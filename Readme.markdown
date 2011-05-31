@@ -7,9 +7,13 @@ OpenPhoto
 ### What is OpenPhoto?
 
 ####Think of OpenPhoto as a WordPress for photo sharing and management.####
-OpenPhoto is federated - meaning it's agnostic to where photos and their metadata are stored.
-This is incredibly important since it allows you to decide where you want your photos stored and whether you want to sign up at OpenPhoto.me or host the software yourself.
-Because of it's federated nature you can sign up at OpenPhoto.me and later transfer to another hosting provider or install the software onto your own servers.
+OpenPhoto is a photo sharing service focused on letting it's users retain 100% ownership of their photos, tags and comments.
+
+Unlike current photo services, OpenPhoto works on a model where you (the user) grants OpenPhoto (the service) access to your photos. 
+This means you can revoke access at anytime and still retain all of the photos, tags and comments you've collected.
+Imagine never having to migrate your photos from one service to another.
+
+This is the way "the cloud" was always meant to be.
 
 ----------------------------------------
 
