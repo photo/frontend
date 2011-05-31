@@ -22,7 +22,7 @@ While OpenPhoto functions like many existing services it's drastically different
 1.  **Built in backups**  
     Since you upload photos to your own [Amazon S3][s3] bucket it's like uploading and archiving your photos in one step.
 1.  **Portability**  
-    Easily start off by signing up for a hosted OpenPhoto account and later switch to hosting the software yourself. There's no need to transfer your photos somewhere else since it's federated. It's like plug and play.
+    Easily start off by signing up for a hosted OpenPhoto account and later switch to hosting the software yourself. There's no need to transfer your photos somewhere else since it's federated. It's plug and play.
 1.  **Durability**  
     Your photos are not tied to any particular photo service. Because everything is open you can write your own web interface for your photos, choose between OpenPhoto hosting providers or install the OpenPhoto software on your own server.
 1.  **Community**  
