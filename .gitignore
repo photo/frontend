@@ -1,0 +1,8 @@
+# Files we don't want
+.DS_Store
+*~
+*.swp
+
+# Useful files which should never be committed
+src/conf/override/*
+src/html/photos/**/*
