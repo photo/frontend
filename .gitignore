@@ -4,5 +4,5 @@
 *.swp
 
 # Useful files which should never be committed
-src/conf/override/*
+src/configs/override/*
 src/html/photos/**/*
