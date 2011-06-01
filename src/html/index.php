@@ -6,7 +6,7 @@
  */
 
 $basePath = dirname(dirname(__FILE__));
-$epiPath = "{$basePath}/lib/epi";
+$epiPath = "{$basePath}/libraries/epi";
 require "{$epiPath}/Epi.php";
 Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
