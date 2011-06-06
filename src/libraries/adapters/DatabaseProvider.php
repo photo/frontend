@@ -1,11 +1,12 @@
 <?php
 class DatabaseProvider
 {
-  public function __construct($type, $opts = null)
+  public static function init($type, $opts = null)
   {
     switch($type)
     {
-      case 'AWSS3':
+      case 'simpleDb':
+        return new DatabaseProviderSimpleDb($opts);
         break;
     }
     
@@ -17,9 +18,9 @@ class DatabaseProvider
 function getDb($type, $opts)
 {
   static $database;
-  if(isset($database))
+  if($database)
     return $database;
 
-  $databases = new DatabaseProvider($type, $opts);
+  $database = DatabaseProvider::init($type, $opts);
   return $database;
 }
