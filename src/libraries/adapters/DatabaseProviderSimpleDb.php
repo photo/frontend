@@ -20,12 +20,12 @@ class DatabaseProviderSimpleDb implements DatabaseInterface
 
   private function normalizePhoto($raw)
   {
-    $photo = new Photo((string)$raw->Name);
+    $photo = array('id' => (string)$raw->Name);
     foreach($raw->Attribute as $item)
     {
       $name = (string)$item->Name;
       $value = (string)$item->Value;
-      $photo->$name = $value;
+      $photo[$name] = $value;
     }
     return $photo;
   }

@@ -1,5 +1,5 @@
 <?php
-class GeneralController extends BasicController
+class GeneralController extends BaseController
 {
   public static function home()
   {

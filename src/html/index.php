@@ -12,7 +12,7 @@ Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
 //Epi::setPath('view', "{$basePath}/views");
 //Epi::setSetting('exceptions', true);
-Epi::init('config','route');
+Epi::init('api','config','route');
 
 getConfig()->load('defaults.ini');
 getConfig()->load('override/defaults.ini');
