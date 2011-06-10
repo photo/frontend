@@ -7,7 +7,7 @@ class PhotosController extends BaseController
     echo '<ul>';
     foreach($photos['result'] as $photo)
     {
-      echo "<li>Photo {$photo['id']} has url {$photo['urlOriginal']}</li>";
+      echo "<li>Photo {$photo->id} has url {$photo->urlOriginal}</li>";
     }
     echo '</ul>';
   }
