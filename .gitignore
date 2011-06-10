@@ -2,6 +2,7 @@
 .DS_Store
 *~
 *.swp
+*.graffle
 
 # Useful files which should never be committed
 src/configs/override/*

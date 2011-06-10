@@ -7,13 +7,9 @@ OpenPhoto
 ### What is OpenPhoto?
 
 ####Think of OpenPhoto as a WordPress for photo sharing and management.####
-OpenPhoto is a photo sharing service focused on letting it's users retain 100% ownership of their photos, tags and comments.
-
-Unlike current photo services, OpenPhoto works on a model where you (the user) grants OpenPhoto (the service) access to your photos. 
-This means you can revoke access at anytime and still retain all of the photos, tags and comments you've collected.
-Imagine never having to migrate your photos from one service to another.
-
-This is the way "the cloud" was always meant to be.
+OpenPhoto is federated - meaning it's agnostic to where photos and their metadata are stored.
+This is incredibly important since it allows you to decide where you want your photos stored and whether you want to sign up at OpenPhoto.me or host the software yourself.
+Because of it's federated nature you can sign up at OpenPhoto.me and later transfer to another hosting provider or install the software onto your own servers.
 
 ----------------------------------------
 
@@ -26,7 +22,7 @@ While OpenPhoto functions like many existing services it's drastically different
 1.  **Built in backups**  
     Since you upload photos to your own [Amazon S3][s3] bucket it's like uploading and archiving your photos in one step.
 1.  **Portability**  
-    Easily start off by signing up for a hosted OpenPhoto account and later switch to hosting the software yourself. There's no need to transfer your photos somewhere else since it's federated. It's plug and play.
+    Easily start off by signing up for a hosted OpenPhoto account and later switch to hosting the software yourself. There's no need to transfer your photos somewhere else since it's federated. It's like plug and play.
 1.  **Durability**  
     Your photos are not tied to any particular photo service. Because everything is open you can write your own web interface for your photos, choose between OpenPhoto hosting providers or install the OpenPhoto software on your own server.
 1.  **Community**  
