@@ -34,7 +34,13 @@ Photos are stored in their own database (or table). The structure the OpenPhoto 
         permission: (int), // bitwise
         creativeCommons: (enum),
         dateTaken: (int), // unix timestamp
+        dateTakenDay: (int)
+        dateTakenMonth: (int)
+        dateTakenYear: (int)
         dateUploaded: (int), // unix timestamp
+        dateUploadedDay: (int)
+        dateUploadedMonth: (int)
+        dateUploadedYear: (int)
         urlOriginal: (string),
         urlBase: (string),
         ...
@@ -74,7 +80,13 @@ Photos are stored in their own database (or table). The structure the OpenPhoto 
   * permission, Bitwise representation of photo permissions
   * creativeCommons, Abbreviation of the CC licenses such as BY, BY-SA, BY-ND, etc. (http://creativecommons.org/licenses/)
   * dateTaken, Unix timestamp of when the photo was taken
+  * dateTakenDay, Day the photo was taken (for searching)
+  * dateTakenMonth, Month the photo was taken (for searching)
+  * dateTakenYear, Year the photo was taken (for searching)
   * dateUploaded, Unix timestamp of when the photo was uploaded
+  * dateUploadedDay, Day the photo was uploaded (for searching)
+  * dateUploadedMonth, Month the photo was uploaded (for searching)
+  * dateUploadedYear, Year the photo was uploaded (for searching)
   * urlOriginal, The URL of the original photo
   * urlBase, The URL of the base version of the photo, used for photo generation
   * urlWxH, A pseudo key which represents any resized version of a photo and it's URL
