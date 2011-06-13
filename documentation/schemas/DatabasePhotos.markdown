@@ -17,9 +17,18 @@ Photos are stored in their own database (or table). The structure the OpenPhoto 
         size: (int), // in kb
         width: (int),
         height: (int),
-        rotation: (int), // degrees
-        cameraMake: (string),
-        cameraModel: (string),
+        exifOrientation: (int), // degrees
+        exifCameraMake: (string),
+        exifCameraModel: (string),
+        exifExpsureTime: (string),
+        exifFNumber: (string),
+        exifMaxApertureValue: (string),
+        exifMeteringMode: (string),
+        exifFlash: (string),
+        exifFocalLength: (string),
+        gpsAltitude: (int),
+        gpsLatitude: (float),
+        gpsLongitude: (float),
         views: (int),
         status: (int), // binary
         permission: (int), // bitwise
@@ -48,9 +57,18 @@ Photos are stored in their own database (or table). The structure the OpenPhoto 
   * size, Size of the photo rounded to the nearest Kilobyte
   * width, Width of the photo in pixels
   * height, Height of the photo in pixels
-  * rotation, Rotation of the camera in degrees
-  * cameraMake, Camera make, i.e. Canon
-  * cameraModel, Camera model, i.e. EOS Rebel
+  * exifOrientation, Rotation of the camera in degrees
+  * exifCameraMake, Camera make, i.e. Canon
+  * exifCcameraModel, Camera model, i.e. EOS Rebel
+  * exifExpsureTime
+  * exifFNumber, F Number i.e f/4.0
+  * exifMaxApertureValue
+  * exifMeteringMode
+  * exifFlash, Indication if the flash fired
+  * exifFocalLength
+  * gpsAltitude
+  * gpsLatitude
+  * gpsLongitude
   * views, Number of times the photo was viewed (excludes views by the owner)
   * status, Numeric representation of the status (0=deleted, 1=active)
   * permission, Bitwise representation of photo permissions
