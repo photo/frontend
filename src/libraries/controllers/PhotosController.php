@@ -11,4 +11,13 @@ class PhotosController extends BaseController
     }
     echo '</ul>';
   }
+
+  public static function upload()
+  {
+    $upload = getApi()->invoke('/photo/upload.json');
+    if($upload)
+      echo '<h1>Your file was uploaded successfully</h1>';
+    else
+      echo '<h1>Sorry, there was a problem uploading your file</h1>';
+  }
 }
