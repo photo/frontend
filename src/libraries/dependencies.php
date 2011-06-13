@@ -15,6 +15,9 @@ require getConfig()->get('paths')->external . '/aws/sdk.class.php';
 require getConfig()->get('paths')->adapters . '/Database.php';
 require getConfig()->get('paths')->adapters . '/DatabaseProvider.php';
 require getConfig()->get('paths')->adapters . '/DatabaseProviderSimpleDb.php';
+require getConfig()->get('paths')->adapters . '/FileSystem.php';
+require getConfig()->get('paths')->adapters . '/FileSystemProvider.php';
+require getConfig()->get('paths')->adapters . '/FileSystemProviderS3.php';
 
 // models
 require getConfig()->get('paths')->models . '/Photo.php';
