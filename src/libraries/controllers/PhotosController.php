@@ -4,15 +4,17 @@ class PhotosController extends BaseController
   public static function home()
   {
     $photos = getApi()->invoke('/photos.json');
-    echo '<ul>';
-    foreach($photos['result'] as $photo)
-    {
-      echo "<li>Photo {$photo->id} has url {$photo->urlOriginal}</li>";
-    }
-    echo '</ul>';
+    $body = getTemplate()->get('photos.php', array('photos' => $photos['result']));
+    getTemplate()->display('template.php', array('body' => $body));
   }
 
   public static function upload()
+  {
+    $body = getTemplate()->get('upload.php');
+    getTemplate()->display('template.php', array('body' => $body));
+  }
+
+  public static function uploadPost()
   {
     $upload = getApi()->invoke('/photo/upload.json');
     if($upload)

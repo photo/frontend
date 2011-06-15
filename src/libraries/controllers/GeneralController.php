@@ -3,6 +3,7 @@ class GeneralController extends BaseController
 {
   public static function home()
   {
-    echo 'Welcome to OpenPhoto';
+    $body = getTemplate()->get('home.php');
+    getTemplate()->display('template.php', array('body' => $body));
   }
 }

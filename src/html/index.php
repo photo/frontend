@@ -10,9 +10,9 @@ $epiPath = "{$basePath}/libraries/external/epi";
 require "{$epiPath}/Epi.php";
 Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
-//Epi::setPath('view', "{$basePath}/views");
+Epi::setPath('view', "{$basePath}/views");
 //Epi::setSetting('exceptions', true);
-Epi::init('api','config','route');
+Epi::init('api','config','route','template');
 
 getConfig()->load('defaults.ini');
 getConfig()->load('override/defaults.ini');
