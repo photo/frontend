@@ -9,6 +9,7 @@ Photos are stored in their own database (or table). The structure the OpenPhoto 
     [
       {
         id: (string),
+        host: (string),
         title: (string),
         description: (string),
         key: (string),
@@ -41,13 +42,13 @@ Photos are stored in their own database (or table). The structure the OpenPhoto 
         dateUploadedDay: (int)
         dateUploadedMonth: (int)
         dateUploadedYear: (int)
-        urlOriginal: (string),
-        urlBase: (string),
+        pathOriginal: (string),
+        pathBase: (string),
         ...
-        urlWxH: (string), // pseudo key
-          // url400x300: (string)
-          // url250x250: (string)
-          // url800x600: (string)
+        pathWxH: (string), // pseudo key
+          // path400x300: (string)
+          // path250x250: (string)
+          // path800x600: (string)
       },
       ....
     ]
@@ -55,6 +56,7 @@ Photos are stored in their own database (or table). The structure the OpenPhoto 
 ### Scema description
 
   * id, base 36 version of a base 10 value
+  * host, host on which this photo resides
   * title, A title for the photo up to 100 chars
   * description, A description for the photo up to 255 chars
   * key, A random sha1 hash
@@ -87,6 +89,6 @@ Photos are stored in their own database (or table). The structure the OpenPhoto 
   * dateUploadedDay, Day the photo was uploaded (for searching)
   * dateUploadedMonth, Month the photo was uploaded (for searching)
   * dateUploadedYear, Year the photo was uploaded (for searching)
-  * urlOriginal, The URL of the original photo
-  * urlBase, The URL of the base version of the photo, used for photo generation
-  * urlWxH, A pseudo key which represents any resized version of a photo and it's URL
+  * pathOriginal, The URL of the original photo
+  * pathBase, The URL of the base version of the photo, used for photo generation
+  * pathWxH, A pseudo key which represents any resized version of a photo and it's URL

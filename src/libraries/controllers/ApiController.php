@@ -1,23 +1,27 @@
 <?php
 class ApiController extends BaseController
 {
+  public static function photoDelete($id)
+  {
+    $status = Photo::delete($id);
+    if($status)
+      return self::success('Photo deleted successfully', $id);
+    else
+      return self::error('Photo deletion failure', false);
+  }
+
   public static function photoUpload()
   {
-    $fs = getFs(getConfig()->get('systems')->fileSystem, getConfig()->get('credentials'));
-    $localFile = $_FILES['photo']['tmp_name'];
-    if(is_uploaded_file($localFile))
-    {
-      $uploaded = $fs->putFile($localFile, rand(0,10000).'.txt');
-      if($uploaded)
-        return self::success('yay', $uploaded);
-    }
-
-    return self::error('boo', $uploaded);
+    $status = Photo::upload($_FILES['photo']['tmp_name'], $_FILES['photo']['name']);
+    if($status)
+      return self::success('yay', $status);
+    else
+      return self::error('File upload failure', false);
   }
 
   public static function photos()
   {
-    $db = getDb(getConfig()->get('systems')->database, getConfig()->get('credentials'));
+    $db = getDb();
     $photos = $db->getPhotos();
     return self::success('yay', $photos);
   }

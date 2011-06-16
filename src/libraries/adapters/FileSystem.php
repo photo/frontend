@@ -1,8 +1,8 @@
 <?php
 interface FileSystemInterface
 {
-  //public function putDirectory($directoryName);
-  public function putFile($localFile, $remoteFile);
+  public function deletePhoto($id);
+  public function putPhoto($localFile, $remoteFile);
   //private function normalizePhoto($raw);
 }
 

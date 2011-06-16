@@ -29,10 +29,25 @@ class EpiApi
       getRoute()->post($route, $callback, true);
   }
 
-  public function invoke($route, $httpMethod = EpiRoute::httpGet)
+  public function invoke($route, $httpMethod = EpiRoute::httpGet, $params = array())
   {
     $routeDef = getRoute()->getRoute($route, $httpMethod);
-    return call_user_func_array($routeDef['callback'], $routeDef['args']);
+
+    // this is ugly but required if internal and external calls are to work
+    $tmps = array();
+    foreach($params as $type => $value)
+    {
+      $tmps[$type] = $GLOBALS[$type];
+      $GLOBALS[$type] = $value;
+    }
+
+    $retval = call_user_func_array($routeDef['callback'], $routeDef['args']);
+
+    // restore sanity
+    foreach($tmps as $type => $value)
+      $GLOBALS[$type] = $value; 
+
+    return $retval;
   }
 
   /**

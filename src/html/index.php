@@ -5,6 +5,9 @@
  * This file takes all requests and dispatches them to the appropriate controller.
  */
 
+// TODO, remove this
+date_default_timezone_set('America/Los_Angeles');
+
 $basePath = dirname(dirname(__FILE__));
 $epiPath = "{$basePath}/libraries/external/epi";
 require "{$epiPath}/Epi.php";

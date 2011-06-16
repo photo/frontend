@@ -15,7 +15,7 @@ class DatabaseProvider
   }
 }
 
-function getDb($type, $opts)
+function getDb($type = null, $opts = null)
 {
   static $database;
   if($database)

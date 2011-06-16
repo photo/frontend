@@ -15,7 +15,7 @@ class FileSystemProvider
   }
 }
 
-function getFs($type, $opts)
+function getFs($type = null, $opts = null)
 {
   static $filesystem;
   if($filesystem)

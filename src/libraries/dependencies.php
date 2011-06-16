@@ -21,3 +21,7 @@ require getConfig()->get('paths')->adapters . '/FileSystemProviderS3.php';
 
 // models
 require getConfig()->get('paths')->models . '/Photo.php';
+
+// initialize the singletons
+getFs(getConfig()->get('systems')->fileSystem, getConfig()->get('credentials'));
+getDb(getConfig()->get('systems')->database, getConfig()->get('credentials'));

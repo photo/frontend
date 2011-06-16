@@ -1,6 +1,15 @@
 <?php
 class PhotosController extends BaseController
 {
+  public static function delete($id)
+  {
+    $delete = getApi()->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost);
+    if($delete['result'] !== false)
+      getRoute()->redirect('/photos?deleteSuccess');
+    else
+      getRoute()->redirect('/photos?deleteFailure');
+  }
+
   public static function home()
   {
     $photos = getApi()->invoke('/photos.json');
@@ -16,10 +25,10 @@ class PhotosController extends BaseController
 
   public static function uploadPost()
   {
-    $upload = getApi()->invoke('/photo/upload.json');
-    if($upload)
-      echo '<h1>Your file was uploaded successfully</h1>';
+    $upload = getApi()->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
+    if($upload['result'])
+      getRoute()->redirect('/photos?uploadSuccess');
     else
-      echo '<h1>Sorry, there was a problem uploading your file</h1>';
+      getRoute()->redirect('/photos?uploadFailure');
   }
 }
