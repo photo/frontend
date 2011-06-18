@@ -11,16 +11,19 @@ class FileSystemS3 implements FileSystemInterface
   public function deletePhoto($id)
   {
     $photo = getDb()->getPhoto($id);
+    $queue = new CFBatchRequest();
     foreach($photo as $key => $value)
     {
-      
+      if(strncmp($key, 'path', 4) === 0)
+        $this->fs->batch($queue)->delete_object($this->bucket, self::normalizePath($value));
     }
-    $this->fs->delete_object($this->bucket, $photoPath);
+    $responses = $this->fs->batch($queue)->send();
+    return $responses->areOK();
   }
 
   public function getPhoto($filename)
   {
-    $filename = preg_replace('/^\/+/', '', $filename);
+    $filename = self::normalizePath($filename);
     $tmpname = '/tmp/'.uniqid('opme', true);
     $fp = fopen($tmpname, 'w+');
     $res = $this->fs->get_object($this->bucket, $filename, array('fileDownload' => $fp));
@@ -30,13 +33,33 @@ class FileSystemS3 implements FileSystemInterface
 
   public function putPhoto($localFile, $remoteFile, $acl = AmazonS3::ACL_PUBLIC)
   {
-    $remoteFile = preg_replace('/^\/+/', '', $remoteFile);
+    $remoteFile = self::normalizePath($remoteFile);
     $opts = array('fileUpload' => $localFile, 'acl' => $acl, 'contentType' => 'image/jpeg');
-    return $this->fs->create_object($this->bucket, $remoteFile, $opts);
+    $res = $this->fs->create_object($this->bucket, $remoteFile, $opts);
+    return $res->isOK();
+  }
+
+  public function putPhotos($files, $acl = AmazonS3::ACL_PUBLIC)
+  {
+    $queue = new CFBatchRequest();
+    foreach($files as $file)
+    {
+      list($localFile, $remoteFile) = each($file);
+      $opts = array('fileUpload' => $localFile, 'acl' => $acl, 'contentType' => 'image/jpeg'); 
+      $remoteFile = self::normalizePath($remoteFile);
+      $this->fs->batch($queue)->create_object($this->bucket, $remoteFile, $opts);
+    }
+    $responses = $this->fs->batch($queue)->send();
+    return $responses->areOK();
   }
 
   public function getHost()
   {
     return getConfig()->get('aws')->s3Host;
+  }
+
+  private function normalizePath($path)
+  {
+    return preg_replace('/^\/+/', '', $path);
   }
 }

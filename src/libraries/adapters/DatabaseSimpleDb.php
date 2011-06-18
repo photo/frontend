@@ -11,7 +11,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function deletePhoto($id)
   {
     $res = $this->db->delete_attributes($this->domain, $id);
-    return $res;
+    return $res->isOK();
   }
 
   public function getPhoto($id)
@@ -35,7 +35,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function putPhoto($id, $params)
   {
     $res = $this->db->put_attributes($this->domain, $id, $params);
-    return $res;
+    return $res->isOK();
   }
 
   public function addAttribute($id, $keyValuePairs, $replace = true)

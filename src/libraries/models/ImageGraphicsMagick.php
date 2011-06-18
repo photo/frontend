@@ -11,7 +11,7 @@ class ImageGraphicsMagick implements Image
       $this->setOutputFile($filename);
   }
 
-  public function scale($width, $height, $maintainAspectRatio = false)
+  public function scale($width, $height, $maintainAspectRatio = true)
   {
     $this->image->scaleimage(intval($width), intval($height), $maintainAspectRatio); 
   }

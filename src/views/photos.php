@@ -1,7 +1,7 @@
 <ul class="photos">
   <?php foreach($photos as $photo) { ?>
   <li>
-    Photo <?php echo $photo['id']; ?> has url <?php echo $photo['pathOriginal']; ?> and <a href="<?php echo $photo['thumb']; ?>">thumb</a> (<a href="/photo/<?php echo $photo['id']; ?>/delete">delete</a>)
+    (<a href="/photo/<?php echo $photo['id']; ?>/delete">delete</a>)
     <br>
     <img src="<?php echo Photo::generateUrlPublic($photo, 200, 200); ?>">
   </li>
