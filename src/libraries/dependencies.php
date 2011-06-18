@@ -13,15 +13,11 @@ require getConfig()->get('paths')->controllers . '/PhotosController.php';
 // libraries
 require getConfig()->get('paths')->external . '/aws/sdk.class.php';
 require getConfig()->get('paths')->adapters . '/Database.php';
-require getConfig()->get('paths')->adapters . '/DatabaseProvider.php';
-require getConfig()->get('paths')->adapters . '/DatabaseProviderSimpleDb.php';
+require getConfig()->get('paths')->adapters . '/DatabaseSimpleDb.php';
 require getConfig()->get('paths')->adapters . '/FileSystem.php';
-require getConfig()->get('paths')->adapters . '/FileSystemProvider.php';
-require getConfig()->get('paths')->adapters . '/FileSystemProviderS3.php';
+require getConfig()->get('paths')->adapters . '/FileSystemS3.php';
 
 // models
 require getConfig()->get('paths')->models . '/Photo.php';
-
-// initialize the singletons
-getFs(getConfig()->get('systems')->fileSystem, getConfig()->get('credentials'));
-getDb(getConfig()->get('systems')->database, getConfig()->get('credentials'));
+require getConfig()->get('paths')->models . '/Image.php';
+require getConfig()->get('paths')->models . '/ImageGraphicsMagick.php';

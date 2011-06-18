@@ -1,6 +1,23 @@
 <?php
 class PhotosController extends BaseController
 {
+  public static function create($id, $hash, $width, $height, $options = null)
+  {
+    $fragment = "{$width}x{$height}";
+    if(!empty($options))
+      $fragment += "x{$options}";   
+    $photo = Photo::generateImage($id, $hash, $width, $height, $options);
+    // TODO return 404 graphic
+    if($photo)
+    {
+      header('Content-Type: image/jpeg');
+      readfile($photo);
+      unlink($photo);
+      return;
+    }
+    echo 'did not work';
+  }
+
   public static function delete($id)
   {
     $delete = getApi()->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost);
@@ -13,6 +30,12 @@ class PhotosController extends BaseController
   public static function home()
   {
     $photos = getApi()->invoke('/photos.json');
+    foreach($photos['result'] as $key => $val)
+    {
+      $resp = getApi()->invoke("/photo/{$val['id']}/url/200x200.json", EpiRoute::httpGet);
+      $url = $resp['result'];
+      $photos['result'][$key]['thumb'] = $url;
+    }
     $body = getTemplate()->get('photos.php', array('photos' => $photos['result']));
     getTemplate()->display('template.php', array('body' => $body));
   }

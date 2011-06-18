@@ -1,5 +1,5 @@
 <?php
-class DatabaseProviderSimpleDb implements DatabaseInterface
+class DatabaseSimpleDb implements DatabaseInterface
 {
   private $domain;
   public function __construct($opts)
@@ -35,6 +35,12 @@ class DatabaseProviderSimpleDb implements DatabaseInterface
   public function putPhoto($id, $params)
   {
     $res = $this->db->put_attributes($this->domain, $id, $params);
+    return $res;
+  }
+
+  public function addAttribute($id, $keyValuePairs, $replace = true)
+  {
+    $res = $this->db->put_attributes($this->domain, $id, $keyValuePairs, $replace);
     return $res;
   }
 
