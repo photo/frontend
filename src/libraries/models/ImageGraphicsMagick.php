@@ -2,13 +2,9 @@
 class ImageGraphicsMagick implements Image
 {
   public $image;
-  public function __construct($filename, $outputFile = null)
+  public function __construct($filename)
   {
     $this->image = new Gmagick($filename);
-    if($outputFile !== null)
-      $this->setOutputFile($outputFile);
-    else
-      $this->setOutputFile($filename);
   }
 
   public function scale($width, $height, $maintainAspectRatio = true)
@@ -16,12 +12,7 @@ class ImageGraphicsMagick implements Image
     $this->image->scaleimage(intval($width), intval($height), $maintainAspectRatio); 
   }
 
-  public function setOutputFile($filename)
-  {
-    $this->image->SetImageFilename($filename);
-  }
-
-  public function write($outputFile = null)
+  public function write($outputFile)
   {
     $this->image->write($outputFile);
   }

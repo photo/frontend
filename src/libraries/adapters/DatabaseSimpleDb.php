@@ -41,7 +41,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function addAttribute($id, $keyValuePairs, $replace = true)
   {
     $res = $this->db->put_attributes($this->domain, $id, $keyValuePairs, $replace);
-    return $res;
+    return $res->isOK();
   }
 
   private function normalizePhoto($raw)

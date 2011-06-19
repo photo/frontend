@@ -20,4 +20,5 @@ require getConfig()->get('paths')->adapters . '/FileSystemS3.php';
 // models
 require getConfig()->get('paths')->models . '/Photo.php';
 require getConfig()->get('paths')->models . '/Image.php';
+require getConfig()->get('paths')->models . '/ImageImageMagick.php';
 require getConfig()->get('paths')->models . '/ImageGraphicsMagick.php';

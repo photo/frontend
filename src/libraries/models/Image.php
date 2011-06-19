@@ -3,6 +3,7 @@ interface Image
 {
   public function __construct($filename);
   public function scale($width, $height, $maintainAspectRatio);
+  public function write($outputFile);
 }
 
 function getImage($image)
@@ -15,6 +16,9 @@ function getImage($image)
   {
     case 'GraphicsMagick':
       return new ImageGraphicsMagick($image);
+      break;
+    case 'ImageMagick':
+      return new ImageImageMagick($image);
       break;
   }
 
