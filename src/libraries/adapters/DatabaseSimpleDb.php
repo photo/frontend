@@ -16,13 +16,13 @@ class DatabaseSimpleDb implements DatabaseInterface
 
   public function getPhoto($id)
   {
-    $res = $this->db->select("select * from {$this->domain} where itemName()='{$id}'");
+    $res = $this->db->select("select * from {$this->domain} where itemName()='{$id}'", array('ConsistentRead' => 'true'));
     return self::normalizePhoto($res->body->SelectResult->Item);
   }
 
   public function getPhotos()
   {
-    $res = $this->db->select("select * from {$this->domain}");
+    $res = $this->db->select("select * from {$this->domain}", array('ConsistentRead' => 'true'));
 
     $photos = array();
     foreach($res->body->SelectResult->Item as $photo)
@@ -47,7 +47,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   private function normalizePhoto($raw)
   {
     $id = strval($raw->Name);
-    $data = array();
+    $photo = array();
     foreach($raw->Attribute as $item)
     {
       $name = (string)$item->Name;
