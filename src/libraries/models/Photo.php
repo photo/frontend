@@ -16,6 +16,30 @@ class Photo
     return sprintf('path%s', self::generateFragment($width, $height, $options));
   }
 
+  public static function generateFragment($width, $height, $options)
+  {
+    $fragment = "{$width}x{$height}";
+    if(!empty($options))
+      $fragment += "x{$options}";
+    return $fragment;
+  }
+
+  public static function generateFragmentReverse($options)
+  {
+    $options = explode('x', $options);
+    $width = array_shift($options);
+    $height = array_shift($options);
+    $options = implode('x', $options);
+    return array('width' => $width, 'height' => $height, 'options' => $options);
+  }
+
+  public static function generateHash(/*$args1, $args2, ...*/)
+  {
+    $args = func_get_args();
+    $args[] = getConfig()->get('secrets')->secret;
+    return substr(sha1(implode('.', $args)), 0, 5);
+  }
+
   public static function generatePaths($photoName)
   {
     // TODO, normalize the name
@@ -75,7 +99,7 @@ class Photo
     return array_merge($data, array('id' => $id));
   }
 
-  public static function upload($localFile, $name)
+  public static function upload($localFile, $name, $attributes = array())
   {
     $fs = getFs();
     $db = getDb();
@@ -105,7 +129,8 @@ class Photo
       unlink($localFileCopy);
       if($uploaded)
       {
-        $stored = $db->putPhoto($id, array('host' => getFs()->getHost(), 'pathOriginal' => $paths['pathOriginal'], 'pathBase' => $paths['pathBase']));
+        $attributes = array_merge($attributes, array('host' => getFs()->getHost(), 'pathOriginal' => $paths['pathOriginal'], 'pathBase' => $paths['pathBase']));
+        $stored = $db->putPhoto($id, $attributes);
         if($stored)
           return $id;
 
@@ -121,21 +146,6 @@ class Photo
     $customPath = preg_replace('#^/base/#', '/custom/', $basePath);
     $customName = substr($customPath, 0, strrpos($customPath, '.'));
     return "{$customName}_{$fragment}.jpg";
-  }
-
-  private static function generateFragment($width, $height, $options)
-  {
-    $fragment = "{$width}x{$height}";
-    if(!empty($options))
-      $fragment += "x{$options}";
-    return $fragment;
-  }
-
-  private static function generateHash(/*$args1, $args2, ...*/)
-  {
-    $args = func_get_args();
-    $args[] = getConfig()->get('secrets')->secret;
-    return substr(sha1(implode('.', $args)), 0, 5);
   }
 
   private static function validateHash(/*$hash, $args1, $args2, ...*/)

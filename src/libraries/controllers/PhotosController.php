@@ -3,9 +3,7 @@ class PhotosController extends BaseController
 {
   public static function create($id, $hash, $width, $height, $options = null)
   {
-    $fragment = "{$width}x{$height}";
-    if(!empty($options))
-      $fragment += "x{$options}";   
+    $fragment = Photo::generateFragment($width, $height, $options);
     $photo = Photo::generateImage($id, $hash, $width, $height, $options);
     // TODO return 404 graphic
     if($photo)
