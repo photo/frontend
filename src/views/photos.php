@@ -1,3 +1,17 @@
+<style type="text/css">
+  ul.photos {
+    list-style-type:none;
+    margin:0;
+    padding:0;
+  }
+
+  ul.photos li {
+    float:left;
+    width:200px;
+    height:200px;
+    padding: 25px;
+  } 
+</style>
 <ul class="photos">
   <?php foreach($photos as $photo) { ?>
   <li>
