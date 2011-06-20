@@ -46,6 +46,7 @@ class DatabaseSimpleDb implements DatabaseInterface
 
   private function normalizePhoto($raw)
   {
+    $appId = getConfig()->get('application')->appId;
     $id = strval($raw->Name);
     $photo = array();
     foreach($raw->Attribute as $item)
@@ -54,6 +55,6 @@ class DatabaseSimpleDb implements DatabaseInterface
       $value = (string)$item->Value;
       $photo[$name] = $value;
     }
-    return Photo::normalize($id, $photo);
+    return Photo::normalize($id, $appId, $photo);
   }
 }

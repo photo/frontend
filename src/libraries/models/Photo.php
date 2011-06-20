@@ -94,9 +94,9 @@ class Photo
     return false;
   }
 
-  public static function normalize($id, $data)
+  public static function normalize($id, $appId, $data)
   {
-    return array_merge($data, array('id' => $id));
+    return array_merge($data, array('id' => $id, 'appId' => $appId));
   }
 
   public static function upload($localFile, $name, $attributes = array())
@@ -125,15 +125,37 @@ class Photo
           array($localFileCopy => $paths['pathBase'])
         )
       );
-      unlink($localFile);
-      unlink($localFileCopy);
       if($uploaded)
       {
-        $attributes = array_merge($attributes, array('host' => getFs()->getHost(), 'pathOriginal' => $paths['pathOriginal'], 'pathBase' => $paths['pathBase']));
+        $exif = self::readExif($localFile);
+        $attributes = array_merge(
+          $attributes, 
+          self::getDefaultAttributes(),
+          array(
+            'hash' => sha1_file($localFile),
+            'size' => 0, // TODO
+            'tags' => '', // TODO
+            'exifCameraMake' => $exif['cameraMake'],
+            'exifCameraModel' => $exif['cameraModel'],
+            'width' => $exif['width'],
+            'height' => $exif['height'],
+            'dateTaken' => $exif['dateTaken'],
+            'dateTakenDay' => date('d', $exif['dateTaken']),
+            'dateTakenMonth' => date('m', $exif['dateTaken']),
+            'dateTakenYear' => date('Y', $exif['dateTaken']),
+            'dateUploaded' => time(),
+            'dateUploadedDay' => date('d', time()),
+            'dateUploadedMonth' => date('m', time()),
+            'dateUploadedYear' => date('Y', time()),
+            'pathOriginal' => $paths['pathOriginal'], 
+            'pathBase' => $paths['pathBase']
+          )
+        );
         $stored = $db->putPhoto($id, $attributes);
+        unlink($localFile);
+        unlink($localFileCopy);
         if($stored)
           return $id;
-
       }
     }
 
@@ -148,11 +170,42 @@ class Photo
     return "{$customName}_{$fragment}.jpg";
   }
 
+  private static function getDefaultAttributes()
+  {
+    return array(
+      'appId' => getConfig()->get('application')->appId,
+      'host' => getFs()->getHost(), 
+      'views' => 0,
+      'status' => 1,
+      'permission' => 0, // TODO
+      'creativeCommons' => 'BY-NC'
+    );
+  }
+
   private static function validateHash(/*$hash, $args1, $args2, ...*/)
   {
     $args = func_get_args();
     $args[] = getConfig()->get('secrets')->secret;
     $hash = array_shift($args);
     return (substr(sha1(implode('.', $args)), 0, 5) == $hash);
+  }
+
+  private static function readExif($image) {
+    $exif = exif_read_data($image);
+    if(!$exif)
+      return null;
+
+    $size = getimagesize($image);
+    $dateTaken = $exif['FileDateTime'];
+    if(array_key_exists('DateTime', $exif))
+    {
+      $dateTime = explode(' ', $exif['DateTime']);
+      $date = explode(':', $dateTime[0]);
+      $time = explode(':', $dateTime[1]);
+      $dateTaken = @mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]);
+    }
+
+    return array('dateTaken' => $dateTaken, 'width' => $size[0], 'height' => $size[1],
+      'cameraModel' => $exif['Model'], 'cameraMake' => $exif['Make']);
   }
 }

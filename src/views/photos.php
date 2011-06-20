@@ -18,6 +18,9 @@
     (<a href="/photo/<?php echo $photo['id']; ?>/delete">delete</a>)
     <br>
     <img src="<?php echo Photo::generateUrlPublic($photo, 200, 200); ?>">
+    Creative Commons: <?php echo $photo['creativeCommons']; ?>
+    <br/>
+    Taken: <?php echo date('D M j, Y', $photo['dateTaken']); ?>
   </li>
   <?php } ?>
 </ul>
