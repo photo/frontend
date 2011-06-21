@@ -3,7 +3,7 @@ class PhotosController extends BaseController
 {
   public static function create($id, $hash, $width, $height, $options = null)
   {
-    $fragment = Photo::generateFragment($width, $height, $options);
+    $args = func_get_args();
     $photo = Photo::generateImage($id, $hash, $width, $height, $options);
     // TODO return 404 graphic
     if($photo)
@@ -25,17 +25,45 @@ class PhotosController extends BaseController
       getRoute()->redirect('/photos?deleteFailure');
   }
 
-  public static function home()
+  public static function photos()
   {
     $photos = getApi()->invoke('/photos.json');
     foreach($photos['result'] as $key => $val)
-    {
-      $resp = getApi()->invoke("/photo/{$val['id']}/url/200x200.json", EpiRoute::httpGet);
-      $url = $resp['result'];
-      $photos['result'][$key]['thumb'] = $url;
-    }
+      $photos['result'][$key]['thumb'] = Photo::generateUrlPublic($val, 200, 200);
     $body = getTemplate()->get('photos.php', array('photos' => $photos['result']));
     getTemplate()->display('template.php', array('body' => $body));
+  }
+
+  public static function photo($id, $options = null)
+  {
+    $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet);
+    if($apiResp['code'] == 200)
+    {
+      $photo = $apiResp['result'];
+      $sizes = array(
+        '300x300' => Photo::generateUrlPublic($photo, 300, 300),
+        '300x300xBW' => Photo::generateUrlPublic($photo, 300, 300, 'BW'),
+        '500x500' => Photo::generateUrlPublic($photo, 500, 500),
+        '700x700' => Photo::generateUrlPublic($photo, 700, 700),
+        '900x700' => Photo::generateUrlPublic($photo, 900, 900),
+        '1280x1280' => Photo::generateUrlPublic($photo, 1280, 1280)
+      );
+      if($options === null)
+      {
+        $photo['displayUrl'] = Photo::generateUrlPublic($photo, 800, 800);
+      }
+      else
+      {
+        $fragment = Photo::generateFragmentReverse($options);
+        $photo['displayUrl'] = Photo::generateUrlPublic($photo, $fragment['width'], $fragment['height'], $fragment['options']);
+      }
+
+      getTemplate()->display('template.php', array('body' => getTemplate()->get('photo.php', array('photo' => $photo, 'sizes' => $sizes))));
+    }
+    else
+    {
+      echo "Couldn't find photo {$id}"; // TODO
+    }
   }
 
   public static function upload()

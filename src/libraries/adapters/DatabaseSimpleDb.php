@@ -17,7 +17,10 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getPhoto($id)
   {
     $res = $this->db->select("select * from {$this->domain} where itemName()='{$id}'", array('ConsistentRead' => 'true'));
-    return self::normalizePhoto($res->body->SelectResult->Item);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizePhoto($res->body->SelectResult->Item);
+    else
+      return false;
   }
 
   public function getPhotos()

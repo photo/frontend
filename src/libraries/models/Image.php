@@ -3,6 +3,7 @@ interface Image
 {
   public function __construct($filename);
   public function scale($width, $height, $maintainAspectRatio);
+  public function greyscale();
   public function write($outputFile);
 }
 

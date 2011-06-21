@@ -15,17 +15,20 @@
 <ul class="photos">
   <?php foreach($photos as $photo) { ?>
   <li>
-    (<a href="/photo/<?php echo $photo['id']; ?>/delete">delete</a>)
+    (<a href="/photo/<?php echo $photo['id']; ?>/delete" class="delete">delete</a>)
     <br>
-    <img src="<?php echo Photo::generateUrlPublic($photo, 200, 200); ?>">
-    Creative Commons: <?php echo $photo['creativeCommons']; ?>
+    <a href="/photo/<?php echo $photo['id']; ?>"><img src="<?php echo Photo::generateUrlPublic($photo, 200, 200); ?>"></a>
+    Tags:
+    <?php foreach((array)$photo['tags'] as $tag) { ?>
+      
+    <?php } ?>
     <br/>
     Taken: <?php echo date('D M j, Y', $photo['dateTaken']); ?>
   </li>
   <?php } ?>
 </ul>
 <script>
-$('ul.photos li a').click(function(e) {
+$('ul.photos li a.delete').click(function(e) {
   var a = this,
     url = $(a).attr('href')+'.json';
   $.post(url, function(response) {

@@ -1,6 +1,15 @@
 <?php
 class ApiController extends BaseController
 {
+  public static function photo($id)
+  {
+    $photo = getDb()->getPhoto($id);
+    if($photo)
+      return self::success("Photo {$id}", $photo);
+    else
+      return self::notFound("Photo {$id} not found", false);
+  }
+
   public static function photoDelete($id)
   {
     $status = Photo::delete($id);

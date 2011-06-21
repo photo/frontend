@@ -20,7 +20,7 @@ class Photo
   {
     $fragment = "{$width}x{$height}";
     if(!empty($options))
-      $fragment += "x{$options}";
+      $fragment .= "x{$options}";
     return $fragment;
   }
 
@@ -36,6 +36,11 @@ class Photo
   public static function generateHash(/*$args1, $args2, ...*/)
   {
     $args = func_get_args();
+    foreach($args as $k => $v)
+    {
+      if(strlen($v) == 0)
+        unset($args[$k]);
+    }
     $args[] = getConfig()->get('secrets')->secret;
     return substr(sha1(implode('.', $args)), 0, 5);
   }
@@ -68,21 +73,26 @@ class Photo
 
   public static function generateImage($id, $hash, $width, $height, $options = null)
   {
-    if(self::generateHash($id, $width, $height, $options) != self::validateHash($hash, $id, $width, $height, $options))
+    if(!self::validateHash($hash, $id, $width, $height, $options))
       return false;
 
-    if(!empty($options))
-    {
-      $options = explode('x', $options);
-      foreach($options as $option)
-      { }
-    }
-    
     $photo = getDb()->getPhoto($id);
     $filename = getFs()->getPhoto($photo['pathBase']);
-
     $image = getImage($filename);
     $image->scale($width, $height, true);
+    if(!empty($options))
+    {
+      $optionsArray = (array)explode('x', $options);
+      foreach($optionsArray as $option)
+      {
+        switch($option)
+        {
+          case 'BW':
+            $image->greyscale();
+            break;
+        }
+      }
+    }
     $image->write($filename);
     $customPath = self::generateCustomUrl($photo['pathBase'], $width, $height, $options);
     $key = self::generateCustomKey($width, $height, $options);
@@ -185,6 +195,11 @@ class Photo
   private static function validateHash(/*$hash, $args1, $args2, ...*/)
   {
     $args = func_get_args();
+    foreach($args as $k => $v)
+    {
+      if(strlen($v) == 0)
+        unset($args[$k]);
+    }
     $args[] = getConfig()->get('secrets')->secret;
     $hash = array_shift($args);
     return (substr(sha1(implode('.', $args)), 0, 5) == $hash);

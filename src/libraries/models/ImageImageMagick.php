@@ -12,6 +12,11 @@ class ImageImageMagick implements Image
     $this->image->scaleImage(intval($width), intval($height), $maintainAspectRatio);
   }
 
+  public function greyscale()
+  {
+    $this->image->modulateImage(100, 0, 100);
+  }
+
   public function write($outputFile)
   {
     $this->image->writeImage($outputFile);
