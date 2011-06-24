@@ -16,6 +16,7 @@ require getConfig()->get('paths')->adapters . '/Database.php';
 require getConfig()->get('paths')->adapters . '/DatabaseSimpleDb.php';
 require getConfig()->get('paths')->adapters . '/FileSystem.php';
 require getConfig()->get('paths')->adapters . '/FileSystemS3.php';
+require getConfig()->get('paths')->libraries . '/functions.php';
 
 // models
 require getConfig()->get('paths')->models . '/Photo.php';

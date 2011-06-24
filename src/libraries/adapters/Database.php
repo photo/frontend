@@ -5,12 +5,18 @@ interface DatabaseInterface
   public function deletePhoto($id);
   public function getPhoto($id);
   public function getPhotos();
+  public function initialize();
   //private function normalizePhoto($raw);
 }
 
-function getDb()
+function getDb(/*$type, $opts*/)
 {
   static $database, $type, $opts;
+  if(func_num_args() == 2)
+  {
+    $type = func_get_arg(0);
+    $opts = func_get_arg(1);
+  }
   // load configs only once
   if(!$type)
     $type = getConfig()->get('systems')->database;
@@ -22,7 +28,7 @@ function getDb()
 
   switch($type)
   {
-    case 'simpleDb':
+    case 'SimpleDb':
       $database = new DatabaseSimpleDb($opts);
       break;
   }

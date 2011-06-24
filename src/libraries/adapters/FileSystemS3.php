@@ -5,7 +5,7 @@ class FileSystemS3 implements FileSystemInterface
   public function __construct($opts)
   {
     $this->fs = new AmazonS3($opts->awsKey, $opts->awsSecret);
-    $this->bucket = getConfig()->get('aws')->bucketName;
+    $this->bucket = getConfig()->get('aws')->s3BucketName;
   }
 
   public function deletePhoto($id)
@@ -56,6 +56,15 @@ class FileSystemS3 implements FileSystemInterface
   public function getHost()
   {
     return getConfig()->get('aws')->s3Host;
+  }
+
+  public function initialize()
+  {
+    if(!$this->fs->validate_bucketname_create($this->bucket) || !$this->fs->validate_bucketname_support($this->bucket))
+      return false;
+
+    $res = $this->fs->create_bucket($this->bucket, AmazonS3::REGION_US_E1, AmazonS3::ACL_PUBLIC);
+    return $res->isOK();
   }
 
   private function normalizePath($path)

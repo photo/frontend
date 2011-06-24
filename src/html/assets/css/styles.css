@@ -1,0 +1,14 @@
+body{
+  font:12px/170% 'Lucida Grande','Lucida Sans Unicode',Geneva,Verdana,Sans-Serif;
+}
+div#site{ width:980px; margin:auto; }
+h1,h2,h3,h4{
+  font:bold Georgia,'Times New Roman',Times,serif;
+}
+form em{ font-size:.75em; }
+label{ font-size:1.15em; color:#404040; display:block; position:relative; }
+label em{ font-size:.6em; position:relative; top:-2px; left:3px; }
+input, textarea, select{ border:solid 1px #ccc; font-size:1em; color:#404040; padding:4px; }
+label + input, label + textarea, label + select{ margin-bottom:20px; display:block; }
+
+div#setup{ width:400px; margin:auto; }

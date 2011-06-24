@@ -5,12 +5,18 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function __construct($opts)
   {
     $this->db = new AmazonSDB($opts->awsKey, $opts->awsSecret);
-    $this->domain = getConfig()->get('aws')->domain;
+    $this->domain = getConfig()->get('aws')->simpleDbDomain;
+  }
+
+  public function addAttribute($id, $keyValuePairs, $replace = true)
+  {
+    $res = $this->db->put_attributes($this->domain, $id, $keyValuePairs, $replace);
+    return $res->isOK();
   }
 
   public function deletePhoto($id)
   {
-    $res = $this->db->delete_attributes($this->domain, $id);
+    $res = $this->db->delete_attributes($this->simpleDbDomain, $id);
     return $res->isOK();
   }
 
@@ -41,9 +47,9 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $res->isOK();
   }
 
-  public function addAttribute($id, $keyValuePairs, $replace = true)
+  public function initialize()
   {
-    $res = $this->db->put_attributes($this->domain, $id, $keyValuePairs, $replace);
+    $res = $this->db->create_domain($this->domain);
     return $res->isOK();
   }
 

@@ -5,12 +5,18 @@ interface FileSystemInterface
   public function getPhoto($filename);
   public function putPhoto($localFile, $remoteFile);
   public function putPhotos($files);
+  public function initialize();
   //private function normalizePhoto($raw);
 }
 
-function getFs()
+function getFs(/*$type, $opts*/)
 {
   static $filesystem, $type, $opts;
+  if(func_num_args() == 2)
+  {
+    $type = func_get_arg(0);
+    $opts = func_get_arg(1);
+  }
   // load configs only once
   if(!$type)
     $type = getConfig()->get('systems')->fileSystem;
@@ -30,5 +36,5 @@ function getFs()
   if($filesystem)
     return $filesystem;
 
-  throw new Exception(404, "FileSysetm Provider {$type} does not exist");
+  throw new Exception("FileSysetm Provider {$type} does not exist", 404);
 }

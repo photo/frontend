@@ -17,10 +17,28 @@ Epi::setPath('view', "{$basePath}/views");
 //Epi::setSetting('exceptions', true);
 Epi::init('api','config','route','template');
 
-getConfig()->load('defaults.ini');
-getConfig()->load('override/defaults.ini');
+$configFile = Epi::getPath('config').'/generated/settings.ini';
+if(file_exists($configFile))
+{
+  getConfig()->load('generated/settings.ini');
+  // load all dependencies
+  require getConfig()->get('paths')->libraries . '/dependencies.php';
+  getRoute()->run();
+}
+elseif(!file_exists($configFile))
+{
 
-// load all dependencies
-require getConfig()->get('paths')->libraries . '/dependencies.php';
-
-getRoute()->run();
+  $baseDir = dirname(dirname(__FILE__));
+  $paths = new stdClass;
+  $paths->libraries = "{$baseDir}/libraries";
+  $paths->controllers = "{$baseDir}/libraries/controllers";
+  $paths->external = "{$baseDir}/libraries/external";
+  $paths->adapters = "{$baseDir}/libraries/adapters";
+  $paths->models = "{$baseDir}/libraries/models";
+  getConfig()->set('paths', $paths);
+  require getConfig()->get('paths')->libraries . '/dependencies.php';
+  require getConfig()->get('paths')->controllers . '/SetupController.php';
+  getRoute()->get('/setup', array('SetupController', 'setup'));
+  getRoute()->post('/setup', array('SetupController', 'setupPost'));
+  getRoute()->run('/setup');
+}
