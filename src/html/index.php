@@ -37,8 +37,7 @@ elseif(!file_exists($configFile))
   $paths->models = "{$baseDir}/libraries/models";
   getConfig()->set('paths', $paths);
   require getConfig()->get('paths')->libraries . '/dependencies.php';
+  require getConfig()->get('paths')->libraries . '/routes-setup.php';
   require getConfig()->get('paths')->controllers . '/SetupController.php';
-  getRoute()->get('/setup', array('SetupController', 'setup'));
-  getRoute()->post('/setup', array('SetupController', 'setupPost'));
   getRoute()->run('/setup');
 }

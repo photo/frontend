@@ -15,7 +15,7 @@
   <script>
       $(document).ready(function() {
         op.init.attach();
-        <?php if($js) { ?>
+        <?php if(isset($js)) { ?>
           <?php echo $js; ?>
         <?php } ?>
       });

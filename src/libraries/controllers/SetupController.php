@@ -4,34 +4,25 @@ class SetupController
   private static $directoryErrors = array();
   public static function setup()
   {
+    $step = 1;
+    if(isset($_GET['step']))
+      $step = intval($_GET['step']);
     $permissionCheck = self::verifyRequirements();
     if($permissionCheck !== true)
     {
-      getTemplate()->display('template.php', array('body' => 'setupRequirements.php', array('errors' => $errors)));
+      getTemplate()->display('blank.php', array('body' => 'setupRequirements.php', array('errors' => $errors)));
       return;
     }
 
-    /*$options = array(
-      'systems' => array(
-        'database' => array(
-          'simpleDb' => 'Amazon SimpleDb'
-        ),
-        'fileSysetm' => array(
-          's3' => 'Amazon S3', 'cloudFiles' => 'Rackspace Cloudfiles'
-        )
-      ),
-      'credentials' => array(
-        'providers' => array()
-      )
-    );*/
     $imageLibs = array();
     if(class_exists('Imagick'))
       $imageLibs['ImageMagick'] = 'ImageMagick';
     if(class_exists('Gmagick'))
       $imageLibs['GraphicsMagick'] = 'GraphicsMagick';
 
-    $params = array('imageLibs' => $imageLibs, 'appId' => $_SERVER['HTTP_HOST']);
-    getTemplate()->display('blank.php', array('body' => getTemplate()->get('setup.php', $params)));
+    $params = array('imageLibs' => $imageLibs, 'appId' => $_SERVER['HTTP_HOST'], 'step' => $step);
+    $body = getTemplate()->get('setup.php', $params);
+    getTemplate()->display('blank.php', array('body' => $body, 'js' => getTemplate()->get('js/setup.js.php')));
   }
 
   public static function setupPost()

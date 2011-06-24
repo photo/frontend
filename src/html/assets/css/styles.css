@@ -10,5 +10,26 @@ label{ font-size:1.15em; color:#404040; display:block; position:relative; }
 label em{ font-size:.6em; position:relative; top:-2px; left:3px; }
 input, textarea, select{ border:solid 1px #ccc; font-size:1em; color:#404040; padding:4px; }
 label + input, label + textarea, label + select{ margin-bottom:20px; display:block; }
+.hidden{ display:none; }
+
 
 div#setup{ width:400px; margin:auto; }
+div#setup ol#setup-steps{
+  list-style:none;
+  height:50px;
+  margin:0;
+  padding:0;
+}
+div#setup ol#setup-steps li{
+  background-color:#ddd;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -o-border-radius: 20px;
+  padding:10px 18px;
+  margin:0 10px 0 0;
+  float:left;
+}
+div#setup ol#setup-steps li.current{
+  background-color:#3072b3;
+  color:#eee;
+}

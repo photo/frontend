@@ -49,6 +49,10 @@ class DatabaseSimpleDb implements DatabaseInterface
 
   public function initialize()
   {
+    $domains = $this->db->get_domain_list("/^{$this->domain}$/");
+    if(count($domains) == 1)
+      return true;
+
     $res = $this->db->create_domain($this->domain);
     return $res->isOK();
   }

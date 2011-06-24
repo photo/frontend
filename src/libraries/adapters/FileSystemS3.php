@@ -1,7 +1,7 @@
 <?php
 class FileSystemS3 implements FileSystemInterface
 {
-  private $bucket;
+  private $bucket, $fs;
   public function __construct($opts)
   {
     $this->fs = new AmazonS3($opts->awsKey, $opts->awsSecret);
@@ -62,6 +62,10 @@ class FileSystemS3 implements FileSystemInterface
   {
     if(!$this->fs->validate_bucketname_create($this->bucket) || !$this->fs->validate_bucketname_support($this->bucket))
       return false;
+
+    $buckets = $this->fs->get_bucket_list("/^{$this->bucket}$/");
+    if(count($buckets) == 1)
+      return true;
 
     $res = $this->fs->create_bucket($this->bucket, AmazonS3::REGION_US_E1, AmazonS3::ACL_PUBLIC);
     return $res->isOK();
