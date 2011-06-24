@@ -12,6 +12,18 @@ input, textarea, select{ border:solid 1px #ccc; font-size:1em; color:#404040; pa
 label + input, label + textarea, label + select{ margin-bottom:20px; display:block; }
 .hidden{ display:none; }
 
+div#photos ul.grid {
+  list-style-type:none;
+  margin:0;
+  padding:0;
+}
+
+div#photos ul.grid li {
+  float:left;
+  width:200px;
+  height:200px;
+  padding: 25px;
+} 
 
 div#setup{ width:400px; margin:auto; }
 div#setup ol#setup-steps{

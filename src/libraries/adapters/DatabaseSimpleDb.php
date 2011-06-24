@@ -16,7 +16,7 @@ class DatabaseSimpleDb implements DatabaseInterface
 
   public function deletePhoto($id)
   {
-    $res = $this->db->delete_attributes($this->simpleDbDomain, $id);
+    $res = $this->db->delete_attributes($this->domain, $id);
     return $res->isOK();
   }
 

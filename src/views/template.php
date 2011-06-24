@@ -7,6 +7,7 @@
 <body>
   <div id="site">
     <header>
+      <h1>OpenPhoto</h1>
       <nav>
         <?php getTemplate()->display('header.php'); ?>
       </nav>

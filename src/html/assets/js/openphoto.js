@@ -3,6 +3,17 @@ var op = (function(){
   };
   return {
     handlers: {
+      photoDelete: function(event) {
+        var el = $(this),
+          url = el.attr('href')+'.json';
+          $.post(url, function(response) {
+            if(response.code === 200)
+              $(".photo-container-"+response.result).hide('medium', function(){ $(this).remove(); });
+            else
+              op.message.error('Could not delete the photo.');
+          }, 'json');
+          return false;
+      },
       photoLink: function(event) {
         var el = this;
         if(event.type == 'click') {
@@ -30,6 +41,12 @@ var op = (function(){
     init: {
       attach: function() {
         $('.photo-link').live('click mouseover', op.handlers.photoLink);
+        $('.photo-delete').live('click', op.handlers.photoDelete);
+      }
+    },
+    message: {
+      error: function(msg) {
+        alert(msg);
       }
     }
   };
