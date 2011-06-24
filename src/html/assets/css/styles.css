@@ -45,3 +45,41 @@ div#setup ol#setup-steps li.current{
   background-color:#3072b3;
   color:#eee;
 }
+
+div#upload ul#upload-queue{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+
+div#upload ul#upload-queue li{
+  margin:10px;
+  padding:10px;
+  float:left;
+}
+div#upload ul#upload-queue li label{
+  padding:0;
+  margin:0;
+}
+div#upload ul#upload-queue li img, div#upload ul#upload-queue li div.img{
+  border:solid 2px #eee;
+}
+div#upload ul#upload-queue li div.img{
+  width:200px;
+  height:200px;
+  font-weight:bold;
+  font-size:larger;
+  line-height:200px;
+  text-align:center;
+}
+div#upload ul#upload-queue div.progress{
+  height:15px;
+  width:200px;
+  background-color:#eee;
+  border:solid 1px #ccc;
+}
+div#upload ul#upload-queue div.progress > div{
+  height:100%;
+  width:100px;
+  background-color:#bbb;
+}

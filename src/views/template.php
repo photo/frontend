@@ -20,6 +20,11 @@
     </footer>
   </div>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
+  <?php if(isset($jsFiles)) { ?>
+    <?php foreach($jsFiles as $file) { ?>
+      <script type="text/javascript" src="<?php echo $file; ?>"></script>
+    <?php } ?>
+  <?php } ?>
   <script type="text/javascript" src="/assets/js/openphoto.js"></script>
   <script>
       $(document).ready(function() {

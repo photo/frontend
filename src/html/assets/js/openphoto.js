@@ -48,6 +48,26 @@ var op = (function(){
       error: function(msg) {
         alert(msg);
       }
+    },
+    upload: {
+      handlers: {
+        added: function(e, data) {
+          var files = data.files
+            html = '<li class="%name"><div><label>%label</label><div class="img">Uploading...</div><div class="progress"><div></div></div></li>';
+          console.log(e);
+          console.log(data);
+          for(i=0; i<files.length; i++) {
+            
+            console.log(files[i].fileName);
+            console.log(files[i].fileSize);
+            $(html.replace('%name', files[i].fileName).replace('%label', files[i].fileName))
+              .prependTo("ul#upload-queue");
+          }
+        },
+        progress: function(e, data) {
+
+        }
+      }
     }
   };
 })();

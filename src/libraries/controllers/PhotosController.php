@@ -69,7 +69,8 @@ class PhotosController extends BaseController
   public static function upload()
   {
     $body = getTemplate()->get('upload.php');
-    getTemplate()->display('template.php', array('body' => $body));
+    $js = getTemplate()->get('js/upload.js.php');
+    getTemplate()->display('template.php', array('body' => $body, 'js' => $js, 'jsFiles' => array('/assets/js/plugins/jquery-ui.widget.js','/assets/js/plugins/jquery.fileupload.js')));
   }
 
   public static function uploadPost()
