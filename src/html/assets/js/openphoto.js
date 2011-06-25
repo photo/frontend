@@ -62,6 +62,13 @@ var op = (function(){
               .prependTo("ul#upload-queue");
           }
         },
+        done: function(e, data) {
+          var resp = jQuery.parseJSON(data.result),
+            img = "http://"+resp.result.host+resp.result.requestedUrl;
+          console.log(resp);
+          console.log(img);
+          $("#"+data.id+" div.img").replaceWith('<img src="'+img+'">');
+        },
         progress: function(e, data) {
           console.log(data.id + " is at " + data.loaded + " of " + data.total);
           var pct = parseInt(data.loaded/data.total*100);

@@ -48,7 +48,7 @@ class Photo
   public static function generatePaths($photoName)
   {
     // TODO, normalize the name
-    $photoName = time() . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
+    $photoName = time() . '-' . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
     return array(
       'pathOriginal' => sprintf('/original/%s/%s', date('Ym'), $photoName),
       'pathBase' => sprintf('/base/%s/%s', date('Ym'), $photoName)
@@ -206,7 +206,7 @@ class Photo
   }
 
   private static function readExif($image) {
-    $exif = exif_read_data($image);
+    $exif = @exif_read_data($image);
     if(!$exif)
       return null;
 
