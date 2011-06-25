@@ -80,6 +80,6 @@ div#upload ul#upload-queue div.progress{
 }
 div#upload ul#upload-queue div.progress > div{
   height:100%;
-  width:100px;
+  width:0;
   background-color:#bbb;
 }

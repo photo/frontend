@@ -53,19 +53,24 @@ var op = (function(){
       handlers: {
         added: function(e, data) {
           var files = data.files
-            html = '<li class="%name"><div><label>%label</label><div class="img">Uploading...</div><div class="progress"><div></div></div></li>';
-          console.log(e);
-          console.log(data);
+            html = '<li id="%id"><div><label>%label</label><div class="img">Uploading...</div><div class="progress"><div></div></div></li>';
+          data.id=parseInt(Math.random()*1000);
           for(i=0; i<files.length; i++) {
-            
             console.log(files[i].fileName);
             console.log(files[i].fileSize);
-            $(html.replace('%name', files[i].fileName).replace('%label', files[i].fileName))
+            $(html.replace('%id', data.id).replace('%label', files[i].fileName))
               .prependTo("ul#upload-queue");
           }
         },
         progress: function(e, data) {
-
+          console.log(data.id + " is at " + data.loaded + " of " + data.total);
+          var pct = parseInt(data.loaded/data.total*100);
+          $("#"+data.id+" div.progress div").css("width", pct+"%");
+        },
+        progressall: function(e, data) {
+          console.log(data.id + " is at " + data.loaded + " of " + data.total);
+          var pct = parseInt(data.loaded/data.total*100);
+          $("#upload-progress").html("%s% completed".replace('%s', pct));
         }
       }
     }
