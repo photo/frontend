@@ -56,8 +56,6 @@ var op = (function(){
             html = '<li id="%id"><div><label>%label</label><div class="img">Uploading...</div><div class="progress"><div></div></div></li>';
           data.id=parseInt(Math.random()*1000);
           for(i=0; i<files.length; i++) {
-            console.log(files[i].fileName);
-            console.log(files[i].fileSize);
             $(html.replace('%id', data.id).replace('%label', files[i].fileName))
               .prependTo("ul#upload-queue");
           }
@@ -65,17 +63,20 @@ var op = (function(){
         done: function(e, data) {
           var resp = jQuery.parseJSON(data.result),
             img = "http://"+resp.result.host+resp.result.requestedUrl;
-          console.log(resp);
-          console.log(img);
+          $("#"+data.id+" div.progress div").css("width", "100%");
           $("#"+data.id+" div.img").replaceWith('<img src="'+img+'">');
         },
         progress: function(e, data) {
-          console.log(data.id + " is at " + data.loaded + " of " + data.total);
           var pct = parseInt(data.loaded/data.total*100);
           $("#"+data.id+" div.progress div").css("width", pct+"%");
+          if(pct > 95)
+            $("#"+data.id+" div.img").html("Crunching...");
+          else if(pct > 85)
+            $("#"+data.id+" div.img").html("Backing up...");
+
+
         },
         progressall: function(e, data) {
-          console.log(data.id + " is at " + data.loaded + " of " + data.total);
           var pct = parseInt(data.loaded/data.total*100);
           $("#upload-progress").html("%s% completed".replace('%s', pct));
         }

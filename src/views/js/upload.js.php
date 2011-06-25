@@ -5,4 +5,5 @@ $("form#upload-form").fileupload({
 })
 .bind('fileuploadadd', op.upload.handlers.added)
 .bind('fileuploaddone', op.upload.handlers.done)
+.bind('fileuploadprogressall', op.upload.handlers.progressall)
 .bind('fileuploadprogress', op.upload.handlers.progress);
