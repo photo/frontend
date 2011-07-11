@@ -5,12 +5,13 @@
       (<a href="/photo/<?php echo $photo['id']; ?>/delete" class="photo-delete">delete</a>)
       <br>
       <a href="/photo/<?php echo $photo['id']; ?>"><img src="<?php echo Photo::generateUrlPublic($photo, 200, 200); ?>"></a>
+      <br>
       Tags:
-      <?php foreach((array)$photo['tags'] as $tag) { ?>
-        
+      <?php if(!empty($photo['tags'])) { ?><?php echo implode(',', $photo['tags']); ?><?php } ?>
+      <?php if($photo['dateTaken']) { ?>
+        <br/>
+        Taken: <?php echo date('D M j, Y', $photo['dateTaken']); ?>
       <?php } ?>
-      <br/>
-      Taken: <?php echo date('D M j, Y', $photo['dateTaken']); ?>
     </li>
     <?php } ?>
   </ul>

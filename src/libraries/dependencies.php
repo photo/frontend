@@ -1,7 +1,7 @@
 <?php
 // public or api routes
-require getConfig()->get('paths')->libraries . '/routes.php';
 require getConfig()->get('paths')->libraries . '/routes-api.php';
+require getConfig()->get('paths')->libraries . '/routes.php';
 
 
 // controllers

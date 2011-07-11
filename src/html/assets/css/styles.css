@@ -21,7 +21,7 @@ div#photos ul.grid {
 div#photos ul.grid li {
   float:left;
   width:200px;
-  height:200px;
+  height:250px;
   padding: 25px;
 } 
 
@@ -83,3 +83,5 @@ div#upload ul#upload-queue div.progress > div{
   width:0;
   background-color:#bbb;
 }
+
+div#searchbar{ display:none; }

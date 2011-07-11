@@ -4,7 +4,9 @@ interface DatabaseInterface
   public function __construct($opts);
   public function deletePhoto($id);
   public function getPhoto($id);
-  public function getPhotos();
+  public function getPhotos($filter, $limit, $offset);
+  public function postPhoto($id, $params);
+  public function putPhoto($id, $params);
   public function initialize();
   //private function normalizePhoto($raw);
 }

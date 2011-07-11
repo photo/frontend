@@ -30,6 +30,12 @@ class ApiController extends BaseController
     return self::success('', $photo);
   }*/
 
+  public static function photoUpdate($id)
+  {
+    $photoUpdatedId = Photo::update($id, $_POST);
+    return self::success("photo {$id} updated", $photoUpdatedId);
+  }
+
   public static function photoUpload()
   {
     $attributes = $_POST;
@@ -59,10 +65,26 @@ class ApiController extends BaseController
     return self::error('File upload failure', false);
   }
 
-  public static function photos()
+  public static function photos($options = null)
   {
+    $options = (array)explode('/', $options);
+    $filter = array();
+    foreach($options as $value)
+    {
+      $parts = explode('-', $value);
+      if(count($parts) != 2)
+        continue;
+
+      switch($parts[0])
+      {
+        case 'tags':
+          $filter['tags'] = $parts[1];
+          break;
+      }
+    }
+
     $db = getDb();
-    $photos = $db->getPhotos();
+    $photos = $db->getPhotos($filter);
     return self::success('yay', $photos);
   }
 }

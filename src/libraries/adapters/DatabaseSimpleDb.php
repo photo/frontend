@@ -22,16 +22,27 @@ class DatabaseSimpleDb implements DatabaseInterface
 
   public function getPhoto($id)
   {
-    $res = $this->db->select("select * from {$this->domain} where itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    $res = $this->db->select("select * from `{$this->domain}` where itemName()='{$id}'", array('ConsistentRead' => 'true'));
     if(isset($res->body->SelectResult->Item))
       return self::normalizePhoto($res->body->SelectResult->Item);
     else
       return false;
   }
 
-  public function getPhotos()
+  public function getPhotos($filter = array(), $limit = 25, $offset = null)
   {
-    $res = $this->db->select("select * from {$this->domain}", array('ConsistentRead' => 'true'));
+    // TODO: support logic for multiple conditions
+    $where = '';
+    if(!empty($filter))
+    {
+      if(isset($filter['tags']) && !empty($filter['tags']))
+      {
+        if(!is_array($filter['tags']))
+          $filter['tags'] = (array)explode(',', $filter['tags']);
+        $where = "where tags in('" . implode("','", $filter['tags']) . "')";
+      }
+    }
+    $res = $this->db->select("select * from `{$this->domain}` {$where} limit {$limit}", array('ConsistentRead' => 'true'));
 
     $photos = array();
     foreach($res->body->SelectResult->Item as $photo)
@@ -39,6 +50,13 @@ class DatabaseSimpleDb implements DatabaseInterface
       $photos[] = $this->normalizePhoto($photo);
     }
     return $photos;
+  }
+
+  public function postPhoto($id, $params)
+  {
+    $params = self::preparePhoto($id, $params);
+    $res = $this->db->put_attributes($this->domain, $id, $params, true);
+    return $res->isOK();
   }
 
   public function putPhoto($id, $params)
@@ -61,13 +79,24 @@ class DatabaseSimpleDb implements DatabaseInterface
   {
     $appId = getConfig()->get('application')->appId;
     $id = strval($raw->Name);
-    $photo = array();
+    $photo = array('tags' => '');
     foreach($raw->Attribute as $item)
     {
       $name = (string)$item->Name;
       $value = (string)$item->Value;
-      $photo[$name] = $value;
+      if($name == 'tags')
+        $photo[$name][] = $value;
+      else
+        $photo[$name] = $value;
     }
     return Photo::normalize($id, $appId, $photo);
+  }
+
+  private function preparePhoto($id, $params)
+  {
+    $params['Name'] = $id;
+    if(isset($params['tags']) || !is_array($params['tags']))
+      $params['tags'] = (array)explode(',', $params['tags']);
+    return $params;
   }
 }

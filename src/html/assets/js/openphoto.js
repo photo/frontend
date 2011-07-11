@@ -22,6 +22,25 @@ var op = (function(){
           console.log('mousover');
         }
       },
+      searchBarToggle: function(event) {
+        $("div#searchbar").toggle();
+        return false;
+      },
+      searchByTags: function(event) {
+        var form = this,
+          tags = $($(form).find('input[name=tags]')[0]).val();
+        // TODO ajaxify
+        /*if(tags.length > 0)
+          location.href = location.pathname + '#/photos/tags-'+tags;
+        else
+          location.href = location.pathname + '#/photos';*/
+
+        if(tags.length > 0)
+          location.href = '/photos/tags-'+tags;
+        else
+          location.href = '/photos';
+        return false;
+      },
       setupContinue: function(event) {
         var el = $(this),
           step = el.attr('data-step');
@@ -42,6 +61,8 @@ var op = (function(){
       attach: function() {
         $('.photo-link').live('click mouseover', op.handlers.photoLink);
         $('.photo-delete').live('click', op.handlers.photoDelete);
+        $('.search-bar-toggle').click(op.handlers.searchBarToggle);
+        $('form#form-tag-search').submit(op.handlers.searchByTags);
       }
     },
     message: {
@@ -80,6 +101,11 @@ var op = (function(){
           var pct = parseInt(data.loaded/data.total*100);
           $("#upload-progress").html("%s% completed".replace('%s', pct));
         }
+      }
+    },
+    photos: {
+      search: function(tags) {
+        //$.get('/photos/');
       }
     }
   };

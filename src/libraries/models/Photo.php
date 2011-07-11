@@ -109,6 +109,19 @@ class Photo
     return array_merge($data, array('id' => $id, 'appId' => $appId));
   }
 
+  public static function update($id, $attributes = array())
+  {
+    if(empty($attributes))
+      return $id;
+
+    $data = self::normalize($id, getConfig()->get('application')->appId, $attributes);
+    $status = getDb()->postPhoto($id, $data);
+    if(!$status)
+      return false;
+
+    return $id;
+  }
+
   public static function upload($localFile, $name, $attributes = array())
   {
     $fs = getFs();
@@ -205,7 +218,8 @@ class Photo
     return (substr(sha1(implode('.', $args)), 0, 5) == $hash);
   }
 
-  private static function readExif($image) {
+  private static function readExif($image)
+  {
     $exif = @exif_read_data($image);
     if(!$exif)
       return null;

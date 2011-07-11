@@ -25,9 +25,9 @@ class PhotosController extends BaseController
       getRoute()->redirect('/photos?deleteFailure');
   }
 
-  public static function photos()
+  public static function photos($options = null)
   {
-    $photos = getApi()->invoke('/photos.json');
+    $photos = getApi()->invoke("/photos{$options}.json");
     foreach($photos['result'] as $key => $val)
       $photos['result'][$key]['thumb'] = Photo::generateUrlPublic($val, 200, 200);
     $body = getTemplate()->get('photos.php', array('photos' => $photos['result']));
@@ -57,13 +57,19 @@ class PhotosController extends BaseController
         $fragment = Photo::generateFragmentReverse($options);
         $photo['displayUrl'] = Photo::generateUrlPublic($photo, $fragment['width'], $fragment['height'], $fragment['options']);
       }
-
       getTemplate()->display('template.php', array('body' => getTemplate()->get('photo.php', array('photo' => $photo, 'sizes' => $sizes))));
     }
     else
     {
       echo "Couldn't find photo {$id}"; // TODO
     }
+  }
+
+  public static function update($id)
+  {
+    $status = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpPost);
+    // TODO include success/error paramter
+    getRoute()->redirect("/photo/{$id}");
   }
 
   public static function upload()
