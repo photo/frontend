@@ -68,23 +68,20 @@ class ApiController extends BaseController
   public static function photos($options = null)
   {
     $options = (array)explode('/', $options);
-    $filter = array();
+    $filters = array();
     foreach($options as $value)
     {
       $parts = explode('-', $value);
       if(count($parts) != 2)
         continue;
-
-      switch($parts[0])
-      {
-        case 'tags':
-          $filter['tags'] = $parts[1];
-          break;
-      }
+      $filters[$parts[0]] = $parts[1];
     }
 
     $db = getDb();
-    $photos = $db->getPhotos($filter);
-    return self::success('yay', $photos);
+    $photos = $db->getPhotos($filters);
+    if(!$photos)
+      return self::error('Could not retrieve photos', false);
+
+    return self::success('', $photos);
   }
 }

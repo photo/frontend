@@ -29,20 +29,59 @@ class DatabaseSimpleDb implements DatabaseInterface
       return false;
   }
 
-  public function getPhotos($filter = array(), $limit = 25, $offset = null)
+  public function getPhotos($filters = array(), $limit = 10, $offset = null)
   {
     // TODO: support logic for multiple conditions
     $where = '';
-    if(!empty($filter))
+    if(!empty($filters) && is_array($filters))
     {
-      if(isset($filter['tags']) && !empty($filter['tags']))
+      foreach($filters as $name => $value)
       {
-        if(!is_array($filter['tags']))
-          $filter['tags'] = (array)explode(',', $filter['tags']);
-        $where = "where tags in('" . implode("','", $filter['tags']) . "')";
+        switch($name)
+        {
+          case 'tags':
+            if(!is_array($value))
+              $value = (array)explode(',', $value);
+            $where = "where tags in('" . implode("','", $value) . "')";
+            break;
+          case 'page':
+            if($value > 1)
+            {
+              $value = min($value, 40); // 40 pages at max of 2,500 recursion limit means 100k photos
+              $offset = ($limit * $value) - $limit;
+            }
+            break;
+        }
       }
     }
-    $res = $this->db->select("select * from `{$this->domain}` {$where} limit {$limit}", array('ConsistentRead' => 'true'));
+
+    if(!empty($offset))
+    {
+      $iterator = max(1, intval($offset - 1));
+      $nextToken = null;
+      $params = array('ConsistentRead' => 'true');
+      $currentPage = 1;
+      $thisLimit = min($iterator, $offset);
+      do
+      {
+        $res = $this->db->select("select * from `{$this->domain}` {$where} limit {$iterator}", $params);
+        if(!$res->body->SelectResult->NextToken)
+          break;
+
+        $nextToken = $res->body->SelectResult->NextToken;
+        $params['NextToken'] = $nextToken;
+        $currentPage++;
+      }while($currentPage <= $value);
+    }
+
+    $params = array('ConsistentRead' => 'true');
+    if(isset($nextToken) && !empty($nextToken))
+      $params['NextToken'] = $nextToken;
+
+    $res = $this->db->select("select * from `{$this->domain}` {$where} limit {$limit}", $params);
+
+    if(!$res->isOK())
+      return false;
 
     $photos = array();
     foreach($res->body->SelectResult->Item as $photo)

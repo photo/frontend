@@ -17,6 +17,8 @@ Epi::setPath('view', "{$basePath}/views");
 //Epi::setSetting('exceptions', true);
 Epi::init('api','config','route','template');
 
+
+getConfig()->load('defaults.ini');
 $configFile = Epi::getPath('config').'/generated/settings.ini';
 if(file_exists($configFile))
 {
