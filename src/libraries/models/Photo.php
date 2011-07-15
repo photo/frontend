@@ -158,14 +158,14 @@ class Photo
             'hash' => sha1_file($localFile),
             'size' => 0, // TODO
             'tags' => '', // TODO
-            'exifCameraMake' => $exif['cameraMake'],
-            'exifCameraModel' => $exif['cameraModel'],
-            'width' => $exif['width'],
-            'height' => $exif['height'],
-            'dateTaken' => $exif['dateTaken'],
-            'dateTakenDay' => date('d', $exif['dateTaken']),
-            'dateTakenMonth' => date('m', $exif['dateTaken']),
-            'dateTakenYear' => date('Y', $exif['dateTaken']),
+            'exifCameraMake' => @$exif['cameraMake'],
+            'exifCameraModel' => @$exif['cameraModel'],
+            'width' => @$exif['width'],
+            'height' => @$exif['height'],
+            'dateTaken' => @$exif['dateTaken'],
+            'dateTakenDay' => date('d', @$exif['dateTaken']),
+            'dateTakenMonth' => date('m', @$exif['dateTaken']),
+            'dateTakenYear' => date('Y', @$exif['dateTaken']),
             'dateUploaded' => time(),
             'dateUploadedDay' => date('d', time()),
             'dateUploadedMonth' => date('m', time()),
@@ -235,6 +235,6 @@ class Photo
     }
 
     return array('dateTaken' => $dateTaken, 'width' => $size[0], 'height' => $size[1],
-      'cameraModel' => $exif['Model'], 'cameraMake' => $exif['Make']);
+      'cameraModel' => @$exif['Model'], 'cameraMake' => @$exif['Make']);
   }
 }

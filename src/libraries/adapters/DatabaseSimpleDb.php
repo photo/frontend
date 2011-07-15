@@ -29,7 +29,7 @@ class DatabaseSimpleDb implements DatabaseInterface
       return false;
   }
 
-  public function getPhotos($filters = array(), $limit = 10, $offset = null)
+  public function getPhotos($filters = array(), $limit = 100, $offset = null)
   {
     // TODO: support logic for multiple conditions
     $where = '';
@@ -134,7 +134,9 @@ class DatabaseSimpleDb implements DatabaseInterface
   private function preparePhoto($id, $params)
   {
     $params['Name'] = $id;
-    if(isset($params['tags']) || !is_array($params['tags']))
+    if(!isset($params['tags']))
+      $params['tags'] = array();
+    elseif(!is_array($params['tags']))
       $params['tags'] = (array)explode(',', $params['tags']);
     return $params;
   }

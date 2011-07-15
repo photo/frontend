@@ -34,6 +34,11 @@ class PhotosController extends BaseController
     getTemplate()->display('template.php', array('body' => $body));
   }
 
+  public static function photosByTags($tags)
+  {
+    
+  }
+
   public static function photo($id, $options = null)
   {
     $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet);
