@@ -9,7 +9,10 @@ class ImageGraphicsMagick implements Image
 
   public function scale($width, $height, $maintainAspectRatio = true)
   {
-    $this->image->scaleimage(intval($width), intval($height), $maintainAspectRatio); 
+    if($maintainAspectRatio)
+      $this->image->scaleImage(intval($width), intval($height), true);
+    else
+      $this->image->cropThumbnailImage(intval($width), intval($height));
   }
 
   public function greyscale()

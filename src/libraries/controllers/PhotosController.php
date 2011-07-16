@@ -25,24 +25,6 @@ class PhotosController extends BaseController
       getRoute()->redirect('/photos?deleteFailure');
   }
 
-  public static function photos($options = null)
-  {
-    $photos = getApi()->invoke("/photos{$options}.json");
-    $photos = $photos['result'];
-    foreach($photos as $key => $val)
-      $photos[$key]['thumb'] = Photo::generateUrlPublic($val, 200, 200);
-
-    $pagination = array('requestUri' => $_SERVER['REQUEST_URI'], 'currentPage' => $photos[0]['currentPage'], 
-      'pageSize' => $photos[0]['pageSize'], 'totalPages' => $photos[0]['totalPages']);
-    $body = getTemplate()->get('photos.php', array('photos' => $photos, 'pagination' => $pagination));
-    getTemplate()->display('template.php', array('body' => $body));
-  }
-
-  public static function photosByTags($tags)
-  {
-    
-  }
-
   public static function photo($id, $options = null)
   {
     $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet);
@@ -52,6 +34,7 @@ class PhotosController extends BaseController
       $sizes = array(
         '300x300' => Photo::generateUrlPublic($photo, 300, 300),
         '300x300xBW' => Photo::generateUrlPublic($photo, 300, 300, 'BW'),
+        '300x300xCR' => Photo::generateUrlPublic($photo, 300, 300, 'CR'),
         '500x500' => Photo::generateUrlPublic($photo, 500, 500),
         '700x700' => Photo::generateUrlPublic($photo, 700, 700),
         '900x700' => Photo::generateUrlPublic($photo, 900, 900),
@@ -72,6 +55,24 @@ class PhotosController extends BaseController
     {
       echo "Couldn't find photo {$id}"; // TODO
     }
+  }
+
+  public static function photos($options = null)
+  {
+    $photos = getApi()->invoke("/photos{$options}.json");
+    $photos = $photos['result'];
+    foreach($photos as $key => $val)
+      $photos[$key]['thumb'] = Photo::generateUrlPublic($val, 200, 200);
+
+    $pagination = array('requestUri' => $_SERVER['REQUEST_URI'], 'currentPage' => $photos[0]['currentPage'], 
+      'pageSize' => $photos[0]['pageSize'], 'totalPages' => $photos[0]['totalPages']);
+    $body = getTemplate()->get('photos.php', array('photos' => $photos, 'pagination' => $pagination));
+    getTemplate()->display('template.php', array('body' => $body));
+  }
+
+  public static function photosByTags($tags)
+  {
+    
   }
 
   public static function update($id)

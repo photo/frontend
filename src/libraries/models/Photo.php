@@ -79,7 +79,7 @@ class Photo
     $photo = getDb()->getPhoto($id);
     $filename = getFs()->getPhoto($photo['pathBase']);
     $image = getImage($filename);
-    $image->scale($width, $height, true);
+    $maintainAspectRatio = true;
     if(!empty($options))
     {
       $optionsArray = (array)explode('x', $options);
@@ -90,9 +90,15 @@ class Photo
           case 'BW':
             $image->greyscale();
             break;
+          case 'CR':
+            $maintainAspectRatio = false;
+            break;
         }
       }
     }
+
+    $image->scale($width, $height, $maintainAspectRatio);
+
     $image->write($filename);
     $customPath = self::generateCustomUrl($photo['pathBase'], $width, $height, $options);
     $key = self::generateCustomKey($width, $height, $options);
