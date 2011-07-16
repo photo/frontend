@@ -29,7 +29,7 @@ class DatabaseSimpleDb implements DatabaseInterface
       return false;
   }
 
-  public function getPhotos($filters = array(), $limit = 100, $offset = null)
+  public function getPhotos($filters = array(), $limit, $offset = null)
   {
     // TODO: support logic for multiple conditions
     $where = '';
@@ -78,16 +78,22 @@ class DatabaseSimpleDb implements DatabaseInterface
     if(isset($nextToken) && !empty($nextToken))
       $params['NextToken'] = $nextToken;
 
-    $res = $this->db->select("select * from `{$this->domain}` {$where} limit {$limit}", $params);
 
-    if(!$res->isOK())
+    $queue = new CFBatchRequest();
+    $this->db->batch($queue)->select("select * from `{$this->domain}` {$where} limit {$limit}", $params);
+    if(isset($params['NextToken']))
+      unset($params['NextToken']);
+    $this->db->batch($queue)->select("select count(*) from `{$this->domain}` {$where}", $params);
+    $responses = $this->db->batch($queue)->send();
+
+    if(!$responses->areOK())
       return false;
 
     $photos = array();
-    foreach($res->body->SelectResult->Item as $photo)
-    {
+    foreach($responses[0]->body->SelectResult->Item as $photo)
       $photos[] = $this->normalizePhoto($photo);
-    }
+
+    $photos[0]['totalRows'] = intval($responses[1]->body->SelectResult->Item->Attribute->Value);
     return $photos;
   }
 

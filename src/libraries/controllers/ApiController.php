@@ -77,11 +77,18 @@ class ApiController extends BaseController
       $filters[$parts[0]] = $parts[1];
     }
 
+    $page = 1;
+    if(isset($filters['page']))
+      $page = $filters['page'];
+    $pageSize = getConfig()->get('site')->pageSize;
     $db = getDb();
-    $photos = $db->getPhotos($filters);
+    $photos = $db->getPhotos($filters, $pageSize);
     if(!$photos)
       return self::error('Could not retrieve photos', false);
 
+    $photos[0]['pageSize'] = $pageSize;
+    $photos[0]['currentPage'] = $page;
+    $photos[0]['totalPages'] = ceil($photos[0]['totalRows'] / $pageSize);
     return self::success('', $photos);
   }
 }

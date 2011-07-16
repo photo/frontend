@@ -28,9 +28,13 @@ class PhotosController extends BaseController
   public static function photos($options = null)
   {
     $photos = getApi()->invoke("/photos{$options}.json");
-    foreach($photos['result'] as $key => $val)
-      $photos['result'][$key]['thumb'] = Photo::generateUrlPublic($val, 200, 200);
-    $body = getTemplate()->get('photos.php', array('photos' => $photos['result']));
+    $photos = $photos['result'];
+    foreach($photos as $key => $val)
+      $photos[$key]['thumb'] = Photo::generateUrlPublic($val, 200, 200);
+
+    $pagination = array('requestUri' => $_SERVER['REQUEST_URI'], 'currentPage' => $photos[0]['currentPage'], 
+      'pageSize' => $photos[0]['pageSize'], 'totalPages' => $photos[0]['totalPages']);
+    $body = getTemplate()->get('photos.php', array('photos' => $photos, 'pagination' => $pagination));
     getTemplate()->display('template.php', array('body' => $body));
   }
 
