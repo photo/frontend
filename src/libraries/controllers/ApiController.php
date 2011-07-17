@@ -69,18 +69,27 @@ class ApiController extends BaseController
   {
     $options = (array)explode('/', $options);
     $filters = array();
+    $pageSize = getConfig()->get('site')->pageSize;
     foreach($options as $value)
     {
       $parts = explode('-', $value);
       if(count($parts) != 2)
         continue;
-      $filters[$parts[0]] = $parts[1];
+
+      switch($parts[0])
+      {
+        case 'pageSize':
+          $pageSize = intval($parts[1]);
+          break;
+        default:
+          $filters[$parts[0]] = $parts[1];
+          break;
+      }
     }
 
     $page = 1;
     if(isset($filters['page']))
       $page = $filters['page'];
-    $pageSize = getConfig()->get('site')->pageSize;
     $db = getDb();
     $photos = $db->getPhotos($filters, $pageSize);
     if(!$photos)
