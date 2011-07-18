@@ -1,4 +1,5 @@
 <?php
+getApi()->get('/hello.json', array('ApiController', 'hello'), EpiApi::external);
 // delete a photo
 getApi()->post('/photo/([a-zA-Z0-9]+)/delete.json', array('ApiController', 'photoDelete'), EpiApi::external);
 // upload a photo
