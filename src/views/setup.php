@@ -28,7 +28,7 @@
     -->
 
     <div id="form-step-1">
-      <h2>Enter your Amazon credentials <em>(<a href="">what's this?</a>)</em></h2>
+      <h2>Enter your Amazon credentials <em>(<a href="whatisthis.php">what's this?</a>)</em></h2>
       <div id="awsCredentials">
         <div data-role="fieldcontain">
           <label for="awsKey">Amazon Access Key ID</label>
