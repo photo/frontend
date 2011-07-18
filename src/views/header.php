@@ -1,5 +1,6 @@
 <ul class="button-group">
-  <li><a href="/" class="button pill primary icon home">Photos</a></li>
+  <li><a href="/" class="button pill primary icon home">Home</a></li>
+  <li><a href="/photos" class="button pill primary icon calendar">Photos</a></li>
   <li><a href="#" class="button pill icon search search-bar-toggle">Search</a></li>
   <li><a href="/photos/upload" class="button pill icon arrowup">Upload</a></li>
 </ul>
