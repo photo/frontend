@@ -32,7 +32,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
     // TODO: support logic for multiple conditions
-    $where = '';
+    $where = 'where';
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -42,7 +42,7 @@ class DatabaseSimpleDb implements DatabaseInterface
           case 'tags':
             if(!is_array($value))
               $value = (array)explode(',', $value);
-            $where = "where tags in('" . implode("','", $value) . "')";
+            $where .= " tags in('" . implode("','", $value) . "')";
             break;
           case 'page':
             if($value > 1)
@@ -50,6 +50,11 @@ class DatabaseSimpleDb implements DatabaseInterface
               $value = min($value, 40); // 40 pages at max of 2,500 recursion limit means 100k photos
               $offset = ($limit * $value) - $limit;
             }
+            break;
+          case 'sortBy':
+            $sortBy = 'order by ' . str_replace(',', ' ', $value);
+            $field = substr($value, 0, strpos($value, ','));
+            $where .= " {$field} is not null";
             break;
         }
       }
@@ -64,7 +69,7 @@ class DatabaseSimpleDb implements DatabaseInterface
       $thisLimit = min($iterator, $offset);
       do
       {
-        $res = $this->db->select("select * from `{$this->domain}` {$where} limit {$iterator}", $params);
+        $res = $this->db->select("select * from `{$this->domain}` {$where} {$sortBy} limit {$iterator}", $params);
         if(!$res->body->SelectResult->NextToken)
           break;
 
@@ -80,7 +85,7 @@ class DatabaseSimpleDb implements DatabaseInterface
 
 
     $queue = new CFBatchRequest();
-    $this->db->batch($queue)->select("select * from `{$this->domain}` {$where} limit {$limit}", $params);
+    $this->db->batch($queue)->select($sql = "select * from `{$this->domain}` {$where} {$sortBy} limit {$limit}", $params);
     if(isset($params['NextToken']))
       unset($params['NextToken']);
     $this->db->batch($queue)->select("select count(*) from `{$this->domain}` {$where}", $params);

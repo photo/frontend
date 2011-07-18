@@ -68,7 +68,7 @@ class ApiController extends BaseController
   public static function photos($options = null)
   {
     $options = (array)explode('/', $options);
-    $filters = array();
+    $filters = array('sortBy' => 'dateTaken,desc');
     $pageSize = getConfig()->get('site')->pageSize;
     foreach($options as $value)
     {
@@ -80,6 +80,12 @@ class ApiController extends BaseController
       {
         case 'pageSize':
           $pageSize = intval($parts[1]);
+          break;
+        case 'sortBy':
+          $sortOptions = explode(',', $value);
+          if(count($sortOptions) != 2 || preg_match('/[^a-zA-Z0-9,]/', $parts[1]))
+            continue;
+          $filters[$parts[0]] = $parts[1];
           break;
         default:
           $filters[$parts[0]] = $parts[1];
