@@ -50,21 +50,34 @@ class ApiController extends BaseController
       unset($attributes['returnOptions']);
     }
 
-    $photoId = Photo::upload($_FILES['photo']['tmp_name'], $_FILES['photo']['name'], $attributes);
-
-    if(isset($returnOptions))
+    $photoId = false;
+    if(isset($_FILES) && isset($_FILES['photo']))
     {
-      $options = Photo::generateFragmentReverse($returnOptions);
-      $hash = Photo::generateHash($photoId, $options['width'], $options['height'], $options['options']);
-      $returnPhotoSuccess = Photo::generateImage($photoId, $hash, $options['width'], $options['height'], $options['options']);
+      $photoId = Photo::upload($_FILES['photo']['tmp_name'], $_FILES['photo']['name'], $attributes);
+    }
+    elseif(isset($_POST['photo']))
+    {
+      unset($attributes['photo']);
+      $photoId = Photo::upload($_POST['photo'], $attributes);
     }
 
     if($photoId)
     {
-      $photo = getDb()->getPhoto($photoId);
-      if($returnPhotoSuccess)
-        $photo['requestedUrl'] = $photo["path{$returnOptions}"];
-      return self::success('yay', $photo);
+      $returnPhotoSuccess = false;
+      if(isset($returnOptions))
+      {
+        $options = Photo::generateFragmentReverse($returnOptions);
+        $hash = Photo::generateHash($photoId, $options['width'], $options['height'], $options['options']);
+        $returnPhotoSuccess = Photo::generateImage($photoId, $hash, $options['width'], $options['height'], $options['options']);
+      }
+
+      if($photoId)
+      {
+        $photo = getDb()->getPhoto($photoId);
+        if($returnPhotoSuccess)
+          $photo['requestedUrl'] = $photo["path{$returnOptions}"];
+        return self::success("Photo {$photoId} uploaded successfully", $photo);
+      }
     }
 
     return self::error('File upload failure', false);

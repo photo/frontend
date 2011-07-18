@@ -4,6 +4,7 @@ class PhotosController extends BaseController
   public static function create($id, $hash, $width, $height, $options = null)
   {
     $args = func_get_args();
+    // TODO, this should call a method in the API
     $photo = Photo::generateImage($id, $hash, $width, $height, $options);
     // TODO return 404 graphic
     if($photo)
@@ -42,10 +43,12 @@ class PhotosController extends BaseController
       );
       if($options === null)
       {
+        // TODO, this should call a method in the API
         $photo['displayUrl'] = Photo::generateUrlPublic($photo, 800, 800);
       }
       else
       {
+        // TODO, this should call a method in the API
         $fragment = Photo::generateFragmentReverse($options);
         $photo['displayUrl'] = Photo::generateUrlPublic($photo, $fragment['width'], $fragment['height'], $fragment['options']);
       }
@@ -61,6 +64,7 @@ class PhotosController extends BaseController
   {
     $photos = getApi()->invoke("/photos{$options}.json");
     $photos = $photos['result'];
+    // TODO, this should call a method in the API
     foreach($photos as $key => $val)
       $photos[$key]['thumb'] = Photo::generateUrlPublic($val, 200, 200);
 

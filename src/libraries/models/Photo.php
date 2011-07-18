@@ -128,66 +128,84 @@ class Photo
     return $id;
   }
 
-  public static function upload($localFile, $name, $attributes = array())
+  /*$localFile, $name, $attributes = array()*/
+  /*$fileBase64Encoded, $attributes = array()*/
+  public static function upload(/*$localFile, $name, $attributes = array()*/)
   {
+    $args = func_get_args();
+    $argsCnt = func_num_args();
+    if($argsCnt == 3 && is_uploaded_file($args[0]))
+    {
+      $localFile = $args[0];
+      $name = $args[1];
+      $attributes = $args[2];
+    }
+    elseif($argsCnt == 2)
+    {
+      $localFile = tempnam(getConfig()->get('server')->tempDir, 'opme');
+      $name = basename($localFile).'.jpg';
+      $attributes = $args[1];
+      file_put_contents($localFile, base64_decode($args[0]));
+    }
+    else
+    {
+      return false;
+    }
+
     $fs = getFs();
     $db = getDb();
     // TODO, needs to be a lookup
     $id = base_convert(rand(1,1000), 10, 35);
-    if(is_uploaded_file($localFile))
+    $paths = Photo::generatePaths($name);
+    // resize the base image before uploading
+    $localFileCopy = "{$localFile}-copy}";
+    copy($localFile, $localFileCopy);
+
+    $exiftran = getConfig()->get('modules')->exiftran;
+    if(is_executable($exiftran))
+      exec($cmd = sprintf('%s -ai %s', getConfig()->get('modules')->exiftran, escapeshellarg($localFileCopy)));
+
+    $baseImage = getImage($localFileCopy);
+    $baseImage->scale(getConfig()->get('photos')->baseSize, getConfig()->get('photos')->baseSize);
+    $baseImage->write($localFileCopy);
+    $uploaded = $fs->putPhotos(
+      array(
+        array($localFile => $paths['pathOriginal']),
+        array($localFileCopy => $paths['pathBase'])
+      )
+    );
+    if($uploaded)
     {
-      $paths = Photo::generatePaths($name);
-      // resize the base image before uploading
-      $localFileCopy = "{$localFile}-copy}";
-      copy($localFile, $localFileCopy);
-
-      $exiftran = getConfig()->get('modules')->exiftran;
-      if(is_executable($exiftran))
-        exec($cmd = sprintf('%s -ai %s', getConfig()->get('modules')->exiftran, escapeshellarg($localFileCopy)));
-
-      $baseImage = getImage($localFileCopy);
-      $baseImage->scale(getConfig()->get('photos')->baseSize, getConfig()->get('photos')->baseSize);
-      $baseImage->write($localFileCopy);
-      $uploaded = $fs->putPhotos(
+      $exif = self::readExif($localFile);
+      $attributes = array_merge(
+        $attributes, 
+        self::getDefaultAttributes(),
         array(
-          array($localFile => $paths['pathOriginal']),
-          array($localFileCopy => $paths['pathBase'])
+          'hash' => sha1_file($localFile),
+          'size' => 0, // TODO
+          'tags' => '', // TODO
+          'exifCameraMake' => @$exif['cameraMake'],
+          'exifCameraModel' => @$exif['cameraModel'],
+          'width' => @$exif['width'],
+          'height' => @$exif['height'],
+          'dateTaken' => @$exif['dateTaken'],
+          'dateTakenDay' => date('d', @$exif['dateTaken']),
+          'dateTakenMonth' => date('m', @$exif['dateTaken']),
+          'dateTakenYear' => date('Y', @$exif['dateTaken']),
+          'dateUploaded' => time(),
+          'dateUploadedDay' => date('d', time()),
+          'dateUploadedMonth' => date('m', time()),
+          'dateUploadedYear' => date('Y', time()),
+          'pathOriginal' => $paths['pathOriginal'], 
+          'pathBase' => $paths['pathBase']
         )
       );
-      if($uploaded)
-      {
-        $exif = self::readExif($localFile);
-        $attributes = array_merge(
-          $attributes, 
-          self::getDefaultAttributes(),
-          array(
-            'hash' => sha1_file($localFile),
-            'size' => 0, // TODO
-            'tags' => '', // TODO
-            'exifCameraMake' => @$exif['cameraMake'],
-            'exifCameraModel' => @$exif['cameraModel'],
-            'width' => @$exif['width'],
-            'height' => @$exif['height'],
-            'dateTaken' => @$exif['dateTaken'],
-            'dateTakenDay' => date('d', @$exif['dateTaken']),
-            'dateTakenMonth' => date('m', @$exif['dateTaken']),
-            'dateTakenYear' => date('Y', @$exif['dateTaken']),
-            'dateUploaded' => time(),
-            'dateUploadedDay' => date('d', time()),
-            'dateUploadedMonth' => date('m', time()),
-            'dateUploadedYear' => date('Y', time()),
-            'pathOriginal' => $paths['pathOriginal'], 
-            'pathBase' => $paths['pathBase']
-          )
-        );
-        $stored = $db->putPhoto($id, $attributes);
-        unlink($localFile);
-        unlink($localFileCopy);
-        if($stored)
-          return $id;
-      }
+      $stored = $db->putPhoto($id, $attributes);
+      unlink($localFile);
+      unlink($localFileCopy);
+      if($stored)
+        return $id;
     }
-
     return false;
   }
 
