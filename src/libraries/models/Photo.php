@@ -177,13 +177,19 @@ class Photo
     if($uploaded)
     {
       $exif = self::readExif($localFile);
+      $tags = $latitude = $longitude = null;
+      if(isset($attributes['tags'])) $tags = (array)explode(',', $attributes['tags']);
+      if(isset($attributes['latitude'])) $latitude = $attributes['latitude'];
+      if(isset($attributes['longitude'])) $longitude = $attributes['longitude'];
       $attributes = array_merge(
         $attributes, 
         self::getDefaultAttributes(),
         array(
           'hash' => sha1_file($localFile),
-          'size' => 0, // TODO
-          'tags' => '', // TODO
+          'size' => intval(filesize($localFile)/1024), // TODO
+          'tags' => $tags, // TODO
+          'latitude' => $latitude,
+          'longitude' => $longitude,
           'exifCameraMake' => @$exif['cameraMake'],
           'exifCameraModel' => @$exif['cameraModel'],
           'width' => @$exif['width'],
