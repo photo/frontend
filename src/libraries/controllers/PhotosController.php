@@ -28,7 +28,7 @@ class PhotosController extends BaseController
 
   public static function photo($id, $options = null)
   {
-    $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet);
+    $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true')));
     if($apiResp['code'] == 200)
     {
       $photo = $apiResp['result'];

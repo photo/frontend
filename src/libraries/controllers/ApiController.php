@@ -8,7 +8,11 @@ class ApiController extends BaseController
 
   public static function photo($id)
   {
-    $photo = getDb()->getPhoto($id);
+    if($_GET['actions'] == 'true')
+      $photo = getDb()->getPhotoWithActions($id);
+    else
+      $photo = getDb()->getPhoto($id);
+
     if($photo)
       return self::success("Photo {$id}", $photo);
     else

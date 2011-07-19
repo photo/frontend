@@ -1,12 +1,12 @@
 <?php
 class DatabaseSimpleDb implements DatabaseInterface
 {
-  private $domainPhoto, $domainSocial, $domainUser;
+  private $domainPhoto, $domainAction, $domainUser;
   public function __construct($opts)
   {
     $this->db = new AmazonSDB($opts->awsKey, $opts->awsSecret);
     $this->domainPhoto = getConfig()->get('aws')->simpleDbDomain;
-    $this->domainSocial = getConfig()->get('aws')->simpleDbDomain.'Social';
+    $this->domainAction = getConfig()->get('aws')->simpleDbDomain.'Action';
     $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'User';
   }
 
@@ -29,6 +29,26 @@ class DatabaseSimpleDb implements DatabaseInterface
       return self::normalizePhoto($res->body->SelectResult->Item);
     else
       return false;
+  }
+
+  public function getPhotoWithActions($id)
+  {
+    $queue = new CFBatchRequest();
+    $this->db->batch($queue)->select("select * from `{$this->domainPhoto}` where itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    $this->db->batch($queue)->select("select * from `{$this->domainAction}` where targetType='photo' and targetId='{$id}'", array('ConsistentRead' => 'true'));
+    $responses = $this->db->batch($queue)->send();
+    if(!$responses->areOk())
+      return false;
+
+
+    if(isset($responses[0]->body->SelectResult->Item))
+      $photo = self::normalizePhoto($responses[0]->body->SelectResult->Item);
+
+    $photo['actions'] = array();
+    foreach($responses[1]->body->SelectResult->Item as $action)
+      $photo['actions'][] = $this->normalizeAction($action);
+      
+    return $photo;
   }
 
   public function getPhotos($filters = array(), $limit, $offset = null)
@@ -119,7 +139,7 @@ class DatabaseSimpleDb implements DatabaseInterface
 
   public function initialize()
   {
-    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(User|Social)?$/");
+    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(User|Action)?$/");
     if(count($domains) == 3)
       return true;
     elseif(count($domains) != 0)
@@ -127,10 +147,15 @@ class DatabaseSimpleDb implements DatabaseInterface
 
     $queue = new CFBatchRequest();
     $this->db->batch($queue)->create_domain($this->domainPhoto);
-    $this->db->batch($queue)->create_domain($this->domainSocial);
+    $this->db->batch($queue)->create_domain($this->domainAction);
     $this->db->batch($queue)->create_domain($this->domainUser);
     $responses = $this->db->batch($queue)->send();
     return $responses->areOK();
+  }
+
+  private function normalizeAction()
+  {
+    return array();
   }
 
   private function normalizePhoto($raw)

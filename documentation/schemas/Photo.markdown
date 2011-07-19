@@ -101,4 +101,4 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
 
 [User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
 [Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
-[Social]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Social.markdown
+[Action]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Action.markdown

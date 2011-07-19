@@ -31,4 +31,4 @@ This includes personal information like name and email address but it also inclu
 
 [User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
 [Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
-[Social]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Social.markdown
+[Action]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Action.markdown

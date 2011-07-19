@@ -4,14 +4,14 @@ Documentation
 
 ----------------------------------------
 
-### What's a Social object for?
+### What's a Action object for?
 
 The Social object stores social actions taken on a user's [Photo][Photo].
 This includes comments and favorites and could include other social actions in the future.
 
 ----------------------------------------
 
-### Schema for a Social object
+### Schema for a Action object
 
     {
       id: (string),
@@ -33,7 +33,7 @@ This includes comments and favorites and could include other social actions in t
 ### Schema description
 
   * id, base 36 value of a base 10 auto-incremented value
-  * targetId, a foreign key to a [Photo][Photo] or [Social][Social] object this action was taken on
+  * targetId, a foreign key to a [Photo][Photo] or [Action][Action] object this action was taken on
   * targetType, a reference to the target type: photo or social
   * name, name of the user taking this action
   * avatar, URL to an image which represents this user's avatar or profile photo
@@ -48,4 +48,4 @@ This includes comments and favorites and could include other social actions in t
 
 [User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
 [Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
-[Social]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Social.markdown
+[Action]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Action.markdown
