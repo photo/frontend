@@ -177,31 +177,39 @@ class Photo
     if($uploaded)
     {
       $exif = self::readExif($localFile);
-      $tags = $latitude = $longitude = null;
+      $title = $description = $tags = $latitude = $longitude = null;
+      $dateUploaded = time();
+      $dateTaken = @$exif['dateTaken'];
+      if(isset($attributes['title'])) $title = $attributes['title'];
+      if(isset($attributes['description'])) $description = $attributes['description'];
       if(isset($attributes['tags'])) $tags = (array)explode(',', $attributes['tags']);
       if(isset($attributes['latitude'])) $latitude = $attributes['latitude'];
       if(isset($attributes['longitude'])) $longitude = $attributes['longitude'];
+      if(isset($attributes['dateUploaded'])) $dateUploaded = $attributes['dateUploaded'];
+      if(isset($attributes['dateTaken'])) $dateTaken = $attributes['dateTaken'];
       $attributes = array_merge(
         $attributes, 
         self::getDefaultAttributes(),
         array(
           'hash' => sha1_file($localFile),
-          'size' => intval(filesize($localFile)/1024), // TODO
-          'tags' => $tags, // TODO
+          'size' => intval(filesize($localFile)/1024),
+          'title' => $title,
+          'description' => $description,
+          'tags' => $tags,
           'latitude' => $latitude,
           'longitude' => $longitude,
           'exifCameraMake' => @$exif['cameraMake'],
           'exifCameraModel' => @$exif['cameraModel'],
           'width' => @$exif['width'],
           'height' => @$exif['height'],
-          'dateTaken' => @$exif['dateTaken'],
-          'dateTakenDay' => date('d', @$exif['dateTaken']),
-          'dateTakenMonth' => date('m', @$exif['dateTaken']),
-          'dateTakenYear' => date('Y', @$exif['dateTaken']),
-          'dateUploaded' => time(),
-          'dateUploadedDay' => date('d', time()),
-          'dateUploadedMonth' => date('m', time()),
-          'dateUploadedYear' => date('Y', time()),
+          'dateTaken' => $dateTaken,
+          'dateTakenDay' => date('d', $dateTaken),
+          'dateTakenMonth' => date('m', $dateTaken),
+          'dateTakenYear' => date('Y', $dateTaken),
+          'dateUploaded' => $dateUploaded,
+          'dateUploadedDay' => date('d', $dateUploaded),
+          'dateUploadedMonth' => date('m', $dateUploaded),
+          'dateUploadedYear' => date('Y', $dateUploaded),
           'pathOriginal' => $paths['pathOriginal'], 
           'pathBase' => $paths['pathBase']
         )

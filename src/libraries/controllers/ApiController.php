@@ -76,7 +76,7 @@ class ApiController extends BaseController
         $photo = getDb()->getPhoto($photoId);
         if($returnPhotoSuccess)
           $photo['requestedUrl'] = $photo["path{$returnOptions}"];
-        return self::success("Photo {$photoId} uploaded successfully", $photo);
+        return self::created("Photo {$photoId} uploaded successfully", $photo);
       }
     }
 
