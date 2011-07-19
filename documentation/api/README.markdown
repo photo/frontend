@@ -10,8 +10,12 @@ The Open Photo API uses [OAuth2][oauth2] for authentication. See the complete [g
 
 ### API Endpoints
 
-1. [POST /photo/upload][photoupload]
+1.  [GET /photos.json][GetPhotos]
+    Get a list of the user's photos.
+1.  [POST /photo/upload.json][PostPhotoUpload]
+    Upload a new photo.
 
+[GetPhotos]: api/GetPhotos.markdown
+[PostPhotoUpload]: api/PostPhotoUpload.markdown
 [authentication]: api/Authentication.markdown
-[photoupload]: api/PhotoUpload.markdown
 [oauth2]: http://wiki.oauth.net/w/page/25236487/OAuth-2
