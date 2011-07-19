@@ -13,52 +13,49 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
 
 ### Schema for a Photo object
 
-    [
-      {
-        id: (string),
-        host: (string),
-        title: (string),
-        description: (string),
-        key: (string),
-        hash: (string),
-        tags: (set),
-        size: (int), // in kb
-        width: (int),
-        height: (int),
-        exifOrientation: (int), // degrees
-        exifCameraMake: (string),
-        exifCameraModel: (string),
-        exifExpsureTime: (string),
-        exifFNumber: (string),
-        exifMaxApertureValue: (string),
-        exifMeteringMode: (string),
-        exifFlash: (string),
-        exifFocalLength: (string),
-        gpsAltitude: (int),
-        gpsLatitude: (float),
-        gpsLongitude: (float),
-        views: (int),
-        status: (int), // binary
-        permission: (int), // bitwise
-        creativeCommons: (enum),
-        dateTaken: (int), // unix timestamp
-        dateTakenDay: (int)
-        dateTakenMonth: (int)
-        dateTakenYear: (int)
-        dateUploaded: (int), // unix timestamp
-        dateUploadedDay: (int)
-        dateUploadedMonth: (int)
-        dateUploadedYear: (int)
-        pathOriginal: (string),
-        pathBase: (string),
-        ...
-        pathWxH: (string), // pseudo key
-          // path400x300: (string)
-          // path250x250: (string)
-          // path800x600: (string)
-      },
-      ....
-    ]
+    {
+      id: (string),
+      host: (string),
+      title: (string),
+      description: (string),
+      key: (string),
+      hash: (string),
+      tags: (set),
+      size: (int), // in kb
+      width: (int),
+      height: (int),
+      exifOrientation: (int), // degrees
+      exifCameraMake: (string),
+      exifCameraModel: (string),
+      exifExpsureTime: (string),
+      exifFNumber: (string),
+      exifMaxApertureValue: (string),
+      exifMeteringMode: (string),
+      exifFlash: (string),
+      exifFocalLength: (string),
+      gpsAltitude: (int),
+      gpsLatitude: (float),
+      gpsLongitude: (float),
+      views: (int),
+      status: (int), // binary
+      permission: (int), // bitwise
+      creativeCommons: (enum),
+      dateTaken: (int), // unix timestamp
+      dateTakenDay: (int)
+      dateTakenMonth: (int)
+      dateTakenYear: (int)
+      dateUploaded: (int), // unix timestamp
+      dateUploadedDay: (int)
+      dateUploadedMonth: (int)
+      dateUploadedYear: (int)
+      pathOriginal: (string),
+      pathBase: (string),
+      ...
+      pathWxH: (string), // pseudo key
+        // path400x300: (string)
+        // path250x250: (string)
+        // path800x600: (string)
+    }
 
 ----------------------------------------
 

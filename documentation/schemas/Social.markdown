@@ -13,21 +13,19 @@ This includes comments and favorites and could include other social actions in t
 
 ### Schema for a Social object
 
-    [
-      {
-        id: (string),
-        photoId: (string), // FK Photos.id
-        name: (string),
-        avatar: (string),
-        website: (string),
-        targetUrl: (string), // link to the target which this row is a child of
-        permalink: (string), // link to this social element (comment, favorite)
-        type: (string), // comment, favorite
-        value: (string),
-        datePosted: (string),
-        status: (int)
-      }
-    ]
+    {
+      id: (string),
+      photoId: (string), // FK Photos.id
+      name: (string),
+      avatar: (string),
+      website: (string),
+      targetUrl: (string), // link to the target which this row is a child of
+      permalink: (string), // link to this social element (comment, favorite)
+      type: (string), // comment, favorite
+      value: (string),
+      datePosted: (string),
+      status: (int)
+    }
 
 ----------------------------------------
 
