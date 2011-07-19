@@ -12,6 +12,8 @@ This API is used to upload a new photo for a user.
 
 ### Endpoint and parameters
 
+_Authentication: required_
+
     POST /photo/upload.json
 
 1.  photo (required), The photo to be uploaded.
