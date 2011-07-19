@@ -2,9 +2,16 @@ Documentation
 =======================
 #### OpenPhoto, a photo service for the masses
 
-Photos are stored in their own database (or table). The structure the OpenPhoto application expects from the adapter is below.
+----------------------------------------
 
-### Schema
+### What's a Photo object for?
+
+The Photo object represents a single photo in a user's photo collection.
+This includes EXIF information from the photo, tags and URLs to all versions of the photo.
+
+----------------------------------------
+
+### Schema for a Photo object
 
     [
       {
@@ -53,10 +60,12 @@ Photos are stored in their own database (or table). The structure the OpenPhoto 
       ....
     ]
 
+----------------------------------------
+
 ### Scema description
 
-  * id, base 36 version of a base 10 value
-  * host, host on which this photo resides
+  * id, Base 36 value of a base 10 auto-incremented value
+  * host, Host on which this photo resides
   * title, A title for the photo up to 100 chars
   * description, A description for the photo up to 255 chars
   * key, A random sha1 hash
@@ -92,3 +101,7 @@ Photos are stored in their own database (or table). The structure the OpenPhoto 
   * pathOriginal, The URL of the original photo
   * pathBase, The URL of the base version of the photo, used for photo generation
   * pathWxH, A pseudo key which represents any resized version of a photo and it's URL
+
+[User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
+[Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
+[Social]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Social.markdown

@@ -7,7 +7,7 @@ OpenPhoto
 ### What are schemas?
 
 Schemas are the blueprint for various objects in the OpenPhoto platform. 
-The most logical example is the [Photo][Photo] object which represents a user's single photo. 
+The most logical example is the [Photo][Photo] object which represents a single photo in a user's photo collection. 
 Their photo library consists of a collection of [Photo][Photo] objects. 
 Other examples are a [User][User] object and [Social][Social] object.
 
@@ -31,4 +31,3 @@ Since a [Photo][Photo] object has a predictable set of properties it means that 
 [User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
 [Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
 [Social]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Social.markdown
-
