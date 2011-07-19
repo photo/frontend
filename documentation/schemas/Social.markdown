@@ -15,7 +15,8 @@ This includes comments and favorites and could include other social actions in t
 
     {
       id: (string),
-      photoId: (string), // FK Photos.id
+      targetId: (string), // FK Photos.id or Social.id
+      targetType: (string), // photo, social
       name: (string),
       avatar: (string),
       website: (string),
@@ -32,7 +33,8 @@ This includes comments and favorites and could include other social actions in t
 ### Schema description
 
   * id, base 36 value of a base 10 auto-incremented value
-  * photoId, a foreign key to the [Photo][Photo] object this action was taken on
+  * targetId, a foreign key to a [Photo][Photo] or [Social][Social] object this action was taken on
+  * targetType, a reference to the target type: photo or social
   * name, name of the user taking this action
   * avatar, URL to an image which represents this user's avatar or profile photo
   * website, URL to the user's website
