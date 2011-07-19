@@ -12,9 +12,7 @@ This API is used to upload a new photo for a user.
 
 ### Endpoint and parameters
 
-#### /photo/upload.json
-
-#### Parameters
+    POST /photo/upload.json
 
 1.  photo (required), The photo to be uploaded.
     * This can be the binary photo in multipart/formdata
@@ -24,6 +22,20 @@ This API is used to upload a new photo for a user.
     * 300x300 - A photo which maintains aspect ratio and fits inside a 300x300 square
     * 1024x768xCR - A photo that's exactly 1024x768 pixels cropped to the center in an optimized manner
     * 160x90xBWxCR - A photo that's cropped exactly to 160x90 in greyscale (black and white)
+
+----------------------------------------
+
+### Example
+
+#### PHP
+
+    $ch = curl_init('http://jmathai.openphoto.me/photo/upload.json');
+    curl_setopt(
+      $ch, 
+      CURLOPT_POSTFIELDS, 
+      array('photo' => '@/path/to/photo.jpg', 'tags' => 'dog,cat', returnOptions' => '300x300')
+    );
+    curl_exec($ch);
 
 ----------------------------------------
 
@@ -66,26 +78,11 @@ The response is a [Photo][Photo] object.
 
 ----------------------------------------
 
-### Example
-
-#### PHP
-
-    $ch = curl_init('http://jmathai.openphoto.me/photo/upload.json');
-    curl_setopt(
-      $ch, 
-      CURLOPT_POSTFIELDS, 
-      array('photo' => '@/path/to/photo.jpg', 'tags' => 'dog,cat', returnOptions' => '300x300')
-    );
-    curl_exec($ch);
-
-
-----------------------------------------
-
 ### Specification
 
 #### Content type multipart/formdata
 
-Preferred. You can post to this API using [multipart][multipart/formdata].
+Preferred. You can post to this API using [multipart/formdata][multipart].
 
     POST /photo/upload.json HTTP/1.1
     Host: jmathai.openphoto.me
@@ -109,7 +106,7 @@ Preferred. You can post to this API using [multipart][multipart/formdata].
 
 #### Content type application/x-www-form-urlencoded
 
-You can post to this API using [urlencoded][application/x-www-form-urlencoded] and base64 encoding the photo.
+You can post to this API using [application/x-www-form-urlencoded][urlencoded] and base64 encoding the photo.
 
 
     POST /photo/upload.json HTTP/1.1
