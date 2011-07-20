@@ -32,7 +32,7 @@ class ApiController extends BaseController
 
   public static function photo($id)
   {
-    if($_GET['actions'] == 'true')
+    if(isset($_GET['actions']) && $_GET['actions'] == 'true')
       $photo = getDb()->getPhotoWithActions($id);
     else
       $photo = getDb()->getPhoto($id);

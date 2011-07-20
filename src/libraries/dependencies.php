@@ -22,6 +22,7 @@ require getConfig()->get('paths')->libraries . '/functions.php';
 // models
 require getConfig()->get('paths')->models . '/Action.php';
 require getConfig()->get('paths')->models . '/Photo.php';
+require getConfig()->get('paths')->models . '/User.php';
 require getConfig()->get('paths')->models . '/Image.php';
 require getConfig()->get('paths')->models . '/ImageImageMagick.php';
 require getConfig()->get('paths')->models . '/ImageGraphicsMagick.php';

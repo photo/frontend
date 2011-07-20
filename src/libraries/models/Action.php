@@ -7,7 +7,7 @@ class Action
       return false;
 
     // TODO: randomize the id
-    $id = base_convert(rand(1,10000), 10, 35);
+    $id = User::getNextActionId();
     $params = array_merge(self::getDefaultAttributes(), $params);
     $db = getDb();
     $action = $db->postAction($id, $params);

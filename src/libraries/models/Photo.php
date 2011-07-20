@@ -110,18 +110,12 @@ class Photo
     return false;
   }
 
-  public static function normalize($id, $appId, $data)
-  {
-    return array_merge($data, array('id' => $id, 'appId' => $appId));
-  }
-
   public static function update($id, $attributes = array())
   {
     if(empty($attributes))
       return $id;
 
-    $data = self::normalize($id, getConfig()->get('application')->appId, $attributes);
-    $status = getDb()->postPhoto($id, $data);
+    $status = getDb()->postPhoto($id, $attributes);
     if(!$status)
       return false;
 
@@ -154,8 +148,7 @@ class Photo
 
     $fs = getFs();
     $db = getDb();
-    // TODO, needs to be a lookup
-    $id = base_convert(rand(1,1000), 10, 35);
+    $id = User::getNextPhotoId();
     $paths = Photo::generatePaths($name);
     // resize the base image before uploading
     $localFileCopy = "{$localFile}-copy}";
@@ -177,27 +170,20 @@ class Photo
     if($uploaded)
     {
       $exif = self::readExif($localFile);
-      $title = $description = $tags = $latitude = $longitude = null;
+      $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
+      foreach($defaults as $default)
+      {
+        if(!isset($attributes[$default]))
+          $attributes[$default] = null;
+      }
       $dateUploaded = time();
       $dateTaken = @$exif['dateTaken'];
-      if(isset($attributes['title'])) $title = $attributes['title'];
-      if(isset($attributes['description'])) $description = $attributes['description'];
-      if(isset($attributes['tags'])) $tags = (array)explode(',', $attributes['tags']);
-      if(isset($attributes['latitude'])) $latitude = $attributes['latitude'];
-      if(isset($attributes['longitude'])) $longitude = $attributes['longitude'];
-      if(isset($attributes['dateUploaded'])) $dateUploaded = $attributes['dateUploaded'];
-      if(isset($attributes['dateTaken'])) $dateTaken = $attributes['dateTaken'];
       $attributes = array_merge(
         $attributes, 
         self::getDefaultAttributes(),
         array(
           'hash' => sha1_file($localFile),
           'size' => intval(filesize($localFile)/1024),
-          'title' => $title,
-          'description' => $description,
-          'tags' => $tags,
-          'latitude' => $latitude,
-          'longitude' => $longitude,
           'exifCameraMake' => @$exif['cameraMake'],
           'exifCameraModel' => @$exif['cameraModel'],
           'width' => @$exif['width'],

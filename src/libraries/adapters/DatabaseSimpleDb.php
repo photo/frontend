@@ -60,7 +60,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
     // TODO: support logic for multiple conditions
-    $where = 'where';
+    $where = '';
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -70,7 +70,7 @@ class DatabaseSimpleDb implements DatabaseInterface
           case 'tags':
             if(!is_array($value))
               $value = (array)explode(',', $value);
-            $where .= " tags in('" . implode("','", $value) . "')";
+            $where = $this->buildWhere($where, "tags in('" . implode("','", $value) . "')");
             break;
           case 'page':
             if($value > 1)
@@ -82,7 +82,7 @@ class DatabaseSimpleDb implements DatabaseInterface
           case 'sortBy':
             $sortBy = 'order by ' . str_replace(',', ' ', $value);
             $field = substr($value, 0, strpos($value, ','));
-            $where .= " {$field} is not null";
+            $where = $this->buildWhere($where, "{$field} is not null");
             break;
         }
       }
@@ -130,6 +130,15 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $photos;
   }
 
+  public function getUser()
+  {
+    $res = $this->db->select("select * from `{$this->domainUser}` where itemName()='1'", array('ConsistentRead' => 'true'));
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeUser($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
   public function postAction($id, $params)
   {
     $res = $this->db->put_attributes($this->domainAction, $id, $params);
@@ -140,6 +149,12 @@ class DatabaseSimpleDb implements DatabaseInterface
   {
     $params = self::preparePhoto($id, $params);
     $res = $this->db->put_attributes($this->domainPhoto, $id, $params, true);
+    return $res->isOK();
+  }
+
+  public function postUser($id, $params)
+  {
+    $res = $this->db->put_attributes($this->domainUser, $id, $params);
     return $res->isOK();
   }
 
@@ -165,23 +180,33 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $responses->areOK();
   }
 
+  private function buildWhere($existing, $add)
+  {
+    if(empty($existing))
+      return "where {$add} ";
+    else
+      return "{$existing} and {$add} ";
+  }
+
+  // normalizes data from simpleDb into schema definition
   private function normalizeAction($raw)
   {
-    $action = array('id' => strval($raw->Name));
+    $action = array();
     foreach($raw->Attribute as $item)
     {
       $name = (string)$item->Name;
       $value = (string)$item->Value;
       $action[$name] = $value;
     }
+    $action['id'] = strval($raw->Name);
+    $action['appId'] = getConfig()->get('application')->appId;
     return $action;
   }
 
+  // normalizes data from simpleDb into schema definition
   private function normalizePhoto($raw)
   {
-    $appId = getConfig()->get('application')->appId;
-    $id = strval($raw->Name);
-    $photo = array('tags' => '');
+    $photo = array();
     foreach($raw->Attribute as $item)
     {
       $name = (string)$item->Name;
@@ -191,7 +216,23 @@ class DatabaseSimpleDb implements DatabaseInterface
       else
         $photo[$name] = $value;
     }
-    return Photo::normalize($id, $appId, $photo);
+    $photo['id'] = strval($raw->Name);
+    $photo['appId'] = getConfig()->get('application')->appId;
+    return $photo;
+  }
+
+  // normalizes data from simpleDb into schema definition
+  private function normalizeUser($raw)
+  {
+    $user = array();
+    foreach($raw->Attribute as $item)
+    {
+      $name = (string)$item->Name;
+      $value = (string)$item->Value;
+      $user[$name] = $value;
+    }
+    $user['id'] = strval($raw->Name);
+    return $user;
   }
 
   private function preparePhoto($id, $params)

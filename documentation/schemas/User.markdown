@@ -7,27 +7,23 @@ Documentation
 ### What's a User object for?
 
 The User object stores information for a given user.
-This includes personal information like name and email address but it also includes the last uploaded [Photo][Photo] id.
+This includes the last uploaded [Photo][Photo]  and [Action][Action] id.
 
 ----------------------------------------
 
 ### Schema for a User object
 
     {
-      name: (string),
-      email: (string),
-      website: (string),
-      lastPhotoId: (string)
+      lastPhotoId: (string),
+      lastActionId: (string)
     }
 
 ----------------------------------------
 
 ### Schema description
 
-  * name, the user's full name
-  * email, the user's email address
-  * website, the user's website
   * lastPhotoId, most recent photo id
+  * lastActionId, most recent action id
 
 [User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
 [Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
