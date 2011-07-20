@@ -3,6 +3,17 @@ var op = (function(){
   };
   return {
     handlers: {
+      actionDelete: function(event) {
+        var el = $(this),
+          url = el.attr('href')+'.json';
+          $.post(url, function(response) {
+            if(response.code === 200)
+              $(".action-container-"+response.result).hide('medium', function(){ $(this).remove(); });
+            else
+              op.message.error('Could not delete the photo.');
+          }, 'json');
+          return false;
+      },
       photoDelete: function(event) {
         var el = $(this),
           url = el.attr('href')+'.json';
@@ -61,6 +72,7 @@ var op = (function(){
       attach: function() {
         $('.photo-link').live('click mouseover', op.handlers.photoLink);
         $('.photo-delete').live('click', op.handlers.photoDelete);
+        $('.action-delete').live('click', op.handlers.actionDelete);
         $('.search-bar-toggle').click(op.handlers.searchBarToggle);
         $('form#form-tag-search').submit(op.handlers.searchByTags);
       }

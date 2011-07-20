@@ -1,6 +1,30 @@
 <?php
 class ApiController extends BaseController
 {
+  public static function actionDelete($id)
+  {
+    $status = Action::delete($id);
+    if($status)
+      return self::success('Action deleted successfully', $id);
+    else
+      return self::error('Action deletion failure', false);
+  }
+
+  public static function actionPost($targetType, $targetId)
+  {
+    // TODO: randomize and unique
+    // TODO: move to an action model
+    $params = $_POST;
+    $params['targetId'] = $targetId;
+    $params['targetType'] = $targetType;
+    $id = Action::add($params);
+
+    if($id)
+      return self::success("Action {$id} created on {$targetType} {$targetId}", array_merge(array('id' => $id), $params));
+    else
+      return self::failure("Error creating action {$id} on {$targetType} {$targetId}", false);
+  }
+
   public static function hello()
   {
     return self::success('Hello, world!', $_GET);

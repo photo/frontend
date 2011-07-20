@@ -4,16 +4,26 @@
   <?php } ?>
 </ul>
 <form method="post">
-  <label>Tags<label>
+  <h3>Tags</h3>
   <input type="text" name="tags" value="<?php echo implode(',', $photo['tags']); ?>">
-  <button type="submit" class="button pill icon pen">Update</button>
+  <button type="submit" class="button pill icon tag">Update</button>
 </form>
 <br>
 <img src="<?php echo $photo['displayUrl']; ?>">
+<br>
+<form method="post" action="/photo/<?php echo $photo['id']; ?>/action">
+  <textarea rows="5" cols="50" name="value"></textarea>
+  <input type="hidden" name="type" value="comment">
+  <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
+  <br>
+  <button type="submit" class="button pill icon pen">Comment</button>
+</form>
 <?php if(count($photo['actions']) > 0) { ?>
   <ol>
     <?php foreach($photo['actions'] as $action) { ?>
-      <li><?php echo $action['value']; ?></li>
+      <li class="action-container-<?php echo $action['id']; ?>">
+        <?php echo $action['value']; ?><br>(<a href="/action/<?php echo $action['id']; ?>/delete" class="action-delete">delete</a>)
+      </li>
     <?php } ?>
   </ol>
 <?php } ?>

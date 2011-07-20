@@ -13,3 +13,5 @@ getRoute()->post('/photo/upload', array('PhotosController', 'uploadPost'));
 getRoute()->get('/photos/upload', array('PhotosController', 'upload'));
 // view all photos / optionally filter
 getRoute()->get('/photos/?(.+)?', array('PhotosController', 'photos'));
+// post an action
+getRoute()->post('/(photo)/([a-zA-Z0-9]+)/action', array('ActionController', 'actionPost'), EpiApi::external);

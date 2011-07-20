@@ -15,6 +15,7 @@ This includes comments and favorites and could include other social actions in t
 
     {
       id: (string),
+      appId: (string),
       targetId: (string), // FK Photos.id or Social.id
       targetType: (string), // photo, social
       name: (string),
@@ -33,6 +34,7 @@ This includes comments and favorites and could include other social actions in t
 ### Schema description
 
   * id, base 36 value of a base 10 auto-incremented value
+  * appId, A string identifing the application creating this entry
   * targetId, a foreign key to a [Photo][Photo] or [Action][Action] object this action was taken on
   * targetType, a reference to the target type: photo or social
   * name, name of the user taking this action

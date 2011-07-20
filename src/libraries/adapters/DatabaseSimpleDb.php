@@ -16,6 +16,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $res->isOK();
   }
 
+  public function deleteAction($id)
+  {
+    $res = $this->db->delete_attributes($this->domainAction, $id);
+    return $res->isOK();
+  }
+
   public function deletePhoto($id)
   {
     $res = $this->db->delete_attributes($this->domainPhoto, $id);
@@ -124,6 +130,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $photos;
   }
 
+  public function postAction($id, $params)
+  {
+    $res = $this->db->put_attributes($this->domainAction, $id, $params);
+    return $res->isOK();
+  }
+
   public function postPhoto($id, $params)
   {
     $params = self::preparePhoto($id, $params);
@@ -153,9 +165,16 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $responses->areOK();
   }
 
-  private function normalizeAction()
+  private function normalizeAction($raw)
   {
-    return array();
+    $action = array('id' => strval($raw->Name));
+    foreach($raw->Attribute as $item)
+    {
+      $name = (string)$item->Name;
+      $value = (string)$item->Value;
+      $action[$name] = $value;
+    }
+    return $action;
   }
 
   private function normalizePhoto($raw)

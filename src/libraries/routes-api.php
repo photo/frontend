@@ -1,7 +1,11 @@
 <?php
 getApi()->get('/hello.json', array('ApiController', 'hello'), EpiApi::external);
+// delete an action
+getApi()->post('/action/([a-zA-Z0-9]+)/delete.json', array('ApiController', 'actionDelete'), EpiApi::external);
 // delete a photo
 getApi()->post('/photo/([a-zA-Z0-9]+)/delete.json', array('ApiController', 'photoDelete'), EpiApi::external);
+// post an action
+getApi()->post('/(photo)/([a-zA-Z0-9]+)/action.json', array('ApiController', 'actionPost'), EpiApi::external);
 // upload a photo
 getApi()->post('/photo/upload.json', array('ApiController', 'photoUpload'), EpiApi::external);
 // generate a dynamic photo url
