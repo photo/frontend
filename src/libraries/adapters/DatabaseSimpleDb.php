@@ -135,14 +135,10 @@ class DatabaseSimpleDb implements DatabaseInterface
     $res = $this->db->select("select * from `{$this->domainUser}` where itemName()='1'", array('ConsistentRead' => 'true'));
     if(isset($res->body->SelectResult->Item))
       return self::normalizeUser($res->body->SelectResult->Item);
+    elseif(isset($res->body->SelectResult))
+      return null;
     else
       return false;
-  }
-
-  public function postAction($id, $params)
-  {
-    $res = $this->db->put_attributes($this->domainAction, $id, $params);
-    return $res->isOK();
   }
 
   public function postPhoto($id, $params)
@@ -154,13 +150,27 @@ class DatabaseSimpleDb implements DatabaseInterface
 
   public function postUser($id, $params)
   {
-    $res = $this->db->put_attributes($this->domainUser, $id, $params);
+    // make sure we don't overwrite an existing user record
+    $res = $this->db->put_attributes($this->domainUser, $id, $params, true);
+    return $res->isOK();
+  }
+
+  public function putAction($id, $params)
+  {
+    $res = $this->db->put_attributes($this->domainAction, $id, $params);
     return $res->isOK();
   }
 
   public function putPhoto($id, $params)
   {
     $res = $this->db->put_attributes($this->domainPhoto, $id, $params);
+    return $res->isOK();
+  }
+
+  public function putUser($id, $params)
+  {
+    // make sure we don't overwrite an existing user record
+    $res = $this->db->put_attributes($this->domainUser, $id, $params);
     return $res->isOK();
   }
 

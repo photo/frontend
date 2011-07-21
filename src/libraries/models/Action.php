@@ -6,11 +6,13 @@ class Action
     if(!isset($params['type']) || !isset($params['targetType']))
       return false;
 
-    // TODO: randomize the id
     $id = User::getNextActionId();
+    // TODO: add a log message
+    if($id === false)
+      return false;
     $params = array_merge(self::getDefaultAttributes(), $params);
     $db = getDb();
-    $action = $db->postAction($id, $params);
+    $action = $db->putAction($id, $params);
     if(!$action)
       return false;
 

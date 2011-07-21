@@ -60,14 +60,37 @@ class FileSystemS3 implements FileSystemInterface
 
   public function initialize()
   {
+    // TODO add logging
     if(!$this->fs->validate_bucketname_create($this->bucket) || !$this->fs->validate_bucketname_support($this->bucket))
       return false;
 
     $buckets = $this->fs->get_bucket_list("/^{$this->bucket}$/");
-    if(count($buckets) == 1)
-      return true;
+    if(count($buckets) == 0)
+    {
+      $res = $this->fs->create_bucket($this->bucket, AmazonS3::REGION_US_E1, AmazonS3::ACL_PUBLIC);
+      // TODO add logging
+      if(!$res->isOK())
+        return false;
+    }
 
-    $res = $this->fs->create_bucket($this->bucket, AmazonS3::REGION_US_E1, AmazonS3::ACL_PUBLIC);
+    // TODO add versioning?
+    // Set a policy for this bucket only
+    $policy = new CFPolicy($this->fs, array(
+        'Version' => '2008-10-17',
+        'Statement' => array(
+            array(
+                'Sid' => 'AddPerm',
+                'Effect' => 'Allow',
+                'Principal' => array(
+                    'AWS' => '*'
+                ),
+                'Action' => array('s3:*'),
+                'Resource' => array("arn:aws:s3:::{$this->bucket}/*")
+            )
+        )
+    ));
+    $res = $this->fs->set_bucket_policy($this->bucket, $policy);
+    // TODO add logging
     return $res->isOK();
   }
 

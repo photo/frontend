@@ -149,6 +149,9 @@ class Photo
     $fs = getFs();
     $db = getDb();
     $id = User::getNextPhotoId();
+    // TODO: add a log message
+    if($id === false)
+      return false;
     $paths = Photo::generatePaths($name);
     // resize the base image before uploading
     $localFileCopy = "{$localFile}-copy}";

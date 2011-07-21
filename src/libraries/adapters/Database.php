@@ -7,8 +7,13 @@ interface DatabaseInterface
   public function getPhoto($id);
   public function getPhotoWithActions($id);
   public function getPhotos($filter, $limit, $offset);
+  // post methods update
   public function postPhoto($id, $params);
+  public function postUser($id, $params);
+  // put methods create but do not update
+  public function putAction($id, $params);
   public function putPhoto($id, $params);
+  public function putUser($id, $params);
   public function initialize();
   //private function normalizePhoto($raw);
 }
