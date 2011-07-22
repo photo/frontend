@@ -42,7 +42,7 @@ class User
     if($res === null)
     {
       // user entry does not exist, create it
-      $res = self::update();
+      $res = self::create();
       if(!$res)
         return false;
     }
