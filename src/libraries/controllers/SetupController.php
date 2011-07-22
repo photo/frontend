@@ -10,7 +10,7 @@ class SetupController
     $permissionCheck = self::verifyRequirements();
     if($permissionCheck !== true)
     {
-      getTemplate()->display('blank.php', array('body' => 'setupRequirements.php', array('errors' => $errors)));
+      getTemplate()->display('blank.php', array('body' => getTemplate()->get('setupRequirements.php', array('errors' => $errors))));
       return;
     }
 
