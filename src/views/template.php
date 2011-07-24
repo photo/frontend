@@ -20,6 +20,7 @@
     </footer>
   </div>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.1.min.js"></script>
+  <script src="https://browserid.org/include.js" type="text/javascript"></script>
   <?php if(isset($jsFiles)) { ?>
     <?php foreach($jsFiles as $file) { ?>
       <script type="text/javascript" src="<?php echo $file; ?>"></script>

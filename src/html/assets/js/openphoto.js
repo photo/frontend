@@ -14,6 +14,17 @@ var op = (function(){
           }, 'json');
           return false;
       },
+      login: function() {
+        console.log('login');
+        navigator.id.getVerifiedEmail(function(assertion) {
+            if (assertion) {
+              op.user.loginSuccess(assertion);
+            } else {
+              op.user.loginFailure(assertion);
+            }
+        });
+        return false;
+      },
       photoDelete: function(event) {
         var el = $(this),
           url = el.attr('href')+'.json';
@@ -75,11 +86,17 @@ var op = (function(){
         $('.action-delete').live('click', op.handlers.actionDelete);
         $('.search-bar-toggle').click(op.handlers.searchBarToggle);
         $('form#form-tag-search').submit(op.handlers.searchByTags);
+        $("a#login").click(op.handlers.login);
       }
     },
     message: {
       error: function(msg) {
         alert(msg);
+      }
+    },
+    photos: {
+      search: function(tags) {
+        //$.get('/photos/');
       }
     },
     upload: {
@@ -115,9 +132,14 @@ var op = (function(){
         }
       }
     },
-    photos: {
-      search: function(tags) {
-        //$.get('/photos/');
+    user: {
+      loginFailure: function(assertion) {
+        console.log('login failed');
+        console.log(assertion);
+      },
+      loginSuccess: function(assertion) {
+        console.log('login success');
+        console.log(assertion);
       }
     }
   };
