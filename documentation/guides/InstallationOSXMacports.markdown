@@ -1,10 +1,10 @@
-OpenPhoto / Installation for Ubuntu
+OpenPhoto / Installation for OSX using Macports
 =======================
 #### OpenPhoto, a photo service for the masses
 
-## OS: Linux Ubuntu Server 10.04+
+## OS: Mac OSX
 
-This guide instructs you on how to install OpenPhoto on an Ubuntu server.
+This guide instructs you on how to install OpenPhoto on a Macintosh OSX computer.
 
 ----------------------------------------
 
@@ -20,19 +20,14 @@ Before setting up your server you'll need to make sure you have your cloud accou
 #### Server Packages and Modules
 Once you've confirmed that your cloud account is setup you can get started on your server. For that you'll need to have _Apache_, _PHP_ and _curl_ installed with a few modules.
 
-    apt-get install apache2
-    apt-get install php5
-    apt-get install libapache2-mod-php5
-    apt-get install php5-curl
-    a2enmod rewrite
+This guide assumes you have [get it here][Macports installed]. If not you can . The easiest option is to use `.pkg` installer.
 
-There are also a few optional but recommended packages and modules.
-
-    apt-get install php5-imagick
-    apt-get install exiftran
-    a2enmod deflate
-    a2enmod expires
-    a2enmod headers
+    port install apache2
+    port install php5 +apache2
+    port install php5-exif
+    port install php5-curl
+    port install php5-imagick
+    port load apache2
 
 ----------------------------------------
 
@@ -42,9 +37,9 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
 
 #### Using git clone
 
-    apt-get install git-core
+    # install git if you don't have it already
+    port install git-core
     git clone https://github.com/openphoto/frontend.git /var/www/yourdomain.com
-    chown -R www-data:www-data /var/www/yourdomain.com
 
 #### Using tar
 
@@ -53,10 +48,10 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
     tar -zxvf --group=www-data --owner=www-data openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
 
-Assuming that this is a development machine you can make the config writable by the user Apache runs as. Most likely `www-data`.
+Assuming that this is a development machine you can make the config writable by the user Apache runs as. Most likely `_www`.
 
     mkdir /var/www/yourdomain.com/src/configs/generated
-    chown www-data:www-data /var/www/yourdomain.com/src/configs/generated
+    chown _www /var/www/yourdomain.com/src/configs/generated
 
 ----------------------------------------
 
@@ -64,19 +59,21 @@ Assuming that this is a development machine you can make the config writable by 
 
 #### Apache
 
-You'll need to copy the sample virtual host configuration file from the source to `/etc/apache2/sites-enabled`.
+You'll need to make sure that you have named virtual hosts enabled in your Apache confs. First, copy the contents of `/var/www/yourdomain.com/configs/openphoto-vhost.conf` onto your clipboard. Then open your `virtualhosts.conf` file.
 
-    cp /var/www/yourdomain.com/src/configs/openphoto-vhost.conf /etc/apache2/sites-enabled/
+    vi /opt/local/apache2/conf/extra/virtualhosts.conf
 
-Now you'll need to replace instances of `/path/to/openphoto/html/directory` with `/var/www/yourdomain.com/src/html` or wherever you placed the code.
+You can put the `NameVirtualHost` directive at the top of the file.
 
-    vi /etc/apache2/sites-enabled/openphoto-vhost.conf
+    NameVirtualHost *
+
+Paste the contents of your clipboard into the bottom of the file and replace instances of `/path/to/openphoto/html/directory` with `/var/www/yourdomain.com/src/html` or wherever you placed the code.
 
 ### PHP
 
 You should also verify that your `php.ini` file has a few important values set correctly.
 
-    vi /etc/php5/apache2/php.ini
+    vi /opt/local/etc/php5/php.ini
 
 Search for the following values and make sure they're correct.
 
@@ -86,7 +83,7 @@ Search for the following values and make sure they're correct.
 
 Now you're ready to restart apache and visit the site in your browser.
 
-    /etc/init.d/apache2 restart
+    /opt/local/apache2/bin/apachectl restart
 
 ### Launching your OpenPhoto site
 
@@ -98,3 +95,4 @@ Once you complete the 3 steps your site will be up and running and you'll be red
 
 **ENJOY!**
 
+[macports]: http://www.macports.org/install.php

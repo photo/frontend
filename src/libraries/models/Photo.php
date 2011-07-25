@@ -1,9 +1,24 @@
 <?php
+/**
+ * Photo model.
+ *
+ * Something related to photos, the guts are in this file.
+ * Upload, update, delete and generate, oh my!
+ * @author Jaisen Mathai <jaisen@jmathai.com>
+ */
 class Photo
 {
+  /**
+    * Delete a photo from the remote database and remote filesystem.
+    * This deletes the original photo and all versions.
+    *
+    * @param string $id ID of the photo
+    * @return boolean 
+    */
   public static function delete($id)
   {
     // TODO, validation
+    // TODO, do not delete record from db - mark as deleted
     $fs = getFs();
     $db = getDb();
     $fileStatus = $fs->deletePhoto($id);
@@ -11,11 +26,29 @@ class Photo
     return $fileStatus && $dataStatus;
   }
 
+  /**
+    * Versions of a photo are stored by a deterministic key in the database.
+    * Given $width, $height and $options this method returns that key.
+    *
+    * @param int $width Width of the photo to generate
+    * @param int $height Height of the photo to generate
+    * @param string $options Options for the photo such as crop (CR) and greyscale (BW)
+    * @return string 
+    */
   public static function generateCustomKey($width, $height, $options = null)
   {
     return sprintf('path%s', self::generateFragment($width, $height, $options));
   }
 
+  /**
+    * Generates the "fragment" for the photo version.
+    * This fragment is used in the file name as well as the database key.
+    *
+    * @param int $width Width of the photo to generate
+    * @param int $height Height of the photo to generate
+    * @param string $options Options for the photo such as crop (CR) and greyscale (BW)
+    * @return string 
+    */
   public static function generateFragment($width, $height, $options)
   {
     $fragment = "{$width}x{$height}";
@@ -24,6 +57,14 @@ class Photo
     return $fragment;
   }
 
+  /**
+    * Does the opposite of self::generateFragment.
+    * Given a string fragment this will return it's parts as an array.
+    * The $options must start with a width and height (i.e. 800x600)
+    *
+    * @param string $options Options for the photo such as crop (CR) and greyscale (BW)
+    * @return array 
+    */
   public static function generateFragmentReverse($options)
   {
     $options = explode('x', $options);
@@ -33,6 +74,16 @@ class Photo
     return array('width' => $width, 'height' => $height, 'options' => $options);
   }
 
+  /**
+    * When a custom version of a photo needs to be generated it must be accompanied by a hash.
+    * This method generates that hash based on a secret and normalization of parameters.
+    * The method takes any number of arguments and processes them all.
+    *
+    * @param string $param1 any parameter value
+    * ...
+    * @param string $paramN any parameter value
+    * @return string 
+    */
   public static function generateHash(/*$args1, $args2, ...*/)
   {
     $args = func_get_args();
@@ -45,9 +96,15 @@ class Photo
     return substr(sha1(implode('.', $args)), 0, 5);
   }
 
+  /**
+    * Generates the default paths given a photo name.
+    * These paths will also be the initial versions of the photo that are stored in the file system and database.
+    *
+    * @param string $photoName File name of the photo
+    * @return array 
+    */
   public static function generatePaths($photoName)
   {
-    // TODO, normalize the name
     $photoName = time() . '-' . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
     return array(
       'pathOriginal' => sprintf('/original/%s/%s', date('Ym'), $photoName),
@@ -55,6 +112,17 @@ class Photo
     );
   }
 
+  /**
+    * Photo urls are either to existing files on the remote filesystem or a call back to this server to generate it.
+    * The requested photo is looked up in the database and if it exists is returned.
+    * If it does not exist then a URL which will generate, store and return it when called is returned.
+    *
+    * @param array $photo The photo object as returned from the database.
+    * @param int $width The width of the requested photo.
+    * @param int $height The height of the requested photo.
+    * @param string $options Optional options to be applied on the photo
+    * @return string 
+    */
   public static function generateUrlPublic($photo, $width, $height, $options = null)
   {
     $key = self::generateCustomKey($width, $height, $options);
@@ -64,6 +132,17 @@ class Photo
       return self::generateUrlInternal($photo['id'], $width, $height, $options);
   }
 
+  /**
+    * This is the method called if a version of a requested photo does not exist.
+    * It simply returns a url pointing back to the server which will generate the photo when called.
+    *
+    * @param string $id The id of the photo.
+    * @param int $width The width of the requested photo.
+    * @param int $height The height of the requested photo.
+    * @param string $options Optional options to be applied on the photo
+    * @return string 
+    */
+  // TODO make private and called via an API in the photo controller
   public static function generateUrlInternal($id, $width, $height, $options = null)
   {
     $fragment = self::generateFragment($width, $height, $options);
@@ -71,9 +150,22 @@ class Photo
     return sprintf('/photo/%s/create/%s/%s.jpg', $id, $hash, $fragment);
   }
 
+  /**
+    * Generate a version of the photo as specified by the width, height and options.
+    * This method requres the $hash ve validated to keep random versions of images to be created.
+    * The photo is generated, uploaded to the remote file system and added to the database.
+    * Operations are done in place on a downloaded version of the base photo and this file name is returned.
+    *
+    * @param string $id The id of the photo.
+    * @param int $width The width of the requested photo.
+    * @param int $height The height of the requested photo.
+    * @param string $options Optional options to be applied on the photo
+    * @return mixed string on success, false on failure
+    */
+  // TODO change name to generate()
   public static function generateImage($id, $hash, $width, $height, $options = null)
   {
-    if(!self::validateHash($hash, $id, $width, $height, $options))
+    if(!self::isValidateHash($hash, $id, $width, $height, $options))
       return false;
 
     $photo = getDb()->getPhoto($id);
@@ -110,6 +202,13 @@ class Photo
     return false;
   }
 
+  /**
+    * Update the attributes of a photo in the database.
+    *
+    * @param string $id The id of the photo.
+    * @param array $attributes The attributes to save
+    * @return mixed string on success, false on failure
+    */
   public static function update($id, $attributes = array())
   {
     if(empty($attributes))
@@ -122,30 +221,16 @@ class Photo
     return $id;
   }
 
-  /*$localFile, $name, $attributes = array()*/
-  /*$fileBase64Encoded, $attributes = array()*/
-  public static function upload(/*$localFile, $name, $attributes = array()*/)
+  /**
+    * Uploads a new photo to the remote file system and database.
+    *
+    * @param string $localFile The local file system path to the photo.
+    * @param string $name The file name of the photo.
+    * @param array $attributes The attributes to save
+    * @return mixed string on success, false on failure
+    */
+  public static function upload($localFile, $name, $attributes = array())
   {
-    $args = func_get_args();
-    $argsCnt = func_num_args();
-    if($argsCnt == 3 && is_uploaded_file($args[0]))
-    {
-      $localFile = $args[0];
-      $name = $args[1];
-      $attributes = $args[2];
-    }
-    elseif($argsCnt == 2)
-    {
-      $localFile = tempnam(getConfig()->get('server')->tempDir, 'opme');
-      $name = basename($localFile).'.jpg';
-      $attributes = $args[1];
-      file_put_contents($localFile, base64_decode($args[0]));
-    }
-    else
-    {
-      return false;
-    }
-
     $fs = getFs();
     $db = getDb();
     $id = User::getNextPhotoId();
@@ -212,6 +297,16 @@ class Photo
     return false;
   }
 
+  /**
+    * Generates a path for a custom version of a photo.
+    * This defines in a deterministic way what the URL for this version of the photo will be.
+    *
+    * @param string $basePath Path to the base version of the photo from the database.
+    * @param int $width The width of the desired photo version.
+    * @param int $height The height of the desired photo version.
+    * @param string $options The options for the desired photo version.
+    * @return string The path to be used for this photo.
+    */
   private static function generateCustomUrl($basePath, $width, $height, $options)
   {
     $fragment = self::generateFragment($width, $height, $options);
@@ -220,6 +315,11 @@ class Photo
     return "{$customName}_{$fragment}.jpg";
   }
 
+  /**
+    * The default attributes for a new photo.
+    *
+    * @return array Default values for a new photo
+    */
   private static function getDefaultAttributes()
   {
     return array(
@@ -232,7 +332,16 @@ class Photo
     );
   }
 
-  private static function validateHash(/*$hash, $args1, $args2, ...*/)
+  /**
+    * Validates the hash component of the generate new photo request.
+    *
+    * @param $hash The hash to validate
+    * @param $param2 One of the options
+    * ...
+    * @param $paramN One of the options
+    * @return boolean 
+    */
+  private static function isValidateHash(/*$hash, $args1, $args2, ...*/)
   {
     $args = func_get_args();
     foreach($args as $k => $v)
@@ -245,13 +354,19 @@ class Photo
     return (substr(sha1(implode('.', $args)), 0, 5) == $hash);
   }
 
-  private static function readExif($image)
+  /**
+    * Reads exif data from a photo.
+    *
+    * @param $photo Path to the photo.
+    * @return array 
+    */
+  private static function readExif($photo)
   {
-    $exif = @exif_read_data($image);
+    $exif = @exif_read_data($photo);
     if(!$exif)
       return null;
 
-    $size = getimagesize($image);
+    $size = getimagesize($photo);
     $dateTaken = $exif['FileDateTime'];
     if(array_key_exists('DateTime', $exif))
     {

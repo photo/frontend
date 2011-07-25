@@ -1,7 +1,25 @@
 <?php
+/**
+ * Amazon AWS SimpleDb implementation for DatabaseInterface
+ *
+ * This class defines the functionality defined by DatabaseInterface for AWS SimpleDb.
+ * @author Jaisen Mathai <jaisen@jmathai.com>
+ */
 class DatabaseSimpleDb implements DatabaseInterface
 {
-  private $domainPhoto, $domainAction, $domainUser;
+  /**
+    * Member variables holding the names to the SimpleDb domains needed and the database object itself.
+    * @access private
+    * @var array
+    */
+  private $db, $domainPhoto, $domainAction, $domainUser;
+
+  /**
+    * Constructor
+    *
+    * @param array $opts Credentials for AWS
+    * @return void 
+    */
   public function __construct($opts)
   {
     $this->db = new AmazonSDB($opts->awsKey, $opts->awsSecret);
@@ -10,24 +28,45 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'User';
   }
 
+  /**
+    * TODO remove this crap and use postPhoto instead
+    */
   public function addAttribute($id, $keyValuePairs, $replace = true)
   {
     $res = $this->db->put_attributes($this->domainPhoto, $id, $keyValuePairs, $replace);
     return $res->isOK();
   }
 
+  /**
+    * Delete an action from the database
+    *
+    * @param string $id ID of the action to delete
+    * @return boolean 
+    */
   public function deleteAction($id)
   {
     $res = $this->db->delete_attributes($this->domainAction, $id);
     return $res->isOK();
   }
 
+  /**
+    * Delete a photo from the database
+    *
+    * @param string $id ID of the photo to delete
+    * @return boolean 
+    */
   public function deletePhoto($id)
   {
     $res = $this->db->delete_attributes($this->domainPhoto, $id);
     return $res->isOK();
   }
 
+  /**
+    * Retrieve a photo from the database
+    *
+    * @param string $id ID of the photo to retrieve
+    * @return mixed Array on success, FALSE on failure 
+    */
   public function getPhoto($id)
   {
     $res = $this->db->select("select * from `{$this->domainPhoto}` where itemName()='{$id}'", array('ConsistentRead' => 'true'));
@@ -37,6 +76,13 @@ class DatabaseSimpleDb implements DatabaseInterface
       return false;
   }
 
+  /**
+    * Retrieve a photo from the database and include the actions on the photo.
+    * Actions are stored in a separate domain so the calls need to be made in parallel
+    *
+    * @param string $id ID of the photo to retrieve
+    * @return mixed Array on success, FALSE on failure 
+    */
   public function getPhotoWithActions($id)
   {
     $queue = new CFBatchRequest();
@@ -57,6 +103,16 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $photo;
   }
 
+  /**
+    * Retrieve a list of the user's photos.
+    * If $filters is present then they will be applied to the list.
+    * For $limit and $offset we have to recursively query to find the page since SimpleDb doesn't support $offset.
+    *
+    * @param array $filters Filters to be applied to the list
+    * @param int $limit Number of rows to return in the list
+    * @param int $offset The row to start at
+    * @return mixed Array on success, FALSE on failure 
+    */
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
     // TODO: support logic for multiple conditions
@@ -130,6 +186,11 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $photos;
   }
 
+  /**
+    * Get the user record entry.
+    *
+    * @return mixed Array on success, NULL if user record is empty, FALSE on error 
+    */
   public function getUser()
   {
     $res = $this->db->select("select * from `{$this->domainUser}` where itemName()='1'", array('ConsistentRead' => 'true'));
@@ -141,6 +202,14 @@ class DatabaseSimpleDb implements DatabaseInterface
       return false;
   }
 
+  /**
+    * Update the information for an existing photo.
+    * This method overwrites existing values present in $params.
+    *
+    * @param string $id ID of the photo to update.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
   public function postPhoto($id, $params)
   {
     $params = self::preparePhoto($id, $params);
@@ -148,6 +217,14 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $res->isOK();
   }
 
+  /**
+    * Update the information for the user record.
+    * This method overwrites existing values present in $params.
+    *
+    * @param string $id ID of the user to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
   public function postUser($id, $params)
   {
     // make sure we don't overwrite an existing user record
@@ -155,18 +232,42 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $res->isOK();
   }
 
+  /**
+    * Add a new action to the database
+    * This method does not overwrite existing values present in $params - hence "new action".
+    *
+    * @param string $id ID of the action to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
   public function putAction($id, $params)
   {
     $res = $this->db->put_attributes($this->domainAction, $id, $params);
     return $res->isOK();
   }
 
+  /**
+    * Add a new photo to the database
+    * This method does not overwrite existing values present in $params - hence "new photo".
+    *
+    * @param string $id ID of the photo to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
   public function putPhoto($id, $params)
   {
     $res = $this->db->put_attributes($this->domainPhoto, $id, $params);
     return $res->isOK();
   }
 
+  /**
+    * Add a new user to the database
+    * This method does not overwrite existing values present in $params - hence "new user".
+    *
+    * @param string $id ID of the user to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
   public function putUser($id, $params)
   {
     // make sure we don't overwrite an existing user record
@@ -174,6 +275,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $res->isOK();
   }
 
+  /**
+    * Initialize the database by creating the domains needed.
+    * This is called from the Setup controller.
+    *
+    * @return boolean
+    */
   public function initialize()
   {
     $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(User|Action)?$/");
@@ -190,6 +297,13 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $responses->areOK();
   }
 
+  /**
+    * Utility function to help build the WHERE clause for SELECT statements.
+    *
+    * @param string $existing Existing where clause.
+    * @param string $add Clause to add.
+    * @return string
+    */
   private function buildWhere($existing, $add)
   {
     if(empty($existing))
@@ -198,7 +312,12 @@ class DatabaseSimpleDb implements DatabaseInterface
       return "{$existing} and {$add} ";
   }
 
-  // normalizes data from simpleDb into schema definition
+  /**
+    * Normalizes data from simpleDb into schema definition
+    *
+    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @return array
+    */
   private function normalizeAction($raw)
   {
     $action = array();
@@ -213,7 +332,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $action;
   }
 
-  // normalizes data from simpleDb into schema definition
+  /**
+    * Normalizes data from simpleDb into schema definition
+    *
+    * @param SimpleXMLObject $raw A photo from SimpleDb in SimpleXML.
+    * @return array
+    */
   private function normalizePhoto($raw)
   {
     $photo = array();
@@ -231,7 +355,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $photo;
   }
 
-  // normalizes data from simpleDb into schema definition
+  /**
+    * Normalizes data from simpleDb into schema definition
+    *
+    * @param SimpleXMLObject $raw A user from SimpleDb in SimpleXML.
+    * @return array
+    */
   private function normalizeUser($raw)
   {
     $user = array();
@@ -245,6 +374,14 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $user;
   }
 
+  /**
+    * Formats a photo to be updated or added to the database.
+    * Primarily to properly format tags as an array.
+    *
+    * @param string $id ID of the photo.
+    * @param array $params Parameters for the photo to be normalized.
+    * @return array
+    */
   private function preparePhoto($id, $params)
   {
     $params['Name'] = $id;

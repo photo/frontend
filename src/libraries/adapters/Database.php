@@ -1,4 +1,10 @@
 <?php
+/**
+ * Interface for the Database models.
+ *
+ * This defines the interface for any model that wants to connect to a remote database.
+ * @author Jaisen Mathai <jaisen@jmathai.com>
+ */
 interface DatabaseInterface
 {
   public function __construct($opts);
@@ -15,9 +21,17 @@ interface DatabaseInterface
   public function putPhoto($id, $params);
   public function putUser($id, $params);
   public function initialize();
-  //private function normalizePhoto($raw);
 }
 
+/**
+  * The public interface for instantiating a database obect.
+  * This returns the appropriate type of object by reading the config.
+  * Accepts a set of params that must include a type and targetType
+  *
+  * @param string $type Optional type parameter which defines the type of database.
+  * @param array $opts Options which can be used by the database adapter.
+  * @return object A database object that implements DatabaseInterface
+  */
 function getDb(/*$type, $opts*/)
 {
   static $database, $type, $opts;

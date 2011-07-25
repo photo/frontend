@@ -1,4 +1,10 @@
 <?php
+/**
+ * Interface for the file system models.
+ *
+ * This defines the interface for any model that wants to interact with a remote file system.
+ * @author Jaisen Mathai <jaisen@jmathai.com>
+ */
 interface FileSystemInterface
 {
   public function deletePhoto($id);
@@ -6,9 +12,17 @@ interface FileSystemInterface
   public function putPhoto($localFile, $remoteFile);
   public function putPhotos($files);
   public function initialize();
-  //private function normalizePhoto($raw);
 }
 
+/**
+  * The public interface for instantiating a file system obect.
+  * This returns the appropriate type of object by reading the config.
+  * Accepts a set of params that must include a type and targetType
+  *
+  * @param string $type Optional type parameter which defines the type of file system.
+  * @param array $opts Options which can be used by the file system adapter.
+  * @return object A file system object that implements FileSystemInterface
+  */
 function getFs(/*$type, $opts*/)
 {
   static $filesystem, $type, $opts;

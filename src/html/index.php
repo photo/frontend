@@ -1,8 +1,9 @@
 <?php
-/*
- * Author: Jaisen Mathai <jaisen@jmathai.com>
+/**
  * Front controller for OpenPhoto.
+ *
  * This file takes all requests and dispatches them to the appropriate controller.
+ * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 
 // TODO, remove this
@@ -29,7 +30,6 @@ if(file_exists($configFile))
 }
 elseif(!file_exists($configFile))
 {
-
   $baseDir = dirname(dirname(__FILE__));
   $paths = new stdClass;
   $paths->libraries = "{$baseDir}/libraries";

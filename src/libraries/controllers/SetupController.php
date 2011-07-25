@@ -1,7 +1,18 @@
 <?php
+/**
+  * Setup controller for HTML endpoints
+  * This controls the setup flow when the software is first installed.
+  * The main purpose of this flow is to generate settings.ini.
+  *
+  * @author Jaisen Mathai <jaisen@jmathai.com>
+  */
 class SetupController
 {
-  private static $directoryErrors = array();
+  /**
+    * Returns the main setup screen markup.
+    *
+    * @return string HTML
+    */
   public static function setup()
   {
     $step = 1;
@@ -25,6 +36,11 @@ class SetupController
     getTemplate()->display('blank.php', array('body' => $body, 'js' => getTemplate()->get('js/setup.js.php')));
   }
 
+  /**
+    * Posts the setup values from the form to store and generate settings.ini.
+    *
+    * @return void HTTP redirect
+    */
   public static function setupPost()
   {
     $opts = new stdClass;
@@ -84,11 +100,11 @@ class SetupController
       getRoute()->redirect('/?m=welcome');
   }
 
-  private static function initialize()
-  {
-    
-  }
-
+  /**
+    * Verify the server requirements are available on this host.
+    *
+    * @return mixed  TRUE on success, array on error
+    */
   private static function verifyRequirements()
   {
     $errors = array();
