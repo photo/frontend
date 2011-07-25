@@ -1,13 +1,38 @@
 <?php
+/**
+ * Amazon AWS S3 implementation for FileSystemInterface
+ *
+ * This class defines the functionality defined by FileSystemInterface for AWS S3.
+ * @author Jaisen Mathai <jaisen@jmathai.com>
+ */
 class FileSystemS3 implements FileSystemInterface
 {
+  /**
+    * Member variables holding the names to the bucket and the file system object itself.
+    * @access private
+    * @var array
+    */
   private $bucket, $fs;
+
+  /**
+    * Constructor
+    *
+    * @param array $opts Credentials for AWS
+    * @return void 
+    */
   public function __construct($opts)
   {
     $this->fs = new AmazonS3($opts->awsKey, $opts->awsSecret);
     $this->bucket = getConfig()->get('aws')->s3BucketName;
   }
 
+  /**
+    * Deletes a photo (and all generated versions) from the file system.  
+    * To get a list of all the files to delete we first have to query the database and find out what versions exist.
+    *
+    * @param string $id ID of the photo to delete
+    * @return boolean 
+    */
   public function deletePhoto($id)
   {
     $photo = getDb()->getPhoto($id);
@@ -21,6 +46,13 @@ class FileSystemS3 implements FileSystemInterface
     return $responses->areOK();
   }
 
+  /**
+    * Retrieves a photo from the remote file system as specified by $filename.
+    * This file is stored locally and the path to the local file is returned.
+    *
+    * @param string $filename File name on the remote file system.
+    * @return mixed String on success, FALSE on failure. 
+    */
   public function getPhoto($filename)
   {
     $filename = self::normalizePath($filename);
@@ -31,6 +63,14 @@ class FileSystemS3 implements FileSystemInterface
     return $res->isOK() ? $tmpname : false;
   }
 
+  /**
+    * Writes/uploads a new photo to the remote file system.
+    *
+    * @param string $localFile File name on the local file system.
+    * @param string $remoteFile File name to be saved on the remote file system.
+    * @param string $acl Permission setting for this photo.
+    * @return boolean
+    */
   public function putPhoto($localFile, $remoteFile, $acl = AmazonS3::ACL_PUBLIC)
   {
     $remoteFile = self::normalizePath($remoteFile);
@@ -39,6 +79,15 @@ class FileSystemS3 implements FileSystemInterface
     return $res->isOK();
   }
 
+  /**
+    * Writes/uploads new photos in bulk and in parallel to the remote file system.
+    *
+    * @param array $files Array where each row represents a file with the key being the local file name and the value being the remote.
+    *   [{"/path/to/local/file.jpg": "/path/to/save/on/remote.jpg"}...]
+    * @param string $remoteFile File name to be saved on the remote file system.
+    * @param string $acl Permission setting for this photo.
+    * @return boolean
+    */
   public function putPhotos($files, $acl = AmazonS3::ACL_PUBLIC)
   {
     $queue = new CFBatchRequest();
@@ -53,11 +102,20 @@ class FileSystemS3 implements FileSystemInterface
     return $responses->areOK();
   }
 
+  /**
+    * Get the hostname for the remote filesystem to be used in constructing public URLs.
+    * @return string
+    */
   public function getHost()
   {
     return getConfig()->get('aws')->s3Host;
   }
 
+  /**
+    * Initialize the remote file system by creating buckets and setting permissions and settings.
+    * This is called from the Setup controller.
+    * @return boolean
+    */
   public function initialize()
   {
     // TODO add logging
@@ -94,7 +152,12 @@ class FileSystemS3 implements FileSystemInterface
     return $res->isOK();
   }
 
-  private function normalizePath($path)
+  /**
+    * Removes leading slashes since it's not needed when putting new files on S3.
+    *
+    * @param string $path Path of the photo to have leading slashes removed.
+    * @return string
+    */  private function normalizePath($path)
   {
     return preg_replace('/^\/+/', '', $path);
   }

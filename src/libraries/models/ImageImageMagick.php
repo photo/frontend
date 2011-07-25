@@ -7,7 +7,7 @@
   * The file is not written to disk until explicitly called.
   * @author Jaisen Mathai <jaisen@jmathai.com>
   */
-class ImageImageMagick implements Image
+class ImageImageMagick implements ImageInterface
 {
   /**
     * Private instance variable that holds an Imagick object
