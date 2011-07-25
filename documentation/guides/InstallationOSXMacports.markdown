@@ -20,7 +20,7 @@ Before setting up your server you'll need to make sure you have your cloud accou
 #### Server Packages and Modules
 Once you've confirmed that your cloud account is setup you can get started on your server. For that you'll need to have _Apache_, _PHP_ and _curl_ installed with a few modules.
 
-This guide assumes you have MacPorts installed. If not you can [use this tutorial][macports].
+This guide assumes you have [get it here][Macports installed]. If not you can . The easiest option is to use `.pkg` installer.
 
     port install apache2
     port install php5 +apache2
