@@ -61,7 +61,7 @@ class User
     * Returns false if no user record could be obtained or crated.
     * Returns the user array on success.
     *
-    * @return mixed 
+    * @return mixed  FALSE on error, array on success
     */
   public static function getUserRecord()
   {

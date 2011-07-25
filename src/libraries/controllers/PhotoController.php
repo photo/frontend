@@ -1,16 +1,21 @@
 <?php
+/**
+  * Photo controller for HTML endpoints.
+  * 
+  * @author Jaisen Mathai <jaisen@jmathai.com>
+ */
 class PhotoController extends BaseController
-{
+{ 
   /**
-   * Photo
-   * 
-   * This file demonstrates the rich information that can be included in
-   * in-code documentation through DocBlocks and tags.
-   * @author Greg Beaver <cellog@php.net>
-   * @version 1.0
-   * @package sample
-   */
-  
+    * Create a new version of the photo with ID $id as specified by $width, $height and $options.
+    *
+    * @param string $id ID of the photo to create a new version of.
+    * @param string $hash Hash to validate this request before creating photo.
+    * @param int $width The width of the photo to which this URL points.
+    * @param int $height The height of the photo to which this URL points.
+    * @param int $options The options of the photo wo which this URL points.
+    * @return string HTML
+    */
   public static function create($id, $hash, $width, $height, $options = null)
   {
     $args = func_get_args();
@@ -27,6 +32,12 @@ class PhotoController extends BaseController
     echo 'did not work';
   }
 
+  /**
+    * Delete a photo specified by the ID.
+    *
+    * @param string $id ID of the photo to be deleted.
+    * @return void HTTP redirect
+    */
   public static function delete($id)
   {
     $delete = getApi()->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost);
@@ -36,6 +47,14 @@ class PhotoController extends BaseController
       getRoute()->redirect('/photos?deleteFailure');
   }
 
+  /**
+    * Render the photo page for a photo with ID $id.
+    * If $options are present then it will render that photo.
+    *
+    * @param string $id ID of the photo to be deleted.
+    * @param string $options Optional options for rendering this photo.
+    * @return string HTML
+    */
   public static function photo($id, $options = null)
   {
     $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true')));
@@ -70,9 +89,16 @@ class PhotoController extends BaseController
     }
   }
 
-  public static function photos($options = null)
+  /**
+    * Render a list of the user's photos as specified by optional $filterOpts.
+    * If $options are present then it will apply those filter rules.
+    *
+    * @param string $filterOpts Optional options for filtering
+    * @return string HTML
+    */
+  public static function photos($filterOpts = null)
   {
-    $photos = getApi()->invoke("/photos{$options}.json", EpiRoute::httpGet);
+    $photos = getApi()->invoke("/photos{$filterOpts}.json", EpiRoute::httpGet);
     $photos = $photos['result'];
     // TODO, this should call a method in the API
     foreach($photos as $key => $val)
@@ -84,11 +110,13 @@ class PhotoController extends BaseController
     getTemplate()->display('template.php', array('body' => $body));
   }
 
-  public static function photosByTags($tags)
-  {
-    
-  }
-
+  /**
+    * Update a photo's data in the datastore.
+    * Attributes to update are in _POST.
+    *
+    * @param string $id ID of the photo to update.
+    * @return void HTTP redirect
+    */
   public static function update($id)
   {
     $status = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpPost);
@@ -96,6 +124,11 @@ class PhotoController extends BaseController
     getRoute()->redirect("/photo/{$id}");
   }
 
+  /**
+    * Display the upload form for photos.
+    *
+    * @return string HTML
+    */
   public static function upload()
   {
     $body = getTemplate()->get('upload.php');
@@ -103,6 +136,13 @@ class PhotoController extends BaseController
     getTemplate()->display('template.php', array('body' => $body, 'js' => $js, 'jsFiles' => array('/assets/js/plugins/jquery-ui.widget.js','/assets/js/plugins/jquery.fileupload.js')));
   }
 
+  /**
+    * Update a photo's data in the datastore.
+    * Attributes to update are in _POST.
+    *
+    * @param string $id ID of the photo to update.
+    * @return void HTTP redirect
+    */
   public static function uploadPost()
   {
     $upload = getApi()->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
