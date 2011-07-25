@@ -12,7 +12,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @access private
     * @var array
     */
-  private $db, $domainPhoto, $domainAction, $domainUser;
+  private $db, $domainAction, $domainPhoto, $domainTag, $domainUser;
 
   /**
     * Constructor
@@ -26,6 +26,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->domainPhoto = getConfig()->get('aws')->simpleDbDomain;
     $this->domainAction = getConfig()->get('aws')->simpleDbDomain.'Action';
     $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'User';
+    $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'Tag';
   }
 
   /**
@@ -283,15 +284,14 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function initialize()
   {
-    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(User|Action)?$/");
-    if(count($domains) == 3)
+    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Tag|User)?$/");
+    if(count($domains) == 4)
       return true;
-    elseif(count($domains) != 0)
-      return false;
 
     $queue = new CFBatchRequest();
-    $this->db->batch($queue)->create_domain($this->domainPhoto);
     $this->db->batch($queue)->create_domain($this->domainAction);
+    $this->db->batch($queue)->create_domain($this->domainPhoto);
+    $this->db->batch($queue)->create_domain($this->domainTag);
     $this->db->batch($queue)->create_domain($this->domainUser);
     $responses = $this->db->batch($queue)->send();
     return $responses->areOK();

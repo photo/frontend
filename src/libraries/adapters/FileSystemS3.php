@@ -157,7 +157,8 @@ class FileSystemS3 implements FileSystemInterface
     *
     * @param string $path Path of the photo to have leading slashes removed.
     * @return string
-    */  private function normalizePath($path)
+   */
+  private function normalizePath($path)
   {
     return preg_replace('/^\/+/', '', $path);
   }
