@@ -1,4 +1,11 @@
 <?php
+/**
+ * Photo model.
+ *
+ * Something related to photos, the guts are in this file.
+ * Upload, update, delete and generate, oh my!
+ * @author Jaisen Mathai <jaisen@jmathai.com>
+ */
 class Photo
 {
   /**
