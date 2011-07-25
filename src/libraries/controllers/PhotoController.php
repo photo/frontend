@@ -1,6 +1,16 @@
 <?php
-class PhotosController extends BaseController
+class PhotoController extends BaseController
 {
+  /**
+   * Photo
+   * 
+   * This file demonstrates the rich information that can be included in
+   * in-code documentation through DocBlocks and tags.
+   * @author Greg Beaver <cellog@php.net>
+   * @version 1.0
+   * @package sample
+   */
+  
   public static function create($id, $hash, $width, $height, $options = null)
   {
     $args = func_get_args();

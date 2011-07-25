@@ -18,7 +18,7 @@
   <br>
   <button type="submit" class="button pill icon pen">Comment</button>&nbsp;
 </form>
-<form method="post" action="/photo/<?php echo $photo['id']; ?>/action">
+<form method="post" action="/action/photo/<?php echo $photo['id']; ?>">
   <input type="hidden" name="value" value="1">
   <input type="hidden" name="type" value="favorite">
   <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
