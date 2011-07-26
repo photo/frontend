@@ -21,3 +21,6 @@ getApi()->post('/photo/([a-zA-Z0-9]+).json', array('ApiPhotoController', 'update
 getApi()->get('/photo/([a-zA-Z0-9]+)/?(\d+x\d+x?[A-Zx]*)?.json', array('ApiPhotoController', 'photo'), EpiApi::external);
 // get all photos / optionally filter
 getApi()->get('/photos/?(.+)?.json', array('ApiPhotoController', 'photos'), EpiApi::external);
+
+// log a user in via BrowserID
+getApi()->post('/user/login.json', array('ApiUserController', 'login'), EpiApi::external);

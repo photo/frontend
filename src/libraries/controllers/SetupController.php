@@ -75,6 +75,7 @@ class SetupController
     $configDir = "{$baseDir}/configs";
     $replacements = array(
       '{adapters}' => "{$libDir}/adapters",
+      '{configs}' => $configDir,
       '{controllers}' => "{$libDir}/controllers",
       '{external}' => "{$libDir}/external",
       '{libraries}' => "{$libDir}",

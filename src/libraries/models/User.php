@@ -92,6 +92,34 @@ class User
   }
 
   /**
+    * Validate the identity of the user using BrowserID
+    * If the assertion is valid then the email address is stored in session.
+    *
+    * @param string $assertion Assertion from BrowserID.org
+    * @param string $audience Audience from BrowserID.org
+    * @return boolean
+    */
+  public static function login($assertion, $audience)
+  {
+    $ch = curl_init('https://browserid.org/verify');
+    $params = array('assertion' => $assertion, 'audience' => $audience);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_CAINFO, getConfig()->get('paths')->configs.'/ca-bundle.crt');
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+    
+    $response = curl_exec($ch);
+    $response = json_decode($response, 1);
+    if(!isset($response['status']) || $response['status'] != 'okay')
+      return false;
+
+    getSession()->set('email', $response['email']);
+    return true;
+  }
+
+  /**
     * Create a new user record.
     * This method should only be called if no record already exists.
     * The user record has a key of 1 and default attributes specified by self::getDefaultAttributes().

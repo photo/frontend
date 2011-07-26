@@ -1,6 +1,5 @@
 var op = (function(){
-  var _this = {
-  };
+  var _this = {};
   return {
     handlers: {
       actionDelete: function(event) {
@@ -135,11 +134,20 @@ var op = (function(){
     user: {
       loginFailure: function(assertion) {
         console.log('login failed');
-        console.log(assertion);
+        // TODO something here to handle failed login
+      },
+      loginProcessed: function(response) {
+        if(response.code != 200) {
+          console.log('processing of login failed');
+          // TODO do something here to handle failed login
+          return;
+        }
+        
+        console.log('login processing succeeded');
       },
       loginSuccess: function(assertion) {
-        console.log('login success');
-        console.log(assertion);
+        var params = {assertion: assertion};
+        $.post('/user/login.json', params, op.user.loginProcessed, 'json');
       }
     }
   };

@@ -6,7 +6,7 @@
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 
-// TODO, remove this
+// TODO, remove these
 date_default_timezone_set('America/Los_Angeles');
 
 $basePath = dirname(dirname(__FILE__));
@@ -16,7 +16,11 @@ Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
 Epi::setPath('view', "{$basePath}/views");
 //Epi::setSetting('exceptions', true);
-Epi::init('api','config','route','template');
+Epi::init('api','config','route','session-php','template');
+// TODO allow configurable session engine
+EpiSession::employ(EpiSession::PHP);
+// This initializes the session. Needed for PHP sessions to implicitly call session_start();
+getSession();
 
 
 getConfig()->load('defaults.ini');
