@@ -8,20 +8,24 @@
 interface DatabaseInterface
 {
   public function __construct($opts);
+  // delete methods can delete or toggle status
   public function deletePhoto($id);
   public function deleteAction($id);
+  // get methods read
   public function getPhoto($id);
   public function getPhotoWithActions($id);
   public function getPhotos($filter, $limit, $offset);
+  public function getTags($filter);
   // post methods update
   public function postPhoto($id, $params);
   public function postUser($id, $params);
-  public function postTag($id, $params);
+  public function postTags($params);
+  public function postTagsIncrement($tags);
   // put methods create but do not update
   public function putAction($id, $params);
   public function putPhoto($id, $params);
   public function putUser($id, $params);
-  public function putTag($id, $params);
+  public function putTags($params);
   public function initialize();
 }
 

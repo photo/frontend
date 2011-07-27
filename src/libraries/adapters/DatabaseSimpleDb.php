@@ -26,7 +26,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->domainPhoto = getConfig()->get('aws')->simpleDbDomain;
     $this->domainAction = getConfig()->get('aws')->simpleDbDomain.'Action';
     $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'User';
-    $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'Tag';
+    $this->domainTag = getConfig()->get('aws')->simpleDbDomain.'Tag';
   }
 
   /**
@@ -105,15 +105,13 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
-    * Retrieve a list of the user's photos.
-    * If $filters is present then they will be applied to the list.
-    * For $limit and $offset we have to recursively query to find the page since SimpleDb doesn't support $offset.
+    * Get tags filtered by $filter
     *
     * @param array $filters Filters to be applied to the list
-    * @param int $limit Number of rows to return in the list
-    * @param int $offset The row to start at
     * @return mixed Array on success, FALSE on failure 
     */
+  public function getTags($filter){}
+
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
     // TODO: support logic for multiple conditions
@@ -219,6 +217,23 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Update multiple tags.
+    * The $params should include the tag in the `id` field.
+    *
+    * @param array $params Tags and related attributes to update.
+    * @return boolean
+    */
+  public function postTags($params) {}
+
+  /**
+    * Increment the `count` field on the tags specified.
+    *
+    * @param array $params An array of tag ids (i.e. a tag name)
+    * @return boolean
+    */
+  public function postTagsIncrement($tags) {}
+
+  /**
     * Update the information for the user record.
     * This method overwrites existing values present in $params.
     *
@@ -262,6 +277,14 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Alias of postTags
+    */
+  public function putTags($params)
+  {
+    return $this->postTags($params);
+  }
+
+  /**
     * Add a new user to the database
     * This method does not overwrite existing values present in $params - hence "new user".
     *
@@ -285,6 +308,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function initialize()
   {
     $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Tag|User)?$/");
+    var_dump($domains);
     if(count($domains) == 4)
       return true;
 
