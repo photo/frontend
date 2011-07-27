@@ -98,7 +98,11 @@ class PhotoController extends BaseController
     */
   public static function photos($filterOpts = null)
   {
-    $photos = getApi()->invoke("/photos{$filterOpts}.json", EpiRoute::httpGet);
+    if($filterOpts)
+      $photos = getApi()->invoke("/photos/{$filterOpts}.json", EpiRoute::httpGet);
+    else
+      $photos = getApi()->invoke("/photos.json", EpiRoute::httpGet);
+
     $photos = $photos['result'];
     // TODO, this should call a method in the API
     foreach($photos as $key => $val)

@@ -15,4 +15,6 @@ getRoute()->post('/photo/upload', array('PhotoController', 'uploadPost'));
 getRoute()->get('/photos/upload', array('PhotoController', 'upload'));
 // view all photos / optionally filter
 getRoute()->get('/photos/?(.+)?', array('PhotoController', 'photos'));
-// post an action
+
+// view tags
+getRoute()->get('/tags/?(.+)?', array('TagController', 'tags'));

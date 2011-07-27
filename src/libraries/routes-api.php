@@ -22,5 +22,10 @@ getApi()->get('/photo/([a-zA-Z0-9]+)/?(\d+x\d+x?[A-Zx]*)?.json', array('ApiPhoto
 // get all photos / optionally filter
 getApi()->get('/photos/?(.+)?.json', array('ApiPhotoController', 'photos'), EpiApi::external);
 
+// post a tag
+getApi()->post('/tag.json', array('ApiTagController', 'post'), EpiApi::external);
+// retrieve tags
+getApi()->get('/tags/?([a-zA-Z0-9]+)?.json', array('ApiTagController', 'tags'), EpiApi::external);
+
 // log a user in via BrowserID
 getApi()->post('/user/login.json', array('ApiUserController', 'login'), EpiApi::external);

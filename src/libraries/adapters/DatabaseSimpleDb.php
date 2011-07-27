@@ -106,11 +106,29 @@ class DatabaseSimpleDb implements DatabaseInterface
 
   /**
     * Get tags filtered by $filter
+    * Consistent read set to false
     *
     * @param array $filters Filters to be applied to the list
     * @return mixed Array on success, FALSE on failure 
     */
-  public function getTags($filter){}
+  public function getTags($filters = array())
+  {
+    $res = $this->db->select("select * from `{$this->domainTag}`", array('ConsistentRead' => 'false'));
+    $tags = array();
+    if(isset($res->body->SelectResult))
+    {
+      if(isset($res->body->SelectResult->Item))
+      {
+        foreach($res->body->SelectResult->Item as $val)
+          $tags[] = self::normalizeTag($val);
+
+        return $tags;
+      }
+
+      return null;
+    }
+    return false;
+  }
 
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
@@ -219,11 +237,20 @@ class DatabaseSimpleDb implements DatabaseInterface
   /**
     * Update multiple tags.
     * The $params should include the tag in the `id` field.
+    * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
     *
     * @param array $params Tags and related attributes to update.
     * @return boolean
     */
-  public function postTags($params) {}
+  public function postTag($params)
+  {
+    if(!isset($params['id']) || empty($params['id']))
+      return false;
+    $tag = $params['id'];
+    unset($params['id']);
+    $res = $this->db->put_attributes($this->domainTag, $tag, $params, true);
+    return $res->isOK();
+  }
 
   /**
     * Increment the `count` field on the tags specified.
@@ -231,7 +258,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @param array $params An array of tag ids (i.e. a tag name)
     * @return boolean
     */
-  public function postTagsIncrement($tags) {}
+  public function postTagIncrement($tags) {}
 
   /**
     * Update the information for the user record.
@@ -279,9 +306,9 @@ class DatabaseSimpleDb implements DatabaseInterface
   /**
     * Alias of postTags
     */
-  public function putTags($params)
+  public function putTag($params)
   {
-    return $this->postTags($params);
+    return $this->postTag($params);
   }
 
   /**
@@ -382,6 +409,25 @@ class DatabaseSimpleDb implements DatabaseInterface
   /**
     * Normalizes data from simpleDb into schema definition
     *
+    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @return array
+    */
+  private function normalizeTag($raw)
+  {
+    $tag = array();
+    foreach($raw->Attribute as $item)
+    {
+      $name = (string)$item->Name;
+      $value = (string)$item->Value;
+      $tag[$name] = $value;
+    }
+    $tag['id'] = strval($raw->Name);
+    return $tag;
+  }
+
+  /**
+    * Normalizes data from simpleDb into schema definition
+    *
     * @param SimpleXMLObject $raw A user from SimpleDb in SimpleXML.
     * @return array
     */
@@ -394,7 +440,6 @@ class DatabaseSimpleDb implements DatabaseInterface
       $value = (string)$item->Value;
       $user[$name] = $value;
     }
-    $user['id'] = strval($raw->Name);
     return $user;
   }
 
