@@ -33,25 +33,25 @@ This guide assumes you have [get it here][Macports installed]. If not you can . 
 
 ### Installing OpenPhoto
 
-Download and install the source code. We recommend `/var/www/yourdomain.com` but you can use any directory you'd like.
+Download and install the source code. We recommend `~/Sites/yourdomain.com` but you can use any directory you'd like.
 
 #### Using git clone
 
     # install git if you don't have it already
     port install git-core
-    git clone https://github.com/openphoto/frontend.git /var/www/yourdomain.com
+    git clone git@github.com:openphoto/frontend.git ~/Sites/yourdomain.com
 
 #### Using tar
 
-    cd /var/www
+    cd ~/Sites
     wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
     tar -zxvf --group=www-data --owner=www-data openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
 
 Assuming that this is a development machine you can make the config writable by the user Apache runs as. Most likely `_www`.
 
-    mkdir /var/www/yourdomain.com/src/configs/generated
-    chown _www /var/www/yourdomain.com/src/configs/generated
+    mkdir ~/Sites/yourdomain.com/src/configs/generated
+    chown _www ~/Sites/yourdomain.com/src/configs/generated
 
 ----------------------------------------
 
@@ -59,7 +59,7 @@ Assuming that this is a development machine you can make the config writable by 
 
 #### Apache
 
-You'll need to make sure that you have named virtual hosts enabled in your Apache confs. First, copy the contents of `/var/www/yourdomain.com/configs/openphoto-vhost.conf` onto your clipboard. Then open your `virtualhosts.conf` file.
+You'll need to make sure that you have named virtual hosts enabled in your Apache confs. First, copy the contents of `~/Sites/yourdomain.com/configs/openphoto-vhost.conf` onto your clipboard. Then open your `virtualhosts.conf` file.
 
     vi /opt/local/apache2/conf/extra/virtualhosts.conf
 
@@ -67,7 +67,7 @@ You can put the `NameVirtualHost` directive at the top of the file.
 
     NameVirtualHost *
 
-Paste the contents of your clipboard into the bottom of the file and replace instances of `/path/to/openphoto/html/directory` with `/var/www/yourdomain.com/src/html` or wherever you placed the code.
+Paste the contents of your clipboard into the bottom of the file and replace instances of `/path/to/openphoto/html/directory` with `/Users/yourusername/Sites/yourdomain.com/src/html` or wherever you placed the code. In the virtualhost conf make sure to specify the full path to your `Sites` directory.
 
 ### PHP
 

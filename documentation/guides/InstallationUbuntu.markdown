@@ -43,7 +43,7 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
 #### Using git clone
 
     apt-get install git-core
-    git clone https://github.com/openphoto/frontend.git /var/www/yourdomain.com
+    git clone git@github.com:openphoto/frontend.git /var/www/yourdomain.com
     chown -R www-data:www-data /var/www/yourdomain.com
 
 #### Using tar
