@@ -127,7 +127,7 @@ class Photo
   {
     $key = self::generateCustomKey($width, $height, $options);
     if(isset($photo[$key]))
-      return sprintf('http://%s%s', getFs()->getHost(), $photo[$key]);
+      return $photo[$key];
     else
       return "http://{$_SERVER['HTTP_HOST']}".self::generateUrlInternal($photo['id'], $width, $height, $options);
   }

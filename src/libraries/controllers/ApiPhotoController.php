@@ -205,8 +205,9 @@ class ApiPhotoController extends BaseController
 
       if($photoId)
       {
-        $photo = getDb()->getPhoto($photoId);
-        return self::created("Photo {$photoId} uploaded successfully", $photo);
+        //$photo = getDb()->getPhoto($photoId);
+        $photo = getApi()->invoke("/photo/{$photoId}.json", EpiRoute::httpGet);
+        return self::created("Photo {$photoId} uploaded successfully", $photo['result']);
       }
     }
 

@@ -111,7 +111,7 @@ var op = (function(){
         },
         done: function(e, data) {
           var resp = jQuery.parseJSON(data.result),
-            img = "http://"+resp.result.host+resp.result.requestedUrl;
+            img = resp.result.path200x200;
           $("#"+data.id+" div.progress div").css("width", "100%");
           $("#"+data.id+" div.img").replaceWith('<img src="'+img+'">');
         },
