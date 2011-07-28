@@ -35,6 +35,24 @@ class ApiPhotoController extends BaseController
     else
       $photo = getDb()->getPhoto($id);
 
+    // make all photos full path
+    foreach($photo as $key => $val)
+    {
+      if(preg_match('/^path\d+x\d+/', $key))
+        $photo[$key] = sprintf('http://%s%s', $photo['host'], $val);
+    }
+
+    // if specific sizes are requested then make sure we return them
+    if(isset($_GET['returnSizes']))
+    {
+      $sizes = (array)explode(',', $_GET['returnSizes']);
+      foreach($sizes as $size)
+      {
+        $options = Photo::generateFragmentReverse($size);
+        $photo["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options']);
+      }
+    }
+
     if($photo)
       return self::success("Photo {$id}", $photo);
     else
@@ -115,8 +133,8 @@ class ApiPhotoController extends BaseController
       {
         foreach($photo as $photoKey => $photoKeyValue)
         {
-          if(preg_match('/^path/', $photoKey))
-            $photos[$key][$photoKey] = sprintf('http://%s%s', getFs()->getHost(), $photoKeyValue);
+          if(preg_match('/^path\d+x\d+/', $photoKey))
+            $photos[$key][$photoKey] = sprintf('http://%s%s', $photo['host'], $photoKeyValue);
         }
 
         foreach($sizes as $size)
