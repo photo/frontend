@@ -127,16 +127,17 @@ class ApiPhotoController extends BaseController
     $db = getDb();
     $photos = $db->getPhotos($filters, $pageSize);
     if(isset($filters['returnSizes']))
-    {
       $sizes = (array)explode(',', $filters['returnSizes']);
-      foreach($photos as $key => $photo)
+    foreach($photos as $key => $photo)
+    {
+      foreach($photo as $photoKey => $photoKeyValue)
       {
-        foreach($photo as $photoKey => $photoKeyValue)
-        {
-          if(preg_match('/^path\d+x\d+/', $photoKey))
-            $photos[$key][$photoKey] = sprintf('http://%s%s', $photo['host'], $photoKeyValue);
-        }
+        if(preg_match('/^path\d+x\d+/', $photoKey))
+          $photos[$key][$photoKey] = sprintf('http://%s%s', $photo['host'], $photoKeyValue);
+      }
 
+      if(isset($sizes))
+      {
         foreach($sizes as $size)
         {
           if(isset($photo["path{$size}"]))
@@ -169,10 +170,10 @@ class ApiPhotoController extends BaseController
   public static function upload()
   {
     $attributes = $_POST;
-    if(isset($attributes['returnOptions']))
+    if(isset($attributes['returnSizes']))
     {
-      $returnOptions = $attributes['returnOptions'];
-      unset($attributes['returnOptions']);
+      $returnSizes = $attributes['returnSizes'];
+      unset($attributes['returnSizes']);
     }
 
     $photoId = false;
@@ -191,19 +192,20 @@ class ApiPhotoController extends BaseController
 
     if($photoId)
     {
-      $returnPhotoSuccess = false;
-      if(isset($returnOptions))
+      if(isset($returnSizes))
       {
-        $options = Photo::generateFragmentReverse($returnOptions);
-        $hash = Photo::generateHash($photoId, $options['width'], $options['height'], $options['options']);
-        $returnPhotoSuccess = Photo::generateImage($photoId, $hash, $options['width'], $options['height'], $options['options']);
+        $sizes = (array)explode(',', $returnSizes);
+        foreach($sizes as $size)
+        {
+          $options = Photo::generateFragmentReverse($size);
+          $hash = Photo::generateHash($photoId, $options['width'], $options['height'], $options['options']);
+          Photo::generateImage($photoId, $hash, $options['width'], $options['height'], $options['options']);
+        }
       }
 
       if($photoId)
       {
         $photo = getDb()->getPhoto($photoId);
-        if($returnPhotoSuccess)
-          $photo['requestedUrl'] = $photo["path{$returnOptions}"];
         return self::created("Photo {$photoId} uploaded successfully", $photo);
       }
     }

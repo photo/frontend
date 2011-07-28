@@ -6,7 +6,7 @@
       <li class="photo-container-<?php echo $photo['id']; ?>">
         (<a href="/photo/<?php echo $photo['id']; ?>/delete" class="photo-delete">delete</a>)
         <br>
-        <a href="/photo/<?php echo $photo['id']; ?>"><img src="<?php echo Photo::generateUrlPublic($photo, 200, 200); ?>"></a>
+        <a href="/photo/<?php echo $photo['id']; ?>"><img src="<?php echo $photo['path200x200']; ?>"></a>
         <br>
         Tags:
         <?php if(!empty($photo['tags'])) { ?><?php echo implode(',', $photo['tags']); ?><?php } ?>

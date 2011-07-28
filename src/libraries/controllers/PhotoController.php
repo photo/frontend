@@ -101,12 +101,9 @@ class PhotoController extends BaseController
     if($filterOpts)
       $photos = getApi()->invoke("/photos/{$filterOpts}.json", EpiRoute::httpGet);
     else
-      $photos = getApi()->invoke("/photos.json", EpiRoute::httpGet);
+      $photos = getApi()->invoke("/photos.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200')));
 
     $photos = $photos['result'];
-    // TODO, this should call a method in the API
-    foreach($photos as $key => $val)
-      $photos[$key]['thumb'] = Photo::generateUrlPublic($val, 200, 200);
 
     $pagination = array('requestUri' => $_SERVER['REQUEST_URI'], 'currentPage' => $photos[0]['currentPage'], 
       'pageSize' => $photos[0]['pageSize'], 'totalPages' => $photos[0]['totalPages']);
