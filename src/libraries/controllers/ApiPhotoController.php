@@ -174,12 +174,26 @@ class ApiPhotoController extends BaseController
   /**
     * Update the data associated with the photo in the remote data store.
     * Parameters to be updated are in _POST
+    * This method also manages updating tag counts
     *
     * @param string $id ID of the photo to be updated.
     * @return string Standard JSON envelope 
     */
   public static function update($id)
   {
+    // diff/manage tag counts - not critical
+    // TODO add logging on get photo failure
+    if(isset($_POST['tags']) && !empty($_POST['tags']))
+    {
+      // TODO should we invoke the api call?
+      $photo = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet);
+      if($photo)
+      {
+        $existingTags = $photo['result']['tags'];
+        $updatedTags = (array)explode(',', $_POST['tags']);
+        Tag::updateTagCounts($existingTags, $updatedTags);
+      }
+    }
     $photoUpdatedId = Photo::update($id, $_POST);
     return self::success("photo {$id} updated", $photoUpdatedId);
   }

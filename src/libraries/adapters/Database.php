@@ -20,7 +20,8 @@ interface DatabaseInterface
   public function postPhoto($id, $params);
   public function postUser($id, $params);
   public function postTag($params);
-  public function postTagIncrement($tags);
+  public function postTags($params);
+  public function postTagsCounter($params);
   // put methods create but do not update
   public function putAction($id, $params);
   public function putPhoto($id, $params);

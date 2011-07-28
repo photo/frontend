@@ -70,7 +70,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function getPhoto($id)
   {
-    $res = $this->db->select("select * from `{$this->domainPhoto}` where itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    $res = $this->db->select("SELECT * FROM `{$this->domainPhoto}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
     if(isset($res->body->SelectResult->Item))
       return self::normalizePhoto($res->body->SelectResult->Item);
     else
@@ -87,8 +87,8 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getPhotoWithActions($id)
   {
     $queue = new CFBatchRequest();
-    $this->db->batch($queue)->select("select * from `{$this->domainPhoto}` where itemName()='{$id}'", array('ConsistentRead' => 'true'));
-    $this->db->batch($queue)->select("select * from `{$this->domainAction}` where targetType='photo' and targetId='{$id}'", array('ConsistentRead' => 'true'));
+    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainAction}` WHERE targetType='photo' AND targetId='{$id}'", array('ConsistentRead' => 'true'));
     $responses = $this->db->batch($queue)->send();
     if(!$responses->areOk())
       return false;
@@ -113,7 +113,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function getTags($filters = array())
   {
-    $res = $this->db->select("select * from `{$this->domainTag}`", array('ConsistentRead' => 'false'));
+    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE `count` IS NOT NULL AND `count` > '0' AND itemName() IS NOT NULL ORDER BY itemName()", array('ConsistentRead' => 'false'));
     $tags = array();
     if(isset($res->body->SelectResult))
     {
@@ -143,7 +143,7 @@ class DatabaseSimpleDb implements DatabaseInterface
           case 'tags':
             if(!is_array($value))
               $value = (array)explode(',', $value);
-            $where = $this->buildWhere($where, "tags in('" . implode("','", $value) . "')");
+            $where = $this->buildWhere($where, "tags IN('" . implode("','", $value) . "')");
             break;
           case 'page':
             if($value > 1)
@@ -153,7 +153,7 @@ class DatabaseSimpleDb implements DatabaseInterface
             }
             break;
           case 'sortBy':
-            $sortBy = 'order by ' . str_replace(',', ' ', $value);
+            $sortBy = 'ORDER BY ' . str_replace(',', ' ', $value);
             $field = substr($value, 0, strpos($value, ','));
             $where = $this->buildWhere($where, "{$field} is not null");
             break;
@@ -170,7 +170,7 @@ class DatabaseSimpleDb implements DatabaseInterface
       $thisLimit = min($iterator, $offset);
       do
       {
-        $res = $this->db->select("select * from `{$this->domainPhoto}` {$where} {$sortBy} limit {$iterator}", $params);
+        $res = $this->db->select("SELECT * FROM `{$this->domainPhoto}` {$where} {$sortBy} LIMIT {$iterator}", $params);
         if(!$res->body->SelectResult->NextToken)
           break;
 
@@ -186,10 +186,10 @@ class DatabaseSimpleDb implements DatabaseInterface
 
 
     $queue = new CFBatchRequest();
-    $this->db->batch($queue)->select($sql = "select * from `{$this->domainPhoto}` {$where} {$sortBy} limit {$limit}", $params);
+    $this->db->batch($queue)->select($sql = "SELECT * FROM `{$this->domainPhoto}` {$where} {$sortBy} LIMIT {$limit}", $params);
     if(isset($params['NextToken']))
       unset($params['NextToken']);
-    $this->db->batch($queue)->select("select count(*) from `{$this->domainPhoto}` {$where}", $params);
+    $this->db->batch($queue)->select("SELECT COUNT(*) FROM `{$this->domainPhoto}` {$where}", $params);
     $responses = $this->db->batch($queue)->send();
 
     if(!$responses->areOK())
@@ -210,7 +210,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function getUser()
   {
-    $res = $this->db->select("select * from `{$this->domainUser}` where itemName()='1'", array('ConsistentRead' => 'true'));
+    $res = $this->db->select("SELECT * FROM `{$this->domainUser}` WHERE itemName()='1'", array('ConsistentRead' => 'true'));
     if(isset($res->body->SelectResult->Item))
       return self::normalizeUser($res->body->SelectResult->Item);
     elseif(isset($res->body->SelectResult))
@@ -235,7 +235,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
-    * Update multiple tags.
+    * Update a single tag.
     * The $params should include the tag in the `id` field.
     * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
     *
@@ -248,17 +248,87 @@ class DatabaseSimpleDb implements DatabaseInterface
       return false;
     $tag = $params['id'];
     unset($params['id']);
+    if(!isset($tag['count']))
+      $tag['count'] = 0;
+    else
+      $tag['count'] = max(0, intval($tag['count']));
     $res = $this->db->put_attributes($this->domainTag, $tag, $params, true);
     return $res->isOK();
   }
 
   /**
-    * Increment the `count` field on the tags specified.
+    * Update multiple tags.
+    * The $params should include the tag in the `id` field.
+    * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
     *
-    * @param array $params An array of tag ids (i.e. a tag name)
+    * @param array $params Tags and related attributes to update.
     * @return boolean
     */
-  public function postTagIncrement($tags) {}
+  public function postTags($params)
+  {
+    // TODO use batch_put_attributes instead of a queue
+    $queue = new CFBatchRequest();
+    foreach($params as $tagObj)
+    {
+      if(!isset($tagObj['id']) || empty($tagObj['id']))
+        continue;
+      $tag = $tagObj['id'];
+      unset($tagObj['id']);
+      // TODO determine if updating tags requires count to be passed. Doesn't feel like it should.
+      if(!isset($tagObj['count']))
+        $tagObj['count'] = 0;
+      else
+        $tagObj['count'] = max(0, intval($tagObj['count']));
+      $this->db->batch($queue)->put_attributes($this->domainTag, $tag, $tagObj, true);
+    }
+    $responses = $this->db->batch($queue)->send();
+    return $responses->areOK();
+  }
+
+ /**
+    * Update counts for multiple tags by incrementing or decrementing.
+    * The $params should include the tag in the `id` field.
+    * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
+    *
+    * @param array $params Tags and related attributes to update.
+    * @return boolean
+    */
+  public function postTagsCounter($params)
+  {
+    $tagsToUpdate = $tagsFromDb = array();
+    foreach($params as $tag => $changeBy)
+      $tagsToUpdate[$tag] = $changeBy;
+
+    $justTags = array_keys($tagsToUpdate);
+
+    // TODO call getTags instead
+    $res = $this->db->select($sql = "SELECT * FROM `{$this->domainTag}` WHERE itemName() IN ('" . implode("','", $justTags) . "')");
+    if(isset($res->body->SelectResult))
+    {
+      if(isset($res->body->SelectResult->Item))
+      {
+        foreach($res->body->SelectResult->Item as $val)
+          $tagsFromDb[] = self::normalizeTag($val);
+      }
+    }
+
+    // track the tags which need to be updated
+    // start with ones which already exist in the database and increment them accordingly
+    $updatedTags = array();
+    foreach($tagsFromDb as $key => $tagFromDb)
+    {
+      $thisTag = $tagFromDb['id'];
+      $changeBy = $tagsToUpdate[$thisTag];
+      $updatedTags[] = array('id' => $thisTag, 'count' => $tagFromDb['count']+$changeBy);
+      // unset so we can later loop over tags which didn't already exist
+      unset($tagsToUpdate[$thisTag]);
+    }
+    // these are new tags
+    foreach($tagsToUpdate as $tag => $count)
+      $updatedTags[] = array('id' => $tag, 'count' => $count);
+    return $this->postTags($updatedTags);
+  }
+  
 
   /**
     * Update the information for the user record.
@@ -304,7 +374,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
-    * Alias of postTags
+    * Alias of postTag
     */
   public function putTag($params)
   {
