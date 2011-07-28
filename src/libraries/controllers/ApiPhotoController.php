@@ -114,7 +114,7 @@ class ApiPhotoController extends BaseController
     $photos[0]['pageSize'] = $pageSize;
     $photos[0]['currentPage'] = $page;
     $photos[0]['totalPages'] = ceil($photos[0]['totalRows'] / $pageSize);
-    return self::success('', $photos);
+    return self::success("Successfully retrieved user's photos", $photos);
   }
 
   /**
