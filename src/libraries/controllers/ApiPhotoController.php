@@ -108,6 +108,28 @@ class ApiPhotoController extends BaseController
       $page = $filters['page'];
     $db = getDb();
     $photos = $db->getPhotos($filters, $pageSize);
+    if(isset($filters['returnSizes']))
+    {
+      $sizes = (array)explode(',', $filters['returnSizes']);
+      foreach($photos as $key => $photo)
+      {
+        foreach($photo as $photoKey => $photoKeyValue)
+        {
+          if(preg_match('/^path/', $photoKey))
+            $photos[$key][$photoKey] = sprintf('http://%s%s', getFs()->getHost(), $photoKeyValue);
+        }
+
+        foreach($sizes as $size)
+        {
+          if(isset($photo["path{$size}"]))
+            continue;
+
+          // TODO call API
+          $options = Photo::generateFragmentReverse($size);
+          $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options']);
+        }
+      }
+    }
     if(!$photos)
       return self::error('Could not retrieve photos', false);
 

@@ -129,7 +129,7 @@ class Photo
     if(isset($photo[$key]))
       return sprintf('http://%s%s', getFs()->getHost(), $photo[$key]);
     else
-      return self::generateUrlInternal($photo['id'], $width, $height, $options);
+      return "http://{$_SERVER['HTTP_HOST']}".self::generateUrlInternal($photo['id'], $width, $height, $options);
   }
 
   /**
