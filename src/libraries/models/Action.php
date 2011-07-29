@@ -20,14 +20,19 @@ class Action
       return false;
 
     $id = User::getNextActionId();
-    // TODO: add a log message
     if($id === false)
+    {
+      getLogger()->crit("Could not fetch next action ID for {$params['type']}");
       return false;
+    }
     $params = array_merge(self::getDefaultAttributes(), $params);
     $db = getDb();
     $action = $db->putAction($id, $params);
     if(!$action)
+    {
+      getLogger()->crit("Could not save action ID ({$id}) for {$params['type']}");
       return false;
+    }
 
     return $id;
   }

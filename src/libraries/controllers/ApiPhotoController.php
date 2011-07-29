@@ -226,7 +226,6 @@ class ApiPhotoController extends BaseController
   public static function update($id)
   {
     // diff/manage tag counts - not critical
-    // TODO add logging on get photo failure
     if(isset($_POST['tags']) && !empty($_POST['tags']))
     {
       $photo = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet);

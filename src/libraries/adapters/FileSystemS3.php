@@ -118,17 +118,20 @@ class FileSystemS3 implements FileSystemInterface
     */
   public function initialize()
   {
-    // TODO add logging
+    getLogger()->info('Initializing file system');
     if(!$this->fs->validate_bucketname_create($this->bucket) || !$this->fs->validate_bucketname_support($this->bucket))
       return false;
 
     $buckets = $this->fs->get_bucket_list("/^{$this->bucket}$/");
     if(count($buckets) == 0)
     {
+      getLogger()->info("Bucket {$this->bucket} does not exist, adding");
       $res = $this->fs->create_bucket($this->bucket, AmazonS3::REGION_US_E1, AmazonS3::ACL_PUBLIC);
-      // TODO add logging
       if(!$res->isOK())
+      {
+        getLogger()->crit('Failed initializing file system: ' . var_export($res, 1));
         return false;
+      }
     }
 
     // TODO add versioning?
@@ -148,7 +151,8 @@ class FileSystemS3 implements FileSystemInterface
         )
     ));
     $res = $this->fs->set_bucket_policy($this->bucket, $policy);
-    // TODO add logging
+    if(!$res->isOK())
+      getLogger()->crit('Failed to set bucket policy');
     return $res->isOK();
   }
 

@@ -237,9 +237,11 @@ class Photo
     $fs = getFs();
     $db = getDb();
     $id = User::getNextPhotoId();
-    // TODO: add a log message
     if($id === false)
+    {
+      getLogger()->crit('Could not fetch next photo ID');
       return false;
+    }
     $paths = Photo::generatePaths($name);
     // resize the base image before uploading
     $localFileCopy = "{$localFile}-copy}";
@@ -260,6 +262,7 @@ class Photo
     );
     if($uploaded)
     {
+      getLogger()->info("Photo ({$id}) successfully stored on the file system");
       $exif = self::readExif($localFile);
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
       foreach($defaults as $default)
@@ -299,8 +302,13 @@ class Photo
       unlink($localFile);
       unlink($localFileCopy);
       if($stored)
+      {
+        getLogger()->info("Photo ({$id}) successfully stored to the database");
         return $id;
+      }
     }
+
+    getLogger()->info("Photo ({$id}) could NOT be stored to the file system");
     return false;
   }
 
