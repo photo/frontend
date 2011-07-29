@@ -214,6 +214,9 @@ class Photo
     if(empty($attributes))
       return $id;
 
+    if(isset($attributes['tags']) && !empty($attributes['tags']))
+      $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
+
     $status = getDb()->postPhoto($id, $attributes);
     if(!$status)
       return false;
@@ -264,6 +267,10 @@ class Photo
         if(!isset($attributes[$default]))
           $attributes[$default] = null;
       }
+
+      if(isset($attributes['tags']) && !empty($attributes['tags']))
+        $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
+
       $dateUploaded = time();
       $dateTaken = @$exif['dateTaken'];
       $attributes = array_merge(

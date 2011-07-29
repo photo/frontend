@@ -22,9 +22,9 @@ class Tag
     $tagsToIncrement = array_diff($updatedTags, $existingTags);
     $tagsToUpdate = array();
     foreach($tagsToDecrement as $tg)
-      $tagsToUpdate[$tg] = -1;
+      $tagsToUpdate[self::sanitize($tg)] = -1;
     foreach($tagsToIncrement as $tg)
-      $tagsToUpdate[$tg] = 1;
+      $tagsToUpdate[self::sanitize($tg)] = 1;
     return getDb()->postTagsCounter($tagsToUpdate);
   }
 
@@ -64,5 +64,18 @@ class Tag
     }
     return $tags;
   }
-}
 
+  public static function sanitize($tag)
+  {
+    return preg_replace('/[^a-zA-Z0-9]/', '', $tag);
+  }
+
+  public static function sanitizeTagsAsString($tags)
+  {
+    $tagsArray = (array)explode(',', $tags);
+    foreach($tagsArray as $key => $val)
+      $tagsArray[$key] = self::sanitize($val);
+
+    return implode(',', $tagsArray);
+  }
+}

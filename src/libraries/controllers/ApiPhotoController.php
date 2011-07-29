@@ -177,6 +177,7 @@ class ApiPhotoController extends BaseController
     }
 
     $photoId = false;
+    // TODO call API
     if(isset($_FILES) && isset($_FILES['photo']))
     {
       $photoId = Photo::upload($_FILES['photo']['tmp_name'], $_FILES['photo']['name'], $attributes);
@@ -228,7 +229,6 @@ class ApiPhotoController extends BaseController
     // TODO add logging on get photo failure
     if(isset($_POST['tags']) && !empty($_POST['tags']))
     {
-      // TODO should we invoke the api call?
       $photo = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet);
       if($photo)
       {
