@@ -438,14 +438,14 @@ class DatabaseSimpleDb implements DatabaseInterface
   private function normalizeAction($raw)
   {
     $action = array();
+    $action['id'] = strval($raw->Name);
+    $action['appId'] = getConfig()->get('application')->appId;
     foreach($raw->Attribute as $item)
     {
       $name = (string)$item->Name;
       $value = (string)$item->Value;
       $action[$name] = $value;
     }
-    $action['id'] = strval($raw->Name);
-    $action['appId'] = getConfig()->get('application')->appId;
     return $action;
   }
 
@@ -458,6 +458,8 @@ class DatabaseSimpleDb implements DatabaseInterface
   private function normalizePhoto($raw)
   {
     $photo = array();
+    $photo['id'] = strval($raw->Name);
+    $photo['appId'] = getConfig()->get('application')->appId;
     foreach($raw->Attribute as $item)
     {
       $name = (string)$item->Name;
@@ -467,8 +469,6 @@ class DatabaseSimpleDb implements DatabaseInterface
       else
         $photo[$name] = $value;
     }
-    $photo['id'] = strval($raw->Name);
-    $photo['appId'] = getConfig()->get('application')->appId;
     return $photo;
   }
 
@@ -481,13 +481,13 @@ class DatabaseSimpleDb implements DatabaseInterface
   private function normalizeTag($raw)
   {
     $tag = array();
+    $tag['id'] = strval($raw->Name);
     foreach($raw->Attribute as $item)
     {
       $name = (string)$item->Name;
       $value = (string)$item->Value;
       $tag[$name] = $value;
     }
-    $tag['id'] = strval($raw->Name);
     return $tag;
   }
 
