@@ -85,3 +85,21 @@ div#upload ul#upload-queue div.progress > div{
 }
 
 div#searchbar{ display:none; }
+
+ul.tag-cloud{
+  list-style-type:none;
+}
+ul.tag-cloud li{
+  float:left;
+  padding:10px 10px 10px 0;
+}
+.tag-1 { font-size:1em; line-height:1.9em; }
+.tag-2 { font-size:1.1em; line-height:1.9em; }
+.tag-3 { font-size:1.2em; line-height:1.9em; }
+.tag-4 { font-size:1.3em; line-height:1.9em; }
+.tag-5 { font-size:1.4em; line-height:1.9em; }
+.tag-6 { font-size:1.5em; line-height:1.9em; }
+.tag-7 { font-size:1.6em; line-height:1.9em; }
+.tag-8 { font-size:1.7em; line-height:1.9em; }
+.tag-9 { font-size:1.8em; line-height:1.9em; }
+.tag-10 { font-size:1.9em; line-height:1.9em; }

@@ -6,14 +6,17 @@
  */
 class TagController extends BaseController
 {
-  public static function tags($filterOpts = null)
+  /**
+    * Display tags (via a tag cloud)
+    *
+    * @return string HTML
+    */
+  public static function tags()
   {
-    if($filterOpts)
-      $tags = getApi()->invoke("/tags/{$filterOpts}.json");
-    else
-      $tags = getApi()->invoke("/tags.json");
+    $tags = getApi()->invoke("/tags.json");
+    $groupedTags = Tag::groupByWeight($tags['result']);
 
-    $body = getTemplate()->get('tags.php', array('tags' => $tags['result']));
+    $body = getTemplate()->get('tags.php', array('tags' => $groupedTags));
     getTemplate()->display('template.php', array('body' => $body));
   }
 }

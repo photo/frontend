@@ -7,16 +7,26 @@
   */
 class ApiTagController extends BaseController
 {
-  public static function post()
+  /**
+    * Update or create a tag in the tag database.
+    *
+    * @return string Standard JSON envelope 
+    */
+  public static function post($tag)
   {
-    $res = getDb()->postTag($_POST);
+    $res = getDb()->postTag($tag, $_POST);
     if($res)
       return self::success('Tag created/updated successfully', $_POST);
     else
       return self::error('Tag could not be created/updated', false);
   }
 
-  public static function tags($filter = array())
+  /**
+    * Return all tags.
+    *
+    * @return string Standard JSON envelope 
+    */
+  public static function tags()
   {
     $tags = getDb()->getTags();
     return self::success('Tags for the user', $tags);

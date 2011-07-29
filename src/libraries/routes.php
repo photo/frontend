@@ -17,4 +17,4 @@ getRoute()->get('/photos/upload', array('PhotoController', 'upload'));
 getRoute()->get('/photos/?(.+)?', array('PhotoController', 'photos'));
 
 // view tags
-getRoute()->get('/tags/?(.+)?', array('TagController', 'tags'));
+getRoute()->get('/tags', array('TagController', 'tags'));

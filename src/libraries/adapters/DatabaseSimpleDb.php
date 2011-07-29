@@ -242,17 +242,13 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @param array $params Tags and related attributes to update.
     * @return boolean
     */
-  public function postTag($params)
+  public function postTag($id, $params)
   {
-    if(!isset($params['id']) || empty($params['id']))
-      return false;
-    $tag = $params['id'];
-    unset($params['id']);
-    if(!isset($tag['count']))
-      $tag['count'] = 0;
+    if(!isset($params['count']))
+      $params['count'] = 0;
     else
-      $tag['count'] = max(0, intval($tag['count']));
-    $res = $this->db->put_attributes($this->domainTag, $tag, $params, true);
+      $params['count'] = max(0, intval($params['count']));
+    $res = $this->db->put_attributes($this->domainTag, $id, $params, true);
     return $res->isOK();
   }
 
@@ -376,9 +372,9 @@ class DatabaseSimpleDb implements DatabaseInterface
   /**
     * Alias of postTag
     */
-  public function putTag($params)
+  public function putTag($id, $params)
   {
-    return $this->postTag($params);
+    return $this->postTag($id, $params);
   }
 
   /**
