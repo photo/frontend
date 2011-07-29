@@ -2,7 +2,7 @@
 // home page
 getRoute()->get('/', array('GeneralController', 'home'));
 // post an action
-getRoute()->post('/action/(photo)/([a-zA-Z0-9]+)', array('ActionController', 'actionPost'), EpiApi::external);
+getRoute()->post('/action/(photo)/([a-zA-Z0-9]+)', array('ActionController', 'post'), EpiApi::external);
 // update a photo
 getRoute()->post('/photo/([a-zA-Z0-9]+)', array('PhotoController', 'update'));
 // view a photo
