@@ -11,7 +11,7 @@
 <br>
 <img src="<?php echo $photo['displayUrl']; ?>">
 <br>
-<form method="post" action="/photo/<?php echo $photo['id']; ?>/action">
+<form method="post" action="/action/photo/<?php echo $photo['id']; ?>">
   <textarea rows="5" cols="50" name="value"></textarea>
   <input type="hidden" name="type" value="comment">
   <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
