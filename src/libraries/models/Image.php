@@ -9,7 +9,7 @@
 interface ImageInterface
 {
   public function __construct($filename);
-  public function scale($width, $height, $maintainAspectRatio);
+  public function scale($width, $height, $maintainAspectRatio = true);
   public function greyscale();
   public function write($outputFile);
 }
