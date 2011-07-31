@@ -14,8 +14,8 @@ interface DatabaseInterface
   // get methods read
   public function getPhoto($id);
   public function getPhotoWithActions($id);
-  public function getPhotos($filter, $limit, $offset);
-  public function getTags($filter);
+  public function getPhotos($filter = array(), $limit, $offset = null);
+  public function getTags($filter = array());
   // post methods update
   public function postPhoto($id, $params);
   public function postUser($id, $params);
