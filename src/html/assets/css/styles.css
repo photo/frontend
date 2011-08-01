@@ -1,7 +1,8 @@
 body{
   font:12px/170% 'Lucida Grande','Lucida Sans Unicode',Geneva,Verdana,Sans-Serif;
+  margin:0;
+  padding:0;
 }
-div#site{ width:980px; margin:auto; }
 h1,h2,h3,h4{
   font:bold Georgia,'Times New Roman',Times,serif;
 }
@@ -11,6 +12,67 @@ label em{ font-size:.6em; position:relative; top:-2px; left:3px; }
 input, textarea, select{ border:solid 1px #ccc; font-size:1em; color:#404040; padding:4px; }
 label + input, label + textarea, label + select{ margin-bottom:20px; display:block; }
 .hidden{ display:none; }
+
+/* themeage */
+header{
+  width:100%;
+  height:49px;
+  background-color:#efefef;
+  border-bottom:solid 1px #cfcfcf;
+  position:relatve;
+}
+header div#logo {
+  background:url("/assets/img/default/header-logo.png") 1px 1px no-repeat;
+  width:191px;
+  height:35px;
+  margin-top:5px;
+  position:absolute;
+}
+header>div{
+  width:100%;
+  height:48px;
+  border-bottom:solid 1px #fff;
+}
+header ul{ 
+  list-style-type:none; 
+  position:relative;
+  left:200px;
+}
+header ul li{
+  height:48px;
+  line-height:48px;
+  background-color:#efefef;
+  width:110px;
+  text-align:center;
+  float:left;
+}
+header ul li.on{
+  background-color:#f8f8f8;
+  width:108px;
+  border-left:solid 1px #e2e2e2;
+  border-right:solid 1px #e2e2e2;
+}
+header ul li.home {
+}
+header ul li a{
+  height:48px;
+  display:block;
+}
+header ul li a:link, header ul li a:visited, header ul li a:active{
+  text-decoration:none;
+  color:#8a8a8a;
+  font-size:1.1em;
+}
+header ul li a img{ padding:0 3px; margin:-3px 0 0 0; }
+header div.user{
+  float:right;
+  line-height:48px;
+  margin-right:30px;
+  color:#8a8a8a;
+}
+header div.user img { padding:0 0 0 3px; }
+div.margin { width:960px; margin:auto; }
+/* // themeage */
 
 div#photos ul.grid {
   list-style-type:none;

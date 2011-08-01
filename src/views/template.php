@@ -6,13 +6,8 @@
 </head>
 <body>
   <div id="site">
-    <header>
-      <h1>OpenPhoto</h1>
-      <nav>
-        <?php getTemplate()->display('header.php'); ?>
-      </nav>
-    </header>
-    <div>
+    <?php getTemplate()->display('header.php'); ?>
+    <div id="content" class="margin">
       <?php echo $body; ?>
     </div>
     <footer>
