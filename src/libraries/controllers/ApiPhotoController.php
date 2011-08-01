@@ -135,6 +135,24 @@ class ApiPhotoController extends BaseController
     */
   public static function photos($filterOpts = null)
   {
+    // If the user is logged in then we can display photos based on group membership
+    $permission = 0;
+    if(User::isOwner())
+    {
+      $permission = 1;
+    }
+    elseif(User::isLoggedIn())
+    {
+      $userGroups = User::getGroups(User::getEmailAddress());
+      if(!empty($userGroups))
+      {
+        $permission = -1;
+        $groupIds = array();
+        foreach($userGroups as $group)
+          $groupIds[] = $group['id'];
+      }
+
+    }
     // This section enables in path parameters which are normally GET
     $pageSize = getConfig()->get('site')->pageSize;
     $filters = array('sortBy' => 'dateTaken,desc');
@@ -175,6 +193,12 @@ class ApiPhotoController extends BaseController
     $protocol = Utility::getProtocol(false);
     if(isset($filters['protocol']))
       $protocol = $filters['protocol'];
+
+    if($permission == 0 || $permission = 1)
+      $filters['permission'] = $permission;
+    else
+      $filters['groups'] = $groups;
+
     $db = getDb();
     $photos = $db->getPhotos($filters, $pageSize);
     if($photos)

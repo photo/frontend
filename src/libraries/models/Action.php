@@ -19,7 +19,7 @@ class Action
     if(!isset($params['type']) || !isset($params['targetType']))
       return false;
 
-    $id = User::getNextActionId();
+    $id = User::getNextId('action');
     if($id === false)
     {
       getLogger()->crit("Could not fetch next action ID for {$params['type']}");

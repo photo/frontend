@@ -35,38 +35,42 @@ class User
   /**
     * Get the next ID to be used for a photo.
     * The ID is a base 32 string that represents an autoincrementing integer.
+    * Get the email address of the logged in user.
     * @return string 
     */
-  public static function getNextPhotoId()
+  public static function getEmailAddress()
   {
-    $user = self::getUserRecord();    
-    if($user === false)
-      return false;
-
-    if(!isset($user['lastPhotoId']))
-      $user['lastPhotoId'] = '';
-    $nextIntId = base_convert($user['lastPhotoId'], 31, 10) + 1;
-    $nextId = base_convert($nextIntId, 10, 31);
-    self::update(array('lastPhotoId' => $nextId));
-    return $nextId;
+    return getSession()->get('email');
   }
 
   /**
-    * Get the next ID to be used for an action.
+    * Get the next ID to be used for a action, group or photo.
     * The ID is a base 32 string that represents an autoincrementing integer.
     * @return string 
     */
-  public static function getNextActionId()
+  public static function getGroups($email = null)
   {
+    return getDb()->getGroups($email);
+  }
+
+  /**
+    * Get the next ID to be used for a action, group or photo.
+    * The ID is a base 32 string that represents an autoincrementing integer.
+    * @return string 
+    */
+  public static function getNextId($type)
+  {
+    $type = ucwords($type);
+    $key = "last{$type}Id";
     $user = self::getUserRecord();    
     if($user === false)
       return false;
 
-    if(!isset($user['lastActionId']))
-      $user['lastActionId'] = '';
-    $nextIntId = base_convert($user['lastActionId'], 31, 10) + 1;
+    if(!isset($user[$key]))
+      $user[$key] = '';
+    $nextIntId = base_convert($user[$key], 31, 10) + 1;
     $nextId = base_convert($nextIntId, 10, 31);
-    self::update(array('lastActionId' => $nextId));
+    self::update(array($key => $nextId));
     return $nextId;
   }
 

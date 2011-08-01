@@ -38,7 +38,8 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
       longitude: (float),
       views: (int),
       status: (int), // binary
-      permission: (int), // bitwise
+      permission: (int), // binary
+      groups: (set),
       creativeCommons: (enum),
       dateTaken: (int), // unix timestamp
       dateTakenDay: (int)
@@ -86,7 +87,8 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
   * gpsLongitude
   * views, Number of times the photo was viewed (excludes views by the owner)
   * status, Numeric representation of the status (0=deleted, 1=active)
-  * permission, Bitwise representation of photo permissions
+  * permission, binary representation of photo permission (0=not public, 1=public)
+  * groups, A set of group IDs which whitelist email addresses for permissions to this photo
   * creativeCommons, Abbreviation of the CC licenses such as BY, BY-SA, BY-ND, etc. (http://creativecommons.org/licenses/)
   * dateTaken, Unix timestamp of when the photo was taken
   * dateTakenDay, Day the photo was taken (for searching)
