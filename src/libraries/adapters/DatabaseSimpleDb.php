@@ -24,6 +24,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->domainPhoto = getConfig()->get('aws')->simpleDbDomain;
     $this->domainAction = getConfig()->get('aws')->simpleDbDomain.'Action';
     $this->domainCredential = getConfig()->get('aws')->simpleDbDomain.'Credential';
+    $this->domainGroup = getConfig()->get('aws')->simpleDbDomain.'Group';
     $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'User';
     $this->domainTag = getConfig()->get('aws')->simpleDbDomain.'Tag';
   }
@@ -74,6 +75,25 @@ class DatabaseSimpleDb implements DatabaseInterface
       return self::normalizeCredential($res->body->SelectResult->Item);
     else
       return false;
+  }
+
+  /**
+    * Retrieve groups from the database optionally filter by member (email)
+    *
+    * @param string $email email address to filter by
+    * @return mixed Array on success, NULL on empty, FALSE on failure 
+    */
+  public function getGroups($email = null)
+  {
+    if(empty($email))
+      $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` ORDER BY name", array('ConsistentRead' => 'true'));
+    else
+      $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE members in ('{$email}') ORDER BY name", array('ConsistentRead' => 'true'));
+
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeGroup($res->body->SelectResult->Item);
+    elseif(!isset($res->body->SelectResult))
+      return null;
   }
 
   /**
@@ -162,10 +182,8 @@ class DatabaseSimpleDb implements DatabaseInterface
       {
         switch($name)
         {
-          case 'tags':
-            if(!is_array($value))
-              $value = (array)explode(',', $value);
-            $where = $this->buildWhere($where, "tags IN('" . implode("','", $value) . "')");
+          case 'groups':
+            $where = $this->buildWhere($where, "groups IN('" . implode("','", $value) . "')");
             break;
           case 'page':
             if($value > 1)
@@ -175,10 +193,18 @@ class DatabaseSimpleDb implements DatabaseInterface
               $page = $value;
             }
             break;
+          case 'permissionx':
+            $where = $this->buildWhere($where, "permission='{$value}'");
+            break;
           case 'sortBy':
             $sortBy = 'ORDER BY ' . str_replace(',', ' ', $value);
             $field = substr($value, 0, strpos($value, ','));
             $where = $this->buildWhere($where, "{$field} is not null");
+            break;
+          case 'tags':
+            if(!is_array($value))
+              $value = (array)explode(',', $value);
+            $where = $this->buildWhere($where, "tags IN('" . implode("','", $value) . "')");
             break;
         }
       }
@@ -295,6 +321,20 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function postCredential($id, $params)
   {
     $res = $this->db->put_attributes($this->domainCredential, $id, $params, true);
+    return $res->isOK();
+  }
+
+  /**
+    * Update a group.
+    *
+    * @param string $id ID of the group to update.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function postGroup($id, $params)
+  {
+    $params = self::prepareGroup($id, $params);
+    $res = $this->db->put_attributes($this->domainGroup, $id, $params, true);
     return $res->isOK();
   }
 
@@ -431,6 +471,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+<<<<<<< HEAD
     * Add a new credential to the database
     * This method does not overwrite existing values present in $params - hence "new credential".
     *
@@ -442,6 +483,14 @@ class DatabaseSimpleDb implements DatabaseInterface
   {
     $res = $this->db->put_attributes($this->domainCredential, $id, $params);
     return $res->isOK();
+  }
+
+  /**
+    * Alias of postGroup
+    */
+  public function putGroup($id, $params)
+  {
+    return $this->postGroup($id, $params);
   }
 
   /**
@@ -498,13 +547,15 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function initialize()
   {
-    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Tag|User)?$/");
-    if(count($domains) == 4)
+    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Credential|Group|Tag|User)?$/");
+    var_dump($domains);
+    if(count($domains) == 6)
       return true;
 
     $queue = new CFBatchRequest();
     $this->db->batch($queue)->create_domain($this->domainAction);
     $this->db->batch($queue)->create_domain($this->domainCredential);
+    $this->db->batch($queue)->create_domain($this->domainGroup);
     $this->db->batch($queue)->create_domain($this->domainPhoto);
     $this->db->batch($queue)->create_domain($this->domainTag);
     $this->db->batch($queue)->create_domain($this->domainUser);
@@ -573,6 +624,25 @@ class DatabaseSimpleDb implements DatabaseInterface
   /**
     * Normalizes data from simpleDb into schema definition
     *
+    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @return array
+    */
+  private function normalizeGroup($raw)
+  {
+    $group = array();
+    $group['id'] = strval($raw->Name);
+    foreach($raw->Attribute as $item)
+    {
+      $name = (string)$item->Name;
+      $value = (string)$item->Value;
+      $group[$name] = $value;
+    }
+    return $group;
+  }
+
+  /**
+    * Normalizes data from simpleDb into schema definition
+    *
     * @param SimpleXMLObject $raw A photo from SimpleDb in SimpleXML.
     * @return array
     */
@@ -634,6 +704,24 @@ class DatabaseSimpleDb implements DatabaseInterface
       $user[$name] = $value;
     }
     return $user;
+  }
+
+  /**
+    * Formats a group to be updated or added to the database.
+    * Primarily to properly format members as an array.
+    *
+    * @param string $id ID of the group.
+    * @param array $params Parameters for the group to be normalized.
+    * @return array
+    */
+  private function prepareGroup($id, $params)
+  {
+    $params['Name'] = $id;
+    if(!isset($params['members']))
+      $params['members'] = array();
+    elseif(!is_array($params['members']))
+      $params['members'] = (array)explode(',', $params['members']);
+    return $params;
   }
 
   /**

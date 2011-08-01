@@ -62,6 +62,18 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Retrieve groups from the database optionally filter by member (email)
+    *
+    * @param string $email email address to filter by
+    * @return mixed Array on success, NULL on empty, FALSE on failure 
+    */
+  public function getGroups($email = null)
+  {
+    // TODO: fill this in Gh-27
+    return array();
+  }
+
+  /**
     * Get a photo specified by $id
     *
     * @param string $id ID of the photo to retrieve
@@ -248,6 +260,20 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Update the information for an existing credential.
+    * This method overwrites existing values present in $params.
+    *
+    * @param string $id ID of the credential to update.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function postGroup($id, $params)
+  {
+    // TODO: fill this in Gh-27
+    return true;
+  }
+
+  /**
     * Update the information for an existing photo.
     * This method overwrites existing values present in $params.
     *
@@ -400,6 +426,14 @@ class DatabaseMySql implements DatabaseInterface
   {
     // TODO: fill this in Gh-78
     return true;
+  }
+
+  /**
+    * Alias of postGroup
+    */
+  public function putGroup($id, $params)
+  {
+    return $this->postGroup($id, $params);
   }
 
   /**

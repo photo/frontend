@@ -7,7 +7,26 @@
 class ApiUserController extends BaseController
 {
   /**
-    * Log a user in.
+    * Get the owner's groups
+    *
+    * @return string Standard JSON envelope 
+    */
+  public static function groups()
+  {
+    if(!User::isOwner())
+      return self::forbidden('Sorry, you cannot view this content', false);
+
+    $groups = User::getGroups();
+    if($groups === false)
+      return self::error('An error occurred trying to get your groups', false);
+
+    return self::success('A list of your groups', (array)$groups);
+  }
+
+  /**
+    * Log a user in via BrowserID
+    *
+    * @return string Standard JSON envelope 
     *
     * @return string Standard JSON envelope 
     */
@@ -29,5 +48,24 @@ class ApiUserController extends BaseController
   {
     User::logout();
     return self::success('User was logged out successfully');
+  }
+
+  /**
+    * Update a group
+    *
+    * @param string $id id of the group to update
+    * @return string Standard JSON envelope 
+    */
+  public static function postGroup($id = null)
+  {
+    if(!$id)
+      $id = User::getNextId('group');
+
+    $res = getDb()->postGroup($id, $_POST);
+
+    if($res)
+      return self::success("Group {$id} was updated", array_merge(array('id' => $id), $_POST));
+    else
+      return self::error("Could not updated group {$id}", false);
   }
 }

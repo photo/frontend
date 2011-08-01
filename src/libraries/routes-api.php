@@ -30,5 +30,7 @@ getApi()->post('/tag/([a-zA-Z0-9]+).json', array('ApiTagController', 'post'), Ep
 getApi()->get('/tags.json', array('ApiTagController', 'tags'), EpiApi::external);
 
 // log a user in/out via BrowserID
+getApi()->get('/user/groups.json', array('ApiUserController', 'groups'), EpiApi::external);
+getApi()->post('/user/group/?([a-zA-Z0-9]+)?.json', array('ApiUserController', 'postGroup'), EpiApi::external);
 getApi()->post('/user/login.json', array('ApiUserController', 'login'), EpiApi::external);
 getApi()->get('/user/logout.json', array('ApiUserController', 'logout'), EpiApi::external);
