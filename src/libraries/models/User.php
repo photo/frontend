@@ -87,8 +87,14 @@ class User
     return self::$user;
   }
 
+  public static function isLoggedIn()
+  {
+    return getSession()->get('email') != '';
+  }
+
   public static function isOwner()
   {
+    return getSession()->get('email') == getConfig()->get('user')->email;
   }
 
   /**

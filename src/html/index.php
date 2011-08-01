@@ -34,16 +34,7 @@ if(file_exists($configFile))
 }
 elseif(!file_exists($configFile))
 {
-  $baseDir = dirname(dirname(__FILE__));
-  $paths = new stdClass;
-  $paths->libraries = "{$baseDir}/libraries";
-  $paths->controllers = "{$baseDir}/libraries/controllers";
-  $paths->external = "{$baseDir}/libraries/external";
-  $paths->adapters = "{$baseDir}/libraries/adapters";
-  $paths->models = "{$baseDir}/libraries/models";
-  getConfig()->set('paths', $paths);
-  require getConfig()->get('paths')->libraries . '/dependencies.php';
-  require getConfig()->get('paths')->libraries . '/routes-setup.php';
-  require getConfig()->get('paths')->controllers . '/SetupController.php';
+  // setup and enable routes for setup
+  require getConfig()->get('paths')->libraries . '/setupInit.php';
   getRoute()->run('/setup');
 }

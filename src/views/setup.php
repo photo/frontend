@@ -73,6 +73,12 @@
           <?php } ?>
         </select>
       </div>
+
+      <div data-role="fieldcontain">
+        <label for="appId">Email address</label>
+        <input type="text" name="email" id="email">
+      </div>
+
       <button type="submit" class="button pill big">Complete the Setup</button>
     </div>
 
