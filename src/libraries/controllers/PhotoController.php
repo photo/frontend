@@ -99,9 +99,9 @@ class PhotoController extends BaseController
   public static function photos($filterOpts = null)
   {
     if($filterOpts)
-      $photos = getApi()->invoke("/photos/{$filterOpts}.json", EpiRoute::httpGet);
+      $photos = getApi()->invoke("/photos/{$filterOpts}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200xCR')));
     else
-      $photos = getApi()->invoke("/photos.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200')));
+      $photos = getApi()->invoke("/photos.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200xCR')));
 
     $photos = $photos['result'];
 
