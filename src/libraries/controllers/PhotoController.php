@@ -57,29 +57,19 @@ class PhotoController extends BaseController
     */
   public static function photo($id, $options = null)
   {
-    $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true')));
+    $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => '960x960')));
     if($apiResp['code'] == 200)
     {
       $photo = $apiResp['result'];
-      $sizes = array(
-        '300x300' => Photo::generateUrlPublic($photo, 300, 300),
-        '300x300xBW' => Photo::generateUrlPublic($photo, 300, 300, 'BW'),
-        '300x300xCR' => Photo::generateUrlPublic($photo, 300, 300, 'CR'),
-        '500x500' => Photo::generateUrlPublic($photo, 500, 500),
-        '700x700' => Photo::generateUrlPublic($photo, 700, 700),
-        '900x700' => Photo::generateUrlPublic($photo, 900, 900),
-        '1280x1280' => Photo::generateUrlPublic($photo, 1280, 1280)
-      );
-      if($options === null)
+      if($photo['width'] >= $photo['height'])
       {
-        // TODO, this should call a method in the API
-        $photo['displayUrl'] = Photo::generateUrlPublic($photo, 800, 800);
+        $photo['thisWidth'] = 960;       
+        $photo['thisHeight'] = intval($photo['height']/$photo['width']*960);
       }
       else
       {
-        // TODO, this should call a method in the API
-        $fragment = Photo::generateFragmentReverse($options);
-        $photo['displayUrl'] = Photo::generateUrlPublic($photo, $fragment['width'], $fragment['height'], $fragment['options']);
+        $photo['thisWidth'] = intval($photo['width']/$photo['height']*960);
+        $photo['thisHeight'] = 960;
       }
       getTemplate()->display('template.php', array('body' => getTemplate()->get('photo.php', array('photo' => $photo, 'sizes' => $sizes))));
     }

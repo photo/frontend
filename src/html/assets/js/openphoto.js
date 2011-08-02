@@ -85,7 +85,9 @@ var op = (function(){
         $('.action-delete').live('click', op.handlers.actionDelete);
         $('.search-bar-toggle').click(op.handlers.searchBarToggle);
         $('form#form-tag-search').submit(op.handlers.searchByTags);
-        $("a#login").click(op.handlers.login);
+        $('a#login').click(op.handlers.login);
+        $('form textarea.comment').click(function(){ $(this).animate({height:'30px'}, 100); });
+        $('form textarea.comment').blur(function(){ $(this).animate({height:'15px'}, 100); });
       }
     },
     message: {

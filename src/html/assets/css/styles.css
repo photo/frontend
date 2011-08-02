@@ -6,6 +6,7 @@ body{
 h1,h2,h3,h4{
   font:bold Georgia,'Times New Roman',Times,serif;
 }
+img{ border:0; padding;0; margin:0; }
 form em{ font-size:.75em; }
 label{ font-size:1.15em; color:#404040; display:block; position:relative; }
 label em{ font-size:.6em; position:relative; top:-2px; left:3px; }
@@ -14,6 +15,13 @@ label + input, label + textarea, label + select{ margin-bottom:20px; display:blo
 .hidden{ display:none; }
 
 /* themeage */
+button {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border:solid 2px #ddd;
+  padding:5px;
+  cursor:pointer;
+}
 header{
   width:100%;
   height:49px;
@@ -58,6 +66,7 @@ header ul li a{
   height:48px;
   display:block;
 }
+div#searchbar{ display:none; position:relative; left:550px; }
 header ul li a:link, header ul li a:visited, header ul li a:active{
   text-decoration:none;
   color:#8a8a8a;
@@ -71,6 +80,7 @@ header div.user{
   color:#8a8a8a;
 }
 header div.user img { padding:0 0 0 3px; }
+header div.user #login{ float:right; }
 
 div#photos ul.grid {
   list-style-type:none;
@@ -97,20 +107,82 @@ div#photos ul.grid ul.options>li {
   padding:2px 3px 0 0;
   font-size:.8em;
 }
-div#photos ul.grid ul.options>li.age { padding-left:10px; color:#b5b5b5; }
-div#photos ul.grid ul.options>li.permission { padding-left:5px; }
-div#photos ul.grid ul.options>li.permission.public { color:#63cd90; }
-div#photos ul.grid ul.options>li.permission.private { color:#cdbf63; }
+div#photos ul.grid { font-size:.8em; }
+div#photos ul.grid span.age { color:#b5b5b5; }
+div#photos ul.grid span.permission { padding-left:5px; }
+div#photos ul.grid span.permission.public { color:#63cd90; }
+div#photos ul.grid span.permission.private { color:#cdbf63; }
 
 div.pagination { float:right; padding: 0 10px; }
 div.pagination div.label { text-align:right; font-size:.85em; color:#bbb; }
-div.pagination ol{ list-style:none; margin:0; padding;0; height:30px; font-size:.8em; }
+div.pagination ol{ list-style:none; margin:0; padding;0; height:30px; }
 div.pagination ol li{ text-align:center; margin:0 0 0 4px; float:left; background-color:#eee; border:solid 2px #ccc; -moz-border-radius:2px; }
 div.pagination ol li>a{ min-width:15px; min-height:15px; margin:0; padding:4px; float:left; background-color:#eee;  }
 div.pagination ol li.on{ border:solid 2px #43c2fd; }
 div.pagination ol li>a:link, div.pagination ol li>a:visited, div.pagination ol li>a:active{ color:#999; text-decoration:none; }
 
+div#photo div.info {
+  color:#bbb;
+  padding:10px 0;
+  margin:5px 0 0;
+  font-size:.9em;
+}
+div#photo div.info ul{
+  list-style:none;
+  margin:0;
+  padding:0;
+  width:300px;
+  float:left;
+}
+div#photo div.info li {
+  padding:0 3px 0 18px;
+  line-height:1.4em;
+  margin:0 0 4px;
+}
+div#photo div.info li.tags {
+  background:url("/assets/img/default/icon-tags.png") no-repeat;
+}
+div#photo div.info li.globe {
+  background:url("/assets/img/default/icon-globe.png") no-repeat;
+}
+div#photo div.info li.date {
+  background:url("/assets/img/default/icon-date.png") no-repeat;
+}
+div#photo div.info li.heart {
+  background:url("/assets/img/default/icon-heart.png") no-repeat;
+}
 
+div#photo div.info a:link, div#photo div.info a:visited, div#photo div.info a:active{
+  color:#bbb;
+}
+div#photo div.info div.comment-form{
+  float:right;
+}
+div#photo div.info div.comment-form div.see-all{
+  float:right;
+}
+div#photo div.info form textarea {
+  height:15px;
+  width:400px;
+  border:solid 1px #ddd;
+  color:#888;
+  font-size:1em;
+  font:12px/170% 'Lucida Grande','Lucida Sans Unicode',Geneva,Verdana,Sans-Serif;
+}
+
+div#photo div.picture {
+  padding:10px 0;
+  border-top: solid 1px #eee;
+  border-bottom: solid 1px #eee;
+}
+div#photo div.picture img {
+  display:block;
+  margin:auto;
+  padding:0;
+  border:0;
+  -moz-box-shadow: 2px 2px 2px #888;
+  -webkit-box-shadow: 2px 2px 2px #888;
+}
 div.margin { width:960px; margin:auto; }
 /* // themeage */
 
@@ -174,7 +246,6 @@ div#upload ul#upload-queue div.progress > div{
   background-color:#bbb;
 }
 
-div#searchbar{ display:none; }
 
 ul.tag-cloud{
   list-style-type:none;

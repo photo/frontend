@@ -1,5 +1,3 @@
-<h2>Recently shared photos</h2>
-
 <div id="photos">
   <ul class="grid">
     <?php foreach($photos as $photo) { ?>
