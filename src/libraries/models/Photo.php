@@ -243,13 +243,14 @@ class Photo
       return false;
     }
     $paths = Photo::generatePaths($name);
+    $exiftran = getConfig()->get('modules')->exiftran;
+    if(is_executable($exiftran))
+      exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
+
     // resize the base image before uploading
     $localFileCopy = "{$localFile}-copy}";
     copy($localFile, $localFileCopy);
 
-    $exiftran = getConfig()->get('modules')->exiftran;
-    if(is_executable($exiftran))
-      exec($cmd = sprintf('%s -ai %s', getConfig()->get('modules')->exiftran, escapeshellarg($localFileCopy)));
 
     $baseImage = getImage($localFileCopy);
     $baseImage->scale(getConfig()->get('photos')->baseSize, getConfig()->get('photos')->baseSize);
