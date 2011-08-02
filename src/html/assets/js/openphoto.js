@@ -1,4 +1,8 @@
 var op = (function(){
+  var log = function(msg) {
+    if(console !== undefined && console.log !== undefined)
+      console.log(msg);
+  };
   var _this = {};
   return {
     handlers: {
@@ -14,7 +18,7 @@ var op = (function(){
           return false;
       },
       login: function() {
-        console.log('login');
+        log('login');
         navigator.id.getVerifiedEmail(function(assertion) {
             if (assertion) {
               op.user.loginSuccess(assertion);
@@ -38,9 +42,9 @@ var op = (function(){
       photoLink: function(event) {
         var el = this;
         if(event.type == 'click') {
-          console.log(el);
+          log(el);
         } else if(event.type == 'mouseover') {
-          console.log('mousover');
+          log('mousover');
         }
       },
       searchBarToggle: function(event) {
@@ -85,9 +89,8 @@ var op = (function(){
         $('.action-delete').live('click', op.handlers.actionDelete);
         $('.search-bar-toggle').click(op.handlers.searchBarToggle);
         $('form#form-tag-search').submit(op.handlers.searchByTags);
-        $('a#login').click(op.handlers.login);
+        $('.login').click(op.handlers.login);
         $('form textarea.comment').click(function(){ $(this).animate({height:'30px'}, 100); });
-        $('form textarea.comment').blur(function(){ $(this).animate({height:'15px'}, 100); });
       }
     },
     message: {
@@ -135,17 +138,17 @@ var op = (function(){
     },
     user: {
       loginFailure: function(assertion) {
-        console.log('login failed');
+        log('login failed');
         // TODO something here to handle failed login
       },
       loginProcessed: function(response) {
         if(response.code != 200) {
-          console.log('processing of login failed');
+          log('processing of login failed');
           // TODO do something here to handle failed login
           return;
         }
         
-        console.log('login processing succeeded');
+        log('login processing succeeded');
       },
       loginSuccess: function(assertion) {
         var params = {assertion: assertion};

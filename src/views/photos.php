@@ -16,6 +16,7 @@
         </li>
       <?php } ?>
     </ul>
+    <br clear="all">
     <?php getTemplate()->display('partial/pagination.php', array_merge($pagination, array('labelPosition' => 'bottom'))); ?>
   <?php } else { ?>
     <h2>You haven't uploaded any photos yet</h2>

@@ -18,6 +18,21 @@ class User
   private static $user;
 
   /**
+    * Get an avatar given an email address
+    * See http://en.gravatar.com/site/implement/images/ and http://en.gravatar.com/site/implement/hash/
+    *
+    * @return string 
+    */
+  public static function getAvatarFromEmail($size = 50, $email = null)
+  {
+    if($email === null)
+      $email = getSession()->get('email');
+
+    $hash = md5(strtolower(trim($email)));
+    return "http://www.gravatar.com/avatar/{$hash}?s={$size}";
+  }
+
+  /**
     * Get the next ID to be used for a photo.
     * The ID is a base 32 string that represents an autoincrementing integer.
     * @return string 

@@ -14,7 +14,7 @@
               <?php if(User::isLoggedIn()) { ?>
                 <?php echo getSession()->get('email'); ?><img src="/assets/img/default/header-navigation-user.png" align="absmiddle">
               <?php } else { ?>
-                <a href="#" id="login"><img src="https://browserid.org/i/sign_in_blue.png" align="absmiddle"></a>
+                <a href="#" class="login"><img src="https://browserid.org/i/sign_in_blue.png" align="absmiddle"></a>
               <?php } ?>
             </div>
             <div id="searchbar">
