@@ -106,7 +106,7 @@ var op = (function(){
       handlers: {
         added: function(e, data) {
           var files = data.files
-            html = '<li id="%id"><div><label>%label</label><div class="img">Uploading...</div><div class="progress"><div></div></div></li>';
+            html = '<li id="%id"><div><div class="img"><label>%label</label></div><div class="progress"><div></div></div></li>';
           data.id=parseInt(Math.random()*1000);
           for(i=0; i<files.length; i++) {
             $(html.replace('%id', data.id).replace('%label', files[i].fileName))
@@ -115,9 +115,11 @@ var op = (function(){
         },
         done: function(e, data) {
           var resp = jQuery.parseJSON(data.result),
-            img = resp.result.path200x200;
-          $("#"+data.id+" div.progress div").css("width", "100%");
-          $("#"+data.id+" div.img").replaceWith('<img src="'+img+'">');
+            id = resp.result.id,
+            img = resp.result.path100x100;
+          $("#"+data.id+" div.progress div.img").css("width", "").css("height", "");
+          $("#"+data.id+" div.progress div").css("width", "100%").addClass('complete');
+          $("#"+data.id+" div.img").replaceWith('<a href="/photo/'+id+'"><img src="'+img+'"></a>');
         },
         progress: function(e, data) {
           var pct = parseInt(data.loaded/data.total*100);
