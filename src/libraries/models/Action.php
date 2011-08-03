@@ -58,6 +58,7 @@ class Action
   {
     return array(
       'appId' => getConfig()->get('application')->appId,
+      'email' => '',
       'name' => '',
       'avatar' => '',
       'website' => '',

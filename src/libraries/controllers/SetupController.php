@@ -83,7 +83,8 @@ class SetupController
       '{photos}' => "{$htmlDir}/photos",
       '{exiftran}' => exec('which exiftran'),
       '{localSecret}' => sha1(uniqid(true)),
-      '{s3Host}' => "{$_POST['s3Bucket']}.s3.amazonaws.com"
+      '{s3Host}' => "{$_POST['s3Bucket']}.s3.amazonaws.com",
+      '{email}' => "{$_POST['email']}"
     );
     $pReplace = array();
     foreach($_POST as $key => $val)

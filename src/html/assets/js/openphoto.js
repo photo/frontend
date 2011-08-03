@@ -1,4 +1,8 @@
 var op = (function(){
+  var log = function(msg) {
+    if(console !== undefined && console.log !== undefined)
+      console.log(msg);
+  };
   var _this = {};
   return {
     handlers: {
@@ -14,7 +18,7 @@ var op = (function(){
           return false;
       },
       login: function() {
-        console.log('login');
+        log('login');
         navigator.id.getVerifiedEmail(function(assertion) {
             if (assertion) {
               op.user.loginSuccess(assertion);
@@ -26,10 +30,10 @@ var op = (function(){
       },
       photoDelete: function(event) {
         var el = $(this),
-          url = el.attr('href')+'.json';
+          url = el.parent().attr('action')+'.json';
           $.post(url, function(response) {
             if(response.code === 200)
-              $(".photo-container-"+response.result).hide('medium', function(){ $(this).remove(); });
+              $(el).html('This photo has been deleted');
             else
               op.message.error('Could not delete the photo.');
           }, 'json');
@@ -38,9 +42,9 @@ var op = (function(){
       photoLink: function(event) {
         var el = this;
         if(event.type == 'click') {
-          console.log(el);
+          log(el);
         } else if(event.type == 'mouseover') {
-          console.log('mousover');
+          log('mousover');
         }
       },
       searchBarToggle: function(event) {
@@ -85,7 +89,7 @@ var op = (function(){
         $('.action-delete').live('click', op.handlers.actionDelete);
         $('.search-bar-toggle').click(op.handlers.searchBarToggle);
         $('form#form-tag-search').submit(op.handlers.searchByTags);
-        $("a#login").click(op.handlers.login);
+        $('.login').click(op.handlers.login);
       }
     },
     message: {
@@ -133,17 +137,17 @@ var op = (function(){
     },
     user: {
       loginFailure: function(assertion) {
-        console.log('login failed');
+        log('login failed');
         // TODO something here to handle failed login
       },
       loginProcessed: function(response) {
         if(response.code != 200) {
-          console.log('processing of login failed');
+          log('processing of login failed');
           // TODO do something here to handle failed login
           return;
         }
         
-        console.log('login processing succeeded');
+        log('login processing succeeded');
       },
       loginSuccess: function(assertion) {
         var params = {assertion: assertion};

@@ -6,17 +6,12 @@
 </head>
 <body>
   <div id="site">
-    <header>
-      <h1>OpenPhoto</h1>
-      <nav>
-        <?php getTemplate()->display('header.php'); ?>
-      </nav>
-    </header>
-    <div>
+    <?php getTemplate()->display('header.php'); ?>
+    <div id="content" class="margin">
       <?php echo $body; ?>
     </div>
     <footer>
-      <?php //getTemplate()->display('footer.php'); ?>
+      <?php getTemplate()->display('footer.php'); ?>
     </footer>
   </div>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.1.min.js"></script>

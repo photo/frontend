@@ -34,6 +34,7 @@ if(file_exists($configFile))
 }
 elseif(!file_exists($configFile))
 {
+  // setup and enable routes for setup
   $baseDir = dirname(dirname(__FILE__));
   $paths = new stdClass;
   $paths->libraries = "{$baseDir}/libraries";

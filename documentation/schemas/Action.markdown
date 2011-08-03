@@ -18,6 +18,7 @@ This includes comments and favorites and could include other social actions in t
       appId: (string),
       targetId: (string), // FK Photos.id or Social.id
       targetType: (string), // photo, social
+      email: (string),
       name: (string),
       avatar: (string),
       website: (string),
@@ -37,6 +38,7 @@ This includes comments and favorites and could include other social actions in t
   * appId, A string identifing the application creating this entry
   * targetId, a foreign key to a [Photo][Photo] or [Action][Action] object this action was taken on
   * targetType, a reference to the target type: photo or social
+  * email, email address of the user taking this action
   * name, name of the user taking this action
   * avatar, URL to an image which represents this user's avatar or profile photo
   * website, URL to the user's website

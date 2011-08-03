@@ -457,7 +457,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   private function normalizePhoto($raw)
   {
-    $photo = array();
+    $photo = array('tags' => array());
     $photo['id'] = strval($raw->Name);
     $photo['appId'] = getConfig()->get('application')->appId;
     foreach($raw->Attribute as $item)
@@ -465,9 +465,13 @@ class DatabaseSimpleDb implements DatabaseInterface
       $name = (string)$item->Name;
       $value = (string)$item->Value;
       if($name == 'tags')
-        $photo[$name][] = $value;
-      else
-        $photo[$name] = $value;
+      {
+        if($value != '')
+          $photo[$name][] = $value;
+        continue;
+      }
+
+      $photo[$name] = $value;
     }
     return $photo;
   }
