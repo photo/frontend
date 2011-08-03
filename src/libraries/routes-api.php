@@ -6,7 +6,7 @@ getApi()->post('/action/([a-zA-Z0-9]+)/delete.json', array('ApiActionController'
 getApi()->post('/action/(photo)/([a-zA-Z0-9]+).json', array('ApiActionController', 'post'), EpiApi::external);
 
 // delete a photo
-getApi()->post('/photo/([a-zA-Z0-9]+)/delete.json', array('ApiPhotoController', 'delete'), EpiApi::external);
+getApi()->post('/photo/delete/([a-zA-Z0-9]+).json', array('ApiPhotoController', 'delete'), EpiApi::external);
 // upload a photo
 getApi()->post('/photo/upload.json', array('ApiPhotoController', 'upload'), EpiApi::external);
 // generate a dynamic photo url

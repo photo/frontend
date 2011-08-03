@@ -7,20 +7,29 @@ h1,h2,h3,h4{
   font:bold Georgia,'Times New Roman',Times,serif;
 }
 img{ border:0; padding;0; margin:0; }
-form em{ font-size:.75em; }
-label{ font-size:1.15em; color:#404040; display:block; position:relative; }
-label em{ font-size:.6em; position:relative; top:-2px; left:3px; }
-input, textarea, select{ border:solid 1px #ccc; font-size:1em; color:#404040; padding:4px; }
-label + input, label + textarea, label + select{ margin-bottom:20px; display:block; }
+
+div#setup form em{ font-size:.75em; }
+div#setup label{ font-size:1.15em; color:#404040; display:block; position:relative; }
+div#setup label em{ font-size:.6em; position:relative; top:-2px; left:3px; }
+div#setup input, textarea, select{ border:solid 1px #ccc; font-size:1em; color:#404040; padding:4px; }
+div#setup label + input, label + textarea, label + select{ margin-bottom:20px; display:block; }
 .hidden{ display:none; }
 
 /* themeage */
-button {
+button, a.button {
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border:solid 2px #ddd;
   padding:5px;
+  color:#777;
   cursor:pointer;
+}
+button.delete, a.button.delete {
+  border-color:#f06eaa;
+}
+input {
+  border:solid 1px #ddd;
+  padding:3px;
 }
 header{
   width:100%;
@@ -90,7 +99,7 @@ div#photos ul.grid {
 div#photos ul.grid>li {
   float:left;
   width:200px;
-  height:250px;
+  height:225px;
   padding: 25px 40px 25px 0;
 } 
 div#photos ul.grid>li>a>img{
@@ -229,6 +238,49 @@ div#photo ol.comments li img.avatar{
   border:solid 2px #ccc;
   float:left;
   margin:0 4px 4px 0;
+}
+div#photo div.owner {
+  padding:10px 0;
+}
+div#photo div.owner h3 {
+  margin:0 0 10px;;
+  padding:5px;
+  background-color:#efefef;
+  border-top:solid 1px #999;
+  border-bottom:solid 1px #999;
+  text-align:center;
+}
+div#photo div.owner input, div#photo div.owner textarea {
+  width:400px;
+}
+div#photo div.owner label {
+  font-weight:bold;
+  display:block;
+}
+div#photo div.owner label + input, div#photo div.owner label + textarea {
+  margin:0 0 10px;
+}
+div#photo div.owner>div {
+  float:left;
+  width:50%;
+}
+div#photo div.owner>div.delete form {
+  float:right;
+  margin-top:
+}
+div#photo div.owner div.manage-comments {
+  margin-top:10px;
+}
+
+footer{
+  height:50px;
+  background-color:#efefef;
+  border-top:solid 1px #cfcfcf;
+  color:#999;
+}
+footer div {
+  text-align:center;
+  line-height:50px;
 }
 
 div.margin { width:960px; margin:auto; }

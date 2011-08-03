@@ -30,10 +30,10 @@ var op = (function(){
       },
       photoDelete: function(event) {
         var el = $(this),
-          url = el.attr('href')+'.json';
+          url = el.parent().attr('action')+'.json';
           $.post(url, function(response) {
             if(response.code === 200)
-              $(".photo-container-"+response.result).hide('medium', function(){ $(this).remove(); });
+              $(el).html('This photo has been deleted');
             else
               op.message.error('Could not delete the photo.');
           }, 'json');

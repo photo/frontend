@@ -55,9 +55,9 @@
             <li class="action-container-<?php echo $action['id']; ?>">
               <img src="<?php echo User::getAvatarFromEmail(40, $action['email']); ?>" class="avatar">
               <?php if($action['type'] == 'comment') { ?>
-                <?php echo $action['value']; ?><br>(<a href="/action/<?php echo $action['id']; ?>/delete" class="action-delete">delete</a>)
+                <?php echo $action['value']; ?>
               <?php } else { ?>
-                Favorited<br>(<a href="/action/<?php echo $action['id']; ?>/delete" class="action-delete">delete</a>)
+                Favorited
               <?php } ?>
               <div class="date"><?php echo Utility::dateLong($action['datePosted']); ?></div>
             </li>
@@ -72,7 +72,9 @@
       <?php } ?>
       <ul class="exif">
         <?php foreach(array('exifCameraMake' => 'Camera make', 'exifCameraModel' => 'Camera model') as $key => $value) { ?>
-          <li><?php echo $value; ?>: <?php echo $photo[$key]; ?></li>
+          <?php if(!empty($photo[$key])) { ?>
+            <li><?php echo $value; ?>: <?php echo $photo[$key]; ?></li>
+          <?php } ?>
         <?php } ?>
       </ul>
     </div>
@@ -82,12 +84,52 @@
   <?php if(User::isOwner()) { ?>
     <div class="owner">
       <h3>This photo belongs to you</h3>
-      
-      <form method="post">
-        <h3>Tags</h3>
-        <input type="text" name="tags" value="<?php echo implode(',', $photo['tags']); ?>">
-        <button type="submit" class="button pill icon tag">Update</button>
-      </form>
+      <div>
+        <div class="detail-form">
+          <form method="post">
+            <label>Title</label>
+            <input type="text" name="title" value="<?php echo $photo['title']; ?>">
+
+            <label>Description</label>
+            <textarea name="description"><?php echo $photo['description']; ?></textarea>
+
+            <label>Tags</label>
+            <input type="text" name="tags" value="<?php echo implode(',', $photo['tags']); ?>">
+
+            <label>Latitude</label>
+            <input type="text" name="latitude" value="<?php echo implode(',', $photo['latitude']); ?>">
+
+            <label>Longitude</label>
+            <input type="text" name="longitude" value="<?php echo implode(',', $photo['longitude']); ?>">
+
+            <button type="submit">Update photo</button>
+          </form>
+        </div>
+        <?php if(count($photo['actions']) > 0) { ?>
+          <div class="manage-comments">
+            <label>Manage comments</label>
+            <ol class="comments">
+              <?php foreach($photo['actions'] as $action) { ?>
+                <li class="action-container-<?php echo $action['id']; ?>">
+                  <img src="<?php echo User::getAvatarFromEmail(40, $action['email']); ?>" class="avatar">
+                  <?php if($action['type'] == 'comment') { ?>
+                    <?php echo $action['value']; ?><br><a href="/action/<?php echo $action['id']; ?>/delete" class="button delete action-delete">delete</a>
+                  <?php } else { ?>
+                    Favorited<br><a href="/action/<?php echo $action['id']; ?>/delete" class="button delete action-delete">delete</a>
+                  <?php } ?>
+                  <div class="date"><?php echo Utility::dateLong($action['datePosted']); ?></div>
+                </li>
+              <?php } ?>
+            </ol>
+          </div>
+        <?php } ?>
+      </div>
+      <div class="delete">
+        <form method="post" action="/photo/delete/<?php echo $photo['id']; ?>">
+          <button type="submit" class="delete photo-delete">Delete this photo</button>
+        </form>
+      </div>
+      <br clear="all">
     </div>
   <?php } ?>
 </div>

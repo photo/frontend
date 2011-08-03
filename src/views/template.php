@@ -11,7 +11,7 @@
       <?php echo $body; ?>
     </div>
     <footer>
-      <?php //getTemplate()->display('footer.php'); ?>
+      <?php getTemplate()->display('footer.php'); ?>
     </footer>
   </div>
   <script type="text/javascript" src="http://code.jquery.com/jquery-1.6.1.min.js"></script>

@@ -8,8 +8,10 @@
           <span class="age"><?php echo Utility::englishTime($photo['dateTaken'], 'Taken'); ?></span>
           <span class="permission <?php echo Utility::englishPermission($photo['permission']); ?>"><?php echo Utility::englishPermission($photo['permission']); ?></span>
           <ul class="options">
-            <li><a href="#"><img src="/assets/img/default/icon-add.png"></a></li>
-            <li><a href="#"><img src="/assets/img/default/icon-star.png"></a></li>
+            <?php if(!empty($photo['tags'])) { ?><li><img src="/assets/img/default/icon-tags.png" alt="This photo has tags"></li><?php } ?>
+            <?php if(!empty($photo['latitude'])) { ?><li><img src="/assets/img/default/icon-globe.png" alt="This photo has location information"></li><?php } ?>
+            <!--<li><a href="#"><img src="/assets/img/default/icon-add.png"></a></li>
+            <li><a href="#"><img src="/assets/img/default/icon-star.png"></a></li>-->
           </ul>
           <!--(<a href="/photo/<?php echo $photo['id']; ?>/delete" class="photo-delete">delete</a>) -->
           <!--<?php if(!empty($photo['tags'])) { ?><?php echo implode(',', $photo['tags']); ?><?php } ?>-->
