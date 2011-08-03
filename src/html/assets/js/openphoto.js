@@ -48,7 +48,7 @@ var op = (function(){
         }
       },
       searchBarToggle: function(event) {
-        $("div#searchbar").toggle();
+        $("div#searchbar").slideToggle('medium');
         return false;
       },
       searchByTags: function(event) {
