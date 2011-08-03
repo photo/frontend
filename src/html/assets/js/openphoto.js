@@ -90,7 +90,6 @@ var op = (function(){
         $('.search-bar-toggle').click(op.handlers.searchBarToggle);
         $('form#form-tag-search').submit(op.handlers.searchByTags);
         $('.login').click(op.handlers.login);
-        $('form textarea.comment').click(function(){ $(this).animate({height:'30px'}, 100); });
       }
     },
     message: {

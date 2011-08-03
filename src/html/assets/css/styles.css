@@ -171,7 +171,7 @@ div#photo div.info div.comment-form div.see-all{
   float:right;
 }
 div#photo div.info form textarea {
-  height:15px;
+  height:30px;
   width:400px;
   border:solid 1px #ddd;
   color:#888;

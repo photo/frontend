@@ -71,7 +71,7 @@ class PhotoController extends BaseController
         $photo['thisWidth'] = intval($photo['width']/$photo['height']*960);
         $photo['thisHeight'] = 960;
       }
-      getTemplate()->display('template.php', array('body' => getTemplate()->get('photo.php', array('photo' => $photo, 'sizes' => $sizes))));
+      getTemplate()->display('template.php', array('body' => getTemplate()->get('photo.php', array('photo' => $photo))));
     }
     else
     {

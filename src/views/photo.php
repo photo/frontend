@@ -97,10 +97,10 @@
             <input type="text" name="tags" value="<?php echo implode(',', $photo['tags']); ?>">
 
             <label>Latitude</label>
-            <input type="text" name="latitude" value="<?php echo implode(',', $photo['latitude']); ?>">
+            <input type="text" name="latitude" value="<?php echo $photo['latitude']; ?>">
 
             <label>Longitude</label>
-            <input type="text" name="longitude" value="<?php echo implode(',', $photo['longitude']); ?>">
+            <input type="text" name="longitude" value="<?php echo $photo['longitude']; ?>">
 
             <button type="submit">Update photo</button>
           </form>
