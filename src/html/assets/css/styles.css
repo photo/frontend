@@ -75,7 +75,7 @@ header ul li a{
   height:48px;
   display:block;
 }
-div#searchbar{ display:none; position:relative; left:550px; }
+div#searchbar{ display:none; position:relative; left:440px; }
 header ul li a:link, header ul li a:visited, header ul li a:active{
   text-decoration:none;
   color:#8a8a8a;

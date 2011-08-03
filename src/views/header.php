@@ -19,7 +19,7 @@
             </div>
             <div id="searchbar">
               <form method="get" id="form-tag-search">
-                <input type="text" name="tags"> &nbsp; <button type="submit" class="pill button">Search</button>
+                <input type="text" name="tags"> &nbsp; <button type="submit">Search</button>
               </form>
             </div>
           </nav>
