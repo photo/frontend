@@ -63,11 +63,33 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
-    * Retrieve a photo from the database
+    * Retrieve the next and previous photo surrounding photo with $id
     *
-    * @param string $id ID of the photo to retrieve
+    * @param string $id ID of the photo to get next and previous for 
     * @return mixed Array on success, FALSE on failure 
     */
+  public function getPhotoNextPrevious($id)
+  {
+    $photo = $this->getPhoto($id);
+    if(!$photo)
+      return false;
+
+    $queue = new CFBatchRequest();
+    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` WHERE dateTaken>'{$photo['dateTaken']}' AND dateTaken IS NOT NULL ORDER BY dateTaken ASC LIMIT 1");
+    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` WHERE dateTaken<'{$photo['dateTaken']}' AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1");
+    $responses = $this->db->batch($queue)->send();
+    if(!$responses->areOK())
+      return false;
+    
+    $ret = array();
+    if(isset($responses[0]->body->SelectResult->Item))
+      $ret['previous'] = self::normalizePhoto($responses[0]->body->SelectResult->Item);
+    if(isset($responses[1]->body->SelectResult->Item))
+      $ret['next'] = self::normalizePhoto($responses[1]->body->SelectResult->Item);
+
+    return $ret;
+  }
+
   public function getPhoto($id)
   {
     $res = $this->db->select("SELECT * FROM `{$this->domainPhoto}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
@@ -474,6 +496,13 @@ class DatabaseSimpleDb implements DatabaseInterface
 
       $photo[$name] = $value;
     }
+
+    foreach($photo as $key => $val)
+    {
+      if(preg_match('/^path\d+x\d+/', $key))
+        $photo[$key] = sprintf('http://%s%s', $photo['host'], $val);
+    }
+
     return $photo;
   }
 

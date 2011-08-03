@@ -1,15 +1,25 @@
 <div id="photo">
   <div class="info">
-    <ul>
-      <li class="date"><?php echo Utility::dateLong($photo['dateTaken']); ?></li>
-      <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments">see all</a></li>
-      <?php if(!empty($photo['tags'])) { ?>
-        <li class="tags"><?php echo Utility::tagsAsLinks($photo['tags']); ?></li>
+    <div>
+      <ul>
+        <li class="date"><?php echo Utility::dateLong($photo['dateTaken']); ?></li>
+        <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments">see all</a></li>
+        <?php if(!empty($photo['tags'])) { ?>
+          <li class="tags"><?php echo Utility::tagsAsLinks($photo['tags']); ?></li>
+        <?php } ?>
+        <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
+          <li class="globe"><?php echo $photo['latitude']; ?>, <?php echo $photo['longitude']; ?> - <a href="#map">see map</a></li>
+        <?php } ?>
+      </ul>
+    </div>
+    <div class="next-previous">
+      <?php if(isset($photo['nextprevious']['previous'])) { ?>
+        <div class="previous"><a href="/photo/<?php echo $photo['nextprevious']['previous']['id']; ?>"><img src="<?php echo $photo['nextprevious']['previous']['path50x50xCR']; ?>"></a></div>
       <?php } ?>
-      <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
-        <li class="globe"><?php echo $photo['latitude']; ?>, <?php echo $photo['longitude']; ?> - <a href="#map">see map</a></li>
+      <?php if(isset($photo['nextprevious']['next'])) { ?>
+        <div class="next"><a href="/photo/<?php echo $photo['nextprevious']['next']['id']; ?>"><img src="<?php echo $photo['nextprevious']['next']['path50x50xCR']; ?>"></a></div>
       <?php } ?>
-    </ul>
+    </div>
     <div class="comment-form">
       <form method="post" action="/action/photo/<?php echo $photo['id']; ?>">
         <textarea rows="1" cols="50" name="value" class="comment"></textarea>

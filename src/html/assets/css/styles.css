@@ -136,11 +136,14 @@ div#photo div.info {
   margin:5px 0 0;
   font-size:.9em;
 }
+div#photo div.info>div{
+  float:left;
+}
 div#photo div.info ul{
   list-style:none;
   margin:0;
   padding:0;
-  width:300px;
+  width:350px;
   float:left;
 }
 div#photo div.info li {
@@ -160,7 +163,29 @@ div#photo div.info li.date {
 div#photo div.info li.heart {
   background:url("/assets/img/default/icon-heart.png") no-repeat;
 }
-
+div#photo div.info div.next-previous>div {
+  line-height:0;
+  float:left;
+  margin:0 4px;
+  border:solid 1px #ddd;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
+div#photo div.info div.previous {
+  background:url("/assets/img/default/icon-left.png") no-repeat 0 17px;
+  padding:0 0 0 15px;
+}
+div#photo div.info div.next {
+  background-position:top right;
+  background:url("/assets/img/default/icon-right.png") no-repeat 50px 17px;
+  padding:0 15px 0 0;
+}
+div#photo div.info div.previous img, div#photo div.info div.next img {
+  width:50px;
+  height:50px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
 div#photo div.info a:link, div#photo div.info a:visited, div#photo div.info a:active{
   color:#bbb;
 }
@@ -189,6 +214,8 @@ div#photo div.picture img {
   margin:auto;
   padding:0;
   border:0;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
   -moz-box-shadow: 2px 2px 2px #888;
   -webkit-box-shadow: 2px 2px 2px #888;
 }

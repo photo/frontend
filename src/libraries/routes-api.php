@@ -13,6 +13,8 @@ getApi()->post('/photo/upload.json', array('ApiPhotoController', 'upload'), EpiA
 // TODO, make internal for now
 getApi()->get('/photo/([a-zA-Z0-9]+)/url/(\d+)x(\d+)x?([A-Zx]*)?.json', array('ApiPhotoController', 'dynamicUrl'), EpiApi::external);
 //getApi()->post('/photo/([a-zA-Z0-9]+)/create/([a-z0-9]+)/([0-9]+)x([0-9]+)x?(.*).json', array('ApiPhotoController', 'dynamic'), EpiApi::external);
+// get a photo's next/previous
+getApi()->get('/photo/nextprevious/([a-zA-Z0-9]+).json', array('ApiPhotoController', 'nextPrevious'), EpiApi::external);
 
 // below are general endpoints that need to be included last
 // update a photo

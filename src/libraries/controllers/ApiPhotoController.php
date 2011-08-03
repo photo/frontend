@@ -21,6 +21,34 @@ class ApiPhotoController extends BaseController
     else
       return self::error('Photo deletion failure', false);
   }
+  /**
+    * Retrieve the next and previous photo given photo $id
+    *
+    * @param string $id ID of the photo to be deleted.
+    * @return string Standard JSON envelope 
+    */
+  public static function nextPrevious($id)
+  {
+    $nextPrevious = getDb()->getPhotoNextPrevious($id);
+    if(!$nextPrevious)
+      return self::error('Could not get next/previous photo', false);
+
+    // if specific sizes are requested then make sure we return them
+    if(isset($_GET['returnSizes']))
+    {
+      $sizes = (array)explode(',', $_GET['returnSizes']);
+      foreach($sizes as $size)
+      {
+        foreach($nextPrevious as $key => $photo)
+        {
+          $options = Photo::generateFragmentReverse($size);
+          $nextPrevious[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options']);
+        }
+      }
+    }
+
+    return self::success("Next/previous for photo {$id}", $nextPrevious);
+  }
 
   /**
     * Retrieve a photo from the remote datasource.
@@ -34,13 +62,6 @@ class ApiPhotoController extends BaseController
       $photo = getDb()->getPhotoWithActions($id);
     else
       $photo = getDb()->getPhoto($id);
-
-    // make all photos full path
-    foreach($photo as $key => $val)
-    {
-      if(preg_match('/^path\d+x\d+/', $key))
-        $photo[$key] = sprintf('http://%s%s', $photo['host'], $val);
-    }
 
     // if specific sizes are requested then make sure we return them
     if(isset($_GET['returnSizes']))
@@ -129,12 +150,6 @@ class ApiPhotoController extends BaseController
       $sizes = (array)explode(',', $filters['returnSizes']);
     foreach($photos as $key => $photo)
     {
-      foreach($photo as $photoKey => $photoKeyValue)
-      {
-        if(preg_match('/^path\d+x\d+/', $photoKey))
-          $photos[$key][$photoKey] = sprintf('http://%s%s', $photo['host'], $photoKeyValue);
-      }
-
       if(isset($sizes))
       {
         foreach($sizes as $size)

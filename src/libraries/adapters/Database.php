@@ -12,6 +12,7 @@ interface DatabaseInterface
   public function deletePhoto($id);
   public function deleteAction($id);
   // get methods read
+  public function getPhotoNextPrevious($id);
   public function getPhoto($id);
   public function getPhotoWithActions($id);
   public function getPhotos($filter = array(), $limit, $offset = null);

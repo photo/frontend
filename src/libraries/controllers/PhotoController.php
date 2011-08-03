@@ -60,6 +60,7 @@ class PhotoController extends BaseController
     $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => '960x960')));
     if($apiResp['code'] == 200)
     {
+      $apiNextPrevious = getApi()->invoke("/photo/nextprevious/{$id}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '50x50xCR')));
       $photo = $apiResp['result'];
       if($photo['width'] >= $photo['height'])
       {
@@ -71,6 +72,7 @@ class PhotoController extends BaseController
         $photo['thisWidth'] = intval($photo['width']/$photo['height']*960);
         $photo['thisHeight'] = 960;
       }
+      $photo['nextprevious'] = $apiNextPrevious['result'];
       getTemplate()->display('template.php', array('body' => getTemplate()->get('photo.php', array('photo' => $photo))));
     }
     else
