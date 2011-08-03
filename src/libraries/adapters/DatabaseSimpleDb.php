@@ -150,6 +150,7 @@ class DatabaseSimpleDb implements DatabaseInterface
             {
               $value = min($value, 40); // 40 pages at max of 2,500 recursion limit means 100k photos
               $offset = ($limit * $value) - $limit;
+              $page = $value;
             }
             break;
           case 'sortBy':
@@ -177,7 +178,7 @@ class DatabaseSimpleDb implements DatabaseInterface
         $nextToken = $res->body->SelectResult->NextToken;
         $params['NextToken'] = $nextToken;
         $currentPage++;
-      }while($currentPage <= $value);
+      }while($currentPage < $page);
     }
 
     $params = array('ConsistentRead' => 'true');
@@ -186,7 +187,7 @@ class DatabaseSimpleDb implements DatabaseInterface
 
 
     $queue = new CFBatchRequest();
-    $this->db->batch($queue)->select($sql = "SELECT * FROM `{$this->domainPhoto}` {$where} {$sortBy} LIMIT {$limit}", $params);
+    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$where} {$sortBy} LIMIT {$limit}", $params);
     if(isset($params['NextToken']))
       unset($params['NextToken']);
     $this->db->batch($queue)->select("SELECT COUNT(*) FROM `{$this->domainPhoto}` {$where}", $params);
