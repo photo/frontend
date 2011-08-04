@@ -40,7 +40,7 @@
           <input type="text" name="awsSecret" id="awsSecret" size="50" autocomplete="false">
         </div>
       </div>
-      <button type="button" class="button pill big" data-step="1">Continue to Step 2</button>
+      <button type="button" data-step="1">Continue to Step 2</button>
     </div>
     
 
@@ -55,7 +55,7 @@
         <label for="simpleDbDomain">Amazon SimpleDb Domain</label>
         <input type="text" name="simpleDbDomain" id="simpleDbDomain" value="openphoto">
       </div>
-      <button type="button" class="button pill big" data-step="2">Continue to Step 3</button>
+      <button type="button" data-step="2">Continue to Step 3</button>
     </div>
 
     <div id="form-step-3" class="hidden">
@@ -79,8 +79,7 @@
         <input type="text" name="email" id="email">
       </div>
 
-      <button type="submit" class="button pill big">Complete the Setup</button>
+      <button type="submit">Complete the Setup</button>
     </div>
-
   </form>
 </div>

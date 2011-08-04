@@ -2,10 +2,9 @@
 <html>
 <head>
   <link rel="stylesheet" href="/assets/css/styles.css">
-  <link rel="stylesheet" href="/assets/css/gh-buttons.css">
 </head>
 <body>
-  <div id="site">
+  <div>
     <?php getTemplate()->display('header.php'); ?>
     <div id="content" class="margin">
       <?php echo $body; ?>

@@ -124,6 +124,11 @@ class PhotoController extends BaseController
     */
   public static function upload()
   {
+    if(!User::isOwner())
+    {
+      getTemplate()->display('template.php', array('body' => getTemplate()->get('noPermission.php')));
+      return;
+    }
     $body = getTemplate()->get('upload.php');
     $js = getTemplate()->get('js/upload.js.php');
     getTemplate()->display('template.php', array('body' => $body, 'js' => $js, 'jsFiles' => array('/assets/js/plugins/jquery-ui.widget.js','/assets/js/plugins/jquery.fileupload.js')));

@@ -3,7 +3,7 @@
         <div class="margin">
           <div id="logo"></div>
           <nav>
-            <ul class="button-group">
+            <ul>
               <!--<li class="home <?php echo Utility::isActiveTab('home') ? 'on' : ''; ?>"><a href="/"><img src="/assets/img/default/header-navigation-home.png" align="absmiddle">Home</a></li>-->
               <li class="photos <?php echo Utility::isActiveTab('photos') ? 'on' : ''; ?>"><a href="/photos"><img src="/assets/img/default/header-navigation-photos.png" align="absmiddle">Photos</a></li>
               <li class="tags <?php echo Utility::isActiveTab('tags') ? 'on' : ''; ?>"><a href="/tags"><img src="/assets/img/default/header-navigation-tags.png" align="absmiddle">Tags</a></li>
