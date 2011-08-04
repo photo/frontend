@@ -24,10 +24,7 @@ button, a.button {
 button.delete, a.button.delete {
   border-color:#f06eaa;
 }
-input {
-  border:solid 1px #ddd;
-  padding:3px;
-}
+input, textarea, select{ border:solid 1px #ccc; color:#404040; padding:3px; }
 header{
   width:100%;
   height:49px;
@@ -78,9 +75,8 @@ header ul li a{
 div#searchbar{
   display:none;
   position:relative; 
-  width:225px;
-  left:550px; 
-  top:-5px;
+  width:226px;
+  top:1px;
   padding:10px;
   background-color:#efefef;
   border-left:solid 1px #cfcfcf;
@@ -327,7 +323,6 @@ div.margin { width:960px; margin:auto; }
 div#setup form em{ font-size:.75em; }
 div#setup label{ font-size:1.15em; color:#404040; display:block; position:relative; }
 div#setup label em{ font-size:.6em; position:relative; top:-2px; left:3px; }
-div#setup input, textarea, select{ border:solid 1px #ccc; font-size:1em; color:#404040; padding:4px; }
 div#setup label + input, label + textarea, label + select{ margin-bottom:20px; display:block; }
 div#setup{ width:400px; margin:auto; }
 div#setup ol#setup-steps{

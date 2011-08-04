@@ -22,7 +22,7 @@
     </div>
     <div class="comment-form">
       <form method="post" action="/action/photo/<?php echo $photo['id']; ?>">
-        <textarea rows="1" cols="50" name="value" class="comment"></textarea>
+      <textarea rows="1" cols="50" name="value" class="comment" <?php if(!User::isLoggedIn()) { ?> disabled="true" <?php } ?>></textarea>
         <input type="hidden" name="type" value="comment">
         <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
         <div class="buttons">

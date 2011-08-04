@@ -17,6 +17,9 @@ var op = (function(){
           }, 'json');
           return false;
       },
+      inputSelect: function(event) {
+        $(this).select().focus();
+      },
       login: function() {
         log('login');
         navigator.id.getVerifiedEmail(function(assertion) {
@@ -90,6 +93,7 @@ var op = (function(){
         $('.search-bar-toggle').click(op.handlers.searchBarToggle);
         $('form#form-tag-search').submit(op.handlers.searchByTags);
         $('.login').click(op.handlers.login);
+        $('input.select').live('click', op.handlers.inputSelect);
       }
     },
     message: {
@@ -150,6 +154,7 @@ var op = (function(){
         }
         
         log('login processing succeeded');
+        window.location.reload();
       },
       loginSuccess: function(assertion) {
         var params = {assertion: assertion};

@@ -121,15 +121,17 @@ class Photo
     * @param int $width The width of the requested photo.
     * @param int $height The height of the requested photo.
     * @param string $options Optional options to be applied on the photo
-    * @return string 
+    * @return mixed string URL on success, FALSE on failure
     */
   public static function generateUrlPublic($photo, $width, $height, $options = null)
   {
     $key = self::generateCustomKey($width, $height, $options);
     if(isset($photo[$key]))
       return $photo[$key];
-    else
+    elseif(isset($photo['id']))
       return "http://{$_SERVER['HTTP_HOST']}".self::generateUrlInternal($photo['id'], $width, $height, $options);
+    else
+      return false;
   }
 
   /**
