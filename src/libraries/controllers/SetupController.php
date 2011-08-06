@@ -15,7 +15,7 @@ class SetupController
     */
   public static function setup()
   {
-    $step = 1;
+    $step = 0;
     if(isset($_GET['step']))
       $step = intval($_GET['step']);
     $permissionCheck = self::verifyRequirements();
@@ -43,25 +43,51 @@ class SetupController
     */
   public static function setupPost()
   {
+    $fs_type = $_POST['fileSystem'];
+    $db_type = $_POST['database'];
+
+    $needs_aws = ($fs_type === 'S3') || ($db_type === 'SimpleDb');
+
     $opts = new stdClass;
-    $opts->awsKey = $_POST['awsKey'];
-    $opts->awsSecret = $_POST['awsSecret'];
+    if($needs_aws) 
+    {
+      $opts->awsKey = $_POST['awsKey'];
+      $opts->awsSecret = $_POST['awsSecret'];
+    }
     getConfig()->set('credentials', $opts);
-    $aws = new stdClass;
-    $aws->s3BucketName = $_POST['s3Bucket'];
-    $aws->simpleDbDomain = $_POST['simpleDbDomain'];
-    $aws->s3Host = $_POST['s3Bucket'].'.s3.amazonaws.com';
-    getConfig()->set('aws', $aws);
+    if($needs_aws) 
+    {
+      $aws = new stdClass;
+      $aws->s3BucketName = $_POST['s3Bucket'];
+      $aws->simpleDbDomain = $_POST['simpleDbDomain'];
+      $aws->s3Host = $_POST['s3Bucket'].'.s3.amazonaws.com';
+      getConfig()->set('aws', $aws);
+    }
+    if($db_type === 'MySql')
+    {
+      $mysql = new stdClass;
+      $mysql->mySqlHost = $_POST['mySqlHost'];
+      $mysql->mySqlUser = $_POST['mySqlUser'];
+      $mysql->mySqlPassword = $_POST['mySqlPassword'];
+      $mysql->mySqlDb = 'openphoto';
+      getConfig()->set('mysql', $mysql);
+    }
+    if($fs_type === 'fs')
+    {
+      $fsConfis = new stdClass;
+      $fsConfig->fsRoot = $_POST['fsRoot'];
+      getConfig()->set('fs', $fsConfig);
+    }
     $systems = new stdClass;
     $systems->database = $_POST['database'];
     $systems->fileSystem = $_POST['fileSystem'];
     getConfig()->set('systems', $systems);
 
-    $fs = getFs($_POST['fileSystem']);
-    $db = getDb($_POST['database']);
+    $fs = getFs($fs_type);
+    $db = getDb($db_type);
 
     /* halt on error */
-    if(empty($_POST['awsKey']) || empty($_POST['awsSecret']))
+    if($needs_aws && (empty($_POST['awsKey']) || empty($_POST['awsSecret'])))
       getRoute()->redirect('/setup?e=emptyCredentials');
     if(!$fs->initialize())
       getRoute()->redirect('/setup?e=fileSystemInitializationError');

@@ -1,33 +1,44 @@
 <div id="setup">
   <h1>Set up your OpenPhoto site</h1>
   <ol id="setup-steps">
-    <?php for($i=1; $i<=3; $i++) { ?>
+    <?php for($i=0; $i<=3; $i++) { ?>
       <li <?php if($step == $i){ ?>class="current"<?php } ?>>
         <?php echo $i; ?>
       </li>
     <?php } ?>
   </ol>
   <form method="post">
-    <input type="hidden" name="database" value="SimpleDb">
-    <input type="hidden" name="fileSystem" value="S3">
-    <!--
-    <div data-role="fieldcontain">
-      <label>Select Database</label>
-      <select name="database">
-        <option value="simpleDb">Amazon SimpleDb</option>
-      </select>
+<?
+//    <input type="hidden" name="database" value="SimpleDb">
+//    <input type="hidden" name="fileSystem" value="S3">
+?>
+    <div id="form-step-0">
+      <h2>Choose the backend you want to use <em>(<a href="">what's this?</a>)</em></h2>
+      <div id="backendSelection">
+      <div data-role="fieldcontain">
+        <label>Select Database</label>
+        <select name="database">
+          <option value="MySql">MySQL</option>
+          <option value="SimpleDb">Amazon SimpleDb</option>
+        </select>
+      </div>
+
+      <div data-role="fieldcontain">
+        <label for="fileSystem">Select File System</label>
+        <select name="fileSystem" id="fileSystem">
+          <option value="S3">Amazon S3</option>
+	  <option value="fs">Regular filesystem</option>
+<?
+//      <option value="cloudFiles">Cloudfiles</option>
+?>
+        </select>
+      </div>
+      </div>
+      <button type="button" class="button pill big" data-step="0">Continue to Step 1</button>
     </div>
 
-    <div data-role="fieldcontain">
-      <label for="fileSystem">Select File System</label>
-      <select name="fileSystem" id="fileSystem">
-        <option value="s3">Amazon S3</option>
-        <option value="cloudFiles">Cloudfiles</option>
-      </select>
-    </div>
-    -->
 
-    <div id="form-step-1">
+    <div id="form-step-1" class="hidden">
       <h2>Enter your Amazon credentials <em>(<a href="">what's this?</a>)</em></h2>
       <div id="awsCredentials">
         <div data-role="fieldcontain">
@@ -40,7 +51,26 @@
           <input type="text" name="awsSecret" id="awsSecret" size="50" autocomplete="false">
         </div>
       </div>
+
+      <!-- for MySQL -->
+      <h2>Enter the MySQL info (if needed)</h2>
+      <div id="mySqlCredentials">
+        <div data-role="fieldcontain">
+          <label for="mySqlHost">MySQL Host</label>
+          <input type="text" name="mySqlHost" id="mySqlHost" size="50" autocomplete="false">
+        </div>
+        <div data-role="fieldcontain">
+          <label for="mySqlUser">MySQL Username</label>
+          <input type="text" name="mySqlUser" id="mySqlUser" size="50" autocomplete="false">
+        </div>
+        <div data-role="fieldcontain">
+          <label for="mySqlPassword">MySQL Password</label>
+          <input type="text" name="mySqlPassword" id="mySqlPassword" size="50" autocomplete="false">
+        </div>
+      </div>
+
       <button type="button" data-step="1">Continue to Step 2</button>
+
     </div>
     
 
@@ -55,7 +85,16 @@
         <label for="simpleDbDomain">Amazon SimpleDb Domain</label>
         <input type="text" name="simpleDbDomain" id="simpleDbDomain" value="openphoto">
       </div>
+
+      <!-- For plain filesystem -->
+      <h2>Create filesystem access info (if not using AWS)</h2>
+      <div data-role="fieldcontain">
+        <label for="fsRoot">Filesystem root</label>
+        <input type="text" name="fsRoot" id="fsRoot" size="50">
+      </div>
+
       <button type="button" data-step="2">Continue to Step 3</button>
+
     </div>
 
     <div id="form-step-3" class="hidden">

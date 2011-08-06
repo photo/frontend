@@ -62,6 +62,9 @@ function getDb(/*$type, $opts*/)
     case 'SimpleDb':
       $database = new DatabaseSimpleDb($opts);
       break;
+    case 'MySql':
+      $database = new DatabaseMySql($opts);
+      break;
   }
   
   if($database)
