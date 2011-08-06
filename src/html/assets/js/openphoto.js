@@ -72,14 +72,19 @@ var op = (function(){
       setupContinue: function(event) {
         var el = $(this),
           step = el.attr('data-step');
-        if(step == 1) {
+	if(step == 0) {
           $("div#setup ol#setup-steps li[class=current]").removeClass('current');
           $("div#setup ol#setup-steps li:nth-child(2)").addClass('current');
+          $("div#setup #form-step-0").hide('medium');
+          $("div#setup #form-step-1").show('medium');	  
+	} else if(step == 1) {
+          $("div#setup ol#setup-steps li[class=current]").removeClass('current');
+          $("div#setup ol#setup-steps li:nth-child(3)").addClass('current');
           $("div#setup #form-step-1").hide('medium');
           $("div#setup #form-step-2").show('medium');
         } else if(step == 2) {
           $("div#setup ol#setup-steps li[class=current]").removeClass('current');
-          $("div#setup ol#setup-steps li:nth-child(3)").addClass('current');
+          $("div#setup ol#setup-steps li:nth-child(4)").addClass('current');
           $("div#setup #form-step-2").hide('medium');
           $("div#setup #form-step-3").show('medium');
         }
