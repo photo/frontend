@@ -280,7 +280,6 @@ class Photo
       $dateUploaded = time();
       $dateTaken = @$exif['dateTaken'];
       $attributes = array_merge(
-        $attributes, 
         self::getDefaultAttributes(),
         array(
           'hash' => sha1_file($localFile),
@@ -299,7 +298,8 @@ class Photo
           'dateUploadedYear' => date('Y', $dateUploaded),
           'pathOriginal' => $paths['pathOriginal'], 
           'pathBase' => $paths['pathBase']
-        )
+        ),
+        $attributes
       );
       $stored = $db->putPhoto($id, $attributes);
       unlink($localFile);
