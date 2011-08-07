@@ -72,11 +72,11 @@ class SetupController
       $mysql->mySqlDb = 'openphoto';
       getConfig()->set('mysql', $mysql);
     }
-    if($fs_type === 'fs')
+    if($fs_type === 'localfs')
     {
       $fsConfis = new stdClass;
       $fsConfig->fsRoot = $_POST['fsRoot'];
-      getConfig()->set('fs', $fsConfig);
+      getConfig()->set('localfs', $fsConfig);
     }
     $systems = new stdClass;
     $systems->database = $_POST['database'];
