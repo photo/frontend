@@ -24,7 +24,7 @@ require getConfig()->get('paths')->adapters . '/DatabaseSimpleDb.php';
 require getConfig()->get('paths')->adapters . '/DatabaseMySql.php';
 require getConfig()->get('paths')->adapters . '/FileSystem.php';
 require getConfig()->get('paths')->adapters . '/FileSystemS3.php';
-require getConfig()->get('paths')->adapters . '/FileSystemFS.php';
+require getConfig()->get('paths')->adapters . '/FileSystemLocal.php';
 require getConfig()->get('paths')->libraries . '/functions.php';
 
 // models

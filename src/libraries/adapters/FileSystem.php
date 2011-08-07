@@ -46,7 +46,7 @@ function getFs(/*$type, $opts*/)
       $filesystem = new FileSystemS3($opts);
       break;
     case 'fs':
-      $filesystem = new FileSystemFS($opts);
+      $filesystem = new FileSystemLocal($opts);
       break;
   }
   

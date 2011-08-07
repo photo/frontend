@@ -5,13 +5,13 @@
  * This class defines the functionality defined by FileSystemInterface for a plain Filesystem.
  * @author Hub Figuiere <hub@figuiere.net>
  */
-class FileSystemFS implements FileSystemInterface
+class FileSystemLocal implements FileSystemInterface
 {
   private $root;
 
   public function __construct($opts)
   {
-    $this->root = getConfig()->get('fs')->fsRoot;
+    $this->root = getConfig()->get('localfs')->fsRoot;
     if(!file_exists($this->root)) {
       mkdir($this->root, 0775, true);
     }
@@ -50,7 +50,7 @@ class FileSystemFS implements FileSystemInterface
     foreach($files as $file)
     {
       list($localFile, $remoteFile) = each($file);
-      $res = $self->putPhot($localFile, $remoteFile);
+      $res = $self->putPhoto($localFile, $remoteFile);
       if(!$res)
         return false;
     }
@@ -68,6 +68,3 @@ class FileSystemFS implements FileSystemInterface
   }
 
 }
-
-
-?>
