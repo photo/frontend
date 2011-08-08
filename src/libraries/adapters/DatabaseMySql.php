@@ -1,34 +1,30 @@
 <?php
 /** 
  * MySQL implementation
+ *
+ * This class defines the functionality defined by DatabaseInterface for a MySQL database.
+ * @author Hub Figuiere <hub@figuiere.net>
  */
 class DatabaseMySql implements DatabaseInterface
 {
-  private $db;
-
-  private function sanitize($s)
-  {
-    return mysql_real_escape_string($s);
-  }
-
   public function __construct($opts)
   {
     $mysql = getConfig()->get('mysql');
-    $this->db = mysql_connect($mysql->mySqlHost, $mysql->mySqlUser, $mysql->mySqlPassword);
-    mysql_select_db(getConfig()->get('mysql')->mySqlDb, $this->db);
+    EpiDatabase::employ('mysql', $mysql->mySqlDb, 
+                        $mysql->mySqlHost, $mysql->mySqlUser, $mysql->mySqlPassword);
   }
 
   // delete methods can delete or toggle status
   public function deletePhoto($id)
   {
-    $query = "DELETE FROM photos WHERE id=`" . self::sanitize($id) . "`;";
-    return mysql_query($query, $this->db);
+    $res = getDatabase()->execute("DELETE FROM photo WHERE id=:id", array(':id' => $id));
+    return ($res == 1);
   }
 
   public function deleteAction($id)
   {
-    $query = "DELETE FROM actions WHERE id=`" . self::sanitize($id) . "`;";
-    return mysql_query($query, $this->db);
+    $res = getDatabase()->execute("DELETE FROM action WHERE id=:id", array(':id' => $id));
+    return ($res == 1);
   }
 
   // get methods read
@@ -38,22 +34,9 @@ class DatabaseMySql implements DatabaseInterface
     if(!$photo)
       return false;
 
-    $query = "SELECT * FROM photos WHERE dateTaken> '" 
-             . self::sanitize($photo['dateTaken']) 
-             . "' AND dateTaken IS NOT NULL ORDER BY dateTaken ASC LIMIT 1";
-    $result = mysql_query($query, $this->db);
-    if($result) {
-      $photo_prev = mysql_fetch_object($result);
-    }
-    $query = "SELECT * FROM photos WHERE dateTaken< '" 
-             . self::sanitize($photo['dateTaken']) 
-             . "' AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1";
-    $result = mysql_query($query, $this->db);
-    if($result) {
-      $photo_next = mysql_fetch_object($result);
-    }
-    
-    
+    $photo_prev = getDatabase()->one("SELECT * FROM photo WHERE dateTaken> :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken ASC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
+    $photo_next = getDatabase()->one("SELECT * FROM photo WHERE dateTaken< :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
+
     $ret = array();
     $ret['previous'] = $photo_prev;
     $ret['next'] = $photo_next;
@@ -63,28 +46,27 @@ class DatabaseMySql implements DatabaseInterface
 
   public function getPhoto($id)
   {
-    $query = "SELECT * FROM photos WHERE id=`" . self::sanitize($id) . "`'";
-    $result = mysql_query($query, $this->db);
-    if($result) {
-      $photo = mysql_fetch_object($result);
-      return $photo;
-    }
-    return false;
+    $photo = getDabase()->one("SELECT * FROM photo WHERE id=:id", array(':id' => $id));
+    if(!isset($photo))
+      return false;
+    return $photo;
   }
 
   public function getPhotoWithActions($id)
   {
     $photo = $this->getPhoto($id);
-    if($photo) {
-      $query = "SELECT * FROM actions WHERE targetType='photo' AND targetId=`"
-      	       . self::sanitize($id) . "`;";
-      $result = mysql_query($query, $this->db);
-      if($result) {
-        $photo['actions'] = array();
-        while($action = mysql_fetch_object($result)) {
+    if($photo) 
+    {
+      $actions = getDatabase()->all("SELECT * FROM action WHERE targetType='photo' AND targetId=:id",
+      	       array(':id' => $id));
+      if($actions)
+      {
+        foreach($actions as $action)
+        {
+           $photo['actions'] = array();
 	   $action['appId'] = getConfig()->get('application')->appId;
-	   $photo['actions'][] = $action;
-	}
+	   $photo['actions'][] = $action;          
+        }
       }
     }
     return $photo;
@@ -130,8 +112,8 @@ class DatabaseMySql implements DatabaseInterface
       do
       {
       // FIXME FIXME FIXME
-        $res = mysql_query("SELECT * FROM `photos` {$where} {$sortBy} LIMIT {$iterator}",
-	                   $this->db);
+        //$res = mysql_query("SELECT * FROM `photo` {$where} {$sortBy} LIMIT {$iterator}",
+	//                   $this->db);
 	// todo deal with pages
         //if(!$res->body->SelectResult->NextToken)
         //  break;
@@ -142,23 +124,13 @@ class DatabaseMySql implements DatabaseInterface
       }while($currentPage <= $value);
     }
 
-    $photos = array();
-
-    $query = "SELECT * FROM photos {$where} {$sortBy} LIMIT {$limit}";
-    $response = mysql_query($query, $this->db);
-    if($response)
+    $photos = getDatabase()->all("SELECT * FROM photo {$where} {$sortBy} LIMIT {$limit}");
+    if(!$photo)
+      return false;
+    $result = getDatabase()->one("SELECT COUNT(*) FROM photo {$where}");
+    if($result)
     {
-      while($photo = mysql_fetch_object($result))
-      {
-        $photos[] = $photo;
-      }
-    }
-
-    $query = "SELECT COUNT(*) FROM photos {$where}";
-    $response = mysql_query($query, $this->db);
-    if($response)
-    {
-      $photos[0]['totalRows'] = intval(mysql_fetch_field($result));
+      $photos[0]['totalRows'] = intval($result);
     }
 
     return $photos;
@@ -166,19 +138,8 @@ class DatabaseMySql implements DatabaseInterface
 
   public function getTags($filter = array())
   {
-    $query = "SELECT * FROM tags WHERE `count` IS NOT NULL AND `count` > '0' "
-    	     . "AND id IS NOT NULL ORDER BY id";
-    $tags = array();
-    $result = mysql_query($query, $this->db);
-    if($result) {
-      while($tag = mysql_fetch_object($result)) {
-        $tags[] = $tag;
-      }
-    }
-    else {
-      return null;
-    }
-    return false;
+    $tags = getDatabase()->all("SELECT * FROM tag WHERE `count` IS NOT NULL AND `count` > '0' AND id IS NOT NULL ORDER BY id");
+    return $tags;
   }
 
   // post methods update
@@ -194,8 +155,8 @@ class DatabaseMySql implements DatabaseInterface
       $count = 0;
     else
       $count = max(0, intval($params['count']));
-    $query = "INSERT INTO tags (id, count) VALUES ($id, $count);";
-    return mysql_query($query, $this->db);
+    return getDatabase()->execute("INSERT INTO tag (id, count) VALUES (:id, :count)",
+            array(':id' => $id, ':count' => $count)) == 1;
   }
 
   public function postTags($params)
@@ -221,12 +182,24 @@ class DatabaseMySql implements DatabaseInterface
   }
   public function putUser($id, $params)
   {
+    foreach($params as $key => $value)
+    {
+      if(isset($stmt)) {
+        $stmt .= ",";
+      }
+      $stmt .= "{$key}={$value}";
+    }
+    $result = getDatabase()->execute("UPDATE user SET {$stmt} WHERE id=:id", array(':id' => $id));
+    return ($result == 1);
   }
+
   public function putTag($id, $params)
   {
+    return $this->postTag($id, $params);
   }
   public function initialize()
   {
+    // create the database
     return true;
   }
 

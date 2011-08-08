@@ -1,5 +1,5 @@
 
-CREATE TABLE IF NOT EXISTS  `photos` (
+CREATE TABLE IF NOT EXISTS  `photo` (
   `id` varchar(255) NOT NULL UNIQUE,
   `host` varchar(255),
   `title` varchar(255),
@@ -38,24 +38,24 @@ CREATE TABLE IF NOT EXISTS  `photos` (
   `pathBase` varchar(1000),
 
   PRIMARY KEY(`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE IF NOT EXISTS `tags` (
+CREATE TABLE IF NOT EXISTS `tag` (
   `id` varchar(255) NOT NULL UNIQUE,
   `count` int,
 
   PRIMARY KEY(`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE IF NOT EXISTS `users` (
+CREATE TABLE IF NOT EXISTS `user` (
   `lastPhotoId` varchar(255),
   `lastActionId` varchar(255)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-CREATE TABLE IF NOT EXISTS `actions` (
+CREATE TABLE IF NOT EXISTS `action` (
   `id` varchar(255) NOT NULL UNIQUE,
   `appId` varchar(255),
   `targetId` varchar(255),
@@ -72,4 +72,4 @@ CREATE TABLE IF NOT EXISTS `actions` (
   `status` integer,
 
   PRIMARY KEY(`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
