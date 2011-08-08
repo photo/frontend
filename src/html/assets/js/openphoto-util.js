@@ -9,6 +9,11 @@
     if ( typeof(OP) === "undefined") {
         OP = {};
     }
+
+
+	//constants
+	var PLUGIN_FILE_PREFIX = 'openphoto-lib';
+
         
     /**
     * Class that contains all utility functions for OpenPhoto
@@ -16,14 +21,188 @@
     */
     OP.Util = {
     
-    
+		/**
+		* default configuration options
+		* @type {object}
+		* @property config
+		*/
+		config: {
+			baseURL: 'http://localhost/openphoto',
+			jsLocation: '/assets/js',
+			css: [],
+			js: []
+		},
+		
+		/**
+		* the event map for click events
+		* @type {object}
+		* @property eventMap
+		*/
+		eventMap : {},
+		
+		/**
+		* A hash of custom events
+		* @type {object}
+		* @property _customEvents
+		*/
+		_customEvents: {},		
+
+		/**
+		* initialization method
+		* @param {object} lib - the library to use
+		* @param {object} config - the configuration object
+		* @method init
+		*/
+		init: function(lib, config) {
+			
+			this.config = this.merge(this.config, config);
+						
+			// we specify what library type in the .ini file
+			// either jQuery or YUI - and then the user can load
+			// additional css/js assets by specifying the files in the 
+			// js config - as specified by the plugin file (that will be user generated).
+				
+			//the library is a requirement, by default jQuery will be loaded
+			this.lib = lib;
+			this.libType = 'jQuery';
+		
+			// get the library plugin file that maps library functions to a normalized
+			// naming so that we can use whatever library that is specified
+			this.getLibraryPlugin();		
+		
+		},
+		
+		/**
+		* Now that the library plugin has been loaded, we add all event handlers
+		* @return {void}
+		* @method _init
+		*/
+		_init: function() {
+			
+			//attach events
+			this.attachEvent( document.getElementsByTagName('html')[0], 'click', this.onviewevent, this);
+			
+		},	
+		
+		/**
+		* handles events - delegates based on className
+		* @param {Event} e
+		* @return {void}
+		* @method onviewevent
+		*/
+		onviewevent: function(e) {
+		
+			var targ = e.target,
+				classes = targ.className.split(" "),
+				length = classes.length,
+				map = this.eventMap,
+				cls;
+				
+			while (length--) {
+				cls = classes[length];
+				if (map[cls]) {
+					map[cls].call(this, e);
+					e.preventDefault();
+					return false; //this should be done later - may want to trigger multiple events
+				}			
+			}		
+			
+			
+		},
+				
+		/* -------------------------------------------------
+        *               Utilities
+        * ------------------------------------------------- */
+
+
+		/**
+		* Get the library plugin which will create a normalized interface
+		* for the libraries so that they can be used properly. Onload of the
+		* library plugin, we will attach our event listeners
+		* @return {void}
+		* @method getLibraryPlugin
+		*/
+		getLibraryPlugin: function() {
+		
+			var url = this.config.baseUrl + this.config.jsLocation + PLUGIN_FILE_PREFIX + this.libType + ".js";
+			
+			//load the script and attach the event handlers onload
+			this.loadScript(url, this._init, this);
+			
+		},
+				
+		/**
+		* Shallow merge of all objects passed into it in order of the objects passed in
+		* this is just needed to merge the config, but will probably be overwritten by
+		* the library plugin
+		* @return {object} merged object
+		* @method merge
+		*/
+		merge: function() {
+		
+			var merged = {},
+				i,
+				j,
+				obj,
+				key;
+				
+			for (i=0, j=arguments.length; i<j; i++) {
+				obj = arguments[i];
+				for (key in obj) {
+					if (obj.hasOwnProperty(key)) {
+						merged[key] = obj[key];
+					}
+				}
+			}
+						
+			return merged;
+		
+		},		
+		
+		/**
+		* Utility function to dynamically load a script
+		* @param {string} url of the source of the script
+		* @param {Function} fn the callback function to execute onload
+		* @param {object} scope - the scope of the callback function
+		* @return {void}
+		* @method loadScript
+		*/
+		loadScript: function(url, fn, scope) {
+			
+			var head = document.getElementsByTagName('head')[0],
+				script = document.createElement('script'),
+				scope,
+				callback;
+								
+			script.type = "text/javascript";
+			script.src = url;
+			
+			//callback function was specified - add the onload handlers
+			if (typeof(fn) !== 'undefined') {
+				
+				scope = scope || window,
+				callback = function() {
+					return fn.apply(scope);
+				};
+				
+				script.onload = callback;
+				script.onreadystatechange = function() {
+					if (this.readyState === 'complete') {
+						callback();
+					}
+				}
+				
+			}
+			
+			head.appendChild(script);
+			
+		},	
+		
+
         /* -------------------------------------------------
         *               Custom Events
         * ------------------------------------------------- */
-        
-        _customEvents: {},
-        
-        
+                
         /**
         * Subscribe to a custom event - the callback will be executed when the custom event is fired 
         * @param {string} eventName - the name of the custom event to subscribe to
@@ -105,6 +284,7 @@
             }
         
         }
+
     
     };
 
