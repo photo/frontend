@@ -67,6 +67,7 @@
           <label for="mySqlPassword">MySQL Password</label>
           <input type="text" name="mySqlPassword" id="mySqlPassword" size="50" autocomplete="false">
         </div>
+        <input type="hidden" name="mySqlDb" value="openphoto">
       </div>
 
       <button type="button" data-step="1">Continue to Step 2</button>

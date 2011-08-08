@@ -69,7 +69,7 @@ class SetupController
       $mysql->mySqlHost = $_POST['mySqlHost'];
       $mysql->mySqlUser = $_POST['mySqlUser'];
       $mysql->mySqlPassword = $_POST['mySqlPassword'];
-      $mysql->mySqlDb = 'openphoto';
+      $mysql->mySqlDb = $_POST['mySqlPassword'];
       getConfig()->set('mysql', $mysql);
     }
     if($fs_type === 'localfs')
