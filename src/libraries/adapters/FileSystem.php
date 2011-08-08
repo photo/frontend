@@ -45,7 +45,7 @@ function getFs(/*$type, $opts*/)
     case 'S3':
       $filesystem = new FileSystemS3($opts);
       break;
-    case 'fs':
+    case 'localfs':
       $filesystem = new FileSystemLocal($opts);
       break;
   }
@@ -53,5 +53,5 @@ function getFs(/*$type, $opts*/)
   if($filesystem)
     return $filesystem;
 
-  throw new Exception("FileSysetm Provider {$type} does not exist", 404);
+  throw new Exception("FileSystem Provider {$type} does not exist", 404);
 }

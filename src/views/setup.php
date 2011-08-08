@@ -27,7 +27,7 @@
         <label for="fileSystem">Select File System</label>
         <select name="fileSystem" id="fileSystem">
           <option value="S3">Amazon S3</option>
-	  <option value="localfs">Regular filesystem</option>
+	  <option value="localfs">Local filesystem</option>
 <?
 //      <option value="cloudFiles">Cloudfiles</option>
 ?>
