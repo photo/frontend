@@ -21,7 +21,7 @@ class SetupController
     $permissionCheck = self::verifyRequirements();
     if($permissionCheck !== true)
     {
-      getTemplate()->display('blank.php', array('body' => getTemplate()->get('setupRequirements.php', array('errors' => $errors))));
+      getTemplate()->display('blank.php', array('body' => getTemplate()->get('setupRequirements.php', array('errors' => $permissionCheck))));
       return;
     }
 
@@ -134,9 +134,14 @@ class SetupController
         $errors[] = "An error occurred while trying to create {$generatedDir}";
       }
     }
-    else
+    elseif(!is_writable($generatedDir))
     {
       $errors[] = "{$generatedDir} exists but is not writable by {$user}";
+    }
+        
+    if((!class_exists('Imagick') && !class_exists('Gmagick')))
+    {
+      $errors[] = "Imagick does not exist (nor does Gmagick)";
     }
     
     return $errors;
