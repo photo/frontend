@@ -108,10 +108,7 @@ class EpiRoute
     if(!$routeDef['postprocess'])
       return $response;
     else
-    {
-      header('Content-type: application/json');
       echo json_encode($response);
-    }
   }
 
 
