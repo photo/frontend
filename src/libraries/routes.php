@@ -18,3 +18,6 @@ getRoute()->get('/photos/?(.+)?', array('PhotoController', 'photos'));
 
 // view tags
 getRoute()->get('/tags', array('TagController', 'tags'));
+
+// oauth request token
+getRoute()->get('/v[1]/oauth/request_token', array('OAuthController', 'requestToken'));
