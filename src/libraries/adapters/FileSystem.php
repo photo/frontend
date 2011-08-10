@@ -11,6 +11,7 @@ interface FileSystemInterface
   public function getPhoto($filename);
   public function putPhoto($localFile, $remoteFile);
   public function putPhotos($files);
+  public function getHost();
   public function initialize();
 }
 
