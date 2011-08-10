@@ -140,6 +140,8 @@ class ApiPhotoController extends BaseController
       }
     }
     // merge path parameters with GET parameters. GET parameters override
+    if(isset($_GET['pageSize']) && intval($_GET['pageSize']) == $_GET['pageSize'])
+      $pageSize = intval($_GET['pageSize']);
     $filters = array_merge($filters, $_GET);
     $page = 1;
     if(isset($filters['page']))
