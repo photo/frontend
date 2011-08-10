@@ -128,7 +128,7 @@ class ApiPhotoController extends BaseController
             $pageSize = intval($parts[1]);
             break;
           case 'sortBy':
-            $sortOptions = explode(',', $value);
+            $sortOptions = (array)explode(',', $value);
             if(count($sortOptions) != 2 || preg_match('/[^a-zA-Z0-9,]/', $parts[1]))
               continue;
             $filters[$parts[0]] = $parts[1];
