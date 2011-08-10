@@ -3,6 +3,7 @@
  * MySQL implementation
  *
  * This class defines the functionality defined by DatabaseInterface for a MySQL database.
+ * It use EpiDatabase.
  * @author Hub Figuiere <hub@figuiere.net>
  */
 class DatabaseMySql implements DatabaseInterface
@@ -38,18 +39,29 @@ class DatabaseMySql implements DatabaseInterface
     $photo_next = getDatabase()->one("SELECT * FROM photo WHERE dateTaken< :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
 
     $ret = array();
-    $ret['previous'] = $photo_prev;
-    $ret['next'] = $photo_next;
+    $ret['previous'] = self::normalizePhoto($photo_prev);
+    $ret['next'] = self::normalizePhoto($photo_next);
 
     return $ret;
   }
 
+  // get all version for a photo
+  // this is for the fields "pathNxN"
+  private function getPhotoVersions($id)
+  {
+    $version = getDatabase()->one("SELECT key,path FROM photoVersion WHERE id=:id",
+                 array(':id' => $id));
+    if(!isset($version))
+      return false;
+    return $version;
+  }
+
   public function getPhoto($id)
   {
-    $photo = getDabase()->one("SELECT * FROM photo WHERE id=:id", array(':id' => $id));
+    $photo = getDatabase()->one("SELECT * FROM photo WHERE id=:id", array(':id' => $id));
     if(!isset($photo))
       return false;
-    return $photo;
+    return self::normalizePhoto($photo);
   }
 
   public function getPhotoWithActions($id)
@@ -145,10 +157,19 @@ class DatabaseMySql implements DatabaseInterface
   // post methods update
   public function postPhoto($id, $params)
   {
+    $params = self::preparePhoto($id, $params);
+    $stmt = self::sqlInsertExplode($params);
+    $res = getDatabase()->execute("INSERT INTO photo ({$stmt['cols']}) VALUES ({$stmt['vals']})");
+    return $res == 1;
   }
+
   public function postUser($id, $params)
   {
+    $stmt = self::sqlInsertExplode($params);
+    $res = getDatabase()->execute("INSERT INTO user ({$stmt['cols']}) VALUES ({$stmt['vals']})");
+    return $res == 1;
   }
+
   public function postTag($id, $params)
   {
     if(!isset($params['count']))
@@ -172,23 +193,55 @@ class DatabaseMySql implements DatabaseInterface
 
   public function postTagsCounter($params)
   {
+    $tagsToUpdate = $tagsFromDb = array();
+    foreach($params as $tag => $changeBy)
+      $tagsToUpdate[$tag] = $changeBy;
+    $justTags = array_keys($tagsToUpdate);
+
+    // TODO call getTags instead
+    $res = getDatabase()->all("SELECT * FROM tag  WHERE itemName() IN ('" . implode("','", $justTags) . "')");
+
+    if($rest)
+    {
+      foreach($res as $val)
+        $tagsFromDb[] = self::normalizeTag($val);
+    }
+
+    // track the tags which need to be updated
+    // start with ones which already exist in the database and increment them accordingly
+    $updatedTags = array();
+    foreach($tagsFromDb as $key => $tagFromDb)
+    {
+      $thisTag = $tagFromDb['id'];
+      $changeBy = $tagsToUpdate[$thisTag];
+      $updatedTags[] = array('id' => $thisTag, 'count' => $tagFromDb['count']+$changeBy);
+      // unset so we can later loop over tags which didn't already exist
+      unset($tagsToUpdate[$thisTag]);
+    }
+    // these are new tags
+    foreach($tagsToUpdate as $tag => $count)
+      $updatedTags[] = array('id' => $tag, 'count' => $count);
+    return $this->postTags($updatedTags);
   }
+
   // put methods create but do not update
   public function putAction($id, $params)
   {
+    $stmt = self::sqlUpdateExplode($params);
+    $result = getDatabase()->execute("UPDATE action SET {$stmt} WHERE id=:id", array(':id' => $id));
+    return ($result == 1);
   }
+
   public function putPhoto($id, $params)
   {
+    $stmt = self::sqlUpdateExplode($params);
+    $result = getDatabase()->execute("UPDATE photo SET {$stmt} WHERE id=:id", array(':id' => $id));
+    return ($result == 1);
   }
+
   public function putUser($id, $params)
   {
-    foreach($params as $key => $value)
-    {
-      if(isset($stmt)) {
-        $stmt .= ",";
-      }
-      $stmt .= "{$key}={$value}";
-    }
+    $stmt = self::sqlUpdateExplode($params);
     $result = getDatabase()->execute("UPDATE user SET {$stmt} WHERE id=:id", array(':id' => $id));
     return ($result == 1);
   }
@@ -197,6 +250,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     return $this->postTag($id, $params);
   }
+
   public function initialize()
   {
     // create the database
@@ -219,6 +273,73 @@ class DatabaseMySql implements DatabaseInterface
       return "{$existing} and {$add} ";
   }
 
-}
+  /**
+   * Explode params associative array into SQL update statement lists
+   * Return a string
+   */
+  private function sqlUpdateExplode($params)
+  {
+    foreach($params as $key => $value)
+    {
+      if(isset($stmt)) {
+        $stmt .= ",";
+      }
+      $stmt .= "{$key}={$value}";
+    }
+    return $stmt;
+  }
 
-?>
+  /**
+   * Explode params associative array into SQL insert statement lists
+   * Return an array with 'cols' and 'vals'
+   */
+  private function sqlInsertExplode($params)
+  {
+    $stmt = array();
+    foreach($params as $key => $value)
+    {
+      if(isset($stmt['cols']))
+        $stmt['cols'] .= ",";
+      if(isset($stmt['vals']))
+        $stmt['vals'] .= ",";
+      $stmt['cols'] .= $key;
+      $stmt['vals'] .= "'{$value}'";
+    }
+    return $stmt;
+  }
+
+
+  /**
+    * Formats a photo to be updated or added to the database.
+    * Primarily to properly format tags as an array.
+    *
+    * @param string $id ID of the photo.
+    * @param array $params Parameters for the photo to be normalized.
+    * @return array
+    */
+  private function preparePhoto($id, $params)
+  {
+    $params['id'] = $id;
+    if(!isset($params['tags']))
+      $params['tags'] = array();
+    elseif(!is_array($params['tags']))
+      $params['tags'] = (array)explode(',', $params['tags']);
+    return $params;
+  }
+
+  /**
+   * Finish loading a photo. 
+   */
+  private function normalizePhoto($photo)
+  {
+    $photo['appId'] = getConfig()->get('application')->appId;
+
+    $versions = getPhotoVersions($id);
+    foreach($versions as $key => $path)
+    {
+      $photo[$key] = $path;
+    }
+    // TODO fix tags
+    return $photo;
+  }
+}
