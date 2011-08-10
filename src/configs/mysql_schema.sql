@@ -41,6 +41,13 @@ CREATE TABLE IF NOT EXISTS  `photo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE IF NOT EXISTS `photoVersion` (
+    `id` varchar(255),
+    `key` varchar(255),
+    `path` varchar(1000),
+    PRIMARY KEY(`id`,`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `tag` (
   `id` varchar(255) NOT NULL UNIQUE,
   `count` int,
