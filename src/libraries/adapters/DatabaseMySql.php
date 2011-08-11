@@ -137,7 +137,7 @@ class DatabaseMySql implements DatabaseInterface
     }
 
     $photos = getDatabase()->all("SELECT * FROM photo {$where} {$sortBy} LIMIT {$limit}");
-    if(!$photo)
+    if(!$photos)
       return false;
     $result = getDatabase()->one("SELECT COUNT(*) FROM photo {$where}");
     if($result)
@@ -250,8 +250,9 @@ class DatabaseMySql implements DatabaseInterface
 
   public function putPhoto($id, $params)
   {
+    $params = self::preparePhoto($id, $params);
     $stmt = self::sqlInsertExplode($params);
-    $result = getDatabase()->execute("INSERT INTO photo (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $result = getDatabase()->execute("INSERT INTO photo ({$stmt['cols']}) VALUES ({$stmt['vals']})");
     return true;
   }
 
@@ -360,9 +361,12 @@ class DatabaseMySql implements DatabaseInterface
     $photo['appId'] = getConfig()->get('application')->appId;
 
     $versions = $this->getPhotoVersions($photo['id']);
-    foreach($versions as $key => $path)
+    if($versions)
     {
-      $photo[$key] = $path;
+      foreach($versions as $key => $path)
+      {
+        $photo[$key] = $path;
+      }
     }
     // TODO fix tags
     return $photo;
