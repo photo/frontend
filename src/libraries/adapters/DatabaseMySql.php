@@ -49,7 +49,7 @@ class DatabaseMySql implements DatabaseInterface
   // this is for the fields "pathNxN"
   private function getPhotoVersions($id)
   {
-    $version = getDatabase()->one("SELECT key,path FROM photoVersion WHERE id=:id",
+    $version = getDatabase()->one("SELECT 'key',path FROM photoVersion WHERE id=:id",
                  array(':id' => $id));
     if(!isset($version))
       return false;
@@ -148,6 +148,22 @@ class DatabaseMySql implements DatabaseInterface
     return $photos;
   }
 
+  /**
+    * Get the user record entry.
+    *
+    * @return mixed Array on success, NULL if user record is empty, FALSE on error 
+    */
+  public function getUser()
+  {
+    $res = getDatabase()->one("SELECT * FROM user WHERE id='1'");
+    if($res)
+    {
+      return self::normalizeUser($res);
+    }
+    return false;
+  }
+
+
   public function getTags($filter = array())
   {
     $tags = getDatabase()->all("SELECT * FROM tag WHERE `count` IS NOT NULL AND `count` > '0' AND id IS NOT NULL ORDER BY id");
@@ -159,15 +175,15 @@ class DatabaseMySql implements DatabaseInterface
   {
     $params = self::preparePhoto($id, $params);
     $stmt = self::sqlInsertExplode($params);
-    $res = getDatabase()->execute("INSERT INTO photo ({$stmt['cols']}) VALUES ({$stmt['vals']})");
+    $res = getDatabase()->execute("UPDATE photo SET {$stmt} WHERE id=:id", array(':id' => $id));
     return $res == 1;
   }
 
   public function postUser($id, $params)
   {
-    $stmt = self::sqlInsertExplode($params);
-    $res = getDatabase()->execute("INSERT INTO user ({$stmt['cols']}) VALUES ({$stmt['vals']})");
-    return $res == 1;
+    $stmt = self::sqlUpdateExplode($params);
+    $res = getDatabase()->execute("UPDATE user SET {$stmt} WHERE id=:id", array(':id' => $id));
+    return $res = 1;
   }
 
   public function postTag($id, $params)
@@ -176,8 +192,8 @@ class DatabaseMySql implements DatabaseInterface
       $count = 0;
     else
       $count = max(0, intval($params['count']));
-    return getDatabase()->execute("INSERT INTO tag (id, count) VALUES (:id, :count)",
-            array(':id' => $id, ':count' => $count)) == 1;
+    $res = getDatabase()->execute("UPDATE tag SET count=:count WHERE id=:id", array(':id' => $id, ':count' => $count));
+    return $res == 1;
   }
 
   public function postTags($params)
@@ -199,7 +215,7 @@ class DatabaseMySql implements DatabaseInterface
     $justTags = array_keys($tagsToUpdate);
 
     // TODO call getTags instead
-    $res = getDatabase()->all("SELECT * FROM tag  WHERE itemName() IN ('" . implode("','", $justTags) . "')");
+    $res = getDatabase()->all("SELECT * FROM tag  WHERE id IN ('" . implode("','", $justTags) . "')");
 
     if($rest)
     {
@@ -227,28 +243,30 @@ class DatabaseMySql implements DatabaseInterface
   // put methods create but do not update
   public function putAction($id, $params)
   {
-    $stmt = self::sqlUpdateExplode($params);
-    $result = getDatabase()->execute("UPDATE action SET {$stmt} WHERE id=:id", array(':id' => $id));
-    return ($result == 1);
+    $stmt = self::sqlInsertExplode($params);
+    $result = getDatabase()->execute("INSERT INTO action (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    return true;
   }
 
   public function putPhoto($id, $params)
   {
-    $stmt = self::sqlUpdateExplode($params);
-    $result = getDatabase()->execute("UPDATE photo SET {$stmt} WHERE id=:id", array(':id' => $id));
-    return ($result == 1);
+    $stmt = self::sqlInsertExplode($params);
+    $result = getDatabase()->execute("INSERT INTO photo (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    return true;
   }
 
   public function putUser($id, $params)
   {
-    $stmt = self::sqlUpdateExplode($params);
-    $result = getDatabase()->execute("UPDATE user SET {$stmt} WHERE id=:id", array(':id' => $id));
-    return ($result == 1);
+    $stmt = self::sqlInsertExplode($params);
+    $result = getDatabase()->execute("INSERT INTO user (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    return true;
   }
 
   public function putTag($id, $params)
   {
-    return $this->postTag($id, $params);
+    $stmt = self::sqlInsertExplode($params);
+    $result = getDatabase()->execute("INSERT INTO tag (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    return true;
   }
 
   public function initialize()
@@ -284,7 +302,7 @@ class DatabaseMySql implements DatabaseInterface
       if(isset($stmt)) {
         $stmt .= ",";
       }
-      $stmt .= "{$key}={$value}";
+      $stmt .= "{$key}='{$value}'";
     }
     return $stmt;
   }
@@ -308,6 +326,13 @@ class DatabaseMySql implements DatabaseInterface
     return $stmt;
   }
 
+  /**
+    *
+    */
+  private function normalizeUser($raw)
+  {
+    return $raw;
+  }
 
   /**
     * Formats a photo to be updated or added to the database.
@@ -334,7 +359,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $photo['appId'] = getConfig()->get('application')->appId;
 
-    $versions = getPhotoVersions($id);
+    $versions = $this->getPhotoVersions($photo['id']);
     foreach($versions as $key => $path)
     {
       $photo[$key] = $path;
