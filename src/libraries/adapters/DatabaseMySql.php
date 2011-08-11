@@ -49,7 +49,7 @@ class DatabaseMySql implements DatabaseInterface
   // this is for the fields "pathNxN"
   private function getPhotoVersions($id)
   {
-    $version = getDatabase()->one("SELECT 'key',path FROM photoVersion WHERE id=:id",
+    $version = getDatabase()->all("SELECT `key`,path FROM photoVersion WHERE id=:id",
                  array(':id' => $id));
     if(!isset($version))
       return false;
@@ -139,6 +139,10 @@ class DatabaseMySql implements DatabaseInterface
     $photos = getDatabase()->all("SELECT * FROM photo {$where} {$sortBy} LIMIT {$limit}");
     if(!$photos)
       return false;
+    for($i = 0; $i < count($photos); $i++)
+    {
+      $photos[$i] = self::normalizePhoto($photos[$i]);
+    }
     $result = getDatabase()->one("SELECT COUNT(*) FROM photo {$where}");
     if($result)
     {
@@ -163,6 +167,14 @@ class DatabaseMySql implements DatabaseInterface
     return false;
   }
 
+  private function postVersions($id, $versions)
+  {
+    foreach($versions as $key => $value)
+    {
+      // TODO this is gonna fail if we already have the version
+      getDatabase()->execute("INSERT INTO photoVersion (id, `key`, path) VALUES({$id}, '{$key}', '{$value}')");
+    }
+  }
 
   public function getTags($filter = array())
   {
@@ -174,8 +186,22 @@ class DatabaseMySql implements DatabaseInterface
   public function postPhoto($id, $params)
   {
     $params = self::preparePhoto($id, $params);
-    $stmt = self::sqlInsertExplode($params);
+
+    foreach($params as $key => $val)
+    {
+      if(preg_match('/^path\d+x\d+/', $key))
+      {
+        $versions[$key] = $val;
+	unset($params[$key]);
+      }
+    }
+
+    $stmt = self::sqlUpdateExplode($params);
     $res = getDatabase()->execute("UPDATE photo SET {$stmt} WHERE id=:id", array(':id' => $id));
+    if(!empty($versions))
+    {
+      $this->postVersions($id, $versions);
+    }
     return $res == 1;
   }
 
@@ -363,9 +389,9 @@ class DatabaseMySql implements DatabaseInterface
     $versions = $this->getPhotoVersions($photo['id']);
     if($versions)
     {
-      foreach($versions as $key => $path)
+      foreach($versions as $version)
       {
-        $photo[$key] = $path;
+        $photo[$version['key']] =  $version['path'];
       }
     }
     // TODO fix tags
