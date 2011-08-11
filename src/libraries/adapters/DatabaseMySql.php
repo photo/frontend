@@ -373,9 +373,9 @@ class DatabaseMySql implements DatabaseInterface
   {
     $params['id'] = $id;
     if(!isset($params['tags']))
-      $params['tags'] = array();
-    elseif(!is_array($params['tags']))
-      $params['tags'] = (array)explode(',', $params['tags']);
+      $params['tags'] = "";
+    elseif(is_array($params['tags']))
+      $params['tags'] = implode(',', $params['tags']);
     return $params;
   }
 
@@ -394,7 +394,7 @@ class DatabaseMySql implements DatabaseInterface
         $photo[$version['key']] =  $version['path'];
       }
     }
-    // TODO fix tags
+    $photo[tags] = explode(",", $photo[tags]);
     return $photo;
   }
 }
