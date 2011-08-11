@@ -93,6 +93,10 @@
         <label for="fsRoot">Filesystem root</label>
         <input type="text" name="fsRoot" id="fsRoot" size="50">
       </div>
+      <div data-role="fieldcontain">
+        <label for="fsHost">Filesystem hostname for download URL</label>
+        <input type="text" name="fsHost" id="fsHost" size="50">
+      </div>
 
       <button type="button" data-step="2">Continue to Step 3</button>
 

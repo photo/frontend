@@ -76,6 +76,7 @@ class SetupController
     {
       $fsConfis = new stdClass;
       $fsConfig->fsRoot = $_POST['fsRoot'];
+      $fsConfig->fsHost = $_POST['fsHost'];
       getConfig()->set('localfs', $fsConfig);
     }
     $systems = new stdClass;

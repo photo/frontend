@@ -20,10 +20,10 @@ CREATE TABLE IF NOT EXISTS  `photo` (
   `exifFlash` varchar(6),
   `exifFocalLength` varchar(32),
   `gpsAltitude` integer,
-  `gpsLatitude` float,
-  `gpsLongitude` float,
+  `latitude` float,
+  `longitude` float,
   `views` integer,
-  `satus` integer,
+  `status` integer,
   `permission` integer,
   `creativeCommons` integer,
   `dateTaken` integer,
@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS  `photo` (
   `pathOriginal` varchar(1000),
   `pathBase` varchar(1000),
 
+  `tags` text,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -57,8 +58,11 @@ CREATE TABLE IF NOT EXISTS `tag` (
 
 
 CREATE TABLE IF NOT EXISTS `user` (
+  `id` varchar(255) NOT NULL UNIQUE,
   `lastPhotoId` varchar(255),
-  `lastActionId` varchar(255)
+  `lastActionId` varchar(255),
+
+  PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

@@ -304,6 +304,7 @@ class Photo
       $stored = $db->putPhoto($id, $attributes);
       unlink($localFile);
       unlink($localFileCopy);
+      print $stored;
       if($stored)
       {
         getLogger()->info("Photo ({$id}) successfully stored to the database");

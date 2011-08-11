@@ -8,13 +8,16 @@
 class FileSystemLocal implements FileSystemInterface
 {
   private $root;
+  private $urlBase;
 
   public function __construct($opts)
   {
-    $this->root = getConfig()->get('localfs')->fsRoot;
+    $config = getConfig()->get('localfs');
+    $this->root = $config->fsRoot;
     if(!file_exists($this->root)) {
       mkdir($this->root, 0775, true);
     }
+    $this->host = $config->fsHost;
   }
 
   public function deletePhoto($id)
@@ -42,6 +45,12 @@ class FileSystemLocal implements FileSystemInterface
   public function putPhoto($localFile, $remoteFile)
   {
     $remoteFile = self::normalizePath($remoteFile);
+    // create all the directories to the file
+    $dirname = dirname($remoteFile);
+    if(!file_exists($dirname)) {
+      mkdir($dirname, 0775, true);
+    }
+    //
     return copy($localFile, $remoteFile);
   }
 
@@ -50,11 +59,20 @@ class FileSystemLocal implements FileSystemInterface
     foreach($files as $file)
     {
       list($localFile, $remoteFile) = each($file);
-      $res = $self->putPhoto($localFile, $remoteFile);
+      $res = $this->putPhoto($localFile, $remoteFile);
       if(!$res)
         return false;
     }
     return true;
+  }
+
+  /**
+    * Get the hostname for the remote filesystem to be used in constructing public URLs.
+    * @return string
+    */
+  public function getHost()
+  {
+    return $this->fsHost;
   }
 
   public function initialize()
@@ -64,7 +82,7 @@ class FileSystemLocal implements FileSystemInterface
 
   private function normalizePath($path)
   {
-    return $root . $path;
+    return $this->root . $path;
   }
 
 }
