@@ -172,7 +172,7 @@ class DatabaseMySql implements DatabaseInterface
     foreach($versions as $key => $value)
     {
       // TODO this is gonna fail if we already have the version
-      getDatabase()->execute("INSERT INTO photoVersion (id, `key`, path) VALUES({$id}, '{$key}', '{$value}')");
+      getDatabase()->execute("INSERT INTO photoVersion (id, `key`, path) VALUES('{$id}', '{$key}', '{$value}')");
     }
   }
 

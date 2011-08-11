@@ -33,11 +33,17 @@ class FileSystemLocal implements FileSystemInterface
     return $ret;
   }
 
+  /**
+   * Get photo will copy the photo to a temporary file.
+   * 
+   */
   public function getPhoto($filename)
   {
     $filename = self::normalizePath($filename);
     if(file_exists($filename)) {
-      return $filename;
+      $tmpname = '/tmp/'.uniqid('opme', true);
+      copy($filename, $tmpname);
+      return $tmpname;
     }
     return false;
   }
