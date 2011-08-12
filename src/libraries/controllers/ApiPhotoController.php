@@ -220,12 +220,13 @@ class ApiPhotoController extends BaseController
         }
       }
 
-      if($photoId)
+      if(isset($_POST['tags']) && !empty($_POST['tags']))
       {
-        //$photo = getDb()->getPhoto($photoId);
-        $photo = getApi()->invoke("/photo/{$photoId}.json", EpiRoute::httpGet);
-        return self::created("Photo {$photoId} uploaded successfully", $photo['result']);
+        $tags = (array)explode(',', $_POST['tags']);
+        Tag::updateTagCounts(array(), $tags);
       }
+      $photo = getApi()->invoke("/photo/{$photoId}.json", EpiRoute::httpGet);
+      return self::created("Photo {$photoId} uploaded successfully", $photo['result']);
     }
 
     return self::error('File upload failure', false);
