@@ -278,7 +278,6 @@ class DatabaseMySql implements DatabaseInterface
   {
     $params = self::preparePhoto($id, $params);
     $stmt = self::sqlInsertExplode($params);
-    print "{$params[tags]}";
     $result = getDatabase()->execute("INSERT INTO photo ({$stmt['cols']}) VALUES ({$stmt['vals']})");
     return true;
   }
