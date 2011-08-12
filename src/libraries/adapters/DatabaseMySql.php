@@ -219,16 +219,17 @@ class DatabaseMySql implements DatabaseInterface
     else
       $count = max(0, intval($params['count']));
     $res = getDatabase()->execute("UPDATE tag SET count=:count WHERE id=:id", array(':id' => $id, ':count' => $count));
-    return $res == 1;
+    // there was no update. Insert
+    if($res == 0)
+      $this->putTag($id, $params);
+    return true;
   }
 
   public function postTags($params)
   {
     foreach($params as $tagObj)
     {
-      $tag = $tagObj['id'];
-      unset($tagObj['id']);
-      $res = $this->postTag($tag, $params);
+      $res = $this->postTag($tagObj[id], $tagObj);
     }
     return $res;
   }
@@ -242,8 +243,7 @@ class DatabaseMySql implements DatabaseInterface
 
     // TODO call getTags instead
     $res = getDatabase()->all("SELECT * FROM tag  WHERE id IN ('" . implode("','", $justTags) . "')");
-
-    if($rest)
+    if($res)
     {
       foreach($res as $val)
         $tagsFromDb[] = self::normalizeTag($val);
@@ -278,6 +278,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $params = self::preparePhoto($id, $params);
     $stmt = self::sqlInsertExplode($params);
+    print "{$params[tags]}";
     $result = getDatabase()->execute("INSERT INTO photo ({$stmt['cols']}) VALUES ({$stmt['vals']})");
     return true;
   }
@@ -291,8 +292,12 @@ class DatabaseMySql implements DatabaseInterface
 
   public function putTag($id, $params)
   {
+    if(!isset($params[id])) 
+    {
+      $params[id] = $id;
+    }
     $stmt = self::sqlInsertExplode($params);
-    $result = getDatabase()->execute("INSERT INTO tag (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $result = getDatabase()->execute("INSERT INTO tag ({$stmt['cols']}) VALUES ({$stmt['vals']})");
     return true;
   }
 
@@ -356,6 +361,15 @@ class DatabaseMySql implements DatabaseInterface
   /**
     *
     */
+  private function normalizeTag($raw)
+  {
+    return $raw;
+  }
+
+
+  /**
+    *
+    */
   private function normalizeUser($raw)
   {
     return $raw;
@@ -372,10 +386,9 @@ class DatabaseMySql implements DatabaseInterface
   private function preparePhoto($id, $params)
   {
     $params['id'] = $id;
-    if(!isset($params['tags']))
-      $params['tags'] = "";
-    elseif(is_array($params['tags']))
+    if(is_array($params['tags']))
       $params['tags'] = implode(',', $params['tags']);
+
     return $params;
   }
 
