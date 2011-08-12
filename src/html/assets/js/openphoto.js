@@ -123,7 +123,7 @@ var op = (function(){
           }
         },
         done: function(e, data) {
-          var resp = jQuery.parseJSON(data.result),
+          var resp = data.result,
             id = resp.result.id,
             img = resp.result.path100x100;
           $("#"+data.id+" div.progress div.img").css("width", "").css("height", "");

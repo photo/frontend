@@ -128,7 +128,7 @@ class ApiPhotoController extends BaseController
             $pageSize = intval($parts[1]);
             break;
           case 'sortBy':
-            $sortOptions = explode(',', $value);
+            $sortOptions = (array)explode(',', $value);
             if(count($sortOptions) != 2 || preg_match('/[^a-zA-Z0-9,]/', $parts[1]))
               continue;
             $filters[$parts[0]] = $parts[1];
@@ -140,6 +140,8 @@ class ApiPhotoController extends BaseController
       }
     }
     // merge path parameters with GET parameters. GET parameters override
+    if(isset($_GET['pageSize']) && intval($_GET['pageSize']) == $_GET['pageSize'])
+      $pageSize = intval($_GET['pageSize']);
     $filters = array_merge($filters, $_GET);
     $page = 1;
     if(isset($filters['page']))
@@ -221,12 +223,13 @@ class ApiPhotoController extends BaseController
         }
       }
 
-      if($photoId)
+      if(isset($_POST['tags']) && !empty($_POST['tags']))
       {
-        //$photo = getDb()->getPhoto($photoId);
-        $photo = getApi()->invoke("/photo/{$photoId}.json", EpiRoute::httpGet);
-        return self::created("Photo {$photoId} uploaded successfully", $photo['result']);
+        $tags = (array)explode(',', $_POST['tags']);
+        Tag::updateTagCounts(array(), $tags);
       }
+      $photo = getApi()->invoke("/photo/{$photoId}.json", EpiRoute::httpGet);
+      return self::created("Photo {$photoId} uploaded successfully", $photo['result']);
     }
 
     return self::error('File upload failure', false);

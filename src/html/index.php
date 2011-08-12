@@ -9,6 +9,9 @@
 // TODO, remove these
 date_default_timezone_set('America/Los_Angeles');
 
+if(strstr($_GET['__route__'], '.json'))
+  header('Content-type: application/json');
+
 $basePath = dirname(dirname(__FILE__));
 $epiPath = "{$basePath}/libraries/external/epi";
 require "{$epiPath}/Epi.php";
@@ -21,7 +24,6 @@ Epi::init('api','config','logger','route','session-php','template','database');
 EpiSession::employ(EpiSession::PHP);
 // This initializes the session. Needed for PHP sessions to implicitly call session_start();
 getSession();
-
 
 getConfig()->load('defaults.ini');
 $configFile = Epi::getPath('config').'/generated/settings.ini';

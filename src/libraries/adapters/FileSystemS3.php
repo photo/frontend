@@ -76,6 +76,8 @@ class FileSystemS3 implements FileSystemInterface
     $remoteFile = self::normalizePath($remoteFile);
     $opts = array('fileUpload' => $localFile, 'acl' => $acl, 'contentType' => 'image/jpeg');
     $res = $this->fs->create_object($this->bucket, $remoteFile, $opts);
+    if(!$res->isOK())
+      getLogger()->crit(var_export($res));
     return $res->isOK();
   }
 
@@ -99,6 +101,11 @@ class FileSystemS3 implements FileSystemInterface
       $this->fs->batch($queue)->create_object($this->bucket, $remoteFile, $opts);
     }
     $responses = $this->fs->batch($queue)->send();
+    if(!$responses->areOK())
+    {
+      foreach($responses as $resp)
+        getLogger()->crit(var_export($resp, 1));
+    }
     return $responses->areOK();
   }
 
