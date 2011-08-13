@@ -63,6 +63,9 @@ class ApiPhotoController extends BaseController
     else
       $photo = getDb()->getPhoto($id);
 
+    if(!$photo)
+      return self::notFound("Photo {$id} not found", false);
+
     // if specific sizes are requested then make sure we return them
     if(isset($_GET['returnSizes']))
     {
@@ -74,10 +77,7 @@ class ApiPhotoController extends BaseController
       }
     }
 
-    if($photo)
-      return self::success("Photo {$id}", $photo);
-    else
-      return self::notFound("Photo {$id} not found", false);
+    return self::success("Photo {$id}", $photo);
   }
 
   /**
