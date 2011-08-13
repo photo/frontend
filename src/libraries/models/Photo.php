@@ -267,7 +267,17 @@ class Photo
     {
       getLogger()->info("Photo ({$id}) successfully stored on the file system");
       $exif = self::readExif($localFile);
+      $iptc = self::readIptc($localFile);
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
+      foreach($iptc as $iptckey => $iptcval)
+      {
+        if($iptckey == 'tags')
+	{
+	  $tags_array = $iptcval;
+	  $iptcval = implode(',', $iptcval);
+        }
+        $attributes[$iptckey] = $iptcval;
+      }
       foreach($defaults as $default)
       {
         if(!isset($attributes[$default]))
@@ -314,6 +324,8 @@ class Photo
       unlink($localFileCopy);
       if($stored)
       {
+        if(isset($tags_array))
+          Tag::updateTagCounts(array(), $tags_array);
         getLogger()->info("Photo ({$id}) successfully stored to the database");
         return $id;
       }
@@ -449,5 +461,31 @@ class Photo
     $exif_array['focalLength'] = self::frac2Num(@$exif['FocalLength']);
 
     return $exif_array;
+  }
+
+
+  /**
+    * Reads IPTC data from a photo.
+    *
+    * @param $photo Path to the photo.
+    * @return array 
+    */
+  private static function readIptc($photo)
+  {
+    $size = getimagesize($photo, $info);
+    if(isset($info['APP13']))
+    {
+      $iptc = iptcparse($info['APP13']);
+      if(!empty($iptc))
+      {
+        // TODO deal with charset
+        // TODO with alternates as both of these are arrays.
+        // TODO eventually HTML-ify the description
+        $iptc_array['title'] = $iptc['2#105'][0];
+        $iptc_array['description'] = $iptc['2#120'][0];
+        $iptc_array['tags'] = $iptc['2#025'];
+      }
+    }
+    return $iptc_array;
   }
 }
