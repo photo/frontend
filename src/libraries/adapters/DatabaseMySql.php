@@ -51,7 +51,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $version = getDatabase()->all("SELECT `key`,path FROM photoVersion WHERE id=:id",
                  array(':id' => $id));
-    if(!isset($version))
+    if(empty($version))
       return false;
     return $version;
   }
@@ -59,7 +59,7 @@ class DatabaseMySql implements DatabaseInterface
   public function getPhoto($id)
   {
     $photo = getDatabase()->one("SELECT * FROM photo WHERE id=:id", array(':id' => $id));
-    if(!isset($photo))
+    if(empty($photo))
       return false;
     return self::normalizePhoto($photo);
   }
@@ -71,7 +71,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       $actions = getDatabase()->all("SELECT * FROM action WHERE targetType='photo' AND targetId=:id",
       	       array(':id' => $id));
-      if($actions)
+      if(!empty($actions))
       {
         foreach($actions as $action)
         {
@@ -137,14 +137,14 @@ class DatabaseMySql implements DatabaseInterface
     }
 
     $photos = getDatabase()->all("SELECT * FROM photo {$where} {$sortBy} LIMIT {$limit}");
-    if(!$photos)
+    if(empty($photos))
       return false;
     for($i = 0; $i < count($photos); $i++)
     {
       $photos[$i] = self::normalizePhoto($photos[$i]);
     }
     $result = getDatabase()->one("SELECT COUNT(*) FROM photo {$where}");
-    if($result)
+    if(!empty($result))
     {
       $photos[0]['totalRows'] = intval($result);
     }
@@ -179,6 +179,8 @@ class DatabaseMySql implements DatabaseInterface
   public function getTags($filter = array())
   {
     $tags = getDatabase()->all("SELECT * FROM tag WHERE `count` IS NOT NULL AND `count` > '0' AND id IS NOT NULL ORDER BY id");
+    if(empty($tags))
+      return false;
     return $tags;
   }
 
@@ -243,7 +245,7 @@ class DatabaseMySql implements DatabaseInterface
 
     // TODO call getTags instead
     $res = getDatabase()->all("SELECT * FROM tag  WHERE id IN ('" . implode("','", $justTags) . "')");
-    if($res)
+    if(!empty($res))
     {
       foreach($res as $val)
         $tagsFromDb[] = self::normalizeTag($val);
