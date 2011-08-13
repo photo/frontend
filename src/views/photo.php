@@ -81,9 +81,14 @@
         <img src="<?php echo Utility::staticMapUrl($photo['latitude'], $photo['longitude'], 14, '450x150'); ?>" class="map">
       <?php } ?>
       <ul class="exif">
-        <?php foreach(array('exifCameraMake' => 'Camera make', 'exifCameraModel' => 'Camera model') as $key => $value) { ?>
+        <?php foreach(array('exifCameraMake' => 'Camera make: %s', 
+                            'exifCameraModel' => 'Camera model: %s', 
+                            'exifFNumber' => 'Av: f/%1.0F', 
+                            'exifExposureTime' => 'Tv: %s', 
+                            'exifISOSpeed' => 'ISO: %d',
+                            'exifFocalLength' => 'Focal Length: %1.0fmm') as $key => $value) { ?>
           <?php if(!empty($photo[$key])) { ?>
-            <li><?php echo $value; ?>: <?php echo $photo[$key]; ?></li>
+            <li><?php printf($value, $photo[$key]); ?></li>
           <?php } ?>
         <?php } ?>
       </ul>
