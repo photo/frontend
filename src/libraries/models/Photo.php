@@ -287,7 +287,6 @@ class Photo
         $attributes['latitude'] = floatval($exif['latitude']);
       if(isset($exif['longitude']))
         $attributes['longitude'] = floatval($exif['longitude']);
-
       if(isset($attributes['tags']) && !empty($attributes['tags']))
         $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
 
