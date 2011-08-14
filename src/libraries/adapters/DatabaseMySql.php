@@ -176,11 +176,16 @@ class DatabaseMySql implements DatabaseInterface
     }
   }
 
+  /**
+    * Get tags filtered by $filter
+    * Consistent read set to false
+    *
+    * @param array $filters Filters to be applied to the list
+    * @return mixed Array on success, FALSE on failure    
+    */
   public function getTags($filter = array())
   {
     $tags = getDatabase()->all("SELECT * FROM tag WHERE `count` IS NOT NULL AND `count` > '0' AND id IS NOT NULL ORDER BY id");
-    if(empty($tags))
-      return false;
     return $tags;
   }
 
