@@ -8,7 +8,7 @@
     <?php } ?>
   </ol>
   <form method="post">
-<?
+<?php
 //    <input type="hidden" name="database" value="SimpleDb">
 //    <input type="hidden" name="fileSystem" value="S3">
 ?>
@@ -28,7 +28,7 @@
         <select name="fileSystem" id="fileSystem">
           <option value="S3">Amazon S3</option>
 	  <option value="localfs">Local filesystem</option>
-<?
+<?php
 //      <option value="cloudFiles">Cloudfiles</option>
 ?>
         </select>

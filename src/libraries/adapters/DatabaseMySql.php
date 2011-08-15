@@ -39,7 +39,9 @@ class DatabaseMySql implements DatabaseInterface
     $photo_next = getDatabase()->one("SELECT * FROM photo WHERE dateTaken< :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
 
     $ret = array();
-    $ret['previous'] = self::normalizePhoto($photo_prev);
+    if($photo_prev)
+      $ret['previous'] = self::normalizePhoto($photo_prev);
+    if($photo_next)
     $ret['next'] = self::normalizePhoto($photo_next);
 
     return $ret;
@@ -88,6 +90,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     // TODO: support logic for multiple conditions
     $where = '';
+    $sortBy = 'ORDER BY dateTaken DESC';
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -121,7 +124,7 @@ class DatabaseMySql implements DatabaseInterface
       $nextToken = null;
       $currentPage = 1;
       $thisLimit = min($iterator, $offset);
-      do
+      /*do
       {
       // FIXME FIXME FIXME
         //$res = mysql_query("SELECT * FROM `photo` {$where} {$sortBy} LIMIT {$iterator}",
@@ -133,7 +136,7 @@ class DatabaseMySql implements DatabaseInterface
         //$nextToken = $res->body->SelectResult->NextToken;
         //$params['NextToken'] = $nextToken;
         $currentPage++;
-      }while($currentPage <= $value);
+      }while($currentPage <= $value);*/
     }
 
     $photos = getDatabase()->all("SELECT * FROM photo {$where} {$sortBy} LIMIT {$limit}");
@@ -335,9 +338,10 @@ class DatabaseMySql implements DatabaseInterface
    */
   private function sqlUpdateExplode($params)
   {
+    $stmt = '';
     foreach($params as $key => $value)
     {
-      if(isset($stmt)) {
+      if(!empty($stmt)) {
         $stmt .= ",";
       }
       $stmt .= "{$key}='{$value}'";
@@ -351,12 +355,12 @@ class DatabaseMySql implements DatabaseInterface
    */
   private function sqlInsertExplode($params)
   {
-    $stmt = array();
+    $stmt = array('cols' => '', 'vals' => '');
     foreach($params as $key => $value)
     {
-      if(isset($stmt['cols']))
+      if(!empty($stmt['cols']))
         $stmt['cols'] .= ",";
-      if(isset($stmt['vals']))
+      if(!empty($stmt['vals']))
         $stmt['vals'] .= ",";
       $stmt['cols'] .= $key;
       $stmt['vals'] .= "'{$value}'";
@@ -392,7 +396,7 @@ class DatabaseMySql implements DatabaseInterface
   private function preparePhoto($id, $params)
   {
     $params['id'] = $id;
-    if(is_array($params['tags']))
+    if(isset($params['tags']) && is_array($params['tags']))
       $params['tags'] = implode(',', $params['tags']);
 
     return $params;
@@ -411,9 +415,10 @@ class DatabaseMySql implements DatabaseInterface
       foreach($versions as $version)
       {
         $photo[$version['key']] =  $version['path'];
+        $photo[$version['key']] = sprintf('http://%s%s', $photo['host'], $version['path']);
       }
     }
-    $photo[tags] = explode(",", $photo[tags]);
+    $photo['tags'] = explode(",", $photo['tags']);
     return $photo;
   }
 }

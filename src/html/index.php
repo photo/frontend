@@ -9,7 +9,7 @@
 // TODO, remove these
 date_default_timezone_set('America/Los_Angeles');
 
-if(strstr($_GET['__route__'], '.json'))
+if(isset($_GET['__route__']) && strstr($_GET['__route__'], '.json'))
   header('Content-type: application/json');
 
 $basePath = dirname(dirname(__FILE__));
