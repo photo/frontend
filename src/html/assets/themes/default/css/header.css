@@ -1,0 +1,92 @@
+/**
+ * OpenPhoto Default Theme
+ *
+ * Styles for the header and the navigation
+ */
+
+header {
+    width: 100%;
+    height: 49px;
+    background-color: #EFEFEF;
+    border-bottom: solid 1px #CFCFCF;
+}
+
+header h1 {
+    background: url(http://current.openphoto.me/assets/img/default/header-logo.png) center left no-repeat;
+    width: 181px;
+    height: 35px;
+    text-indent: -9999px;
+    position: relative;
+    top: 7px;
+    float: left;
+    margin-right: 10px;
+}
+
+nav li {
+    float: left;
+    height: 49px;
+    line-height: 49px;
+    
+    width: 10em;
+    min-width: 108px;
+    text-align: center;
+}
+
+nav li a {
+    padding-left: 23px;
+    text-decoration: none;
+    color: #8A8A8A;
+    font-size: 1.1em;
+}
+
+nav .on {
+    border-left: solid 1px #E2E2E2;
+    border-right: solid 1px #E2E2E2;
+    background-color: #F8F8F8;
+}
+
+#nav-photos a {
+    background: url(http://current.openphoto.me/assets/img/default/header-navigation-photos.png) 0 .2em no-repeat;
+}
+
+#nav-tags a {
+    background: url(http://current.openphoto.me/assets/img/default/header-navigation-tags.png) 0 .2em no-repeat;
+}
+
+#nav-search a {
+    background: url(http://current.openphoto.me/assets/img/default/header-navigation-search.png) 0 .2em no-repeat;
+}
+
+#nav-upload a {
+    background: url(http://current.openphoto.me/assets/img/default/header-navigation-upload.png) 0 .2em no-repeat;
+}
+#searchbar {
+    background-color: #EFEFEF;
+    border-bottom: 1px solid #CFCFCF;
+    border-left: 1px solid #CFCFCF;
+    border-right: 1px solid #CFCFCF;
+    padding: 10px;
+    position: relative;
+    top: 1px;
+    width: 226px;
+    z-index: 1;
+}
+
+#searchbar button {
+    margin-left: 10px;
+}
+
+#nav-signin {
+    position: absolute;
+    right: 30px;
+    top: 10px;
+    width: auto;
+    min-width: inherit;
+}
+
+#nav-signin button {
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
