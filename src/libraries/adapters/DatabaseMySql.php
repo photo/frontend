@@ -171,9 +171,12 @@ class DatabaseMySql implements DatabaseInterface
   {
     foreach($versions as $key => $value)
     {
-      // TODO this is gonna fail if we already have the version
+      // TODO this is gonna fail if we already have the version -- hfiguiere
+      // Possibly use REPLACE INTO? -- jmathai
       getDatabase()->execute("INSERT INTO photoVersion (id, `key`, path) VALUES('{$id}', '{$key}', '{$value}')");
     }
+    // TODO, what type of return value should we have here -- jmathai
+    return true;
   }
 
   /**
@@ -193,23 +196,28 @@ class DatabaseMySql implements DatabaseInterface
   public function postPhoto($id, $params)
   {
     $params = self::preparePhoto($id, $params);
+    unset($params['id']);
 
     foreach($params as $key => $val)
     {
       if(preg_match('/^path\d+x\d+/', $key))
       {
         $versions[$key] = $val;
-	unset($params[$key]);
+        unset($params[$key]);
       }
     }
 
-    $stmt = self::sqlUpdateExplode($params);
-    $res = getDatabase()->execute("UPDATE photo SET {$stmt} WHERE id=:id", array(':id' => $id));
-    if(!empty($versions))
+    if(!empty($params))
     {
-      $this->postVersions($id, $versions);
+      // TODO, this doesn't use named parameters via PDO, should be fixed -- jmathai
+      $stmt = self::sqlUpdateExplode($params);
+      $res = getDatabase()->execute("UPDATE photo SET {$stmt} WHERE id=:id", array(':id' => $id));
     }
-    return $res == 1;
+
+    if(!empty($versions))
+      $resVersions = $this->postVersions($id, $versions);
+
+    return (isset($res) && $res == 1) || (isset($resVersions) && $resVersions);
   }
 
   public function postUser($id, $params)
@@ -332,15 +340,15 @@ class DatabaseMySql implements DatabaseInterface
   /**
    * Explode params associative array into SQL update statement lists
    * Return a string
+   * TODO, have this work with PDO named parameters
    */
   private function sqlUpdateExplode($params)
   {
     $stmt = '';
     foreach($params as $key => $value)
     {
-      if(!empty($stmt)) {
+      if(!empty($stmt))
         $stmt .= ",";
-      }
       $stmt .= "{$key}='{$value}'";
     }
     return $stmt;
