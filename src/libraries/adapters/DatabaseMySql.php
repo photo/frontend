@@ -69,6 +69,7 @@ class DatabaseMySql implements DatabaseInterface
   public function getPhotoWithActions($id)
   {
     $photo = $this->getPhoto($id);
+    $photo['actions'] = array();
     if($photo) 
     {
       $actions = getDatabase()->all("SELECT * FROM action WHERE targetType='photo' AND targetId=:id",
@@ -76,11 +77,7 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($actions))
       {
         foreach($actions as $action)
-        {
-           $photo['actions'] = array();
-	   $action['appId'] = getConfig()->get('application')->appId;
-	   $photo['actions'][] = $action;          
-        }
+           $photo['actions'][] = $action;          
       }
     }
     return $photo;
