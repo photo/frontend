@@ -83,7 +83,7 @@ class DatabaseMySql implements DatabaseInterface
     return $photo;
   }
 
-  public function getPhotos($filter = array(), $limit, $offset = null)
+  public function getPhotos($filters = array(), $limit, $offset = null)
   {
     // TODO: support logic for multiple conditions
     $where = '';
