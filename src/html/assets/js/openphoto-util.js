@@ -10,42 +10,56 @@
         OP = {};
     }
 
-
 	//constants
-	var PLUGIN_FILE_PREFIX = 'openphoto-lib';
-
+	var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
+	    log = typeof(console) !== 'undefined' ? console.log : function(){};
         
     /**
     * Class that contains all utility functions for OpenPhoto
+    * We can use a Constructor function in this case since we will
+    * not have multiple instances of Util.  Also, it makes it easier to
+    * extend via prototype.
     * @class Util
     */
-    OP.Util = {
+    function Util() {
     
 		/**
 		* default configuration options
 		* @type {object}
 		* @property config
 		*/
-		config: {
-			baseURL: 'http://localhost/openphoto',
-			jsLocation: '/assets/js',
+		this.config = {
+			baseUrl: 'http://localhost/',
+			jsLocation: '/assets/js/',
 			css: [],
 			js: []
-		},
+		};
 		
 		/**
-		* the event map for click events
+		* the event map for click events, maps the HTML
+		* classNames to the custom event names
 		* @type {object}
 		* @property eventMap
 		*/
-		eventMap : {},
+		this.eventMap = {
+	
+		    'nav-item':'click:navigation',
+		    'photo-thumbnail':'click:photo-thumbnail',
+		    'pagination-trigger':'click:pagination',
+		    'photo-tag':'click:tag',
+		    'see-all-comments-trigger':'click:see-all-comments',
+		    'see-map-trigger':'click:see-map',
+		    'comment-box':'click:comment-box',
+		    'comment-button':'click:comment-button'
+		    
+		};
 		
 		/**
 		* A hash of custom events
 		* @type {object}
 		* @property _customEvents
 		*/
-		_customEvents: {},		
+		this._customEvents = {};		
 
 		/**
 		* initialization method
@@ -53,7 +67,9 @@
 		* @param {object} config - the configuration object
 		* @method init
 		*/
-		init: function(lib, config) {
+		this.init = function(lib, config) {
+			
+			log('[Util] init:');
 			
 			this.config = this.merge(this.config, config);
 						
@@ -64,25 +80,42 @@
 				
 			//the library is a requirement, by default jQuery will be loaded
 			this.lib = lib;
-			this.libType = 'jQuery';
+			this.libType = this.detectLibrary();
 		
 			// get the library plugin file that maps library functions to a normalized
 			// naming so that we can use whatever library that is specified
 			this.getLibraryPlugin();		
 		
-		},
+		};
 		
 		/**
 		* Now that the library plugin has been loaded, we add all event handlers
 		* @return {void}
 		* @method _init
 		*/
-		_init: function() {
+		this._init = function() {
 			
-			//attach events
-			this.attachEvent( document.getElementsByTagName('html')[0], 'click', this.onviewevent, this);
+			log('[Util] _init:')
 			
-		},	
+			var js = this.config.js,
+			    css = this.config.css,
+			    i,
+			    length;
+			    
+			//attach events			
+			this.attachEvent( 'body', 'click', this.onviewevent, this);
+			
+			//load additional js in order specified
+			for(i=0, j=js.length; i<j; i++) {
+			   this.loadScript( js[i] ); 
+			}
+			
+			//load additional css in order specified
+			for(i=0, j=css.length; i<j; i++) {
+			   this.loadCss( css[i] ); 
+			}
+			
+		};	
 		
 		/**
 		* handles events - delegates based on className
@@ -90,7 +123,9 @@
 		* @return {void}
 		* @method onviewevent
 		*/
-		onviewevent: function(e) {
+		this.onviewevent = function(e) {
+		
+		    log('[Util] onviewevent: ' + e.target);
 		
 			var targ = e.target,
 				classes = targ.className.split(" "),
@@ -101,14 +136,14 @@
 			while (length--) {
 				cls = classes[length];
 				if (map[cls]) {
-					map[cls].call(this, e);
+				    this.fire( map[cls], e);
 					e.preventDefault();
 					return false; //this should be done later - may want to trigger multiple events
 				}			
 			}		
 			
 			
-		},
+		};
 				
 		/* -------------------------------------------------
         *               Utilities
@@ -122,14 +157,16 @@
 		* @return {void}
 		* @method getLibraryPlugin
 		*/
-		getLibraryPlugin: function() {
+		this.getLibraryPlugin = function() {
+		
+		    log('[Util] getLibraryPlugin');
 		
 			var url = this.config.baseUrl + this.config.jsLocation + PLUGIN_FILE_PREFIX + this.libType + ".js";
 			
 			//load the script and attach the event handlers onload
 			this.loadScript(url, this._init, this);
 			
-		},
+		};
 				
 		/**
 		* Shallow merge of all objects passed into it in order of the objects passed in
@@ -138,7 +175,9 @@
 		* @return {object} merged object
 		* @method merge
 		*/
-		merge: function() {
+		this.merge = function() {
+		
+		    log('[Util] merge');
 		
 			var merged = {},
 				i,
@@ -157,7 +196,7 @@
 						
 			return merged;
 		
-		},		
+		};		
 		
 		/**
 		* Utility function to dynamically load a script
@@ -167,7 +206,9 @@
 		* @return {void}
 		* @method loadScript
 		*/
-		loadScript: function(url, fn, scope) {
+		this.loadScript = function(url, fn, scope) {
+			
+			log('[Util] loadScript');
 			
 			var head = document.getElementsByTagName('head')[0],
 				script = document.createElement('script'),
@@ -196,7 +237,78 @@
 			
 			head.appendChild(script);
 			
-		},	
+		};
+		
+		
+		/**
+		* Utility function to dynamically load css
+		* @param {string} url of the source of the sstylesheet
+		* @param {Function} fn the callback function to execute onload
+		* @param {object} scope - the scope of the callback function
+		* @return {void}
+		* @method loadScript
+		*/
+		this.loadCss = function(url, fn, scope) {
+			
+			log('[Util] loadCss');
+			
+			var head = document.getElementsByTagName('head')[0],
+				link = document.createElement('link'),
+				scope,
+				callback;
+								
+			link.type = 'text/css';
+			link.rel = 'stylesheet';
+			link.href = url;
+			
+			//callback function was specified - add the onload handlers
+			if (typeof(fn) !== 'undefined') {
+				
+				scope = scope || window,
+				callback = function() {
+					return fn.apply(scope);
+				};
+				
+				link.onload = callback;
+				link.onreadystatechange = function() {
+					if (this.readyState === 'complete') {
+						callback();
+					}
+				}
+				
+			}
+			
+			head.appendChild(link);
+			
+		};
+		
+		/**
+		* Determines the library type - really simplistic rules for now
+		* @return {string} library the library type
+		* @method detectLibrary
+		*/
+		this.detectLibrary = function() {
+		  
+		  //very simple for now, but we can extend it later
+		  var lib = '';
+		  
+		  //jQuery
+		  if ( typeof(jQuery) !== 'undefined' ) {
+		      lib = 'jQuery';
+		  }  else {
+		      
+		      //YUI2
+		      if ( typeof(YAHOO) !== 'undefined' ) {
+		          lib = 'yui2';
+		      } else {
+		          lib = 'yui3';
+		      }
+		      
+		  }
+		  
+		  return lib;
+		    
+		};	
 		
 
         /* -------------------------------------------------
@@ -211,7 +323,9 @@
         * @return {void}
         * @method on
         */
-        on: function(eventName, callback, scope) {
+        this.on = function(eventName, callback, scope) {
+        
+            log('[Util] on: ' + eventName)
         
             var events = this._customEvents,
                 cEvent = events[eventName],
@@ -237,7 +351,7 @@
 				scope: scope
 			};
         
-        },
+        };
         
         /**
         * A little less terse name, but removes an event listener if it exists
@@ -246,7 +360,9 @@
         * @return {void}
         * @method unsubscribe
         */
-        unsubscribe: function(eventName, callback) {
+        this.unsubscribe = function(eventName, callback) {
+        
+            log('[Util] unsubscribe: ' + callback);
         
             var events = this._customEvents,
                 cEvent = events[eventName],
@@ -261,9 +377,8 @@
                     }
                 }
             }
-            
-
-        },
+          
+        };
         
         /**
         * Fire a custom event - invoke all listeners passing whatever optional arguments
@@ -271,7 +386,9 @@
         * @return {void}
         * @method fire
         */
-        fire: function(eventName, arg){
+        this.fire = function(eventName, arg) {
+        
+            log('[Util] fire: ' + eventName);
         
             var callbacks = this._customEvents[eventName],
                 arg = arg || {},
@@ -283,10 +400,12 @@
                 }
             }
         
-        }
+        };
 
     
-    };
-
+    }
+        
+    //store the util instance
+    OP.Util = new Util();
 
 }());
