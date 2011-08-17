@@ -112,7 +112,7 @@
 			
 			//load additional css in order specified
 			for(i=0, j=css.length; i<j; i++) {
-			   this.loadCss( js[i] ); 
+			   this.loadCss( css[i] ); 
 			}
 			
 		};	
