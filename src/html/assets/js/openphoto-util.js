@@ -17,35 +17,38 @@
         
     /**
     * Class that contains all utility functions for OpenPhoto
+    * We can use a Constructor function in this case since we will
+    * not have multiple instances of Util.  Also, it makes it easier to
+    * extend via prototype.
     * @class Util
     */
-    OP.Util = {
+    function Util() {
     
 		/**
 		* default configuration options
 		* @type {object}
 		* @property config
 		*/
-		config: {
+		this.config = {
 			baseURL: 'http://localhost/openphoto',
 			jsLocation: '/assets/js',
 			css: [],
 			js: []
-		},
+		};
 		
 		/**
 		* the event map for click events
 		* @type {object}
 		* @property eventMap
 		*/
-		eventMap : {},
+		this.eventMap = {};
 		
 		/**
 		* A hash of custom events
 		* @type {object}
 		* @property _customEvents
 		*/
-		_customEvents: {},		
+		this._customEvents = {};		
 
 		/**
 		* initialization method
@@ -53,7 +56,7 @@
 		* @param {object} config - the configuration object
 		* @method init
 		*/
-		init: function(lib, config) {
+		this.init = function(lib, config) {
 			
 			this.config = this.merge(this.config, config);
 						
@@ -70,19 +73,19 @@
 			// naming so that we can use whatever library that is specified
 			this.getLibraryPlugin();		
 		
-		},
+		};
 		
 		/**
 		* Now that the library plugin has been loaded, we add all event handlers
 		* @return {void}
 		* @method _init
 		*/
-		_init: function() {
+		this._init = function() {
 			
 			//attach events
 			this.attachEvent( document.getElementsByTagName('html')[0], 'click', this.onviewevent, this);
 			
-		},	
+		};	
 		
 		/**
 		* handles events - delegates based on className
@@ -90,7 +93,7 @@
 		* @return {void}
 		* @method onviewevent
 		*/
-		onviewevent: function(e) {
+		this.onviewevent = function(e) {
 		
 			var targ = e.target,
 				classes = targ.className.split(" "),
@@ -108,7 +111,7 @@
 			}		
 			
 			
-		},
+		};
 				
 		/* -------------------------------------------------
         *               Utilities
@@ -122,14 +125,14 @@
 		* @return {void}
 		* @method getLibraryPlugin
 		*/
-		getLibraryPlugin: function() {
+		this.getLibraryPlugin = function() {
 		
 			var url = this.config.baseUrl + this.config.jsLocation + PLUGIN_FILE_PREFIX + this.libType + ".js";
 			
 			//load the script and attach the event handlers onload
 			this.loadScript(url, this._init, this);
 			
-		},
+		};
 				
 		/**
 		* Shallow merge of all objects passed into it in order of the objects passed in
@@ -138,7 +141,7 @@
 		* @return {object} merged object
 		* @method merge
 		*/
-		merge: function() {
+		this.merge = function() {
 		
 			var merged = {},
 				i,
@@ -157,7 +160,7 @@
 						
 			return merged;
 		
-		},		
+		};		
 		
 		/**
 		* Utility function to dynamically load a script
@@ -167,7 +170,7 @@
 		* @return {void}
 		* @method loadScript
 		*/
-		loadScript: function(url, fn, scope) {
+		this.loadScript = function(url, fn, scope) {
 			
 			var head = document.getElementsByTagName('head')[0],
 				script = document.createElement('script'),
@@ -196,7 +199,7 @@
 			
 			head.appendChild(script);
 			
-		},	
+		};	
 		
 
         /* -------------------------------------------------
@@ -211,7 +214,7 @@
         * @return {void}
         * @method on
         */
-        on: function(eventName, callback, scope) {
+        this.on = function(eventName, callback, scope) {
         
             var events = this._customEvents,
                 cEvent = events[eventName],
@@ -237,7 +240,7 @@
 				scope: scope
 			};
         
-        },
+        };
         
         /**
         * A little less terse name, but removes an event listener if it exists
@@ -246,7 +249,7 @@
         * @return {void}
         * @method unsubscribe
         */
-        unsubscribe: function(eventName, callback) {
+        this.unsubscribe = function(eventName, callback) {
         
             var events = this._customEvents,
                 cEvent = events[eventName],
@@ -261,9 +264,8 @@
                     }
                 }
             }
-            
-
-        },
+          
+        };
         
         /**
         * Fire a custom event - invoke all listeners passing whatever optional arguments
@@ -271,7 +273,7 @@
         * @return {void}
         * @method fire
         */
-        fire: function(eventName, arg){
+        this.fire = function(eventName, arg) {
         
             var callbacks = this._customEvents[eventName],
                 arg = arg || {},
@@ -283,10 +285,12 @@
                 }
             }
         
-        }
+        };
 
     
-    };
-
+    }
+        
+    //store the util instance
+    OP.Util = new Util();
 
 }());
