@@ -10,10 +10,9 @@
         OP = {};
     }
 
-
 	//constants
-	var PLUGIN_FILE_PREFIX = 'openphoto-lib';
-
+	var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
+	    log = typeof(console) !== 'undefined' ? console.log : function(){};
         
     /**
     * Class that contains all utility functions for OpenPhoto
@@ -30,18 +29,30 @@
 		* @property config
 		*/
 		this.config = {
-			baseURL: 'http://localhost/openphoto',
-			jsLocation: '/assets/js',
+			baseUrl: 'http://localhost/',
+			jsLocation: '/assets/js/',
 			css: [],
 			js: []
 		};
 		
 		/**
-		* the event map for click events
+		* the event map for click events, maps the HTML
+		* classNames to the custom event names
 		* @type {object}
 		* @property eventMap
 		*/
-		this.eventMap = {};
+		this.eventMap = {
+	
+		    'nav-item':'click:navigation',
+		    'photo-thumbnail':'click:photo-thumbnail',
+		    'pagination-trigger':'click:pagination',
+		    'photo-tag':'click:tag',
+		    'see-all-comments-trigger':'click:see-all-comments',
+		    'see-map-trigger':'click:see-map',
+		    'comment-box':'click:comment-box',
+		    'comment-button':'click:comment-button'
+		    
+		};
 		
 		/**
 		* A hash of custom events
@@ -58,6 +69,8 @@
 		*/
 		this.init = function(lib, config) {
 			
+			log('[Util] init:');
+			
 			this.config = this.merge(this.config, config);
 						
 			// we specify what library type in the .ini file
@@ -67,7 +80,7 @@
 				
 			//the library is a requirement, by default jQuery will be loaded
 			this.lib = lib;
-			this.libType = 'jQuery';
+			this.libType = this.detectLibrary();
 		
 			// get the library plugin file that maps library functions to a normalized
 			// naming so that we can use whatever library that is specified
@@ -82,8 +95,25 @@
 		*/
 		this._init = function() {
 			
-			//attach events
-			this.attachEvent( document.getElementsByTagName('html')[0], 'click', this.onviewevent, this);
+			log('[Util] _init:')
+			
+			var js = this.config.js,
+			    css = this.config.css,
+			    i,
+			    length;
+			    
+			//attach events			
+			this.attachEvent( 'body', 'click', this.onviewevent, this);
+			
+			//load additional js in order specified
+			for(i=0, j=js.length; i<j; i++) {
+			   this.loadScript( js[i] ); 
+			}
+			
+			//load additional css in order specified
+			for(i=0, j=css.length; i<j; i++) {
+			   this.loadCss( js[i] ); 
+			}
 			
 		};	
 		
@@ -95,6 +125,8 @@
 		*/
 		this.onviewevent = function(e) {
 		
+		    log('[Util] onviewevent: ' + e.target);
+		
 			var targ = e.target,
 				classes = targ.className.split(" "),
 				length = classes.length,
@@ -104,7 +136,7 @@
 			while (length--) {
 				cls = classes[length];
 				if (map[cls]) {
-					map[cls].call(this, e);
+				    this.fire( map[cls], e);
 					e.preventDefault();
 					return false; //this should be done later - may want to trigger multiple events
 				}			
@@ -127,6 +159,8 @@
 		*/
 		this.getLibraryPlugin = function() {
 		
+		    log('[Util] getLibraryPlugin');
+		
 			var url = this.config.baseUrl + this.config.jsLocation + PLUGIN_FILE_PREFIX + this.libType + ".js";
 			
 			//load the script and attach the event handlers onload
@@ -142,6 +176,8 @@
 		* @method merge
 		*/
 		this.merge = function() {
+		
+		    log('[Util] merge');
 		
 			var merged = {},
 				i,
@@ -172,6 +208,8 @@
 		*/
 		this.loadScript = function(url, fn, scope) {
 			
+			log('[Util] loadScript');
+			
 			var head = document.getElementsByTagName('head')[0],
 				script = document.createElement('script'),
 				scope,
@@ -199,6 +237,77 @@
 			
 			head.appendChild(script);
 			
+		};
+		
+		
+		/**
+		* Utility function to dynamically load css
+		* @param {string} url of the source of the sstylesheet
+		* @param {Function} fn the callback function to execute onload
+		* @param {object} scope - the scope of the callback function
+		* @return {void}
+		* @method loadScript
+		*/
+		this.loadCss = function(url, fn, scope) {
+			
+			log('[Util] loadCss');
+			
+			var head = document.getElementsByTagName('head')[0],
+				link = document.createElement('link'),
+				scope,
+				callback;
+								
+			link.type = 'text/css';
+			link.rel = 'stylesheet';
+			link.href = url;
+			
+			//callback function was specified - add the onload handlers
+			if (typeof(fn) !== 'undefined') {
+				
+				scope = scope || window,
+				callback = function() {
+					return fn.apply(scope);
+				};
+				
+				link.onload = callback;
+				link.onreadystatechange = function() {
+					if (this.readyState === 'complete') {
+						callback();
+					}
+				}
+				
+			}
+			
+			head.appendChild(link);
+			
+		};
+		
+		/**
+		* Determines the library type - really simplistic rules for now
+		* @return {string} library the library type
+		* @method detectLibrary
+		*/
+		this.detectLibrary = function() {
+		  
+		  //very simple for now, but we can extend it later
+		  var lib = '';
+		  
+		  //jQuery
+		  if ( typeof(jQuery) !== 'undefined' ) {
+		      lib = 'jQuery';
+		  }  else {
+		      
+		      //YUI2
+		      if ( typeof(YAHOO) !== 'undefined' ) {
+		          lib = 'yui2';
+		      } else {
+		          lib = 'yui3';
+		      }
+		      
+		  }
+		  
+		  return lib;
+		    
 		};	
 		
 
@@ -215,6 +324,8 @@
         * @method on
         */
         this.on = function(eventName, callback, scope) {
+        
+            log('[Util] on: ' + eventName)
         
             var events = this._customEvents,
                 cEvent = events[eventName],
@@ -251,6 +362,8 @@
         */
         this.unsubscribe = function(eventName, callback) {
         
+            log('[Util] unsubscribe: ' + callback);
+        
             var events = this._customEvents,
                 cEvent = events[eventName],
                 length;
@@ -274,6 +387,8 @@
         * @method fire
         */
         this.fire = function(eventName, arg) {
+        
+            log('[Util] fire: ' + eventName);
         
             var callbacks = this._customEvents[eventName],
                 arg = arg || {},

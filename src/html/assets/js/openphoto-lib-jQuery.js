@@ -25,17 +25,17 @@
     /**
     * Adds an event listener to the element
     * @param {HTMLElement} element - the element to add the listener to
-    * @param {string} type - the event type to add the listener to
+    * @param {string} etype - the event type to add the listener to
     * @param {Function} callback - the callback function
     * @param {object} scope - the context of the callback function
     * @return {void}
     * @method attachEvent
     */
-    OU.attachEvent = function(element, type, callback, scope) {
+    OU.attachEvent = function(element, etype, callback, scope) {
         
         var scope = scope || window;
-        
-        lib( element ).live( type, OU.bind(callback, scope) );
+    
+        lib( element ).live(etype, lib.proxy(callback, scope) );
     
     }
     
