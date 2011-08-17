@@ -7,9 +7,13 @@ OpenPhoto / Documentation
 1.  [Schemas][schemas]
 1.  [Guides][guides]
   * [Installation on Ubuntu][guideinstallubuntu]
+  * [Installation on OSX using MacPorts][guideinstallosxmacports]
+  * [Installation on SUSE][guideinstallsuse]
 
 [api]: documentation/api
 [glossary]: documentation/Glossary.markdown
 [schemas]: documentation/schemas
 [guides]: documentation/guides
 [guideinstallubuntu]: documentation/guides/InstallationUbuntu.markdown
+[guideinstallosxmacports]: documentation/guides/InstallationOSXMacports.markdown
+[guideinstallsuse]: documentation/guides/InstallationSUSE.markdown

@@ -250,7 +250,8 @@ class Photo
       exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
 
     // resize the base image before uploading
-    $localFileCopy = "{$localFile}-copy}";
+    $localFileCopy = "{$localFile}-copy";
+    getLogger()->info("Making a local copy of the uploaded image. {$localFile} to {$localFileCopy}");
     copy($localFile, $localFileCopy);
 
 

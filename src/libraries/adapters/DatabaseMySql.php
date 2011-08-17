@@ -39,8 +39,10 @@ class DatabaseMySql implements DatabaseInterface
     $photo_next = getDatabase()->one("SELECT * FROM photo WHERE dateTaken< :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
 
     $ret = array();
-    $ret['previous'] = self::normalizePhoto($photo_prev);
-    $ret['next'] = self::normalizePhoto($photo_next);
+    if($photo_prev)
+      $ret['previous'] = self::normalizePhoto($photo_prev);
+    if($photo_next)
+      $ret['next'] = self::normalizePhoto($photo_next);
 
     return $ret;
   }
@@ -67,6 +69,7 @@ class DatabaseMySql implements DatabaseInterface
   public function getPhotoWithActions($id)
   {
     $photo = $this->getPhoto($id);
+    $photo['actions'] = array();
     if($photo) 
     {
       $actions = getDatabase()->all("SELECT * FROM action WHERE targetType='photo' AND targetId=:id",
@@ -74,20 +77,17 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($actions))
       {
         foreach($actions as $action)
-        {
-           $photo['actions'] = array();
-	   $action['appId'] = getConfig()->get('application')->appId;
-	   $photo['actions'][] = $action;          
-        }
+           $photo['actions'][] = $action;          
       }
     }
     return $photo;
   }
 
-  public function getPhotos($filters = array(), $limit, $offset = null)
+  public function getPhotos($filter = array(), $limit, $offset = null)
   {
     // TODO: support logic for multiple conditions
     $where = '';
+    $sortBy = 'ORDER BY dateTaken DESC';
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -154,9 +154,12 @@ class DatabaseMySql implements DatabaseInterface
   {
     foreach($versions as $key => $value)
     {
-      // TODO this is gonna fail if we already have the version
+      // TODO this is gonna fail if we already have the version -- hfiguiere
+      // Possibly use REPLACE INTO? -- jmathai
       getDatabase()->execute("INSERT INTO photoVersion (id, `key`, path) VALUES('{$id}', '{$key}', '{$value}')");
     }
+    // TODO, what type of return value should we have here -- jmathai
+    return true;
   }
 
   /**
@@ -176,23 +179,28 @@ class DatabaseMySql implements DatabaseInterface
   public function postPhoto($id, $params)
   {
     $params = self::preparePhoto($id, $params);
+    unset($params['id']);
 
     foreach($params as $key => $val)
     {
       if(preg_match('/^path\d+x\d+/', $key))
       {
         $versions[$key] = $val;
-	unset($params[$key]);
+        unset($params[$key]);
       }
     }
 
-    $stmt = self::sqlUpdateExplode($params);
-    $res = getDatabase()->execute("UPDATE photo SET {$stmt} WHERE id=:id", array(':id' => $id));
-    if(!empty($versions))
+    if(!empty($params))
     {
-      $this->postVersions($id, $versions);
+      // TODO, this doesn't use named parameters via PDO, should be fixed -- jmathai
+      $stmt = self::sqlUpdateExplode($params);
+      $res = getDatabase()->execute("UPDATE photo SET {$stmt} WHERE id=:id", array(':id' => $id));
     }
-    return $res == 1;
+
+    if(!empty($versions))
+      $resVersions = $this->postVersions($id, $versions);
+
+    return (isset($res) && $res == 1) || (isset($resVersions) && $resVersions);
   }
 
   public function postUser($id, $params)
@@ -315,14 +323,15 @@ class DatabaseMySql implements DatabaseInterface
   /**
    * Explode params associative array into SQL update statement lists
    * Return a string
+   * TODO, have this work with PDO named parameters
    */
   private function sqlUpdateExplode($params)
   {
+    $stmt = '';
     foreach($params as $key => $value)
     {
-      if(isset($stmt)) {
+      if(!empty($stmt))
         $stmt .= ",";
-      }
       $stmt .= "{$key}='{$value}'";
     }
     return $stmt;
@@ -334,12 +343,12 @@ class DatabaseMySql implements DatabaseInterface
    */
   private function sqlInsertExplode($params)
   {
-    $stmt = array();
+    $stmt = array('cols' => '', 'vals' => '');
     foreach($params as $key => $value)
     {
-      if(isset($stmt['cols']))
+      if(!empty($stmt['cols']))
         $stmt['cols'] .= ",";
-      if(isset($stmt['vals']))
+      if(!empty($stmt['vals']))
         $stmt['vals'] .= ",";
       $stmt['cols'] .= $key;
       $stmt['vals'] .= "'{$value}'";
@@ -375,7 +384,7 @@ class DatabaseMySql implements DatabaseInterface
   private function preparePhoto($id, $params)
   {
     $params['id'] = $id;
-    if(is_array($params['tags']))
+    if(isset($params['tags']) && is_array($params['tags']))
       $params['tags'] = implode(',', $params['tags']);
 
     return $params;
@@ -394,9 +403,10 @@ class DatabaseMySql implements DatabaseInterface
       foreach($versions as $version)
       {
         $photo[$version['key']] =  $version['path'];
+        $photo[$version['key']] = sprintf('http://%s%s', $photo['host'], $version['path']);
       }
     }
-    $photo[tags] = explode(",", $photo[tags]);
+    $photo['tags'] = explode(",", $photo['tags']);
     return $photo;
   }
 }

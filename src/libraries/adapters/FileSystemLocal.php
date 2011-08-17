@@ -27,8 +27,8 @@ class FileSystemLocal implements FileSystemInterface
     {
       if(strncmp($key, 'path', 4) === 0) {
         $path = self::normalizePath($value);
+        $ret = unlink($path);
       }
-      $ret = unlink($path);
     }
     return $ret;
   }
@@ -78,7 +78,7 @@ class FileSystemLocal implements FileSystemInterface
     */
   public function getHost()
   {
-    return $this->fsHost;
+    return $this->host;
   }
 
   public function initialize()
@@ -90,5 +90,4 @@ class FileSystemLocal implements FileSystemInterface
   {
     return $this->root . $path;
   }
-
 }
