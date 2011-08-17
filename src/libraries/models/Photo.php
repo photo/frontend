@@ -274,6 +274,8 @@ class Photo
         if(!isset($attributes[$default]))
           $attributes[$default] = null;
       }
+      $attributes['latitude'] = floatval($exif['latitude']);
+      $attributes['longitude'] = floatval($exif['longitude']);
 
       if(isset($attributes['tags']) && !empty($attributes['tags']))
         $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
@@ -297,7 +299,7 @@ class Photo
           'dateUploadedDay' => date('d', $dateUploaded),
           'dateUploadedMonth' => date('m', $dateUploaded),
           'dateUploadedYear' => date('Y', $dateUploaded),
-          'pathOriginal' => $paths['pathOriginal'], 
+          'pathOriginal' => $paths['pathOriginal'],
           'pathBase' => $paths['pathBase']
         ),
         $attributes
@@ -374,6 +376,36 @@ class Photo
     return (substr(sha1(implode('.', $args)), 0, 5) == $hash);
   }
 
+
+  /*** GPS Utils 
+   * from http://stackoverflow.com/questions/2526304/php-extract-gps-exif-data 
+   **/
+  private static function getGps($exifCoord, $hemi) 
+  {
+    $degrees = count($exifCoord) > 0 ? self::gps2Num($exifCoord[0]) : 0;
+    $minutes = count($exifCoord) > 1 ? self::gps2Num($exifCoord[1]) : 0;
+    $seconds = count($exifCoord) > 2 ? self::gps2Num($exifCoord[2]) : 0;
+
+    $flip = ($hemi == 'W' or $hemi == 'S') ? -1 : 1;
+
+    return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
+  }
+
+  private static function gps2Num($coordPart) 
+  {
+    $parts = explode('/', $coordPart);
+
+    if (count($parts) <= 0)
+        return 0;
+
+    if (count($parts) == 1)
+        return $parts[0];
+
+    return floatval($parts[0]) / floatval($parts[1]);
+  }
+
+
+
   /**
     * Reads exif data from a photo.
     *
@@ -396,7 +428,18 @@ class Photo
       $dateTaken = @mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]);
     }
 
-    return array('dateTaken' => $dateTaken, 'width' => $size[0], 'height' => $size[1],
-      'cameraModel' => @$exif['Model'], 'cameraMake' => @$exif['Make']);
+    $exif_array = array('dateTaken' => $dateTaken, 'width' => $size[0], 
+      'height' => $size[1], 'cameraModel' => @$exif['Model'], 
+      'cameraMake' => @$exif['Make']);
+
+    if(isset($exif['GPSLongitude'])) {
+      $exif_array['longitude'] = self::getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
+    }
+
+    if(isset($exif['GPSLatitude'])) {
+      $exif_array['latitude'] = self::getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
+    }
+
+    return $exif_array;
   }
 }

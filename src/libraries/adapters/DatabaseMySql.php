@@ -42,7 +42,7 @@ class DatabaseMySql implements DatabaseInterface
     if($photo_prev)
       $ret['previous'] = self::normalizePhoto($photo_prev);
     if($photo_next)
-    $ret['next'] = self::normalizePhoto($photo_next);
+      $ret['next'] = self::normalizePhoto($photo_next);
 
     return $ret;
   }
@@ -83,7 +83,7 @@ class DatabaseMySql implements DatabaseInterface
     return $photo;
   }
 
-  public function getPhotos($filter = array(), $limit, $offset = null)
+  public function getPhotos($filters = array(), $limit, $offset = null)
   {
     // TODO: support logic for multiple conditions
     $where = '';
@@ -114,29 +114,12 @@ class DatabaseMySql implements DatabaseInterface
         }
       }
     }
-
+    $sql = "SELECT * FROM photo {$where} {$sortBy} LIMIT {$limit}";
     if(!empty($offset))
     {
-      $iterator = max(1, intval($offset - 1));
-      $nextToken = null;
-      $currentPage = 1;
-      $thisLimit = min($iterator, $offset);
-      /*do
-      {
-      // FIXME FIXME FIXME
-        //$res = mysql_query("SELECT * FROM `photo` {$where} {$sortBy} LIMIT {$iterator}",
-	//                   $this->db);
-	// todo deal with pages
-        //if(!$res->body->SelectResult->NextToken)
-        //  break;
-
-        //$nextToken = $res->body->SelectResult->NextToken;
-        //$params['NextToken'] = $nextToken;
-        $currentPage++;
-      }while($currentPage <= $value);*/
+      $sql .= " OFFSET {$offset}";
     }
-
-    $photos = getDatabase()->all("SELECT * FROM photo {$where} {$sortBy} LIMIT {$limit}");
+    $photos = getDatabase()->all($sql);
     if(empty($photos))
       return false;
     for($i = 0; $i < count($photos); $i++)
@@ -146,7 +129,7 @@ class DatabaseMySql implements DatabaseInterface
     $result = getDatabase()->one("SELECT COUNT(*) FROM photo {$where}");
     if(!empty($result))
     {
-      $photos[0]['totalRows'] = intval($result);
+      $photos[0]['totalRows'] = $result['COUNT(*)'];
     }
 
     return $photos;
