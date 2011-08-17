@@ -432,15 +432,14 @@ class Photo
       'height' => $size[1], 'cameraModel' => @$exif['Model'], 
       'cameraMake' => @$exif['Make']);
 
-    $sectionsFound = explode(", ", $exif['SectionsFound']);
-    if(in_array("GPS", $sectionsFound))
-    {
-      $lon = self::getGps($exif["GPSLongitude"], $exif['GPSLongitudeRef']);
-      $lat = self::getGps($exif["GPSLatitude"], $exif['GPSLatitudeRef']);
-
-      $exif_array['latitude'] = $lat;
-      $exif_array['longitude'] = $lon;
+    if(isset($exif['GPSLongitude'])) {
+      $exif_array['longitude'] = self::getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
     }
+
+    if(isset($exif['GPSLatitude'])) {
+      $exif_array['latitude'] = self::getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
+    }
+
     return $exif_array;
   }
 }
