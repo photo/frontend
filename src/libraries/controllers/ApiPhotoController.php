@@ -63,6 +63,9 @@ class ApiPhotoController extends BaseController
     else
       $photo = getDb()->getPhoto($id);
 
+    if(!$photo)
+      return self::notFound("Photo {$id} not found", false);
+
     // if specific sizes are requested then make sure we return them
     if(isset($_GET['returnSizes']))
     {
@@ -74,10 +77,7 @@ class ApiPhotoController extends BaseController
       }
     }
 
-    if($photo)
-      return self::success("Photo {$id}", $photo);
-    else
-      return self::notFound("Photo {$id} not found", false);
+    return self::success("Photo {$id}", $photo);
   }
 
   /**
@@ -148,24 +148,27 @@ class ApiPhotoController extends BaseController
       $page = $filters['page'];
     $db = getDb();
     $photos = $db->getPhotos($filters, $pageSize);
-    if(isset($filters['returnSizes']))
-      $sizes = (array)explode(',', $filters['returnSizes']);
-    foreach($photos as $key => $photo)
+    if($photos)
     {
-      if(isset($sizes))
+      if(isset($filters['returnSizes']))
+        $sizes = (array)explode(',', $filters['returnSizes']);
+      foreach($photos as $key => $photo)
       {
-        foreach($sizes as $size)
+        if(isset($sizes))
         {
-          if(isset($photo["path{$size}"]))
-            continue;
+          foreach($sizes as $size)
+          {
+            if(isset($photo["path{$size}"]))
+              continue;
 
-          // TODO call API
-          $options = Photo::generateFragmentReverse($size);
-          $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options']);
+            // TODO call API
+            $options = Photo::generateFragmentReverse($size);
+            $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options']);
+          }
         }
       }
     }
-    if(!$photos)
+    else
       return self::error('Could not retrieve photos', false);
 
     $photos[0]['pageSize'] = $pageSize;

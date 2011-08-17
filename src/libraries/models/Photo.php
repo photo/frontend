@@ -197,7 +197,7 @@ class Photo
     $customPath = self::generateCustomUrl($photo['pathBase'], $width, $height, $options);
     $key = self::generateCustomKey($width, $height, $options);
     $resFs = getFs()->putPhoto($filename, $customPath);
-    $resDb = getDb()->addAttribute($id, array($key => $customPath));
+    $resDb = getDb()->postPhoto($id, array($key => $customPath));
     if($resFs && $resDb)
       return $filename;
 
@@ -304,6 +304,7 @@ class Photo
       $stored = $db->putPhoto($id, $attributes);
       unlink($localFile);
       unlink($localFileCopy);
+      print $stored;
       if($stored)
       {
         getLogger()->info("Photo ({$id}) successfully stored to the database");

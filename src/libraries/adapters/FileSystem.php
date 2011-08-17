@@ -11,6 +11,7 @@ interface FileSystemInterface
   public function getPhoto($filename);
   public function putPhoto($localFile, $remoteFile);
   public function putPhotos($files);
+  public function getHost();
   public function initialize();
 }
 
@@ -45,10 +46,13 @@ function getFs(/*$type, $opts*/)
     case 'S3':
       $filesystem = new FileSystemS3($opts);
       break;
+    case 'localfs':
+      $filesystem = new FileSystemLocal($opts);
+      break;
   }
   
   if($filesystem)
     return $filesystem;
 
-  throw new Exception("FileSysetm Provider {$type} does not exist", 404);
+  throw new Exception("FileSystem Provider {$type} does not exist", 404);
 }

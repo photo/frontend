@@ -16,6 +16,7 @@ interface DatabaseInterface
   public function getPhoto($id);
   public function getPhotoWithActions($id);
   public function getPhotos($filter = array(), $limit, $offset = null);
+  public function getUser();
   public function getTags($filter = array());
   // post methods update
   public function postPhoto($id, $params);
@@ -61,6 +62,9 @@ function getDb(/*$type, $opts*/)
   {
     case 'SimpleDb':
       $database = new DatabaseSimpleDb($opts);
+      break;
+    case 'MySql':
+      $database = new DatabaseMySql($opts);
       break;
   }
   

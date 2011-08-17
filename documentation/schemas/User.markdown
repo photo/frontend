@@ -14,6 +14,7 @@ This includes the last uploaded [Photo][Photo]  and [Action][Action] id.
 ### Schema for a User object
 
     {
+      id: (string),
       lastPhotoId: (string),
       lastActionId: (string)
     }
@@ -22,6 +23,7 @@ This includes the last uploaded [Photo][Photo]  and [Action][Action] id.
 
 ### Schema description
 
+  * id, the user id
   * lastPhotoId, most recent photo id
   * lastActionId, most recent action id
 
