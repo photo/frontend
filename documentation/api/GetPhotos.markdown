@@ -18,6 +18,9 @@ Open Photo API / Get Photos
 <a name="purpose"></a>
 ### Purpose of the Get Photos API
 
+Use this API to get a set of photos for a user.
+
+_NOTE:_ Always pass in the `returnSizes` parameter for sizes you plan on using. It's the only way to guarantee that a URL for that size will be present in the response. See [Photo Generation][photogeneration] for details.
 
 ----------------------------------------
 
@@ -31,6 +34,7 @@ _Authentication: optional_
 <a name="parameters"></a>
 ### Parameters
 
+1.  returnSizes (optional), The photo sizes you'd like in the response. Specify every size you plan on using.
 1.  page (optional), Page number when browsing through photos. Starts at 1.
 1.  tags (optional), _i.e. dog,cat_ - A comma delimited string of alpha numeric strings.
 
@@ -135,7 +139,7 @@ The response is in a standard [response envelope][Envelope].
     }
 
 [Envelope]: api/Envelope.markdown
-[Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
+[Photo]: schemas/Photo.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters
@@ -144,4 +148,4 @@ The response is in a standard [response envelope][Envelope].
 [example-php]: #example-php
 [response]: #response
 [sample]: #sample
-
+[photogeneration]: ../PhotoGeneration.markdown

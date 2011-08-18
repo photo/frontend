@@ -18,6 +18,9 @@ Open Photo API / Get Photo
 <a name="purpose"></a>
 ### Purpose of the Get Photo API
 
+Use this API to get a single of photo for a user.
+
+_NOTE:_ Always pass in the `returnSizes` parameter for sizes you plan on using. It's the only way to guarantee that a URL for that size will be present in the response. See [Photo Generation][photogeneration] for details.
 
 ----------------------------------------
 
@@ -31,7 +34,7 @@ _Authentication: optional_
 <a name="parameters"></a>
 ### Parameters
 
-_None_
+1.  returnSizes (optional), The photo sizes you'd like in the response. Specify every size you plan on using.
 
 ----------------------------------------
 
@@ -107,5 +110,4 @@ The response is in a standard [response envelope][Envelope].
 [example-php]: #example-php
 [response]: #response
 [sample]: #sample
-
-
+[photogeneration]: ../PhotoGeneration.markdown
