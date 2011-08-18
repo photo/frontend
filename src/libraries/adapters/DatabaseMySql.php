@@ -244,7 +244,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     foreach($params as $tagObj)
     {
-      $res = $this->postTag($tagObj[id], $tagObj);
+      $res = $this->postTag($tagObj['id'], $tagObj);
     }
     return $res;
   }
@@ -306,7 +306,7 @@ class DatabaseMySql implements DatabaseInterface
 
   public function putTag($id, $params)
   {
-    if(!isset($params[id])) 
+    if(!isset($params['id'])) 
     {
       $params[id] = $id;
     }
