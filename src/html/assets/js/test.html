@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Example OpenPhoto Util</title>
+<meta name="author" content="Preet Jassi">
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+<script type="text/javascript" src="openphoto-util.js"></script>
+<script type="text/javascript">
+
+//Jaisen - this will be the "user defined" (our default) theme file.
+//Here they must initiate the OP.Util, and then they can subscribe to whatever custom
+//events they want to.  We should probably load this file in a <script> tag, so the user
+//would specify the location to their custom theme file in PHP somewhere, along with their library
+//that they would like to load (or the path to the library), and we an combo library, util, and their custom theme file
+
+(function() {
+
+    //initialize the OpenPhoto Util, passing in the library, also you can
+    //specify any configuration options like css, js to load
+    OP.Util.init($, {
+        css:['http://yui.yahooapis.com/3.3.0/build/cssreset/reset-min.css']
+    });
+
+    //subscribe to callback functions
+    OP.Util.on('click:see-all-comments', function(){
+        $('#comments').css('display','block');
+    })
+    
+}());
+
+</script>
+	
+</head>
+<body>
+
+    <h1>Test</h1>
+    
+    <p>Bacon Ipsum</p>
+
+    <a href='#' class='see-all-comments-trigger'>see all comments</a>
+
+    <ul id="comments" style="display:none">
+        <li>comment 1</li>
+        <li>comment 2</li>
+        <li>comment 3</li>
+        <li>comment 4</li>
+        <li>comment 5</li>
+        <li>comment 6</li>
+    </ul>
+
+</body>
+</html>
