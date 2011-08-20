@@ -8,6 +8,18 @@
  */
 class DatabaseMySql implements DatabaseInterface
 {
+  /**
+    * Member variables holding the names to the SimpleDb domains needed and the database object itself.
+    * @access private
+    */
+  private $mysqlDb, $mySqlHost, $mySqlUser, $mySqlPassword;
+
+  /**
+    * Constructor
+    *
+    * @param array $opts information for MySql
+    * @return void 
+    */
   public function __construct($opts)
   {
     $mysql = getConfig()->get('mysql');
@@ -15,20 +27,36 @@ class DatabaseMySql implements DatabaseInterface
                         $mysql->mySqlHost, $mysql->mySqlUser, $mysql->mySqlPassword);
   }
 
-  // delete methods can delete or toggle status
-  public function deletePhoto($id)
-  {
-    $res = getDatabase()->execute("DELETE FROM photo WHERE id=:id", array(':id' => $id));
-    return ($res == 1);
-  }
-
+  /**
+    * Delete an action from the database
+    *
+    * @param string $id ID of the action to delete
+    * @return boolean 
+    */
   public function deleteAction($id)
   {
     $res = getDatabase()->execute("DELETE FROM action WHERE id=:id", array(':id' => $id));
     return ($res == 1);
   }
 
-  // get methods read
+  /**
+    * Delete a photo from the database
+    *
+    * @param string $id ID of the photo to delete
+    * @return boolean 
+    */
+  public function deletePhoto($id)
+  {
+    $res = getDatabase()->execute("DELETE FROM photo WHERE id=:id", array(':id' => $id));
+    return ($res == 1);
+  }
+
+  /**
+    * Retrieve the next and previous photo surrounding photo with $id
+    *
+    * @param string $id ID of the photo to get next and previous for 
+    * @return mixed Array on success, FALSE on failure 
+    */
   public function getPhotoNextPrevious($id)
   {
     $photo = $this->getPhoto($id);
@@ -47,17 +75,12 @@ class DatabaseMySql implements DatabaseInterface
     return $ret;
   }
 
-  // get all version for a photo
-  // this is for the fields "pathNxN"
-  private function getPhotoVersions($id)
-  {
-    $version = getDatabase()->all("SELECT `key`,path FROM photoVersion WHERE id=:id",
-                 array(':id' => $id));
-    if(empty($version))
-      return false;
-    return $version;
-  }
-
+  /**
+    * Get a photo specified by $id
+    *
+    * @param string $id ID of the photo to retrieve
+    * @return mixed Array on success, FALSE on failure 
+    */
   public function getPhoto($id)
   {
     $photo = getDatabase()->one("SELECT * FROM photo WHERE id=:id", array(':id' => $id));
@@ -66,6 +89,13 @@ class DatabaseMySql implements DatabaseInterface
     return self::normalizePhoto($photo);
   }
 
+  /**
+    * Retrieve a photo from the database and include the actions on the photo.
+    * Actions are stored in a separate domain so the calls need to be made in parallel
+    *
+    * @param string $id ID of the photo to retrieve
+    * @return mixed Array on success, FALSE on failure 
+    */
   public function getPhotoWithActions($id)
   {
     $photo = $this->getPhoto($id);
@@ -83,6 +113,12 @@ class DatabaseMySql implements DatabaseInterface
     return $photo;
   }
 
+  /**
+    * Get a list of a user's photos filtered by $filter, $limit and $offset
+    *
+    * @param array $filters Filters to be applied before obtaining the result
+    * @return mixed Array on success, FALSE on failure 
+    */
   public function getPhotos($filter = array(), $limit, $offset = null)
   {
     // TODO: support logic for multiple conditions
@@ -123,10 +159,10 @@ class DatabaseMySql implements DatabaseInterface
       $thisLimit = min($iterator, $offset);
       /*do
       {
-      // FIXME FIXME FIXME
+        // FIXME FIXME FIXME
         //$res = mysql_query("SELECT * FROM `photo` {$where} {$sortBy} LIMIT {$iterator}",
-	//                   $this->db);
-	// todo deal with pages
+        //                   $this->db);
+        // todo deal with pages
         //if(!$res->body->SelectResult->NextToken)
         //  break;
 
@@ -152,13 +188,41 @@ class DatabaseMySql implements DatabaseInterface
     return $photos;
   }
 
+  /**
+    * Get a tag
+    * Consistent read set to false
+    *
+    * @param string $tag tag to be retrieved
+    * @return mixed Array on success, FALSE on failure 
+    */
   public function getTag($tag)
   {
     $tag = getDatabase()->one('SELECT * FROM tag WHERE id=:id', array(':id' => $tag));
+    // TODO this should be in the normalize method
     if($tag['params'])
       $tag = array_merge($tag, json_decode($tag['params'], 1));
     unset($tag['params']);
     return $tag;
+  }
+
+  /**
+    * Get tags filtered by $filter
+    * Consistent read set to false
+    *
+    * @param array $filters Filters to be applied to the list
+    * @return mixed Array on success, FALSE on failure    
+    */
+  public function getTags($filter = array())
+  {
+    $tags = getDatabase()->all("SELECT * FROM tag WHERE `count` IS NOT NULL AND `count` > '0' AND id IS NOT NULL ORDER BY id");
+    foreach($tags as $key => $tag)
+    {
+      // TODO this should be in the normalize method
+      if($tag['params'])
+        $tags[$key] = array_merge($tag, json_decode($tag['params'], 1));
+      unset($tags[$key]['params']);
+    }
+    return $tags;
   }
 
   /**
@@ -176,40 +240,14 @@ class DatabaseMySql implements DatabaseInterface
     return false;
   }
 
-  private function postVersions($id, $versions)
-  {
-    foreach($versions as $key => $value)
-    {
-      // TODO this is gonna fail if we already have the version -- hfiguiere
-      // Possibly use REPLACE INTO? -- jmathai
-      getDatabase()->execute("INSERT INTO photoVersion (id, `key`, path) VALUES('{$id}', '{$key}', '{$value}')");
-    }
-    // TODO, what type of return value should we have here -- jmathai
-    return true;
-  }
-
   /**
-    * Get tags filtered by $filter
-    * Consistent read set to false
+    * Update the information for an existing photo.
+    * This method overwrites existing values present in $params.
     *
-    * @param array $filters Filters to be applied to the list
-    * @return mixed Array on success, FALSE on failure    
+    * @param string $id ID of the photo to update.
+    * @param array $params Attributes to update.
+    * @return boolean
     */
-  public function getTags($filter = array())
-  {
-    $tags = getDatabase()->all("SELECT * FROM tag WHERE `count` IS NOT NULL AND `count` > '0' AND id IS NOT NULL ORDER BY id");
-    foreach($tags as $key => $tag)
-    {
-      if($tag['params'])
-      {
-        $tags[$key] = array_merge($tag, json_decode($tag['params'], 1));
-      }
-      unset($tags[$key]['params']);
-    }
-    return $tags;
-  }
-
-  // post methods update
   public function postPhoto($id, $params)
   {
     $params = self::preparePhoto($id, $params);
@@ -237,13 +275,14 @@ class DatabaseMySql implements DatabaseInterface
     return (isset($res) && $res == 1) || (isset($resVersions) && $resVersions);
   }
 
-  public function postUser($id, $params)
-  {
-    $stmt = self::sqlUpdateExplode($params);
-    $res = getDatabase()->execute("UPDATE user SET {$stmt} WHERE id=:id", array(':id' => $id));
-    return $res = 1;
-  }
-
+  /**
+    * Update a single tag.
+    * The $params should include the tag in the `id` field.
+    * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
+    *
+    * @param array $params Tags and related attributes to update.
+    * @return boolean
+    */
   public function postTag($id, $params)
   {
     if(!isset($params['id'])) 
@@ -254,8 +293,16 @@ class DatabaseMySql implements DatabaseInterface
 
     $result = getDatabase()->execute("INSERT INTO tag ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']}) ON DUPLICATE KEY UPDATE {$stmtUpd}");
     return true;
- }
+  }
 
+  /**
+    * Update multiple tags.
+    * The $params should include the tag in the `id` field.
+    * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
+    *
+    * @param array $params Tags and related attributes to update.
+    * @return boolean
+    */
   public function postTags($params)
   {
     foreach($params as $tagObj)
@@ -265,6 +312,14 @@ class DatabaseMySql implements DatabaseInterface
     return $res;
   }
 
+ /**
+    * Update counts for multiple tags by incrementing or decrementing.
+    * The $params should include the tag in the `id` field.
+    * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
+    *
+    * @param array $params Tags and related attributes to update.
+    * @return boolean
+    */
   public function postTagsCounter($params)
   {
     $tagsToUpdate = $tagsFromDb = array();
@@ -297,7 +352,29 @@ class DatabaseMySql implements DatabaseInterface
     return $this->postTags($updatedTags);
   }
 
-  // put methods create but do not update
+  /**
+    * Update the information for the user record.
+    * This method overwrites existing values present in $params.
+    *
+    * @param string $id ID of the user to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function postUser($id, $params)
+  {
+    $stmt = self::sqlUpdateExplode($params);
+    $res = getDatabase()->execute("UPDATE user SET {$stmt} WHERE id=:id", array(':id' => $id));
+    return $res = 1;
+  }
+
+  /**
+    * Add a new action to the database
+    * This method does not overwrite existing values present in $params - hence "new action".
+    *
+    * @param string $id ID of the action to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
   public function putAction($id, $params)
   {
     $stmt = self::sqlInsertExplode($params);
@@ -305,6 +382,14 @@ class DatabaseMySql implements DatabaseInterface
     return true;
   }
 
+  /**
+    * Add a new photo to the database
+    * This method does not overwrite existing values present in $params - hence "new photo".
+    *
+    * @param string $id ID of the photo to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
   public function putPhoto($id, $params)
   {
     $params = self::preparePhoto($id, $params);
@@ -313,6 +398,31 @@ class DatabaseMySql implements DatabaseInterface
     return true;
   }
 
+  /**
+    * Add a new tag to the database
+    * This method does not overwrite existing values present in $params - hence "new user".
+    *
+    * @param string $id ID of the user to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putTag($id, $params)
+  {
+    if(!isset($params['count']))
+      $count = 0;
+    else
+      $count = max(0, intval($params['count']));
+    return $this->postTag($id, $params);
+  }
+
+  /**
+    * Add a new user to the database
+    * This method does not overwrite existing values present in $params - hence "new user".
+    *
+    * @param string $id ID of the user to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
   public function putUser($id, $params)
   {
     $stmt = self::sqlInsertExplode($params);
@@ -320,25 +430,22 @@ class DatabaseMySql implements DatabaseInterface
     return true;
   }
 
-  public function putTag($id, $params)
-  {
-    if(!isset($params['count']))
-      $count = 0;
-    else
-      $count = max(0, intval($params['count']));
-
-    return $this->postTag($id, $params);
-  }
-
+  /**
+    * Initialize the database by creating the database and tables needed.
+    * This is called from the Setup controller.
+    *
+    * @return boolean
+    */
   public function initialize()
   {
-    // create the database
+    // TODO create the database and tables
     return true;
   }
 
   /**
     * Utility function to help build the WHERE clause for SELECT statements.
     * (Taken from DatabaseSimpleDb)
+    * TODO possibly put duplicate code in a utility class
     *
     * @param string $existing Existing where clause.
     * @param string $add Clause to add.
@@ -350,6 +457,22 @@ class DatabaseMySql implements DatabaseInterface
       return "where {$add} ";
     else
       return "{$existing} and {$add} ";
+  }
+
+  /**
+    * Get all the versions of a given photo
+    * TODO this can be eliminated once versions are in the json field
+    *
+    * @param string $id Id of the photo of which to get versions of
+    * @return array Array of versions
+    */
+  private function getPhotoVersions($id)
+  {
+    $versions = getDatabase()->all("SELECT `key`,path FROM photoVersion WHERE id=:id",
+                 array(':id' => $id));
+    if(empty($versions))
+      return false;
+    return $versions;
   }
 
   /**
@@ -389,16 +512,58 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Normalizes data from MySql into schema definition
     *
+    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @return array
+    */
+  private function normalizeAction($raw)
+  {
+    // TODO shouldn't we require and use this method?
+  }
+
+  /**
+    * Normalizes data from simpleDb into schema definition
+    * TODO this should eventually translate the json field
+    *
+    * @param SimpleXMLObject $raw A photo from SimpleDb in SimpleXML.
+    * @return array
+    */
+  private function normalizePhoto($photo)
+  {
+    $photo['appId'] = getConfig()->get('application')->appId;
+
+    $versions = $this->getPhotoVersions($photo['id']);
+    if($versions)
+    {
+      foreach($versions as $version)
+      {
+        $photo[$version['key']] =  $version['path'];
+        $photo[$version['key']] = sprintf('http://%s%s', $photo['host'], $version['path']);
+      }
+    }
+    $photo['tags'] = explode(",", $photo['tags']);
+    return $photo;
+  }
+
+  /**
+    * Normalizes data from simpleDb into schema definition
+    * TODO this should eventually translate the json field
+    *
+    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @return array
     */
   private function normalizeTag($raw)
   {
     return $raw;
   }
 
-
   /**
+    * Normalizes data from simpleDb into schema definition
+    * TODO this should eventually translate the json field
     *
+    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @return array
     */
   private function normalizeUser($raw)
   {
@@ -423,22 +588,22 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-   * Finish loading a photo. 
-   */
-  private function normalizePhoto($photo)
+    * Inserts a new version of photo with $id and $versions
+    * TODO this should be in a json field in the photo table
+    *
+    * @param string $id ID of the photo.
+    * @param array $versions Versions to the photo be inserted
+    * @return array
+    */
+  private function postVersions($id, $versions)
   {
-    $photo['appId'] = getConfig()->get('application')->appId;
-
-    $versions = $this->getPhotoVersions($photo['id']);
-    if($versions)
+    foreach($versions as $key => $value)
     {
-      foreach($versions as $version)
-      {
-        $photo[$version['key']] =  $version['path'];
-        $photo[$version['key']] = sprintf('http://%s%s', $photo['host'], $version['path']);
-      }
+      // TODO this is gonna fail if we already have the version -- hfiguiere
+      // Possibly use REPLACE INTO? -- jmathai
+      getDatabase()->execute("INSERT INTO photoVersion (id, `key`, path) VALUES('{$id}', '{$key}', '{$value}')");
     }
-    $photo['tags'] = explode(",", $photo['tags']);
-    return $photo;
+    // TODO, what type of return value should we have here -- jmathai
+    return true;
   }
 }

@@ -10,7 +10,6 @@ class DatabaseSimpleDb implements DatabaseInterface
   /**
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
-    * @var array
     */
   private $db, $domainAction, $domainPhoto, $domainTag, $domainUser;
 
@@ -90,6 +89,13 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $ret;
   }
 
+
+  /**
+    * Get a photo specified by $id
+    *
+    * @param string $id ID of the photo to retrieve
+    * @return mixed Array on success, FALSE on failure 
+    */
   public function getPhoto($id)
   {
     $res = $this->db->select("SELECT * FROM `{$this->domainPhoto}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
@@ -127,47 +133,11 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
-    * Get a tag
-    * Consistent read set to false
+    * Get a list of a user's photos filtered by $filter, $limit and $offset
     *
-    * @param string $tag tag to be retrieved
+    * @param array $filters Filters to be applied before obtaining the result
     * @return mixed Array on success, FALSE on failure 
     */
-  public function getTag($tag)
-  {
-    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE itemName()='{$tag}')", array('ConsistentRead' => 'false'));
-    if(isset($res->body->SelectResult->Item))
-      return self::normalizeTag($res->body->SelectResult->Item);
-
-    return false;
-  }
-
-  /**
-    * Get tags filtered by $filter
-    * Consistent read set to false
-    *
-    * @param array $filters Filters to be applied to the list
-    * @return mixed Array on success, FALSE on failure 
-    */
-  public function getTags($filters = array())
-  {
-    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE `count` IS NOT NULL AND `count` > '0' AND itemName() IS NOT NULL ORDER BY itemName()", array('ConsistentRead' => 'false'));
-    $tags = array();
-    if(isset($res->body->SelectResult))
-    {
-      if(isset($res->body->SelectResult->Item))
-      {
-        foreach($res->body->SelectResult->Item as $val)
-          $tags[] = self::normalizeTag($val);
-
-        return $tags;
-      }
-
-      return null;
-    }
-    return false;
-  }
-
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
     // TODO: support logic for multiple conditions
@@ -240,6 +210,48 @@ class DatabaseSimpleDb implements DatabaseInterface
 
     $photos[0]['totalRows'] = intval($responses[1]->body->SelectResult->Item->Attribute->Value);
     return $photos;
+  }
+
+  /**
+    * Get a tag
+    * Consistent read set to false
+    *
+    * @param string $tag tag to be retrieved
+    * @return mixed Array on success, FALSE on failure 
+    */
+  public function getTag($tag)
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE itemName()='{$tag}')", array('ConsistentRead' => 'false'));
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeTag($res->body->SelectResult->Item);
+
+    return false;
+  }
+
+  /**
+    * Get tags filtered by $filter
+    * Consistent read set to false
+    *
+    * @param array $filters Filters to be applied to the list
+    * @return mixed Array on success, FALSE on failure 
+    */
+  public function getTags($filters = array())
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE `count` IS NOT NULL AND `count` > '0' AND itemName() IS NOT NULL ORDER BY itemName()", array('ConsistentRead' => 'false'));
+    $tags = array();
+    if(isset($res->body->SelectResult))
+    {
+      if(isset($res->body->SelectResult->Item))
+      {
+        foreach($res->body->SelectResult->Item as $val)
+          $tags[] = self::normalizeTag($val);
+
+        return $tags;
+      }
+
+      return null;
+    }
+    return false;
   }
 
   /**
@@ -405,7 +417,12 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
-    * Alias of postTag
+    * Add a new tag to the database
+    * This method does not overwrite existing values present in $params - hence "new user".
+    *
+    * @param string $id ID of the user to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
     */
   public function putTag($id, $params)
   {
@@ -454,6 +471,7 @@ class DatabaseSimpleDb implements DatabaseInterface
 
   /**
     * Utility function to help build the WHERE clause for SELECT statements.
+    * TODO possibly put duplicate code in a utility class
     *
     * @param string $existing Existing where clause.
     * @param string $add Clause to add.
