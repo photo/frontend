@@ -46,18 +46,12 @@ _Authentication: optional_
 <a name="example-curl"></a>
 #### Command line curl
 
-    curl -F 'photo=@/path/to/photo.jpg' -F 'tags=dog,cat' http://jmathai.openphoto.me/photo/upload.json
-    curl -F 'photo=base64_encoded_string_representation_of_photo' -F 'title=My first day at work' http://jmathai.openphoto.me/photo/upload.json
+    curl "http://jmathai.openphoto.me/photo.json?tags=sunnyvale"
 
 <a name="example-php"></a>
 #### PHP
 
-    $ch = curl_init('http://jmathai.openphoto.me/photo/upload.json');
-    curl_setopt(
-      $ch, 
-      CURLOPT_POSTFIELDS, 
-      array('photo' => '@/path/to/photo.jpg', 'tags' => 'dog,cat', returnOptions' => '300x300')
-    );
+    $ch = curl_init('http://jmathai.openphoto.me/photos.json?tags=sunnyvale');
     curl_exec($ch);
 
 ----------------------------------------
