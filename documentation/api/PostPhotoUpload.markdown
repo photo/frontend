@@ -124,7 +124,7 @@ The response is in a standard [response envelope][Envelope].
     }
 
 [Envelope]: api/Envelope.markdown
-[Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
+[Photo]: schemas/Photo.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters

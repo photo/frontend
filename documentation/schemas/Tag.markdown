@@ -18,7 +18,10 @@ For example, the tag `sunnyvale` can have a `latitude` and `longitude` property.
 
     {
       id: (string),
-      count: (int)
+      count: (int),
+      email: (string),
+      latitude: (float),
+      longitude: (float)
     }
 
 ----------------------------------------
@@ -27,9 +30,11 @@ For example, the tag `sunnyvale` can have a `latitude` and `longitude` property.
 
   * id, Base 36 value of a base 10 auto-incremented value
   * count, The number of objects with this tag
+  * email, Email address if applicable
+  * latitude, Latitude if applicable
+  * longitude, Longitude if applicable
 
-[User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
-[Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
-[Action]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Action.markdown
-[Tag]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Tag.markdown
-
+[User]: User.markdown
+[Photo]: Photo.markdown
+[Action]: Action.markdown
+[Tag]: Tag.markdown

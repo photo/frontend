@@ -33,9 +33,9 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
       exifMeteringMode: (string),
       exifFlash: (string),
       exifFocalLength: (string),
-      gpsAltitude: (int),
-      gpsLatitude: (float),
-      gpsLongitude: (float),
+      altitude: (int),
+      latitude: (float),
+      longitude: (float),
       views: (int),
       status: (int), // binary
       permission: (int), // bitwise
