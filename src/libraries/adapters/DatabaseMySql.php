@@ -152,6 +152,15 @@ class DatabaseMySql implements DatabaseInterface
     return $photos;
   }
 
+  public function getTag($tag)
+  {
+    $tag = getDatabase()->one('SELECT * FROM tag WHERE id=:id', array(':id' => $tag));
+    if($tag['params'])
+      $tag = array_merge($tag, json_decode($tag['params'], 1));
+    unset($tag['params']);
+    return $tag;
+  }
+
   /**
     * Get the user record entry.
     *
@@ -194,8 +203,8 @@ class DatabaseMySql implements DatabaseInterface
       if($tag['params'])
       {
         $tags[$key] = array_merge($tag, json_decode($tag['params'], 1));
-        unset($tags[$key]['params']);
       }
+      unset($tags[$key]['params']);
     }
     return $tags;
   }
@@ -237,13 +246,15 @@ class DatabaseMySql implements DatabaseInterface
 
   public function postTag($id, $params)
   {
-    $stmt = self::sqlUpdateExplode($params);
-    $res = getDatabase()->execute("UPDATE tag SET {$stmt} WHERE id=:id", array(':id' => $id));
-    // there was no update. Insert
-    if($res == 0)
-      $this->putTag($id, $params);
+    if(!isset($params['id'])) 
+      $params['id'] = $id;
+
+    $stmtIns = self::sqlInsertExplode($params);
+    $stmtUpd = self::sqlUpdateExplode($params);
+
+    $result = getDatabase()->execute("INSERT INTO tag ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']}) ON DUPLICATE KEY UPDATE {$stmtUpd}");
     return true;
-  }
+ }
 
   public function postTags($params)
   {
@@ -311,17 +322,12 @@ class DatabaseMySql implements DatabaseInterface
 
   public function putTag($id, $params)
   {
-    if(!isset($params['id'])) 
-      $params[id] = $id;
-
     if(!isset($params['count']))
       $count = 0;
     else
       $count = max(0, intval($params['count']));
 
-    $stmt = self::sqlInsertExplode($params);
-    $result = getDatabase()->execute("INSERT INTO tag ({$stmt['cols']}) VALUES ({$stmt['vals']})");
-    return true;
+    return $this->postTag($id, $params);
   }
 
   public function initialize()
