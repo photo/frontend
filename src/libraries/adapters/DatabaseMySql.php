@@ -70,7 +70,7 @@ class DatabaseMySql implements DatabaseInterface
     if($photo_prev)
       $ret['previous'] = self::normalizePhoto($photo_prev);
     if($photo_next)
-    $ret['next'] = self::normalizePhoto($photo_next);
+      $ret['next'] = self::normalizePhoto($photo_next);
 
     return $ret;
   }
@@ -525,6 +525,11 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
     $photo['tags'] = explode(",", $photo['tags']);
+
+    $exif_array = (array)json_decode($photo['exif']);
+    $photo = array_merge($photo, $exif_array);
+    unset($photo['exif']);
+
     return $photo;
   }
 
@@ -566,6 +571,29 @@ class DatabaseMySql implements DatabaseInterface
     if(isset($params['tags']) && is_array($params['tags']))
       $params['tags'] = implode(',', $params['tags']);
 
+    
+    $exif_keys = array('exifOrientation' => 0,
+                       'exifCameraMake' => 0,
+                       'exifCameraModel' => 0,
+                       'exifExposureTime' => 0,
+                       'exifFNumber' => 0,
+                       'exifMaxApertureValue' => 0,
+                       'exifMeteringMode' => 0,
+                       'exifFlash' => 0,
+                       'exifFocalLength' => 0,
+                       'gpsAltitude' => 0,
+                       'latitude' => 0,
+                       'longitude' => 0);
+
+    $exif_array = array_intersect_key($params, $exif_keys);
+    if(!empty($exif_array))
+    {
+      foreach(array_keys($exif_keys) as $key)
+      {
+        unset($params[$key]);
+      }
+      $params['exif'] = json_encode($exif_array);
+    }
     return $params;
   }
 
