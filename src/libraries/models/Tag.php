@@ -78,4 +78,23 @@ class Tag
 
     return implode(',', $tagsArray);
   }
+
+  public static function validateParams($params)
+  {
+    $fields = array('count' => 1);
+    $noSql = array('email' => 1, 'latitude' => 1, 'longitude' => 1);
+    $json = null;
+    foreach($params as $key => $param)
+    {
+      if(isset($noSql[$key]))
+        $json[$key] = $param;
+
+      if(!isset($fields[$key]))
+        unset($params[$key]);
+    }
+
+    if($json)
+      $params['params'] = json_encode($json);
+    return $params;
+  }
 }

@@ -15,7 +15,8 @@ class ApiTagController extends BaseController
   public static function post($tag)
   {
     $tag = Tag::sanitize($tag);
-    $res = getDb()->postTag($tag, $_POST);
+    $params = Tag::validateParams($_POST);
+    $res = getDb()->postTag($tag, $params);
     if($res)
       return self::success('Tag created/updated successfully', $_POST);
     else
