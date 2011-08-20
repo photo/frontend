@@ -189,6 +189,14 @@ class DatabaseMySql implements DatabaseInterface
   public function getTags($filter = array())
   {
     $tags = getDatabase()->all("SELECT * FROM tag WHERE `count` IS NOT NULL AND `count` > '0' AND id IS NOT NULL ORDER BY id");
+    foreach($tags as $key => $tag)
+    {
+      if($tag['params'])
+      {
+        $tags[$key] = array_merge($tag, json_decode($tag['params'], 1));
+        unset($tags[$key]['params']);
+      }
+    }
     return $tags;
   }
 
@@ -229,11 +237,8 @@ class DatabaseMySql implements DatabaseInterface
 
   public function postTag($id, $params)
   {
-    if(!isset($params['count']))
-      $count = 0;
-    else
-      $count = max(0, intval($params['count']));
-    $res = getDatabase()->execute("UPDATE tag SET count=:count WHERE id=:id", array(':id' => $id, ':count' => $count));
+    $stmt = self::sqlUpdateExplode($params);
+    $res = getDatabase()->execute("UPDATE tag SET {$stmt} WHERE id=:id", array(':id' => $id));
     // there was no update. Insert
     if($res == 0)
       $this->putTag($id, $params);
@@ -307,9 +312,13 @@ class DatabaseMySql implements DatabaseInterface
   public function putTag($id, $params)
   {
     if(!isset($params['id'])) 
-    {
       $params[id] = $id;
-    }
+
+    if(!isset($params['count']))
+      $count = 0;
+    else
+      $count = max(0, intval($params['count']));
+
     $stmt = self::sqlInsertExplode($params);
     $result = getDatabase()->execute("INSERT INTO tag ({$stmt['cols']}) VALUES ({$stmt['vals']})");
     return true;

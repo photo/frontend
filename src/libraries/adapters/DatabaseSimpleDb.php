@@ -267,10 +267,6 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function postTag($id, $params)
   {
-    if(!isset($params['count']))
-      $params['count'] = 0;
-    else
-      $params['count'] = max(0, intval($params['count']));
     $res = $this->db->put_attributes($this->domainTag, $id, $params, true);
     return $res->isOK();
   }
@@ -397,6 +393,10 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function putTag($id, $params)
   {
+    if(!isset($params['count']))
+      $params['count'] = 0;
+    else
+      $params['count'] = max(0, intval($params['count']));
     return $this->postTag($id, $params);
   }
 
