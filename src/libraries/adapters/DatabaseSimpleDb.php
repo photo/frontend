@@ -127,6 +127,22 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Get a tag
+    * Consistent read set to false
+    *
+    * @param string $tag tag to be retrieved
+    * @return mixed Array on success, FALSE on failure 
+    */
+  public function getTag($tag)
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE itemName()='{$tag}')", array('ConsistentRead' => 'false'));
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeTag($res->body->SelectResult->Item);
+
+    return false;
+  }
+
+  /**
     * Get tags filtered by $filter
     * Consistent read set to false
     *
