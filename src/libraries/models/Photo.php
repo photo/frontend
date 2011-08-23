@@ -254,7 +254,6 @@ class Photo
     getLogger()->info("Making a local copy of the uploaded image. {$localFile} to {$localFileCopy}");
     copy($localFile, $localFileCopy);
 
-
     $baseImage = getImage($localFileCopy);
     $baseImage->scale(getConfig()->get('photos')->baseSize, getConfig()->get('photos')->baseSize);
     $baseImage->write($localFileCopy);
@@ -274,8 +273,10 @@ class Photo
         if(!isset($attributes[$default]))
           $attributes[$default] = null;
       }
-      $attributes['latitude'] = floatval($exif['latitude']);
-      $attributes['longitude'] = floatval($exif['longitude']);
+      if(isset($exif['latitude']))
+        $attributes['latitude'] = floatval($exif['latitude']);
+      if(isset($exif['longitude']))
+        $attributes['longitude'] = floatval($exif['longitude']);
 
       if(isset($attributes['tags']) && !empty($attributes['tags']))
         $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
@@ -307,7 +308,6 @@ class Photo
       $stored = $db->putPhoto($id, $attributes);
       unlink($localFile);
       unlink($localFileCopy);
-      print $stored;
       if($stored)
       {
         getLogger()->info("Photo ({$id}) successfully stored to the database");
