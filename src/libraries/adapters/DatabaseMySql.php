@@ -151,10 +151,9 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
 
+    $offset_sql = '';
     if($offset)
-    {
       $offset_sql = "OFFSET {$offset}";
-    }
     $photos = getDatabase()->all("SELECT * FROM photo {$where} {$sortBy} LIMIT {$limit} {$offset_sql}");
     if(empty($photos))
       return false;
