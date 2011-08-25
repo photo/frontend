@@ -83,18 +83,24 @@ Launch the administration web interface and connect to it
     firefox http://localhost:9090
 
 Go the sections "Vservers" and create a new vserver with the + button
+
 In the "Languages" sub-section, choose "PHP" and click "Add"
+
 Set the Document Root to "/var/www/yourdomain.com/src/html" and click "Next"
+
 Enter the Vhost Name the configuration will serve and set the log configuration; click "Create"
+
 Now, go to the rules definition and add a "File Exists" rules, invert the rule with "Not" button and set the following parameters:
 * Match any file: enable
 * Use I/O Cache: enable
 * Only match files: disable
 * If dir, check Index files: disable
+
 Go to the tab "Handler", set a "Redirection" handler with the following parameters:
 * Show: Internal
 * Regular Expression: `^/(.*)\?*$`
 * Substitution: `index.php?__route__=/$1`
+
 Click "Add".
 
 Press the button "Save", and restart Cherokee.
