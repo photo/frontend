@@ -6,6 +6,6 @@ OpenPhoto / Guides
 1.  [Installation on Ubuntu with Cherokee][guideinstallubuntucherokee]
 1.  [Installation on OSX using Macports][guideinstallosxmacports]
 
-[guideinstallubuntuapache]: guides/InstallationUbuntuApache.markdown
-[guideinstallubuntucherokee]: guides/InstallationUbuntuCherokee.markdown
-[guideinstallosxmacports]: guides/InstallationOSXMacports.markdown
+[guideinstallubuntuapache]: InstallationUbuntuApache.markdown
+[guideinstallubuntucherokee]: InstallationUbuntuCherokee.markdown
+[guideinstallosxmacports]: InstallationOSXMacports.markdown
