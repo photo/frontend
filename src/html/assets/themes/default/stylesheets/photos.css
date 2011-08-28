@@ -16,6 +16,12 @@
 .photo-grid .grid-item {
     float: left;
 }
+.photo-grid .grid-item a img{
+    -webkit-box-shadow: 2px 2px 2px #888;
+    -moz-box-shadow: 2px 2px 2px #888;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
 
 .grid-200 .grid-item {
     width : 240px;
@@ -26,10 +32,14 @@
     -webkit-box-shadow: 2px 2px 2px #888;
     -moz-box-shadow: 2px 2px 2px #888;
     box-shadow: 2px 2px 2px #888;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
 }
 
 .meta {
     font-size: .8em;
+    height: 15px;
+    margin: 0 0 8px;
 }
 
 .age {
@@ -115,6 +125,9 @@
     border: 1px solid #ddd;
     height: 50px;
     width: 65px;
+    float: left;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
 }
 
 .image-pagination a {
@@ -125,9 +138,7 @@
 
 .image-pagination .previous {
     background: url(http://current.openphoto.me/assets/img/default/icon-left.png) center left no-repeat;
-    float: left;
 }
-
 
 .image-pagination .previous a {
     margin-left: 15px;
@@ -135,13 +146,17 @@
 
 .image-pagination .next {
     background: url(http://current.openphoto.me/assets/img/default/icon-right.png) center right no-repeat;
-    float: left;
     margin-left: 10px;
 }
 
 
 .image-pagination .previous a {
     margin-right: 15px;
+}
+
+.image-pagination .empty {
+  border:none;
+  background: none;
 }
 
 .comment-form {

@@ -17,7 +17,8 @@ $epiPath = "{$basePath}/libraries/external/epi";
 require "{$epiPath}/Epi.php";
 Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
-Epi::setPath('view', "{$basePath}/views");
+//Epi::setPath('view', "{$basePath}/views");
+Epi::setPath('view', '');
 //Epi::setSetting('exceptions', true);
 Epi::init('api','config','logger','route','session-php','template','database');
 // TODO allow configurable session engine
@@ -26,6 +27,7 @@ EpiSession::employ(EpiSession::PHP);
 getSession();
 
 getConfig()->load('defaults.ini');
+getConfig()->load(sprintf('%s/assets/themes/%s/config/settings.ini', dirname(__FILE__), getConfig()->get('site')->theme));
 $configFile = Epi::getPath('config').'/generated/settings.ini';
 if(file_exists($configFile))
 {
