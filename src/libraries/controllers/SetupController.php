@@ -18,18 +18,21 @@ class SetupController
     $step = 0;
     if(isset($_GET['step']))
       $step = intval($_GET['step']);
-    $permissionCheck = self::verifyRequirements();
-    if($permissionCheck !== true)
-    {
-      getTemplate()->display('blank.php', array('body' => getTemplate()->get('setupRequirements.php', array('errors' => $permissionCheck))));
-      return;
-    }
 
     $imageLibs = array();
     if(class_exists('Imagick'))
       $imageLibs['ImageMagick'] = 'ImageMagick';
     if(class_exists('Gmagick'))
       $imageLibs['GraphicsMagick'] = 'GraphicsMagick';
+    if(extension_loaded('gd') && function_exists('gd_info'))
+      $imageLibs['GD'] = 'GD';
+
+    $permissionCheck = self::verifyRequirements($imageLibs);
+    if($permissionCheck !== true)
+    {
+      getTemplate()->display('blank.php', array('body' => getTemplate()->get('setupRequirements.php', array('errors' => $permissionCheck))));
+      return;
+    }
 
     $params = array('imageLibs' => $imageLibs, 'appId' => $_SERVER['HTTP_HOST'], 'step' => $step);
     $body = getTemplate()->get('setup.php', $params);
@@ -49,13 +52,13 @@ class SetupController
     $needs_aws = ($fs_type === 'S3') || ($db_type === 'SimpleDb');
 
     $opts = new stdClass;
-    if($needs_aws) 
+    if($needs_aws)
     {
       $opts->awsKey = $_POST['awsKey'];
       $opts->awsSecret = $_POST['awsSecret'];
     }
     getConfig()->set('credentials', $opts);
-    if($needs_aws) 
+    if($needs_aws)
     {
       $aws = new stdClass;
       $aws->s3BucketName = $_POST['s3Bucket'];
@@ -94,7 +97,7 @@ class SetupController
       getRoute()->redirect('/setup?e=fileSystemInitializationError');
     if(!$db->initialize())
       getRoute()->redirect('/setup?e=databaseInitializationError');
-    
+
     // continue
     $baseDir = dirname(dirname(dirname(__FILE__)));
     $htmlDir = "{$baseDir}/html";
@@ -118,8 +121,8 @@ class SetupController
       $pReplace["{{$key}}"] = $val;
     $replacements = array_merge($pReplace, $replacements);
     $generatedIni = str_replace(
-      array_keys($replacements), 
-      array_values($replacements), 
+      array_keys($replacements),
+      array_values($replacements),
       file_get_contents("{$configDir}/template.ini")
     );
     $wasPut = file_put_contents("{$configDir}/generated/settings.ini", $generatedIni);
@@ -134,14 +137,15 @@ class SetupController
     *
     * @return mixed  TRUE on success, array on error
     */
-  private static function verifyRequirements()
+  private static function verifyRequirements($imageLibs)
   {
     $errors = array();
     $configDir = dirname(dirname(dirname(__FILE__))) . '/configs';
     $generatedDir = "{$configDir}/generated";
-    if(file_exists($generatedDir) 
+
+    if(file_exists($generatedDir)
         && is_writable($generatedDir)
-        && (class_exists('Imagick') || class_exists('Gmagick')))
+        && !empty($imageLibs))
       return true;
 
     $user = exec("whoami");
@@ -165,12 +169,12 @@ class SetupController
     {
       $errors[] = "{$generatedDir} exists but is not writable by {$user}";
     }
-        
+
     if((!class_exists('Imagick') && !class_exists('Gmagick')))
     {
       $errors[] = "Imagick does not exist (nor does Gmagick)";
     }
-    
+
     return $errors;
   }
 }
