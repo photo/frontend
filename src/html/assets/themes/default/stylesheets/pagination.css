@@ -5,7 +5,7 @@
  */
 
 .pagination {
-    text-align: center;
+    text-align: right;
 }
 
 .pagination .label {
@@ -31,6 +31,8 @@
     background-color: #eee;
     border: 1px solid #ccc;
     padding: 8px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
 }
 
 
