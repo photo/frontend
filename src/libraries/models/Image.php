@@ -35,5 +35,8 @@ function getImage($image)
     case 'ImageMagick':
       return new ImageImageMagick($image);
       break;
+    case 'GD':
+      return new ImageGD($image);
+      break;
   }
 }
