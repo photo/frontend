@@ -37,3 +37,4 @@ require getConfig()->get('paths')->models . '/Theme.php';
 require getConfig()->get('paths')->models . '/Image.php';
 require getConfig()->get('paths')->models . '/ImageImageMagick.php';
 require getConfig()->get('paths')->models . '/ImageGraphicsMagick.php';
+require getConfig()->get('paths')->models . '/ImageGD.php';
