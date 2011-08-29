@@ -109,7 +109,7 @@ class User
 
   public static function isOwner()
   {
-    return getSession()->get('email') == getConfig()->get('user')->email;
+    return isset(getConfig()->get('user')->email) && getSession()->get('email') == getConfig()->get('user')->email;
   }
 
   /**
