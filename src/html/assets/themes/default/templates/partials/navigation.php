@@ -20,7 +20,7 @@
   <?php } ?>
   <?php if(User::isLoggedIn()) { ?>
   <li id="nav-signin">
-    <?php echo getSession()->get('email'); ?><img src="/assets/img/default/header-navigation-user.png" align="absmiddle">
+    <?php echo getSession()->get('email'); ?><img src="<?php getTheme()->asset('image', 'header-navigation-user.png'); ?>" align="absmiddle">
   </li>
   <?php } else { ?>
   <li id="nav-signin">
