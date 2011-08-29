@@ -32,14 +32,29 @@ class Theme
     }
   }
 
+  public function display($template, $params = null)
+  {
+    getTemplate()->display("{$this->themeDir}/templates/{$template}", $params);
+  }
+
+  public function fileExists($path)
+  {
+    return file_exists(sprintf('%s/%s', $this->themeDir, $path));
+  }
+
   public function get($template, $params = null)
   {
     return getTemplate()->get("{$this->themeDir}/templates/{$template}", $params);
   }
 
-  public function display($template, $params = null)
+  public function meta($page, $key, $write = true)
   {
-    getTemplate()->display("{$this->themeDir}/templates/{$template}", $params);
+    if(isset(getConfig()->get($page)->$key))
+      return Utility::returnValue(getConfig()->get($page)->$key, $write);
+    elseif(isset(getConfig()->get($page)->default))
+      return Utility::returnValue(getConfig()->get($page)->default, $write);
+    else
+      return Utility::returnValue('', $write);
   }
 }
 

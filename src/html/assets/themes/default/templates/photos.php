@@ -3,7 +3,7 @@
     <ul class="photo-grid grid-200">
       <?php foreach($photos as $photo) { ?>
         <li class="grid-item id-<?php Utility::safe($photo['id']); ?>">
-          <a href="/photo/<?php Utility::safe($photo['id']); ?>"><img src="<?php Utility::photoUrl($photo, getConfig()->get('photo')->thumbnailSize); ?>" alt="<?php Utility::safe($photo['title']); ?>"></a>
+          <a href="/photo/<?php Utility::safe($photo['id']); ?>"><img src="<?php Utility::photoUrl($photo, getConfig()->get('photoSizes')->thumbnail); ?>" alt="<?php Utility::safe($photo['title']); ?>"></a>
           <ul class="meta">
             <li class="age"><?php Utility::timeAsText($photo['dateTaken'], 'Taken'); ?></li>
             <li class="permission <?php Utility::permissionAsText($photo['permission']); ?>"><?php Utility::permissionAsText($photo['permission']); ?></li>
@@ -16,6 +16,15 @@
     <br clear="all">
     <?php getTheme()->display('partials/pagination.php', array_merge($pagination, array('labelPosition' => 'bottom'))); ?>
   <?php } else { ?>
-    <?php /* TODO: more intelligent message */ ?>
-    <h2>You haven't uploaded any photos yet</h2>
+    <?php if(User::isOwner()) { ?>
+      <h1>There don't seem to be any photos. You should <a href="/photo/upload">upload</a> some.</h1>
+      <p>
+        If you're searching for photos then there aren't any which match your query.
+      </p>
+    <?php } else { ?>
+      <h1>No photos to show.</h1>
+      <p>
+        This could be because the user hasn't uploaded any photos yet or you've searched for photos that do not exist.
+      </p>
+    <?php } ?>
   <?php } ?>

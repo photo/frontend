@@ -7,8 +7,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     
-    <title></title>
-    <meta name="description" content="">
+    <title><?php getTheme()->meta('titles', $page); ?></title>
+    <meta name="description" content="<?php getTheme()->meta('descriptions', $page); ?>">
+    <meta name="keywords" content="<?php getTheme()->meta('keywords', $page); ?>">
 
     
     <meta name="author" content="">
@@ -25,7 +26,7 @@
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'footer.css'); ?>">
 </head>
 
-<body class="<?php echo $class; ?>">
+<body class="<?php echo $page; ?>">
 
   <div id="container">
     <header>
