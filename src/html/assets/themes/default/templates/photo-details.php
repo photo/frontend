@@ -3,20 +3,20 @@
     <div class="photo-column">
       <h1><?php Utility::safe($photo['title']); ?></h1>
       <p class="description"><?php Utility::safe($photo['description']); ?></p>
-      <img class="photo" width="<?php Utility::safe($photo['thisWidth']); ?>" height="<?php Utility::safe($photo['thisHeight']); ?>" src="<?php Utility::photoUrl($photo, getConfig()->get('photo')->detailSize); ?>" alt="My last latte at Yahoo!">
+      <img class="photo" width="<?php Utility::safe($photo['thisWidth']); ?>" height="<?php Utility::safe($photo['thisHeight']); ?>" src="<?php Utility::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" alt="My last latte at Yahoo!">
     </div>
     <div class="sidebar">
       <div class="image-pagination">
         <?php if(!empty($photo['previous'])) { ?>
           <div class="previous">
-            <a href="/photo/<?php Utility::safe($photo['previous']['id']); ?>" style="background:url(<?php Utility::photoUrl($photo['previous'], getConfig()->get('photo')->nextPreviousSize); ?>) top left no-repeat;"><span class="audible">Go to previous photo</span></a>
+            <a href="/photo/<?php Utility::safe($photo['previous']['id']); ?>" style="background:url(<?php Utility::photoUrl($photo['previous'], getConfig()->get('photoSizes')->nextPrevious); ?>) top left no-repeat;"><span class="audible">Go to previous photo</span></a>
           </div>
         <?php } else { ?>
           <div class="empty"></div>
         <?php } ?>
         <div class="next">
           <?php if(!empty($photo['next'])) { ?>
-            <a href="/photo/<?php Utility::safe($photo['next']['id']); ?>" style="background:url(<?php Utility::photoUrl($photo['next'], getConfig()->get('photo')->nextPreviousSize); ?>) top left no-repeat"><span class="audible">Go to next photo</span></a>
+            <a href="/photo/<?php Utility::safe($photo['next']['id']); ?>" style="background:url(<?php Utility::photoUrl($photo['next'], getConfig()->get('photoSizes')->nextPrevious); ?>) top left no-repeat"><span class="audible">Go to next photo</span></a>
           <?php } ?>
         </div>
       </div>
@@ -25,8 +25,10 @@
         <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments">see all</a></li>
         <li class="tags"><?php Utility::tagsAsLinks($photo['tags']); ?></li>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
-          <li class="location"><?php Utility::safe($photo['latitude']); ?>, <?php Utility::safe($photo['longitude']); ?></li>
-          <img src="<?php Utility::staticMapUrl($photo['latitude'], $photo['longitude'], 14, '450x150'); ?>" class="map">
+          <li class="location">
+            <?php Utility::safe($photo['latitude']); ?>, <?php Utility::safe($photo['longitude']); ?>
+            <img src="<?php Utility::staticMapUrl($photo['latitude'], $photo['longitude'], 14, '225x150'); ?>" class="map">
+          </li>
         <?php } ?>
         <li class="exif">
           <ul>

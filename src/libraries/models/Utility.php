@@ -87,6 +87,14 @@ class Utility
       return self::returnValue(($int > 1 ? "{$word}s" : $word), $write);
   }
 
+  public static function returnValue($value, $write = true)
+  {
+    if($write)
+      echo $value;
+    else
+      return $value;
+  }
+
   public static function safe($string, $write = true)
   {
     return self::returnValue(htmlspecialchars($string), $write);
@@ -106,13 +114,5 @@ class Utility
       $ret[] = '<a href="/photos/tags-'.self::safe($tag, false).'">'.self::safe($tag, false).'</a>';
 
     return self::returnValue(implode(', ', $ret), $write);
-  }
-
-  private static function returnValue($value, $write = true)
-  {
-    if($write)
-      echo $value;
-    else
-      return $value;
   }
 }
