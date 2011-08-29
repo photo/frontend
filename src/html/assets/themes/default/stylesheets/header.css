@@ -12,7 +12,7 @@ header {
 }
 
 header h1 {
-    background: url(http://current.openphoto.me/assets/img/default/header-logo.png) center left no-repeat;
+    background: url(../images/header-logo.png) center left no-repeat;
     width: 181px;
     height: 35px;
     text-indent: -9999px;
@@ -46,19 +46,19 @@ nav .on {
 }
 
 #nav-photos a {
-    background: url(http://current.openphoto.me/assets/img/default/header-navigation-photos.png) 0 .2em no-repeat;
+    background: url(../images/header-navigation-photos.png) 0 .2em no-repeat;
 }
 
 #nav-tags a {
-    background: url(http://current.openphoto.me/assets/img/default/header-navigation-tags.png) 0 .2em no-repeat;
+    background: url(../images/header-navigation-tags.png) 0 .2em no-repeat;
 }
 
 #nav-search a {
-    background: url(http://current.openphoto.me/assets/img/default/header-navigation-search.png) 0 .2em no-repeat;
+    background: url(../images/header-navigation-search.png) 0 .2em no-repeat;
 }
 
 #nav-upload a {
-    background: url(http://current.openphoto.me/assets/img/default/header-navigation-upload.png) 0 .2em no-repeat;
+    background: url(../images/header-navigation-upload.png) 0 .2em no-repeat;
 }
 #searchbar {
     background-color: #EFEFEF;

@@ -95,19 +95,19 @@
 }
 
 .photo-details .date {
-    background: url(http://current.openphoto.me/assets/img/default/icon-date.png) center left no-repeat;
+    background: url(../images/icon-date.png) center left no-repeat;
 }
 
 .photo-details .heart {
-    background: url(http://current.openphoto.me/assets/img/default/icon-heart.png) center left no-repeat;
+    background: url(../images/icon-heart.png) center left no-repeat;
 }
 
 .photo-details .tags {
-    background: url(http://current.openphoto.me/assets/img/default/icon-tags.png) center left no-repeat;
+    background: url(../images/icon-tags.png) center left no-repeat;
 }
 
 .photo-details .location {
-    background: url(http://current.openphoto.me/assets/img/default/icon-globe.png) left 2px no-repeat;
+    background: url(../images/icon-globe.png) left 2px no-repeat;
 }
 
 .photo-details .location img {
@@ -137,7 +137,7 @@
 }
 
 .image-pagination .previous {
-    background: url(http://current.openphoto.me/assets/img/default/icon-left.png) center left no-repeat;
+    background: url(../images/icon-left.png) center left no-repeat;
 }
 
 .image-pagination .previous a {
@@ -145,7 +145,7 @@
 }
 
 .image-pagination .next {
-    background: url(http://current.openphoto.me/assets/img/default/icon-right.png) center right no-repeat;
+    background: url(../images/icon-right.png) center right no-repeat;
     margin-left: 10px;
 }
 
