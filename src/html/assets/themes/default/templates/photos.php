@@ -7,8 +7,8 @@
           <ul class="meta">
             <li class="age"><?php Utility::timeAsText($photo['dateTaken'], 'Taken'); ?></li>
             <li class="permission <?php Utility::permissionAsText($photo['permission']); ?>"><?php Utility::permissionAsText($photo['permission']); ?></li>
-            <?php if(!empty($photo['tags'])) { ?><li><img src="/assets/img/default/icon-tags.png" alt="This photo has tags"></li><?php } ?>
-            <?php if(!empty($photo['latitude'])) { ?><li><img src="/assets/img/default/icon-globe.png" alt="This photo has location information"></li><?php } ?>
+            <?php if(!empty($photo['tags'])) { ?><li><img src="<?php getTheme()->asset('image', 'icon-tags.png'); ?>" alt="This photo has tags"></li><?php } ?>
+            <?php if(!empty($photo['latitude'])) { ?><li><img src="<?php getTheme()->asset('image', 'icon-globe.png'); ?>" alt="This photo has location information"></li><?php } ?>
           </ul>
         </li>
       <?php } ?>
