@@ -46,6 +46,7 @@ elseif(!file_exists($configFile))
   $paths->external = "{$baseDir}/libraries/external";
   $paths->adapters = "{$baseDir}/libraries/adapters";
   $paths->models = "{$baseDir}/libraries/models";
+  $paths->themes = "{$baseDir}/html/assets/themes";
   getConfig()->set('paths', $paths);
   require getConfig()->get('paths')->libraries . '/dependencies.php';
   require getConfig()->get('paths')->libraries . '/routes-setup.php';

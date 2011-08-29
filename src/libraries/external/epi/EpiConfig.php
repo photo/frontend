@@ -43,7 +43,7 @@ class EpiConfig
 
   public function get($key)
   {
-    return $this->config->$key;
+    return isset($this->config->$key) ? $this->config->$key : null;
   }
 
   public function set($key, $val)
