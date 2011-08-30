@@ -34,8 +34,8 @@
   OU.attachEvent = function(element, etype, callback, scope) {
     
     var scope = scope || window;
-  
-    lib ).live(etype, lib.proxy(callback, scope) );
+
+    lib( element ).live(etype, lib.proxy(callback, scope) );
   
   }
   

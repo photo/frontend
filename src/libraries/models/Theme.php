@@ -16,18 +16,29 @@ class Theme
     $this->themeDirWeb = str_replace(sprintf('%s/html', dirname(dirname(dirname(__FILE__)))), '', $this->themeDir);
   }
 
-  public function asset($type, $filename)
+  public function asset($type, $filename = '')
   {
+    $filename = "/{$filename}";
     switch($type)
     {
+      case 'base':
+        echo "{$this->themeDirWeb}{$filename}";
+        break;
       case 'image':
-        echo "{$this->themeDirWeb}/images/{$filename}";
+        echo "{$this->themeDirWeb}/images{$filename}";
         break;
       case 'javascript':
-        echo "{$this->themeDirWeb}/javascripts/{$filename}";
+        echo "{$this->themeDirWeb}/javascripts{$filename}";
         break;
       case 'stylesheet':
-        echo "{$this->themeDirWeb}/stylesheets/{$filename}";
+        echo "{$this->themeDirWeb}/stylesheets{$filename}";
+        break;
+      //
+      case 'jquery':
+        echo '/assets/javascripts/jquery-1.6.2.min.js';
+        break;
+      case 'util':
+        echo '/assets/javascripts/openphoto-util.js';
         break;
     }
   }

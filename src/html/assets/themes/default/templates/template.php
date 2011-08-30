@@ -42,5 +42,15 @@
     </footer>
   </div> <!-- eo #container -->
   <!-- your javascript here //-->
+  <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
+  <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
+  <script>
+    OP.Util.init(jQuery, { 
+      js: [
+        {src: '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>', callback: function(){ opTheme.init.attach(); }},
+        '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>'
+      ]
+    });
+  </script>
 </body>
 </html>
