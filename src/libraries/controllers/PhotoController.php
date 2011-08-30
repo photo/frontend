@@ -57,23 +57,26 @@ class PhotoController extends BaseController
     */
   public static function photo($id, $options = null)
   {
-    $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => '960x960')));
+    $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => getConfig()->get('photoSizes')->detail)));
     if($apiResp['code'] == 200)
     {
-      $apiNextPrevious = getApi()->invoke("/photo/nextprevious/{$id}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '50x50xCR')));
+      $detailDimensions = explode('x', getConfig()->get('photoSizes')->detail);
+      $apiNextPrevious = getApi()->invoke("/photo/nextprevious/{$id}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
       $photo = $apiResp['result'];
       if($photo['width'] >= $photo['height'])
       {
-        $photo['thisWidth'] = 960;       
-        $photo['thisHeight'] = intval($photo['height']/$photo['width']*960);
+        $photo['thisWidth'] = $detailDimensions[0];
+        $photo['thisHeight'] = intval($photo['height']/$photo['width']*$detailDimensions[0]);
       }
       else
       {
-        $photo['thisWidth'] = intval($photo['width']/$photo['height']*960);
-        $photo['thisHeight'] = 960;
+        $photo['thisWidth'] = intval($photo['width']/$photo['height']*$detailDimensions[1]);
+        $photo['thisHeight'] = $detailDimensions[1];
       }
-      $photo['nextprevious'] = $apiNextPrevious['result'];
-      getTemplate()->display('template.php', array('body' => getTemplate()->get('photo.php', array('photo' => $photo))));
+      $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
+      $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
+      $body = getTheme()->get('photo-details.php', array('photo' => $photo));
+      getTheme()->display('template.php', array('body' => $body, 'page' => 'photo-details'));
     }
     else
     {
@@ -91,16 +94,17 @@ class PhotoController extends BaseController
   public static function photos($filterOpts = null)
   {
     if($filterOpts)
-      $photos = getApi()->invoke("/photos/{$filterOpts}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200xCR')));
+      $photos = getApi()->invoke("/photos/{$filterOpts}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
     else
-      $photos = getApi()->invoke("/photos.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200xCR')));
+      $photos = getApi()->invoke("/photos.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
 
     $photos = $photos['result'];
 
     $pagination = array('requestUri' => $_SERVER['REQUEST_URI'], 'currentPage' => $photos[0]['currentPage'], 
       'pageSize' => $photos[0]['pageSize'], 'totalPages' => $photos[0]['totalPages']);
-    $body = getTemplate()->get('photos.php', array('photos' => $photos, 'pagination' => $pagination));
-    getTemplate()->display('template.php', array('body' => $body));
+
+    $body = getTheme()->get('photos.php', array('photos' => $photos, 'pagination' => $pagination));
+    getTheme()->display('template.php', array('body' => $body, 'page' => 'photos'));
   }
 
   /**

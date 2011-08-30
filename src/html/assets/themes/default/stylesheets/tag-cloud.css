@@ -1,0 +1,63 @@
+/**
+ * OpenPhoto Default Theme
+ *
+ * Tag Cloud styles
+ */
+
+.tag-cloud {
+    text-align: center;
+}
+
+.tag-cloud li {
+    display: inline;
+    line-height: 1.5;
+    margin-right: 10px;
+}
+
+
+/**
+ * Weighted Styles for each tag
+ *
+ * size-1: least popular
+ * size-10: most popular
+ */
+
+.size-1 {
+    font-size:1em;
+}
+
+.size-2 {
+    font-size:1.1em;
+}
+
+.size-3 {
+    font-size:1.2em;
+}
+
+.size-4 {
+    font-size:1.3em;
+}
+
+.size-5 {
+    font-size:1.4em;
+}
+
+.size-6 {
+    font-size:1.5em;
+}
+
+.size-7 {
+    font-size:1.6em;
+}
+
+.size-8 {
+    font-size:1.7em;
+}
+
+.size-9 {
+    font-size:1.8em;
+}
+
+.size-10 {
+    font-size:1.9em;
+}

@@ -19,6 +19,14 @@ class SetupController
     if(isset($_GET['step']))
       $step = intval($_GET['step']);
 
+    $permissionCheck = self::verifyRequirements();
+    if($permissionCheck !== true)
+    {
+      // TODO: do something here - jmathai
+      echo 'Do something here';
+      return;
+    }
+
     $imageLibs = array();
     if(class_exists('Imagick'))
       $imageLibs['ImageMagick'] = 'ImageMagick';
@@ -35,8 +43,8 @@ class SetupController
     }
 
     $params = array('imageLibs' => $imageLibs, 'appId' => $_SERVER['HTTP_HOST'], 'step' => $step);
-    $body = getTemplate()->get('setup.php', $params);
-    getTemplate()->display('blank.php', array('body' => $body, 'js' => getTemplate()->get('js/setup.js.php')));
+    $body = getTheme()->get('setup.php', $params);
+    getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'/* do not use inline js, 'js' => getTheme()->get('js/setup.js.php'*/));
   }
 
   /**

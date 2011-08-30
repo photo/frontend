@@ -12,10 +12,10 @@ class GeneralController extends BaseController
     */
   public static function home()
   {
-    getRoute()->redirect('/photos');
-    die();
-    $photos = getApi()->invoke('/photos/sortBy-dateUploaded,desc/pageSize-6.json', EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200')));
-    $body = getTemplate()->get('home.php', array('photos' => $photos['result']));
-    getTemplate()->display('template.php', array('body' => $body));
+    if(!getTheme()->fileExists('templates/front.php'))
+      getRoute()->redirect('/photos');
+
+    $body = getTheme()->get('front.php');
+    getTheme()->display('template.php', array('body' => $body, 'page' => 'front'));
   }
 }
