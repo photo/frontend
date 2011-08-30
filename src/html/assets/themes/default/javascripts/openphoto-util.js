@@ -4,11 +4,11 @@
 */
 (function() {
 
-    // just make sure that OP, the global namespace for OpenPhoto
-    // is defined
-    if ( typeof(OP) === "undefined") {
-        OP = {};
-    }
+  // just make sure that OP, the global namespace for OpenPhoto
+  // is defined
+  if ( typeof(OP) === "undefined") {
+    OP = {};
+  }
 
 	//constants
 	var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
@@ -29,8 +29,8 @@
 		* @property config
 		*/
 		this.config = {
-			baseUrl: 'http://localhost/',
-			jsLocation: '/assets/js/',
+			baseUrl: '',
+			jsLocation: '',
 			css: [],
 			js: []
 		};
@@ -43,15 +43,15 @@
 		*/
 		this.eventMap = {
 	
-		    'nav-item':'click:navigation',
-		    'photo-thumbnail':'click:photo-thumbnail',
-		    'pagination-trigger':'click:pagination',
-		    'photo-tag':'click:tag',
-		    'see-all-comments-trigger':'click:see-all-comments',
-		    'see-map-trigger':'click:see-map',
-		    'comment-box':'click:comment-box',
-		    'comment-button':'click:comment-button'
-		    
+		  'nav-item':'click:navigation',
+		  'photo-thumbnail':'click:photo-thumbnail',
+		  'pagination-trigger':'click:pagination',
+		  'photo-tag':'click:tag',
+		  'see-all-comments-trigger':'click:see-all-comments',
+		  'see-map-trigger':'click:see-map',
+		  'comment-box':'click:comment-box',
+		  'comment-button':'click:comment-button'
+		  
 		};
 		
 		/**
@@ -98,10 +98,10 @@
 			log('[Util] _init:')
 			
 			var js = this.config.js,
-			    css = this.config.css,
-			    i,
-			    length;
-			    
+			  css = this.config.css,
+			  i,
+			  length;
+			  
 			//attach events			
 			this.attachEvent( 'body', 'click', this.onviewevent, this);
 			
@@ -125,7 +125,7 @@
 		*/
 		this.onviewevent = function(e) {
 		
-		    log('[Util] onviewevent: ' + e.target);
+		  log('[Util] onviewevent: ' + e.target);
 		
 			var targ = e.target,
 				classes = targ.className.split(" "),
@@ -136,7 +136,7 @@
 			while (length--) {
 				cls = classes[length];
 				if (map[cls]) {
-				    this.fire( map[cls], e);
+				  this.fire( map[cls], e);
 					e.preventDefault();
 					return false; //this should be done later - may want to trigger multiple events
 				}			
@@ -146,8 +146,8 @@
 		};
 				
 		/* -------------------------------------------------
-        *               Utilities
-        * ------------------------------------------------- */
+    *         Utilities
+    * ------------------------------------------------- */
 
 
 		/**
@@ -159,10 +159,10 @@
 		*/
 		this.getLibraryPlugin = function() {
 		
-		    log('[Util] getLibraryPlugin');
+		  log('[Util] getLibraryPlugin');
 		
 			var url = this.config.baseUrl + this.config.jsLocation + PLUGIN_FILE_PREFIX + this.libType + ".js";
-			
+
 			//load the script and attach the event handlers onload
 			this.loadScript(url, this._init, this);
 			
@@ -177,7 +177,7 @@
 		*/
 		this.merge = function() {
 		
-		    log('[Util] merge');
+		  log('[Util] merge');
 		
 			var merged = {},
 				i,
@@ -294,49 +294,49 @@
 		  
 		  //jQuery
 		  if ( typeof(jQuery) !== 'undefined' ) {
-		      lib = 'jQuery';
+		    lib = 'jquery';
 		  }  else {
-		      
-		      //YUI2
-		      if ( typeof(YAHOO) !== 'undefined' ) {
-		          lib = 'yui2';
-		      } else {
-		          lib = 'yui3';
-		      }
-		      
+		    
+		    //YUI2
+		    if ( typeof(YAHOO) !== 'undefined' ) {
+		      lib = 'yui2';
+		    } else {
+		      lib = 'yui3';
+		    }
+		    
 		  }
 		  
 		  return lib;
-		    
+		  
 		};	
 		
 
-        /* -------------------------------------------------
-        *               Custom Events
-        * ------------------------------------------------- */
-                
-        /**
-        * Subscribe to a custom event - the callback will be executed when the custom event is fired 
-        * @param {string} eventName - the name of the custom event to subscribe to
-        * @param {Function} callback - the callback function that will be executed when the event is fired
-        * @param {Object} scope - the scope of the callback function (what this will refer to)
-        * @return {void}
-        * @method on
-        */
-        this.on = function(eventName, callback, scope) {
+    /* -------------------------------------------------
+    *         Custom Events
+    * ------------------------------------------------- */
         
-            log('[Util] on: ' + eventName)
-        
-            var events = this._customEvents,
-                cEvent = events[eventName],
-                scope = scope || window,
+    /**
+    * Subscribe to a custom event - the callback will be executed when the custom event is fired 
+    * @param {string} eventName - the name of the custom event to subscribe to
+    * @param {Function} callback - the callback function that will be executed when the event is fired
+    * @param {Object} scope - the scope of the callback function (what this will refer to)
+    * @return {void}
+    * @method on
+    */
+    this.on = function(eventName, callback, scope) {
+    
+      log('[Util] on: ' + eventName)
+    
+      var events = this._customEvents,
+        cEvent = events[eventName],
+        scope = scope || window,
 				length;
-        
-            if (! cEvent ) {
-                events[eventName] = [];
-                cEvent = events[eventName];
-            }
-            
+    
+      if (! cEvent ) {
+        events[eventName] = [];
+        cEvent = events[eventName];
+      }
+      
 			//make sure the event doesn't exist already - if it does, return without
 			//adding the event again
 			length = cEvent.length;
@@ -350,62 +350,62 @@
 				fn: callback,
 				scope: scope
 			};
-        
-        };
-        
-        /**
-        * A little less terse name, but removes an event listener if it exists
-        * @param {string} eventName - the name of the custom event to unsubscribe from
-        * @param {Function} callback - the callback function that would have been executed on fire of the custom event
-        * @return {void}
-        * @method unsubscribe
-        */
-        this.unsubscribe = function(eventName, callback) {
-        
-            log('[Util] unsubscribe: ' + callback);
-        
-            var events = this._customEvents,
-                cEvent = events[eventName],
-                length;
-        
-            if (!!cEvent) {
-                length = cEvent.length;
-                while (length--) {
-                    if (cEvent[length].fn === callback) {
-                        cEvent.splice(length, 1);
-                        break;
-                    }
-                }
-            }
-          
-        };
-        
-        /**
-        * Fire a custom event - invoke all listeners passing whatever optional arguments
-        * @param {string} eventName - name of the event to fire
-        * @return {void}
-        * @method fire
-        */
-        this.fire = function(eventName, arg) {
-        
-            log('[Util] fire: ' + eventName);
-        
-            var callbacks = this._customEvents[eventName],
-                arg = arg || {},
-                i, j;
-                
-            if (!!callbacks) {
-                for ( i=0, j=callbacks.length; i<j; i++ ) {
-                    callbacks[i].fn.call(callbacks[i].scope, arg);
-                }
-            }
-        
-        };
-
     
-    }
+    };
+    
+    /**
+    * A little less terse name, but removes an event listener if it exists
+    * @param {string} eventName - the name of the custom event to unsubscribe from
+    * @param {Function} callback - the callback function that would have been executed on fire of the custom event
+    * @return {void}
+    * @method unsubscribe
+    */
+    this.unsubscribe = function(eventName, callback) {
+    
+      log('[Util] unsubscribe: ' + callback);
+    
+      var events = this._customEvents,
+        cEvent = events[eventName],
+        length;
+    
+      if (!!cEvent) {
+        length = cEvent.length;
+        while (length--) {
+          if (cEvent[length].fn === callback) {
+            cEvent.splice(length, 1);
+            break;
+          }
+        }
+      }
+      
+    };
+    
+    /**
+    * Fire a custom event - invoke all listeners passing whatever optional arguments
+    * @param {string} eventName - name of the event to fire
+    * @return {void}
+    * @method fire
+    */
+    this.fire = function(eventName, arg) {
+    
+      log('[Util] fire: ' + eventName);
+    
+      var callbacks = this._customEvents[eventName],
+        arg = arg || {},
+        i, j;
         
-    //store the util instance
-    OP.Util = new Util();
+      if (!!callbacks) {
+        for ( i=0, j=callbacks.length; i<j; i++ ) {
+          callbacks[i].fn.call(callbacks[i].scope, arg);
+        }
+      }
+    
+    };
+
+  
+  }
+    
+  //store the util instance
+  OP.Util = new Util();
 
 }());
