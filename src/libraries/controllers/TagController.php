@@ -16,7 +16,7 @@ class TagController extends BaseController
     $tags = getApi()->invoke("/tags.json");
     $groupedTags = Tag::groupByWeight($tags['result']);
 
-    $body = getTemplate()->get('tags.php', array('tags' => $groupedTags));
-    getTemplate()->display('template.php', array('body' => $body));
+    $body = getTheme()->get('tags.php', array('tags' => $groupedTags));
+    getTheme()->display('template.php', array('body' => $body, 'page' => 'tags'));
   }
 }

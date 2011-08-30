@@ -1,0 +1,187 @@
+/**
+ * OpenPhoto Default Theme
+ *
+ * Styles for list of photos and single photos
+ */
+
+
+/* Photo Grid on main page */
+
+.photo-grid {
+    overflow: hidden;
+    _zoom: 1;
+    margin-top: 3em;
+}
+
+.photo-grid .grid-item {
+    float: left;
+}
+.photo-grid .grid-item a img{
+    -webkit-box-shadow: 2px 2px 2px #888;
+    -moz-box-shadow: 2px 2px 2px #888;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+.grid-200 .grid-item {
+    width : 240px;
+    margin-bottom: 2em;
+}
+
+.photo {
+    -webkit-box-shadow: 2px 2px 2px #888;
+    -moz-box-shadow: 2px 2px 2px #888;
+    box-shadow: 2px 2px 2px #888;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+.meta {
+    font-size: .8em;
+    height: 15px;
+    margin: 0 0 8px;
+}
+
+.age {
+    float: left;
+    margin-right: 1em;
+}
+
+.hastags {
+    clear: left;
+    float: left;
+    margin-right: .5em;
+}
+
+.photo-grid .private {
+    color: #CDBF63;
+}
+
+.photo-grid .public {
+    color: #63CD90;
+}
+
+/* Photo Details Page */
+
+.photo-details h1 {
+    font-size: 1.5em;
+    margin-bottom: .5em;
+    color: #666;
+}
+
+.photo-details .description {
+    color: #666;
+}
+
+.photo-wrapper {
+    position: relative;
+    margin-top: 1em;
+}
+
+.photo-wrapper p {
+    font-size: 1.1em;
+}
+
+.photo-details .photo-column {
+    float: left;
+}
+
+.photo-details .sidebar {
+    float: right;
+}
+
+.photo-details .meta li {
+    padding-left: 20px;
+}
+
+.photo-details .date {
+    background: url(../images/icon-date.png) center left no-repeat;
+}
+
+.photo-details .heart {
+    background: url(../images/icon-heart.png) center left no-repeat;
+}
+
+.photo-details .tags {
+    background: url(../images/icon-tags.png) center left no-repeat;
+}
+
+.photo-details .location {
+    background: url(../images/icon-globe.png) left 2px no-repeat;
+}
+
+.photo-details .location img {
+    display: block;
+}
+
+.image-pagination {
+    overflow: hidden;
+    _zoom: 1;
+    width: 150px;
+    margin-top: 3em;
+}
+
+.image-pagination div {
+    border: 1px solid #ddd;
+    height: 50px;
+    width: 65px;
+    float: left;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+
+.image-pagination a {
+    height: 50px;
+    width: 50px;
+    display: block;
+}
+
+.image-pagination .previous {
+    background: url(../images/icon-left.png) center left no-repeat;
+}
+
+.image-pagination .previous a {
+    margin-left: 15px;
+}
+
+.image-pagination .next {
+    background: url(../images/icon-right.png) center right no-repeat;
+    margin-left: 10px;
+}
+
+
+.image-pagination .previous a {
+    margin-right: 15px;
+}
+
+.image-pagination .empty {
+  border:none;
+  background: none;
+}
+
+.comment-form {
+    clear: both;
+}
+
+button, a.button {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border:solid 2px #ddd;
+  padding:5px;
+  color:#777;
+  cursor:pointer;
+  background-color:#efefef;
+  text-decoration:none;
+}
+
+button.delete, a.button.delete {
+  border-color:#f06eaa;
+}
+
+input, textarea, select{
+    border:solid 1px #ccc;
+    color:#404040;
+    padding:3px;
+}
+
+
