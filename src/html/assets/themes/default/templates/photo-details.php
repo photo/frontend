@@ -22,7 +22,7 @@
       </div>
       <ul class="meta">
         <li class="date">Taken on <?php Utility::dateLong($photo['dateTaken']); ?></li>
-        <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments">see all</a></li>
+        <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments" class="comment-jump-click">see all</a></li>
         <li class="tags"><?php Utility::tagsAsLinks($photo['tags']); ?></li>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
           <li class="location">
@@ -43,6 +43,7 @@
     </div>
   </div>
 </div>
+<a name="comments"></a>
 <div class="comment-form">
   <form method="post" action="/action/photo/<?php Utility::safe($photo['id']); ?>">
     <textarea rows="5" cols="50" name="value" class="comment"  disabled="true" ></textarea>

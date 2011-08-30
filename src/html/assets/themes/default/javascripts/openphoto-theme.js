@@ -1,3 +1,20 @@
+var opTheme = (function() {
+  return {
+    callbacks: {
+      commentJump: function(ev) {
+        ev.preventDefault();
+        $.scrollTo($('div.comment-form'), 200);
+      }
+    },
+    init: {
+      attach: function() {
+        OP.Util.on('click:comment-jump', opTheme.callbacks.commentJump);
+      }
+    }
+  };
+}());
+
+
 var op = (function(){
   var log = function(msg) {
     if(console !== undefined && console.log !== undefined)
