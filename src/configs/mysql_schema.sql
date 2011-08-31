@@ -10,18 +10,8 @@ CREATE TABLE IF NOT EXISTS `photo` (
   `size` int(11) DEFAULT NULL,
   `width` int(11) DEFAULT NULL,
   `height` int(11) DEFAULT NULL,
-  `exifOrientation` int(11) DEFAULT NULL,
-  `exifCameraMake` varchar(32) DEFAULT NULL,
-  `exifCameraModel` varchar(32) DEFAULT NULL,
-  `exifExposureTime` varchar(64) DEFAULT NULL,
-  `exifFNumber` varchar(6) DEFAULT NULL,
-  `exifMaxApertureValue` varchar(6) DEFAULT NULL,
-  `exifMeteringMode` varchar(64) DEFAULT NULL,
-  `exifFlash` varchar(6) DEFAULT NULL,
-  `exifFocalLength` varchar(32) DEFAULT NULL,
-  `gpsAltitude` int(11) DEFAULT NULL,
-  `latitude` double DEFAULT NULL,
-  `longitude` double DEFAULT NULL,
+  `exif` text,
+
   `views` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
   `permission` int(11) DEFAULT NULL,
@@ -51,12 +41,12 @@ CREATE TABLE IF NOT EXISTS `photoVersion` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `tag` (
-  `id` varchar(255) NOT NULL UNIQUE,
-  `count` int,
-
-  PRIMARY KEY(`id`)
+  `id` varchar(255) NOT NULL,
+  `count` int(11) DEFAULT NULL,
+  `params` text NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 CREATE TABLE IF NOT EXISTS `user` (
   `id` varchar(255) NOT NULL UNIQUE,
@@ -85,3 +75,12 @@ CREATE TABLE IF NOT EXISTS `action` (
 
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO  `user` (
+  `id` ,
+  `lastPhotoId` ,
+  `lastActionId`
+  )
+  VALUES (
+  '1', NULL , NULL
+  );
