@@ -27,6 +27,9 @@ interface FileSystemInterface
 function getFs(/*$type, $opts*/)
 {
   static $filesystem, $type, $opts;
+  if($filesystem)
+    return $filesystem;
+  
   if(func_num_args() == 2)
   {
     $type = func_get_arg(0);
@@ -38,9 +41,6 @@ function getFs(/*$type, $opts*/)
   if(!$opts)
     $opts = getConfig()->get('credentials');
 
-  if($filesystem)
-    return $filesystem;
-
   switch($type)
   {
     case 'S3':
@@ -50,7 +50,7 @@ function getFs(/*$type, $opts*/)
       $filesystem = new FileSystemLocal($opts);
       break;
   }
-  
+
   if($filesystem)
     return $filesystem;
 

@@ -20,7 +20,7 @@ Epi::setPath('config', "{$basePath}/configs");
 //Epi::setPath('view', "{$basePath}/views");
 Epi::setPath('view', '');
 //Epi::setSetting('exceptions', true);
-Epi::init('api','config','logger','route','session-php','template','database');
+Epi::init('api','config','form','logger','route','session-php','template','database');
 // TODO allow configurable session engine
 EpiSession::employ(EpiSession::PHP);
 // This initializes the session. Needed for PHP sessions to implicitly call session_start();
@@ -36,7 +36,7 @@ if(file_exists($configFile))
   require getConfig()->get('paths')->libraries . '/dependencies.php';
   getRoute()->run();
 }
-elseif(!file_exists($configFile))
+elseif(!file_exists($configFile)) // if no config file then load up the setup dependencies
 {
   // setup and enable routes for setup
   $baseDir = dirname(dirname(__FILE__));
@@ -51,5 +51,11 @@ elseif(!file_exists($configFile))
   require getConfig()->get('paths')->libraries . '/dependencies.php';
   require getConfig()->get('paths')->libraries . '/routes-setup.php';
   require getConfig()->get('paths')->controllers . '/SetupController.php';
-  getRoute()->run('/setup');
+
+  // if we're not in the setup path (anything other than /setup) then redirect to the setup
+  // otherwise we're on one of the setup steps already, so just run it
+  if(strpos($_GET['__route__'], '/setup') === false)
+    getRoute()->run('/setup');
+  else
+    getRoute()->run();
 }

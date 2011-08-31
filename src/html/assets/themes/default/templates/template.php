@@ -6,14 +6,14 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    
+
     <title><?php getTheme()->meta('titles', $page); ?></title>
     <meta name="description" content="<?php getTheme()->meta('descriptions', $page); ?>">
     <meta name="keywords" content="<?php getTheme()->meta('keywords', $page); ?>">
 
-    
+
     <meta name="author" content="">
-    
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.ico'); ?>">
     <link rel="apple-touch-icon" href="<?php getTheme()->asset('image', 'apple-touch-icon.png'); ?>">
@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'photos.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'tag-cloud.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'footer.css'); ?>">
+    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'setup.css'); ?>">
 </head>
 
 <body class="<?php echo $page; ?>">
