@@ -45,6 +45,9 @@ interface DatabaseInterface
 function getDb(/*$type, $opts*/)
 {
   static $database, $type, $opts;
+  if($database)
+    return $database;
+  
   if(func_num_args() == 2)
   {
     $type = func_get_arg(0);
@@ -56,9 +59,6 @@ function getDb(/*$type, $opts*/)
   if(!$opts)
     $opts = getConfig()->get('credentials');
 
-  if($database)
-    return $database;
-
   switch($type)
   {
     case 'SimpleDb':
@@ -68,9 +68,9 @@ function getDb(/*$type, $opts*/)
       $database = new DatabaseMySql($opts);
       break;
   }
-  
+
   if($database)
     return $database;
 
-  throw new Exception(404, "DataProvider {$type} does not exist");
+  throw new Exception("DataProvider {$type} does not exist", 404);
 }
