@@ -267,7 +267,17 @@ class Photo
     {
       getLogger()->info("Photo ({$id}) successfully stored on the file system");
       $exif = self::readExif($localFile);
+      $iptc = self::readIptc($localFile);
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
+      foreach($iptc as $iptckey => $iptcval)
+      {
+        if($iptckey == 'tags')
+	{
+	  $tags_array = $iptcval;
+	  $iptcval = implode(',', $iptcval);
+        }
+        $attributes[$iptckey] = $iptcval;
+      }
       foreach($defaults as $default)
       {
         if(!isset($attributes[$default]))
@@ -290,6 +300,10 @@ class Photo
           'size' => intval(filesize($localFile)/1024),
           'exifCameraMake' => @$exif['cameraMake'],
           'exifCameraModel' => @$exif['cameraModel'],
+          'exifFNumber' => @$exif['FNumber'],
+          'exifExposureTime' => @$exif['exposureTime'],
+          'exifISOSpeed' => @$exif['ISO'],
+          'exifFocalLength' => @$exif['focalLength'],
           'width' => @$exif['width'],
           'height' => @$exif['height'],
           'dateTaken' => $dateTaken,
@@ -310,6 +324,8 @@ class Photo
       unlink($localFileCopy);
       if($stored)
       {
+        if(isset($tags_array))
+          Tag::updateTagCounts(array(), $tags_array);
         getLogger()->info("Photo ({$id}) successfully stored to the database");
         return $id;
       }
@@ -376,35 +392,35 @@ class Photo
     return (substr(sha1(implode('.', $args)), 0, 5) == $hash);
   }
 
-
-  /*** GPS Utils 
-   * from http://stackoverflow.com/questions/2526304/php-extract-gps-exif-data 
-   **/
-  private static function getGps($exifCoord, $hemi) 
+  private static function frac2Num($frac) 
   {
-    $degrees = count($exifCoord) > 0 ? self::gps2Num($exifCoord[0]) : 0;
-    $minutes = count($exifCoord) > 1 ? self::gps2Num($exifCoord[1]) : 0;
-    $seconds = count($exifCoord) > 2 ? self::gps2Num($exifCoord[2]) : 0;
-
-    $flip = ($hemi == 'W' or $hemi == 'S') ? -1 : 1;
-
-    return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
-  }
-
-  private static function gps2Num($coordPart) 
-  {
-    $parts = explode('/', $coordPart);
+    $parts = explode('/', $frac);
 
     if (count($parts) <= 0)
         return 0;
 
     if (count($parts) == 1)
         return $parts[0];
+    // DIV/0
+    if($parts[1] == 0)
+        return 0;
 
     return floatval($parts[0]) / floatval($parts[1]);
   }
 
+  /*** GPS Utils 
+   * from http://stackoverflow.com/questions/2526304/php-extract-gps-exif-data 
+   **/
+  private static function getGps($exifCoord, $hemi) 
+  {
+    $degrees = count($exifCoord) > 0 ? self::frac2Num($exifCoord[0]) : 0;
+    $minutes = count($exifCoord) > 1 ? self::frac2Num($exifCoord[1]) : 0;
+    $seconds = count($exifCoord) > 2 ? self::frac2Num($exifCoord[2]) : 0;
 
+    $flip = ($hemi == 'W' or $hemi == 'S') ? -1 : 1;
+
+    return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
+  }
 
   /**
     * Reads exif data from a photo.
@@ -417,7 +433,6 @@ class Photo
     $exif = @exif_read_data($photo);
     if(!$exif)
       return null;
-
     $size = getimagesize($photo);
     $dateTaken = $exif['FileDateTime'];
     if(array_key_exists('DateTime', $exif))
@@ -430,7 +445,9 @@ class Photo
 
     $exif_array = array('dateTaken' => $dateTaken, 'width' => $size[0], 
       'height' => $size[1], 'cameraModel' => @$exif['Model'], 
-      'cameraMake' => @$exif['Make']);
+      'cameraMake' => @$exif['Make'],
+      'ISO' => @$exif['ISOSpeedRatings'],
+      'exposureTime' => @$exif['ExposureTime']);
 
     if(isset($exif['GPSLongitude'])) {
       $exif_array['longitude'] = self::getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
@@ -440,6 +457,36 @@ class Photo
       $exif_array['latitude'] = self::getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
     }
 
+    $exif_array['FNumber'] = self::frac2Num(@$exif['FNumber']);
+    $exif_array['focalLength'] = self::frac2Num(@$exif['FocalLength']);
+
     return $exif_array;
+  }
+
+
+  /**
+    * Reads IPTC data from a photo.
+    *
+    * @param $photo Path to the photo.
+    * @return array 
+    */
+  private static function readIptc($photo)
+  {
+    $size = getimagesize($photo, $info);
+    $iptc_array = array();
+    if(isset($info['APP13']))
+    {
+      $iptc = iptcparse($info['APP13']);
+      if(!empty($iptc))
+      {
+        // TODO deal with charset
+        // TODO with alternates as both of these are arrays.
+        // TODO eventually HTML-ify the description
+        $iptc_array['title'] = $iptc['2#105'][0];
+        $iptc_array['description'] = $iptc['2#120'][0];
+        $iptc_array['tags'] = $iptc['2#025'];
+      }
+    }
+    return $iptc_array;
   }
 }
