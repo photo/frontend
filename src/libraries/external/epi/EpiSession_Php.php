@@ -21,11 +21,16 @@ class EpiSession_Php implements EpiSessionInterface
     return $_SESSION[$key];
   }
 
+  public function getAll()
+  {
+    return $_SESSION;
+  }
+
   public function set($key = null, $value = null)
   {
     if(empty($key))
       return false;
-    
+
     $_SESSION[$key] = $value;
     return $value;
   }

@@ -4,7 +4,7 @@
  *
  * This contains the EpiCode class as wel as the EpiException abstract class
  * @author  Jaisen Mathai <jaisen@jmathai.com>
- * @version 1.0  
+ * @version 1.0
  * @package EpiCode
  */
 class Epi
@@ -20,6 +20,7 @@ class Epi
     'cache-apc' => array('base', 'EpiCache.php', 'EpiCache_Apc.php'),
     'cache-memcached' => array('base', 'EpiCache.php', 'EpiCache_Memcached.php'),
     'config' => array('base', 'EpiConfig.php'),
+    'form' => array('EpiForm.php'),
     'logger' => array('EpiLogger.php'),
     'session' => array('base', 'EpiSession.php', 'session-php', 'session-apc', 'session-memcached'),
     'session-php' => array('base', 'EpiSession.php', 'EpiSession_Php.php'),
