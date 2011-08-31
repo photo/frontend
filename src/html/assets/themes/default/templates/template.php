@@ -47,11 +47,10 @@
   <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
   <script>
     OP.Util.init(jQuery, { 
-      js: [
-        '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
-        '<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>',
-        {src: '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>', callback: function(){ opTheme.init.attach(); }}
-      ]
+      js: {
+        assets: ['<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>','<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'], 
+        onComplete: function(){ opTheme.init.attach(); }
+      }
     });
   </script>
 </body>
