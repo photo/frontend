@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'pagination.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'photos.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'tag-cloud.css'); ?>">
+    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'upload.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'footer.css'); ?>">
 </head>
 
@@ -42,5 +43,15 @@
     </footer>
   </div> <!-- eo #container -->
   <!-- your javascript here //-->
+  <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
+  <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
+  <script>
+    OP.Util.init(jQuery, { 
+      js: {
+        assets: ['<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>','<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'], 
+        onComplete: function(){ opTheme.init.attach(); }
+      }
+    });
+  </script>
 </body>
 </html>

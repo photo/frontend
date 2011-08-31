@@ -6,11 +6,11 @@
 (function() {
 
     //OP and OP.Util are already defined at this point, so just modify directly
-   	
-	var OU = OP.Util.constructor.prototype,
-	    lib = OP.Util.lib;
 
-    
+    var OU = OP.Util.constructor.prototype,
+        lib = OP.Util.lib;
+
+
     /**
     * Sets the context / scope of a function
     * @param {Function} fn - the function
@@ -18,9 +18,9 @@
     * @return {Function} the context applied function
     * @method bind
     */
- 	OU.bind = function(fn, scope) {
-		return lib.proxy(fn, scope);
-	}
+    OU.bind = function(fn, scope) {
+        return lib.proxy(fn, scope);
+    }
 
     /**
     * Adds an event listener to the element
@@ -32,14 +32,14 @@
     * @method attachEvent
     */
     OU.attachEvent = function(element, etype, callback, scope) {
-        
+
         var scope = scope || window;
-    
+
         lib( element ).live(etype, lib.proxy(callback, scope) );
-    
+
     }
-    
-    
+
+
     /**
     * removes the event listener from the element
     * @param {HTMLElement} element - the element to add the listener to
@@ -50,7 +50,7 @@
     OU.detachEvent = function(element, type) {
 
         lib( element ).die( type );
-        
+
     }
 
 
