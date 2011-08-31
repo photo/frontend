@@ -4,419 +4,476 @@
 */
 (function() {
 
-  // just make sure that OP, the global namespace for OpenPhoto
-  // is defined
-  if ( typeof(OP) === "undefined") {
-    OP = {};
-  }
+    // just make sure that OP, the global namespace for OpenPhoto
+    // is defined
+    if ( typeof(OP) === "undefined") {
+        OP = {};
+    }
 
-  //constants
-  var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
-    browserIdSrc = 'https://browserid.org/include.js',
-    //log = typeof(console) !== 'undefined' ? console.log : function(){};
-    log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } }
+    //constants
+    var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
+        BROWSER_ID_SRC = 'https://browserid.org/include.js',
+        log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } }
 
     
-  /**
-  * Class that contains all utility functions for OpenPhoto
-  * We can use a Constructor function in this case since we will
-  * not have multiple instances of Util.  Also, it makes it easier to
-  * extend via prototype.
-  * @class Util
-  */
-  function Util() {
+    /**
+    * Class that contains all utility functions for OpenPhoto
+    * We can use a Constructor function in this case since we will
+    * not have multiple instances of Util.  Also, it makes it easier to
+    * extend via prototype.
+    * @class Util
+    */
+    function Util() {
+
+        /**
+        * default configuration options 
+        * user can optionally specify an onComplete attribute in the css/js
+        * object which will execute when the assets are loaded.
+        * @type {object}
+        * @property config
+        */
+        this.config = {
+            baseUrl: '',
+            jsLocation: '/assets/javascripts/',
+            css: {
+                assets: []
+            },
+            js: {
+                assets:[]
+            }
+        };
+
+        /**
+        * the event map for click events, maps the HTML
+        * classNames to the custom event names
+        * @type {object}
+        * @property eventMap
+        */
+        this.eventMap = {
+
+            'action-box-click':'click:action-box',
+            'action-delete-click':'click:action-delete',
+            'action-jump-click':'click:action-jump',
+            'action-post-click':'click:action-post',
+            'login-click':'click:login',
+            'map-jump-click':'click:map-jump',
+            'nav-item-click':'click:nav-item',
+            'pagination-click':'click:pagination',
+            'photo-delete-click':'click:photo-delete',
+            'photo-tag-click':'click:tag',
+            'photo-thumbnail-click':'click:photo-thumbnail',
+            'photo-update-click':'click:photo-update',
+            'search-click':'click:search'
+
+        };
+
+        /**
+        * A hash of custom events
+        * @type {object}
+        * @property _customEvents
+        */
+        this._customEvents = {};
+        
+        /**
+        * Count of the number of scripts loaded
+        * @type {Number}
+        * @property _scriptLoadCount
+        */
+        this._scriptLoadCount = 0;
+        
+        /**
+        * Count of the number of css loaded
+        * @type {Number}
+        * @property _cssLoadCount
+        */
+        this._cssLoadCount = 0;    
+
+        /**
+        * initialization method
+        * @param {object} lib - the library to use
+        * @param {object} config - the configuration object
+        * @method init
+        */
+        this.init = function(lib, config) {
+
+            log('[Util] init:');
+
+            //merge the config with the user specified config
+            this.config = this.merge(this.config, config);
+
+            //allow the user to override the eventmap if they wish
+            if (this.config.eventMap) {
+                this.eventMap = this.merge(this.config.eventMap, this.eventMap)
+            }
+
+            // we specify what library type in the .ini file
+            // either jQuery or YUI - and then the user can load
+            // additional css/js assets by specifying the files in the 
+            // js config - as specified by the plugin file (that will be user generated).
+
+            //the library is a requirement, by default jQuery will be loaded
+            this.lib = lib;
+            this.libType = this.detectLibrary();
+
+            // get the library plugin file that maps library functions to a normalized
+            // naming so that we can use whatever library that is specified
+            this.getLibraryPlugin();
+
+        };
+
+        /**
+        * Now that the library plugin has been loaded, we add all event handlers
+        * @return {void}
+        * @method _init
+        */
+        this._init = function() {
   
-    /**
-    * default configuration options
-    * @type {object}
-    * @property config
-    */
-    this.config = {
-      baseUrl: '',
-      jsLocation: '/assets/javascripts/',
-      css: [],
-      js: []
-    };
-    
-    /**
-    * the event map for click events, maps the HTML
-    * classNames to the custom event names
-    * @type {object}
-    * @property eventMap
-    */
-    this.eventMap = {
+            log('[Util] _init:')
+
+            var js = this.config.js.assets,
+                css = this.config.css.assets,
+                i,
+                length;
+
+            //attach events      
+            this.attachEvent( 'body', 'click', this.onviewevent, this);
+
+            //load additional js in order specified
+            for(i=0, j=js.length; i<j; i++) {
+                this.loadScript( js[i], this._handleScriptLoad );
+            }
+
+            //load additional css in order specified
+            for(i=0, j=css.length; i<j; i++) {
+                this.loadCss( css[i], this._handleCssLoad ); 
+            }
   
-      'action-box-click':'click:action-box',
-      'action-delete-click':'click:action-delete',
-      'action-jump-click':'click:action-jump',
-      'action-post-click':'click:action-post',
-      'login-click':'click:login',
-      'map-jump-click':'click:map-jump',
-      'nav-item-click':'click:nav-item',
-      'pagination-click':'click:pagination',
-      'photo-delete-click':'click:photo-delete',
-      'photo-tag-click':'click:tag',
-      'photo-thumbnail-click':'click:photo-thumbnail',
-      'photo-update-click':'click:photo-update',
-      'search-click':'click:search'
+        };  
 
-    };
-    
-    /**
-    * A hash of custom events
-    * @type {object}
-    * @property _customEvents
-    */
-    this._customEvents = {};    
+        /**
+        * handles events - delegates based on className
+        * @param {Event} e
+        * @return {void}
+        * @method onviewevent
+        */
+        this.onviewevent = function(e) {
 
-    /**
-    * initialization method
-    * @param {object} lib - the library to use
-    * @param {object} config - the configuration object
-    * @method init
-    */
-    this.init = function(lib, config/*, callback*/) {
-      var callback = arguments[2] || null;
-      log('[Util] init:');
-      
-      this.config = this.merge(this.config, config);
-            
-      // we specify what library type in the .ini file
-      // either jQuery or YUI - and then the user can load
-      // additional css/js assets by specifying the files in the 
-      // js config - as specified by the plugin file (that will be user generated).
-        
-      //the library is a requirement, by default jQuery will be loaded
-      this.lib = lib;
-      this.libType = this.detectLibrary();
-    
-      // get the library plugin file that maps library functions to a normalized
-      // naming so that we can use whatever library that is specified
-      this.getLibraryPlugin();
-    
-    };
-    
-    /**
-    * Now that the library plugin has been loaded, we add all event handlers
-    * @return {void}
-    * @method _init
-    */
-    this._init = function() {
-      
-      log('[Util] _init:')
-      
-      var js = this.config.js,
-        css = this.config.css,
-        i,
-        length;
-        
-      //attach events      
-      this.attachEvent( 'body', 'click', this.onviewevent, this);
-      
-      //load additional js in order specified
-      for(i=0, j=js.length; i<j; i++) {
-        if(typeof(js[i]) === 'object' && typeof(js[i].src) === 'string' && typeof(js[i].callback) === 'function')
-          this.loadScript( js[i].src, js[i].callback ); 
-        else
-          this.loadScript( js[i] ); 
-      }
-      
-      //load additional css in order specified
-      for(i=0, j=css.length; i<j; i++) {
-         this.loadCss( css[i] ); 
-      }
-      
-    };  
-    
-    /**
-    * handles events - delegates based on className
-    * @param {Event} e
-    * @return {void}
-    * @method onviewevent
-    */
-    this.onviewevent = function(e) {
-    
-      log('[Util] onviewevent: ' + e.target);
-    
-      var targ = e.target,
-        classes = targ.className.split(" "),
-        length = classes.length,
-        map = this.eventMap,
-        cls;
-      while (length--) {
-        cls = classes[length];
-        log(cls);
-        if (map[cls]) {
-          this.fire( map[cls], e);
-          e.preventDefault();
-          return false; //this should be done later - may want to trigger multiple events
-        }      
-      }    
-      
-      
-    };
-        
-    /* -------------------------------------------------
-    *         Utilities
-    * ------------------------------------------------- */
+            log('[Util] onviewevent: ' + e.target);
 
-
-    /**
-    * Get the library plugin which will create a normalized interface
-    * for the libraries so that they can be used properly. Onload of the
-    * library plugin, we will attach our event listeners
-    * @return {void}
-    * @method getLibraryPlugin
-    */
-    this.getLibraryPlugin = function() {
-    
-      log('[Util] getLibraryPlugin');
-    
-      var url = this.config.baseUrl + this.config.jsLocation + PLUGIN_FILE_PREFIX + this.libType + ".js";
-
-      //load the script and attach the event handlers onload
-      this.loadScript(url, this._init, this);
-      this.loadScript(browserIdSrc);
-    };
-        
-    /**
-    * Shallow merge of all objects passed into it in order of the objects passed in
-    * this is just needed to merge the config, but will probably be overwritten by
-    * the library plugin
-    * @return {object} merged object
-    * @method merge
-    */
-    this.merge = function() {
-    
-      log('[Util] merge');
-    
-      var merged = {},
-        i,
-        j,
-        obj,
-        key;
-        
-      for (i=0, j=arguments.length; i<j; i++) {
-        obj = arguments[i];
-        for (key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            merged[key] = obj[key];
-          }
-        }
-      }
-            
-      return merged;
-    
-    };    
-    
-    /**
-    * Utility function to dynamically load a script
-    * @param {string} url of the source of the script
-    * @param {Function} fn the callback function to execute onload
-    * @param {object} scope - the scope of the callback function
-    * @return {void}
-    * @method loadScript
-    */
-    this.loadScript = function(url, fn, scope) {
-      
-      log('[Util] loadScript');
-      
-      var head = document.getElementsByTagName('head')[0],
-        script = document.createElement('script'),
-        scope,
-        callback;
+            var targ = e.target,
+                classes = targ.className.split(" "),
+                length = classes.length,
+                map = this.eventMap,
+                cls;
                 
-      script.type = "text/javascript";
-      script.src = url;
-      
-      //callback function was specified - add the onload handlers
-      if (typeof(fn) !== 'undefined') {
-        
-        scope = scope || window,
-        callback = function() {
-          return fn.apply(scope);
+            while (length--) {
+                cls = classes[length];
+                if (map[cls]) {
+                    //do not prevent the default action, let the callback
+                    //function do it if it wants
+                    this.fire( map[cls], e);    
+                }      
+            }    
+  
+  
+        };
+    
+        /* -------------------------------------------------
+        *         Utilities
+        * ------------------------------------------------- */
+
+
+        /**
+        * Get the library plugin which will create a normalized interface
+        * for the libraries so that they can be used properly. Onload of the
+        * library plugin, we will attach our event listeners
+        * @return {void}
+        * @method getLibraryPlugin
+        */
+        this.getLibraryPlugin = function() {
+
+            log('[Util] getLibraryPlugin');
+
+            var url = this.config.baseUrl + this.config.jsLocation + PLUGIN_FILE_PREFIX + this.libType + ".js";
+
+            //load the script and attach the event handlers onload
+            this.loadScript(url, this._init, this);
+            this.loadScript(BROWSER_ID_SRC);
+          
+        };
+    
+        /**
+        * Shallow merge of all objects passed into it in order of the objects passed in
+        * this is just needed to merge the config, but will probably be overwritten by
+        * the library plugin
+        * @return {object} merged object
+        * @method merge
+        */
+        this.merge = function() {
+
+            log('[Util] merge');
+
+            var merged = {},
+                i,
+                j,
+                obj,
+                key;
+
+            for (i=0, j=arguments.length; i<j; i++) {
+                obj = arguments[i];
+                for (key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        merged[key] = obj[key];
+                    }
+                }
+            }
+
+            return merged;
+
+        };    
+
+        /**
+        * Utility function to dynamically load a script
+        * @param {string} url of the source of the script
+        * @param {Function} fn the callback function to execute onload
+        * @param {object} scope - the scope of the callback function
+        * @return {void}
+        * @method loadScript
+        */
+        this.loadScript = function(url, fn, scope) {
+  
+            log('[Util] loadScript');
+
+            var head = document.getElementsByTagName('head')[0],
+                script = document.createElement('script'),
+                scope,
+                callback;
+
+            script.type = "text/javascript";
+            script.src = url;
+
+            //callback function was specified - add the onload handlers
+            if (typeof(fn) !== 'undefined') {
+
+                scope = scope || window,
+                callback = function() {
+                    return fn.apply(scope);
+                };
+
+                script.onload = callback;
+                script.onreadystatechange = function() {
+                    if (this.readyState === 'complete') {
+                        callback();
+                    }
+                }
+
+            }
+
+            head.appendChild(script);
+  
+        };
+
+
+        /**
+        * Utility function to dynamically load css
+        * @param {string} url of the source of the sstylesheet
+        * @param {Function} fn the callback function to execute onload
+        * @param {object} scope - the scope of the callback function
+        * @return {void}
+        * @method loadScript
+        */
+        this.loadCss = function(url, fn, scope) {
+  
+            log('[Util] loadCss');
+
+            var head = document.getElementsByTagName('head')[0],
+                link = document.createElement('link'),
+                scope,
+                callback;
+
+            link.type = 'text/css';
+            link.rel = 'stylesheet';
+            link.href = url;
+
+            //callback function was specified - add the onload handlers
+            if (typeof(fn) !== 'undefined') {
+
+                scope = scope || window,
+                callback = function() {
+                    return fn.apply(scope);
+                };
+
+                link.onload = callback;
+                link.onreadystatechange = function() {
+                    if (this.readyState === 'complete') {
+                        callback();
+                    }
+                }
+
+            }
+
+            head.appendChild(link);
+  
         };
         
-        script.onload = callback;
-        script.onreadystatechange = function() {
-          if (this.readyState === 'complete') {
-            callback();
-          }
+        /**
+        * The user can specify a callback to execute when all of the javascript assets
+        * have loaded.  This helper method keeps track of the number of javascript assets
+        * loaded and executes the onComplete callback when everything is loaded.
+        * @return {void}
+        * @method _handleScriptLoad
+        */
+        this._handleScriptLoad = function() {
+            
+            this._scriptLoadCount++;
+            
+            if ( (this._scriptLoadCount === this.config.js.assets.length) && (typeof(this.config.js.onComplete) !== 'undefined')) {
+                this.config.js.onComplete();
+            }          
+            
         }
         
-      }
-      
-      head.appendChild(script);
-      
-    };
-    
-    
-    /**
-    * Utility function to dynamically load css
-    * @param {string} url of the source of the sstylesheet
-    * @param {Function} fn the callback function to execute onload
-    * @param {object} scope - the scope of the callback function
-    * @return {void}
-    * @method loadScript
-    */
-    this.loadCss = function(url, fn, scope) {
-      
-      log('[Util] loadCss');
-      
-      var head = document.getElementsByTagName('head')[0],
-        link = document.createElement('link'),
-        scope,
-        callback;
-                
-      link.type = 'text/css';
-      link.rel = 'stylesheet';
-      link.href = url;
-      
-      //callback function was specified - add the onload handlers
-      if (typeof(fn) !== 'undefined') {
-        
-        scope = scope || window,
-        callback = function() {
-          return fn.apply(scope);
-        };
-        
-        link.onload = callback;
-        link.onreadystatechange = function() {
-          if (this.readyState === 'complete') {
-            callback();
-          }
+        /**
+        * The user can specify a callback to execute when all of the css assets
+        * have loaded.  This helper method keeps track of the number of css assets
+        * loaded and executes the onComplete callback when everything is loaded.
+        * @return {void}
+        * @method _handleCssLoad
+        */
+        this._handleCssLoad = function() {
+            
+            this._cssLoadCount++;
+            
+            if ( (this._cssLoadCount === this.config.css.assets.length) && (typeof(this.config.css.onComplete) !== 'undefined')) {
+                this.config.css.onComplete();
+            }            
+            
         }
-        
-      }
-      
-      head.appendChild(link);
-      
-    };
-    
-    /**
-    * Determines the library type - really simplistic rules for now
-    * @return {string} library the library type
-    * @method detectLibrary
-    */
-    this.detectLibrary = function() {
-      
-      //very simple for now, but we can extend it later
-      var lib = '';
-      
-      //jQuery
-      if ( typeof(jQuery) !== 'undefined' ) {
-        lib = 'jquery';
-      }  else {
-        
-        //YUI2
-        if ( typeof(YAHOO) !== 'undefined' ) {
-          lib = 'yui2';
-        } else {
-          lib = 'yui3';
-        }
-        
-      }
-      
-      return lib;
-      
-    };  
-    
 
-    /* -------------------------------------------------
-    *         Custom Events
-    * ------------------------------------------------- */
-        
-    /**
-    * Subscribe to a custom event - the callback will be executed when the custom event is fired 
-    * @param {string} eventName - the name of the custom event to subscribe to
-    * @param {Function} callback - the callback function that will be executed when the event is fired
-    * @param {Object} scope - the scope of the callback function (what this will refer to)
-    * @return {void}
-    * @method on
-    */
-    this.on = function(eventName, callback, scope) {
-    
-      log('[Util] on: ' + eventName)
-    
-      var events = this._customEvents,
-        cEvent = events[eventName],
-        scope = scope || window,
-        length;
-    
-      if (! cEvent ) {
-        events[eventName] = [];
-        cEvent = events[eventName];
-      }
-      
-      //make sure the event doesn't exist already - if it does, return without
-      //adding the event again
-      length = cEvent.length;
-      while(length--) {
-        if (cEvent[length].fn === callback) {
-          return;
-        }
-      }
-        
-      cEvent[ cEvent.length ] = {
-        fn: callback,
-        scope: scope
-      };
-    
-    };
-    
-    /**
-    * A little less terse name, but removes an event listener if it exists
-    * @param {string} eventName - the name of the custom event to unsubscribe from
-    * @param {Function} callback - the callback function that would have been executed on fire of the custom event
-    * @return {void}
-    * @method unsubscribe
-    */
-    this.unsubscribe = function(eventName, callback) {
-    
-      log('[Util] unsubscribe: ' + callback);
-    
-      var events = this._customEvents,
-        cEvent = events[eventName],
-        length;
-    
-      if (!!cEvent) {
-        length = cEvent.length;
-        while (length--) {
-          if (cEvent[length].fn === callback) {
-            cEvent.splice(length, 1);
-            break;
-          }
-        }
-      }
-      
-    };
-    
-    /**
-    * Fire a custom event - invoke all listeners passing whatever optional arguments
-    * @param {string} eventName - name of the event to fire
-    * @return {void}
-    * @method fire
-    */
-    this.fire = function(eventName, arg) {
-    
-      log('[Util] fire: ' + eventName);
-    
-      var callbacks = this._customEvents[eventName],
-        arg = arg || {},
-        i, j;
-        
-      if (!!callbacks) {
-        for ( i=0, j=callbacks.length; i<j; i++ ) {
-          callbacks[i].fn.call(callbacks[i].scope, arg);
-        }
-      }
-    
-    };
-
+        /**
+        * Determines the library type - really simplistic rules for now
+        * @return {string} library the library type
+        * @method detectLibrary
+        */
+        this.detectLibrary = function() {
   
-  }
+            //very simple for now, but we can extend it later
+            var lib = '';
+
+            //jQuery
+            if ( typeof(jQuery) !== 'undefined' ) {
+                lib = 'jquery';
+            }  else {
+
+                //YUI2
+                if ( typeof(YAHOO) !== 'undefined' ) {
+                    lib = 'yui2';
+                } else {
+                    lib = 'yui3';
+                }
+
+            }
+
+            return lib;
+  
+        };  
+
+
+        /* -------------------------------------------------
+        *         Custom Events
+        * ------------------------------------------------- */
     
-  //store the util instance
-  OP.Util = new Util();
+        /**
+        * Subscribe to a custom event - the callback will be executed when the custom event is fired 
+        * @param {string} eventName - the name of the custom event to subscribe to
+        * @param {Function} callback - the callback function that will be executed when the event is fired
+        * @param {Object} scope - the scope of the callback function (what this will refer to)
+        * @return {void}
+        * @method on
+        */
+        this.on = function(eventName, callback, scope) {
+
+            log('[Util] on: ' + eventName)
+
+            var events = this._customEvents,
+                cEvent = events[eventName],
+                scope = scope || window,
+                length;
+
+            if (! cEvent ) {
+                events[eventName] = [];
+                cEvent = events[eventName];
+            }
+
+            //make sure the event doesn't exist already - if it does, return without
+            //adding the event again
+            length = cEvent.length;
+            while(length--) {
+                if (cEvent[length].fn === callback) {
+                    return;
+                }
+            }
+
+            cEvent[ cEvent.length ] = {
+                fn: callback,
+                scope: scope
+            };
+
+        };
+
+        /**
+        * A little less terse name, but removes an event listener if it exists
+        * @param {string} eventName - the name of the custom event to unsubscribe from
+        * @param {Function} callback - the callback function that would have been executed on fire of the custom event
+        * @return {void}
+        * @method unsubscribe
+        */
+        this.unsubscribe = function(eventName, callback) {
+
+            log('[Util] unsubscribe: ' + callback);
+
+            var events = this._customEvents,
+                cEvent = events[eventName],
+                length;
+
+            if (!!cEvent) {
+                length = cEvent.length;
+                while (length--) {
+                    if (cEvent[length].fn === callback) {
+                        cEvent.splice(length, 1);
+                        break;
+                    }
+                }
+            }
+  
+        };
+
+        /**
+        * Fire a custom event - invoke all listeners passing whatever optional arguments
+        * @param {string} eventName - name of the event to fire
+        * @return {void}
+        * @method fire
+        */
+        this.fire = function(eventName, arg) {
+
+            log('[Util] fire: ' + eventName);
+
+            var callbacks = this._customEvents[eventName],
+                arg = arg || {},
+                i, j;
+
+            if (!!callbacks) {
+                for ( i=0, j=callbacks.length; i<j; i++ ) {
+                    callbacks[i].fn.call(callbacks[i].scope, arg);
+                }
+            }
+
+        };
+
+
+    }
+
+    //store the util instance
+    OP.Util = new Util();
 
 }());
