@@ -10,10 +10,11 @@
     OP = {};
   }
 
-	//constants
-	var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
-	  //log = typeof(console) !== 'undefined' ? console.log : function(){};
-	  log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } }
+  //constants
+  var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
+    browserIdSrc = 'https://browserid.org/include.js',
+    //log = typeof(console) !== 'undefined' ? console.log : function(){};
+    log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } }
 
     
   /**
@@ -45,16 +46,19 @@
     */
     this.eventMap = {
   
-      'comment-jump-click':'click:comment-jump',
-      'comment-box-click':'click:comment-box',
-      'comment-button-click':'click:comment-button',
-      'nav-item-click':'click:navigation',
-      'photo-thumbnail-click':'click:photo-thumbnail',
-      'photo-tag-click':'click:tag',
-      'photo-delete-click':'click:photo-delete',
-      'photo-update-click':'click:photo-update',
+      'action-box-click':'click:action-box',
+      'action-delete-click':'click:action-delete',
+      'action-jump-click':'click:action-jump',
+      'action-post-click':'click:action-post',
+      'login-click':'click:login',
+      'map-jump-click':'click:map-jump',
+      'nav-item-click':'click:nav-item',
       'pagination-click':'click:pagination',
-      'map-jump-click':'click:map-jump'
+      'photo-delete-click':'click:photo-delete',
+      'photo-tag-click':'click:tag',
+      'photo-thumbnail-click':'click:photo-thumbnail',
+      'photo-update-click':'click:photo-update',
+      'search-click':'click:search'
 
     };
     
@@ -139,9 +143,9 @@
         length = classes.length,
         map = this.eventMap,
         cls;
-        
       while (length--) {
         cls = classes[length];
+        log(cls);
         if (map[cls]) {
           this.fire( map[cls], e);
           e.preventDefault();
@@ -172,7 +176,7 @@
 
       //load the script and attach the event handlers onload
       this.loadScript(url, this._init, this);
-      
+      this.loadScript(browserIdSrc);
     };
         
     /**

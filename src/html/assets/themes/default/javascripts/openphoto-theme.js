@@ -1,79 +1,53 @@
 var opTheme = (function() {
-  return {
-    callbacks: {
-      commentJump: function(ev) {
-        ev.preventDefault();
-        $.scrollTo($('div.comment-form'), 200);
-      }
-    },
-    init: {
-      attach: function() {
-        OP.Util.on('click:comment-jump', opTheme.callbacks.commentJump);
-      }
-    }
-  };
-}());
-
-
-var op = (function(){
   var log = function(msg) {
     if(console !== undefined && console.log !== undefined)
       console.log(msg);
   };
-  var _this = {};
   return {
-    handlers: {
-      actionDelete: function(event) {
-        var el = $(this),
+    callback: {
+      actionDelete: function(ev) {
+        var el = $(ev.target),
           url = el.attr('href')+'.json';
           $.post(url, function(response) {
             if(response.code === 200)
               $(".action-container-"+response.result).hide('medium', function(){ $(this).remove(); });
             else
-              op.message.error('Could not delete the photo.');
+              opTheme.message.error('Could not delete the photo.');
           }, 'json');
           return false;
       },
-      inputSelect: function(event) {
-        $(this).select().focus();
+      commentJump: function(ev) {
+        ev.preventDefault();
+        $.scrollTo($('div.comment-form'), 200);
       },
-      login: function() {
-        log('login');
+      login: function(ev) {
         navigator.id.getVerifiedEmail(function(assertion) {
             if (assertion) {
-              op.user.loginSuccess(assertion);
+              opTheme.user.loginSuccess(assertion);
             } else {
-              op.user.loginFailure(assertion);
+              opTheme.user.loginFailure(assertion);
             }
         });
-        return false;
       },
-      photoDelete: function(event) {
-        var el = $(this),
+      photoDelete: function(ev) {
+        var el = $(ev.target),
           url = el.parent().attr('action')+'.json';
           $.post(url, function(response) {
             if(response.code === 200)
-              $(el).html('This photo has been deleted');
+              el.html('This photo has been deleted');
             else
-              op.message.error('Could not delete the photo.');
+              opTheme.message.error('Could not delete the photo.');
           }, 'json');
           return false;
       },
-      photoLink: function(event) {
-        var el = this;
-        if(event.type == 'click') {
-          log(el);
-        } else if(event.type == 'mouseover') {
-          log('mousover');
-        }
-      },
-      searchBarToggle: function(event) {
+      searchBarToggle: function(ev) {
+        console.log('foobar');
         $("div#searchbar").slideToggle('medium');
         return false;
       },
-      searchByTags: function(event) {
-        var form = this,
-          tags = $($(form).find('input[name=tags]')[0]).val();
+      searchByTags: function(ev) {
+        var form = $(ev.target).parent(),
+          tags = $(form.find('input[name=tags]')[0]).val();
         // TODO ajaxify
         /*if(tags.length > 0)
           location.href = location.pathname + '#/photos/tags-'+tags;
@@ -85,37 +59,26 @@ var op = (function(){
         else
           location.href = '/photos';
         return false;
-      },
-      setupContinue: function(event) {
-        var el = $(this),
-          step = el.attr('data-step');
-	if(step == 0) {
-          $("div#setup ol#setup-steps li[class=current]").removeClass('current');
-          $("div#setup ol#setup-steps li:nth-child(2)").addClass('current');
-          $("div#setup #form-step-0").hide('medium');
-          $("div#setup #form-step-1").show('medium');	  
-	} else if(step == 1) {
-          $("div#setup ol#setup-steps li[class=current]").removeClass('current');
-          $("div#setup ol#setup-steps li:nth-child(3)").addClass('current');
-          $("div#setup #form-step-1").hide('medium');
-          $("div#setup #form-step-2").show('medium');
-        } else if(step == 2) {
-          $("div#setup ol#setup-steps li[class=current]").removeClass('current');
-          $("div#setup ol#setup-steps li:nth-child(4)").addClass('current');
-          $("div#setup #form-step-2").hide('medium');
-          $("div#setup #form-step-3").show('medium');
-        }
       }
     },
     init: {
       attach: function() {
-        $('.photo-link').live('click mouseover', op.handlers.photoLink);
-        $('.photo-delete').live('click', op.handlers.photoDelete);
-        $('.action-delete').live('click', op.handlers.actionDelete);
-        $('.search-bar-toggle').click(op.handlers.searchBarToggle);
-        $('form#form-tag-search').submit(op.handlers.searchByTags);
-        $('.login').click(op.handlers.login);
-        $('input.select').live('click', op.handlers.inputSelect);
+        OP.Util.on('click:action-jump', opTheme.callback.commentJump);
+        OP.Util.on('click:action-delete', opTheme.callback.commentJump);
+        OP.Util.on('click:login', opTheme.callback.login);
+        OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
+        OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
+        OP.Util.on('click:search', opTheme.callback.searchByTags);
+        OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
+        $("form#upload-form").fileupload({
+          url: '/photo/upload.json',
+          singleFileUploads: true,
+          autoUpload: false
+        })
+        .bind('fileuploadadd', opTheme.upload.handlers.added)
+        .bind('fileuploaddone', opTheme.upload.handlers.done)
+        .bind('fileuploadprogressall', opTheme.upload.handlers.progressall)
+        .bind('fileuploadprogress', opTheme.upload.handlers.progress);
       }
     },
     message: {
@@ -123,9 +86,24 @@ var op = (function(){
         alert(msg);
       }
     },
-    photos: {
-      search: function(tags) {
-        //$.get('/photos/');
+    user: {
+      loginFailure: function(assertion) {
+        log('login failed');
+        // TODO something here to handle failed login
+      },
+      loginProcessed: function(response) {
+        if(response.code != 200) {
+          log('processing of login failed');
+          // TODO do something here to handle failed login
+          return;
+        }
+        
+        log('login processing succeeded');
+        window.location.reload();
+      },
+      loginSuccess: function(assertion) {
+        var params = {assertion: assertion};
+        $.post('/user/login.json', params, opTheme.user.loginProcessed, 'json');
       }
     },
     upload: {
@@ -163,25 +141,5 @@ var op = (function(){
         }
       }
     },
-    user: {
-      loginFailure: function(assertion) {
-        log('login failed');
-        // TODO something here to handle failed login
-      },
-      loginProcessed: function(response) {
-        if(response.code != 200) {
-          log('processing of login failed');
-          // TODO do something here to handle failed login
-          return;
-        }
-        
-        log('login processing succeeded');
-        window.location.reload();
-      },
-      loginSuccess: function(assertion) {
-        var params = {assertion: assertion};
-        $.post('/user/login.json', params, op.user.loginProcessed, 'json');
-      }
-    }
   };
-})();
+}());
