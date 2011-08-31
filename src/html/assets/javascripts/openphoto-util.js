@@ -140,12 +140,12 @@
 
             //load additional js in order specified
             for(i=0, j=js.length; i<j; i++) {
-                this.loadScript( js[i], this._handleScriptLoad );
+                this.loadScript( js[i], this._handleScriptLoad, this );
             }
 
             //load additional css in order specified
             for(i=0, j=css.length; i<j; i++) {
-                this.loadCss( css[i], this._handleCssLoad ); 
+                this.loadCss( css[i], this._handleCssLoad, this ); 
             }
   
         };  
