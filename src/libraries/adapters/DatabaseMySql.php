@@ -70,7 +70,7 @@ class DatabaseMySql implements DatabaseInterface
     if($photo_prev)
       $ret['previous'] = self::normalizePhoto($photo_prev);
     if($photo_next)
-    $ret['next'] = self::normalizePhoto($photo_next);
+      $ret['next'] = self::normalizePhoto($photo_next);
 
     return $ret;
   }
@@ -154,6 +154,7 @@ class DatabaseMySql implements DatabaseInterface
     $offset_sql = '';
     if($offset)
       $offset_sql = "OFFSET {$offset}";
+
     $photos = getDatabase()->all("SELECT * FROM photo {$where} {$sortBy} LIMIT {$limit} {$offset_sql}");
     if(empty($photos))
       return false;
@@ -246,14 +247,13 @@ class DatabaseMySql implements DatabaseInterface
 
     if(!empty($params))
     {
-      // TODO, this doesn't use named parameters via PDO, should be fixed -- jmathai
-      $stmt = self::sqlUpdateExplode($params);
-      $res = getDatabase()->execute("UPDATE photo SET {$stmt} WHERE id=:id", array(':id' => $id));
+      $bindings = $params['::bindings'];
+      $stmt = self::sqlUpdateExplode($params, $bindings);
+      $bindings[':id'] = $id;
+      $res = getDatabase()->execute("UPDATE photo SET {$stmt} WHERE id=:id", $bindings);
     }
-
     if(!empty($versions))
       $resVersions = $this->postVersions($id, $versions);
-
     return (isset($res) && $res == 1) || (isset($resVersions) && $resVersions);
   }
 
@@ -375,8 +375,9 @@ class DatabaseMySql implements DatabaseInterface
   public function putPhoto($id, $params)
   {
     $params = self::preparePhoto($id, $params);
-    $stmt = self::sqlInsertExplode($params);
-    $result = getDatabase()->execute("INSERT INTO photo ({$stmt['cols']}) VALUES ({$stmt['vals']})");
+    $bindings = $params['::bindings'];
+    $stmt = self::sqlInsertExplode($params, $bindings);
+    $result = getDatabase()->execute("INSERT INTO photo ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
     return true;
   }
 
@@ -462,14 +463,20 @@ class DatabaseMySql implements DatabaseInterface
    * Return a string
    * TODO, have this work with PDO named parameters
    */
-  private function sqlUpdateExplode($params)
+  private function sqlUpdateExplode($params, $bindings = array())
   {
     $stmt = '';
     foreach($params as $key => $value)
     {
-      if(!empty($stmt))
+      if($key == '::bindings')
+        continue;
+      if(!empty($stmt)) {
         $stmt .= ",";
-      $stmt .= "{$key}='{$value}'";
+      }
+      if(!empty($bindings[$value]))
+        $stmt .= "{$key}={$value}";  
+      else
+        $stmt .= "{$key}='{$value}'";
     }
     return $stmt;
   }
@@ -478,17 +485,22 @@ class DatabaseMySql implements DatabaseInterface
    * Explode params associative array into SQL insert statement lists
    * Return an array with 'cols' and 'vals'
    */
-  private function sqlInsertExplode($params)
+  private function sqlInsertExplode($params, $bindings = array())
   {
     $stmt = array('cols' => '', 'vals' => '');
     foreach($params as $key => $value)
     {
+      if($key == '::bindings')
+        continue;
       if(!empty($stmt['cols']))
         $stmt['cols'] .= ",";
       if(!empty($stmt['vals']))
         $stmt['vals'] .= ",";
       $stmt['cols'] .= $key;
-      $stmt['vals'] .= "'{$value}'";
+      if(!empty($bindings[$value]))
+        $stmt['vals'] .= "{$value}";
+      else        
+        $stmt['vals'] .= "'{$value}'";
     }
     return $stmt;
   }
@@ -525,6 +537,11 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
     $photo['tags'] = explode(",", $photo['tags']);
+
+    $exif_array = (array)json_decode($photo['exif']);
+    $photo = array_merge($photo, $exif_array);
+    unset($photo['exif']);
+
     return $photo;
   }
 
@@ -562,10 +579,49 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function preparePhoto($id, $params)
   {
+    $bindings = array();
     $params['id'] = $id;
     if(isset($params['tags']) && is_array($params['tags']))
       $params['tags'] = implode(',', $params['tags']);
+    
+    $exif_keys = array('exifOrientation' => 0,
+                       'exifCameraMake' => 0,
+                       'exifCameraModel' => 0,
+                       'exifExposureTime' => 0,
+                       'exifFNumber' => 0,
+                       'exifMaxApertureValue' => 0,
+                       'exifMeteringMode' => 0,
+                       'exifFlash' => 0,
+                       'exifFocalLength' => 0,
+                       'exifISOSpeed' => 0,
+                       'gpsAltitude' => 0,
+                       'latitude' => 0,
+                       'longitude' => 0);
 
+    $exif_array = array_intersect_key($params, $exif_keys);
+    if(!empty($exif_array))
+    {
+      foreach(array_keys($exif_keys) as $key)
+      {
+        unset($params[$key]);
+      }
+      $bindings[':exif'] = json_encode($exif_array);
+      $params['exif'] = ':exif';
+    }
+    if(!empty($params['title']))
+    {
+      $bindings[':title'] = $params['title'];
+      $params['title'] = ':title';
+    }
+    if(!empty($params['description']))
+    {
+      $bindings[':description'] = $params['description'];
+      $params['description'] = ':description';
+    }
+    if(!empty($bindings))
+    {
+      $params['::bindings'] = $bindings;
+    }
     return $params;
   }
 

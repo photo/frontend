@@ -17,7 +17,7 @@
   <?php getTheme()->display('partials/pagination.php', array_merge($pagination, array('labelPosition' => 'bottom'))); ?>
 <?php } else { ?>
   <?php if(User::isOwner()) { ?>
-    <h1>There don't seem to be any photos. You should <a href="/photo/upload">upload</a> some.</h1>
+    <h1>There don't seem to be any photos. You should <a href="/photos/upload">upload</a> some.</h1>
     <p>
       If you're searching for photos then there aren't any which match your query.
     </p>

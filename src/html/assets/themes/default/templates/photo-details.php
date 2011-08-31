@@ -22,7 +22,7 @@
       </div>
       <ul class="meta">
         <li class="date">Taken on <?php Utility::dateLong($photo['dateTaken']); ?></li>
-        <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments">see all</a></li>
+        <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments" class="action-jump-click">see all</a></li>
         <li class="tags"><?php Utility::tagsAsLinks($photo['tags']); ?></li>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
           <li class="location">
@@ -32,7 +32,12 @@
         <?php } ?>
         <li class="exif">
           <ul>
-            <?php foreach(array('exifCameraMake' => 'Camera make', 'exifCameraModel' => 'Camera model') as $key => $value) { ?>
+            <?php foreach(array('exifCameraMake' => 'Camera make: %s', 
+                                        'exifCameraModel' => 'Camera model: %s', 
+                                        'exifFNumber' => 'Av: f/%1.0F', 
+                                        'exifExposureTime' => 'Tv: %s', 
+                                        'exifISOSpeed' => 'ISO: %d',
+                                        'exifFocalLength' => 'Focal Length: %1.0fmm') as $key => $value) { ?>
               <?php if(!empty($photo[$key])) { ?>
                 <li><?php Utility::safe($value); ?>: <?php Utility::safe($photo[$key]); ?></li>
               <?php } ?>
@@ -43,13 +48,18 @@
     </div>
   </div>
 </div>
+<a name="comments"></a>
 <div class="comment-form">
   <form method="post" action="/action/photo/<?php Utility::safe($photo['id']); ?>">
-    <textarea rows="5" cols="50" name="value" class="comment"  disabled="true" ></textarea>
+    <textarea rows="5" cols="50" name="value" class="comment" <?php if(!User::isLoggedIn()) { ?>disabled="true"<?php } ?> ></textarea>
     <input type="hidden" name="type" value="comment">
     <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
     <div class="buttons">
-    <button type="button" class="login">Sign in to comment</button>
+    <?php if(User::isLoggedIn()) { ?>
+      <button type="submit">Leave a comment</button>
+    <?php } else { ?>
+      <button type="button" class="login-click">Sign in to comment</button>
+    <?php } ?>
     </div>
   </form>
   <form method="post" action="/action/photo/<?php Utility::safe($photo['id']); ?>">
@@ -60,6 +70,24 @@
     <button type="submit">Favorite</button>
   </form>
 </div>
+<?php if(count($photo['actions']) > 0) { ?>
+  <a name="comments"></a>
+  <ul class="comments">
+    <?php foreach($photo['actions'] as $action) { ?>
+      <li class="action-container-<?php echo $action['id']; ?>">
+        <img src="<?php echo User::getAvatarFromEmail(40, $action['email']); ?>" class="avatar">
+        <?php if($action['type'] == 'comment') { ?>
+          <?php echo $action['value']; ?>
+        <?php } else { ?>
+          Favorited
+        <?php } ?>
+        <ul class="meta">
+          <li class="date"><?php echo Utility::dateLong($action['datePosted']); ?></li>
+        </ul>
+      </li>
+    <?php } ?>
+  </ul>
+<?php } ?>
 
 <?php if(User::isOwner()) { ?>
   <div class="owner">
@@ -88,25 +116,27 @@
       <?php if(count($photo['actions']) > 0) { ?>
         <div class="manage-comments">
           <label>Manage comments</label>
-          <ol class="comments">
+          <ul class="comments">
             <?php foreach($photo['actions'] as $action) { ?>
               <li class="action-container-<?php echo $action['id']; ?>">
                 <img src="<?php echo User::getAvatarFromEmail(40, $action['email']); ?>" class="avatar">
                 <?php if($action['type'] == 'comment') { ?>
-                  <?php echo $action['value']; ?><br><a href="/action/<?php echo $action['id']; ?>/delete" class="button delete action-delete">delete</a>
+                  <?php echo $action['value']; ?><br><a href="/action/<?php echo $action['id']; ?>/delete" class="button delete action-delete-click">delete</a>
                 <?php } else { ?>
-                  Favorited<br><a href="/action/<?php echo $action['id']; ?>/delete" class="button delete action-delete">delete</a>
+                  Favorited<br><a href="/action/<?php echo $action['id']; ?>/delete" class="button delete action-delete-click">delete</a>
                 <?php } ?>
-                <div class="date"><?php echo Utility::dateLong($action['datePosted']); ?></div>
+                <ul class="meta">
+                  <li class="date"><?php echo Utility::dateLong($action['datePosted']); ?></li>
+                </ul>
               </li>
             <?php } ?>
-          </ol>
+          </ul>
         </div>
       <?php } ?>
     </div>
     <div class="delete">
       <form method="post" action="/photo/delete/<?php echo $photo['id']; ?>">
-        <button type="submit" class="delete photo-delete">Delete this photo</button>
+        <button type="submit" class="delete photo-delete-click">Delete this photo</button>
       </form>
     </div>
     <br clear="all">
