@@ -32,7 +32,12 @@
         <?php } ?>
         <li class="exif">
           <ul>
-            <?php foreach(array('exifCameraMake' => 'Camera make', 'exifCameraModel' => 'Camera model') as $key => $value) { ?>
+            <?php foreach(array('exifCameraMake' => 'Camera make: %s', 
+                                        'exifCameraModel' => 'Camera model: %s', 
+                                        'exifFNumber' => 'Av: f/%1.0F', 
+                                        'exifExposureTime' => 'Tv: %s', 
+                                        'exifISOSpeed' => 'ISO: %d',
+                                        'exifFocalLength' => 'Focal Length: %1.0fmm') as $key => $value) { ?>
               <?php if(!empty($photo[$key])) { ?>
                 <li><?php Utility::safe($value); ?>: <?php Utility::safe($photo[$key]); ?></li>
               <?php } ?>
