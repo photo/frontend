@@ -6,14 +6,14 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    
+
     <title><?php getTheme()->meta('titles', $page); ?></title>
     <meta name="description" content="<?php getTheme()->meta('descriptions', $page); ?>">
     <meta name="keywords" content="<?php getTheme()->meta('keywords', $page); ?>">
 
-    
+
     <meta name="author" content="">
-    
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.ico'); ?>">
     <link rel="apple-touch-icon" href="<?php getTheme()->asset('image', 'apple-touch-icon.png'); ?>">
@@ -25,6 +25,8 @@
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'tag-cloud.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'upload.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'footer.css'); ?>">
+    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'setup.css'); ?>">
+    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'message-box.css'); ?>">
 </head>
 
 <body class="<?php echo $page; ?>">
@@ -46,10 +48,10 @@
   <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
   <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
   <script>
-    OP.Util.init(jQuery, { 
+    OP.Util.init(jQuery, {
       js: {
-        assets: ['<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>','<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'], 
-        onComplete: function(){ opTheme.init.attach(); }
+        assets: ['<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>','<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'],
+        onComplete: function(){ opTheme.init.attach(); $('form.validate').each(opTheme.formHandlers.init); }
       }
     });
   </script>

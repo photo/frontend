@@ -7,7 +7,7 @@
  */
 interface DatabaseInterface
 {
-  public function __construct($opts);
+  public function __construct();
   // delete methods can delete or toggle status
   public function deletePhoto($id);
   public function deleteAction($id);
@@ -39,38 +39,33 @@ interface DatabaseInterface
   * Accepts a set of params that must include a type and targetType
   *
   * @param string $type Optional type parameter which defines the type of database.
-  * @param array $opts Options which can be used by the database adapter.
   * @return object A database object that implements DatabaseInterface
   */
-function getDb(/*$type, $opts*/)
+function getDb(/*$type*/)
 {
-  static $database, $type, $opts;
-  if(func_num_args() == 2)
-  {
+  static $database, $type;
+  if($database)
+    return $database;
+
+  if(func_num_args() == 1)
     $type = func_get_arg(0);
-    $opts = func_get_arg(1);
-  }
+
   // load configs only once
   if(!$type)
     $type = getConfig()->get('systems')->database;
-  if(!$opts)
-    $opts = getConfig()->get('credentials');
-
-  if($database)
-    return $database;
 
   switch($type)
   {
     case 'SimpleDb':
-      $database = new DatabaseSimpleDb($opts);
+      $database = new DatabaseSimpleDb();
       break;
     case 'MySql':
-      $database = new DatabaseMySql($opts);
+      $database = new DatabaseMySql();
       break;
   }
-  
+
   if($database)
     return $database;
 
-  throw new Exception(404, "DataProvider {$type} does not exist");
+  throw new Exception("DataProvider {$type} does not exist", 404);
 }
