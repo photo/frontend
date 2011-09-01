@@ -3,6 +3,7 @@ var opTheme = (function() {
     if(console !== undefined && console.log !== undefined)
       console.log(msg);
   };
+  var timeoutId = undefined;
   return {
     callback: {
       actionDelete: function(ev) {
@@ -61,6 +62,172 @@ var opTheme = (function() {
         return false;
       }
     },
+    formHandlers: {
+			hasErrors: function(form, attribute) {
+				var errors = new Array();
+
+				form.children('input, textarea').each(function() {
+					var child = $(this);
+					// remove any old error classes
+					child.prev().removeClass('error');
+					var dataValidation = child.attr(attribute);
+					if(dataValidation != undefined) {
+						var dataValidationArray = dataValidation.split(' ');
+						for(var i = 0; i < dataValidationArray.length; i++) {
+							if(dataValidationArray[i] == 'date') {
+								if(!opTheme.formHandlers.passesDate(child)) {
+									var message = child.prev().html() + ' is not a valid date';
+									errors.push(new Array(child, message));
+								}
+							}
+
+							if(dataValidationArray[i] == 'email') {
+								if(!opTheme.formHandlers.passesEmail(child)) {
+									var message = child.prev().html() + ' is not a valid email address';
+									errors.push(new Array(child, message));
+								}
+							}
+
+							if(dataValidationArray[i] == 'ifexists') {
+								if(child.val() != '' && child.val() != undefined) {
+									$.merge(errors, opTheme.formHandlers.hasErrors(form, 'data-ifexists'));
+								}
+							}
+
+							if(dataValidationArray[i] == 'integer') {
+								if(!opTheme.formHandlers.passesInteger(child)) {
+									var message = child.prev().html() + ' is not a number';
+									errors.push(new Array(child, message));
+								}
+							}
+
+							if(dataValidationArray[i] == 'match') {
+								var matchId = child.attr('data-match');
+								if(!opTheme.formHandlers.passesMatch(child, matchId)) {
+									var message = child.prev().html() + ' does not match ' + $('#' + matchId).prev().html();
+									errors.push(new Array(child, message));
+								}
+							}
+
+							if(dataValidationArray[i] == 'required') {
+								if(!opTheme.formHandlers.passesRequired(child)) {
+									var message = child.prev().html() + ' is required';
+									errors.push(new Array(child, message));
+								}
+							}
+						}
+					}
+				});
+
+				return errors;
+			},
+
+			init: function(index) {
+				$(this).submit(opTheme.submitHandlers.siteForm);
+				opTheme.formHandlers.showPlaceholders();
+				$('input[data-placeholder]').live('focus', opTheme.formHandlers.placeholderFocus);
+				$('input[data-placeholder]').live('blur', opTheme.formHandlers.placeholderBlur);
+			},
+
+			passesDate: function(obj) {
+				var regex = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+				return regex.test(obj.val());
+			},
+
+			passesEmail: function(obj) {
+				var regex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+				return regex.test(obj.val());
+			},
+
+			passesInteger: function(obj) {
+				var regex = /^\d+$/;
+				return regex.test(obj.val());
+			},
+
+			passesMatch: function(obj, matchId) {
+				return obj.val() == $('#' + matchId).val();
+			},
+
+			passesRequired: function(obj) {
+				if(obj.is('textarea') || (obj.is('input') && (obj.attr('type') == 'text' || obj.attr('type') == 'password')))
+					return obj.val() != '' && obj.val() != undefined;
+				else if(obj.is('checkbox'))
+					return obj.is(':checked');
+				else
+					return true;
+			},
+
+			placeholderBlur: function() {
+				var obj = $(this);
+				if(obj.val() == '') {
+					obj.val(obj.attr('data-placeholder'));
+					obj.addClass('placeholder');
+				}
+			},
+
+			placeholderFocus: function() {
+				var obj = $(this);
+				if(obj.val() == obj.attr('data-placeholder')) {
+					obj.val('');
+					obj.removeClass('placeholder');
+				}
+			},
+
+			removePlaceholders: function() {
+				$('input[data-placeholder]').each(function() {
+					var obj = $(this);
+					if(obj.val() == obj.attr('data-placeholder')) {
+						obj.val('');
+						obj.removeClass('placeholder');
+					}
+				});
+			},
+
+			showPlaceholders: function() {
+				$('input[data-placeholder]').each(function() {
+					var obj = $(this);
+					if(obj.val() == '') {
+						obj.val(obj.attr('data-placeholder'));
+						obj.addClass('placeholder');
+					}
+				});
+			}
+		},
+
+		messageBox: function(messageHtml) {
+			$('a.message-close').live('click', opTheme.messageBoxClose);
+			if(timeoutId != undefined) {
+				clearTimeout(timeoutId);
+				timeoutId = undefined;
+				$('#message-box').html('<div><a class="message-close">close</a>' + messageHtml + '</div>');
+				timeoutId = setTimeout(function() {
+					$('#message-box').animate({height:'toggle'}, 500, function() {
+						$('#message-box').remove();
+						timeoutId = undefined;
+					});
+				}, 7000);
+			} else {
+				$('html').append('<section id="message-box" style="display:none;"><div><a class="message-close">close</a>' + messageHtml + '</div></section>');
+				$('#message-box').animate({height:'toggle'}, 500, function() {
+					timeoutId = setTimeout(function() {
+						$('#message-box').animate({height:'toggle'}, 500, function() {
+							$('#message-box').remove();
+							timeoutId = undefined;
+						});
+					}, 7000);
+				});
+			}
+		},
+
+		messageBoxClose: function() {
+			if(timeoutId != undefined) {
+				clearTimeout(timeoutId);
+				timeoutId = undefined;
+				$('#message-box').animate({height:'toggle'}, 500, function() {
+					$('#message-box').remove();
+				});
+			}
+		},
     init: {
       attach: function() {
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
@@ -86,6 +253,35 @@ var opTheme = (function() {
         alert(msg);
       }
     },
+    submitHandlers: {
+			siteForm: function(event) {
+				var form = $(this);
+				event.preventDefault();
+				opTheme.formHandlers.removePlaceholders();
+				var errors = opTheme.formHandlers.hasErrors(form, 'data-validation');
+				opTheme.formHandlers.showPlaceholders();
+
+				if(errors.length == 0) {
+					// submit the form
+					this.submit();
+				} else {
+					var messageHtml = '<ul>';
+					for(var i = 0; i < errors.length; i++) {
+						// highlight all errors
+						errors[i][0].prev().addClass('error');
+						messageHtml += '<li>' + errors[i][1] + '</li>';
+					}
+					messageHtml += '</ul>';
+
+					// scroll to the topmost error and focus
+					$('html').animate({scrollTop: errors[0][0].offset().top-30}, 500);
+					errors[0][0].focus();
+
+					// bring up the error message box
+					opTheme.messageBox(messageHtml);
+				}
+			}
+		},
     user: {
       loginFailure: function(assertion) {
         log('login failed');
@@ -97,7 +293,7 @@ var opTheme = (function() {
           // TODO do something here to handle failed login
           return;
         }
-        
+
         log('login processing succeeded');
         window.location.reload();
       },

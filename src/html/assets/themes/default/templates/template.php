@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'upload.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'footer.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'setup.css'); ?>">
+    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'message-box.css'); ?>">
 </head>
 
 <body class="<?php echo $page; ?>">
@@ -47,10 +48,10 @@
   <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
   <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
   <script>
-    OP.Util.init(jQuery, { 
+    OP.Util.init(jQuery, {
       js: {
-        assets: ['<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>','<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'], 
-        onComplete: function(){ opTheme.init.attach(); }
+        assets: ['<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>','<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'],
+        onComplete: function(){ opTheme.init.attach(); $('form.validate').each(opTheme.formHandlers.init); }
       }
     });
   </script>

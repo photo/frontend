@@ -1,5 +1,5 @@
 <?php
-/** 
+/**
  * Plain FS implementation for FileSystemInterface
  *
  * This class defines the functionality defined by FileSystemInterface for a plain Filesystem.
@@ -10,7 +10,7 @@ class FileSystemLocal implements FileSystemInterface
   private $root;
   private $urlBase;
 
-  public function __construct($opts)
+  public function __construct()
   {
     $config = getConfig()->get('localfs');
     $this->root = $config->fsRoot;
@@ -35,7 +35,7 @@ class FileSystemLocal implements FileSystemInterface
 
   /**
    * Get photo will copy the photo to a temporary file.
-   * 
+   *
    */
   public function getPhoto($filename)
   {

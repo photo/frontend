@@ -17,21 +17,20 @@ class FileSystemS3 implements FileSystemInterface
   /**
     * Constructor
     *
-    * @param array $opts Credentials for AWS
-    * @return void 
+    * @return void
     */
-  public function __construct($opts)
+  public function __construct()
   {
-    $this->fs = new AmazonS3($opts->awsKey, $opts->awsSecret);
+    $this->fs = new AmazonS3(getConfig()->get('credentials')->awsKey, getConfig()->get('credentials')->awsSecret);
     $this->bucket = getConfig()->get('aws')->s3BucketName;
   }
 
   /**
-    * Deletes a photo (and all generated versions) from the file system.  
+    * Deletes a photo (and all generated versions) from the file system.
     * To get a list of all the files to delete we first have to query the database and find out what versions exist.
     *
     * @param string $id ID of the photo to delete
-    * @return boolean 
+    * @return boolean
     */
   public function deletePhoto($id)
   {
@@ -51,7 +50,7 @@ class FileSystemS3 implements FileSystemInterface
     * This file is stored locally and the path to the local file is returned.
     *
     * @param string $filename File name on the remote file system.
-    * @return mixed String on success, FALSE on failure. 
+    * @return mixed String on success, FALSE on failure.
     */
   public function getPhoto($filename)
   {
@@ -96,7 +95,7 @@ class FileSystemS3 implements FileSystemInterface
     foreach($files as $file)
     {
       list($localFile, $remoteFile) = each($file);
-      $opts = array('fileUpload' => $localFile, 'acl' => $acl, 'contentType' => 'image/jpeg'); 
+      $opts = array('fileUpload' => $localFile, 'acl' => $acl, 'contentType' => 'image/jpeg');
       $remoteFile = self::normalizePath($remoteFile);
       $this->fs->batch($queue)->create_object($this->bucket, $remoteFile, $opts);
     }

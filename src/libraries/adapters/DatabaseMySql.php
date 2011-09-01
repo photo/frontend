@@ -1,5 +1,5 @@
 <?php
-/** 
+/**
  * MySQL implementation
  *
  * This class defines the functionality defined by DatabaseInterface for a MySQL database.
@@ -17,21 +17,19 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Constructor
     *
-    * @param array $opts information for MySql
-    * @return void 
+    * @return void
     */
-  public function __construct($opts)
+  public function __construct()
   {
     $mysql = getConfig()->get('mysql');
-    EpiDatabase::employ('mysql', $mysql->mySqlDb, 
-                        $mysql->mySqlHost, $mysql->mySqlUser, $mysql->mySqlPassword);
+    EpiDatabase::employ('mysql', $mysql->mySqlDb, $mysql->mySqlHost, $mysql->mySqlUser, $mysql->mySqlPassword);
   }
 
   /**
     * Delete an action from the database
     *
     * @param string $id ID of the action to delete
-    * @return boolean 
+    * @return boolean
     */
   public function deleteAction($id)
   {
@@ -43,7 +41,7 @@ class DatabaseMySql implements DatabaseInterface
     * Delete a photo from the database
     *
     * @param string $id ID of the photo to delete
-    * @return boolean 
+    * @return boolean
     */
   public function deletePhoto($id)
   {
@@ -54,8 +52,8 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Retrieve the next and previous photo surrounding photo with $id
     *
-    * @param string $id ID of the photo to get next and previous for 
-    * @return mixed Array on success, FALSE on failure 
+    * @param string $id ID of the photo to get next and previous for
+    * @return mixed Array on success, FALSE on failure
     */
   public function getPhotoNextPrevious($id)
   {
@@ -79,7 +77,7 @@ class DatabaseMySql implements DatabaseInterface
     * Get a photo specified by $id
     *
     * @param string $id ID of the photo to retrieve
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getPhoto($id)
   {
@@ -94,20 +92,20 @@ class DatabaseMySql implements DatabaseInterface
     * Actions are stored in a separate domain so the calls need to be made in parallel
     *
     * @param string $id ID of the photo to retrieve
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getPhotoWithActions($id)
   {
     $photo = $this->getPhoto($id);
     $photo['actions'] = array();
-    if($photo) 
+    if($photo)
     {
       $actions = getDatabase()->all("SELECT * FROM action WHERE targetType='photo' AND targetId=:id",
       	       array(':id' => $id));
       if(!empty($actions))
       {
         foreach($actions as $action)
-           $photo['actions'][] = $action;          
+           $photo['actions'][] = $action;
       }
     }
     return $photo;
@@ -117,7 +115,7 @@ class DatabaseMySql implements DatabaseInterface
     * Get a list of a user's photos filtered by $filter, $limit and $offset
     *
     * @param array $filters Filters to be applied before obtaining the result
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
@@ -176,7 +174,7 @@ class DatabaseMySql implements DatabaseInterface
     * Consistent read set to false
     *
     * @param string $tag tag to be retrieved
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getTag($tag)
   {
@@ -193,7 +191,7 @@ class DatabaseMySql implements DatabaseInterface
     * Consistent read set to false
     *
     * @param array $filters Filters to be applied to the list
-    * @return mixed Array on success, FALSE on failure    
+    * @return mixed Array on success, FALSE on failure
     */
   public function getTags($filter = array())
   {
@@ -211,7 +209,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Get the user record entry.
     *
-    * @return mixed Array on success, NULL if user record is empty, FALSE on error 
+    * @return mixed Array on success, NULL if user record is empty, FALSE on error
     */
   public function getUser()
   {
@@ -267,7 +265,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postTag($id, $params)
   {
-    if(!isset($params['id'])) 
+    if(!isset($params['id']))
       $params['id'] = $id;
 
     $stmtIns = self::sqlInsertExplode($params);
@@ -474,7 +472,7 @@ class DatabaseMySql implements DatabaseInterface
         $stmt .= ",";
       }
       if(!empty($bindings[$value]))
-        $stmt .= "{$key}={$value}";  
+        $stmt .= "{$key}={$value}";
       else
         $stmt .= "{$key}='{$value}'";
     }
@@ -499,7 +497,7 @@ class DatabaseMySql implements DatabaseInterface
       $stmt['cols'] .= $key;
       if(!empty($bindings[$value]))
         $stmt['vals'] .= "{$value}";
-      else        
+      else
         $stmt['vals'] .= "'{$value}'";
     }
     return $stmt;
@@ -583,7 +581,7 @@ class DatabaseMySql implements DatabaseInterface
     $params['id'] = $id;
     if(isset($params['tags']) && is_array($params['tags']))
       $params['tags'] = implode(',', $params['tags']);
-    
+
     $exif_keys = array('exifOrientation' => 0,
                        'exifCameraMake' => 0,
                        'exifCameraModel' => 0,
