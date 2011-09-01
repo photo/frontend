@@ -46,8 +46,8 @@ class SetupController
   public static function setupPost()
   {
     $step = 1;
-    $appId = $_POST['appId'];
-    $email = $_POST['email'];
+    $appId = isset($_POST['appId']) ? $_POST['appId'] : '';
+    $email = isset($_POST['email']) ? $_POST['email'] : '';
     $input = array(
       array('Email', $email, 'required')
     );

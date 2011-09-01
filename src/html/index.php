@@ -54,7 +54,7 @@ elseif(!file_exists($configFile)) // if no config file then load up the setup de
 
   // if we're not in the setup path (anything other than /setup) then redirect to the setup
   // otherwise we're on one of the setup steps already, so just run it
-  if(strpos($_GET['__route__'], '/setup') === false)
+  if(!isset($_GET['__route__']) || strpos($_GET['__route__'], '/setup') === false)
     getRoute()->run('/setup');
   else
     getRoute()->run();
