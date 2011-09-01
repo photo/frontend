@@ -16,12 +16,11 @@ class DatabaseSimpleDb implements DatabaseInterface
   /**
     * Constructor
     *
-    * @param array $opts Credentials for AWS
-    * @return void 
+    * @return void
     */
-  public function __construct($opts)
+  public function __construct()
   {
-    $this->db = new AmazonSDB($opts->awsKey, $opts->awsSecret);
+    $this->db = new AmazonSDB(getConfig()->get('credentials')->awsKey, getConfig()->get('credentials')->awsSecret);
     $this->domainPhoto = getConfig()->get('aws')->simpleDbDomain;
     $this->domainAction = getConfig()->get('aws')->simpleDbDomain.'Action';
     $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'User';
@@ -41,7 +40,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Delete an action from the database
     *
     * @param string $id ID of the action to delete
-    * @return boolean 
+    * @return boolean
     */
   public function deleteAction($id)
   {
@@ -53,7 +52,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Delete a photo from the database
     *
     * @param string $id ID of the photo to delete
-    * @return boolean 
+    * @return boolean
     */
   public function deletePhoto($id)
   {
@@ -64,8 +63,8 @@ class DatabaseSimpleDb implements DatabaseInterface
   /**
     * Retrieve the next and previous photo surrounding photo with $id
     *
-    * @param string $id ID of the photo to get next and previous for 
-    * @return mixed Array on success, FALSE on failure 
+    * @param string $id ID of the photo to get next and previous for
+    * @return mixed Array on success, FALSE on failure
     */
   public function getPhotoNextPrevious($id)
   {
@@ -79,7 +78,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $responses = $this->db->batch($queue)->send();
     if(!$responses->areOK())
       return false;
-    
+
     $ret = array();
     if(isset($responses[0]->body->SelectResult->Item))
       $ret['previous'] = self::normalizePhoto($responses[0]->body->SelectResult->Item);
@@ -94,7 +93,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Get a photo specified by $id
     *
     * @param string $id ID of the photo to retrieve
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getPhoto($id)
   {
@@ -110,7 +109,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Actions are stored in a separate domain so the calls need to be made in parallel
     *
     * @param string $id ID of the photo to retrieve
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getPhotoWithActions($id)
   {
@@ -128,7 +127,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $photo['actions'] = array();
     foreach($responses[1]->body->SelectResult->Item as $action)
       $photo['actions'][] = $this->normalizeAction($action);
-      
+
     return $photo;
   }
 
@@ -136,7 +135,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Get a list of a user's photos filtered by $filter, $limit and $offset
     *
     * @param array $filters Filters to be applied before obtaining the result
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
@@ -217,7 +216,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Consistent read set to false
     *
     * @param string $tag tag to be retrieved
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getTag($tag)
   {
@@ -233,7 +232,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Consistent read set to false
     *
     * @param array $filters Filters to be applied to the list
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getTags($filters = array())
   {
@@ -257,7 +256,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   /**
     * Get the user record entry.
     *
-    * @return mixed Array on success, NULL if user record is empty, FALSE on error 
+    * @return mixed Array on success, NULL if user record is empty, FALSE on error
     */
   public function getUser()
   {
@@ -371,7 +370,7 @@ class DatabaseSimpleDb implements DatabaseInterface
       $updatedTags[] = array('id' => $tag, 'count' => $count);
     return $this->postTags($updatedTags);
   }
-  
+
 
   /**
     * Update the information for the user record.

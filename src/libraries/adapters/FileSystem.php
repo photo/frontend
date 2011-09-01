@@ -21,33 +21,28 @@ interface FileSystemInterface
   * Accepts a set of params that must include a type and targetType
   *
   * @param string $type Optional type parameter which defines the type of file system.
-  * @param array $opts Options which can be used by the file system adapter.
   * @return object A file system object that implements FileSystemInterface
   */
-function getFs(/*$type, $opts*/)
+function getFs(/*$type*/)
 {
-  static $filesystem, $type, $opts;
+  static $filesystem, $type;
   if($filesystem)
     return $filesystem;
-  
-  if(func_num_args() == 2)
-  {
+
+  if(func_num_args() == 1)
     $type = func_get_arg(0);
-    $opts = func_get_arg(1);
-  }
+
   // load configs only once
   if(!$type)
     $type = getConfig()->get('systems')->fileSystem;
-  if(!$opts)
-    $opts = getConfig()->get('credentials');
 
   switch($type)
   {
     case 'S3':
-      $filesystem = new FileSystemS3($opts);
+      $filesystem = new FileSystemS3();
       break;
     case 'localfs':
-      $filesystem = new FileSystemLocal($opts);
+      $filesystem = new FileSystemLocal();
       break;
   }
 

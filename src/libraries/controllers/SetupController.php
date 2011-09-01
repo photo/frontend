@@ -28,15 +28,13 @@ class SetupController
     if(extension_loaded('gd') && function_exists('gd_info'))
       $imageLibs['GD'] = 'GD';
 
-    $permissionCheck = self::verifyRequirements($imageLibs);
-    if($permissionCheck !== true)
-    {
-      // TODO: do something here
-      echo 'Permission error';
-      die();
-    }
+    $errors = self::verifyRequirements($imageLibs);
+    if($errors !== true)
+      $step = 0;
+    else
+      $errors = '';
 
-    $body = getTheme()->get('setup.php', array('imageLibs' => $imageLibs, 'appId' => $appId, 'step' => $step));
+    $body = getTheme()->get('setup.php', array('imageLibs' => $imageLibs, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -80,7 +78,6 @@ class SetupController
         getRoute()->redirect('/setup');
 
     $step = 2;
-
     $imageLibs = array();
     if(class_exists('Imagick'))
       $imageLibs['ImageMagick'] = 'ImageMagick';
@@ -125,11 +122,11 @@ class SetupController
 
     $step = 3;
     $appId = getSession()->get('appId');
-    $usesAws = (getSession()->get('database') == 'SimpleDB' || getSession()->get('fileSystem') == 'S3') ? true : false;
+    $usesAws = (getSession()->get('database') == 'SimpleDb' || getSession()->get('fileSystem') == 'S3') ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesLocalFs = (getSession()->get('fileSystem') == 'LocalFs') ? true : false;
     $usesS3 = (getSession()->get('fileSystem') == 'S3') ? true : false;
-    $usesSimpleDb = (getSession()->get('database') == 'SimpleDB') ? true : false;
+    $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
 
     $body = getTheme()->get('setup.php', array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 'usesSimpleDb' => $usesSimpleDb, 'appId' => $appId));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
@@ -144,11 +141,11 @@ class SetupController
   {
     $step = 3;
     $appId = getSession()->get('appId');
-    $usesAws = (getSession()->get('database') == 'SimpleDB' || getSession()->get('fileSystem') == 'S3') ? true : false;
+    $usesAws = (getSession()->get('database') == 'SimpleDb' || getSession()->get('fileSystem') == 'S3') ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesLocalFs = (getSession()->get('fileSystem') == 'LocalFs') ? true : false;
     $usesS3 = (getSession()->get('fileSystem') == 'S3') ? true : false;
-    $usesSimpleDb = (getSession()->get('database') == 'SimpleDB') ? true : false;
+    $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
     $awsErrors = false;
     $mySqlErrors = false;
     $localFsErrors = false;
@@ -221,7 +218,7 @@ class SetupController
         $aws = new stdClass;
         if($usesS3)
         {
-          getSession()->set('s3BucketName', $s3Bucket);
+          getSession()->set('s3Bucket', $s3Bucket);
           $aws->s3BucketName = $s3Bucket;
           $aws->s3Host = "{$s3Bucket}.s3.amazonaws.com";
         }
@@ -270,7 +267,7 @@ class SetupController
       $fsObj = getFs();
       $dbObj = getDb();
 
-      if(!$fs->initialize())
+      if(!$fsObj->initialize())
       {
         if($usesAws)
           $fsErrors[] = 'Unable to initialize s3';
@@ -279,7 +276,7 @@ class SetupController
         else
           $fsErrors[] = 'File system error';
       }
-      if(!$db->initialize())
+      if(!$dbObj->initialize())
       {
         if($usesAws)
           $dbErrors[] = 'Unable to initialize simpledb';
@@ -360,7 +357,7 @@ class SetupController
       $errors[] = "{$generatedDir} exists but is not writable by {$user}";
 
     if(empty($imageLibs))
-      $errors[] = "The Imagick library, Gmagick library, and GD library do not exist";
+      $errors[] = "The Imagick library, Gmagick library, or GD library do not exist";
 
     return $errors;
   }
@@ -385,6 +382,7 @@ class SetupController
       '{libraries}' => "{$libDir}",
       '{models}' => "{$libDir}/models",
       '{photos}' => "{$htmlDir}/photos",
+      '{themes}' => "{$htmlDir}/assets/themes",
       '{exiftran}' => exec('which exiftran'),
       '{localSecret}' => sha1(uniqid(true)),
       '{s3Host}' => getSession()->get('s3BucketName') . '.s3.amazonaws.com',
@@ -392,7 +390,8 @@ class SetupController
     );
 
     $pReplace = array();
-    foreach(getSession()->getAll() as $key => $val)
+    $session = getSession()->getAll();
+    foreach($session as $key => $val)
       $pReplace["{{$key}}"] = $val;
 
     $replacements = array_merge($pReplace, $replacements);
