@@ -55,9 +55,9 @@
       <?php if(isset($usesAws) && $usesAws) { ?>
         <h3>Enter your Amazon credentials <em>(<a href="">what's this?</a>)</em></h3>
         <label for="awsKey">Amazon Access Key ID</label>
-        <input type="text" name="awsKey" id="awsKey" size="50" autocomplete="false" data-validation="required">
+        <input type="text" name="awsKey" id="awsKey" size="50" autocomplete="off" data-validation="required">
         <label for="awsSecret">Amazon Secret Access Key</label>
-        <input type="text" name="awsSecret" id="awsSecret" size="50" autocomplete="false" data-validation="required">
+        <input type="text" name="awsSecret" id="awsSecret" size="50" autocomplete="off" data-validation="required">
         <?php if(isset($usesS3) && $usesS3) { ?>
           <label for="s3Bucket">Amazon S3 Bucket Name <em>(<a href="">what's this?</a>)</em></label>
           <?php if(isset($s3Bucket) && !empty($s3Bucket)) { ?>
@@ -78,11 +78,11 @@
       <?php if(isset($usesMySql) && !empty($usesMySql)) { ?>
         <h3>Enter your MySQL credentials <em>(<a href="">what's this?</a>)</em></h3>
         <label for="mySqlHost">MySQL Host</label>
-        <input type="text" name="mySqlHost" id="mySqlHost" size="50" autocomplete="false" data-validation="required">
+        <input type="text" name="mySqlHost" id="mySqlHost" size="50" autocomplete="off" data-validation="required">
         <label for="mySqlUser">MySQL Username</label>
-        <input type="text" name="mySqlUser" id="mySqlUser" size="50" autocomplete="false" data-validation="required">
+        <input type="text" name="mySqlUser" id="mySqlUser" size="50" autocomplete="off" data-validation="required">
         <label for="mySqlPassword">MySQL Password</label>
-        <input type="text" name="mySqlPassword" id="mySqlPassword" size="50" autocomplete="false" data-validation="required">
+        <input type="text" name="mySqlPassword" id="mySqlPassword" size="50" autocomplete="off" data-validation="required">
         <input type="hidden" name="mySqlDb" value="openphoto">
       <?php } ?>
       <?php if(isset($usesLocalFs) && !empty($usesLocalFs)) { ?>
