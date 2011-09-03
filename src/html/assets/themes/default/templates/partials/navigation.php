@@ -24,8 +24,7 @@
   </li>
   <?php } else { ?>
   <li id="nav-signin">
-    <button type="button"><img src="https://browserid.org/i/sign_in_blue.png" alt="Signin to OpenPhoto" class="login-click"></button>
-    <!--<a href="#" class="login"><img src="https://browserid.org/i/sign_in_blue.png" align="absmiddle"></a>-->
+    <button type="button" class="login-click"><img src="https://browserid.org/i/sign_in_blue.png" alt="Signin to OpenPhoto" class="login-click"></button>
   </li>
   <?php } ?>
 </ul>
