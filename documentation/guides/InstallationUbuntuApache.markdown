@@ -20,6 +20,7 @@ Before setting up your server you'll need to make sure you have your cloud accou
 #### Server Packages and Modules
 Once you've confirmed that your cloud account is setup you can get started on your server. For that you'll need to have _Apache_, _PHP_ and _curl_ installed with a few modules.
 
+    apt-get update
     apt-get install apache2
     apt-get install php5
     apt-get install libapache2-mod-php5
