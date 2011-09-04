@@ -16,6 +16,7 @@ require getConfig()->get('paths')->controllers . '/ApiTagController.php';
 require getConfig()->get('paths')->controllers . '/TagController.php';
 require getConfig()->get('paths')->controllers . '/ApiUserController.php';
 require getConfig()->get('paths')->controllers . '/UserController.php';
+require getConfig()->get('paths')->controllers . '/OAuthController.php';
 
 // libraries
 require getConfig()->get('paths')->external . '/aws/sdk.class.php';
@@ -29,6 +30,7 @@ require getConfig()->get('paths')->libraries . '/functions.php';
 
 // models
 require getConfig()->get('paths')->models . '/Utility.php';
+require getConfig()->get('paths')->models . '/Auth.php';
 require getConfig()->get('paths')->models . '/Action.php';
 require getConfig()->get('paths')->models . '/Photo.php';
 require getConfig()->get('paths')->models . '/Tag.php';
