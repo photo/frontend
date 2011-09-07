@@ -63,6 +63,19 @@ You'll need to make sure that you have named virtual hosts enabled in your Apach
 
     vi /opt/local/apache2/conf/extra/virtualhosts.conf
 
+By default, any access to ini files is denied with a "Not Found" 404 HTTP code.  To enable a 404, or Forbidden return code, change the following lines in the virtual host file.
+
+Uncomment:
+
+    # 403 Forbidden for ini files
+    #RewriteRule \.ini$ - [F,NC]
+
+Comment:
+
+  # 404 Not Found for ini files
+  AliasMatch \.ini$	/404
+
+
 You can put the `NameVirtualHost` directive at the top of the file.
 
     NameVirtualHost *
