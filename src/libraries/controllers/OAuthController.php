@@ -70,7 +70,7 @@ class OAuthController extends BaseController
         if(stripos($callback, '?') !== false)
           $separator = '&';
       }
-      $callback .= "{$separator}&oauth_token={$token}&oauth_verifier={$consumer['verifier']}";
+      $callback .= "{$separator}&oauth_token={$token}&oauth_token_secret={$consumer['client_secret']}&oauth_verifier={$consumer['verifier']}";
       // TODO require SSL unless omited in the config
       getRoute()->redirect($callback, null, true);
     }
