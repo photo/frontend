@@ -218,7 +218,7 @@ class SetupController
         $aws = new stdClass;
         if($usesS3)
         {
-          getSession()->set('s3Bucket', $s3Bucket);
+          getSession()->set('s3BucketName', $s3Bucket);
           $aws->s3BucketName = $s3Bucket;
           $aws->s3Host = "{$s3Bucket}.s3.amazonaws.com";
         }
