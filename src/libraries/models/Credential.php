@@ -7,6 +7,8 @@ class Credential
 
   const statusInactive = '0';
   const statusActive = '1';
+
+  const nonceCacheKey = 'oauthTimestamps';
   private $provider, $consumer;
 
   public function __construct()
@@ -86,8 +88,37 @@ class Credential
 
   public function checkTimestampAndNonce($provider)
   {
-    // TODO check nonce in APC/Memcached using EpiCache.
-    return OAUTH_OK;
+    $cache = getConfig()->get(self::nonceCacheKey);
+    if(!$cache)
+      $cache = array();
+    list($lastTimestamp, $nonces) = each($cache);
+    if($provider->timestamp > (time()+300) || $provider->timestamp < $lastTimestamp) 
+    {
+      // timestamp can't be more then 30 seconds into the future
+      // or prior to the last timestamp
+      return OAUTH_BAD_TIMESTAMP;
+    }
+    elseif(isset($cache[$provider->timestamp]))
+    {
+      // we've seen this timestamp before and need to check the nonce
+      if(isset($nonces[$provider->nonce]))
+      {
+        // this nonce has been used
+        return OAUTH_BAD_NONCE;
+      }
+      else
+      {
+        $cache[$provider->timestamp][$provider->nonce] = true;
+        getCache()->set(self::nonceCacheKey, $cache);
+        return OAUTH_OK;
+      }
+    }
+    else
+    {
+      $cache = array($provider->timestamp => array($provider->nonce => true));
+      getCache()->set(self::nonceCacheKey, $cache);
+      return OAUTH_OK;
+    }
   }
 
   public function checkToken($provider)
