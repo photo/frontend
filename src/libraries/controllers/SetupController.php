@@ -29,7 +29,8 @@ class SetupController
       $imageLibs['GD'] = 'GD';
 
     $errors = self::verifyRequirements($imageLibs);
-    if($errors !== true)
+
+    if(count($errors) > 0)
       $step = 0;
     else
       $errors = '';
