@@ -30,7 +30,7 @@ require getConfig()->get('paths')->libraries . '/functions.php';
 
 // models
 require getConfig()->get('paths')->models . '/Utility.php';
-require getConfig()->get('paths')->models . '/Auth.php';
+require getConfig()->get('paths')->models . '/Credential.php';
 require getConfig()->get('paths')->models . '/Action.php';
 require getConfig()->get('paths')->models . '/Photo.php';
 require getConfig()->get('paths')->models . '/Tag.php';

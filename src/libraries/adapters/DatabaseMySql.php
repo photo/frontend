@@ -50,6 +50,32 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Retrieve a credential with $id
+    *
+    * @param string $id ID of the credential to get
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getCredential($id)
+  {
+    // TODO: fill this in Gh-78
+    return array();
+  }
+
+  /**
+    * Get a photo specified by $id
+    *
+    * @param string $id ID of the photo to retrieve
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getPhoto($id)
+  {
+    $photo = getDatabase()->one("SELECT * FROM photo WHERE id=:id", array(':id' => $id));
+    if(empty($photo))
+      return false;
+    return self::normalizePhoto($photo);
+  }
+
+  /**
     * Retrieve the next and previous photo surrounding photo with $id
     *
     * @param string $id ID of the photo to get next and previous for
@@ -71,20 +97,6 @@ class DatabaseMySql implements DatabaseInterface
       $ret['next'] = self::normalizePhoto($photo_next);
 
     return $ret;
-  }
-
-  /**
-    * Get a photo specified by $id
-    *
-    * @param string $id ID of the photo to retrieve
-    * @return mixed Array on success, FALSE on failure
-    */
-  public function getPhoto($id)
-  {
-    $photo = getDatabase()->one("SELECT * FROM photo WHERE id=:id", array(':id' => $id));
-    if(empty($photo))
-      return false;
-    return self::normalizePhoto($photo);
   }
 
   /**
@@ -219,6 +231,20 @@ class DatabaseMySql implements DatabaseInterface
       return self::normalizeUser($res);
     }
     return false;
+  }
+
+  /**
+    * Update the information for an existing credential.
+    * This method overwrites existing values present in $params.
+    *
+    * @param string $id ID of the credential to update.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function postCredential($id, $params)
+  {
+    // TODO: fill this in Gh-78
+    return true;
   }
 
   /**
@@ -359,6 +385,20 @@ class DatabaseMySql implements DatabaseInterface
   {
     $stmt = self::sqlInsertExplode($params);
     $result = getDatabase()->execute("INSERT INTO action (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    return true;
+  }
+
+  /**
+    * Add a new credential to the database
+    * This method does not overwrite existing values present in $params - hence "new credential".
+    *
+    * @param string $id ID of the credential to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putCredential($id, $params)
+  {
+    // TODO: fill this in Gh-78
     return true;
   }
 
