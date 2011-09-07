@@ -20,7 +20,7 @@ Epi::setPath('config', "{$basePath}/configs");
 //Epi::setPath('view', "{$basePath}/views");
 Epi::setPath('view', '');
 //Epi::setSetting('exceptions', true);
-Epi::init('api','config','form','logger','route','session-php','template','database');
+Epi::init('api','cache','config','form','logger','route','session-php','template','database');
 // TODO allow configurable session engine
 EpiSession::employ(EpiSession::PHP);
 // This initializes the session. Needed for PHP sessions to implicitly call session_start();

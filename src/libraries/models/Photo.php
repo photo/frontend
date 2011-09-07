@@ -198,6 +198,7 @@ class Photo
     $key = self::generateCustomKey($width, $height, $options);
     $resFs = getFs()->putPhoto($filename, $customPath);
     $resDb = getDb()->postPhoto($id, array($key => $customPath));
+    // TODO unlink $filename
     if($resFs && $resDb)
       return $filename;
 
