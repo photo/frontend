@@ -9,7 +9,7 @@ class Credential
   const statusActive = '1';
 
   const nonceCacheKey = 'oauthTimestamps';
-  private $provider, $consumer;
+  private $consumer, $oauthException, $provider;
 
   public function __construct()
   {
@@ -63,6 +63,7 @@ class Credential
     }
     catch(OAuthException $e)
     {
+      $this->oauthException = $e;
       getLogger()->crit(OAuthProvider::reportProblem($e));
       return false;
     }
@@ -140,6 +141,11 @@ class Credential
       $this->consumer = getDb()->getCredential($consumerKey);
 
     return $this->consumer;
+  }
+
+  public function getErrorAsString()
+  {
+    return OAuthProvider::reportProblem($this->oauthException);
   }
 
   public function getOAuthParameters()

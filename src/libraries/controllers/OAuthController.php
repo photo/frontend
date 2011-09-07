@@ -133,7 +133,7 @@ class OAuthController extends BaseController
     }
     else
     {
-      echo "Boooo!!!! The OAuth request made FAILED :(.";
+      echo sprintf('Boooo!!!! The OAuth request made FAILED :(. Reason: %s', getCredential()->getErrorAsString());
     }
   }
 
