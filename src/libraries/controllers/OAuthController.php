@@ -92,7 +92,7 @@ class OAuthController extends BaseController
     {
       $token = $_GET['oauth_token'];
       $verifier = $_GET['oauth_verifier'];
-      $ch = curl_init('http://opme/v1/oauth/token/access');
+      $ch = curl_init(sprintf('http://%s/v1/oauth/token/access', $_SERVER['HTTP_HOST']));
       curl_setopt($ch, CURLOPT_POST, 1);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($ch, CURLOPT_POSTFIELDS, array('oauth_token' => $token, 'oauth_verifier' => $verifier));
