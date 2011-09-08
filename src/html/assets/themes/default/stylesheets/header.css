@@ -60,7 +60,7 @@ nav .on {
 #nav-upload a {
     background: url(../images/header-navigation-upload.png) 0 .2em no-repeat;
 }
-#searchbar {
+#searchbar, #settingsbar {
     display:none;
     background-color: #EFEFEF;
     border-bottom: 1px solid #CFCFCF;
@@ -68,6 +68,7 @@ nav .on {
     border-right: 1px solid #CFCFCF;
     padding: 10px;
     position: relative;
+    top:-1px;
     width: 226px;
     height: 22px;
     z-index: 1;
@@ -87,12 +88,30 @@ nav .on {
     float:right;
 }
 
+#settingsbar {
+    width:100px;
+    height:15px;
+    margin:0 0 0 auto;
+    padding-bottom:15px;
+    font-size: .9em;
+    line-height:1.5em;
+}
+
+#settingsbar a {
+    margin:0;
+    padding:0;
+}
+
 #nav-signin {
     position: absolute;
     right: 30px;
-    top: 10px;
     width: auto;
     min-width: inherit;
+}
+#nav-signin img {
+    position:relative;
+    top:5px;
+    padding:0 0 0 3px;
 }
 
 #nav-signin button {
