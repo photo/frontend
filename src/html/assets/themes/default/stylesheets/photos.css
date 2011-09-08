@@ -185,6 +185,39 @@ u.lcomments li .date {
     margin:10px 0;
     clear: both;
 }
+.comment-form form {
+    display:inline;
+}
+
+.owner h3 {
+  border-top:solid 1px #aaa;
+  border-bottom:solid 1px #aaa;
+  background-color: #ddd;
+  padding:4px 0;
+  text-align:center;
+  color:#666;
+  margin:10px 0;
+}
+.owner > div{
+  width:50%;
+  float:left;
+}
+.owner form label {
+  display:block;
+  font-weight:bold;
+}
+.owner form label + input, .owner form label + textarea {
+  display:block;
+  margin:0 0 10px 0;
+  width:350px;
+}
+.owner form label + textarea {
+  height:50px;
+}
+
+.owner .delete {
+  float:right;
+}
 
 button, a.button {
   -moz-border-radius: 3px;
