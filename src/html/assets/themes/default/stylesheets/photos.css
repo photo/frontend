@@ -85,6 +85,7 @@
 
 .photo-details .photo-column {
     float: left;
+    width: 700px;
 }
 
 .photo-details .sidebar {
