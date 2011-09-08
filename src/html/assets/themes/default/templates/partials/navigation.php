@@ -20,12 +20,14 @@
   <?php } ?>
   <?php if(User::isLoggedIn()) { ?>
   <li id="nav-signin">
-    <?php echo getSession()->get('email'); ?><img src="<?php getTheme()->asset('image', 'header-navigation-user.png'); ?>" align="absmiddle">
+    <?php echo getSession()->get('email'); ?><button class="settings-click"><img src="<?php getTheme()->asset('image', 'header-navigation-user.png'); ?>" class="settings-click"></button>
+    <div id="settingsbar">
+      <p><a href="/user/logout">Logout</a></p>
+    </div>
   </li>
   <?php } else { ?>
   <li id="nav-signin">
-    <button type="button"><img src="https://browserid.org/i/sign_in_blue.png" alt="Signin to OpenPhoto" class="login-click"></button>
-    <!--<a href="#" class="login"><img src="https://browserid.org/i/sign_in_blue.png" align="absmiddle"></a>-->
+    <button type="button" class="login-click"><img src="https://browserid.org/i/sign_in_blue.png" alt="Signin to OpenPhoto" class="login-click"></button>
   </li>
   <?php } ?>
 </ul>

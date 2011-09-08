@@ -25,6 +25,8 @@ class ImageImageMagick implements ImageInterface
   public function __construct($filename)
   {
     $this->image = new Imagick($filename);
+    //$this->image->setImageCompression(imagick::COMPRESSION_NO);
+    //$this->image->setImageCompressionQuality(20);
   }
 
   /**

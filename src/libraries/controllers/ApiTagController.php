@@ -14,6 +14,7 @@ class ApiTagController extends BaseController
     */
   public static function post($tag)
   {
+    getAuthentication()->requireAuthentication();
     $tag = Tag::sanitize($tag);
     $params = Tag::validateParams($_POST);
     $res = getDb()->postTag($tag, $params);

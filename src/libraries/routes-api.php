@@ -29,5 +29,6 @@ getApi()->post('/tag/([a-zA-Z0-9]+).json', array('ApiTagController', 'post'), Ep
 // retrieve tags
 getApi()->get('/tags.json', array('ApiTagController', 'tags'), EpiApi::external);
 
-// log a user in via BrowserID
+// log a user in/out via BrowserID
 getApi()->post('/user/login.json', array('ApiUserController', 'login'), EpiApi::external);
+getApi()->get('/user/logout.json', array('ApiUserController', 'logout'), EpiApi::external);

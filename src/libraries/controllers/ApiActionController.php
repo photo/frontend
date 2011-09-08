@@ -14,6 +14,7 @@ class ApiActionController extends BaseController
     */
   public static function delete($id)
   {
+    getAuthentication()->requireAuthentication();
     $status = Action::delete($id);
     if($status)
       return self::success('Action deleted successfully', $id);
@@ -30,6 +31,7 @@ class ApiActionController extends BaseController
     */
   public static function post($targetType, $targetId)
   {
+    getAuthentication()->requireAuthentication(false);
     $params = $_POST;
     $params['targetId'] = $targetId;
     $params['targetType'] = $targetType;

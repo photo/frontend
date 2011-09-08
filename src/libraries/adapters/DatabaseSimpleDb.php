@@ -11,7 +11,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $db, $domainAction, $domainPhoto, $domainTag, $domainUser;
+  private $db, $domainAction, $domainCredential, $domainPhoto, $domainTag, $domainUser;
 
   /**
     * Constructor
@@ -23,6 +23,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->db = new AmazonSDB(getConfig()->get('credentials')->awsKey, getConfig()->get('credentials')->awsSecret);
     $this->domainPhoto = getConfig()->get('aws')->simpleDbDomain;
     $this->domainAction = getConfig()->get('aws')->simpleDbDomain.'Action';
+    $this->domainCredential = getConfig()->get('aws')->simpleDbDomain.'Credential';
     $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'User';
     $this->domainTag = getConfig()->get('aws')->simpleDbDomain.'Tag';
   }
@@ -61,6 +62,36 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Retrieve a credential with $id
+    *
+    * @param string $id ID of the credential to get
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getCredential($id)
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainCredential}` WHERE itemName()='{$id}' AND status='1'", array('ConsistentRead' => 'true'));
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeCredential($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
+    * Get a photo specified by $id
+    *
+    * @param string $id ID of the photo to retrieve
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getPhoto($id)
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainPhoto}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizePhoto($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
     * Retrieve the next and previous photo surrounding photo with $id
     *
     * @param string $id ID of the photo to get next and previous for
@@ -86,22 +117,6 @@ class DatabaseSimpleDb implements DatabaseInterface
       $ret['next'] = self::normalizePhoto($responses[1]->body->SelectResult->Item);
 
     return $ret;
-  }
-
-
-  /**
-    * Get a photo specified by $id
-    *
-    * @param string $id ID of the photo to retrieve
-    * @return mixed Array on success, FALSE on failure
-    */
-  public function getPhoto($id)
-  {
-    $res = $this->db->select("SELECT * FROM `{$this->domainPhoto}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
-    if(isset($res->body->SelectResult->Item))
-      return self::normalizePhoto($res->body->SelectResult->Item);
-    else
-      return false;
   }
 
   /**
@@ -270,6 +285,20 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Update the information for an existing credential.
+    * This method overwrites existing values present in $params.
+    *
+    * @param string $id ID of the credential to update.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function postCredential($id, $params)
+  {
+    $res = $this->db->put_attributes($this->domainCredential, $id, $params, true);
+    return $res->isOK();
+  }
+
+  /**
     * Update the information for an existing photo.
     * This method overwrites existing values present in $params.
     *
@@ -402,6 +431,20 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Add a new credential to the database
+    * This method does not overwrite existing values present in $params - hence "new credential".
+    *
+    * @param string $id ID of the credential to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putCredential($id, $params)
+  {
+    $res = $this->db->put_attributes($this->domainCredential, $id, $params);
+    return $res->isOK();
+  }
+
+  /**
     * Add a new photo to the database
     * This method does not overwrite existing values present in $params - hence "new photo".
     *
@@ -461,6 +504,7 @@ class DatabaseSimpleDb implements DatabaseInterface
 
     $queue = new CFBatchRequest();
     $this->db->batch($queue)->create_domain($this->domainAction);
+    $this->db->batch($queue)->create_domain($this->domainCredential);
     $this->db->batch($queue)->create_domain($this->domainPhoto);
     $this->db->batch($queue)->create_domain($this->domainTag);
     $this->db->batch($queue)->create_domain($this->domainUser);
@@ -502,6 +546,28 @@ class DatabaseSimpleDb implements DatabaseInterface
       $action[$name] = $value;
     }
     return $action;
+  }
+
+  /**
+    * Normalizes data from simpleDb into schema definition
+    *
+    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @return array
+    */
+  private function normalizeCredential($raw)
+  {
+    $credential = array();
+    $credential['id'] = strval($raw->Name);
+    foreach($raw->Attribute as $item)
+    {
+      $name = (string)$item->Name;
+      $value = (string)$item->Value;
+      if($name == 'permissions')
+        $credential[$name] = (array)explode(',', $value);
+      else
+        $credential[$name] = $value;
+    }
+    return $credential;
   }
 
   /**
@@ -566,6 +632,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   private function normalizeUser($raw)
   {
     $user = array();
+    $user['id'] = strval($raw->Name);
     foreach($raw->Attribute as $item)
     {
       $name = (string)$item->Name;
