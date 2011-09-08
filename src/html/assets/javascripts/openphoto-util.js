@@ -63,7 +63,8 @@
             'photo-tag-click':'click:tag',
             'photo-thumbnail-click':'click:photo-thumbnail',
             'photo-update-click':'click:photo-update',
-            'search-click':'click:search'
+            'search-click':'click:search',
+            'settings-click':'click:settings'
 
         };
 
