@@ -46,15 +46,16 @@ var opTheme = (function() {
         });
       },
       photoDelete: function(ev) {
+        ev.preventDefault();
         var el = $(ev.target),
           url = el.parent().attr('action')+'.json';
-          $.post(url, function(response) {
-            if(response.code === 200)
-              el.html('This photo has been deleted');
-            else
-              opTheme.message.error('Could not delete the photo.');
-          }, 'json');
-          return false;
+        $.post(url, function(response) {
+          if(response.code === 200)
+            el.html('This photo has been deleted');
+          else
+            opTheme.message.error('Could not delete the photo.');
+        }, 'json');
+        return false;
       },
       searchBarToggle: function(ev) {
         $("div#searchbar").slideToggle('medium');
