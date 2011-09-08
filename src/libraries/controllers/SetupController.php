@@ -339,7 +339,8 @@ class SetupController
     $generatedDir = "{$configDir}/generated";
 
     if(file_exists($generatedDir) && is_writable($generatedDir) && !empty($imageLibs))
-      return true;
+      # No errors, return empty array
+      return $errors;
 
     $user = exec("whoami");
     if(empty($user))
