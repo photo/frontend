@@ -18,3 +18,14 @@ getRoute()->get('/photos/?(.+)?', array('PhotoController', 'photos'));
 
 // view tags
 getRoute()->get('/tags', array('TagController', 'tags'));
+
+// logout
+getRoute()->get('/user/logout', array('UserController', 'logout'));
+
+// oauth endpoints
+getRoute()->get('/v[1]/oauth/authorize', array('OAuthController', 'authorize'));
+getRoute()->post('/v[1]/oauth/authorize', array('OAuthController', 'authorizePost'));
+getRoute()->post('/v[1]/oauth/token/access', array('OAuthController', 'tokenAccess'));
+getRoute()->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenRequest'));
+getRoute()->get('/v[1]/oauth/test', array('OAuthController', 'test'));
+getRoute()->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));

@@ -42,7 +42,6 @@ var opTheme = (function() {
           return false;
       },
       searchBarToggle: function(ev) {
-        console.log('foobar');
         $("div#searchbar").slideToggle('medium');
         return false;
       },
@@ -59,6 +58,10 @@ var opTheme = (function() {
           location.href = '/photos/tags-'+tags;
         else
           location.href = '/photos';
+        return false;
+      },
+      settings: function(ev) {
+        $("div#settingsbar").slideToggle('medium');
         return false;
       }
     },
@@ -237,6 +240,7 @@ var opTheme = (function() {
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
+        OP.Util.on('click:settings', opTheme.callback.settings);
         $("form#upload-form").fileupload({
           url: '/photo/upload.json',
           singleFileUploads: true,
