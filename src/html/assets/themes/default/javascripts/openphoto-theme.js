@@ -7,15 +7,16 @@ var opTheme = (function() {
   return {
     callback: {
       actionDelete: function(ev) {
+        ev.preventDefault();
         var el = $(ev.target),
           url = el.attr('href')+'.json';
-          $.post(url, function(response) {
-            if(response.code === 200)
-              $(".action-container-"+response.result).hide('medium', function(){ $(this).remove(); });
-            else
-              opTheme.message.error('Could not delete the photo.');
-          }, 'json');
-          return false;
+        $.post(url, function(response) {
+          if(response.code === 200)
+            $(".action-container-"+response.result).hide('medium', function(){ $(this).remove(); });
+          else
+            opTheme.message.error('Could not delete the photo.');
+        }, 'json');
+        return false;
       },
       commentJump: function(ev) {
         ev.preventDefault();
@@ -257,7 +258,6 @@ var opTheme = (function() {
     init: {
       attach: function() {
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
-        OP.Util.on('click:action-delete', opTheme.callback.commentJump);
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
