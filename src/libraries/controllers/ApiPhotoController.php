@@ -15,6 +15,7 @@ class ApiPhotoController extends BaseController
     */
   public static function delete($id)
   {
+    getAuthentication()->requireAuthentication();
     $status = Photo::delete($id);
     if($status)
       return self::success('Photo deleted successfully', $id);
@@ -169,7 +170,9 @@ class ApiPhotoController extends BaseController
       }
     }
     else
+    {
       return self::error('Could not retrieve photos', false);
+    }
 
     $photos[0]['pageSize'] = $pageSize;
     $photos[0]['currentPage'] = $page;
@@ -188,6 +191,7 @@ class ApiPhotoController extends BaseController
     */
   public static function upload()
   {
+    getAuthentication()->requireAuthentication();
     $attributes = $_POST;
     if(isset($attributes['returnSizes']))
     {
@@ -245,6 +249,7 @@ class ApiPhotoController extends BaseController
     */
   public static function update($id)
   {
+    getAuthentication()->requireAuthentication();
     // diff/manage tag counts - not critical
     if(isset($_POST['tags']) && !empty($_POST['tags']))
     {

@@ -40,6 +40,7 @@ class PhotoController extends BaseController
     */
   public static function delete($id)
   {
+    getAuthentication()->requireAuthentication();
     $delete = getApi()->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost);
     if($delete['result'] !== false)
       getRoute()->redirect('/photos?deleteSuccess');
@@ -116,6 +117,7 @@ class PhotoController extends BaseController
     */
   public static function update($id)
   {
+    getAuthentication()->requireAuthentication();
     $status = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpPost);
     // TODO include success/error paramter
     getRoute()->redirect("/photo/{$id}");
@@ -146,6 +148,7 @@ class PhotoController extends BaseController
     */
   public static function uploadPost()
   {
+    getAuthentication()->requireAuthentication();
     $upload = getApi()->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
     if($upload['result'])
       getRoute()->redirect('/photos?uploadSuccess');

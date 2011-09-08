@@ -22,7 +22,7 @@ class BaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope 
     */
-  protected static function created($message, $result = null)
+  public static function created($message, $result = null)
   {
     return self::json($message, self::statusCreated, $result);
   }
@@ -34,7 +34,7 @@ class BaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope 
     */
-  protected static function error($message, $result = null)
+  public static function error($message, $result = null)
   {
     return self::json($message, self::statusError, $result);
   }
@@ -46,7 +46,7 @@ class BaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope 
     */
-  protected static function success($message, $result = null)
+  public static function success($message, $result = null)
   {
     return self::json($message, self::statusSuccess, $result);
   }
@@ -58,7 +58,7 @@ class BaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope 
     */
-  protected static function forbidden($message, $result = null)
+  public static function forbidden($message, $result = null)
   {
     return self::json($message, self::statusForbidden, $result);
   }
@@ -70,7 +70,7 @@ class BaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope 
     */
-  protected static function notFound($message, $result = null)
+  public static function notFound($message, $result = null)
   {
     return self::json($message, self::statusNotFound, $result);
   }
