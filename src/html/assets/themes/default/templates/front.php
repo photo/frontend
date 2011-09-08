@@ -1,3 +1,1 @@
-<div class="front">
-  Hello front page.
-</div>
+<div class="front"></div>

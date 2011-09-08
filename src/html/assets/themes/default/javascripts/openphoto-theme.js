@@ -21,6 +21,21 @@ var opTheme = (function() {
         ev.preventDefault();
         $.scrollTo($('div.comment-form'), 200);
       },
+      front: function(response) {
+        var photos = response.result, mkp;
+        mkp = '<div class="front-slideshow">';
+        for(i in photos) {
+          mkp += '<img src="'+photos[i].path800x450xCR+'" data-origin="/photo/'+photos[i].id+'">';
+        }
+        mkp += '</div>';
+        $('div.front').html(mkp).find('img').click(
+          function(ev) {
+            var img = ev.target;
+            location.href=$(img).attr('data-origin');
+          }
+        );
+        $('div.front-slideshow').cycle({ fx: 'fade' });
+      },
       login: function(ev) {
         navigator.id.getVerifiedEmail(function(assertion) {
             if (assertion) {
@@ -197,6 +212,13 @@ var opTheme = (function() {
 			}
 		},
 
+    front: {
+      init: function(el) {
+        if(el.length > 0)
+          $.get('/photos.json', {pageSize: 20, returnSizes: '800x450xCR'}, opTheme.callback.front, 'json');
+      }
+    },
+
 		messageBox: function(messageHtml) {
 			$('a.message-close').live('click', opTheme.messageBoxClose);
 			if(timeoutId != undefined) {
@@ -241,6 +263,8 @@ var opTheme = (function() {
         OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:settings', opTheme.callback.settings);
+        opTheme.front.init($('.front'));
+
         $("form#upload-form").fileupload({
           url: '/photo/upload.json',
           singleFileUploads: true,
@@ -250,6 +274,8 @@ var opTheme = (function() {
         .bind('fileuploaddone', opTheme.upload.handlers.done)
         .bind('fileuploadprogressall', opTheme.upload.handlers.progressall)
         .bind('fileuploadprogress', opTheme.upload.handlers.progress);
+
+        $('form.validate').each(opTheme.formHandlers.init);
       }
     },
     message: {
