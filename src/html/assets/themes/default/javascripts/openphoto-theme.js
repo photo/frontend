@@ -42,7 +42,6 @@ var opTheme = (function() {
           return false;
       },
       searchBarToggle: function(ev) {
-        console.log('foobar');
         $("div#searchbar").slideToggle('medium');
         return false;
       },
