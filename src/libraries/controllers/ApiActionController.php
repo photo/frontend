@@ -31,7 +31,7 @@ class ApiActionController extends BaseController
     */
   public static function post($targetType, $targetId)
   {
-    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireAuthentication(false);
     $params = $_POST;
     $params['targetId'] = $targetId;
     $params['targetType'] = $targetType;

@@ -70,7 +70,7 @@ class OAuthController extends BaseController
         if(stripos($callback, '?') !== false)
           $separator = '&';
       }
-      $callback .= "{$separator}&oauth_token={$token}&oauth_token_secret={$consumer['client_secret']}&oauth_verifier={$consumer['verifier']}";
+      $callback .= "{$separator}&oauth_token={$token}&oauth_verifier={$consumer['verifier']}";
       // TODO require SSL unless omited in the config
       getRoute()->redirect($callback, null, true);
     }
@@ -118,9 +118,10 @@ class OAuthController extends BaseController
         $response_info = $oauth->getLastResponseInfo();
         header("Content-Type: {$response_info["content_type"]}");
         echo $oauth->getLastResponse();
-      } catch(OAuthException $E) {
-        echo "Exception caught!\n";
-        echo "Response: ". $E->lastResponse . "\n";
+      } catch(OAuthException $e) {
+        $message = OAuthProvider::reportProblem($e);
+        getLogger()->info($message);
+        OPException::raise(new OPAuthorizationOAuthException($message));
       }
     }
   }
@@ -145,15 +146,20 @@ class OAuthController extends BaseController
     $token = $_POST['oauth_token'];
     $verifier = $_POST['oauth_verifier'];
     $consumer = getDb()->getCredential($token);
-    if(!$consumer || $consumer['verifier'] != $verifier)
+    if(!$consumer)
     {
-      echo 'oauth_error=could_not_authorize';
+      echo 'oauth_error=oauth_invalid_consumer_key';
+    }
+    elseif($consumer['verifier'] != $verifier)
+    {
+      echo 'oauth_error=oauth_invalid_verifier';
     }
     else
     {
       getCredential()->addUserToken($consumer['id'], true);
       $consumer = getDb()->getCredential($token);
-      echo "oauth_token={$consumer['id']}&oauth_token_secret={$consumer['client_secret']}&user_token={$consumer['user_token']}&user_secret={$consumer['user_secret']}";
+      printf('oauth_token=%s&oauth_token_secret=%s&oauth_consumer_key=%s&oauth_consumer_secret=%s',
+        $consumer['user_token'], $consumer['user_secret'], $consumer['id'], $consumer['client_secret']);
     }
   }
 
