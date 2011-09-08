@@ -13,7 +13,6 @@ class TagController extends BaseController
     */
   public static function tags()
   {
-    getAuthentication()->requireAuthentication();
     $tags = getApi()->invoke("/tags.json");
     $groupedTags = Tag::groupByWeight($tags['result']);
 
