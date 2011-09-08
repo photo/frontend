@@ -9,7 +9,7 @@ class Credential
   const statusActive = '1';
 
   const nonceCacheKey = 'oauthTimestamps';
-  private $consumer, $oauthException, $provider;
+  private $consumer, $oauthException, $oauthParams, $provider;
 
   public function __construct()
   {
@@ -150,7 +150,10 @@ class Credential
 
   public function getOAuthParameters()
   {
-    $params = array();
+    if($this->oauthParams)
+      return $this->oauthParams;
+
+    $this->oauthParams = array();
     // fetch values from header
     $headers = getallheaders();
     foreach($headers as $name => $header)
@@ -161,10 +164,12 @@ class Credential
         foreach($parameters as $parameter)
         {
           list($key, $value) = explode('=', $parameter);
+          $key = trim($key);
+          $value = trim($value);
           if(strpos($key, 'oauth_') !== 0)
             continue;
 
-          $params[$key] = urldecode(substr($value, 1, -1));
+          $this->oauthParams[$key] = urldecode(substr($value, 1, -1));
         }
       }
     }
@@ -173,11 +178,17 @@ class Credential
     foreach($_GET as $key => $value)
     {
       if(strpos($key, 'oauth_') === 0)
-        $params[$key] = $value;
+        $this->oauthParams[$key] = $value;
     }
 
-    ksort($params);
-    return $params;
+    ksort($this->oauthParams);
+    return $this->oauthParams;
+  }
+
+  public function isOAuthRequest()
+  {
+    $params = $this->getOAuthParameters();
+    return !empty($params);
   }
 }
 

@@ -39,7 +39,7 @@
                                         'exifISOSpeed' => 'ISO: %d',
                                         'exifFocalLength' => 'Focal Length: %1.0fmm') as $key => $value) { ?>
               <?php if(!empty($photo[$key])) { ?>
-                <li><?php Utility::safe($value); ?>: <?php Utility::safe($photo[$key]); ?></li>
+                <li><?php printf($value, Utility::safe($photo[$key], false)); ?></li>
               <?php } ?>
             <?php } ?>
           </ul>
@@ -49,6 +49,21 @@
   </div>
 </div>
 <a name="comments"></a>
+<?php if(count($photo['actions']) > 0) { ?>
+  <ul class="comments">
+    <?php foreach($photo['actions'] as $action) { ?>
+      <li class="action-container-<?php echo $action['id']; ?>">
+        <img src="<?php echo User::getAvatarFromEmail(40, $action['email']); ?>" class="avatar">
+        <?php if($action['type'] == 'comment') { ?>
+          <?php echo $action['value']; ?>
+        <?php } else { ?>
+          Favorited
+        <?php } ?>
+        <div class="date"><?php echo Utility::dateLong($action['datePosted']); ?></div>
+      </li>
+    <?php } ?>
+  </ul>
+<?php } ?>
 <div class="comment-form">
   <form method="post" action="/action/photo/<?php Utility::safe($photo['id']); ?>">
     <textarea rows="5" cols="50" name="value" class="comment" <?php if(!User::isLoggedIn()) { ?>disabled="true"<?php } ?> ></textarea>
@@ -70,24 +85,6 @@
     <button type="submit">Favorite</button>
   </form>
 </div>
-<?php if(count($photo['actions']) > 0) { ?>
-  <a name="comments"></a>
-  <ul class="comments">
-    <?php foreach($photo['actions'] as $action) { ?>
-      <li class="action-container-<?php echo $action['id']; ?>">
-        <img src="<?php echo User::getAvatarFromEmail(40, $action['email']); ?>" class="avatar">
-        <?php if($action['type'] == 'comment') { ?>
-          <?php echo $action['value']; ?>
-        <?php } else { ?>
-          Favorited
-        <?php } ?>
-        <ul class="meta">
-          <li class="date"><?php echo Utility::dateLong($action['datePosted']); ?></li>
-        </ul>
-      </li>
-    <?php } ?>
-  </ul>
-<?php } ?>
 
 <?php if(User::isOwner()) { ?>
   <div class="owner">

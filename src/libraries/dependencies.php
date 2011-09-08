@@ -3,6 +3,8 @@
 require getConfig()->get('paths')->libraries . '/routes-api.php';
 require getConfig()->get('paths')->libraries . '/routes.php';
 
+// exceptions
+require getConfig()->get('paths')->libraries . '/exceptions.php';
 
 // controllers
 require getConfig()->get('paths')->controllers . '/BaseController.php';
@@ -30,6 +32,7 @@ require getConfig()->get('paths')->libraries . '/functions.php';
 
 // models
 require getConfig()->get('paths')->models . '/Utility.php';
+require getConfig()->get('paths')->models . '/Authentication.php';
 require getConfig()->get('paths')->models . '/Credential.php';
 require getConfig()->get('paths')->models . '/Action.php';
 require getConfig()->get('paths')->models . '/Photo.php';
