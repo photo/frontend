@@ -13,6 +13,9 @@ class ApiController extends BaseController
     */
   public static function hello()
   {
+    if(isset($_GET['auth']) && !empty($_GET['auth']))
+      getAuthentication()->requireAuthentication();
+
     return self::success('Hello, world!', $_GET);
   }
 }
