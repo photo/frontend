@@ -29,7 +29,8 @@ class SetupController
       $imageLibs['GD'] = 'GD';
 
     $errors = self::verifyRequirements($imageLibs);
-    if($errors !== true)
+
+    if(count($errors) > 0)
       $step = 0;
     else
       $errors = '';
@@ -338,7 +339,8 @@ class SetupController
     $generatedDir = "{$configDir}/generated";
 
     if(file_exists($generatedDir) && is_writable($generatedDir) && !empty($imageLibs))
-      return true;
+      # No errors, return empty array
+      return $errors;
 
     $user = exec("whoami");
     if(empty($user))
