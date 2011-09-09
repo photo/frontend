@@ -13,7 +13,7 @@ Before setting up your server you'll need to make sure you have your cloud accou
 
 ### Starting up an OpenPhoto EC2 Instance
 
-1. Sign Into AWS Management Console.
+1. Sign Into AWS Management Console and select "Amazon Elastic Compute Cloud (EC2)" from the dropdown menu.
 
 1. Click AMIs under Images.
 
