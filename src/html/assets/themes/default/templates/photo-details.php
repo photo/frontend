@@ -21,7 +21,7 @@
         </div>
       </div>
       <ul class="meta">
-        <li class="date">Taken on <?php Utility::dateLong($photo['dateTaken']); ?></li>
+        <li class="date"><?php Utility::dateLong($photo['dateTaken']); ?></li>
         <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments" class="action-jump-click">see all</a></li>
         <li class="tags"><?php Utility::tagsAsLinks($photo['tags']); ?></li>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
