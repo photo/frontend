@@ -3,8 +3,7 @@ class OAuthController extends BaseController
 {
   public static function authorize()
   {
-    // TODO require login
-    // TODO require SSL
+    getAuthentication()->requireAuthentication();
     $callback = null;
     $separator = '?';
 
@@ -44,8 +43,7 @@ class OAuthController extends BaseController
 
   public static function authorizePost()
   {
-    // TODO require login
-    // TODO require SSL
+    getAuthentication()->requireAuthentication();
     if(isset($_GET['oauth_token']) && !empty($_GET['oauth_token']))
     {
       $token = $_GET['oauth_token'];
@@ -71,7 +69,6 @@ class OAuthController extends BaseController
           $separator = '&';
       }
       $callback .= "{$separator}&oauth_token={$token}&oauth_verifier={$consumer['verifier']}";
-      // TODO require SSL unless omited in the config
       getRoute()->redirect($callback, null, true);
     }
     else
@@ -140,8 +137,6 @@ class OAuthController extends BaseController
 
   public static function tokenAccess()
   {
-    // TODO require login
-    // TODO require SSL
     // TODO check oauth_verifier
     $token = $_POST['oauth_token'];
     $verifier = $_POST['oauth_verifier'];
@@ -165,8 +160,6 @@ class OAuthController extends BaseController
 
   public static function tokenRequest()
   {
-    // TODO require login
-    // TODO require SSL
     // Not yet implemented
     $type = 'unauthorized';
     if(isset($_GET['oauth_token']))
