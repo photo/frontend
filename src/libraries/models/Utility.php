@@ -6,39 +6,10 @@ class Utility
     return self::returnValue(date('l, F jS, Y \a\t g:ia', $ts), $write);
   }
 
-  public static function permissionAsText($permission, $write = true)
+  public static function getProtocol($write = true)
   {
-    self::returnValue(($permission ? 'public' : 'private'), $write);
-  }
-
-  public static function timeAsText($time, $prefix = null, $suffix = null, $write = true)
-  {
-    if(empty($time))
-      return self::returnValue('', $write);
-
-    $seconds = intval(time() - $time);
-    $hours = intval($seconds / 3600);
-    if($hours < 0)
-      return self::returnValue('--', $write);
-    elseif($hours < 1)
-      return self::returnValue("{$prefix} a few minutes ago {$suffix}", $write);
-    elseif($hours < 24)
-      return self::returnValue("{$prefix} {$hours} " . self::plural($hours, 'hour', false) . " ago {$suffix}", $write);
-
-    $days = intval($seconds / 86400);
-    if($days <= 7)
-      return self::returnValue("{$prefix} {$days} " . self::plural($days, 'day', false) . " ago {$suffix}", $write);
-
-    $weeks = intval($days / 7);
-    if($weeks <= 4)
-      return self::returnValue("{$prefix} {$weeks} " . self::plural($weeks, 'week', false) . " ago {$suffix}", $write);
-
-    $months = intval($days / 30);
-    if($months < 12)
-      return self::returnValue("{$prefix} {$months} " . self::plural($months, 'month', false) . " ago {$suffix}", $write);
-
-    $years = intval($days / 365);
-    return self::returnValue("{$prefix} {$years} " . self::plural($years, 'year', false) . " ago {$suffix}", $write);
+    $protocol = $_SERVER['SERVER_PORT'] != '443' ? 'http' : 'https';
+    return self::returnValue($protocol, $write);
   }
 
   public static function isActiveTab($label)
@@ -73,9 +44,9 @@ class Utility
     }
   }
 
-  public static function photoUrl($photo, $key)
+  public static function permissionAsText($permission, $write = true)
   {
-    return self::returnValue($photo[sprintf('path%s', $key)]);
+    self::returnValue(($permission ? 'public' : 'private'), $write);
   }
 
   public static function plural($int, $word = null, $write = true)
@@ -85,6 +56,11 @@ class Utility
       return self::returnValue(($int > 1 ? 's' : ''), $write);
     else
       return self::returnValue(($int > 1 ? "{$word}s" : $word), $write);
+  }
+
+  public static function photoUrl($photo, $key)
+  {
+    return self::returnValue($photo[sprintf('path%s', $key)]);
   }
 
   public static function returnValue($value, $write = true)
@@ -114,5 +90,35 @@ class Utility
       $ret[] = '<a href="/photos/tags-'.self::safe($tag, false).'">'.self::safe($tag, false).'</a>';
 
     return self::returnValue(implode(', ', $ret), $write);
+  }
+
+  public static function timeAsText($time, $prefix = null, $suffix = null, $write = true)
+  {
+    if(empty($time))
+      return self::returnValue('', $write);
+
+    $seconds = intval(time() - $time);
+    $hours = intval($seconds / 3600);
+    if($hours < 0)
+      return self::returnValue('--', $write);
+    elseif($hours < 1)
+      return self::returnValue("{$prefix} a few minutes ago {$suffix}", $write);
+    elseif($hours < 24)
+      return self::returnValue("{$prefix} {$hours} " . self::plural($hours, 'hour', false) . " ago {$suffix}", $write);
+
+    $days = intval($seconds / 86400);
+    if($days <= 7)
+      return self::returnValue("{$prefix} {$days} " . self::plural($days, 'day', false) . " ago {$suffix}", $write);
+
+    $weeks = intval($days / 7);
+    if($weeks <= 4)
+      return self::returnValue("{$prefix} {$weeks} " . self::plural($weeks, 'week', false) . " ago {$suffix}", $write);
+
+    $months = intval($days / 30);
+    if($months < 12)
+      return self::returnValue("{$prefix} {$months} " . self::plural($months, 'month', false) . " ago {$suffix}", $write);
+
+    $years = intval($days / 365);
+    return self::returnValue("{$prefix} {$years} " . self::plural($years, 'year', false) . " ago {$suffix}", $write);
   }
 }

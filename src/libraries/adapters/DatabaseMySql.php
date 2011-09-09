@@ -566,14 +566,6 @@ class DatabaseMySql implements DatabaseInterface
     $photo['appId'] = getConfig()->get('application')->appId;
 
     $versions = $this->getPhotoVersions($photo['id']);
-    if($versions)
-    {
-      foreach($versions as $version)
-      {
-        $photo[$version['key']] =  $version['path'];
-        $photo[$version['key']] = sprintf('http://%s%s', $photo['host'], $version['path']);
-      }
-    }
     $photo['tags'] = explode(",", $photo['tags']);
 
     $exif_array = (array)json_decode($photo['exif']);
