@@ -32,10 +32,10 @@
         <?php } ?>
         <li class="exif">
           <ul>
-            <?php foreach(array('exifCameraMake' => 'Camera make: %s', 
-                                        'exifCameraModel' => 'Camera model: %s', 
-                                        'exifFNumber' => 'Av: f/%1.0F', 
-                                        'exifExposureTime' => 'Tv: %s', 
+            <?php foreach(array('exifCameraMake' => 'Camera make: %s',
+                                        'exifCameraModel' => 'Camera model: %s',
+                                        'exifFNumber' => 'Av: f/%1.0F',
+                                        'exifExposureTime' => 'Tv: %s',
                                         'exifISOSpeed' => 'ISO: %d',
                                         'exifFocalLength' => 'Focal Length: %1.0fmm') as $key => $value) { ?>
               <?php if(!empty($photo[$key])) { ?>
@@ -62,7 +62,10 @@
         <div class="date">
           <?php echo Utility::dateLong($action['datePosted']); ?>
           <?php if(User::isOwner()) { ?>
-            (<a href="/action/<?php echo $action['id']; ?>/delete" class="action-delete-click">delete</a>)
+            <form method="post" action="/action/<?php echo $action['id']; ?>/delete">
+              <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
+              <button type="submit" class="action-delete-click">delete</button>
+            </form>
           <?php } ?>
         </div>
       </li>
@@ -74,6 +77,7 @@
     <textarea rows="5" cols="50" name="value" class="comment" <?php if(!User::isLoggedIn()) { ?>disabled="true"<?php } ?> ></textarea>
     <input type="hidden" name="type" value="comment">
     <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
+    <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
     <div class="buttons">
     <?php if(User::isLoggedIn()) { ?>
       <button type="submit">Leave a comment</button>
@@ -83,11 +87,12 @@
     </div>
   </form>
   <?php if(User::isLoggedIn()) { ?>
-    or 
+    or
     <form method="post" action="/action/photo/<?php Utility::safe($photo['id']); ?>">
       <input type="hidden" name="value" value="1">
       <input type="hidden" name="type" value="favorite">
       <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
+      <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
       <br>
       <button type="submit">Favorite</button>
     </form>
@@ -100,6 +105,7 @@
     <div>
       <div class="detail-form">
         <form method="post">
+          <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
           <label>Title</label>
           <input type="text" name="title" value="<?php echo $photo['title']; ?>">
 
@@ -121,6 +127,7 @@
     </div>
     <div class="delete">
       <form method="post" action="/photo/delete/<?php echo $photo['id']; ?>">
+        <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
         <button type="submit" class="delete photo-delete-click">Delete this photo</button>
       </form>
     </div>
