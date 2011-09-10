@@ -21,7 +21,7 @@
         </div>
       </div>
       <ul class="meta">
-        <li class="date">Taken on <?php Utility::dateLong($photo['dateTaken']); ?></li>
+        <li class="date"><?php Utility::dateLong($photo['dateTaken']); ?></li>
         <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments" class="action-jump-click">see all</a></li>
         <li class="tags"><?php Utility::tagsAsLinks($photo['tags']); ?></li>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
@@ -57,9 +57,14 @@
         <?php if($action['type'] == 'comment') { ?>
           <?php echo $action['value']; ?>
         <?php } else { ?>
-          Favorited
+          Marked this photo as a favorite
         <?php } ?>
-        <div class="date"><?php echo Utility::dateLong($action['datePosted']); ?></div>
+        <div class="date">
+          <?php echo Utility::dateLong($action['datePosted']); ?>
+          <?php if(User::isOwner()) { ?>
+            (<a href="/action/<?php echo $action['id']; ?>/delete" class="action-delete-click">delete</a>)
+          <?php } ?>
+        </div>
       </li>
     <?php } ?>
   </ul>
@@ -77,18 +82,21 @@
     <?php } ?>
     </div>
   </form>
-  <form method="post" action="/action/photo/<?php Utility::safe($photo['id']); ?>">
-    <input type="hidden" name="value" value="1">
-    <input type="hidden" name="type" value="favorite">
-    <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
-    <br>
-    <button type="submit">Favorite</button>
-  </form>
+  <?php if(User::isLoggedIn()) { ?>
+    or 
+    <form method="post" action="/action/photo/<?php Utility::safe($photo['id']); ?>">
+      <input type="hidden" name="value" value="1">
+      <input type="hidden" name="type" value="favorite">
+      <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
+      <br>
+      <button type="submit">Favorite</button>
+    </form>
+  <?php } ?>
 </div>
 
 <?php if(User::isOwner()) { ?>
   <div class="owner">
-    <h3>This photo belongs to you</h3>
+    <h3>This photo belongs to you. You can edit it.</h3>
     <div>
       <div class="detail-form">
         <form method="post">
@@ -110,26 +118,6 @@
           <button type="submit">Update photo</button>
         </form>
       </div>
-      <?php if(count($photo['actions']) > 0) { ?>
-        <div class="manage-comments">
-          <label>Manage comments</label>
-          <ul class="comments">
-            <?php foreach($photo['actions'] as $action) { ?>
-              <li class="action-container-<?php echo $action['id']; ?>">
-                <img src="<?php echo User::getAvatarFromEmail(40, $action['email']); ?>" class="avatar">
-                <?php if($action['type'] == 'comment') { ?>
-                  <?php echo $action['value']; ?><br><a href="/action/<?php echo $action['id']; ?>/delete" class="button delete action-delete-click">delete</a>
-                <?php } else { ?>
-                  Favorited<br><a href="/action/<?php echo $action['id']; ?>/delete" class="button delete action-delete-click">delete</a>
-                <?php } ?>
-                <ul class="meta">
-                  <li class="date"><?php echo Utility::dateLong($action['datePosted']); ?></li>
-                </ul>
-              </li>
-            <?php } ?>
-          </ul>
-        </div>
-      <?php } ?>
     </div>
     <div class="delete">
       <form method="post" action="/photo/delete/<?php echo $photo['id']; ?>">

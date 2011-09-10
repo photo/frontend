@@ -13,7 +13,8 @@ class Credential
 
   public function __construct()
   {
-    $this->provider = new OAuthProvider($this->getOAuthParameters());
+    if(class_exists('OAuthProvider'))
+      $this->provider = new OAuthProvider($this->getOAuthParameters());
   }
 
   public function add($name, $permissions = array('read'))
@@ -51,6 +52,12 @@ class Credential
 
   public function checkRequest()
   {
+    if(!class_exists('OAuthProvider'))
+    {
+      getLogger()->warn('No OAuthProvider class found on this system');
+      return false;
+    }
+
     try
     {
       $this->provider->consumerHandler(array($this,'checkConsumer'));	
@@ -71,6 +78,13 @@ class Credential
 
   public function checkConsumer($provider)
   {
+    if(!class_exists('OAuthProvider'))
+    {
+      getLogger()->warn('No OAuthProvider class found on this system');
+      // might need a better way to do this
+      return false;
+    }
+
     $consumer = $this->getConsumer($provider->consumer_key);
     if(!$consumer)
     {
@@ -89,6 +103,13 @@ class Credential
 
   public function checkTimestampAndNonce($provider)
   {
+    if(!class_exists('OAuthProvider'))
+    {
+      getLogger()->warn('No OAuthProvider class found on this system');
+      // might need a better way to do this
+      return false;
+    }
+
     $cache = getConfig()->get(self::nonceCacheKey);
     if(!$cache)
       $cache = array();
@@ -124,6 +145,13 @@ class Credential
 
   public function checkToken($provider)
   {
+    if(!class_exists('OAuthProvider'))
+    {
+      getLogger()->warn('No OAuthProvider class found on this system');
+      // might need a better way to do this
+      return false;
+    }
+
     $consumer = $this->getConsumer($provider->consumer_key);
     if(!$consumer)
     {

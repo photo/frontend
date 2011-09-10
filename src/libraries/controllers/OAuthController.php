@@ -3,8 +3,6 @@ class OAuthController extends BaseController
 {
   public static function authorize()
   {
-    // TODO require login
-    // TODO require SSL
     $callback = null;
     $separator = '?';
 
@@ -44,8 +42,12 @@ class OAuthController extends BaseController
 
   public static function authorizePost()
   {
-    // TODO require login
-    // TODO require SSL
+    if(!User::isOwner())
+    {
+      echo '<h1>You need to be logged in to view this page.</h1><button class="login-click">Login now</button>';
+      die();
+    }
+
     if(isset($_GET['oauth_token']) && !empty($_GET['oauth_token']))
     {
       $token = $_GET['oauth_token'];
@@ -70,19 +72,29 @@ class OAuthController extends BaseController
         if(stripos($callback, '?') !== false)
           $separator = '&';
       }
-      $callback .= "{$separator}&oauth_token={$token}&oauth_verifier={$consumer['verifier']}";
-      // TODO require SSL unless omited in the config
+      $callback .= "{$separator}oauth_token={$token}&oauth_verifier={$consumer['verifier']}";
       getRoute()->redirect($callback, null, true);
+    }
+    elseif(isset($_POST['name']) && !empty($_POST['name']))
+    {
+      // no oauth token so this call is to create a credential
+      // TODO make permissions an array
+      $clientToken = getCredential()->add($_POST['name'], $_POST['permissions']);
+      if(!$clientToken)
+      {
+        getLogger()->warn(sprintf('Could not add credential for: %s', json_encode($clientToken)));
+        echo sprintf('Could not add credential for: %s', json_encode($clientToken));
+        die();
+      }
+
+      $callback = urlencode($_GET['oauth_callback']);
+      getRoute()->redirect("/v1/oauth/authorize?oauth_token={$clientToken}&oauth_callback={$callback}");
     }
     else
     {
-      // no oauth token so this call is to create a credential
-      $clientToken = getCredential()->add($_POST['name'], (array)explode(',', $_POST['permissions']));
-      if(!$clientToken)
-        getLogger()->warn(sprintf('Could not add credential for: %s', json_encode($_POST)));
-
-      $callback = urlencode($_POST['oauth_callback']);
-      getRoute()->redirect("/v1/oauth/authorize?oauth_token={$clientToken}&oauth_callback={$callback}");
+      // TODO templatize this
+      echo sprintf('Could not convert this unauthorized request token to a request token %s', $_GET['oauth_token']);
+      die();
     }
   }
 
@@ -140,8 +152,6 @@ class OAuthController extends BaseController
 
   public static function tokenAccess()
   {
-    // TODO require login
-    // TODO require SSL
     // TODO check oauth_verifier
     $token = $_POST['oauth_token'];
     $verifier = $_POST['oauth_verifier'];
@@ -165,8 +175,6 @@ class OAuthController extends BaseController
 
   public static function tokenRequest()
   {
-    // TODO require login
-    // TODO require SSL
     // Not yet implemented
     $type = 'unauthorized';
     if(isset($_GET['oauth_token']))

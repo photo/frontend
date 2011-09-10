@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'html5_boilerplate_style.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'basics.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'header.css'); ?>">
+    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'front.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'pagination.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'photos.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'tag-cloud.css'); ?>">
@@ -50,8 +51,13 @@
   <script>
     OP.Util.init(jQuery, {
       js: {
-        assets: ['<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>','<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'],
-        onComplete: function(){ opTheme.init.attach(); $('form.validate').each(opTheme.formHandlers.init); }
+        assets: [
+          '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
+          '<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', 
+          '<?php getTheme()->asset('javascript', 'jquery.cycle.min.js '); ?>', 
+          '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'
+        ],
+        onComplete: function(){ opTheme.init.attach(); }
       }
     });
   </script>
