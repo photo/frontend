@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'html5_boilerplate_style.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'basics.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'header.css'); ?>">
+    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'error.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'front.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'pagination.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'photos.css'); ?>">
