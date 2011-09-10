@@ -29,7 +29,7 @@ class PhotoController extends BaseController
       unlink($photo);
       return;
     }
-    echo 'did not work';
+    getRoute()->run('/error/500');
   }
 
   /**
@@ -81,7 +81,7 @@ class PhotoController extends BaseController
     }
     else
     {
-      echo "Couldn't find photo {$id}"; // TODO
+      getRoute()->run('/error/404');
     }
   }
 
@@ -132,7 +132,7 @@ class PhotoController extends BaseController
   {
     if(!User::isOwner())
     {
-      getTemplate()->display('template.php', array('body' => getTemplate()->get('noPermission.php')));
+      getRoute()->run('/error/403');
       return;
     }
     $body = getTheme()->get('upload.php');

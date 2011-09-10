@@ -29,3 +29,8 @@ getRoute()->post('/v[1]/oauth/token/access', array('OAuthController', 'tokenAcce
 getRoute()->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenRequest'));
 getRoute()->get('/v[1]/oauth/test', array('OAuthController', 'test'));
 getRoute()->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
+
+// error routes
+getRoute()->get('/error/403', array('GeneralController', 'error403'));
+getRoute()->get('/error/404', array('GeneralController', 'error404'));
+

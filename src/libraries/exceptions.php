@@ -14,8 +14,7 @@ class OPException extends Exception
         }
         else
         {
-          $body = getTheme()->get('error403.php');
-          getTheme()->display('template.php', array('body' => $body, 'page' => 'error-403'));
+          getRoute()->run('/error/403');
         }
         die();
         break;

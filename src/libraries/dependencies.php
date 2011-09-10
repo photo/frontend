@@ -2,6 +2,7 @@
 // public or api routes
 require getConfig()->get('paths')->libraries . '/routes-api.php';
 require getConfig()->get('paths')->libraries . '/routes.php';
+getRoute()->get('.*', array('GeneralController', 'error404'));
 
 // exceptions
 require getConfig()->get('paths')->libraries . '/exceptions.php';
