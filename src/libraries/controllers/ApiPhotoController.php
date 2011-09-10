@@ -11,11 +11,12 @@ class ApiPhotoController extends BaseController
     * Delete a photo specified by the ID.
     *
     * @param string $id ID of the photo to be deleted.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function delete($id)
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb($_POST['crumb']);
     $status = Photo::delete($id);
     if($status)
       return self::success('Photo deleted successfully', $id);
@@ -26,7 +27,7 @@ class ApiPhotoController extends BaseController
     * Retrieve the next and previous photo given photo $id
     *
     * @param string $id ID of the photo to be deleted.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function nextPrevious($id)
   {
@@ -69,7 +70,7 @@ class ApiPhotoController extends BaseController
     * Retrieve a photo from the remote datasource.
     *
     * @param string $id ID of the photo to be deleted.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function photo($id)
   {
@@ -87,7 +88,7 @@ class ApiPhotoController extends BaseController
       if(preg_match('/path\d+x\d+/', $key))
         unset($photo[$key]);
     }
-    
+
     if(isset($_GET['returnSizes']))
     {
       $protocol = Utility::getProtocol(false);
@@ -112,7 +113,7 @@ class ApiPhotoController extends BaseController
     * @param int $width The width of the photo to which this URL points.
     * @param int $height The height of the photo to which this URL points.
     * @param int $options The options of the photo wo which this URL points.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function dynamicUrl($id, $width, $height, $options = null)
   {
@@ -131,7 +132,7 @@ class ApiPhotoController extends BaseController
     * /photos/page-2/tags-favorites.json is identical to /photos.json?page=2&tags=favorites
     *
     * @param string $filterOpts Options on how to filter the list of photos.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function photos($filterOpts = null)
   {
@@ -222,11 +223,12 @@ class ApiPhotoController extends BaseController
     * This stores in the remote file system as well as the remote data store.
     * Parameters are contained in _POST.
     *
-    * @return string standard json envelope 
+    * @return string standard json envelope
     */
   public static function upload()
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb($_POST['crumb']);
     $attributes = $_POST;
     if(isset($attributes['returnSizes']))
     {
@@ -280,7 +282,7 @@ class ApiPhotoController extends BaseController
     * This method also manages updating tag counts
     *
     * @param string $id ID of the photo to be updated.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function update($id)
   {

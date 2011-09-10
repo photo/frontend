@@ -1,11 +1,11 @@
 <?php
 /**
   * Photo controller for HTML endpoints.
-  * 
+  *
   * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 class PhotoController extends BaseController
-{ 
+{
   /**
     * Create a new version of the photo with ID $id as specified by $width, $height and $options.
     *
@@ -76,7 +76,8 @@ class PhotoController extends BaseController
       }
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
-      $body = getTheme()->get('photo-details.php', array('photo' => $photo));
+      $crumb = getSession()->get('crumb');
+      $body = getTheme()->get('photo-details.php', array('photo' => $photo, 'crumb' => $crumb));
       getTheme()->display('template.php', array('body' => $body, 'page' => 'photo-details'));
     }
     else
@@ -101,7 +102,7 @@ class PhotoController extends BaseController
 
     $photos = $photos['result'];
 
-    $pagination = array('requestUri' => $_SERVER['REQUEST_URI'], 'currentPage' => $photos[0]['currentPage'], 
+    $pagination = array('requestUri' => $_SERVER['REQUEST_URI'], 'currentPage' => $photos[0]['currentPage'],
       'pageSize' => $photos[0]['pageSize'], 'totalPages' => $photos[0]['totalPages']);
 
     $body = getTheme()->get('photos.php', array('photos' => $photos, 'pagination' => $pagination));
@@ -135,7 +136,8 @@ class PhotoController extends BaseController
       getTemplate()->display('template.php', array('body' => getTemplate()->get('noPermission.php')));
       return;
     }
-    $body = getTheme()->get('upload.php');
+    $crumb = getSession()->get('crumb');
+    $body = getTheme()->get('upload.php', array('crumb' => $crumb));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'upload'));
   }
 
