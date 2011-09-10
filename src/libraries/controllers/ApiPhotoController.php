@@ -35,15 +35,29 @@ class ApiPhotoController extends BaseController
       return self::error('Could not get next/previous photo', false);
 
     // if specific sizes are requested then make sure we return them
+    foreach($nextPrevious as $key => $photo)
+    {
+      foreach($photo as $photoKey => $photoValue)
+      {
+        if(preg_match('/path\d+x\d+/', $photoKey))
+          unset($nextPrevious[$key][$photoKey]);
+      }
+    }
+
+    // if specific sizes are requested then make sure we return them
     if(isset($_GET['returnSizes']))
     {
+      $protocol = Utility::getProtocol(false);
+      if(isset($_GET['protocol']))
+        $protocol = $_GET['protocol'];
+
       $sizes = (array)explode(',', $_GET['returnSizes']);
       foreach($sizes as $size)
       {
         foreach($nextPrevious as $key => $photo)
         {
           $options = Photo::generateFragmentReverse($size);
-          $nextPrevious[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options']);
+          $nextPrevious[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
         }
       }
     }
@@ -68,13 +82,23 @@ class ApiPhotoController extends BaseController
       return self::notFound("Photo {$id} not found", false);
 
     // if specific sizes are requested then make sure we return them
+    foreach($photo as $key => $val)
+    {
+      if(preg_match('/path\d+x\d+/', $key))
+        unset($photo[$key]);
+    }
+    
     if(isset($_GET['returnSizes']))
     {
+      $protocol = Utility::getProtocol(false);
+      if(isset($_GET['protocol']))
+        $protocol = $_GET['protocol'];
+
       $sizes = (array)explode(',', $_GET['returnSizes']);
       foreach($sizes as $size)
       {
         $options = Photo::generateFragmentReverse($size);
-        $photo["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options']);
+        $photo["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
       }
     }
 
@@ -144,27 +168,38 @@ class ApiPhotoController extends BaseController
     if(isset($_GET['pageSize']) && intval($_GET['pageSize']) == $_GET['pageSize'])
       $pageSize = intval($_GET['pageSize']);
     $filters = array_merge($filters, $_GET);
+
     $page = 1;
     if(isset($filters['page']))
       $page = $filters['page'];
+    $protocol = Utility::getProtocol(false);
+    if(isset($filters['protocol']))
+      $protocol = $filters['protocol'];
     $db = getDb();
     $photos = $db->getPhotos($filters, $pageSize);
     if($photos)
     {
       if(isset($filters['returnSizes']))
         $sizes = (array)explode(',', $filters['returnSizes']);
+
       foreach($photos as $key => $photo)
       {
+        // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
+        // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
+        foreach($photo as $photoKey => $photoVal)
+        {
+          if(preg_match('/path\d+x\d+/', $photoKey))
+            unset($photos[$key][$photoKey]);
+        }
+
         if(isset($sizes))
         {
           foreach($sizes as $size)
           {
-            if(isset($photo["path{$size}"]))
-              continue;
-
             // TODO call API
+            // here we put a previously deleted key back in - ah, the things we do for consistency
             $options = Photo::generateFragmentReverse($size);
-            $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options']);
+            $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
           }
         }
       }

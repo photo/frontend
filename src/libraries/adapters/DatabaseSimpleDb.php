@@ -595,12 +595,6 @@ class DatabaseSimpleDb implements DatabaseInterface
       $photo[$name] = $value;
     }
 
-    foreach($photo as $key => $val)
-    {
-      if(preg_match('/^path\d+x\d+/', $key))
-        $photo[$key] = sprintf('http://%s%s', $photo['host'], $val);
-    }
-
     return $photo;
   }
 

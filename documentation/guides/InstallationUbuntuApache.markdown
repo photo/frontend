@@ -73,6 +73,18 @@ Now you'll need to replace instances of `/path/to/openphoto/html/directory` with
 
     vi /etc/apache2/sites-enabled/openphoto-vhost.conf
 
+By default, any access to ini files is denied with a "Not Found" 404 HTTP code.  To enable a 404, or Forbidden return code, change the following lines in the virtual host file.
+
+Uncomment:
+
+    # 403 Forbidden for ini files
+    #RewriteRule \.ini$ - [F,NC]
+
+Comment:
+
+  # 404 Not Found for ini files
+  AliasMatch \.ini$	/404
+
 ### PHP
 
 You should also verify that your `php.ini` file has a few important values set correctly.
