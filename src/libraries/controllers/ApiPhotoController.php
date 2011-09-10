@@ -267,7 +267,10 @@ class ApiPhotoController extends BaseController
         $tags = (array)explode(',', $_POST['tags']);
         Tag::updateTagCounts(array(), $tags);
       }
-      $photo = getApi()->invoke("/photo/{$photoId}.json", EpiRoute::httpGet);
+      $params = array();
+      if(isset($returnSizes))
+        $params = array('returnSizes' => $returnSizes);
+      $photo = getApi()->invoke("/photo/{$photoId}.json", EpiRoute::httpGet, array('_GET' => $params));
       return self::created("Photo {$photoId} uploaded successfully", $photo['result']);
     }
 
