@@ -14,6 +14,7 @@ interface DatabaseInterface
   // get methods read
   public function getCredential($id);
   public function getPhotoNextPrevious($id);
+  public function getGroups($email);
   public function getPhoto($id);
   public function getPhotoWithActions($id);
   public function getPhotos($filter = array(), $limit, $offset = null);
@@ -22,12 +23,14 @@ interface DatabaseInterface
   public function getTags($filter = array());
   // post methods update
   public function postCredential($id, $params);
+  public function postGroup($id, $params);
   public function postPhoto($id, $params);
   public function postUser($id, $params);
   public function postTag($id, $params);
   public function postTags($params);
   public function postTagsCounter($params);
   // put methods create but do not update
+  public function putGroup($id, $params);
   public function putAction($id, $params);
   public function putCredential($id, $params);
   public function putPhoto($id, $params);
