@@ -239,7 +239,7 @@ class Photo
   {
     $fs = getFs();
     $db = getDb();
-    $id = User::getNextPhotoId();
+    $id = User::getNextId('photo');
     if($id === false)
     {
       getLogger()->crit('Could not fetch next photo ID');

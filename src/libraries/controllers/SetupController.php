@@ -404,7 +404,7 @@ class SetupController
       file_get_contents("{$configDir}/template.ini")
     );
 
-    $iniWritten = file_put_contents("{$configDir}/generated/settings.ini", $generatedIni);
+    $iniWritten = file_put_contents("{$configDir}/generated/{$_SERVER['HTTP_HOST']}.ini", $generatedIni);
     if(!$iniWritten)
       return false;
 

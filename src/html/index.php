@@ -25,10 +25,10 @@ getSession();
 
 getConfig()->load('defaults.ini');
 getConfig()->load(sprintf('%s/assets/themes/%s/config/settings.ini', dirname(__FILE__), getConfig()->get('site')->theme));
-$configFile = Epi::getPath('config').'/generated/settings.ini';
+$configFile = sprintf('%s/generated/%s.ini', Epi::getPath('config'), $_SERVER['HTTP_HOST']);
 if(file_exists($configFile))
 {
-  getConfig()->load('generated/settings.ini');
+  getConfig()->load("generated/{$_SERVER['HTTP_HOST']}.ini");
   // load all dependencies
   require getConfig()->get('paths')->libraries . '/dependencies.php';
   getRoute()->run();
@@ -45,8 +45,8 @@ elseif(!file_exists($configFile)) // if no config file then load up the setup de
   $paths->models = "{$baseDir}/libraries/models";
   $paths->themes = "{$baseDir}/html/assets/themes";
   getConfig()->set('paths', $paths);
-  require getConfig()->get('paths')->libraries . '/dependencies.php';
   require getConfig()->get('paths')->libraries . '/routes-setup.php';
+  require getConfig()->get('paths')->libraries . '/dependencies.php';
   require getConfig()->get('paths')->controllers . '/SetupController.php';
 
   // if we're not in the setup path (anything other than /setup) then redirect to the setup
