@@ -7,14 +7,9 @@
 class ApiUserController extends BaseController
 {
   /**
-    * Create a new version of the photo with ID $id as specified by $width, $height and $options.
+    * Log a user in.
     *
-    * @param string $id ID of the photo to create a new version of.
-    * @param string $hash Hash to validate this request before creating photo.
-    * @param int $width The width of the photo to which this URL points.
-    * @param int $height The height of the photo to which this URL points.
-    * @param int $options The options of the photo wo which this URL points.
-    * @return string HTML
+    * @return string Standard JSON envelope 
     */
   public static function login()
   {
@@ -24,5 +19,15 @@ class ApiUserController extends BaseController
     else
       return self::error('User was not able to be logged in', false);
   }
-}
 
+  /**
+    * Log a user out.
+    *
+    * @return string Standard JSON envelope 
+    */
+  public static function logout()
+  {
+    User::logout();
+    return self::success('User was logged out successfully');
+  }
+}

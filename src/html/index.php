@@ -15,15 +15,12 @@ if(isset($_GET['__route__']) && strstr($_GET['__route__'], '.json'))
 $basePath = dirname(dirname(__FILE__));
 $epiPath = "{$basePath}/libraries/external/epi";
 require "{$epiPath}/Epi.php";
+
 Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
-//Epi::setPath('view', "{$basePath}/views");
 Epi::setPath('view', '');
-//Epi::setSetting('exceptions', true);
-Epi::init('api','config','form','logger','route','session-php','template','database');
-// TODO allow configurable session engine
+Epi::init('api','cache','config','form','logger','route','session-php','template','database');
 EpiSession::employ(EpiSession::PHP);
-// This initializes the session. Needed for PHP sessions to implicitly call session_start();
 getSession();
 
 getConfig()->load('defaults.ini');

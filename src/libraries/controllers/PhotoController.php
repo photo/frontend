@@ -29,7 +29,7 @@ class PhotoController extends BaseController
       unlink($photo);
       return;
     }
-    echo 'did not work';
+    getRoute()->run('/error/500');
   }
 
   /**
@@ -40,6 +40,7 @@ class PhotoController extends BaseController
     */
   public static function delete($id)
   {
+    getAuthentication()->requireAuthentication();
     $delete = getApi()->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost);
     if($delete['result'] !== false)
       getRoute()->redirect('/photos?deleteSuccess');
@@ -80,7 +81,7 @@ class PhotoController extends BaseController
     }
     else
     {
-      echo "Couldn't find photo {$id}"; // TODO
+      getRoute()->run('/error/404');
     }
   }
 
@@ -116,6 +117,7 @@ class PhotoController extends BaseController
     */
   public static function update($id)
   {
+    getAuthentication()->requireAuthentication();
     $status = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpPost);
     // TODO include success/error paramter
     getRoute()->redirect("/photo/{$id}");
@@ -130,7 +132,7 @@ class PhotoController extends BaseController
   {
     if(!User::isOwner())
     {
-      getTemplate()->display('template.php', array('body' => getTemplate()->get('noPermission.php')));
+      getRoute()->run('/error/403');
       return;
     }
     $body = getTheme()->get('upload.php');
@@ -146,6 +148,7 @@ class PhotoController extends BaseController
     */
   public static function uploadPost()
   {
+    getAuthentication()->requireAuthentication();
     $upload = getApi()->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
     if($upload['result'])
       getRoute()->redirect('/photos?uploadSuccess');

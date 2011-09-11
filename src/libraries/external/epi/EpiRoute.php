@@ -104,6 +104,9 @@ class EpiRoute
       $httpMethod = $_SERVER['REQUEST_METHOD'];
     $routeDef = $this->getRoute($route, $httpMethod);
 
+    if(!$routeDef)
+      return;
+
     $response = call_user_func_array($routeDef['callback'], $routeDef['args']);
     if(!$routeDef['postprocess'])
       return $response;

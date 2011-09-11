@@ -123,13 +123,13 @@ class Photo
     * @param string $options Optional options to be applied on the photo
     * @return mixed string URL on success, FALSE on failure
     */
-  public static function generateUrlPublic($photo, $width, $height, $options = null)
+  public static function generateUrlPublic($photo, $width, $height, $options = null, $protocol = 'http')
   {
     $key = self::generateCustomKey($width, $height, $options);
     if(isset($photo[$key]))
-      return $photo[$key];
+      return "{$protocol}://{$photo['host']}{$photo[$key]}";
     elseif(isset($photo['id']))
-      return "http://{$_SERVER['HTTP_HOST']}".self::generateUrlInternal($photo['id'], $width, $height, $options);
+      return "{$protocol}://{$_SERVER['HTTP_HOST']}".self::generateUrlInternal($photo['id'], $width, $height, $options);
     else
       return false;
   }
@@ -198,6 +198,7 @@ class Photo
     $key = self::generateCustomKey($width, $height, $options);
     $resFs = getFs()->putPhoto($filename, $customPath);
     $resDb = getDb()->postPhoto($id, array($key => $customPath));
+    // TODO unlink $filename
     if($resFs && $resDb)
       return $filename;
 
