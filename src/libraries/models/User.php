@@ -140,6 +140,11 @@ class User
     return true;
   }
 
+  public static function logout()
+  {
+    getSession()->end();
+  }
+
   /**
     * Create a new user record.
     * This method should only be called if no record already exists.

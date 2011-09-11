@@ -7,19 +7,35 @@ var opTheme = (function() {
   return {
     callback: {
       actionDelete: function(ev) {
+        ev.preventDefault();
         var el = $(ev.target),
           url = el.attr('href')+'.json';
-          $.post(url, function(response) {
-            if(response.code === 200)
-              $(".action-container-"+response.result).hide('medium', function(){ $(this).remove(); });
-            else
-              opTheme.message.error('Could not delete the photo.');
-          }, 'json');
-          return false;
+        $.post(url, function(response) {
+          if(response.code === 200)
+            $(".action-container-"+response.result).hide('medium', function(){ $(this).remove(); });
+          else
+            opTheme.message.error('Could not delete the photo.');
+        }, 'json');
+        return false;
       },
       commentJump: function(ev) {
         ev.preventDefault();
         $.scrollTo($('div.comment-form'), 200);
+      },
+      front: function(response) {
+        var photos = response.result, mkp;
+        mkp = '<div class="front-slideshow">';
+        for(i in photos) {
+          mkp += '<img src="'+photos[i].path800x450xCR+'" data-origin="/photo/'+photos[i].id+'">';
+        }
+        mkp += '</div>';
+        $('div.front').html(mkp).find('img').click(
+          function(ev) {
+            var img = ev.target;
+            location.href=$(img).attr('data-origin');
+          }
+        );
+        $('div.front-slideshow').cycle({ fx: 'fade' });
       },
       login: function(ev) {
         navigator.id.getVerifiedEmail(function(assertion) {
@@ -31,18 +47,18 @@ var opTheme = (function() {
         });
       },
       photoDelete: function(ev) {
+        ev.preventDefault();
         var el = $(ev.target),
           url = el.parent().attr('action')+'.json';
-          $.post(url, function(response) {
-            if(response.code === 200)
-              el.html('This photo has been deleted');
-            else
-              opTheme.message.error('Could not delete the photo.');
-          }, 'json');
-          return false;
+        $.post(url, function(response) {
+          if(response.code === 200)
+            el.html('This photo has been deleted');
+          else
+            opTheme.message.error('Could not delete the photo.');
+        }, 'json');
+        return false;
       },
       searchBarToggle: function(ev) {
-        console.log('foobar');
         $("div#searchbar").slideToggle('medium');
         return false;
       },
@@ -59,6 +75,10 @@ var opTheme = (function() {
           location.href = '/photos/tags-'+tags;
         else
           location.href = '/photos';
+        return false;
+      },
+      settings: function(ev) {
+        $("div#settingsbar").slideToggle('medium');
         return false;
       }
     },
@@ -194,6 +214,13 @@ var opTheme = (function() {
 			}
 		},
 
+    front: {
+      init: function(el) {
+        if(el.length > 0)
+          $.get('/photos.json', {pageSize: 20, returnSizes: '800x450xCR'}, opTheme.callback.front, 'json');
+      }
+    },
+
 		messageBox: function(messageHtml) {
 			$('a.message-close').live('click', opTheme.messageBoxClose);
 			if(timeoutId != undefined) {
@@ -231,12 +258,14 @@ var opTheme = (function() {
     init: {
       attach: function() {
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
-        OP.Util.on('click:action-delete', opTheme.callback.commentJump);
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
+        OP.Util.on('click:settings', opTheme.callback.settings);
+        opTheme.front.init($('.front'));
+
         $("form#upload-form").fileupload({
           url: '/photo/upload.json',
           singleFileUploads: true,
@@ -246,6 +275,8 @@ var opTheme = (function() {
         .bind('fileuploaddone', opTheme.upload.handlers.done)
         .bind('fileuploadprogressall', opTheme.upload.handlers.progressall)
         .bind('fileuploadprogress', opTheme.upload.handlers.progress);
+
+        $('form.validate').each(opTheme.formHandlers.init);
       }
     },
     message: {

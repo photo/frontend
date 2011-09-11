@@ -39,6 +39,7 @@
 .meta {
     font-size: .8em;
     height: 15px;
+    width:252px;
     margin: 0 0 8px;
 }
 
@@ -84,6 +85,7 @@
 
 .photo-details .photo-column {
     float: left;
+    width: 700px;
 }
 
 .photo-details .sidebar {
@@ -159,8 +161,62 @@
   background: none;
 }
 
+ul.comments li{
+  margin:0 0 15px;
+  clear:both;
+}
+ul.comments li div.date{
+  font-size:smaller;
+  font-style:italic;
+}
+ul.comments li img.avatar{
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border:solid 2px #ccc;
+  float:left;
+  margin:0 4px 4px 0;
+}
+u.lcomments li .date {
+  font-size: .8em;
+  font-style:italic;
+}
+
 .comment-form {
+    margin:10px 0;
     clear: both;
+}
+.comment-form form {
+    display:inline;
+}
+
+.owner h3 {
+  border-top:solid 1px #aaa;
+  border-bottom:solid 1px #aaa;
+  background-color: #ddd;
+  padding:4px 0;
+  text-align:center;
+  color:#666;
+  margin:10px 0;
+}
+.owner > div{
+  width:50%;
+  float:left;
+}
+.owner form label {
+  display:block;
+  font-weight:bold;
+}
+.owner form label + input, .owner form label + textarea {
+  display:block;
+  margin:0 0 10px 0;
+  width:350px;
+}
+.owner form label + textarea {
+  height:50px;
+}
+
+.owner .delete {
+  float:right;
 }
 
 button, a.button {

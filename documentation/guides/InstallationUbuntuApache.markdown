@@ -20,6 +20,7 @@ Before setting up your server you'll need to make sure you have your cloud accou
 #### Server Packages and Modules
 Once you've confirmed that your cloud account is setup you can get started on your server. For that you'll need to have _Apache_, _PHP_ and _curl_ installed with a few modules.
 
+    apt-get update
     apt-get install apache2
     apt-get install php5
     apt-get install libapache2-mod-php5
@@ -71,6 +72,18 @@ You'll need to copy the sample virtual host configuration file from the source t
 Now you'll need to replace instances of `/path/to/openphoto/html/directory` with `/var/www/yourdomain.com/src/html` or wherever you placed the code.
 
     vi /etc/apache2/sites-enabled/openphoto-vhost.conf
+
+By default, any access to ini files is denied with a "Not Found" 404 HTTP code.  To enable a 404, or Forbidden return code, change the following lines in the virtual host file.
+
+Uncomment:
+
+    # 403 Forbidden for ini files
+    #RewriteRule \.ini$ - [F,NC]
+
+Comment:
+
+  # 404 Not Found for ini files
+  AliasMatch \.ini$	/404
 
 ### PHP
 

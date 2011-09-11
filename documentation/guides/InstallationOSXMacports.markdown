@@ -27,6 +27,7 @@ This guide assumes you have [get it here][Macports installed]. If not you can . 
     port install php5-exif
     port install php5-curl
     port install php5-imagick
+    port install php5-oauth
     port load apache2
 
 ----------------------------------------
@@ -62,6 +63,19 @@ Assuming that this is a development machine you can make the config writable by 
 You'll need to make sure that you have named virtual hosts enabled in your Apache confs. First, copy the contents of `~/Sites/yourdomain.com/configs/openphoto-vhost.conf` onto your clipboard. Then open your `virtualhosts.conf` file.
 
     vi /opt/local/apache2/conf/extra/virtualhosts.conf
+
+By default, any access to ini files is denied with a "Not Found" 404 HTTP code.  To enable a 404, or Forbidden return code, change the following lines in the virtual host file.
+
+Uncomment:
+
+    # 403 Forbidden for ini files
+    #RewriteRule \.ini$ - [F,NC]
+
+Comment:
+
+  # 404 Not Found for ini files
+  AliasMatch \.ini$	/404
+
 
 You can put the `NameVirtualHost` directive at the top of the file.
 
