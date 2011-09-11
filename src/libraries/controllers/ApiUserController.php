@@ -13,8 +13,7 @@ class ApiUserController extends BaseController
     */
   public static function groups()
   {
-    if(!User::isOwner())
-      return self::forbidden('Sorry, you cannot view this content', false);
+    getAuthentication()->requireAuthentication();
 
     $groups = User::getGroups();
     if($groups === false)
@@ -58,6 +57,8 @@ class ApiUserController extends BaseController
     */
   public static function postGroup($id = null)
   {
+    getAuthentication()->requireAuthentication();
+
     if(!$id)
       $id = User::getNextId('group');
 
