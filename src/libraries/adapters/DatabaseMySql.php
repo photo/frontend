@@ -566,7 +566,7 @@ class DatabaseMySql implements DatabaseInterface
     $photo['appId'] = getConfig()->get('application')->appId;
 
     $versions = $this->getPhotoVersions($photo['id']);
-    if(!empty($versions)) 
+    if($versions && !empty($versions)) 
     {
       foreach($versions as $version) 
       {
