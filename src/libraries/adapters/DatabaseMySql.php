@@ -61,8 +61,13 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getCredential($id)
   {
-    // TODO: fill this in Gh-78
-    return array();
+    $cred = getDatabase()->one("SELECT * FROM credential WHERE id=:id",
+                               array(':id' => $id));
+    if(empty($cred))
+    {
+      return false;
+    }
+    return self::normalizeCredential($cred);
   }
 
   /**
@@ -271,7 +276,14 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postCredential($id, $params)
   {
-    // TODO: fill this in Gh-78
+    $cred = self::prepareCredential($params);
+
+    $bindings = $params['::bindings'];
+    $stmt = self::sqlUpdateExplode($params, $bindings);
+    $bindings[':id'] = $id;
+
+    $result = getDatabase()->execute("UPDATE credential SET {$stmt} WHERE id=:id", $bindings);
+
     return true;
   }
 
@@ -442,7 +454,13 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putCredential($id, $params)
   {
-    // TODO: fill this in Gh-78
+    if(!isset($params['id']))
+      $params['id'] = $id;
+    $cred = self::prepareCredential($params);
+    
+    $stmt = self::sqlInsertExplode($params);
+    $result = getDatabase()->execute("INSERT INTO credential ({$stmt['cols']}) VALUES ({$stmt['vals']})");
+
     return true;
   }
 
@@ -500,7 +518,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $stmt = self::sqlInsertExplode($params);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}user` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
-    return true;
+    return ($result != -1);
   }
 
   /**
@@ -667,6 +685,14 @@ class DatabaseMySql implements DatabaseInterface
     return $raw;
   }
 
+  private function normalizeCredential($raw)
+  {
+    if(isset($raw['permissions']) && !empty($raw['permissions']))
+      $raw['permissions'] = (array)explode(',', $raw['permissions']);
+
+    return $raw;
+  }
+
   /**
     * Formats a photo to be updated or added to the database.
     * Primarily to properly format tags as an array.
@@ -720,6 +746,16 @@ class DatabaseMySql implements DatabaseInterface
     {
       $params['::bindings'] = $bindings;
     }
+    return $params;
+  }
+
+  /** Prepare credential to store in the database
+   */
+  private function prepareCredential($params)
+  {
+    if(isset($params['permissions']))
+      $params['permissions'] = implode(',', $params['permissions']);
+
     return $params;
   }
 
