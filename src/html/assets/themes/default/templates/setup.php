@@ -63,7 +63,7 @@
           <?php if(isset($s3Bucket) && !empty($s3Bucket)) { ?>
             <input type="text" name="s3Bucket" id="s3Bucket" size="50" value="<?php Utility::safe($s3Bucket); ?>" data-validation="required">
           <?php } else { ?>
-            <input type="text" name="s3Bucket" id="s3Bucket" size="50" value="<?php Utility::safe("{$appId}-openphoto"); ?>" data-validation="required">
+            <input type="text" name="s3Bucket" id="s3Bucket" size="50" value="<?php Utility::safe($_SERVER['HTTP_HOST']); ?>" data-validation="required">
           <?php } ?>
         <?php } ?>
         <?php if($usesSimpleDb) { ?>
