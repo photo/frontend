@@ -1,11 +1,6 @@
-div#upload label.filebutton {
-    width:70px;
-    height:20px;
-    overflow:hidden;
-    position:relative;
-    background-color:#ccc;
+body.upload h1 {
+  font-size:2em;
 }
-
 div#upload {
   padding:10px 0;
 }
