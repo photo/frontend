@@ -22,6 +22,43 @@ class ApiPhotoController extends BaseController
     else
       return self::error('Photo deletion failure', false);
   }
+
+  /**
+   * Remove all the size keys from the photo but the one in list in $sizes
+   *
+   * @param $photo the photo object to prune.
+   * @param array $sizes the sizes to keep.
+   * @return the photo
+   */
+  private static function pruneSizes($photo, $sizes)
+  {
+    if(isset($sizes) && !empty($sizes))
+    {
+      foreach($sizes as $size)
+      {
+        $sizekeys["path{$size}"] = 1;
+      }
+    }
+
+    foreach($photo as $photoKey => $photoValue)
+    {
+      if(preg_match('/path(\d+x\d+)/', $photoKey))
+      {
+        $prune = true;
+        if(isset($sizekeys) && isset($sizekeys[$photoKey]))
+        {
+          $prune = false;
+          break;
+        }
+        if($prune)
+        {
+          unset($photo[$photoKey]);
+        }
+      }
+    }
+    return $photo;
+  }
+
   /**
     * Retrieve the next and previous photo given photo $id
     *
@@ -34,24 +71,23 @@ class ApiPhotoController extends BaseController
     if(!$nextPrevious)
       return self::error('Could not get next/previous photo', false);
 
+    if(isset($_GET['returnSizes']))
+    {
+      $sizes = (array)explode(',', $_GET['returnSizes']);
+    }
     // if specific sizes are requested then make sure we return them
     foreach($nextPrevious as $key => $photo)
     {
-      foreach($photo as $photoKey => $photoValue)
-      {
-        if(preg_match('/path\d+x\d+/', $photoKey))
-          unset($nextPrevious[$key][$photoKey]);
-      }
+      $nextPrevious[$key] = self::pruneSizes($photo, $sizes);
     }
 
     // if specific sizes are requested then make sure we return them
-    if(isset($_GET['returnSizes']))
+    if(isset($sizes))
     {
       $protocol = Utility::getProtocol(false);
       if(isset($_GET['protocol']))
         $protocol = $_GET['protocol'];
 
-      $sizes = (array)explode(',', $_GET['returnSizes']);
       foreach($sizes as $size)
       {
         foreach($nextPrevious as $key => $photo)
@@ -82,19 +118,19 @@ class ApiPhotoController extends BaseController
       return self::notFound("Photo {$id} not found", false);
 
     // if specific sizes are requested then make sure we return them
-    foreach($photo as $key => $val)
-    {
-      if(preg_match('/path\d+x\d+/', $key))
-        unset($photo[$key]);
-    }
-    
     if(isset($_GET['returnSizes']))
+    {
+      $sizes = (array)explode(',', $_GET['returnSizes']);
+    }
+
+    $photo = self::pruneSizes($photo, $sizes);
+
+    if(isset($sizes))
     {
       $protocol = Utility::getProtocol(false);
       if(isset($_GET['protocol']))
         $protocol = $_GET['protocol'];
 
-      $sizes = (array)explode(',', $_GET['returnSizes']);
       foreach($sizes as $size)
       {
         $options = Photo::generateFragmentReverse($size);
@@ -210,11 +246,7 @@ class ApiPhotoController extends BaseController
       {
         // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
         // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
-        foreach($photo as $photoKey => $photoVal)
-        {
-          if(preg_match('/path\d+x\d+/', $photoKey))
-            unset($photos[$key][$photoKey]);
-        }
+        $photos[$key] = self::pruneSizes($photo, $sizes);
 
         if(isset($sizes))
         {
