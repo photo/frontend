@@ -6,6 +6,9 @@ var opTheme = (function() {
   var timeoutId = undefined;
   return {
     callback: {
+      keyboard: function(ev) {
+        log("keyboard!!!!");
+      },
       actionDelete: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
@@ -65,6 +68,17 @@ var opTheme = (function() {
       settings: function(ev) {
         $("div#settingsbar").slideToggle('medium');
         return false;
+      },
+      keyBrowse: function(ev) {
+          var ref;
+          if (ev.keyCode == 37) {
+              ref = $(".image-pagination .previous a").attr("href");
+          } else if (ev.keyCode == 39) {
+              ref = $(".image-pagination .next a").attr("href");
+          }
+          if (ref) {
+              location.href = ref;
+          }
       }
     },
     formHandlers: {
@@ -255,6 +269,7 @@ var opTheme = (function() {
         OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:settings', opTheme.callback.settings);
+        OP.Util.on('keydown:browse', opTheme.callback.keyBrowse);
         opTheme.front.init($('div.front-slideshow'));
 
         $("form#upload-form").fileupload({
