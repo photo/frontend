@@ -176,9 +176,12 @@ ul.comments li img.avatar{
   float:left;
   margin:0 4px 4px 0;
 }
-u.lcomments li .date {
+ul.comments li .date {
   font-size: .8em;
   font-style:italic;
+}
+ul.comments li form {
+  display:inline;
 }
 
 .comment-form {
