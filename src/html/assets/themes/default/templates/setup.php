@@ -39,12 +39,12 @@
       <label>Select Database</label>
       <select name="database">
         <option value="SimpleDb">Amazon SimpleDb</option>
-        <!--<option value="MySql">MySQL</option>-->
+        <option value="MySql">MySQL</option>
       </select>
       <label for="fileSystem">Select File System</label>
       <select name="fileSystem">
         <option value="S3">Amazon S3</option>
-        <!--<option value="LocalFs">Local filesystem</option>-->
+        <option value="LocalFs">Local filesystem</option>
       </select>
       <button type="submit">Continue to Step 3</button>
     </form>
