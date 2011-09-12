@@ -1,6 +1,6 @@
 <div class="front">
   <p>
-    <?php if(empty($photos)) { ?>
+    <?php if($photos[0]['totalRows'] == 0) { ?>
       <?php if(User::isOwner()) { ?>
         <h1>Oh no, you haven't uploaded any photos yet. <a href="/photos/upload" class="button">Start Now</a>
         <img src="<?php getTheme()->asset('image', 'front.jpg'); ?>" class="front">
