@@ -138,6 +138,7 @@
 
             //attach events      
             this.attachEvent( 'body', 'click', this.onviewevent, this);
+            this.attachEvent( 'body', 'keydown', this.onkeydownevent, this);
 
             //load additional js in order specified
             for(i=0, j=js.length; i<j; i++) {
@@ -178,6 +179,22 @@
   
   
         };
+        
+        /**
+        * handles keydown keyboard events
+        * @param {Event} e
+        * @return {void}
+        * @method onkeydownevent
+        */
+        this.onkeydownevent = function(e) {
+            if (e.keyCode == 37 || e.keyCode == 39) {
+                if ((e.srcElement.nodeName != "TEXTAREA") && (e.srcElement.nodeName != "INPUT")) {
+                    this.fire("keydown:browse", e);
+                }
+            }
+        };
+        
+        
     
         /* -------------------------------------------------
         *         Utilities
