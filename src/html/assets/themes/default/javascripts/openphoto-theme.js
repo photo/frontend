@@ -10,7 +10,7 @@ var opTheme = (function() {
         ev.preventDefault();
         var el = $(ev.target),
           url = el.attr('href')+'.json';
-        $.post(url, function(response) {
+        $.post(url, el.parent().serializeArray(), function(response) {
           if(response.code === 200)
             $(".action-container-"+response.result).hide('medium', function(){ $(this).remove(); });
           else
@@ -35,7 +35,7 @@ var opTheme = (function() {
         ev.preventDefault();
         var el = $(ev.target),
           url = el.parent().attr('action')+'.json';
-        $.post(url, function(response) {
+        $.post(url, el.parent().serializeArray(), function(response) {
           if(response.code === 200)
             el.html('This photo has been deleted');
           else
