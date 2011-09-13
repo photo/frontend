@@ -333,7 +333,8 @@ class ApiPhotoController extends BaseController
       return self::created("Photo {$photoId} uploaded successfully", $photo['result']);
     }
 
-    return self::error('File upload failure', false);
+    error_log("File upload failed");
+    return self::error('File upload failure $localFile', false);
   }
 
   /**
