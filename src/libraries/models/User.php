@@ -21,7 +21,7 @@ class User
     * Get an avatar given an email address
     * See http://en.gravatar.com/site/implement/images/ and http://en.gravatar.com/site/implement/hash/
     *
-    * @return string 
+    * @return string
     */
   public static function getAvatarFromEmail($size = 50, $email = null)
   {
@@ -33,9 +33,8 @@ class User
   }
 
   /**
-    * Get the next ID to be used for a photo.
-    * The ID is a base 32 string that represents an autoincrementing integer.
     * Get the email address of the logged in user.
+    *
     * @return string 
     */
   public static function getEmailAddress()
@@ -56,7 +55,7 @@ class User
   /**
     * Get the next ID to be used for a action, group or photo.
     * The ID is a base 32 string that represents an autoincrementing integer.
-    * @return string 
+    * @return string
     */
   public static function getNextId($type)
   {
@@ -118,7 +117,7 @@ class User
 
   /**
     * Validate the identity of the user using BrowserID
-    * If the assertion is valid then the email address is stored in session.
+    * If the assertion is valid then the email address is stored in session with a random key to prevent XSRF.
     *
     * @param string $assertion Assertion from BrowserID.org
     * @param string $audience Audience from BrowserID.org
@@ -134,13 +133,14 @@ class User
     curl_setopt($ch, CURLOPT_CAINFO, getConfig()->get('paths')->configs.'/ca-bundle.crt');
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-    
+
     $response = curl_exec($ch);
     $response = json_decode($response, 1);
     if(!isset($response['status']) || $response['status'] != 'okay')
       return false;
 
     getSession()->set('email', $response['email']);
+    getSession()->set('crumb', md5(getConfig()->get('secrets')->secret . time()));
     return true;
   }
 
@@ -155,17 +155,18 @@ class User
     * The user record has a key of 1 and default attributes specified by self::getDefaultAttributes().
     * Differs from self::update on the implementation at the adapter layer.
     *
-    * @return boolean 
+    * @return boolean
     */
   private static function create()
   {
     return getDb()->putUser(1, self::getDefaultAttributes());
   }
 
+
   /**
     * Default attributes for a new user record.
     *
-    * @return array 
+    * @return array
     */
   private static function getDefaultAttributes()
   {
@@ -179,7 +180,7 @@ class User
     *
     * The user record has a key of 1 and default attributes specified by self::getDefaultAttributes().
     *
-    * @return boolean 
+    * @return boolean
     */
   private static function update($params)
   {

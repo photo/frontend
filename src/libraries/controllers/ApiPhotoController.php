@@ -11,22 +11,60 @@ class ApiPhotoController extends BaseController
     * Delete a photo specified by the ID.
     *
     * @param string $id ID of the photo to be deleted.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function delete($id)
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb($_POST['crumb']);
     $status = Photo::delete($id);
     if($status)
       return self::success('Photo deleted successfully', $id);
     else
       return self::error('Photo deletion failure', false);
   }
+
+  /**
+   * Remove all the size keys from the photo but the one in list in $sizes
+   *
+   * @param $photo the photo object to prune.
+   * @param array $sizes the sizes to keep.
+   * @return the photo
+   */
+  private static function pruneSizes($photo, $sizes)
+  {
+    if(isset($sizes) && !empty($sizes))
+    {
+      foreach($sizes as $size)
+      {
+        $sizekeys["path{$size}"] = 1;
+      }
+    }
+
+    foreach($photo as $photoKey => $photoValue)
+    {
+      if(preg_match('/path(\d+x\d+)/', $photoKey))
+      {
+        $prune = true;
+        if(isset($sizekeys) && isset($sizekeys[$photoKey]))
+        {
+          $prune = false;
+          break;
+        }
+        if($prune)
+        {
+          unset($photo[$photoKey]);
+        }
+      }
+    }
+    return $photo;
+  }
+
   /**
     * Retrieve the next and previous photo given photo $id
     *
     * @param string $id ID of the photo to be deleted.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function nextPrevious($id)
   {
@@ -34,24 +72,23 @@ class ApiPhotoController extends BaseController
     if(!$nextPrevious)
       return self::error('Could not get next/previous photo', false);
 
+    if(isset($_GET['returnSizes']))
+    {
+      $sizes = (array)explode(',', $_GET['returnSizes']);
+    }
     // if specific sizes are requested then make sure we return them
     foreach($nextPrevious as $key => $photo)
     {
-      foreach($photo as $photoKey => $photoValue)
-      {
-        if(preg_match('/path\d+x\d+/', $photoKey))
-          unset($nextPrevious[$key][$photoKey]);
-      }
+      $nextPrevious[$key] = self::pruneSizes($photo, $sizes);
     }
 
     // if specific sizes are requested then make sure we return them
-    if(isset($_GET['returnSizes']))
+    if(isset($sizes))
     {
       $protocol = Utility::getProtocol(false);
       if(isset($_GET['protocol']))
         $protocol = $_GET['protocol'];
 
-      $sizes = (array)explode(',', $_GET['returnSizes']);
       foreach($sizes as $size)
       {
         foreach($nextPrevious as $key => $photo)
@@ -69,7 +106,7 @@ class ApiPhotoController extends BaseController
     * Retrieve a photo from the remote datasource.
     *
     * @param string $id ID of the photo to be deleted.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function photo($id)
   {
@@ -82,19 +119,20 @@ class ApiPhotoController extends BaseController
       return self::notFound("Photo {$id} not found", false);
 
     // if specific sizes are requested then make sure we return them
-    foreach($photo as $key => $val)
-    {
-      if(preg_match('/path\d+x\d+/', $key))
-        unset($photo[$key]);
-    }
-    
+    $sizes = array();
     if(isset($_GET['returnSizes']))
+    {
+      $sizes = (array)explode(',', $_GET['returnSizes']);
+    }
+
+    $photo = self::pruneSizes($photo, $sizes);
+
+    if(isset($sizes))
     {
       $protocol = Utility::getProtocol(false);
       if(isset($_GET['protocol']))
         $protocol = $_GET['protocol'];
 
-      $sizes = (array)explode(',', $_GET['returnSizes']);
       foreach($sizes as $size)
       {
         $options = Photo::generateFragmentReverse($size);
@@ -112,7 +150,7 @@ class ApiPhotoController extends BaseController
     * @param int $width The width of the photo to which this URL points.
     * @param int $height The height of the photo to which this URL points.
     * @param int $options The options of the photo wo which this URL points.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function dynamicUrl($id, $width, $height, $options = null)
   {
@@ -131,7 +169,7 @@ class ApiPhotoController extends BaseController
     * /photos/page-2/tags-favorites.json is identical to /photos.json?page=2&tags=favorites
     *
     * @param string $filterOpts Options on how to filter the list of photos.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function photos($filterOpts = null)
   {
@@ -210,11 +248,7 @@ class ApiPhotoController extends BaseController
       {
         // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
         // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
-        foreach($photo as $photoKey => $photoVal)
-        {
-          if(preg_match('/path\d+x\d+/', $photoKey))
-            unset($photos[$key][$photoKey]);
-        }
+        $photos[$key] = self::pruneSizes($photo, $sizes);
 
         if(isset($sizes))
         {
@@ -246,11 +280,12 @@ class ApiPhotoController extends BaseController
     * This stores in the remote file system as well as the remote data store.
     * Parameters are contained in _POST.
     *
-    * @return string standard json envelope 
+    * @return string standard json envelope
     */
   public static function upload()
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb($_POST['crumb']);
     $attributes = $_POST;
     if(isset($attributes['returnSizes']))
     {
@@ -307,7 +342,7 @@ class ApiPhotoController extends BaseController
     * This method also manages updating tag counts
     *
     * @param string $id ID of the photo to be updated.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function update($id)
   {
