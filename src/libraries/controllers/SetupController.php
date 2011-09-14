@@ -185,12 +185,14 @@ class SetupController
       $mySqlUser = $_POST['mySqlUser'];
       $mySqlPassword = $_POST['mySqlPassword'];
       $mySqlDb = $_POST['mySqlDb'];
+      $mySqlTablePrefix = $_POST['mySqlTablePrefix'];
       $input = array(
         array('MySQL Host', $mySqlHost, 'required'),
         array('MySQL Username', $mySqlUser, 'required'),
-        array('MySQL Password', $mySqlPassword, 'required')
+        array('MySQL Password', $mySqlPassword, 'required'),
+        array('MySQL Database', $mySqlDb, 'required'),
+        array('MySQL Table Prefix', $mySqlTablePrefix, 'required')
       );
-
       $mySqlErrors = getForm()->hasErrors($input);
     }
 
@@ -236,11 +238,13 @@ class SetupController
         getSession()->set('mySqlUser', $mySqlUser);
         getSession()->set('mySqlPassword', $mySqlPassword);
         getSession()->set('mySqlDb', $mySqlDb);
+        getSession()->set('mySqlTablePrefix', $mySqlTablePrefix);
         $mysql = new stdClass;
         $mysql->mySqlHost = $mySqlHost;
         $mysql->mySqlUser = $mySqlUser;
         $mysql->mySqlPassword = $mySqlPassword;
         $mysql->mySqlDb = $mySqlDb;
+        $mysql->mySqlTablePrefix = $mySqlTablePrefix;
       }
       if($usesLocalFs)
       {
@@ -282,9 +286,9 @@ class SetupController
         if($usesAws)
           $dbErrors[] = 'Unable to initialize simpledb';
         else if($usesMySql)
-          $fsErrors[] = 'Unable to initialize mysql';
+          $dbErrors[] = 'Unable to initialize mysql';
         else
-          $fsErrors[] = 'Database error';
+          $dbErrors[] = 'Database error';
       }
 
       if($fsErrors === false && $dbErrors === false)
