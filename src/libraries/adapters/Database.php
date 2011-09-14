@@ -14,7 +14,7 @@ interface DatabaseInterface
   // get methods read
   public function getCredential($id);
   public function getPhotoNextPrevious($id);
-  public function getGroups($email);
+  public function getGroups($email = null);
   public function getPhoto($id);
   public function getPhotoWithActions($id);
   public function getPhotos($filter = array(), $limit, $offset = null);
