@@ -548,7 +548,6 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function initialize()
   {
     $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Credential|Group|Tag|User)?$/");
-    var_dump($domains);
     if(count($domains) == 6)
       return true;
 

@@ -10,7 +10,7 @@ class Authentication
   /**
     * Checks to see if there are any authentication credentials present in this request
     *
-    * @return boolean 
+    * @return boolean
     */
   public function isRequestAuthenticated()
   {
@@ -35,6 +35,17 @@ class Authentication
     {
       OPException::raise(new OPAuthorizationSessionException());
     }
+  }
+
+   /**
+    * Check that the crumb is valid
+    *
+    * @param $crumb the crumb posted to validate
+    */
+  public function requireCrumb($crumb)
+  {
+     if(getSession()->get('crumb') != $crumb)
+      OPException::raise('Crumb does not match', new OPAuthorizationException);
   }
 }
 
