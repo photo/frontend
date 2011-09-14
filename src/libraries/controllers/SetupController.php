@@ -391,8 +391,18 @@ class SetupController
       '{themes}' => "{$htmlDir}/assets/themes",
       '{exiftran}' => exec('which exiftran'),
       '{localSecret}' => sha1(uniqid(true)),
+      '{awsKey}' => "",
+      '{awsSecret}' => "", 
       '{s3Bucket}' => getSession()->get('s3BucketName'),
       '{s3Host}' => getSession()->get('s3BucketName') . '.s3.amazonaws.com',
+      '{simpleDbDomain}' => "",
+      '{mySqlHost}' => "",
+      '{mySqlUser}' => "",
+      '{mySqlPassword}' => "",
+      '{mySqlDb}' => "",
+      '{mySqlTablePrefix}' => "",
+      '{fsRoot}' => "",
+      '{fsHost}' => "",
       '{email}' => getSession()->get('email')
     );
 
@@ -401,7 +411,7 @@ class SetupController
     foreach($session as $key => $val)
       $pReplace["{{$key}}"] = $val;
 
-    $replacements = array_merge($pReplace, $replacements);
+    $replacements = array_merge($replacements, $pReplace);
     $generatedIni = str_replace(
       array_keys($replacements),
       array_values($replacements),
