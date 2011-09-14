@@ -10,11 +10,12 @@ class ApiActionController extends BaseController
     * Delete a new action by calling the model.
     *
     * @param string $id The ID of the action to be deleted.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function delete($id)
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb($_POST['crumb']);
     $status = Action::delete($id);
     if($status)
       return self::success('Action deleted successfully', $id);
@@ -27,11 +28,12 @@ class ApiActionController extends BaseController
     *
     * @param string $targetType The type of object this action is being added to - typically a photo.
     * @param string $targetId The ID of the target on which the action will be applied.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function post($targetType, $targetId)
   {
     getAuthentication()->requireAuthentication(false);
+    getAuthentication()->requireCrumb($_POST['crumb']);
     $params = $_POST;
     $params['targetId'] = $targetId;
     $params['targetType'] = $targetType;
