@@ -3,7 +3,7 @@
     <div class="photo-column">
       <h1><?php Utility::safe($photo['title']); ?></h1>
       <p class="description"><?php Utility::safe($photo['description']); ?></p>
-      <img class="photo" width="<?php Utility::safe($photo['thisWidth']); ?>" height="<?php Utility::safe($photo['thisHeight']); ?>" src="<?php Utility::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" alt="My last latte at Yahoo!">
+      <img class="photo" width="<?php Utility::safe($photo['thisWidth']); ?>" height="<?php Utility::safe($photo['thisHeight']); ?>" src="<?php Utility::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" alt="<?php Utility::safe($photo['title']); ?>">
     </div>
     <div class="sidebar">
       <div class="image-pagination">
