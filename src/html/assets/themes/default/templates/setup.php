@@ -83,7 +83,10 @@
         <input type="text" name="mySqlUser" id="mySqlUser" size="50" autocomplete="off" data-validation="required">
         <label for="mySqlPassword">MySQL Password</label>
         <input type="text" name="mySqlPassword" id="mySqlPassword" size="50" autocomplete="off" data-validation="required">
-        <input type="hidden" name="mySqlDb" value="openphoto">
+        <label for="mySqlDb">MySQL Database</label>
+        <input type="text" name="mySqlDb" id="mySqlDb" size="50" autocomplete="off" data-validation="required">
+        <label for="mySqlTablePrefix">Table prefix</label>
+        <input type="text" name="mySqlTablePrefix" value="op_" id="mySqlTablePrefix" size="50" autocomplete="off" data-validation="required">
       <?php } ?>
       <?php if(isset($usesLocalFs) && !empty($usesLocalFs)) { ?>
         <h3>Enter your local file system credentials <em>(<a href="">what's this?</a>)</em></h3>

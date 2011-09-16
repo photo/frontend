@@ -185,12 +185,14 @@ class SetupController
       $mySqlUser = $_POST['mySqlUser'];
       $mySqlPassword = $_POST['mySqlPassword'];
       $mySqlDb = $_POST['mySqlDb'];
+      $mySqlTablePrefix = $_POST['mySqlTablePrefix'];
       $input = array(
         array('MySQL Host', $mySqlHost, 'required'),
         array('MySQL Username', $mySqlUser, 'required'),
-        array('MySQL Password', $mySqlPassword, 'required')
+        array('MySQL Password', $mySqlPassword, 'required'),
+        array('MySQL Database', $mySqlDb, 'required'),
+        array('MySQL Table Prefix', $mySqlTablePrefix, 'required')
       );
-
       $mySqlErrors = getForm()->hasErrors($input);
     }
 
@@ -236,11 +238,13 @@ class SetupController
         getSession()->set('mySqlUser', $mySqlUser);
         getSession()->set('mySqlPassword', $mySqlPassword);
         getSession()->set('mySqlDb', $mySqlDb);
+        getSession()->set('mySqlTablePrefix', $mySqlTablePrefix);
         $mysql = new stdClass;
         $mysql->mySqlHost = $mySqlHost;
         $mysql->mySqlUser = $mySqlUser;
         $mysql->mySqlPassword = $mySqlPassword;
         $mysql->mySqlDb = $mySqlDb;
+        $mysql->mySqlTablePrefix = $mySqlTablePrefix;
       }
       if($usesLocalFs)
       {
@@ -282,9 +286,9 @@ class SetupController
         if($usesAws)
           $dbErrors[] = 'Unable to initialize simpledb';
         else if($usesMySql)
-          $fsErrors[] = 'Unable to initialize mysql';
+          $dbErrors[] = 'Unable to initialize mysql';
         else
-          $fsErrors[] = 'Database error';
+          $dbErrors[] = 'Database error';
       }
 
       if($fsErrors === false && $dbErrors === false)
@@ -387,8 +391,18 @@ class SetupController
       '{themes}' => "{$htmlDir}/assets/themes",
       '{exiftran}' => exec('which exiftran'),
       '{localSecret}' => sha1(uniqid(true)),
+      '{awsKey}' => "",
+      '{awsSecret}' => "", 
       '{s3Bucket}' => getSession()->get('s3BucketName'),
       '{s3Host}' => getSession()->get('s3BucketName') . '.s3.amazonaws.com',
+      '{simpleDbDomain}' => "",
+      '{mySqlHost}' => "",
+      '{mySqlUser}' => "",
+      '{mySqlPassword}' => "",
+      '{mySqlDb}' => "",
+      '{mySqlTablePrefix}' => "",
+      '{fsRoot}' => "",
+      '{fsHost}' => "",
       '{email}' => getSession()->get('email')
     );
 
@@ -397,7 +411,7 @@ class SetupController
     foreach($session as $key => $val)
       $pReplace["{{$key}}"] = $val;
 
-    $replacements = array_merge($pReplace, $replacements);
+    $replacements = array_merge($replacements, $pReplace);
     $generatedIni = str_replace(
       array_keys($replacements),
       array_values($replacements),
