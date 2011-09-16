@@ -12,7 +12,8 @@ class DatabaseMySql implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $mysqlDb, $mySqlHost, $mySqlUser, $mySqlPassword;
+  private $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword;
+  private $mySqlTablePrefix;
 
   /**
     * Constructor
@@ -22,7 +23,11 @@ class DatabaseMySql implements DatabaseInterface
   public function __construct()
   {
     $mysql = getConfig()->get('mysql');
-    EpiDatabase::employ('mysql', $mysql->mySqlDb, $mysql->mySqlHost, $mysql->mySqlUser, $mysql->mySqlPassword);
+    EpiDatabase::employ('mysql', $mysql->mySqlDb, 
+                        $mysql->mySqlHost, $mysql->mySqlUser, $mysql->mySqlPassword);
+    foreach($mysql as $key => $value) {
+      $this->{$key} = $value;
+    }
   }
 
   /**
@@ -33,7 +38,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteAction($id)
   {
-    $res = getDatabase()->execute("DELETE FROM action WHERE id=:id", array(':id' => $id));
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}action` WHERE id=:id", array(':id' => $id));
     return ($res == 1);
   }
 
@@ -45,7 +50,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deletePhoto($id)
   {
-    $res = getDatabase()->execute("DELETE FROM photo WHERE id=:id", array(':id' => $id));
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE id=:id", array(':id' => $id));
     return ($res == 1);
   }
 
@@ -81,7 +86,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getPhoto($id)
   {
-    $photo = getDatabase()->one("SELECT * FROM photo WHERE id=:id", array(':id' => $id));
+    $photo = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE id=:id", array(':id' => $id));
     if(empty($photo))
       return false;
     return self::normalizePhoto($photo);
@@ -99,8 +104,8 @@ class DatabaseMySql implements DatabaseInterface
     if(!$photo)
       return false;
 
-    $photo_prev = getDatabase()->one("SELECT * FROM photo WHERE dateTaken> :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken ASC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
-    $photo_next = getDatabase()->one("SELECT * FROM photo WHERE dateTaken< :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
+    $photo_prev = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE dateTaken> :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken ASC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
+    $photo_next = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE dateTaken< :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
 
     $ret = array();
     if($photo_prev)
@@ -124,7 +129,7 @@ class DatabaseMySql implements DatabaseInterface
     $photo['actions'] = array();
     if($photo)
     {
-      $actions = getDatabase()->all("SELECT * FROM action WHERE targetType='photo' AND targetId=:id",
+      $actions = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}action` WHERE targetType='photo' AND targetId=:id",
       	       array(':id' => $id));
       if(!empty($actions))
       {
@@ -177,19 +182,18 @@ class DatabaseMySql implements DatabaseInterface
     if($offset)
       $offset_sql = "OFFSET {$offset}";
 
-    $photos = getDatabase()->all("SELECT * FROM photo {$where} {$sortBy} LIMIT {$limit} {$offset_sql}");
+    $photos = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}photo` {$where} {$sortBy} LIMIT {$limit} {$offset_sql}");
     if(empty($photos))
       return false;
     for($i = 0; $i < count($photos); $i++)
     {
       $photos[$i] = self::normalizePhoto($photos[$i]);
     }
-    $result = getDatabase()->one("SELECT COUNT(*) FROM photo {$where}");
+    $result = getDatabase()->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}photo` {$where}");
     if(!empty($result))
     {
       $photos[0]['totalRows'] = $result['COUNT(*)'];
     }
-
     return $photos;
   }
 
@@ -202,7 +206,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getTag($tag)
   {
-    $tag = getDatabase()->one('SELECT * FROM tag WHERE id=:id', array(':id' => $tag));
+    $tag = getDatabase()->one('SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE id=:id', array(':id' => $tag));
     // TODO this should be in the normalize method
     if($tag['params'])
       $tag = array_merge($tag, json_decode($tag['params'], 1));
@@ -219,7 +223,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getTags($filter = array())
   {
-    $tags = getDatabase()->all("SELECT * FROM tag WHERE `count` IS NOT NULL AND `count` > '0' AND id IS NOT NULL ORDER BY id");
+    $tags = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `count` IS NOT NULL AND `count` > '0' AND id IS NOT NULL ORDER BY id");
     foreach($tags as $key => $tag)
     {
       // TODO this should be in the normalize method
@@ -237,7 +241,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getUser()
   {
-    $res = getDatabase()->one("SELECT * FROM user WHERE id='1'");
+    $res = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE id='1'");
     if($res)
     {
       return self::normalizeUser($res);
@@ -300,7 +304,7 @@ class DatabaseMySql implements DatabaseInterface
       $bindings = $params['::bindings'];
       $stmt = self::sqlUpdateExplode($params, $bindings);
       $bindings[':id'] = $id;
-      $res = getDatabase()->execute("UPDATE photo SET {$stmt} WHERE id=:id", $bindings);
+      $res = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}photo` SET {$stmt} WHERE id=:id", $bindings);
     }
     if(!empty($versions))
       $resVersions = $this->postVersions($id, $versions);
@@ -323,7 +327,7 @@ class DatabaseMySql implements DatabaseInterface
     $stmtIns = self::sqlInsertExplode($params);
     $stmtUpd = self::sqlUpdateExplode($params);
 
-    $result = getDatabase()->execute("INSERT INTO tag ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']}) ON DUPLICATE KEY UPDATE {$stmtUpd}");
+    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}tag` ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']}) ON DUPLICATE KEY UPDATE {$stmtUpd}");
     return true;
   }
 
@@ -360,7 +364,7 @@ class DatabaseMySql implements DatabaseInterface
     $justTags = array_keys($tagsToUpdate);
 
     // TODO call getTags instead
-    $res = getDatabase()->all("SELECT * FROM tag  WHERE id IN ('" . implode("','", $justTags) . "')");
+    $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE id IN ('" . implode("','", $justTags) . "')");
     if(!empty($res))
     {
       foreach($res as $val)
@@ -395,7 +399,7 @@ class DatabaseMySql implements DatabaseInterface
   public function postUser($id, $params)
   {
     $stmt = self::sqlUpdateExplode($params);
-    $res = getDatabase()->execute("UPDATE user SET {$stmt} WHERE id=:id", array(':id' => $id));
+    $res = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}user` SET {$stmt} WHERE id=:id", array(':id' => $id));
     return $res = 1;
   }
 
@@ -410,7 +414,7 @@ class DatabaseMySql implements DatabaseInterface
   public function putAction($id, $params)
   {
     $stmt = self::sqlInsertExplode($params);
-    $result = getDatabase()->execute("INSERT INTO action (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}action` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return true;
   }
 
@@ -449,7 +453,7 @@ class DatabaseMySql implements DatabaseInterface
     $params = self::preparePhoto($id, $params);
     $bindings = $params['::bindings'];
     $stmt = self::sqlInsertExplode($params, $bindings);
-    $result = getDatabase()->execute("INSERT INTO photo ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
+    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}photo` ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
     return true;
   }
 
@@ -481,7 +485,7 @@ class DatabaseMySql implements DatabaseInterface
   public function putUser($id, $params)
   {
     $stmt = self::sqlInsertExplode($params);
-    $result = getDatabase()->execute("INSERT INTO user (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}user` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return true;
   }
 
@@ -523,7 +527,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function getPhotoVersions($id)
   {
-    $versions = getDatabase()->all("SELECT `key`,path FROM photoVersion WHERE id=:id",
+    $versions = getDatabase()->all("SELECT `key`,path FROM `{$this->mySqlTablePrefix}photoVersion` WHERE id=:id",
                  array(':id' => $id));
     if(empty($versions))
       return false;
@@ -711,7 +715,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       // TODO this is gonna fail if we already have the version -- hfiguiere
       // Possibly use REPLACE INTO? -- jmathai
-      getDatabase()->execute("INSERT INTO photoVersion (id, `key`, path) VALUES('{$id}', '{$key}', '{$value}')");
+      getDatabase()->execute("INSERT INTO {$this->mySqlTablePrefix}photoVersion (id, `key`, path) VALUES('{$id}', '{$key}', '{$value}')");
     }
     // TODO, what type of return value should we have here -- jmathai
     return true;
