@@ -23,6 +23,9 @@ class EpiDatabase
     return self::$instances[$hash];
   }
   
+  /** 
+   * @return -1 in case of error
+   */
   public function execute($sql = false, $params = array())
   {
     $this->init();
@@ -30,7 +33,7 @@ class EpiDatabase
     {
       $sth = $this->prepare($sql, $params);
       if(!$sth)
-        return false;
+        return -1;
       else if(preg_match('/insert/i', $sql))
         return $this->dbh->lastInsertId();
       else
@@ -39,7 +42,7 @@ class EpiDatabase
     catch(PDOException $e)
     {
       EpiException::raise(new EpiDatabaseQueryException("Query error: {$e->getMessage()} - {$sql}"));
-      return false;
+      return -1;
     }
   }
   
