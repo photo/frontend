@@ -329,9 +329,14 @@ class Photo
         getLogger()->info("Photo ({$id}) successfully stored to the database");
         return $id;
       }
+      else 
+      {
+        getLogger()->warn("Photo ({$id}) could NOT be stored to the database");
+        return false;
+      }
     }
 
-    getLogger()->info("Photo ({$id}) could NOT be stored to the file system");
+    getLogger()->warn("Photo ({$id}) could NOT be stored to the file system");
     return false;
   }
 

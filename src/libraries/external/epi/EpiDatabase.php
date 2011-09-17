@@ -29,7 +29,9 @@ class EpiDatabase
     try
     {
       $sth = $this->prepare($sql, $params);
-      if(preg_match('/insert/i', $sql))
+      if(!$sth)
+        return false;
+      else if(preg_match('/insert/i', $sql))
         return $this->dbh->lastInsertId();
       else
         return $sth->rowCount();
@@ -100,7 +102,14 @@ class EpiDatabase
     try
     {
       $sth = $this->dbh->prepare($sql, array(PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY));
-      $sth->execute($params);
+      $success = $sth->execute($params);
+      if(!$success)
+      {
+        $err = $sth->errorInfo();
+        $errmsg = $err[2];
+        EpiException::raise(new EpiDatabaseQueryException("Query error: {$errmsg} - {$sql}"));
+        return false;
+      }
       return $sth;
     }
     catch(PDOException $e)
