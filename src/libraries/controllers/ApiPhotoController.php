@@ -292,6 +292,10 @@ class ApiPhotoController extends BaseController
       $returnSizes = $attributes['returnSizes'];
       unset($attributes['returnSizes']);
     }
+    if(isset($attributes['crumb']))
+    {
+      unset($attributes['crumb']);
+    }
 
     $photoId = false;
     // TODO call API
