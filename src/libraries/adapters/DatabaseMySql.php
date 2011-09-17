@@ -327,7 +327,7 @@ class DatabaseMySql implements DatabaseInterface
     $stmtUpd = self::sqlUpdateExplode($params);
 
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}tag` ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']}) ON DUPLICATE KEY UPDATE {$stmtUpd}");
-    return (isset($result) && ($result != false));
+    return ($result != -1);
   }
 
   /**
@@ -414,7 +414,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $stmt = self::sqlInsertExplode($params);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}action` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
-    return (isset($result) && ($result != false));
+    return ($result != -1);
   }
 
   /**
@@ -453,7 +453,7 @@ class DatabaseMySql implements DatabaseInterface
     $bindings = $params['::bindings'];
     $stmt = self::sqlInsertExplode($params, $bindings);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}photo` ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
-    return (isset($result) && ($result != false));
+    return ($result != -1);
   }
 
   /**
@@ -714,9 +714,9 @@ class DatabaseMySql implements DatabaseInterface
     {
       // TODO this is gonna fail if we already have the version -- hfiguiere
       // Possibly use REPLACE INTO? -- jmathai
-      getDatabase()->execute("INSERT INTO {$this->mySqlTablePrefix}photoVersion (id, `key`, path) VALUES('{$id}', '{$key}', '{$value}')");
+      $result = getDatabase()->execute("INSERT INTO {$this->mySqlTablePrefix}photoVersion (id, `key`, path) VALUES('{$id}', '{$key}', '{$value}')");
     }
     // TODO, what type of return value should we have here -- jmathai
-    return true;
+    return ($result != 1);
   }
 }
