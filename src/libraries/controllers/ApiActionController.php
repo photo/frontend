@@ -38,11 +38,12 @@ class ApiActionController extends BaseController
     $params['targetId'] = $targetId;
     $params['targetType'] = $targetType;
     $params['email'] = getSession()->get('email');
+    unset($params['crumb']);
     $id = Action::add($params);
 
     if($id)
       return self::success("Action {$id} created on {$targetType} {$targetId}", array_merge(array('id' => $id), $params));
     else
-      return self::failure("Error creating action {$id} on {$targetType} {$targetId}", false);
+      return self::error("Error creating action {$id} on {$targetType} {$targetId}", false);
   }
 }
