@@ -12,8 +12,7 @@ class DatabaseMySql implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword;
-  private $mySqlTablePrefix;
+  private $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
 
   /**
     * Constructor
@@ -328,7 +327,7 @@ class DatabaseMySql implements DatabaseInterface
     $stmtUpd = self::sqlUpdateExplode($params);
 
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}tag` ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']}) ON DUPLICATE KEY UPDATE {$stmtUpd}");
-    return true;
+    return (isset($result) && ($result != false));
   }
 
   /**
@@ -415,7 +414,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $stmt = self::sqlInsertExplode($params);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}action` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
-    return true;
+    return (isset($result) && ($result != false));
   }
 
   /**
@@ -454,7 +453,7 @@ class DatabaseMySql implements DatabaseInterface
     $bindings = $params['::bindings'];
     $stmt = self::sqlInsertExplode($params, $bindings);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}photo` ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
-    return true;
+    return (isset($result) && ($result != false));
   }
 
   /**
