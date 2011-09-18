@@ -159,7 +159,7 @@ class DatabaseMySql implements DatabaseInterface
           case 'tags':
             if(!is_array($value))
               $value = (array)explode(',', $value);
-            $where = $this->buildWhere($where, "tags IN('" . implode("','", $value) . "')");
+            $where = $this->buildWhere($where, ' MATCH(tags) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)');
             break;
           case 'page':
             if($value > 1)
@@ -340,7 +340,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postTags($params)
   {
-    $res = true;
+    if(empty($params))
+      return true;
     foreach($params as $tagObj)
     {
       $res = $this->postTag($tagObj['id'], $tagObj);
@@ -658,7 +659,7 @@ class DatabaseMySql implements DatabaseInterface
     $bindings = array();
     $params['id'] = $id;
     if(isset($params['tags']) && is_array($params['tags']))
-      $params['tags'] = implode(',', $params['tags']);
+      $params['tags'] = implode(',', $params['tags']) ;
 
     $exif_keys = array('exifOrientation' => 0,
                        'exifCameraMake' => 0,
