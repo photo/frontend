@@ -28,7 +28,7 @@ echo "===================================================="
 echo ""
 echo ""
 
-apt-get install --assume-yes --quiet apache2 php5 libapache2-mod-php5 php5-curl
+apt-get install --assume-yes --quiet apache2 php5 libapache2-mod-php5 php5-curl curl
 a2enmod rewrite
 
 echo ""
@@ -102,6 +102,15 @@ echo ""
 
 /etc/init.d/apache2 restart
 
+# finding IP address and compensating for possible EC2 installation
+EC2=`curl --silent --connect-timeout 1 http://169.254.169.254/latest/meta-data/public-hostname`
+if [[ $EC2 != "" ]]; 
+then
+	IP=`echo $EC2 | sed -rn 's/ec2-(.*?)\.compute.*/\1/p' | sed 's/-/./g'`
+else
+	IP=`ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'`
+fi
+
 echo ""
 echo ""
 echo ""
@@ -114,6 +123,10 @@ echo "brand new installation of OpenPhoto."
 echo ""
 echo ""
 echo "Took $SECONDS seconds to install."
+echo ""
+echo ""
+echo "Now you can test your installation by directing your"
+echo "browser to $IP"
 echo "===================================================="
 echo "****************************************************"
 echo ""
