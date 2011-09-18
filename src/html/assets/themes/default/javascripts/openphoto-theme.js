@@ -48,13 +48,9 @@ var opTheme = (function() {
         return false;
       },
       searchByTags: function(ev) {
+        ev.preventDefault();
         var form = $(ev.target).parent(),
           tags = $(form.find('input[name=tags]')[0]).val();
-        // TODO ajaxify
-        /*if(tags.length > 0)
-          location.href = location.pathname + '#/photos/tags-'+tags;
-        else
-          location.href = location.pathname + '#/photos';*/
 
         if(tags.length > 0)
           location.href = '/photos/tags-'+tags;

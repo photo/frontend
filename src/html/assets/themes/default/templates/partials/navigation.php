@@ -8,7 +8,7 @@
   <li id="nav-search" <?php if(Utility::isActiveTab('search')) { ?> class="on" <?php } ?>>
     <a role="button" class="nav-item-click">Search</a>
     <div id="searchbar">
-      <form method="get" id="form-tag-search">
+      <form action-"/photos" method="get" id="form-tag-search">
         <input type="text" name="tags" placeholder="Enter a tag" class="select"><button type="submit" class="search-click">Search</button>
       </form>
     </div>
