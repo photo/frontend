@@ -301,16 +301,20 @@ var opTheme = (function() {
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
         opTheme.front.init($('div.front-slideshow'));
 
-        $("form#upload-form").fileupload({
-          url: '/photo/upload.json',
-          singleFileUploads: true,
-          autoUpload: false
-        })
-        .bind('fileuploadadd', opTheme.upload.handlers.added)
-        .bind('fileuploaddone', opTheme.upload.handlers.done)
-        .bind('fileuploadprogressall', opTheme.upload.handlers.progressall)
-        .bind('fileuploadprogress', opTheme.upload.handlers.progress);
-
+        var uploadOptions = {
+            uploadPath : '/photo/upload.json'
+        };
+        OP.Util.upload.init(uploadOptions);
+        // $("form#upload-form").fileupload({
+        //           url: '/photo/upload.json',
+        //           singleFileUploads: true,
+        //           autoUpload: false
+        //         })
+        //         .bind('fileuploadadd', opTheme.upload.handlers.added)
+        //         .bind('fileuploaddone', opTheme.upload.handlers.done)
+        //         .bind('fileuploadprogressall', opTheme.upload.handlers.progressall)
+        //         .bind('fileuploadprogress', opTheme.upload.handlers.progress);
+        
         $('form.validate').each(opTheme.formHandlers.init);
       }
     },
