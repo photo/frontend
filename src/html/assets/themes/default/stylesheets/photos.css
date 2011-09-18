@@ -48,6 +48,10 @@
     margin-right: 1em;
 }
 
+.photos .tags, .photos .geo {
+	display: inline-block;
+}
+
 .hastags {
     clear: left;
     float: left;
@@ -134,7 +138,7 @@
 
 .image-pagination a {
     height: 50px;
-    width: 50px;
+    width: 65px;
     display: block;
 }
 
@@ -143,7 +147,7 @@
 }
 
 .image-pagination .previous a {
-    margin-left: 15px;
+	background-position: 15px 0px !important;
 }
 
 .image-pagination .next {
