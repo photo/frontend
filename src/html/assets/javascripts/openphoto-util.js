@@ -531,6 +531,249 @@
             }
 
         };
+        
+        
+        /**
+        * Object containing everything needed to upload photos
+        *
+        * See initUpload to get things started
+        */
+        this.upload = {
+            // default options
+            options : {
+                simultaneousUploadLimit : 1,
+                frameId : "uploader-frame",
+                dropZoneId : "drop-zone",
+                uploadPath : '/photo/upload.json',
+                dragEnterCallback : function(){},
+                dragLeaveCallback : function(){},
+                dragDropCallback : function(){},
+                duplicateCallback : function(){},
+                notImageCallback : function(){},
+                pushToUICallback : function(a){OP.Util.upload._pushToUI(a)},
+                startingFileUploadCallback : function(a){OP.Util.upload._startingFileUpload(a)},
+                allowDuplicates : false
+            },
+            
+            droppedFiles : {},
+            simultaneousUploads : 0,
+            dropZone : null,
+            // stack for managing which file gets uploaded next
+            uploadQueue : [],
+            uploadQueueIndex : 0,
+            xhrs : [],
+            
+            
+            /**
+            * initialize upload area and functions
+            * @param {object} options - object defining options to override defaults
+            * @return {void}
+            * @method upload.initUpload
+            */
+            init : function(options) {
+                /*
+                    TODO actually merge given options with defaults
+                */
+                var that = this;
+                if (window.File && window.FileReader) {
+                    that.dropZone = document.getElementById(that.options.dropZoneId);
+                    this._uploadEventHandlers();
+                } else {
+                    this._fallbackUploader();
+                }
+            },
+            
+            /**
+            * enable or disable duplicate photo name checking
+            * @param {bool} state should duplicates be allowed?
+            * @return {void}
+            * @method upload.allowDuplicates
+            */
+            allowDuplicates : function(state) {
+                if (state) {
+                    this.options.allowDuplicates = true;
+                } else {
+                    this.options.allowDuplicates = false;
+                }
+            },
+            
+            _uploadEventHandlers : function() {
+                /*
+                    TODO prevent page from leaving if user drops photo in wrong 
+                    place or hits key to navigate before all uploads are done
+                */
+                var that = this;
+                that._addListener(that.dropZone, 'dragenter', that._handleDragEnter, that);
+                that._addListener(that.dropZone, 'dragover', that._handleDragOver, that);
+                that._addListener(that.dropZone, 'dragleave', that._handleDragLeave, that);
+                that._addListener(that.dropZone, 'drop', that._handleFileDrop, that);
+            },
+            
+            /**
+            * wrapper for addEventListener to enable passing along the 'that' context
+            * @param target dom element to attach to
+            * @param event event to listen for
+            * @param callback the function to call when event listener fires
+            * @param cantext to pass along
+            **/
+            _addListener : function(target, event, callback, context) {
+                if (!target) {
+                    log("upload.options.dropZoneID probably not properly set or not on page");
+                }
+                target.addEventListener(event, function(e) {
+                    callback(e,context);
+                }, false);
+            },
+            
+            _handleDragEnter : function(e, that) {
+                log("enter");
+                e.stopPropagation();
+                e.preventDefault();
+                that.options.dragEnterCallback()
+            },
+            
+            _handleDragLeave : function(e, that) {
+                log("leave");
+                e.stopPropagation();
+                e.preventDefault();
+                that.options.dragLeaveCallback();
+            },
+            
+            /**
+            * when user's mouse moves over dropzone while draggin files
+            *
+            * if we don't prevent default, dropping the file 
+            * wil cause the browser to redirect to the file location
+            **/
+            _handleDragOver : function(e, that) {
+                log("over");
+                e.stopPropagation();
+                e.preventDefault();
+            },
+            
+            _handleFileDrop : function(e, that) {
+                log("drop");
+                e.stopPropagation();
+                e.preventDefault();
+                that.options.dragDropCallback();
+                var files = e.dataTransfer.files;
+                that._checkForDuplicates(files);
+            },
+            
+            _checkForDuplicates : function(files) {
+                log("duplicates");
+                var that = this;
+                if (!that.allowDuplicates) {
+                    var filteredFiles = [];
+                    for (var i=0; i < files.length; i++) {
+                        if (that.droppedFiles[files[i].name]) {
+                            that.options.duplicateCallback();
+                        } else {
+                            filteredFiles.push(files[i]);
+                        }
+                        that.droppedFiles[files[i].name] = files[i];
+                    }
+                    files = filteredFiles;
+                }
+                that._validateIsImage(files);
+            },
+            
+            _validateIsImage : function(files) {
+                log("image");
+                var that = this;
+                /*
+                    TODO actually check here and callback not image handler
+                */
+                that._indexAndStack(files);
+            },
+            
+            /**
+            * each file receives a reference number so that it can be correlated to
+            * its coresponding UI representation
+            */
+            _indexAndStack : function(files) {
+                log("index and stack");
+                var that = this;
+                for (var i=0; i < files.length; i++) {
+                    files[i]["queueIndex"] = that.uploadQueue.length;
+                    that.uploadQueue.push(files[i]);
+                }
+                that.options.pushToUICallback(files);
+            },
+            
+            
+            // theme must call this to start uploading files
+            kickOffUploads : function() {
+                log("kick off");
+                var that = this;
+                log(that.simultaneousUploads != that.options.simultaneousUploadLimit);
+                if (that.simultaneousUploads != that.options.simultaneousUploadLimit) {
+                    // check to see if there are files to upload
+                    log(that.uploadQueue[that.uploadQueueIndex]);
+                    if (that.uploadQueue[that.uploadQueueIndex]) {
+                        // pick file to upload
+                        var file = that.uploadQueue[that.uploadQueueIndex];
+                        that.uploadQueueIndex++;
+                        // let theme know we are starting on that file
+                        that.options.startingFileUploadCallback(file);
+                        // send to server
+                        that._ajaxToServer(file);
+                    }
+                }
+            },
+            
+            _ajaxToServer : function(file) {
+                log("send");
+                var that = this;
+                var xhr = new XMLHttpRequest();
+                that.xhrs.push(xhr);
+                xhr.open("POST", that.options.uploadPath, true);  
+                // xhr.setRequestHeader("X_FILENAME", file.name);  
+                var reader = new FileReader();
+                reader.readAsDataURL(file);
+                xhr.send(file);
+                log("sending file");
+            },
+            
+            //////////////////////////////////////////////////////
+            // DEFAULT FUNCTIONS THAT CAN BE OVERRIDDEN BY THEME
+            //////////////////////////////////////////////////////
+            // default for options.pushToUICallback(files)
+            _pushToUI : function(files) {
+                log("push to ui");
+                var that = this;
+                var html = [];
+                for (var i=0; i < files.length; i++) {
+                    var size = (parseInt(files[i].size) / 1048576).toFixed(2) + "MB";
+                    html.push("<div id='file-",files[i]["queueIndex"],"' class='photo'><span class='name'>",files[i].name,"</span><span class='size'>",size,"</span><div class='progress'></div></div>");
+                }
+                log(html.join(""));
+                /*
+                    TODO handle yui library implementations or will jQuery always be available?
+                */
+                log("#"+that.options.dropZoneId);
+                $("#"+that.options.dropZoneId).append(html.join(""));
+                that.kickOffUploads();
+            },
+            
+            // default for options.startingFileUploadCallback(file)
+            _startingFileUpload : function(file) {
+                /*
+                    TODO will jquery always be available?
+                */
+                $("#file-"+file["queueIndex"]).addClass("uploading");
+            },
+            
+            // END OF THEME DEFAULTS
+            /////////////////////////////////////////////////////
+            
+            _fallbackUploader : function() {
+                /*
+                    TODO actually fallback to other uploader
+                */
+                alert("falling back to different uploader because your browser doesn't support html5 drag and drop");
+            }
+        }; // end of upload function
 
 
     }
