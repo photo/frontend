@@ -362,6 +362,10 @@ class ApiPhotoController extends BaseController
         Tag::updateTagCounts($existingTags, $updatedTags);
       }
     }
+    if(isset($_POST['crumb']))
+    {
+      unset($_POST['crumb']);
+    }
     $photoUpdatedId = Photo::update($id, $_POST);
     return self::success("photo {$id} updated", $photoUpdatedId);
   }
