@@ -272,23 +272,24 @@ class SetupController
       $fsObj = getFs();
       $dbObj = getDb();
 
+      $user = exec("whoami");
       if(!$fsObj->initialize())
       {
         if($usesAws)
-          $fsErrors[] = 'Unable to initialize s3';
+          $fsErrors[] = 'We were unable to initialize your S3 bucket.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/s3/">signed up for AWS S3</a>.</li><li>Double check your AWS credentials.</li><li>S3 bucket names are globally unique, make sure yours isn\'t already in use by someone else.</li><li>S3 bucket names can\'t have certain special characters. Try using just alpha-numeric characters and periods.</li></ul>';
         else if($usesLocalFs)
-          $fsErrors[] = 'Unable to initialize the file system';
+          $fsErrors[] = "We were unable to set up your local file system using <em>{$fs->rsRoot}</em>. Make sure that the following user has proper permissions ({$user}).";
         else
-          $fsErrors[] = 'File system error';
+          $fsErrors[] = 'An unknown error occurred while setting up your file system. Check your error logs to see if there\'s more information about the error.';
       }
       if(!$dbObj->initialize())
       {
         if($usesAws)
-          $dbErrors[] = 'Unable to initialize simpledb';
+          $dbErrors[] = 'We were unable to initialize your SimpleDb domains.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/simpledb/">signed up for AWS SimpleDb</a>.</li><li>Double check your AWS credentials.</li><li>SimpleDb domains cannot contain special characters such as periods.</li></ul>';
         else if($usesMySql)
-          $dbErrors[] = 'Unable to initialize mysql';
+          $dbErrors[] = 'We were unable to properly connect to your MySql database server. Please verify that the host, username and password are correct and have proper permissions to create a database.';
         else
-          $dbErrors[] = 'Database error';
+          $dbErrors[] = 'An unknown error occurred while setting up your file system. Check your error logsto see if there\'s more information about the error.';
       }
 
       if($fsErrors === false && $dbErrors === false)
@@ -297,7 +298,7 @@ class SetupController
         if($writeErrors === false)
           getRoute()->redirect('/?m=welcome');
         else
-          $writeErrors[] = 'Error writing settings ini file';
+          $writeErrors[] = "We were unable to save your settings file. Please make sure that the following user has proper permissions to write to src/configs ({$user}).";
       }
     }
 
@@ -351,19 +352,21 @@ class SetupController
       $user = 'Apache user';
 
     if(!is_writable($configDir))
-      $errors[] = "Please make sure {$user} can write to {$configDir}";
+      $errors[] = "Insufficient privileges to complete setup.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$configDir}</em>.</li></ul>";
 
     if(!file_exists($generatedDir))
     {
       $createDir = mkdir($generatedDir, 0700);
       if(!$createDir)
-        $errors[] = "An error occurred while trying to create {$generatedDir}";
+        $errors[] = "Could not create configuration directory.<ul><li>Make sure the user <um>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
     }
     elseif(!is_writable($generatedDir))
-      $errors[] = "{$generatedDir} exists but is not writable by {$user}";
+    {
+      $errors[] = "Directory exist but is not writable.<ul><li>Make sure the user <um>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
+    }
 
     if(empty($imageLibs))
-      $errors[] = "The Imagick library, Gmagick library, or GD library do not exist";
+      $errors[] = 'No suitable image library exists.<ul><li>Make sure that one of the following are installed: <em><a href="http://php.net/imagick">Imagick</a></em>, <em><a href="http://php.net/gmagick">Gmagick</a></em>, or <em><a href="http://php.net/gd">GD</a></em>.</li></ul>';
 
     return $errors;
   }
