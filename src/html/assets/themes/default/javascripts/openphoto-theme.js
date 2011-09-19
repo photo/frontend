@@ -301,10 +301,70 @@ var opTheme = (function() {
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
         opTheme.front.init($('div.front-slideshow'));
 
-        var uploadOptions = {
-            uploadPath : '/photo/upload.json'
+        var options = {
+          simultaneousUploadLimit : 3,
+          frameId : "uploader-frame",
+          dropZoneId : "drop-zone",
+          uploadPath : '/photo/upload.json',
+          returnSizes : "32x32xCR",
+          // dragEnterCallback : function(){log("enter")},
+          // dragLeaveCallback : function(){log("leave")},
+          // dragDropCallback : function(){log("drop")},
+          // duplicateCallback : function(){log("duplicate")},
+          // notImageCallback : function(){log("not image")},
+          // pushToUICallback : function(a){log("push"); log(a); OP.Util.upload.kickOffUploads();},
+          // uploadStartCallback : function(a){log("upload start")},
+          // uploadProgressCallback : function(a, b){log("progress"); log(a); log(b+"%");},
+          // uploadFinishedCallback : function(){log("finished")},
+          allowDuplicates : false,
         };
-        OP.Util.upload.init(uploadOptions);
+        var $dropZone = $("#drop-zone");
+        options.dragEnterCallback = function() {
+          $dropZone.removeClass("waiting active").addClass("hover");
+        };
+        options.dragLeaveCallback = function() {
+          $dropZone.removeClass("hover").addClass("active");
+        };
+        options.dragDropCallback = function() {
+          $dropZone.removeClass("hover").addClass("active");
+        };
+        options.duplicateCallback = function() {
+          opTheme.messageBox("duplicate image");
+        };
+        options.notImageCallback = function() {
+          opTheme.messageBox("not an image file");
+        };
+        options.pushToUICallback = function(files) {
+          var html = [];
+          for (var i=0; i < files.length; i++) {
+            var size = (parseInt(files[i].size) / 1048576).toFixed(2) + "MB";
+            html.push("<div id='file-",files[i]["queueIndex"],"' class='photo waiting'><span class='name'>",files[i].name,"</span><span class='size'>",size,"</span><span class='progress'></span></div>");
+          }
+          $dropZone.append(html.join(""));
+          OP.Util.upload.kickOffUploads();
+        };
+        options.uploadStartCallback = function(queueIndex) {
+          log("uploading "+queueIndex);
+          $("#file-"+queueIndex).removeClass("waiting").addClass("uploading");
+          /*
+            TODO visual indicator for starting
+          */
+        };
+        options.uploadProgressCallback = function(queueIndex, percent) {
+          log(queueIndex+" is at "+percent+"%");
+          $("#file-"+queueIndex+" .progress").animate({
+            "width":percent+"%"
+          }, 500);
+        };
+        options.uploadFinishedCallback = function(queueIndex, status, response) {
+          log(queueIndex+" finished");
+          $("#file-"+queueIndex+" .progress").remove();
+          $("#file-"+queueIndex).removeClass("uploading").addClass("finished").append("<img class='thumb' src='"+response.result.path32x32xCR+"'/>");
+        };
+        
+        options.crumb = $("#uploader-frame").attr("crumb");
+        
+        OP.Util.upload.init(options);
         // $("form#upload-form").fileupload({
         //           url: '/photo/upload.json',
         //           singleFileUploads: true,
@@ -318,6 +378,7 @@ var opTheme = (function() {
         $('form.validate').each(opTheme.formHandlers.init);
       }
     },
+    
     message: {
       error: function(msg) {
         alert(msg);

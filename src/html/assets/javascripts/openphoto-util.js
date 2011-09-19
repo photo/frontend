@@ -550,14 +550,18 @@
                 dragDropCallback : function(){},
                 duplicateCallback : function(){},
                 notImageCallback : function(){},
-                pushToUICallback : function(a){OP.Util.upload._pushToUI(a)},
-                startingFileUploadCallback : function(a){OP.Util.upload._startingFileUpload(a)},
-                allowDuplicates : false
+                pushToUICallback : function(){},
+                uploadStartCallback : function(){},
+                uploadProgressCallback : function(){},
+                uploadFinishedCallback : function(){},
+                allowDuplicates : false,
+                returnSizes : "25x25xCR",
+                crumb : null
             },
             
+            parent : this,
             droppedFiles : {},
             simultaneousUploads : 0,
-            dropZone : null,
             // stack for managing which file gets uploaded next
             uploadQueue : [],
             uploadQueueIndex : 0,
@@ -570,11 +574,9 @@
             * @return {void}
             * @method upload.initUpload
             */
-            init : function(options) {
-                /*
-                    TODO actually merge given options with defaults
-                */
+            init : function(themeOptions) {
                 var that = this;
+                that.options = that.parent.merge(that.options, themeOptions);
                 if (window.File && window.FileReader) {
                     that.dropZone = document.getElementById(that.options.dropZoneId);
                     this._uploadEventHandlers();
@@ -599,7 +601,7 @@
             
             _uploadEventHandlers : function() {
                 /*
-                    TODO prevent page from leaving if user drops photo in wrong 
+                    TODO prevent page from leaving with confirmation if user drops photo in wrong 
                     place or hits key to navigate before all uploads are done
                 */
                 var that = this;
@@ -626,14 +628,12 @@
             },
             
             _handleDragEnter : function(e, that) {
-                log("enter");
                 e.stopPropagation();
                 e.preventDefault();
                 that.options.dragEnterCallback()
             },
             
             _handleDragLeave : function(e, that) {
-                log("leave");
                 e.stopPropagation();
                 e.preventDefault();
                 that.options.dragLeaveCallback();
@@ -646,13 +646,11 @@
             * wil cause the browser to redirect to the file location
             **/
             _handleDragOver : function(e, that) {
-                log("over");
                 e.stopPropagation();
                 e.preventDefault();
             },
             
             _handleFileDrop : function(e, that) {
-                log("drop");
                 e.stopPropagation();
                 e.preventDefault();
                 that.options.dragDropCallback();
@@ -661,7 +659,6 @@
             },
             
             _checkForDuplicates : function(files) {
-                log("duplicates");
                 var that = this;
                 if (!that.allowDuplicates) {
                     var filteredFiles = [];
@@ -679,11 +676,11 @@
             },
             
             _validateIsImage : function(files) {
-                log("image");
                 var that = this;
                 /*
                     TODO actually check here and callback not image handler
                 */
+                // that.options.notImageCallback();
                 that._indexAndStack(files);
             },
             
@@ -692,7 +689,6 @@
             * its coresponding UI representation
             */
             _indexAndStack : function(files) {
-                log("index and stack");
                 var that = this;
                 for (var i=0; i < files.length; i++) {
                     files[i]["queueIndex"] = that.uploadQueue.length;
@@ -704,68 +700,53 @@
             
             // theme must call this to start uploading files
             kickOffUploads : function() {
-                log("kick off");
                 var that = this;
-                log(that.simultaneousUploads != that.options.simultaneousUploadLimit);
+                // make sure we don't upload more at one time than constrained to
                 if (that.simultaneousUploads != that.options.simultaneousUploadLimit) {
                     // check to see if there are files to upload
-                    log(that.uploadQueue[that.uploadQueueIndex]);
                     if (that.uploadQueue[that.uploadQueueIndex]) {
                         // pick file to upload
                         var file = that.uploadQueue[that.uploadQueueIndex];
                         that.uploadQueueIndex++;
                         // let theme know we are starting on that file
-                        that.options.startingFileUploadCallback(file);
+                        that.options.uploadStartCallback(file.queueIndex);
                         // send to server
                         that._ajaxToServer(file);
+                        // if we are still under the simultaneousUploads limit, lets try another
+                        that.kickOffUploads();
                     }
                 }
             },
             
             _ajaxToServer : function(file) {
-                log("send");
                 var that = this;
+                
+                that.simultaneousUploads++;
                 var xhr = new XMLHttpRequest();
                 that.xhrs.push(xhr);
+                
+                var formData = new FormData();
+                formData.append("crumb",that.options.crumb);
+                formData.append("returnSizes",that.options.returnSizes);
+                formData.append("photo",file);
                 xhr.open("POST", that.options.uploadPath, true);  
-                // xhr.setRequestHeader("X_FILENAME", file.name);  
-                var reader = new FileReader();
-                reader.readAsDataURL(file);
-                xhr.send(file);
-                log("sending file");
+                
+                xhr.onload = function(e) {
+                    that.simultaneousUploads--;
+                    // tell theme we finished
+                    that.options.uploadFinishedCallback(file.queueIndex, xhr.status, JSON.parse(xhr.response));
+                    // rinse and repeat
+                    that.kickOffUploads();
+                };
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        var progress = Math.round((e.loaded / e.total)*100);
+                        that.options.uploadProgressCallback(file.queueIndex, progress);
+                    }
+                };
+                
+                xhr.send(formData);
             },
-            
-            //////////////////////////////////////////////////////
-            // DEFAULT FUNCTIONS THAT CAN BE OVERRIDDEN BY THEME
-            //////////////////////////////////////////////////////
-            // default for options.pushToUICallback(files)
-            _pushToUI : function(files) {
-                log("push to ui");
-                var that = this;
-                var html = [];
-                for (var i=0; i < files.length; i++) {
-                    var size = (parseInt(files[i].size) / 1048576).toFixed(2) + "MB";
-                    html.push("<div id='file-",files[i]["queueIndex"],"' class='photo'><span class='name'>",files[i].name,"</span><span class='size'>",size,"</span><div class='progress'></div></div>");
-                }
-                log(html.join(""));
-                /*
-                    TODO handle yui library implementations or will jQuery always be available?
-                */
-                log("#"+that.options.dropZoneId);
-                $("#"+that.options.dropZoneId).append(html.join(""));
-                that.kickOffUploads();
-            },
-            
-            // default for options.startingFileUploadCallback(file)
-            _startingFileUpload : function(file) {
-                /*
-                    TODO will jquery always be available?
-                */
-                $("#file-"+file["queueIndex"]).addClass("uploading");
-            },
-            
-            // END OF THEME DEFAULTS
-            /////////////////////////////////////////////////////
             
             _fallbackUploader : function() {
                 /*
