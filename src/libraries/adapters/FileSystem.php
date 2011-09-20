@@ -13,6 +13,8 @@ interface FileSystemInterface
   public function putPhotos($files);
   public function getHost();
   public function initialize();
+  // TODO enable this
+  //public function inject($name, $value);
 }
 
 /**

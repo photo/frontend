@@ -6,31 +6,10 @@
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 
-// TODO, remove these
-date_default_timezone_set('America/Los_Angeles');
+require sprintf('%s/libraries/initialize.php', dirname(dirname(__FILE__)));
 
-if(isset($_GET['__route__']) && strstr($_GET['__route__'], '.json'))
-  header('Content-type: application/json');
-
-$basePath = dirname(dirname(__FILE__));
-$epiPath = "{$basePath}/libraries/external/epi";
-require "{$epiPath}/Epi.php";
-
-Epi::setPath('base', $epiPath);
-Epi::setPath('config', "{$basePath}/configs");
-Epi::setPath('view', '');
-Epi::init('api','cache','config','form','logger','route','session-php','template','database');
-EpiSession::employ(EpiSession::PHP);
-getSession();
-
-getConfig()->load('defaults.ini');
-getConfig()->load(sprintf('%s/assets/themes/%s/config/settings.ini', dirname(__FILE__), getConfig()->get('site')->theme));
-$configFile = sprintf('%s/generated/%s.ini', Epi::getPath('config'), $_SERVER['HTTP_HOST']);
-if(file_exists($configFile))
+if(getConfig()->get('paths'))
 {
-  getConfig()->load("generated/{$_SERVER['HTTP_HOST']}.ini");
-  // load all dependencies
-  require getConfig()->get('paths')->libraries . '/dependencies.php';
   getRoute()->run();
 }
 elseif(!file_exists($configFile)) // if no config file then load up the setup dependencies
