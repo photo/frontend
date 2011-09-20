@@ -327,7 +327,7 @@ class DatabaseMySql implements DatabaseInterface
     $stmtUpd = self::sqlUpdateExplode($params);
 
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}tag` ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']}) ON DUPLICATE KEY UPDATE {$stmtUpd}");
-    return ($result != -1);
+    return ($result !== false);
   }
 
   /**
@@ -340,6 +340,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postTags($params)
   {
+    $res = true;
     foreach($params as $tagObj)
     {
       $res = $this->postTag($tagObj['id'], $tagObj);
@@ -414,7 +415,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $stmt = self::sqlInsertExplode($params);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}action` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
-    return ($result != -1);
+    return ($result !== false);
   }
 
   /**
@@ -453,7 +454,7 @@ class DatabaseMySql implements DatabaseInterface
     $bindings = $params['::bindings'];
     $stmt = self::sqlInsertExplode($params, $bindings);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}photo` ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
-    return ($result != -1);
+    return ($result !== false);
   }
 
   /**

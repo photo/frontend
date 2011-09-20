@@ -38,7 +38,10 @@ class ApiActionController extends BaseController
     $params['targetId'] = $targetId;
     $params['targetType'] = $targetType;
     $params['email'] = getSession()->get('email');
-    unset($params['crumb']);
+    if(isset($_POST['crumb']))
+    {
+      unset($params['crumb']);
+    }
     $id = Action::add($params);
 
     if($id)
