@@ -41,7 +41,7 @@ class FileSystemLocal implements FileSystemInterface
   {
     $filename = self::normalizePath($filename);
     if(file_exists($filename)) {
-      $tmpname = '/tmp/'.uniqid('opme', true);
+      $tmpname = tempnam(getConfig()->get('server')->tempDir, 'opme');
       copy($filename, $tmpname);
       return $tmpname;
     }
