@@ -310,6 +310,11 @@ class DatabaseSimpleDb implements DatabaseInterface
       return false;
   }
 
+  public function inject($name, $value)
+  {
+    $this->$name = $value;
+  }
+
   /**
     * Update the information for an existing credential.
     * This method overwrites existing values present in $params.

@@ -62,6 +62,11 @@ class FileSystemS3 implements FileSystemInterface
     return $res->isOK() ? $tmpname : false;
   }
 
+  public function inject($name, $value)
+  {
+    $this->$name = $value;
+  }
+
   /**
     * Writes/uploads a new photo to the remote file system.
     *
@@ -76,7 +81,7 @@ class FileSystemS3 implements FileSystemInterface
     $opts = array('fileUpload' => $localFile, 'acl' => $acl, 'contentType' => 'image/jpeg');
     $res = $this->fs->create_object($this->bucket, $remoteFile, $opts);
     if(!$res->isOK())
-      getLogger()->crit(var_export($res));
+      getLogger()->crit('Could not put photo on the file system: ' . var_export($res));
     return $res->isOK();
   }
 
