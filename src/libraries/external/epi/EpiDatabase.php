@@ -24,7 +24,7 @@ class EpiDatabase
   }
   
   /** 
-   * @return -1 in case of error
+   * @return false in case of error
    */
   public function execute($sql = false, $params = array())
   {
@@ -33,7 +33,7 @@ class EpiDatabase
     {
       $sth = $this->prepare($sql, $params);
       if(!$sth)
-        return -1;
+        return false;
       else if(preg_match('/insert/i', $sql))
         return $this->dbh->lastInsertId();
       else
@@ -42,7 +42,7 @@ class EpiDatabase
     catch(PDOException $e)
     {
       EpiException::raise(new EpiDatabaseQueryException("Query error: {$e->getMessage()} - {$sql}"));
-      return -1;
+      return false;
     }
   }
   
