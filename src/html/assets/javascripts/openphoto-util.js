@@ -10,11 +10,11 @@
         OP = {};
     }
 
-    //constants
+    	//constants
     var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
         BROWSER_ID_SRC = 'https://browserid.org/include.js',
-        log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } }
-
+        log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } };
+       	
     
     /**
     * Class that contains all utility functions for OpenPhoto
@@ -50,22 +50,29 @@
         * @property eventMap
         */
         this.eventMap = {
-
-            'action-box-click':'click:action-box',
-            'action-delete-click':'click:action-delete',
-            'action-jump-click':'click:action-jump',
-            'action-post-click':'click:action-post',
-            'login-click':'click:login',
-            'map-jump-click':'click:map-jump',
-            'nav-item-click':'click:nav-item',
-            'pagination-click':'click:pagination',
-            'photo-delete-click':'click:photo-delete',
-            'photo-tag-click':'click:tag',
-            'photo-thumbnail-click':'click:photo-thumbnail',
-            'photo-update-click':'click:photo-update',
-            'search-click':'click:search',
-            'settings-click':'click:settings'
-
+			
+			'click': {
+				'action-box-click':'click:action-box',
+				'action-delete-click':'click:action-delete',
+				'action-jump-click':'click:action-jump',
+				'action-post-click':'click:action-post',
+				'login-click':'click:login',
+				'map-jump-click':'click:map-jump',
+				'nav-item-click':'click:nav-item',
+				'pagination-click':'click:pagination',
+				'photo-delete-click':'click:photo-delete',
+				'photo-tag-click':'click:tag',
+				'photo-thumbnail-click':'click:photo-thumbnail',
+				'photo-update-click':'click:photo-update',
+				'search-click':'click:search',
+				'settings-click':'click:settings'			
+			},
+			
+			'keydown': {
+				37: 'keydown:browse-previous',
+				39: 'keydown:browse-next'
+			}
+			
         };
 
         /**
@@ -104,7 +111,11 @@
 
             //allow the user to override the eventmap if they wish
             if (this.config.eventMap) {
-                this.eventMap = this.merge(this.config.eventMap, this.eventMap)
+            	for (var eType in this.config.eventMap) {
+            		if (this.config.eventMap.hasOwnProperty(eType)) {
+            			this.eventMap[eType] = this.merge(this.config.eventMap[eType], this.eventMap[eType]);
+            		}
+            	}
             }
 
             // we specify what library type in the .ini file
@@ -137,7 +148,8 @@
                 length;
 
             //attach events      
-            this.attachEvent( 'body', 'click', this.onviewevent, this);
+            this.attachEvent( document, 'click', this.onviewevent, this);
+            this.attachEvent( document, 'keydown', this.onkeydownevent, this);
 
             //load additional js in order specified
             for(i=0, j=js.length; i<j; i++) {
@@ -161,10 +173,10 @@
 
             log('[Util] onviewevent: ' + e.target);
 
-            var targ = e.target,
+            var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
                 length = classes.length,
-                map = this.eventMap,
+                map = this.eventMap[e.type],
                 cls;
                 
             while (length--) {
@@ -177,6 +189,55 @@
             }    
   
   
+        };
+        
+        /**
+        * handles keydown events
+        * @param {Event} e
+        * @return {void}
+        * @method onkeydownevent
+        */
+        this.onkeydownevent = function(e) {
+        
+        	log('[Util] keydownevent: ' + e.target);
+        	
+        	var targ = e.target || e.srcElement,
+        		classes = targ.className.split(" "),
+        		length = classes.length,
+        		map = this.eventMap[e.type],
+        		nodeName = targ.nodeName.toLowerCase(),
+        		keyCode = e.keyCode,
+        		cls;
+        		
+        	if (nodeName === "textarea" || nodeName === "input") {
+        	
+        		//i don't think there is a case where the user needs to know
+        		//if the user is inputing text, but just in case, lets fire 
+        		//a custom event on user input
+        		this.fire( 'keydown:user-input', e);
+        	
+        	} else {
+        		
+        		//the event map for key press can be two dimensional, it can be
+        		//keycode, or className then keyCode, if keyCode, fire the custom event
+        		if (map[keyCode]) {
+        			this.fire( map[keyCode], e);
+        		}
+        		        		
+        		//both className and keycode
+        		while (length--) {
+	                cls = classes[length];
+	                if (map[cls] && map[cls][keyCode]) {
+	                    //do not prevent the default action, let the callback
+	                    //function do it if it wants
+	                    this.fire( map[cls][keyCode], e);    
+	                }      
+	            }
+        	
+        	
+        	}
+        	
+        
         };
     
         /* -------------------------------------------------
