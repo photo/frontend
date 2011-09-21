@@ -62,6 +62,14 @@ class FileSystemS3 implements FileSystemInterface
     return $res->isOK() ? $tmpname : false;
   }
 
+  /**
+    * Allows injection of member variables.
+    * Primarily used for unit testing with mock objects.
+    *
+    * @param string $name Name of the member variable
+    * @param mixed $value Value of the member variable
+    * @return void
+    */
   public function inject($name, $value)
   {
     $this->$name = $value;
@@ -131,16 +139,19 @@ class FileSystemS3 implements FileSystemInterface
   {
     getLogger()->info('Initializing file system');
     if(!$this->fs->validate_bucketname_create($this->bucket) || !$this->fs->validate_bucketname_support($this->bucket))
+    {
+      getLogger()->warn("The bucket name you provided ({$this->bucket}) is invalid.");
       return false;
+    }
 
     $buckets = $this->fs->get_bucket_list("/^{$this->bucket}$/");
     if(count($buckets) == 0)
     {
-      getLogger()->info("Bucket {$this->bucket} does not exist, adding");
+      getLogger()->info("Bucket {$this->bucket} does not exist, creating it now");
       $res = $this->fs->create_bucket($this->bucket, AmazonS3::REGION_US_E1, AmazonS3::ACL_PUBLIC);
       if(!$res->isOK())
       {
-        getLogger()->crit('Failed initializing file system: ' . var_export($res, 1));
+        getLogger()->crit('Could not create S3 bucket: ' . var_export($res, 1));
         return false;
       }
     }
