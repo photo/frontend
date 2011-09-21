@@ -36,6 +36,12 @@
         var scope = scope || window;
 
         lib( element ).live(etype, lib.proxy(callback, scope) );
+        
+        //key events need to use bind, for some reason only gets triggered
+        //when you input in textareas or inputs with jQuery
+        if (etype === "keydown" || etype === "keypress" || etype === "keyup") {
+        	lib( element ).bind(etype, lib.proxy(callback, scope) );
+        }
 
     }
 
@@ -51,6 +57,22 @@
 
         lib( element ).die( type );
 
+    }
+    
+    
+    /**
+    * Makes an ajax post request
+    * @param {string} url to make request to
+    * @param {string} post data
+    * @param {Function} XHR callback function
+    * @param {string} format (json/xml)
+    * @return {void}
+    * @method makeRequest
+    */
+    OU.makeRequest = function(url, data, callback, format) {
+    
+    	lib.post(url, data, callback, format);
+    	
     }
 
 

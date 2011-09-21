@@ -7,16 +7,21 @@ var opTheme = (function() {
   return {
     callback: {
       actionDelete: function(ev) {
+      
         ev.preventDefault();
+      
         var el = $(ev.target),
-          url = el.attr('href')+'.json';
-        $.post(url, el.parent().serializeArray(), function(response) {
+          	url = el.attr('href')+'.json';
+      
+        OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 200)
             $(".action-container-"+response.result).hide('medium', function(){ $(this).remove(); });
           else
             opTheme.message.error('Could not delete the photo.');
         }, 'json');
+        
         return false;
+        
       },
       commentJump: function(ev) {
         ev.preventDefault();
@@ -32,16 +37,21 @@ var opTheme = (function() {
         });
       },
       photoDelete: function(ev) {
+      
         ev.preventDefault();
+      
         var el = $(ev.target),
-          url = el.parent().attr('action')+'.json';
-        $.post(url, el.parent().serializeArray(), function(response) {
+          	url = el.parent().attr('action')+'.json';
+      
+        OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 200)
             el.html('This photo has been deleted');
           else
             opTheme.message.error('Could not delete the photo.');
         }, 'json');
+        
         return false;
+      
       },
       searchBarToggle: function(ev) {
         $("div#searchbar").slideToggle('medium');
@@ -317,7 +327,7 @@ var opTheme = (function() {
       },
       loginSuccess: function(assertion) {
         var params = {assertion: assertion};
-        $.post('/user/login.json', params, opTheme.user.loginProcessed, 'json');
+        OP.Util.makeRequest('/user/login.json', params, opTheme.user.loginProcessed, 'json');
       }
     },
     upload: {
