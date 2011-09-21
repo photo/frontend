@@ -91,9 +91,16 @@ class DatabaseSimpleDb implements DatabaseInterface
       $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE members in ('{$email}') ORDER BY name", array('ConsistentRead' => 'true'));
 
     if(isset($res->body->SelectResult->Item))
-      return self::normalizeGroup($res->body->SelectResult->Item);
+    {
+      $groups = array();
+      foreach($res->body->SelectResult->Item as $group)
+        $groups[] = self::normalizeGroup($group);
+      return $groups;
+    }
     elseif(!isset($res->body->SelectResult))
+    {
       return null;
+    }
   }
 
   /**
@@ -310,6 +317,37 @@ class DatabaseSimpleDb implements DatabaseInterface
       return false;
   }
 
+  /**
+    * Initialize the database by creating the domains needed.
+    * This is called from the Setup controller.
+    *
+    * @return boolean
+    */
+  public function initialize()
+  {
+    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Credential|Group|Tag|User)?$/");
+    if(count($domains) == 6)
+      return true;
+
+    $queue = new CFBatchRequest();
+    $this->db->batch($queue)->create_domain($this->domainAction);
+    $this->db->batch($queue)->create_domain($this->domainCredential);
+    $this->db->batch($queue)->create_domain($this->domainGroup);
+    $this->db->batch($queue)->create_domain($this->domainPhoto);
+    $this->db->batch($queue)->create_domain($this->domainTag);
+    $this->db->batch($queue)->create_domain($this->domainUser);
+    $responses = $this->db->batch($queue)->send();
+    return $responses->areOK();
+  }
+
+  /**
+    * Allows injection of member variables.
+    * Primarily used for unit testing with mock objects.
+    *
+    * @param string $name Name of the member variable
+    * @param mixed $value Value of the member variable
+    * @return void
+    */
   public function inject($name, $value)
   {
     $this->$name = $value;
@@ -403,8 +441,8 @@ class DatabaseSimpleDb implements DatabaseInterface
 
  /**
     * Update counts for multiple tags by incrementing or decrementing.
-    * The $params should include the tag in the `id` field.
-    * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
+    * The $params should include the tag and increment value as a key/value pair.
+    * {tag1: 10, sunnyvale: 3}
     *
     * @param array $params Tags and related attributes to update.
     * @return boolean
@@ -476,7 +514,6 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
-<<<<<<< HEAD
     * Add a new credential to the database
     * This method does not overwrite existing values present in $params - hence "new credential".
     *
@@ -542,29 +579,6 @@ class DatabaseSimpleDb implements DatabaseInterface
     // make sure we don't overwrite an existing user record
     $res = $this->db->put_attributes($this->domainUser, $id, $params);
     return $res->isOK();
-  }
-
-  /**
-    * Initialize the database by creating the domains needed.
-    * This is called from the Setup controller.
-    *
-    * @return boolean
-    */
-  public function initialize()
-  {
-    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Credential|Group|Tag|User)?$/");
-    if(count($domains) == 6)
-      return true;
-
-    $queue = new CFBatchRequest();
-    $this->db->batch($queue)->create_domain($this->domainAction);
-    $this->db->batch($queue)->create_domain($this->domainCredential);
-    $this->db->batch($queue)->create_domain($this->domainGroup);
-    $this->db->batch($queue)->create_domain($this->domainPhoto);
-    $this->db->batch($queue)->create_domain($this->domainTag);
-    $this->db->batch($queue)->create_domain($this->domainUser);
-    $responses = $this->db->batch($queue)->send();
-    return $responses->areOK();
   }
 
   /**

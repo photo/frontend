@@ -1,6 +1,6 @@
 <?php
-require_once 'PHPUnit/Framework.php';
-putenv('HTTP_HOST=unittest');
+require_once './helpers/init.php';
+require_once './helpers/aws.php';
 require_once '../libraries/initialize.php';
 
 class FileSystemS3Test extends PHPUnit_Framework_TestCase
@@ -15,13 +15,13 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
   {
     $this->sdbStub->expects($this->any())
       ->method('select')
-      ->will($this->returnValue(new PhotoMockSdb));
+      ->will($this->returnValue(new AWSPhotoMockSdb));
     $db = getDb();
     $db->inject('db', $this->sdbStub);
 
     $this->s3Stub->expects($this->any())
       ->method('batch')
-      ->will($this->returnValue(new BatchResponseSuccess));
+      ->will($this->returnValue(new AWSBatchSuccessResponse));
     $fs = getFs();
     $fs->inject('fs', $this->s3Stub);
 
@@ -33,13 +33,13 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
   {
     $this->sdbStub->expects($this->any())
       ->method('select')
-      ->will($this->returnValue(new PhotoMockSdb));
+      ->will($this->returnValue(new AWSPhotoMockSdb));
     $db = getDb();
     $db->inject('db', $this->sdbStub);
 
     $this->s3Stub->expects($this->any())
       ->method('batch')
-      ->will($this->returnValue(new BatchResponseFailure));
+      ->will($this->returnValue(new AWSBatchFailureResponse));
     $fs = getFs();
     $fs->inject('fs', $this->s3Stub);
 
@@ -51,7 +51,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
   {
     $this->s3Stub->expects($this->any())
       ->method('get_object')
-      ->will($this->returnValue(new SuccessResponse));
+      ->will($this->returnValue(new AWSSuccessResponse));
 
     $fs = getFs();
     $fs->inject('fs', $this->s3Stub);
@@ -63,7 +63,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
   {
     $this->s3Stub->expects($this->any())
       ->method('get_object')
-      ->will($this->returnValue(new FailureResponse));
+      ->will($this->returnValue(new AWSFailureResponse));
 
     $fs = getFs();
     $fs->inject('fs', $this->s3Stub);
@@ -75,7 +75,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
   {
     $this->s3Stub->expects($this->any())
       ->method('create_object')
-      ->will($this->returnValue(new SuccessResponse));
+      ->will($this->returnValue(new AWSSuccessResponse));
 
     $fs = getFs();
     $fs->inject('fs', $this->s3Stub);
@@ -87,7 +87,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
   {
     $this->s3Stub->expects($this->any())
       ->method('create_object')
-      ->will($this->returnValue(new FailureResponse));
+      ->will($this->returnValue(new AWSFailureResponse));
 
     $fs = getFs();
     $fs->inject('fs', $this->s3Stub);
@@ -99,7 +99,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
   {
     $this->s3Stub->expects($this->any())
       ->method('batch')
-      ->will($this->returnValue(new BatchResponseSuccess));
+      ->will($this->returnValue(new AWSBatchSuccessResponse));
 
     $fs = getFs();
     $fs->inject('fs', $this->s3Stub);
@@ -111,7 +111,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
   {
     $this->s3Stub->expects($this->any())
       ->method('batch')
-      ->will($this->returnValue(new BatchResponseFailure));
+      ->will($this->returnValue(new AWSBatchFailureResponse));
 
     $fs = getFs();
     $fs->inject('fs', $this->s3Stub);
@@ -165,7 +165,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(array()));
     $this->s3Stub->expects($this->any())
       ->method('create_bucket')
-      ->will($this->returnValue(new FailureResponse));
+      ->will($this->returnValue(new AWSFailureResponse));
 
     $fs = getFs();
     $fs->inject('fs', $this->s3Stub);
@@ -186,10 +186,10 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(array()));
     $this->s3Stub->expects($this->any())
       ->method('create_bucket')
-      ->will($this->returnValue(new SuccessResponse));
+      ->will($this->returnValue(new AWSSuccessResponse));
     $this->s3Stub->expects($this->any())
       ->method('set_bucket_policy')
-      ->will($this->returnValue(new FailureResponse));
+      ->will($this->returnValue(new AWSFailureResponse));
 
     $fs = getFs();
     $fs->inject('fs', $this->s3Stub);
@@ -210,102 +210,14 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(array()));
     $this->s3Stub->expects($this->any())
       ->method('create_bucket')
-      ->will($this->returnValue(new SuccessResponse));
+      ->will($this->returnValue(new AWSSuccessResponse));
     $this->s3Stub->expects($this->any())
       ->method('set_bucket_policy')
-      ->will($this->returnValue(new SuccessResponse));
+      ->will($this->returnValue(new AWSSuccessResponse));
 
     $fs = getFs();
     $fs->inject('fs', $this->s3Stub);
     $res = $fs->initialize();
     $this->assertTrue($res, 'The S3 FileSystem adapter did not return TRUE for initializing an bucket and setting the policy');
-  }
-}
-
-class SuccessResponse
-{
-  public function isOK()
-  {
-    return true;
-  }
-
-  public function areOK()
-  {
-    return true;
-  }
-}
-
-
-class FailureResponse
-{
-  public function isOK()
-  {
-    return false;
-  }
-
-  public function areOK()
-  {
-    return false;
-  }
-}
-
-class BatchResponseSuccess
-{
-  public function delete_object()
-  {
-    return true;
-  }
-
-  public function send()
-  {
-    return new SuccessResponse;    
-  }
-
-  public function create_object()
-  {
-    return new SuccessResponse;    
-  }
-}
-
-class BatchResponseFailure
-{
-  public function delete_object()
-  {
-    return false;
-  }
-
-  public function send()
-  {
-    return new FailureResponse;    
-  }
-
-  public function create_object()
-  {
-    return new FailureResponse;    
-  }
-}
-
-class PhotoMockSdb
-{
-  public $body;
-  public function __construct()
-  {
-    $this->body = new stdClass;
-    $this->body->SelectResult = new stdClass;
-    $this->body->SelectResult->Item = new stdClass;
-    $this->body->SelectResult->Item->Name = 'foo';
-    $this->body->SelectResult->Item->Attribute = array(
-      $this->attr('host', 'unittest'),
-      $this->attr('dateTaken', time())
-    );
-
-  }
-
-  private function attr($name, $value)
-  {
-    $ret = new stdClass;
-    $ret->Name = $name;
-    $ret->Value = $value;
-    return $ret;
   }
 }
