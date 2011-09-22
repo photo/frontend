@@ -19,6 +19,12 @@ class Credential
 
   public function add($name, $permissions = array('read'))
   {
+    if(!class_exists('OAuthProvider'))
+    {
+      getLogger()->warn('No OAuthProvider class found on this system');
+      return false;
+    }
+
     $random = bin2hex($this->provider->generateToken(25));
     $id = substr($random, 0, 30);
     $params = array(
@@ -40,6 +46,12 @@ class Credential
 
   public function addUserToken($id, $convertToAccessToken = false)
   {
+    if(!class_exists('OAuthProvider'))
+    {
+      getLogger()->warn('No OAuthProvider class found on this system');
+      return false;
+    }
+
     $random = bin2hex($this->provider->generateToken(20));
     $params = array(
       'user_token' => substr($random, 0, 30),
