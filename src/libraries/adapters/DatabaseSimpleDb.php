@@ -337,6 +337,11 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->db->batch($queue)->create_domain($this->domainTag);
     $this->db->batch($queue)->create_domain($this->domainUser);
     $responses = $this->db->batch($queue)->send();
+    if(!$responses->areOK())
+    {
+      foreach($responses as $response)
+        getLogger()->crit(sprintf('Could not created SimpleDb domains. Repsonse: %s', var_export($response, 1)));
+    }
     return $responses->areOK();
   }
 
