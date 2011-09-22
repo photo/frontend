@@ -27,3 +27,11 @@ div#setup ol#setup-steps li.current{
   background-color:#3072b3;
   color:#eee;
 }
+div#setup ul.errors ul {
+  list-style-type:lower-roman;
+  margin: 2px 0 5px 25px;
+  color:#666;
+}
+div#setup ul.errors em {
+  font-style: italic;
+}
