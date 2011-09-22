@@ -45,7 +45,7 @@ class Authentication
   public function requireCrumb($crumb)
   {
      if(getSession()->get('crumb') != $crumb)
-      OPException::raise('Crumb does not match', new OPAuthorizationException);
+      OPException::raise(new OPAuthorizationException('Crumb does not match'));
   }
 }
 

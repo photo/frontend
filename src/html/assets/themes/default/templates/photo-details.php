@@ -24,6 +24,7 @@
         <li class="date"><?php Utility::dateLong($photo['dateTaken']); ?></li>
         <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments" class="action-jump-click">see all</a></li>
         <li class="tags"><?php Utility::tagsAsLinks($photo['tags']); ?></li>
+        <li class="license"><?php Utility::licenseLong($photo['license']); ?></li>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
           <li class="location">
             <?php Utility::safe($photo['latitude']); ?>, <?php Utility::safe($photo['longitude']); ?>
@@ -45,6 +46,9 @@
           </ul>
         </li>
       </ul>
+      <?php if(User::isOwner()) { ?>
+        <a href="/photo/edit/<?php Utility::safe($photo['id']); ?>" class="button photo-edit-click">Edit this photo</a>
+      <?php } ?>
     </div>
   </div>
 </div>
@@ -98,39 +102,3 @@
     </form>
   <?php } ?>
 </div>
-
-<?php if(User::isOwner()) { ?>
-  <div class="owner">
-    <h3>This photo belongs to you. You can edit it.</h3>
-    <div>
-      <div class="detail-form">
-        <form method="post">
-          <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
-          <label>Title</label>
-          <input type="text" name="title" value="<?php echo $photo['title']; ?>">
-
-          <label>Description</label>
-          <textarea name="description"><?php echo $photo['description']; ?></textarea>
-
-          <label>Tags</label>
-          <input type="text" name="tags" value="<?php echo implode(',', $photo['tags']); ?>">
-
-          <label>Latitude</label>
-          <input type="text" name="latitude" value="<?php echo $photo['latitude']; ?>">
-
-          <label>Longitude</label>
-          <input type="text" name="longitude" value="<?php echo $photo['longitude']; ?>">
-
-          <button type="submit">Update photo</button>
-        </form>
-      </div>
-    </div>
-    <div class="delete">
-      <form method="post" action="/photo/delete/<?php echo $photo['id']; ?>">
-        <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
-        <button type="submit" class="delete photo-delete-click">Delete this photo</button>
-      </form>
-    </div>
-    <br clear="all">
-  </div>
-<?php } ?>

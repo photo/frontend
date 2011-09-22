@@ -371,7 +371,7 @@ class Photo
       'views' => 0,
       'status' => 1,
       'permission' => 0, // TODO
-      'creativeCommons' => 'BY-NC'
+      'license' => ''
     );
   }
 

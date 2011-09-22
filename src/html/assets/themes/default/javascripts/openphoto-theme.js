@@ -29,6 +29,7 @@ var opTheme = (function() {
       commentJump: function(ev) {
         ev.preventDefault();
         $.scrollTo($('div.comment-form'), 200);
+        return false;
       },
       login: function(ev) {
         navigator.id.getVerifiedEmail(function(assertion) {
@@ -52,9 +53,26 @@ var opTheme = (function() {
           else
             opTheme.message.error('Could not delete the photo.');
         }, 'json');
-        
         return false;
-      
+      },
+      photoEdit: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+          	url = el.attr('href')+'.json';
+        if($("div.owner-edit").length == 1) {
+          $.scrollTo($('div.owner-edit'), 200);
+        } else {
+          // TODO use makeRequest once it supports GET
+          $.get(url, {}, function(response){
+            if(response.code === 200) {
+              $("#main").append(response.result.markup);
+              $.scrollTo($('div.owner-edit'), 200);
+            } else {
+              opTheme.message.error('Could not load the form to edit this photo.');
+            }
+          }, 'json');
+        }
+        return false;
       },
       searchBarToggle: function(ev) {
         $("div#searchbar").slideToggle('medium');
@@ -274,6 +292,7 @@ var opTheme = (function() {
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
+        OP.Util.on('click:photo-edit', opTheme.callback.photoEdit);
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
