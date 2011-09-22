@@ -169,7 +169,7 @@ class OAuthController extends BaseController
       getCredential()->addUserToken($consumer['id'], true);
       $consumer = getDb()->getCredential($token);
       printf('oauth_token=%s&oauth_token_secret=%s&oauth_consumer_key=%s&oauth_consumer_secret=%s',
-        $consumer['user_token'], $consumer['user_secret'], $consumer['id'], $consumer['client_secret']);
+        $consumer['userToken'], $consumer['userSecret'], $consumer['id'], $consumer['clientSecret']);
     }
   }
 

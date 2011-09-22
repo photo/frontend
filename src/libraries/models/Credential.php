@@ -29,7 +29,7 @@ class Credential
     $id = substr($random, 0, 30);
     $params = array(
       'name' => $name,
-      'client_secret' => substr($random, -10),
+      'clientSecret' => substr($random, -10),
       /*'user_token' => '',
       'user_secret' => '',*/
       'permissions' => $permissions,
@@ -54,8 +54,8 @@ class Credential
 
     $random = bin2hex($this->provider->generateToken(20));
     $params = array(
-      'user_token' => substr($random, 0, 30),
-      'user_secret' => substr($random, -10)
+      'userToken' => substr($random, 0, 30),
+      'userSecret' => substr($random, -10)
     );
     if($convertToAccessToken)
       $params['type'] = self::typeAccess;
