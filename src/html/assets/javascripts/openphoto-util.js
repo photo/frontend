@@ -61,6 +61,7 @@
 				'nav-item-click':'click:nav-item',
 				'pagination-click':'click:pagination',
 				'photo-delete-click':'click:photo-delete',
+				'photo-edit-click':'click:photo-edit',
 				'photo-tag-click':'click:tag',
 				'photo-thumbnail-click':'click:photo-thumbnail',
 				'photo-update-click':'click:photo-update',

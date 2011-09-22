@@ -25,6 +25,30 @@ class ApiPhotoController extends BaseController
   }
 
   /**
+    * Get a form to edit a photo specified by the ID.
+    *
+    * @param string $id ID of the photo to be edited.
+    * @return string Standard JSON envelope
+    */
+  public static function edit($id)
+  {
+    getAuthentication()->requireAuthentication();
+    $resp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet);
+    $photo = $resp['result'];
+    if($photo)
+    {
+      $template = sprintf('%s/photo-edit.php', getConfig()->get('paths')->templates);
+      $license = null;
+      if(isset($photo['license']))
+        $license = $photo['license'];
+      $markup = getTemplate()->get($template, array('photo' => $photo, 'licenses' => Utility::getLicenses($license), 'crumb' => getSession()->get('crumb')));
+      return self::success('Photo deleted successfully', array('markup' => $markup));
+    }
+
+    return self::error('Photo deletion failure', false);
+  }
+
+  /**
    * Remove all the size keys from the photo but the one in list in $sizes
    *
    * @param $photo the photo object to prune.

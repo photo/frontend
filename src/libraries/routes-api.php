@@ -5,6 +5,8 @@ getApi()->post('/action/([a-zA-Z0-9]+)/delete.json', array('ApiActionController'
 // post an action
 getApi()->post('/action/(photo)/([a-zA-Z0-9]+).json', array('ApiActionController', 'post'), EpiApi::external);
 
+// edit form for photo
+getApi()->get('/photo/edit/([a-zA-Z0-9]+).json', array('ApiPhotoController', 'edit'), EpiApi::external);
 // delete a photo
 getApi()->post('/photo/delete/([a-zA-Z0-9]+).json', array('ApiPhotoController', 'delete'), EpiApi::external);
 // upload a photo

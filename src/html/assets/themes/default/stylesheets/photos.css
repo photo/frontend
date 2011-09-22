@@ -38,7 +38,6 @@
 
 .meta {
     font-size: .8em;
-    height: 15px;
     width:252px;
     margin: 0 0 8px;
 }
@@ -196,7 +195,7 @@ ul.comments li form {
     display:inline;
 }
 
-.owner h3 {
+.owner-edit h3 {
   border-top:solid 1px #aaa;
   border-bottom:solid 1px #aaa;
   background-color: #ddd;
@@ -205,24 +204,24 @@ ul.comments li form {
   color:#666;
   margin:10px 0;
 }
-.owner > div{
+.owner-edit > div{
   width:50%;
   float:left;
 }
-.owner form label {
+.owner-edit form label {
   display:block;
   font-weight:bold;
 }
-.owner form label + input, .owner form label + textarea {
+.owner-edit form label + input, .owner-edit form label + textarea {
   display:block;
   margin:0 0 10px 0;
   width:350px;
 }
-.owner form label + textarea {
+.owner-edit form label + textarea {
   height:50px;
 }
 
-.owner .delete {
+.owner-edit .delete {
   float:right;
 }
 

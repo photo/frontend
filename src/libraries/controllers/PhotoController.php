@@ -41,11 +41,31 @@ class PhotoController extends BaseController
   public static function delete($id)
   {
     getAuthentication()->requireAuthentication();
-    $delete = getApi()->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost);
-    if($delete['result'] !== false)
+    $delete = getApi()->invoke("/photo/delete/{$id}.json", EpiRoute::httpPost);
+    if($delete['code'] !== 200)
       getRoute()->redirect('/photos?deleteSuccess');
     else
       getRoute()->redirect('/photos?deleteFailure');
+  }
+
+  /**
+    * Return makrup for the edit form for the photo by the ID.
+    *
+    * @param string $id ID of the photo to be edited.
+    * @return string HTML
+    */
+  public static function edit($id)
+  {
+    getAuthentication()->requireAuthentication();
+    $resp = getApi()->invoke("/photo/edit/{$id}.json", EpiRoute::httpGet);
+    if($resp['code'] === 200)
+    {
+      getTheme()->display('template.php', array('body' => $resp['result']['markup'], 'page' => 'photo-edit'));
+    }
+    else
+    {
+      getRoute()->run('/error/404');
+    }
   }
 
   /**
@@ -59,7 +79,7 @@ class PhotoController extends BaseController
   public static function photo($id, $options = null)
   {
     $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => getConfig()->get('photoSizes')->detail)));
-    if($apiResp['code'] == 200)
+    if($apiResp['code'] === 200)
     {
       $detailDimensions = explode('x', getConfig()->get('photoSizes')->detail);
       $apiNextPrevious = getApi()->invoke("/photo/nextprevious/{$id}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));

@@ -1,6 +1,34 @@
 <?php
 class Utility
 {
+  public static function getLicenses($selected = null)
+  {
+    static $licenses;
+    if(!$licenses)
+    {
+      $licenses = array(
+        '' => array('name' => 'All Rights Reserved', 'description' => ''),
+        'CC BY' => array('name' => 'Attribution', 'description' => ''),
+        'CC BY-SA' => array('name' => 'Attribution-ShareAlike', 'description' => ''),
+        'CC BY-ND' => array('name' => 'Attribution-NoDerivs', 'description' => ''),
+        'CC BY-NC' => array('name' => 'Attribution-NonCommercial', 'description' => ''),
+        'CC BY-NC-SA' => array('name' => 'Attribution-NonCommercial-ShareAlike', 'description' => ''),
+        'CC BY-NC-ND' => array('name' => 'Attribution-NonCommercial-NoDerivs', 'description' => '')
+      );
+    }
+
+    if($selected === null)
+    {
+      $licenses['']['selected'] = true;
+    }
+    else
+    {
+      foreach($licenses as $key => $value)
+        $licenses[$key]['selected'] = ($key == $selected);
+    }
+    return $licenses;
+  }
+
   public static function dateLong($ts, $write = true)
   {
     return self::returnValue(date('l, F jS, Y \a\t g:ia', $ts), $write);
@@ -42,6 +70,18 @@ class Utility
         return false;
         break;
     }
+  }
+
+  public static function licenseLong($key, $write = true)
+  {
+    $licenses = self::getLicenses();
+    $license = null;
+    if(isset($licenses[$key]))
+    {
+      $license = sprintf('%s (%s)', $key, $licenses[$key]['name']);
+    }
+
+    self::returnValue($license, $write);
   }
 
   public static function permissionAsText($permission, $write = true)

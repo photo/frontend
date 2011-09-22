@@ -40,7 +40,7 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
       status: (int), // binary
       permission: (int), // binary
       groups: (set),
-      creativeCommons: (enum),
+      license: (enum),
       dateTaken: (int), // unix timestamp
       dateTakenDay: (int)
       dateTakenMonth: (int)
@@ -89,7 +89,7 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
   * status, Numeric representation of the status (0=deleted, 1=active)
   * permission, binary representation of photo permission (0=not public, 1=public)
   * groups, A set of group IDs which whitelist email addresses for permissions to this photo
-  * creativeCommons, Abbreviation of the CC licenses such as BY, BY-SA, BY-ND, etc. (http://creativecommons.org/licenses/)
+  * license, Abbreviation of the CC licenses such as BY, BY-SA, BY-ND, _blank_ (All rights reserved) or free form (http://creativecommons.org/licenses/)
   * dateTaken, Unix timestamp of when the photo was taken
   * dateTakenDay, Day the photo was taken (for searching)
   * dateTakenMonth, Month the photo was taken (for searching)
