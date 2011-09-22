@@ -148,8 +148,8 @@
                 length;
 
             //attach events      
-            this.attachEvent( document, 'click', this.onviewevent, this);
-            this.attachEvent( document, 'keydown', this.onkeydownevent, this);
+            this.attachEvent( 'body', 'click', this.onviewevent, this);
+            this.attachEvent( 'body', 'keydown', this.onkeydownevent, this);
 
             //load additional js in order specified
             for(i=0, j=js.length; i<j; i++) {
