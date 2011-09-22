@@ -6,6 +6,9 @@ var opTheme = (function() {
   var timeoutId = undefined;
   return {
     callback: {
+      keyboard: function(ev) {
+        log("keyboard!!!!");
+      },
       actionDelete: function(ev) {
       
         ev.preventDefault();
@@ -71,6 +74,20 @@ var opTheme = (function() {
       settings: function(ev) {
         $("div#settingsbar").slideToggle('medium');
         return false;
+      },
+      keyBrowseNext: function(ev) {
+          var ref;
+          ref = $(".image-pagination .next a").attr("href");
+          if (ref) {
+              location.href = ref;
+          }
+      },
+      keyBrowsePrevious: function(ev) {
+          var ref;
+          ref = $(".image-pagination .previous a").attr("href");
+          if (ref) {
+              location.href = ref;
+          }
       }
     },
     formHandlers: {
@@ -261,6 +278,8 @@ var opTheme = (function() {
         OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:settings', opTheme.callback.settings);
+        OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
+        OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
         opTheme.front.init($('div.front-slideshow'));
 
         $("form#upload-form").fileupload({
