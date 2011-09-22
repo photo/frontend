@@ -22,6 +22,7 @@ elseif(!file_exists($configFile)) // if no config file then load up the setup de
   $paths->external = "{$baseDir}/libraries/external";
   $paths->adapters = "{$baseDir}/libraries/adapters";
   $paths->models = "{$baseDir}/libraries/models";
+  $paths->templates = "{$baseDir}/templates";
   $paths->themes = "{$baseDir}/html/assets/themes";
   getConfig()->set('paths', $paths);
   require getConfig()->get('paths')->libraries . '/routes-setup.php';

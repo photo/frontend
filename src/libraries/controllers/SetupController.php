@@ -35,7 +35,8 @@ class SetupController
     else
       $errors = '';
 
-    $body = getTheme()->get('setup.php', array('imageLibs' => $imageLibs, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
+    $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
+    $body = getTemplate()->get($template, array('imageLibs' => $imageLibs, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -63,7 +64,8 @@ class SetupController
       getRoute()->redirect('/setup/2');
     }
 
-    $body = getTheme()->get('setup.php', array('emai' => $email, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
+    $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
+    $body = getTemplate()->get($template, array('emai' => $email, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -87,7 +89,8 @@ class SetupController
     if(extension_loaded('gd') && function_exists('gd_info'))
       $imageLibs['GD'] = 'GD';
 
-    $body = getTheme()->get('setup.php', array('imageLibs' => $imageLibs, 'appId' => 'openphoto-frontend', 'step' => $step));
+    $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
+    $body = getTemplate()->get($template, array('imageLibs' => $imageLibs, 'appId' => 'openphoto-frontend', 'step' => $step));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -129,7 +132,8 @@ class SetupController
     $usesS3 = (getSession()->get('fileSystem') == 'S3') ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
 
-    $body = getTheme()->get('setup.php', array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 'usesSimpleDb' => $usesSimpleDb, 'appId' => $appId));
+    $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
+    $body = getTemplate()->get($template, array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 'usesSimpleDb' => $usesSimpleDb, 'appId' => $appId));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -285,7 +289,7 @@ class SetupController
       if(!$dbObj->initialize())
       {
         if($usesAws)
-          $dbErrors[] = 'We were unable to initialize your SimpleDb domains.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/simpledb/">signed up for AWS SimpleDb</a>.</li><li>Double check your AWS credentials.</li><li>SimpleDb domains cannot contain special characters such as periods.</li></ul>';
+          $dbErrors[] = 'We were unable to initialize your SimpleDb domains.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/simpledb/">signed up for AWS SimpleDb</a>.</li><li>Double check your AWS credentials.</li><li>SimpleDb domains cannot contain special characters such as periods.</li><li>Sometimes the SimpleDb create domain API is unstable. Try again later or check the error log if you have access to it.</li></ul>';
         else if($usesMySql)
           $dbErrors[] = 'We were unable to properly connect to your MySql database server. Please verify that the host, username and password are correct and have proper permissions to create a database.';
         else
@@ -317,7 +321,8 @@ class SetupController
     if(is_array($writeErrors))
       $errors = array_merge($errors, $writeErrors);
 
-    $body = getTheme()->get('setup.php', array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 'usesSimpleDb' => $usesSimpleDb, 's3Bucket' => $s3Bucket, 'simpleDbDomain' => $simpleDbDomain, 'appId' => $appId, 'errors' => $errors));
+    $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
+    $body = getTemplate()->get($template, array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 'usesSimpleDb' => $usesSimpleDb, 's3Bucket' => $s3Bucket, 'simpleDbDomain' => $simpleDbDomain, 'appId' => $appId, 'errors' => $errors));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -391,6 +396,7 @@ class SetupController
       '{libraries}' => "{$libDir}",
       '{models}' => "{$libDir}/models",
       '{photos}' => "{$htmlDir}/photos",
+      '{templates}' => "{$baseDir}/templates",
       '{themes}' => "{$htmlDir}/assets/themes",
       '{exiftran}' => exec('which exiftran'),
       '{localSecret}' => sha1(uniqid(true)),
