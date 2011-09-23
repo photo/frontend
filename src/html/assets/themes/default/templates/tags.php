@@ -6,7 +6,7 @@
     <?php foreach($tags as $tag) { ?>
     <li class="size-<?php Utility::safe($tag['weight']); ?>">
       <span class="audible"><?php Utility::safe($tag['count']); ?> photos are tagged with</span>
-      <a href="/photos/tags-<?php Utility::safe($tag['id']); ?>" title="<?php Utility::safe($tag['count']); ?> photos"><?php Utility::safe($tag['id']); ?></a>
+      <a href="<?php Url::photosView("tags-{$tag['id']}"); ?>" title="<?php Utility::safe($tag['count']); ?> photos"><?php Utility::safe($tag['id']); ?></a>
     </li>
     <?php } ?>
   </ol>

@@ -2,7 +2,7 @@
   <h3>This photo belongs to you. You can edit it.</h3>
   <div>
     <div class="detail-form">
-      <form method="post" action="/photo/<?php Utility::safe($photo['id']); ?>">
+      <form method="post" action="<?php Url::photoUpdate($photo['id']); ?>">
         <input type="hidden" name="crumb" value="<?php Utility::safe($crumb); ?>">
         <label>Title</label>
         <input type="text" name="title" value="<?php Utility::safe($photo['title']); ?>">
@@ -32,7 +32,7 @@
     </div>
   </div>
   <div class="delete">
-    <form method="post" action="/photo/delete/<?php echo $photo['id']; ?>">
+    <form method="post" action="<?php Url::photoDelete($photo['id']); ?>">
       <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
       <button type="submit" class="delete photo-delete-click">Delete this photo</button>
     </form>

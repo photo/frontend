@@ -98,11 +98,6 @@ class Utility
       return self::returnValue(($int > 1 ? "{$word}s" : $word), $write);
   }
 
-  public static function photoUrl($photo, $key)
-  {
-    return self::returnValue($photo[sprintf('path%s', $key)]);
-  }
-
   public static function returnValue($value, $write = true)
   {
     if($write)

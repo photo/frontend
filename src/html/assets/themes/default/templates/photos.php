@@ -3,7 +3,7 @@
   <ul class="photo-grid grid-200">
     <?php foreach($photos as $photo) { ?>
       <li class="grid-item id-<?php Utility::safe($photo['id']); ?>">
-        <a href="/photo/<?php Utility::safe($photo['id']); ?>"><img src="<?php Utility::photoUrl($photo, getConfig()->get('photoSizes')->thumbnail); ?>" alt="<?php Utility::safe($photo['title']); ?>"></a>
+        <a href="<?php Url::photoView($photo['id'], $options); ?>"><img src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->thumbnail); ?>" alt="<?php Utility::safe($photo['title']); ?>"></a>
         <ul class="meta">
           <li class="age"><?php Utility::timeAsText($photo['dateTaken'], 'Taken'); ?></li>
           <li class="permission <?php Utility::permissionAsText($photo['permission']); ?>"><?php Utility::permissionAsText($photo['permission']); ?></li>
@@ -17,7 +17,7 @@
   <?php getTheme()->display('partials/pagination.php', array_merge($pagination, array('labelPosition' => 'bottom'))); ?>
 <?php } else { ?>
   <?php if(User::isOwner()) { ?>
-    <h1>There don't seem to be any photos. You should <a href="/photos/upload">upload</a> some.</h1>
+    <h1>There don't seem to be any photos. You should <a href="<?php Url::photosUpload(); ?>">upload</a> some.</h1>
     <p>
       If you're searching for photos then there aren't any which match your query.
     </p>

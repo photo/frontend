@@ -3,7 +3,7 @@
   Select as many photos as you'd like by clicking the button below.
 </p>
 <div id="upload">
-  <form enctype="multipart/form-data" action="/photo/upload" method="POST" id="upload-form">
+  <form enctype="multipart/form-data" action="<?php Url::photoUpload(); ?>" method="POST" id="upload-form">
     <input type="hidden" name="returnSizes" value="200x200xCR,100x100">
     <input type="file" name="photo" multiple>
     <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
