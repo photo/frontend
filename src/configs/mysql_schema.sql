@@ -29,7 +29,8 @@ CREATE TABLE IF NOT EXISTS `photo` (
   `tags` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  FULLTEXT (`tags`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
 

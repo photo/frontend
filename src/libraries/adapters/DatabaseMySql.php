@@ -159,7 +159,7 @@ class DatabaseMySql implements DatabaseInterface
           case 'tags':
             if(!is_array($value))
               $value = (array)explode(',', $value);
-            $where = $this->buildWhere($where, "tags IN('" . implode("','", $value) . "')");
+            $where = $this->buildWhere($where, ' MATCH(tags) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)');
             break;
           case 'page':
             if($value > 1)
@@ -340,7 +340,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postTags($params)
   {
-    $res = true;
+    if(empty($params))
+      return true;
     foreach($params as $tagObj)
     {
       $res = $this->postTag($tagObj['id'], $tagObj);
@@ -497,7 +498,15 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function initialize()
   {
-    // TODO create the database and tables
+    $version = $this->checkDbVersion();
+    if($version == 0)
+    {
+      $this->createSchema();
+    }
+    else if($version < 1)
+    {
+      return $this->upgradeFrom($version);
+    }
     return true;
   }
 
@@ -658,7 +667,7 @@ class DatabaseMySql implements DatabaseInterface
     $bindings = array();
     $params['id'] = $id;
     if(isset($params['tags']) && is_array($params['tags']))
-      $params['tags'] = implode(',', $params['tags']);
+      $params['tags'] = implode(',', $params['tags']) ;
 
     $exif_keys = array('exifOrientation' => 0,
                        'exifCameraMake' => 0,
@@ -719,5 +728,134 @@ class DatabaseMySql implements DatabaseInterface
     }
     // TODO, what type of return value should we have here -- jmathai
     return ($result != 1);
+  }
+
+  /**
+   * Check the Db Version.
+   * 
+   * This shouldn't fail unless you don't have database access
+   * But if the DB is empty (ie don't have the tables), it returns 0
+   * @return the numeric version. 0 means no DB
+   */
+  private function checkDbVersion()
+  {
+    $version = 0;
+    $result = getDatabase()->one("SHOW TABLES LIKE '{$this->mySqlTablePrefix}admin'");
+    if(!empty($result))
+    {
+      $result = getDatabase()->one("SELECT value FROM {$this->mySqlTablePrefix}admin WHERE key='version'");
+      if(!empty($result) && isset($result['value']))
+      {
+        $version = $result['value'];
+      }
+    }
+    return $version;
+  }
+  /**
+   * Upgrade from a version to the current schema
+   *
+   * @param int $version version of the database found
+   * @return false if failed
+   */
+  private function upgradeFrom($version)
+  {
+    if($version != 1)
+      return false;
+    return true;
+  }
+
+  /**
+    * Create the database schema
+    * Make sure to enforce the version
+    * @return true on success.
+    */
+  private function createSchema()
+  {
+    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}admin`"
+        . "(`key` varchar(255) NOT NULL,"
+        . "`value` varchar(255) NOT NULL)"
+        . "ENGINE=InnoDB DEFAULT CHARSET=utf8");
+    getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}admin`"
+        . "(`key`, `value`) VALUES('version', '1')");
+
+    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}photo`"
+        . "(`id` varchar(255) NOT NULL,"
+	. "`appId` varchar(255) NOT NULL,"
+	. "`host` varchar(255) DEFAULT NULL,"
+	. "`title` varchar(255) DEFAULT NULL,"
+	. "`description` text,"
+	. "`key` varchar(255) DEFAULT NULL,"
+	. "`hash` varchar(255) DEFAULT NULL,"
+	. "`size` int(11) DEFAULT NULL,"
+	. "`width` int(11) DEFAULT NULL,"
+	. "`height` int(11) DEFAULT NULL,"
+	. "`exif` text,"
+	. "`views` int(11) DEFAULT NULL,"
+	. "`status` int(11) DEFAULT NULL,"
+	. "`permission` int(11) DEFAULT NULL,"
+	. "`creativeCommons` int(11) DEFAULT NULL,"
+	. "`dateTaken` int(11) DEFAULT NULL,"
+	. "`dateTakenDay` int(11) DEFAULT NULL,"
+	. "`dateTakenMonth` int(11) DEFAULT NULL,"
+	. "`dateTakenYear` int(11) DEFAULT NULL,"
+	. "`dateUploaded` int(11) DEFAULT NULL,"
+	. "`dateUploadedDay` int(11) DEFAULT NULL,"
+	. "`dateUploadedMonth` int(11) DEFAULT NULL,"
+	. "`dateUploadedYear` int(11) DEFAULT NULL,"
+	. "`pathOriginal` varchar(1000) DEFAULT NULL,"
+	. "`pathBase` varchar(1000) DEFAULT NULL,"
+	. "`tags` text,"
+	. "PRIMARY KEY (`id`),"
+	. "UNIQUE KEY `id` (`id`),"
+	. "FULLTEXT (`tags`)"
+	. ") ENGINE=MyISAM DEFAULT CHARSET=utf8");
+    getDatabase()->execute("CREATE TABLE IF NOT EXISTS "
+        . "`{$this->mySqlTablePrefix}photoVersion`"
+        . "(`id` varchar(255),"
+        . "`key` varchar(255),"
+        . "`path` varchar(1000),"
+        . "PRIMARY KEY(`id`,`key`)"
+        . ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}tag`"
+        . "(`id` varchar(255) NOT NULL,"
+	. "`count` int(11) DEFAULT NULL,"
+	. "`params` text NOT NULL,"
+	. "PRIMARY KEY(`id`),"
+	. "UNIQUE KEY `id` (`id`)"
+        . ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}user`"
+        . "(`id` varchar(255) NOT NULL UNIQUE,"
+        . "`lastPhotoId` varchar(255),"
+        . "`lastActionId` varchar(255),"
+        . "PRIMARY KEY(`id`)"
+	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}action`"
+        . "(`id` varchar(255) NOT NULL UNIQUE,"
+	. "`appId` varchar(255),"
+	. "`targetId` varchar(255),"
+	. "`targetType` varchar(255),"
+	. "`email` varchar(255),"
+	. "`name` varchar(255),"
+	. "`avatar` varchar(255),"
+	. "`website` varchar(255),"
+	. "`targetUrl` varchar(1000),"
+	. "`permalink` varchar(1000),"
+	. "`type` varchar(255),"
+	. "`value` varchar(255),"
+	. "`datePosted` varchar(255),"
+	. "`status` integer,"
+        . "PRIMARY KEY(`id`)"
+	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+
+    getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}user` ("
+        . "`id` ,"
+	. "`lastPhotoId` ,"
+	. "`lastActionId`"
+	. ")"
+	. "VALUES ("
+	. "'1', NULL , NULL"
+	. ");");
+
+    return true;
   }
 }
