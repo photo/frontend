@@ -33,6 +33,7 @@ require getConfig()->get('paths')->libraries . '/functions.php';
 
 // models
 require getConfig()->get('paths')->models . '/Utility.php';
+require getConfig()->get('paths')->models . '/Url.php';
 require getConfig()->get('paths')->models . '/Authentication.php';
 require getConfig()->get('paths')->models . '/Credential.php';
 require getConfig()->get('paths')->models . '/Action.php';

@@ -3,20 +3,20 @@
     <div class="photo-column">
       <h1><?php Utility::safe($photo['title']); ?></h1>
       <p class="description"><?php Utility::safe($photo['description']); ?></p>
-      <img class="photo" width="<?php Utility::safe($photo['thisWidth']); ?>" height="<?php Utility::safe($photo['thisHeight']); ?>" src="<?php Utility::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" alt="<?php Utility::safe($photo['title']); ?>">
+      <img class="photo" width="<?php Utility::safe($photo['thisWidth']); ?>" height="<?php Utility::safe($photo['thisHeight']); ?>" src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" alt="<?php Utility::safe($photo['title']); ?>">
     </div>
     <div class="sidebar">
       <div class="image-pagination">
         <?php if(!empty($photo['previous'])) { ?>
           <div class="previous">
-            <a href="/photo/<?php Utility::safe($photo['previous']['id']); ?>" style="background:url(<?php Utility::photoUrl($photo['previous'], getConfig()->get('photoSizes')->nextPrevious); ?>) top left no-repeat;"><span class="audible">Go to previous photo</span></a>
+            <a href="<?php Url::photoView($photo['previous']['id']); ?>" style="background:url(<?php Url::photoUrl($photo['previous'], getConfig()->get('photoSizes')->nextPrevious); ?>) top left no-repeat;"><span class="audible">Go to previous photo</span></a>
           </div>
         <?php } else { ?>
           <div class="empty"></div>
         <?php } ?>
         <div class="next">
           <?php if(!empty($photo['next'])) { ?>
-            <a href="/photo/<?php Utility::safe($photo['next']['id']); ?>" style="background:url(<?php Utility::photoUrl($photo['next'], getConfig()->get('photoSizes')->nextPrevious); ?>) top left no-repeat"><span class="audible">Go to next photo</span></a>
+            <a href="<?php Url::photoView($photo['next']['id']); ?>" style="background:url(<?php Url::photoUrl($photo['next'], getConfig()->get('photoSizes')->nextPrevious); ?>) top left no-repeat"><span class="audible">Go to next photo</span></a>
           <?php } ?>
         </div>
       </div>
@@ -47,7 +47,7 @@
         </li>
       </ul>
       <?php if(User::isOwner()) { ?>
-        <a href="/photo/edit/<?php Utility::safe($photo['id']); ?>" class="button photo-edit-click">Edit this photo</a>
+        <a href="<?php Url::photoEdit($photo['id']); ?>" class="button photo-edit-click">Edit this photo</a>
       <?php } ?>
     </div>
   </div>
@@ -66,9 +66,9 @@
         <div class="date">
           <?php echo Utility::dateLong($action['datePosted']); ?>
           <?php if(User::isOwner()) { ?>
-            <form method="post" action="/action/<?php echo $action['id']; ?>/delete">
+            <form method="post" action="<?php Url::actionDelete($action['id']); ?>">
               <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
-              (<a href="/action/<?php Utility::safe($action['id']); ?>/delete" class="action-delete-click">delete</a>)
+              (<a href="<?php Url::actionDelete($action['id']); ?>" class="action-delete-click">delete</a>)
             </form>
           <?php } ?>
         </div>
@@ -77,7 +77,7 @@
   </ul>
 <?php } ?>
 <div class="comment-form">
-  <form method="post" action="/action/photo/<?php Utility::safe($photo['id']); ?>">
+  <form method="post" action="<?php Url::actionCreate($photo['id'], 'photo'); ?>">
     <textarea rows="5" cols="50" name="value" class="comment" <?php if(!User::isLoggedIn()) { ?>disabled="true"<?php } ?> ></textarea>
     <input type="hidden" name="type" value="comment">
     <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
@@ -92,7 +92,7 @@
   </form>
   <?php if(User::isLoggedIn()) { ?>
     or
-    <form method="post" action="/action/photo/<?php Utility::safe($photo['id']); ?>">
+    <form method="post" action="<?php Url::actionCreate($photo['id'], 'photo'); ?>">
       <input type="hidden" name="value" value="1">
       <input type="hidden" name="type" value="favorite">
       <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">

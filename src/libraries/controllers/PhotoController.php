@@ -41,7 +41,7 @@ class PhotoController extends BaseController
   public static function delete($id)
   {
     getAuthentication()->requireAuthentication();
-    $delete = getApi()->invoke("/photo/delete/{$id}.json", EpiRoute::httpPost);
+    $delete = getApi()->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost);
     if($delete['code'] !== 200)
       getRoute()->redirect('/photos?deleteSuccess');
     else
@@ -57,7 +57,7 @@ class PhotoController extends BaseController
   public static function edit($id)
   {
     getAuthentication()->requireAuthentication();
-    $resp = getApi()->invoke("/photo/edit/{$id}.json", EpiRoute::httpGet);
+    $resp = getApi()->invoke("/photo/{$id}/edit.json", EpiRoute::httpGet);
     if($resp['code'] === 200)
     {
       getTheme()->display('template.php', array('body' => $resp['result']['markup'], 'page' => 'photo-edit'));
@@ -78,11 +78,11 @@ class PhotoController extends BaseController
     */
   public static function photo($id, $options = null)
   {
-    $apiResp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => getConfig()->get('photoSizes')->detail)));
+    $apiResp = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => getConfig()->get('photoSizes')->detail)));
     if($apiResp['code'] === 200)
     {
       $detailDimensions = explode('x', getConfig()->get('photoSizes')->detail);
-      $apiNextPrevious = getApi()->invoke("/photo/nextprevious/{$id}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
+      $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
       $photo = $apiResp['result'];
       if($photo['width'] >= $photo['height'])
       {
@@ -116,16 +116,17 @@ class PhotoController extends BaseController
   public static function photos($filterOpts = null)
   {
     if($filterOpts)
-      $photos = getApi()->invoke("/photos/{$filterOpts}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
+      $photos = getApi()->invoke("/photos/{$filterOpts}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
     else
-      $photos = getApi()->invoke("/photos.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
+      $photos = getApi()->invoke("/photos/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
 
     $photos = $photos['result'];
 
     $pagination = array('requestUri' => $_SERVER['REQUEST_URI'], 'currentPage' => $photos[0]['currentPage'],
       'pageSize' => $photos[0]['pageSize'], 'totalPages' => $photos[0]['totalPages']);
 
-    $body = getTheme()->get('photos.php', array('photos' => $photos, 'pagination' => $pagination));
+
+    $body = getTheme()->get('photos.php', array('photos' => $photos, 'pagination' => $pagination, 'options' => $filterOpts));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'photos'));
   }
 
@@ -139,9 +140,9 @@ class PhotoController extends BaseController
   public static function update($id)
   {
     getAuthentication()->requireAuthentication();
-    $status = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpPost);
+    $status = getApi()->invoke("/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $_POST));
     // TODO include success/error paramter
-    getRoute()->redirect("/photo/{$id}");
+    getRoute()->redirect(Url::photoView($id, null, false));
   }
 
   /**

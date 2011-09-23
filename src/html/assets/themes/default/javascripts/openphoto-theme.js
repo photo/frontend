@@ -81,12 +81,13 @@ var opTheme = (function() {
       searchByTags: function(ev) {
         ev.preventDefault();
         var form = $(ev.target).parent(),
-          tags = $(form.find('input[name=tags]')[0]).val();
+          tags = $(form.find('input[name=tags]')[0]).val(),
+          url = $(form).attr('action');
 
         if(tags.length > 0)
-          location.href = '/photos/tags-'+tags;
+          location.href = url+'/tags-'+tags;
         else
-          location.href = '/photos';
+          location.href = url;
         return false;
       },
       settings: function(ev) {
@@ -385,7 +386,7 @@ var opTheme = (function() {
             img = resp.result.path100x100;
           $("#"+data.id+" div.progress div.img").css("width", "").css("height", "");
           $("#"+data.id+" div.progress div").css("width", "100%").addClass('complete');
-          $("#"+data.id+" div.img").replaceWith('<a href="/photo/'+id+'"><img src="'+img+'"></a>');
+          $("#"+data.id+" div.img").replaceWith('<a href="/photo/'+id+'/view"><img src="'+img+'"></a>');
         },
         progress: function(e, data) {
           var pct = parseInt(data.loaded/data.total*100);

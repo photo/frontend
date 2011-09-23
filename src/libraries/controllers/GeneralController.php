@@ -49,7 +49,7 @@ class GeneralController extends BaseController
   public static function home()
   {
     if(!getTheme()->fileExists('templates/front.php'))
-      getRoute()->redirect('/photos');
+      getRoute()->redirect(Url::photosView(null, false));
 
     $apisToCall = getConfig()->get('front-apis');
     $params = array();

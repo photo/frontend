@@ -33,7 +33,7 @@ class ApiPhotoController extends BaseController
   public static function edit($id)
   {
     getAuthentication()->requireAuthentication();
-    $resp = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet);
+    $resp = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
     $photo = $resp['result'];
     if($photo)
     {
@@ -90,7 +90,7 @@ class ApiPhotoController extends BaseController
     * @param string $id ID of the photo to be deleted.
     * @return string Standard JSON envelope
     */
-  public static function nextPrevious($id)
+  public static function nextPrevious($id, $options = null)
   {
     $nextPrevious = getDb()->getPhotoNextPrevious($id);
     if(!$nextPrevious)
@@ -357,7 +357,7 @@ class ApiPhotoController extends BaseController
       $params = array();
       if(isset($returnSizes))
         $params = array('returnSizes' => $returnSizes);
-      $photo = getApi()->invoke("/photo/{$photoId}.json", EpiRoute::httpGet, array('_GET' => $params));
+      $photo = getApi()->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => $params));
       return self::created("Photo {$photoId} uploaded successfully", $photo['result']);
     }
 
@@ -378,7 +378,7 @@ class ApiPhotoController extends BaseController
     // diff/manage tag counts - not critical
     if(isset($_POST['tags']) && !empty($_POST['tags']))
     {
-      $photo = getApi()->invoke("/photo/{$id}.json", EpiRoute::httpGet);
+      $photo = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
       if($photo)
       {
         $existingTags = $photo['result']['tags'];
