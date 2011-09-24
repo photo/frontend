@@ -24,7 +24,7 @@
         <li class="date"><?php Utility::dateLong($photo['dateTaken']); ?></li>
         <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments" class="action-jump-click">see all</a></li>
         <li class="tags"><?php Url::tagsAsLinks($photo['tags']); ?></li>
-        <li class="license"><?php Utility::licenseLong($photo['license']); ?></li>
+        <li class="license"><?php if(isset($photo['license'])) Utility::licenseLong($photo['license']); ?></li>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
           <li class="location">
             <?php Utility::safe($photo['latitude']); ?>, <?php Utility::safe($photo['longitude']); ?>
