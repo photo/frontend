@@ -82,7 +82,10 @@ class PhotoController extends BaseController
     if($apiResp['code'] === 200)
     {
       $detailDimensions = explode('x', getConfig()->get('photoSizes')->detail);
-      $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
+      if(empty($options))
+        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
+      else
+        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
       $photo = $apiResp['result'];
       if($photo['width'] >= $photo['height'])
       {
@@ -97,7 +100,7 @@ class PhotoController extends BaseController
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
       $crumb = getSession()->get('crumb');
-      $body = getTheme()->get('photo-details.php', array('photo' => $photo, 'crumb' => $crumb));
+      $body = getTheme()->get('photo-details.php', array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
       getTheme()->display('template.php', array('body' => $body, 'page' => 'photo-details'));
     }
     else

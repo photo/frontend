@@ -90,9 +90,10 @@ class ApiPhotoController extends BaseController
     * @param string $id ID of the photo to be deleted.
     * @return string Standard JSON envelope
     */
-  public static function nextPrevious($id, $options = null)
+  public static function nextPrevious($id, $filterOpts = null)
   {
-    $nextPrevious = getDb()->getPhotoNextPrevious($id);
+    extract(self::parseFilters($filterOpts));
+    $nextPrevious = getDb()->getPhotoNextPrevious($id, $filters);
     if(!$nextPrevious)
       return self::error('Could not get next/previous photo', false);
 
@@ -197,70 +198,8 @@ class ApiPhotoController extends BaseController
     */
   public static function photos($filterOpts = null)
   {
-    // If the user is logged in then we can display photos based on group membership
-    $permission = 0;
-    if(User::isOwner())
-    {
-      $permission = 1;
-    }
-    elseif(User::isLoggedIn())
-    {
-      $userGroups = User::getGroups(User::getEmailAddress());
-      if(!empty($userGroups))
-      {
-        $permission = -1;
-        $groupIds = array();
-        foreach($userGroups as $group)
-          $groupIds[] = $group['id'];
-      }
-
-    }
-    // This section enables in path parameters which are normally GET
-    $pageSize = getConfig()->get('site')->pageSize;
-    $filters = array('sortBy' => 'dateTaken,desc');
-    if($filterOpts !== null)
-    {
-      $filterOpts = (array)explode('/', $filterOpts);
-      foreach($filterOpts as $value)
-      {
-        $parts = explode('-', $value);
-        if(count($parts) != 2)
-          continue;
-
-        switch($parts[0])
-        {
-          case 'pageSize':
-            $pageSize = intval($parts[1]);
-            break;
-          case 'sortBy':
-            $sortOptions = (array)explode(',', $value);
-            if(count($sortOptions) != 2 || preg_match('/[^a-zA-Z0-9,]/', $parts[1]))
-              continue;
-            $filters[$parts[0]] = $parts[1];
-            break;
-          default:
-            $filters[$parts[0]] = $parts[1];
-            break;
-        }
-      }
-    }
-    // merge path parameters with GET parameters. GET parameters override
-    if(isset($_GET['pageSize']) && intval($_GET['pageSize']) == $_GET['pageSize'])
-      $pageSize = intval($_GET['pageSize']);
-    $filters = array_merge($filters, $_GET);
-
-    $page = 1;
-    if(isset($filters['page']))
-      $page = $filters['page'];
-    $protocol = Utility::getProtocol(false);
-    if(isset($filters['protocol']))
-      $protocol = $filters['protocol'];
-
-    if($permission == 0 || $permission = 1)
-      $filters['permission'] = $permission;
-    else
-      $filters['groups'] = $groups;
-
+    // this extracts local variables $permission, $filter, $pageSize, etc
+    extract(self::parseFilters($filterOpts));
     $db = getDb();
     $photos = $db->getPhotos($filters, $pageSize);
     if($photos)
@@ -392,5 +331,74 @@ class ApiPhotoController extends BaseController
     }
     $photoUpdatedId = Photo::update($id, $_POST);
     return self::success("photo {$id} updated", $photoUpdatedId);
+  }
+
+  private static function parseFilters($filterOpts)
+  {
+    // If the user is logged in then we can display photos based on group membership
+    $permission = 0;
+    if(User::isOwner())
+    {
+      $permission = 1;
+    }
+    elseif(User::isLoggedIn())
+    {
+      /*$userGroups = User::getGroups(User::getEmailAddress());
+      if(!empty($userGroups))
+      {
+        $permission = -1;
+        $groupIds = array();
+        foreach($userGroups as $group)
+          $groupIds[] = $group['id'];
+      }*/
+    }
+
+    // This section enables in path parameters which are normally GET
+    $pageSize = getConfig()->get('site')->pageSize;
+    $filters = array('sortBy' => 'dateTaken,desc');
+    if($filterOpts !== null)
+    {
+      $filterOpts = (array)explode('/', $filterOpts);
+      foreach($filterOpts as $value)
+      {
+        $parts = explode('-', $value);
+        if(count($parts) != 2)
+          continue;
+
+        switch($parts[0])
+        {
+          case 'pageSize':
+            $pageSize = intval($parts[1]);
+            break;
+          case 'sortBy':
+            $sortOptions = (array)explode(',', $value);
+            if(count($sortOptions) != 2 || preg_match('/[^a-zA-Z0-9,]/', $parts[1]))
+              continue;
+            $filters[$parts[0]] = $parts[1];
+            break;
+          default:
+            $filters[$parts[0]] = $parts[1];
+            break;
+        }
+      }
+    }
+    // merge path parameters with GET parameters. GET parameters override
+    if(isset($_GET['pageSize']) && intval($_GET['pageSize']) == $_GET['pageSize'])
+      $pageSize = intval($_GET['pageSize']);
+    $filters = array_merge($filters, $_GET);
+
+    $page = 1;
+    if(isset($filters['page']))
+      $page = $filters['page'];
+    $protocol = Utility::getProtocol(false);
+    if(isset($filters['protocol']))
+      $protocol = $filters['protocol'];
+
+    if($permission == 0 || $permission = 1)
+      $filters['permission'] = $permission;
+    else
+      $filters['groups'] = $groups;
+    
+    return array('filters' => $filters, 'pageSize' => $pageSize, 'protocol' => $protocol, 'page' => $page);
   }
 }
