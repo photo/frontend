@@ -40,7 +40,7 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
       status: (int), // binary
       permission: (int), // binary
       groups: (set),
-      license: (enum),
+      license: (string),
       dateTaken: (int), // unix timestamp
       dateTakenDay: (int)
       dateTakenMonth: (int)
