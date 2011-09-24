@@ -117,16 +117,6 @@ class Utility
     return self::returnValue("http://maps.googleapis.com/maps/api/staticmap?center={$latitude},{$longitude}&zoom={$zoom}&size={$size}&maptype={$type}&markers=color:gray%7C{$latitude},{$longitude}&sensor=false", $write);
   }
 
-  public static function tagsAsLinks($tags, $write = true)
-  {
-    $ret = array();
-    sort($tags);
-    foreach($tags as $tag)
-      $ret[] = '<a href="/photos/tags-'.self::safe($tag, false).'">'.self::safe($tag, false).'</a>';
-
-    return self::returnValue(implode(', ', $ret), $write);
-  }
-
   public static function timeAsText($time, $prefix = null, $suffix = null, $write = true)
   {
     if(empty($time))

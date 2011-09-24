@@ -124,15 +124,16 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @param string $id ID of the photo to get next and previous for
     * @return mixed Array on success, FALSE on failure
     */
-  public function getPhotoNextPrevious($id)
+  public function getPhotoNextPrevious($id, $filterOpts = null)
   {
+    $buildQuery = self::buildQuery($filterOpts, null, null);
     $photo = $this->getPhoto($id);
     if(!$photo)
       return false;
 
     $queue = new CFBatchRequest();
-    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` WHERE dateTaken>'{$photo['dateTaken']}' AND dateTaken IS NOT NULL ORDER BY dateTaken ASC LIMIT 1");
-    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` WHERE dateTaken<'{$photo['dateTaken']}' AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1");
+    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$buildQuery['where']} AND dateTaken>'{$photo['dateTaken']}' ORDER BY dateTaken ASC LIMIT 1");
+    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$buildQuery['where']} AND dateTaken<'{$photo['dateTaken']}' ORDER BY dateTaken DESC LIMIT 1");
     $responses = $this->db->batch($queue)->send();
     if(!$responses->areOK())
       return false;
@@ -181,71 +182,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
-    // TODO: support logic for multiple conditions
-    $where = '';
-    if(!empty($filters) && is_array($filters))
-    {
-      foreach($filters as $name => $value)
-      {
-        switch($name)
-        {
-          case 'groups':
-            $where = $this->buildWhere($where, "groups IN('" . implode("','", $value) . "')");
-            break;
-          case 'page':
-            if($value > 1)
-            {
-              $value = min($value, 40); // 40 pages at max of 2,500 recursion limit means 100k photos
-              $offset = ($limit * $value) - $limit;
-              $page = $value;
-            }
-            break;
-          case 'permissionx':
-            $where = $this->buildWhere($where, "permission='{$value}'");
-            break;
-          case 'sortBy':
-            $sortBy = 'ORDER BY ' . str_replace(',', ' ', $value);
-            $field = substr($value, 0, strpos($value, ','));
-            $where = $this->buildWhere($where, "{$field} is not null");
-            break;
-          case 'tags':
-            if(!is_array($value))
-              $value = (array)explode(',', $value);
-            $where = $this->buildWhere($where, "tags IN('" . implode("','", $value) . "')");
-            break;
-        }
-      }
-    }
-
-    if(!empty($offset))
-    {
-      $iterator = max(1, intval($offset - 1));
-      $nextToken = null;
-      $params = array('ConsistentRead' => 'true');
-      $currentPage = 1;
-      $thisLimit = min($iterator, $offset);
-      do
-      {
-        $res = $this->db->select("SELECT * FROM `{$this->domainPhoto}` {$where} {$sortBy} LIMIT {$iterator}", $params);
-        if(!$res->body->SelectResult->NextToken)
-          break;
-
-        $nextToken = $res->body->SelectResult->NextToken;
-        $params['NextToken'] = $nextToken;
-        $currentPage++;
-      }while($currentPage < $page);
-    }
-
-    $params = array('ConsistentRead' => 'true');
-    if(isset($nextToken) && !empty($nextToken))
-      $params['NextToken'] = $nextToken;
-
-
+    $buildQuery = self::buildQuery($filters, $limit, $offset);
     $queue = new CFBatchRequest();
-    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$where} {$sortBy} LIMIT {$limit}", $params);
-    if(isset($params['NextToken']))
-      unset($params['NextToken']);
-    $this->db->batch($queue)->select("SELECT COUNT(*) FROM `{$this->domainPhoto}` {$where}", $params);
+    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$buildQuery['where']} {$buildQuery['sortBy']} LIMIT {$buildQuery['limit']}", $buildQuery['params']);
+    if(isset($buildQuery['params']['NextToken']))
+      unset($buildQuery['params']['NextToken']);
+    $this->db->batch($queue)->select("SELECT COUNT(*) FROM `{$this->domainPhoto}` {$buildQuery['where']}", $buildQuery['params']);
     $responses = $this->db->batch($queue)->send();
 
     if(!$responses->areOK())
@@ -586,6 +528,72 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $res->isOK();
   }
 
+  private function buildQuery($filters, $limit, $offset)
+  {
+    // TODO: support logic for multiple conditions
+    $where = '';
+    $sortBy = null;
+    if(!empty($filters) && is_array($filters))
+    {
+      foreach($filters as $name => $value)
+      {
+        switch($name)
+        {
+          /*case 'groups':
+            $where = $this->buildWhere($where, "groups IN('" . implode("','", $value) . "')");
+            break;*/
+          case 'page':
+            if($value > 1)
+            {
+              $value = min($value, 40); // 40 pages at max of 2,500 recursion limit means 100k photos
+              $offset = ($limit * $value) - $limit;
+              $page = $value;
+            }
+            break;
+          case 'permissionx':
+            $where = $this->buildWhere($where, "permission='{$value}'");
+            break;
+          case 'sortBy':
+            $sortBy = 'ORDER BY ' . str_replace(',', ' ', $value);
+            $field = substr($value, 0, strpos($value, ','));
+            $where = $this->buildWhere($where, "{$field} IS NOT NULL");
+            break;
+          case 'tags':
+            if(!is_array($value))
+              $value = (array)explode(',', $value);
+            $where = $this->buildWhere($where, "tags IN('" . implode("','", $value) . "')");
+            break;
+        }
+      }
+    }
+
+    if(!empty($offset))
+    {
+      $iterator = max(1, intval($offset - 1));
+      $nextToken = null;
+      $params = array('ConsistentRead' => 'true');
+      $currentPage = 1;
+      $thisLimit = min($iterator, $offset);
+      do
+      {
+        $res = $this->db->select("SELECT * FROM `{$this->domainPhoto}` {$where} {$sortBy} LIMIT {$iterator}", $params);
+        if(!$res->body->SelectResult->NextToken)
+          break;
+
+        $nextToken = $res->body->SelectResult->NextToken;
+        $params['NextToken'] = $nextToken;
+        $currentPage++;
+      }while($currentPage < $page);
+    }
+
+    $params = array('ConsistentRead' => 'true');
+    if(isset($nextToken) && !empty($nextToken))
+      $params['NextToken'] = $nextToken;
+
+
+    return array('params' => $params, 'where' => $where, 'sortBy' => $sortBy, 'limit' => $limit);
+  }
+
   /**
     * Utility function to help build the WHERE clause for SELECT statements.
     * TODO possibly put duplicate code in a utility class
@@ -597,9 +605,9 @@ class DatabaseSimpleDb implements DatabaseInterface
   private function buildWhere($existing, $add)
   {
     if(empty($existing))
-      return "where {$add} ";
+      return "WHERE {$add} ";
     else
-      return "{$existing} and {$add} ";
+      return "{$existing} AND {$add} ";
   }
 
   /**

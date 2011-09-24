@@ -27,7 +27,7 @@ getApi()->get('/photo/([a-zA-Z0-9]+)/view.json', array('ApiPhotoController', 'ph
 getApi()->get('/photos/?(.+)?/view.json', array('ApiPhotoController', 'photos'), EpiApi::external); // get all photos / optionally filter (/photos[/{options}]/view.json)
 getApi()->post('/photo/upload.json', array('ApiPhotoController', 'upload'), EpiApi::external); // upload a photo
 getApi()->get('/photo/([a-zA-Z0-9]+)/url/(\d+)x(\d+)x?([A-Zx]*)?.json', array('ApiPhotoController', 'dynamicUrl'), EpiApi::external); // generate a dynamic photo url (/photo/{id}/url/{options}.json) TODO, make internal for now
-getApi()->get('/photo/([a-zA-Z0-9]+)/nextprevious/?([a-zA-Z0-9-]+)?.json', array('ApiPhotoController', 'nextPrevious'), EpiApi::external); // get a photo's next/previous (/photo/{id}/nextprevious[/{options}].json)
+getApi()->get('/photo/([a-zA-Z0-9]+)/nextprevious/?(.+)?.json', array('ApiPhotoController', 'nextPrevious'), EpiApi::external); // get a photo's next/previous (/photo/{id}/nextprevious[/{options}].json)
 //getApi()->post('/photo/([a-zA-Z0-9]+)/create/([a-z0-9]+)/([0-9]+)x([0-9]+)x?(.*).json', array('ApiPhotoController', 'dynamic'), EpiApi::external);
 
 /*

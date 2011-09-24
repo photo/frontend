@@ -33,6 +33,7 @@ class Url
 
   public static function photoView($id, $options = null, $write = true)
   {
+    $options = preg_replace('#/page-\d+#', '', $options);
     if(empty($options))
       return Utility::returnValue(sprintf('/photo/%s/view', Utility::safe($id, false)), $write);
     else
@@ -60,6 +61,16 @@ class Url
   public static function tagsView($write = true)
   {
     return Utility::returnValue('/tags/view', $write);
+  }
+
+  public static function tagsAsLinks($tags, $write = true)
+  {
+    $ret = array();
+    sort($tags);
+    foreach($tags as $tag)
+      $ret[] = sprintf('<a href="%s">%s</a>', self::photosView("tags-{$tag}", false), Utility::safe($tag, false));
+
+    return Utility::returnValue(implode(', ', $ret), $write);
   }
 
   public static function userLogout($write = true)
