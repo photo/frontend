@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `photo` (
   `views` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
   `permission` int(11) DEFAULT NULL,
-  `creativeCommons` int(11) DEFAULT NULL,
+  `license` int(11) DEFAULT NULL,
   `dateTaken` int(11) DEFAULT NULL,
   `dateTakenDay` int(11) DEFAULT NULL,
   `dateTakenMonth` int(11) DEFAULT NULL,
