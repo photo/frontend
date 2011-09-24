@@ -97,14 +97,15 @@ class DatabaseMySql implements DatabaseInterface
     * @param string $id ID of the photo to get next and previous for
     * @return mixed Array on success, FALSE on failure
     */
-  public function getPhotoNextPrevious($id)
+  public function getPhotoNextPrevious($id, $filterOpts = null)
   {
+    $buildQuery = self::buildQuery($filterOpts, null, null);
     $photo = $this->getPhoto($id);
     if(!$photo)
       return false;
 
-    $photo_prev = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE dateTaken> :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken ASC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
-    $photo_next = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE dateTaken< :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
+    $photo_prev = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND dateTaken> :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken ASC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
+    $photo_next = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND dateTaken< :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
 
     $ret = array();
     if($photo_prev)
@@ -147,6 +148,25 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
+    $query = self::buildQuery($filters, $limit, $offset);
+
+    $photos = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}photo` {$query['where']} {$query['sortBy']} {$query['limit']} {$query['offset']}");
+    if(empty($photos))
+      return false;
+    for($i = 0; $i < count($photos); $i++)
+    {
+      $photos[$i] = self::normalizePhoto($photos[$i]);
+    }
+    $result = getDatabase()->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}photo` {$query['where']}");
+    if(!empty($result))
+    {
+      $photos[0]['totalRows'] = $result['COUNT(*)'];
+    }
+    return $photos;
+  }
+
+  private function buildQuery($filters, $limit, $offset)
+  {
     // TODO: support logic for multiple conditions
     $where = '';
     $sortBy = 'ORDER BY dateTaken DESC';
@@ -177,23 +197,16 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
 
+    $limit_sql = '';
+    if($limit)
+      $limit_sql = "LIMIT {$limit}";
+
     $offset_sql = '';
     if($offset)
       $offset_sql = "OFFSET {$offset}";
 
-    $photos = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}photo` {$where} {$sortBy} LIMIT {$limit} {$offset_sql}");
-    if(empty($photos))
-      return false;
-    for($i = 0; $i < count($photos); $i++)
-    {
-      $photos[$i] = self::normalizePhoto($photos[$i]);
-    }
-    $result = getDatabase()->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}photo` {$where}");
-    if(!empty($result))
-    {
-      $photos[0]['totalRows'] = $result['COUNT(*)'];
-    }
-    return $photos;
+    $ret = array('where' => $where, 'sortBy' => $sortBy, 'limit' => $limit_sql, 'offset' => $offset_sql);
+    return $ret;
   }
 
   /**
