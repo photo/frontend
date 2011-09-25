@@ -256,6 +256,11 @@ class Photo
     copy($localFile, $localFileCopy);
 
     $baseImage = getImage($localFileCopy);
+    if(!$baseImage)
+    {
+      getLogger()->warn('Could not load image, possibly an invalid image file.');
+      return false;
+    }
     $baseImage->scale(getConfig()->get('photos')->baseSize, getConfig()->get('photos')->baseSize);
     $baseImage->write($localFileCopy);
     $uploaded = $fs->putPhotos(

@@ -24,7 +24,14 @@ class ImageImageMagick implements ImageInterface
     */
   public function __construct($filename)
   {
-    $this->image = new Imagick($filename);
+    try
+    {
+      $this->image = new Imagick($filename);
+    }
+    catch(ImagickException $e)
+    {
+      OPException::raise(new OPInvalidImageException('Could not create jpeg with ImageMagick library'));
+    }
     //$this->image->setImageCompression(imagick::COMPRESSION_NO);
     //$this->image->setImageCompressionQuality(20);
   }

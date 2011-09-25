@@ -24,7 +24,14 @@ class ImageGraphicsMagick implements ImageInterface
     */
   public function __construct($filename)
   {
-    $this->image = new Gmagick($filename);
+    try
+    {
+      $this->image = new Gmagick($filename);
+    }
+    catch(GmagickException $e)
+    {
+      OPException::raise(new OPInvalidImageException('Could not create jpeg with GraphicsMagick library'));
+    }
   }
 
   /**

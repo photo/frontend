@@ -27,16 +27,24 @@ function getImage($image)
   if(!$type)
     $type = getConfig()->get('modules')->image;
 
-  switch($type)
+  try
   {
-    case 'GraphicsMagick':
-      return new ImageGraphicsMagick($image);
-      break;
-    case 'ImageMagick':
-      return new ImageImageMagick($image);
-      break;
-    case 'GD':
-      return new ImageGD($image);
-      break;
+    switch($type)
+    {
+      case 'GraphicsMagick':
+        return new ImageGraphicsMagick($image);
+        break;
+      case 'ImageMagick':
+        return new ImageImageMagick($image);
+        break;
+      case 'GD':
+        return new ImageGD($image);
+        break;
+    }
+  }
+  catch(OPInvalidImageException $e)
+  {
+    getLogger()->warn("Invalid image exception thrown for {$type}");
+    return false;
   }
 }
