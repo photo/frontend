@@ -554,6 +554,8 @@
                 uploadStartCallback : function(){},
                 uploadProgressCallback : function(){},
                 uploadFinishedCallback : function(){},
+                photoTags : function(){alert("photoTags")},
+                photoLicense : function(){alert("photoLicense")},
                 allowDuplicates : false,
                 returnSizes : "25x25xCR",
                 crumb : null
@@ -729,6 +731,8 @@
                 formData.append("crumb",that.options.crumb);
                 formData.append("returnSizes",that.options.returnSizes);
                 formData.append("photo",file);
+                formData.append("license", that.options.photoLicense(file.queueIndex));
+                formData.append("tags", that.options.photoTags(file.queueIndex));
                 xhr.open("POST", that.options.uploadPath, true);  
                 
                 xhr.onload = function(e) {
@@ -752,7 +756,7 @@
                 /*
                     TODO actually fallback to other uploader
                 */
-                alert("falling back to different uploader because your browser doesn't support html5 drag and drop");
+                alert("Your browser doesn't support html5 drag and drop : (");
             }
         }; // end of upload function
 
