@@ -281,7 +281,7 @@ var opTheme = (function() {
         frameId : "uploader-frame",
         dropZoneId : "drop-zone",
         uploadPath : '/photo/upload.json',
-        returnSizes : "32x32xCR",
+        returnSizes : "50x50xCR",
         allowDuplicates : false
       },
       
@@ -350,8 +350,11 @@ var opTheme = (function() {
       },
       
       uploadFinished : function(queueIndex, status, response) {
-        $("#file-"+queueIndex+" .progress").remove();
-        $("#file-"+queueIndex).removeClass("uploading").addClass("finished").append("<img class='thumb' src='"+response.result.path32x32xCR+"'/>");
+        var thisClass = response.code == 202 ? 'finished' : 'error';
+        $("#file-"+queueIndex+" .progress").addClass(thisClass);
+        $("#file-"+queueIndex).removeClass("uploading").addClass("finished");
+        if(response.code == 202)
+          $("#file-"+queueIndex).append("<img class='thumb' src='"+response.result.path50x50xCR+"'/>");
       },
       
       photoLicense : function(queueIndex) {
@@ -364,41 +367,6 @@ var opTheme = (function() {
 
     }, // upload
 
-
-		messageBox: function(messageHtml) {
-			$('a.message-close').live('click', opTheme.messageBoxClose);
-			if(timeoutId != undefined) {
-				clearTimeout(timeoutId);
-				timeoutId = undefined;
-				$('#message-box').html('<div><a class="message-close">close</a>' + messageHtml + '</div>');
-				timeoutId = setTimeout(function() {
-					$('#message-box').animate({height:'toggle'}, 500, function() {
-						$('#message-box').remove();
-						timeoutId = undefined;
-					});
-				}, 7000);
-			} else {
-				$('html').append('<section id="message-box" style="display:none;"><div><a class="message-close">close</a>' + messageHtml + '</div></section>');
-				$('#message-box').animate({height:'toggle'}, 500, function() {
-					timeoutId = setTimeout(function() {
-						$('#message-box').animate({height:'toggle'}, 500, function() {
-							$('#message-box').remove();
-							timeoutId = undefined;
-						});
-					}, 7000);
-				});
-			}
-		},
-
-		messageBoxClose: function() {
-			if(timeoutId != undefined) {
-				clearTimeout(timeoutId);
-				timeoutId = undefined;
-				$('#message-box').animate({height:'toggle'}, 500, function() {
-					$('#message-box').remove();
-				});
-			}
-		},
     init: {
       attach: function() {
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
@@ -413,24 +381,59 @@ var opTheme = (function() {
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
         opTheme.front.init($('div.front-slideshow'));
         opTheme.upload.init();
-        
-        // $("form#upload-form").fileupload({
-        //           url: '/photo/upload.json',
-        //           singleFileUploads: true,
-        //           autoUpload: false
-        //         })
-        //         .bind('fileuploadadd', opTheme.upload.handlers.added)
-        //         .bind('fileuploaddone', opTheme.upload.handlers.done)
-        //         .bind('fileuploadprogressall', opTheme.upload.handlers.progressall)
-        //         .bind('fileuploadprogress', opTheme.upload.handlers.progress);
-        
+        // TODO standardize this somehow
         $('form.validate').each(opTheme.formHandlers.init);
       }
     },
     
     message: {
-      error: function(msg) {
-        alert(msg);
+      close: function() {
+        if(timeoutId != undefined) {
+          clearTimeout(timeoutId);
+          timeoutId = undefined;
+          $('#message-box').animate({height:'toggle'}, 500, function() {
+            $('#message-box').remove();
+          });
+        }
+      },
+      confirm: function(messageHtml) {
+        opTheme.message.show(messageHtml, 'confirm');
+      },
+      error: function(messageHtml) {
+        opTheme.message.show(messageHtml, 'error');
+      },
+      show: function(messageHtml, type) {
+        var thisType = type,
+          removeType = type == 'error' ? 'confirm' : 'error';
+        if(timeoutId != undefined) {
+          clearTimeout(timeoutId);
+          timeoutId = undefined;
+          $('#message-box').
+            removeClass(removeType).
+            addClass(thisType).
+            html('<div><a class="message-close">close</a>' + messageHtml + '</div>');
+          timeoutId = setTimeout(function() {
+            $('#message-box').animate({height:'toggle'}, 500, function() {
+              $('#message-box').remove();
+              timeoutId = undefined;
+            });
+          }, 7000);
+        } else {
+          $('html').append('<section id="message-box" style="display:none;"><div><a class="message-close">close</a>' + messageHtml + '</div></section>');
+          $('#message-box').
+            removeClass(removeType).
+            addClass(thisType).
+            animate({height:'toggle'}, 500, function() {
+              timeoutId = setTimeout(function() {
+                $('#message-box').animate({height:'toggle'}, 500, function() {
+                  $('#message-box').remove();
+                  timeoutId = undefined;
+                });
+              }, 7000);
+            }
+          );
+        }
+        $('a.message-close').click(opTheme.message.close);
       }
     },
     submitHandlers: {
@@ -482,42 +485,5 @@ var opTheme = (function() {
         OP.Util.makeRequest('/user/login.json', params, opTheme.user.loginProcessed, 'json');
       }
     },
-    
-    // upload: {
-    //   handlers: {
-    //     added: function(e, data) {
-    //       var files = data.files
-    //         html = '<li id="%id"><div><div class="img"><label>%label</label></div><div class="progress"><div></div></div></li>';
-    //       data.id=parseInt(Math.random()*1000);
-    //       for(i=0; i<files.length; i++) {
-    //         $(html.replace('%id', data.id).replace('%label', files[i].fileName))
-    //           .prependTo("ul#upload-queue");
-    //       }
-    //     },
-    //     done: function(e, data) {
-    //       var resp = data.result,
-    //         id = resp.result.id,
-    //         img = resp.result.path100x100;
-    //       $("#"+data.id+" div.progress div.img").css("width", "").css("height", "");
-    //       $("#"+data.id+" div.progress div").css("width", "100%").addClass('complete');
-    //       $("#"+data.id+" div.img").replaceWith('<a href="/photo/'+id+'/view"><img src="'+img+'"></a>');
-    //     },
-    //     progress: function(e, data) {
-    //       var pct = parseInt(data.loaded/data.total*100);
-    //       $("#"+data.id+" div.progress div").css("width", pct+"%");
-    //       if(pct > 95)
-    //         $("#"+data.id+" div.img").html("Crunching...");
-    //       else if(pct > 85)
-    //         $("#"+data.id+" div.img").html("Backing up...");
-    // 
-    // 
-    //     },
-    //     progressall: function(e, data) {
-    //       var pct = parseInt(data.loaded/data.total*100);
-    //       $("#upload-progress").html("%s% completed".replace('%s', pct));
-    //     }
-    //   }
-    // }
-    
   };
 }());

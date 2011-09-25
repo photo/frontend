@@ -161,7 +161,7 @@ class PhotoController extends BaseController
       return;
     }
     $crumb = getSession()->get('crumb');
-    $body = getTheme()->get('upload.php', array('crumb' => $crumb));
+    $body = getTheme()->get('upload.php', array('crumb' => $crumb, 'licenses' => Utility::getLicenses()));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'upload'));
   }
 

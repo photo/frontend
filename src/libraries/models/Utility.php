@@ -17,15 +17,12 @@ class Utility
       );
     }
 
+    foreach($licenses as $key => $value)
+      $licenses[$key]['selected'] = ($key == $selected);
+
     if($selected === null)
-    {
       $licenses['']['selected'] = true;
-    }
-    else
-    {
-      foreach($licenses as $key => $value)
-        $licenses[$key]['selected'] = ($key == $selected);
-    }
+
     return $licenses;
   }
 
@@ -75,7 +72,8 @@ class Utility
   public static function licenseLong($key, $write = true)
   {
     $licenses = self::getLicenses();
-    $license = null;
+    // default it to the key, if the key doesn't exist then assume it's custom
+    $license = $key;
     if(isset($licenses[$key]))
     {
       $license = sprintf('%s (%s)', $key, $licenses[$key]['name']);
