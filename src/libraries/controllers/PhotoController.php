@@ -87,15 +87,15 @@ class PhotoController extends BaseController
       else
         $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
       $photo = $apiResp['result'];
-      if($photo['width'] >= $photo['height'])
+      if($photo['width'] <= $detailDimensions[0])
       {
-        $photo['thisWidth'] = $detailDimensions[0];
-        $photo['thisHeight'] = intval($photo['height']/$photo['width']*$detailDimensions[0]);
+        $photo['thisWidth'] = $photo['width'];
+        $photo['thisHeight'] = $photo['height'];
       }
       else
       {
-        $photo['thisWidth'] = intval($photo['width']/$photo['height']*$detailDimensions[1]);
-        $photo['thisHeight'] = $detailDimensions[1];
+        $photo['thisWidth'] = $detailDimensions[0];
+        $photo['thisHeight'] = intval($photo['height']/$photo['width']*$detailDimensions[0]);
       }
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;

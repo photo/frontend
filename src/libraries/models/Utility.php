@@ -81,12 +81,12 @@ class Utility
       $license = sprintf('%s (%s)', $key, $licenses[$key]['name']);
     }
 
-    self::returnValue($license, $write);
+    return self::returnValue($license, $write);
   }
 
   public static function permissionAsText($permission, $write = true)
   {
-    self::returnValue(($permission ? 'public' : 'private'), $write);
+    return self::returnValue(($permission ? 'public' : 'private'), $write);
   }
 
   public static function plural($int, $word = null, $write = true)
