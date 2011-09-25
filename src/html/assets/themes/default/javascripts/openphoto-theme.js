@@ -48,10 +48,12 @@ var opTheme = (function() {
           	url = el.parent().attr('action')+'.json';
       
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
-          if(response.code === 200)
+          if(response.code === 200) {
             el.html('This photo has been deleted');
-          else
+            opTheme.message.confirm('This photo has been deleted.');
+          } else {
             opTheme.message.error('Could not delete the photo.');
+          }
         }, 'json');
         return false;
       },
