@@ -7,26 +7,26 @@
     </div>
     <div class="sidebar">
       <div class="image-pagination">
-        <div class="previous">
-          <?php if(!empty($photo['previous'])) { ?>
+        <?php if(!empty($photo['previous'])) { ?>
+          <div class="previous">
             <a href="<?php Url::photoView($photo['previous']['id'], $options); ?>" style="background:url(<?php Url::photoUrl($photo['previous'], getConfig()->get('photoSizes')->nextPrevious); ?>) top left no-repeat;"><span class="audible">Go to previous photo</span></a>
+          </div>
         <?php } else { ?>
           <div class="empty"></div>
         <?php } ?>
-        </div>
-        <div class="next">
-          <?php if(!empty($photo['next'])) { ?>
+        <?php if(!empty($photo['next'])) { ?>
+          <div class="next">
             <a href="<?php Url::photoView($photo['next']['id'], $options); ?>" style="background:url(<?php Url::photoUrl($photo['next'], getConfig()->get('photoSizes')->nextPrevious); ?>) top left no-repeat"><span class="audible">Go to next photo</span></a>
+          </div>
         <?php } else { ?>
           <div class="empty"></div>
         <?php } ?>
-        </div>
       </div>
       <ul class="meta">
         <li class="date"><?php Utility::dateLong($photo['dateTaken']); ?></li>
         <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments" class="action-jump-click">see all</a></li>
         <li class="tags"><?php Url::tagsAsLinks($photo['tags']); ?></li>
-	<?php if(isset($photo['license'])) { ?>
+        <?php if(isset($photo['license'])) { ?>
           <li class="license"><?php Utility::licenseLong($photo['license']); ?></li>
         <?php } ?>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
