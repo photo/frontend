@@ -492,6 +492,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function putPhoto($id, $params)
   {
+    $params = self::preparePhoto($id, $params);
     $res = $this->db->put_attributes($this->domainPhoto, $id, $params);
     return $res->isOK();
   }
