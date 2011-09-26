@@ -134,7 +134,7 @@ class EpiDatabase
     }
     catch(Exception $e)
     {
-      EpiException::raise(new EpiDatabaseConnectionException('Could not connect to database'));
+      EpiException::raise(new EpiDatabaseConnectionException('Could not connect to database: ' . $e->getMessage()));
     }
   }
 }

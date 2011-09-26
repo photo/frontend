@@ -145,6 +145,7 @@ class SetupController
   public static function setup3Post()
   {
     $step = 3;
+    $secret = self::getSecret();
     $appId = getSession()->get('appId');
     $usesAws = (getSession()->get('database') == 'SimpleDb' || getSession()->get('fileSystem') == 'S3') ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
@@ -217,10 +218,10 @@ class SetupController
       $credentials = new stdClass;
       if($usesAws)
       {
-        getSession()->set('awsKey', $awsKey);
-        getSession()->set('awsSecret', $awsSecret);
-        $credentials->awsKey = $awsKey;
-        $credentials->awsSecret = $awsSecret;
+        getSession()->set('awsKey', Utility::encrypt($awsKey, $secret));
+        getSession()->set('awsSecret', Utility::encrypt($awsSecret, $secret));
+        $credentials->awsKey = Utility::encrypt($awsKey, $secret);
+        $credentials->awsSecret = Utility::encrypt($awsSecret, $secret);
 
         $aws = new stdClass;
         if($usesS3)
@@ -240,13 +241,13 @@ class SetupController
       {
         getSession()->set('mySqlHost', $mySqlHost);
         getSession()->set('mySqlUser', $mySqlUser);
-        getSession()->set('mySqlPassword', $mySqlPassword);
+        getSession()->set('mySqlPassword', Utility::encrypt($mySqlPassword, $secret));
         getSession()->set('mySqlDb', $mySqlDb);
         getSession()->set('mySqlTablePrefix', $mySqlTablePrefix);
         $mysql = new stdClass;
         $mysql->mySqlHost = $mySqlHost;
         $mysql->mySqlUser = $mySqlUser;
-        $mysql->mySqlPassword = $mySqlPassword;
+        $mysql->mySqlPassword = Utility::encrypt($mySqlPassword, $secret);
         $mysql->mySqlDb = $mySqlDb;
         $mysql->mySqlTablePrefix = $mySqlTablePrefix;
       }
@@ -262,6 +263,8 @@ class SetupController
       $systems = new stdClass;
       $systems->database = getSession()->get('database');
       $systems->fileSystem = getSession()->get('fileSystem');
+      $secrets = new stdClass;
+      $secrets->secret = self::getSecret();
 
       // save the config info
       getConfig()->set('credentials', $credentials);
@@ -272,6 +275,7 @@ class SetupController
       if($usesLocalFs)
         getConfig()->set('localfs', $fs);
       getConfig()->set('systems', $systems);
+      getConfig()->set('secrets', $secrets);
 
       $fsObj = getFs();
       $dbObj = getDb();
@@ -337,6 +341,17 @@ class SetupController
     getRoute()->redirect('/setup');
   }
 
+  public static function getSecret()
+  {
+    $secret = getSession()->get('secret');
+    if(!$secret)
+    {
+      $secret = sha1(uniqid(true));
+      getSession()->set('secret', $secret);
+    }
+    return $secret;
+  }
+
   /**
     * Verify the server requirements are available on this host.
     *
@@ -345,7 +360,7 @@ class SetupController
   private static function verifyRequirements($imageLibs)
   {
     $errors = array();
-    $configDir = dirname(dirname(dirname(__FILE__))) . '/configs';
+    $configDir = Utility::getBaseDir() . '/configs';
     $generatedDir = "{$configDir}/generated";
 
     if(file_exists($generatedDir) && is_writable($generatedDir) && !empty($imageLibs))
@@ -384,7 +399,8 @@ class SetupController
   private static function writeConfigFile()
   {
     // continue if no errors
-    $baseDir = dirname(dirname(dirname(__FILE__)));
+    $secret = self::getSecret();
+    $baseDir = Utility::getBaseDir();
     $htmlDir = "{$baseDir}/html";
     $libDir = "{$baseDir}/libraries";
     $configDir = "{$baseDir}/configs";
@@ -399,7 +415,7 @@ class SetupController
       '{templates}' => "{$baseDir}/templates",
       '{themes}' => "{$htmlDir}/assets/themes",
       '{exiftran}' => exec('which exiftran'),
-      '{localSecret}' => sha1(uniqid(true)),
+      '{localSecret}' => $secret,
       '{awsKey}' => "",
       '{awsSecret}' => "", 
       '{s3Bucket}' => getSession()->get('s3BucketName'),

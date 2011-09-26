@@ -28,6 +28,7 @@ This guide assumes you have [get it here][Macports installed]. If not you can . 
     port install php5-curl
     port install php5-imagick
     port install php5-oauth
+    port install php5-mcrypt
     port load apache2
 
 ----------------------------------------

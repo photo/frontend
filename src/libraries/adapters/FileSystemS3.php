@@ -21,7 +21,7 @@ class FileSystemS3 implements FileSystemInterface
     */
   public function __construct()
   {
-    $this->fs = new AmazonS3(getConfig()->get('credentials')->awsKey, getConfig()->get('credentials')->awsSecret);
+    $this->fs = new AmazonS3(Utility::decrypt(getConfig()->get('credentials')->awsKey), Utility::decrypt(getConfig()->get('credentials')->awsSecret));
     $this->bucket = getConfig()->get('aws')->s3BucketName;
   }
 
