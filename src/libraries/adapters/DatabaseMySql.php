@@ -23,7 +23,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $mysql = getConfig()->get('mysql');
     EpiDatabase::employ('mysql', $mysql->mySqlDb, 
-                        $mysql->mySqlHost, $mysql->mySqlUser, $mysql->mySqlPassword);
+                        $mysql->mySqlHost, $mysql->mySqlUser, Utility::decrypt($mysql->mySqlPassword));
     foreach($mysql as $key => $value) {
       $this->{$key} = $value;
     }

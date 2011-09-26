@@ -20,7 +20,7 @@ Before setting up your server you'll need to make sure you have your cloud accou
 #### Server Packages and Modules
 Once you've confirmed that your cloud account is setup you can get started on your server. For that you'll need to have _Apache_, _PHP_ and _curl_ installed with a few modules.
 
-    zypper in apache2 php5 apache2-mod-php5 php5-curl
+    zypper in apache2 php5 apache2-mod-php5 php5-curl php5-mcrypt
 
 Ensure you have mod_rewrite enabled
     a2enmod rewrite

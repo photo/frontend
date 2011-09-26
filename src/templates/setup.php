@@ -83,7 +83,7 @@
         <input type="text" name="mySqlUser" id="mySqlUser" size="50" autocomplete="off" data-validation="required">
         <label for="mySqlPassword">MySQL Password</label>
         <input type="password" name="mySqlPassword" id="mySqlPassword" size="50" autocomplete="off" data-validation="required">
-        <label for="mySqlDb">MySQL Database</label>
+        <label for="mySqlDb">MySQL Database <em>(this needs to already exist)</em></label>
         <input type="text" name="mySqlDb" value="openphoto" id="mySqlDb" size="50" autocomplete="off" data-validation="required">
         <label for="mySqlTablePrefix">Table prefix</label>
         <input type="text" name="mySqlTablePrefix" value="op_" id="mySqlTablePrefix" size="50" autocomplete="off" data-validation="required">

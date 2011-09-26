@@ -20,7 +20,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function __construct()
   {
-    $this->db = new AmazonSDB(getConfig()->get('credentials')->awsKey, getConfig()->get('credentials')->awsSecret);
+    $this->db = new AmazonSDB(Utility::decrypt(getConfig()->get('credentials')->awsKey), Utility::decrypt(getConfig()->get('credentials')->awsSecret));
     $this->domainPhoto = getConfig()->get('aws')->simpleDbDomain;
     $this->domainAction = getConfig()->get('aws')->simpleDbDomain.'Action';
     $this->domainCredential = getConfig()->get('aws')->simpleDbDomain.'Credential';

@@ -22,14 +22,11 @@ Before setting up your server you'll need to make sure you have your cloud accou
 #### Server Packages and Modules
 Once you've confirmed that your cloud account is setup you can get started on your server. For that you'll need to have _Cherokee_, _PHP_ and _curl_ installed with a few modules.
 
-    apt-get install cherokee
-    apt-get install php5-fpm
-    apt-get install php5-curl
+    apt-get install cherokee php5-fpm php5-curl php5-mcrypt
 
 There are also a few optional but recommended packages and modules.
 
-    apt-get install php5-imagick
-    apt-get install exiftran
+    apt-get install php5-imagick exiftran
 
 ----------------------------------------
 

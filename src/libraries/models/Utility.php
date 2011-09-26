@@ -1,6 +1,44 @@
 <?php
 class Utility
 {
+  public static function decrypt($string, $secret = null, $salt = null)
+  {
+    if($secret === null)
+      $secret = getConfig()->get('secrets')->secret;
+
+    if($salt === null)
+      $salt = self::getBaseDir();
+
+    getLogger()->info("decrypt secret = {$secret}");
+    $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
+    $key = md5(sprintf('%s~%s', $salt, $secret));
+
+    $string = base64_decode($string);
+    $decryptedString = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $string, MCRYPT_MODE_ECB, $iv));
+    return $decryptedString;
+  }
+
+  public static function encrypt($string, $secret = null, $salt = null)
+  {
+    if($secret === null)
+      $secret = getConfig()->get('secrets')->secret;
+
+    if($salt === null)
+      $salt = self::getBaseDir();
+
+    getLogger()->info("encrypt secret = {$secret}");
+    $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
+    $key = md5(sprintf('%s~%s', $salt, $secret));
+
+    $encryptedString = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $string, MCRYPT_MODE_ECB, $iv);
+    return base64_encode($encryptedString);
+  }
+
+  public static function getBaseDir()
+  {
+    return dirname(dirname(dirname(__FILE__)));
+  }
+
   public static function getLicenses($selected = null)
   {
     static $licenses;
