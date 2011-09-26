@@ -50,7 +50,7 @@ class Url
   
   public static function photoUpload($write = true)
   {
-    return Utility::returnValue('/photo/upload', $write);
+    return Utility::returnValue('/photos/upload', $write);
   }
   
   public static function photosUpload($write = true)
