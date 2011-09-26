@@ -21,6 +21,8 @@
     -moz-box-shadow: 2px 2px 2px #888;
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
+    width:200px;
+    height:200px;
 }
 
 .grid-200 .grid-item {
