@@ -11,9 +11,9 @@ class TagController extends BaseController
     *
     * @return string HTML
     */
-  public static function tags()
+  public static function list_()
   {
-    $tags = getApi()->invoke("/tags/view.json");
+    $tags = getApi()->invoke("/tags/list.json");
     $groupedTags = Tag::groupByWeight($tags['result']);
 
     $body = getTheme()->get('tags.php', array('tags' => $groupedTags));

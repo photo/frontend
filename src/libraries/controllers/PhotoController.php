@@ -69,59 +69,18 @@ class PhotoController extends BaseController
   }
 
   /**
-    * Render the photo page for a photo with ID $id.
-    * If $options are present then it will render that photo.
-    *
-    * @param string $id ID of the photo to be deleted.
-    * @param string $options Optional options for rendering this photo.
-    * @return string HTML
-    */
-  public static function photo($id, $options = null)
-  {
-    $apiResp = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => getConfig()->get('photoSizes')->detail)));
-    if($apiResp['code'] === 200)
-    {
-      $detailDimensions = explode('x', getConfig()->get('photoSizes')->detail);
-      if(empty($options))
-        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
-      else
-        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
-      $photo = $apiResp['result'];
-      if($photo['width'] <= $detailDimensions[0])
-      {
-        $photo['thisWidth'] = $photo['width'];
-        $photo['thisHeight'] = $photo['height'];
-      }
-      else
-      {
-        $photo['thisWidth'] = $detailDimensions[0];
-        $photo['thisHeight'] = intval($photo['height']/$photo['width']*$detailDimensions[0]);
-      }
-      $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
-      $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
-      $crumb = getSession()->get('crumb');
-      $body = getTheme()->get('photo-details.php', array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
-      getTheme()->display('template.php', array('body' => $body, 'page' => 'photo-details'));
-    }
-    else
-    {
-      getRoute()->run('/error/404');
-    }
-  }
-
-  /**
     * Render a list of the user's photos as specified by optional $filterOpts.
     * If $options are present then it will apply those filter rules.
     *
     * @param string $filterOpts Optional options for filtering
     * @return string HTML
     */
-  public static function photos($filterOpts = null)
+  public static function list_($filterOpts = null)
   {
     if($filterOpts)
-      $photos = getApi()->invoke("/photos/{$filterOpts}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
+      $photos = getApi()->invoke("/photos/{$filterOpts}/list.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
     else
-      $photos = getApi()->invoke("/photos/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
+      $photos = getApi()->invoke("/photos/list.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
 
     $photos = $photos['result'];
 
@@ -163,6 +122,47 @@ class PhotoController extends BaseController
     $crumb = getSession()->get('crumb');
     $body = getTheme()->get('upload.php', array('crumb' => $crumb, 'licenses' => Utility::getLicenses()));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'upload'));
+  }
+
+  /**
+    * Render the photo page for a photo with ID $id.
+    * If $options are present then it will render that photo.
+    *
+    * @param string $id ID of the photo to be deleted.
+    * @param string $options Optional options for rendering this photo.
+    * @return string HTML
+    */
+  public static function view($id, $options = null)
+  {
+    $apiResp = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => getConfig()->get('photoSizes')->detail)));
+    if($apiResp['code'] === 200)
+    {
+      $detailDimensions = explode('x', getConfig()->get('photoSizes')->detail);
+      if(empty($options))
+        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
+      else
+        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
+      $photo = $apiResp['result'];
+      if($photo['width'] <= $detailDimensions[0])
+      {
+        $photo['thisWidth'] = $photo['width'];
+        $photo['thisHeight'] = $photo['height'];
+      }
+      else
+      {
+        $photo['thisWidth'] = $detailDimensions[0];
+        $photo['thisHeight'] = intval($photo['height']/$photo['width']*$detailDimensions[0]);
+      }
+      $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
+      $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
+      $crumb = getSession()->get('crumb');
+      $body = getTheme()->get('photo-details.php', array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
+      getTheme()->display('template.php', array('body' => $body, 'page' => 'photo-details'));
+    }
+    else
+    {
+      getRoute()->run('/error/404');
+    }
   }
 
   /**
