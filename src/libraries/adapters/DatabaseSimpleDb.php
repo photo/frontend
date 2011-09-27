@@ -650,7 +650,6 @@ class DatabaseSimpleDb implements DatabaseInterface
     if(isset($nextToken) && !empty($nextToken))
       $params['NextToken'] = $nextToken;
 
-
     return array('params' => $params, 'where' => $where, 'sortBy' => $sortBy, 'limit' => $limit);
   }
 

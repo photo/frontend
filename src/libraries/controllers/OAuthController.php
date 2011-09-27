@@ -138,22 +138,6 @@ class OAuthController extends BaseController
     }
   }
 
-  public static function list_()
-  {
-    getAuthentication()->requireAuthentication();
-    $res = getApi()->invoke('/oauth/list.json', EpiRoute::httpGet);
-    if($res['code'] === 200)
-    {
-      $template = sprintf('%s/credentials.php', getConfig()->get('paths')->templates);
-      $body = getTemplate()->get($template, array('credentials' => $res['result']));
-      getTheme()->display('template.php', array('body' => $body, 'page' => 'credentials'));
-    }
-    else
-    {
-      getRoute()->run('/error/404');
-    }
-  }
-
   public static function test()
   {
     if(getCredential()->checkRequest())

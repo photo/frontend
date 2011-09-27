@@ -77,4 +77,9 @@ class Url
   {
     return Utility::returnValue('/user/logout', $write);
   }
+
+  public static function userSettings($write = true)
+  {
+    return Utility::returnValue('/user/settings', $write);
+  }
 }

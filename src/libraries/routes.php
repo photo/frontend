@@ -41,9 +41,10 @@ getRoute()->get('/tags/list', array('TagController', 'list_')); // view tags
  * User endpoints
  * All user endpoints follow the same convention.
  * Everything in []'s are optional
- * /user/{action}.json
+ * /user/{action}
  */
 getRoute()->get('/user/logout', array('UserController', 'logout')); // logout
+getRoute()->get('/user/settings', array('UserController', 'settings'));
 
 /*
  * OAuth endpoints
@@ -56,7 +57,6 @@ getRoute()->post('/v[1]/oauth/token/access', array('OAuthController', 'tokenAcce
 getRoute()->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenRequest'));
 getRoute()->get('/v[1]/oauth/test', array('OAuthController', 'test'));
 getRoute()->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
-getRoute()->get('/oauth/list', array('OAuthController', 'list_'));
 
 /*
  * Error endpoints

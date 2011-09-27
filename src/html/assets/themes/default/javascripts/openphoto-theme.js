@@ -46,6 +46,20 @@ var opTheme = (function() {
         }, 'json');
         return false;
       },
+      groupUpdate: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            form = el.parent(),
+            url = form.attr('action')+'.json';
+
+        OP.Util.makeRequest(url, form.serializeArray(), function(response) {
+          if(response.code === 200)
+            opTheme.message.confirm('Group updated successfully.');
+          else
+            opTheme.message.error('Could not update group.');
+        }, 'json');
+        return false;
+      },
       login: function(ev) {
         navigator.id.getVerifiedEmail(function(assertion) {
             if (assertion) {
@@ -58,7 +72,6 @@ var opTheme = (function() {
       photoDelete: function(ev) {
       
         ev.preventDefault();
-      
         var el = $(ev.target),
           	url = el.parent().attr('action')+'.json';
       
@@ -395,6 +408,7 @@ var opTheme = (function() {
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
+        OP.Util.on('click:group-update', opTheme.callback.groupUpdate);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
 
