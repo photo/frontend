@@ -51,6 +51,17 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Delete credential
+    *
+    * @return boolean
+    */
+  public function deleteCredential($id)
+  {
+    $res = $this->db->delete_attributes($this->domainCredential, $id);
+    return $res->isOK();
+  }
+
+  /**
     * Delete a group from the database
     *
     * @param string $id ID of the group to delete
@@ -87,6 +98,27 @@ class DatabaseSimpleDb implements DatabaseInterface
       return self::normalizeCredential($res->body->SelectResult->Item);
     else
       return false;
+  }
+
+  /**
+    * Retrieve credentials
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getCredentials()
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainCredential}` WHERE status='1'", array('ConsistentRead' => 'true'));
+    if(isset($res->body->SelectResult->Item))
+    {
+      $credentials = array();
+      foreach($res->body->SelectResult->Item as $credential)
+        $credentials[] = self::normalizeCredential($credential);
+      return $credentials;
+    }
+    else
+    {
+      return false;
+    }
   }
 
   /**

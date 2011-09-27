@@ -49,6 +49,14 @@ getApi()->post('/user/login.json', array('ApiUserController', 'login'), EpiApi::
 getApi()->get('/user/logout.json', array('ApiUserController', 'logout'), EpiApi::external);
 
 /*
+ * OAuth endpoints
+ * All oauth endpoints follow the same convention.
+ * /v{version}/oauth/{action}
+ */
+getApi()->get('/oauth/list.json', array('ApiOAuthController', 'list_'), EpiApi::external);
+getApi()->post('/oauth/([a-zA-Z0-9]+)/delete.json', array('ApiOAuthController', 'delete'), EpiApi::external);
+
+/*
  * Group endpoints follow the same convention.
  * Everything in []'s are optional
  * /group[s]/{action}.json

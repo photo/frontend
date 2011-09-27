@@ -31,6 +31,21 @@ var opTheme = (function() {
         $.scrollTo($('div.comment-form'), 200);
         return false;
       },
+      credentailDelete: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href')+'.json';
+
+        OP.Util.makeRequest(url, {}, function(response) {
+          if(response.code === 200) {
+            el.parent().remove();
+            opTheme.message.confirm('Credential successfully deleted.');
+          } else {
+            opTheme.message.error('Could not delete credential.');
+          }
+        }, 'json');
+        return false;
+      },
       login: function(ev) {
         navigator.id.getVerifiedEmail(function(assertion) {
             if (assertion) {
@@ -379,8 +394,10 @@ var opTheme = (function() {
         OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:settings', opTheme.callback.settings);
+        OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
+
         opTheme.front.init($('div.front-slideshow'));
         opTheme.upload.init();
         // TODO standardize this somehow

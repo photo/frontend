@@ -109,7 +109,7 @@ class Credential
       return OAUTH_CONSUMER_KEY_REFUSED;
     }
 
-    $provider->consumer_secret = $consumer['client_secret'];
+    $provider->consumer_secret = $consumer['clientSecret'];
     return OAUTH_OK;
   }
 
@@ -171,7 +171,7 @@ class Credential
       return OAUTH_CONSUMER_KEY_UNKNOWN;
     }
 
-    $provider->token_secret = $consumer['user_secret'];
+    $provider->token_secret = $consumer['userSecret'];
     return OAUTH_OK;
   }
 

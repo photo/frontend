@@ -33,7 +33,7 @@ getRoute()->get('/photos/?(.+)?/list', array('PhotoController', 'list_')); // vi
  * Tag endpoints
  * All tag endpoints follow the same convention.
  * Everything in []'s are optional
- * /tag[s][/{id}/]{action}.json
+ * /tag[s][/{id}/]{action}
  */
 getRoute()->get('/tags/list', array('TagController', 'list_')); // view tags
 
@@ -56,6 +56,7 @@ getRoute()->post('/v[1]/oauth/token/access', array('OAuthController', 'tokenAcce
 getRoute()->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenRequest'));
 getRoute()->get('/v[1]/oauth/test', array('OAuthController', 'test'));
 getRoute()->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
+getRoute()->get('/oauth/list', array('OAuthController', 'list_'));
 
 /*
  * Error endpoints
