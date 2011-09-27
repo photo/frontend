@@ -43,9 +43,9 @@ class Url
   public static function photosView($options = null, $write = true)
   {
     if(empty($options))
-      return Utility::returnValue('/photos/view', $write);
+      return Utility::returnValue('/photos/list', $write);
     else
-      return Utility::returnValue(sprintf('/photos/view/%s', $options), $write);
+      return Utility::returnValue(sprintf('/photos/%s/list', $options), $write);
   }
   
   public static function photoUpload($write = true)
@@ -60,7 +60,7 @@ class Url
 
   public static function tagsView($write = true)
   {
-    return Utility::returnValue('/tags/view', $write);
+    return Utility::returnValue('/tags/list', $write);
   }
 
   public static function tagsAsLinks($tags, $write = true)
@@ -76,5 +76,10 @@ class Url
   public static function userLogout($write = true)
   {
     return Utility::returnValue('/user/logout', $write);
+  }
+
+  public static function userSettings($write = true)
+  {
+    return Utility::returnValue('/user/settings', $write);
   }
 }

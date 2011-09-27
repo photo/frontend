@@ -12,7 +12,7 @@ class ApiTagController extends BaseController
     *
     * @return string Standard JSON envelope 
     */
-  public static function post($tag)
+  public static function update($tag)
   {
     getAuthentication()->requireAuthentication();
     $tag = Tag::sanitize($tag);
@@ -29,7 +29,7 @@ class ApiTagController extends BaseController
     *
     * @return string Standard JSON envelope 
     */
-  public static function tags()
+  public static function view()
   {
     $tags = getDb()->getTags();
     return self::success('Tags for the user', $tags);

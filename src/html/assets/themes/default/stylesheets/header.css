@@ -90,11 +90,15 @@ nav .on {
 
 #settingsbar {
     width:100px;
-    height:15px;
+    height:25px;
     margin:0 0 0 auto;
     padding-bottom:15px;
     font-size: .9em;
     line-height:1.5em;
+}
+
+#settingsbar p {
+  margin-bottom:4px;
 }
 
 #settingsbar a {

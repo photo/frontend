@@ -23,27 +23,28 @@ getRoute()->post('/action/([a-zA-Z0-9]+)/(photo)/create', array('ActionControlle
  */
 getRoute()->get('/photo/([a-zA-Z0-9]+)/edit', array('PhotoController', 'edit')); // edit form for a photo (/photo/{id}/edit)
 getRoute()->get('/photo/([a-zA-Z0-9]+)/create/([a-z0-9]+)/([0-9]+)x([0-9]+)x?(.*).jpg', array('PhotoController', 'create')); // create a version of a photo (/photo/create/{id}/{options}.jpg)
-getRoute()->get('/photo/([a-zA-Z0-9]+)/view/?(.+)?', array('PhotoController', 'photo')); // view a photo (/photo/{id}/view[/{options}])
+getRoute()->get('/photo/([a-zA-Z0-9]+)/view/?(.+)?', array('PhotoController', 'view')); // view a photo (/photo/{id}/view[/{options}])
 getRoute()->post('/photo/([a-zA-Z0-9]+)/update', array('PhotoController', 'update')); // update a photo (/photo/{id}/update
 getRoute()->post('/photo/upload', array('PhotoController', 'uploadPost')); // upload a photo
 getRoute()->get('/photos/upload', array('PhotoController', 'upload')); // view the upload photo form
-getRoute()->get('/photos/view/?(.+)?', array('PhotoController', 'photos')); // view all photos / optionally filter (/photos[/{options})
+getRoute()->get('/photos/?(.+)?/list', array('PhotoController', 'list_')); // view all photos / optionally filter (/photos[/{options})
 
 /*
  * Tag endpoints
  * All tag endpoints follow the same convention.
  * Everything in []'s are optional
- * /tag[s][/{id}/]{action}.json
+ * /tag[s][/{id}/]{action}
  */
-getRoute()->get('/tags/view', array('TagController', 'tags')); // view tags
+getRoute()->get('/tags/list', array('TagController', 'list_')); // view tags
 
 /*
  * User endpoints
  * All user endpoints follow the same convention.
  * Everything in []'s are optional
- * /user/{action}.json
+ * /user/{action}
  */
 getRoute()->get('/user/logout', array('UserController', 'logout')); // logout
+getRoute()->get('/user/settings', array('UserController', 'settings'));
 
 /*
  * OAuth endpoints
@@ -64,4 +65,3 @@ getRoute()->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
  */
 getRoute()->get('/error/403', array('GeneralController', 'error403'));
 getRoute()->get('/error/404', array('GeneralController', 'error404'));
-

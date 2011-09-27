@@ -51,6 +51,29 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Delete credential
+    *
+    * @return boolean
+    */
+  public function deleteCredential($id)
+  {
+    $res = $this->db->delete_attributes($this->domainCredential, $id);
+    return $res->isOK();
+  }
+
+  /**
+    * Delete a group from the database
+    *
+    * @param string $id ID of the group to delete
+    * @return boolean
+    */
+  public function deleteGroup($id)
+  {
+    $res = $this->db->delete_attributes($this->domainGroup, $id);
+    return $res->isOK();
+  }
+
+  /**
     * Delete a photo from the database
     *
     * @param string $id ID of the photo to delete
@@ -78,6 +101,42 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Retrieve credentials
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getCredentials()
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainCredential}` WHERE status='1'", array('ConsistentRead' => 'true'));
+    if(isset($res->body->SelectResult->Item))
+    {
+      $credentials = array();
+      foreach($res->body->SelectResult->Item as $credential)
+        $credentials[] = self::normalizeCredential($credential);
+      return $credentials;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  /**
+    * Retrieve group from the database specified by $id
+    *
+    * @param string $id id of the group to return
+    * @return mixed Array on success, FALSE on failure 
+    */
+  public function getGroup($id = null)
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeGroup($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
     * Retrieve groups from the database optionally filter by member (email)
     *
     * @param string $email email address to filter by
@@ -86,9 +145,9 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getGroups($email = null)
   {
     if(empty($email))
-      $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` ORDER BY name", array('ConsistentRead' => 'true'));
+      $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE `name` IS NOT NULL ORDER BY `name`", array('ConsistentRead' => 'true'));
     else
-      $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE members in ('{$email}') ORDER BY name", array('ConsistentRead' => 'true'));
+      $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE members in ('{$email}') AND `name` IS NOT NULL ORDER BY `name`", array('ConsistentRead' => 'true'));
 
     if(isset($res->body->SelectResult->Item))
     {
@@ -540,9 +599,9 @@ class DatabaseSimpleDb implements DatabaseInterface
       {
         switch($name)
         {
-          /*case 'groups':
-            $where = $this->buildWhere($where, "groups IN('" . implode("','", $value) . "')");
-            break;*/
+          case 'groups':
+            $where = $this->buildWhere($where, "(groups IN('" . implode("','", $value) . "') OR permission='1')");
+            break;
           case 'page':
             if($value > 1)
             {
@@ -551,8 +610,8 @@ class DatabaseSimpleDb implements DatabaseInterface
               $page = $value;
             }
             break;
-          case 'permissionx':
-            $where = $this->buildWhere($where, "permission='{$value}'");
+          case 'permission':
+            $where = $this->buildWhere($where, "permission='1'");
             break;
           case 'sortBy':
             $sortBy = 'ORDER BY ' . str_replace(',', ' ', $value);
@@ -590,7 +649,6 @@ class DatabaseSimpleDb implements DatabaseInterface
     $params = array('ConsistentRead' => 'true');
     if(isset($nextToken) && !empty($nextToken))
       $params['NextToken'] = $nextToken;
-
 
     return array('params' => $params, 'where' => $where, 'sortBy' => $sortBy, 'limit' => $limit);
   }
@@ -667,6 +725,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     {
       $name = (string)$item->Name;
       $value = (string)$item->Value;
+      if($name == 'members')
+      {
+        if($value != '')
+          $group[$name][] = $value;
+        continue;
+      }
       $group[$name] = $value;
     }
     return $group;
@@ -687,7 +751,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     {
       $name = (string)$item->Name;
       $value = (string)$item->Value;
-      if($name == 'tags')
+      if($name == 'tags' || $name == 'groups')
       {
         if($value != '')
           $photo[$name][] = $value;
@@ -767,10 +831,13 @@ class DatabaseSimpleDb implements DatabaseInterface
   private function preparePhoto($id, $params)
   {
     $params['Name'] = $id;
-    if(!isset($params['tags']))
-      $params['tags'] = array();
-    elseif(!is_array($params['tags']))
-      $params['tags'] = (array)explode(',', $params['tags']);
+    foreach(array('groups','tags') as $val)
+    {
+      if(!isset($params[$val]))
+        $params[$val] = array();
+      elseif(!is_array($params[$val]))
+        $params[$val] = (array)explode(',', $params[$val]);
+    }
     return $params;
   }
 }
