@@ -117,16 +117,16 @@ class OAuthController extends BaseController
     else if(!isset($_GET['reloaded']))
     {
       $callback = sprintf('http://%s/v1/oauth/flow', $_SERVER['HTTP_HOST']);
-      echo sprintf('<a href="http://opme/v1/oauth/authorize?oauth_callback=%s">Create a new client id</a>', urlencode($callback));
+      echo sprintf('<a href="http://%s/v1/oauth/authorize?oauth_callback=%s">Create a new client id</a>', $_SERVER['HTTP_HOST'], urlencode($callback));
     }
     else
     {
       try {
         parse_str($_COOKIE['oauth']);
         $consumer = getDb()->getCredential($oauth_token);
-        $oauth = new OAuth($oauth_token,$oauth_token_secret,OAUTH_SIG_METHOD_HMACSHA1,OAUTH_AUTH_TYPE_AUTHORIZATION);
-        $oauth->setToken($user_token,$user_secret);
-        $oauth->fetch(sprintf('http://%s/v1/oauth/test?oauth_consumer_key=%s', $_SERVER['HTTP_HOST'], $oauth_token));
+        $oauth = new OAuth($oauth_consumer_key,$oauth_consumer_secret,OAUTH_SIG_METHOD_HMACSHA1,OAUTH_AUTH_TYPE_AUTHORIZATION);
+        $oauth->setToken($oauth_token,$oauth_token_secret);
+        $oauth->fetch(sprintf('http://%s/v1/oauth/test?oauth_consumer_key=%s', $_SERVER['HTTP_HOST'], $oauth_consumer_key));
         $response_info = $oauth->getLastResponseInfo();
         header("Content-Type: {$response_info["content_type"]}");
         echo $oauth->getLastResponse();

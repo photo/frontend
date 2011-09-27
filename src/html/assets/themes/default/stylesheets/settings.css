@@ -1,0 +1,13 @@
+.settings form label {
+  display:block;
+  font-weight:bold;
+}
+.settings form label + input, .settings form label + textarea {
+  display:block;
+  margin:0 0 10px 0;
+  width:350px;
+}
+
+.settings ul.credentials li {
+  margin:0 0 20px 0;
+}
