@@ -95,6 +95,11 @@ class User
       $res = self::create();
       if(!$res)
         return false;
+
+      // fetch the record to return
+      $res = getDb()->getUser();
+      if(!$res)
+        return false;
     }
     elseif($res === false)
     {
