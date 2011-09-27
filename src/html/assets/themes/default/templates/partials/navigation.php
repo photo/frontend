@@ -22,6 +22,7 @@
     <li id="nav-signin">
       <?php echo getSession()->get('email'); ?><button class="settings-click"><img src="<?php getTheme()->asset('image', 'header-navigation-user.png'); ?>" class="settings-click"></button>
       <div id="settingsbar">
+        <p><a href="<?php Url::userSettings(); ?>">Settings</a></p>
         <p><a href="<?php Url::userLogout(); ?>">Logout</a></p>
       </div>
     </li>

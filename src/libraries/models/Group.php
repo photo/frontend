@@ -51,6 +51,21 @@ class Group
     return getDb()->getGroups($email);
   }
 
+  public static function update($id, $params)
+  {
+    $defaults = self::getDefaultAttributes();
+    $params = array();
+    foreach($defaults as $key => $value)
+    {
+      if(isset($_POST[$key]))
+        $params[$key] = $_POST[$key];
+    }
+    if(!self::validate($params, false))
+      return false;
+
+    return getDb()->postGroup($id, $params);
+  }
+
   private static function getDefaultAttributes()
   {
     return array(
@@ -60,9 +75,9 @@ class Group
     );
   }
 
-  private static function validate($params)
+  private static function validate($params, $create = true)
   {
-    if( (!isset($params['appId']) || empty($params['appId'])) || (!isset($params['name']) || empty($params['name'])) )
+    if( ($create && (!isset($params['appId']) || empty($params['appId']))) || (!isset($params['name']) || empty($params['name'])) )
       return false;
     return true;
   }

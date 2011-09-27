@@ -50,15 +50,16 @@ class ApiGroupController extends BaseController
     *
     * @return string Standard JSON envelope 
     */
-  public static function update()
+  public static function update($id)
   {
     getAuthentication()->requireAuthentication();
     // TODO add crumb check
+    $res = Group::update($id, $_POST);
 
-    if($res['code'] === 200)
-      return self::success('Groups for this user', $groups);
+    if($res)
+      return self::success("Updated group {$id}.", true);
     else
-      return self::error('Could not retrieve groups for this user', false);
+      return self::error('Could not update this group.', false);
   }
 
   /**

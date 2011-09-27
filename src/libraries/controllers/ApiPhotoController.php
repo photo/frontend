@@ -33,19 +33,21 @@ class ApiPhotoController extends BaseController
   public static function edit($id)
   {
     getAuthentication()->requireAuthentication();
-    $resp = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
-    $photo = $resp['result'];
-    if($photo)
+    $photoResp = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+    $groupsResp = getApi()->invoke('/groups/list.json', EpiRoute::httpGet);
+    $photo = $photoResp['result'];
+    $groups = $groupsResp['result'];
+    if($photo && $groups)
     {
       $template = sprintf('%s/photo-edit.php', getConfig()->get('paths')->templates);
       $license = null;
       if(isset($photo['license']))
         $license = $photo['license'];
-      $markup = getTemplate()->get($template, array('photo' => $photo, 'licenses' => Utility::getLicenses($license), 'crumb' => getSession()->get('crumb')));
+      $markup = getTemplate()->get($template, array('photo' => $photo, 'groups' => $groups, 'licenses' => Utility::getLicenses($license), 'crumb' => getSession()->get('crumb')));
       return self::success('Photo deleted successfully', array('markup' => $markup));
     }
 
-    return self::error('Photo deletion failure', false);
+    return self::error('Photo edit markup failure', false);
   }
 
   /**
