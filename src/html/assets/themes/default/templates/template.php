@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'tag-cloud.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'upload.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'footer.css'); ?>">
+    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'settings.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'setup.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'message-box.css'); ?>">
 </head>

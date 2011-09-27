@@ -7,22 +7,6 @@
 class ApiUserController extends BaseController
 {
   /**
-    * Get the owner's groups
-    *
-    * @return string Standard JSON envelope 
-    */
-  public static function groups()
-  {
-    getAuthentication()->requireAuthentication();
-
-    $groups = User::getGroups();
-    if($groups === false)
-      return self::error('An error occurred trying to get your groups', false);
-
-    return self::success('A list of your groups', (array)$groups);
-  }
-
-  /**
     * Log a user in via BrowserID
     *
     * @return string Standard JSON envelope 

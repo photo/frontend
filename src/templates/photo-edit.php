@@ -19,6 +19,16 @@
         <label>Longitude</label>
         <input type="text" name="longitude" value="<?php Utility::safe($photo['longitude']); ?>">
 
+        <?php if(count($groups) > 0) { ?>
+          <label>Groups</label>
+          <?php foreach($groups as $group) { ?>
+            <div>
+              <input type="checkbox" name="groups[]" value="<?php Utility::safe($group['id']); ?>" <?php if(isset($photo['groups']) && in_array($group['id'], $photo['groups'])) { ?> checked="checked" <?php } ?>>
+              <?php Utility::licenseLong($group['name']); ?>
+            </div>
+          <?php } ?>
+        <?php } ?>
+
         <label>License</label>
         <?php foreach($licenses as $code => $license) { ?>
           <div>

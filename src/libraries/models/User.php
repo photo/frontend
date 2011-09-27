@@ -42,14 +42,14 @@ class User
     return getSession()->get('email');
   }
 
-  /**
-    * Get the next ID to be used for a action, group or photo.
-    * The ID is a base 32 string that represents an autoincrementing integer.
-    * @return string 
-    */
-  public static function getGroups($email = null)
+  public static function groupCreate()
   {
-    return getDb()->getGroups($email);
+
+  }
+
+  public static function groupUpdate()
+  {
+
   }
 
   /**
@@ -93,6 +93,11 @@ class User
     {
       // user entry does not exist, create it
       $res = self::create();
+      if(!$res)
+        return false;
+
+      // fetch the record to return
+      $res = getDb()->getUser();
       if(!$res)
         return false;
     }

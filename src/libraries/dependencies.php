@@ -13,12 +13,15 @@ require getConfig()->get('paths')->controllers . '/ApiController.php';
 require getConfig()->get('paths')->controllers . '/GeneralController.php';
 require getConfig()->get('paths')->controllers . '/ApiActionController.php';
 require getConfig()->get('paths')->controllers . '/ActionController.php';
+require getConfig()->get('paths')->controllers . '/ApiGroupController.php';
+require getConfig()->get('paths')->controllers . '/GroupController.php';
 require getConfig()->get('paths')->controllers . '/ApiPhotoController.php';
 require getConfig()->get('paths')->controllers . '/PhotoController.php';
 require getConfig()->get('paths')->controllers . '/ApiTagController.php';
 require getConfig()->get('paths')->controllers . '/TagController.php';
 require getConfig()->get('paths')->controllers . '/ApiUserController.php';
 require getConfig()->get('paths')->controllers . '/UserController.php';
+require getConfig()->get('paths')->controllers . '/ApiOAuthController.php';
 require getConfig()->get('paths')->controllers . '/OAuthController.php';
 
 // libraries
@@ -37,6 +40,7 @@ require getConfig()->get('paths')->models . '/Url.php';
 require getConfig()->get('paths')->models . '/Authentication.php';
 require getConfig()->get('paths')->models . '/Credential.php';
 require getConfig()->get('paths')->models . '/Action.php';
+require getConfig()->get('paths')->models . '/Group.php';
 require getConfig()->get('paths')->models . '/Photo.php';
 require getConfig()->get('paths')->models . '/Tag.php';
 require getConfig()->get('paths')->models . '/User.php';
