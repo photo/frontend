@@ -56,6 +56,7 @@
 				'action-delete-click':'click:action-delete',
 				'action-jump-click':'click:action-jump',
 				'action-post-click':'click:action-post',
+				'credential-delete-click':'click:credential-delete',
 				'login-click':'click:login',
 				'map-jump-click':'click:map-jump',
 				'nav-item-click':'click:nav-item',

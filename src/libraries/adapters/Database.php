@@ -10,10 +10,12 @@ interface DatabaseInterface
   public function __construct();
   // delete methods can delete or toggle status
   public function deleteAction($id);
+  public function deleteCredential($id);
   public function deleteGroup($id);
   public function deletePhoto($id);
   // get methods read
   public function getCredential($id);
+  public function getCredentials();
   public function getPhotoNextPrevious($id);
   public function getGroup($id = null);
   public function getGroups($email = null);

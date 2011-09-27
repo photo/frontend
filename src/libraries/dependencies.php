@@ -21,6 +21,7 @@ require getConfig()->get('paths')->controllers . '/ApiTagController.php';
 require getConfig()->get('paths')->controllers . '/TagController.php';
 require getConfig()->get('paths')->controllers . '/ApiUserController.php';
 require getConfig()->get('paths')->controllers . '/UserController.php';
+require getConfig()->get('paths')->controllers . '/ApiOAuthController.php';
 require getConfig()->get('paths')->controllers . '/OAuthController.php';
 
 // libraries
