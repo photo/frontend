@@ -23,8 +23,8 @@ getApi()->post('/action/([a-zA-Z0-9]+)/(photo)/create.json', array('ApiActionCon
 getApi()->post('/photo/([a-zA-Z0-9]+)/delete.json', array('ApiPhotoController', 'delete'), EpiApi::external); // delete a photo (/photo/{id}/delete.json)
 getApi()->get('/photo/([a-zA-Z0-9]+)/edit.json', array('ApiPhotoController', 'edit'), EpiApi::external); // edit form for photo (/photo/{id}/edit.json)
 getApi()->post('/photo/([a-zA-Z0-9]+)/update.json', array('ApiPhotoController', 'update'), EpiApi::external); // update a photo (/photo/{id}/update.json)
-getApi()->get('/photo/([a-zA-Z0-9]+)/view.json', array('ApiPhotoController', 'photo'), EpiApi::external); // get a photo's information (/photo/view/{id}.json)
-getApi()->get('/photos/?(.+)?/view.json', array('ApiPhotoController', 'photos'), EpiApi::external); // get all photos / optionally filter (/photos[/{options}]/view.json)
+getApi()->get('/photo/([a-zA-Z0-9]+)/view.json', array('ApiPhotoController', 'view'), EpiApi::external); // get a photo's information (/photo/view/{id}.json)
+getApi()->get('/photos/?(.+)?/list.json', array('ApiPhotoController', 'list_'), EpiApi::external); // get all photos / optionally filter (/photos[/{options}]/view.json)
 getApi()->post('/photo/upload.json', array('ApiPhotoController', 'upload'), EpiApi::external); // upload a photo
 getApi()->get('/photo/([a-zA-Z0-9]+)/url/(\d+)x(\d+)x?([A-Zx]*)?.json', array('ApiPhotoController', 'dynamicUrl'), EpiApi::external); // generate a dynamic photo url (/photo/{id}/url/{options}.json) TODO, make internal for now
 getApi()->get('/photo/([a-zA-Z0-9]+)/nextprevious/?(.+)?.json', array('ApiPhotoController', 'nextPrevious'), EpiApi::external); // get a photo's next/previous (/photo/{id}/nextprevious[/{options}].json)
@@ -36,8 +36,8 @@ getApi()->get('/photo/([a-zA-Z0-9]+)/nextprevious/?(.+)?.json', array('ApiPhotoC
  * Everything in []'s are optional
  * /tag[s][/{id}/]{action}.json
  */
-getApi()->post('/tag/([a-zA-Z0-9]+)/update.json', array('ApiTagController', 'post'), EpiApi::external); // post a tag (/tag/{id}/update.json)
-getApi()->get('/tags/view.json', array('ApiTagController', 'tags'), EpiApi::external); // retrieve tags
+getApi()->post('/tag/([a-zA-Z0-9]+)/update.json', array('ApiTagController', 'update'), EpiApi::external); // post a tag (/tag/{id}/update.json)
+getApi()->get('/tags/list.json', array('ApiTagController', 'view'), EpiApi::external); // retrieve tags
 
 /*
  * User endpoints
@@ -47,5 +47,14 @@ getApi()->get('/tags/view.json', array('ApiTagController', 'tags'), EpiApi::exte
  */
 getApi()->post('/user/login.json', array('ApiUserController', 'login'), EpiApi::external);
 getApi()->get('/user/logout.json', array('ApiUserController', 'logout'), EpiApi::external);
-//getApi()->get('/user/groups.json', array('ApiUserController', 'groups'), EpiApi::external);
-//getApi()->post('/user/group/?([a-zA-Z0-9]+)?.json', array('ApiUserController', 'postGroup'), EpiApi::external);
+
+/*
+ * Group endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /group[s]/{action}.json
+ */
+getApi()->post('/group/create.json', array('ApiGroupController', 'create'), EpiApi::external);
+getApi()->post('/group/([a-zA-Z0-9]+)/delete.json', array('ApiGroupController', 'delete'), EpiApi::external);
+getApi()->post('/group/([a-zA-Z0-9]+)/update.json', array('ApiGroupController', 'update'), EpiApi::external);
+getApi()->get('/group/([a-zA-Z0-9]+)/view.json', array('ApiGroupController', 'view'), EpiApi::external);
+getApi()->get('/groups/list.json', array('ApiGroupController', 'list_'), EpiApi::external);

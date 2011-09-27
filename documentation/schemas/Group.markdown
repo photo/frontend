@@ -15,6 +15,7 @@ A Group consists of an `id`, `name` and array of `email addresses`.
 
     {
       id: (string),
+      appId: (string),
       name: (string),
       members: (set)
     }
@@ -24,6 +25,7 @@ A Group consists of an `id`, `name` and array of `email addresses`.
 ### Schema description
 
   * id, a string idenfier
+  * appId, the appId which created this group
   * name, the name of the group
   * members: a set of email addresses who belong to this group
 
