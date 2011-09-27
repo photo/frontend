@@ -756,7 +756,7 @@ class DatabaseMySql implements DatabaseInterface
     $result = getDatabase()->one("SHOW TABLES LIKE '{$this->mySqlTablePrefix}admin'");
     if(!empty($result))
     {
-      $result = getDatabase()->one("SELECT value FROM {$this->mySqlTablePrefix}admin WHERE key='version'");
+      $result = getDatabase()->one("SELECT value FROM {$this->mySqlTablePrefix}admin WHERE `key`='version'");
       if(!empty($result) && isset($result['value']))
       {
         $version = $result['value'];
