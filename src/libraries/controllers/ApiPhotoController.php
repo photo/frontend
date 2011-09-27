@@ -37,7 +37,9 @@ class ApiPhotoController extends BaseController
     $groupsResp = getApi()->invoke('/groups/list.json', EpiRoute::httpGet);
     $photo = $photoResp['result'];
     $groups = $groupsResp['result'];
-    if($photo && $groups)
+    if(!$groups)
+      $groups = array();
+    if($photo)
     {
       $template = sprintf('%s/photo-edit.php', getConfig()->get('paths')->templates);
       $license = null;
