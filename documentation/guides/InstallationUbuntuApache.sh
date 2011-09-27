@@ -28,7 +28,7 @@ echo "===================================================="
 echo ""
 echo ""
 
-apt-get install --assume-yes --quiet apache2 php5 libapache2-mod-php5 php5-curl curl
+apt-get install --assume-yes --quiet apache2 php5 libapache2-mod-php5 php5-curl curl php5-mcrypt
 a2enmod rewrite
 
 echo ""
