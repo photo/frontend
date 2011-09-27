@@ -128,47 +128,6 @@ class ApiPhotoController extends BaseController
   }
 
   /**
-    * Retrieve a photo from the remote datasource.
-    *
-    * @param string $id ID of the photo to be deleted.
-    * @return string Standard JSON envelope
-    */
-  public static function photo($id)
-  {
-    if(isset($_GET['actions']) && $_GET['actions'] == 'true')
-      $photo = getDb()->getPhotoWithActions($id);
-    else
-      $photo = getDb()->getPhoto($id);
-
-    if(!isset($photo['id']))
-      return self::notFound("Photo {$id} not found", false);
-
-    // if specific sizes are requested then make sure we return them
-    $sizes = array();
-    if(isset($_GET['returnSizes']))
-    {
-      $sizes = (array)explode(',', $_GET['returnSizes']);
-    }
-
-    $photo = self::pruneSizes($photo, $sizes);
-
-    if(isset($sizes))
-    {
-      $protocol = Utility::getProtocol(false);
-      if(isset($_GET['protocol']))
-        $protocol = $_GET['protocol'];
-
-      foreach($sizes as $size)
-      {
-        $options = Photo::generateFragmentReverse($size);
-        $photo["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
-      }
-    }
-
-    return self::success("Photo {$id}", $photo);
-  }
-
-  /**
     * Given a photo ID generate a url with the specified $width, $height and $options
     *
     * @param string $id ID of the photo to be deleted.
@@ -196,7 +155,7 @@ class ApiPhotoController extends BaseController
     * @param string $filterOpts Options on how to filter the list of photos.
     * @return string Standard JSON envelope
     */
-  public static function photos($filterOpts = null)
+  public static function list_($filterOpts = null)
   {
     // this extracts local variables $permission, $filter, $pageSize, etc
     extract(self::parseFilters($filterOpts));
@@ -204,6 +163,7 @@ class ApiPhotoController extends BaseController
     $photos = $db->getPhotos($filters, $pageSize);
     if($photos)
     {
+      $sizes = array();
       if(isset($filters['returnSizes']))
         $sizes = (array)explode(',', $filters['returnSizes']);
 
@@ -314,6 +274,7 @@ class ApiPhotoController extends BaseController
   public static function update($id)
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb($_POST['crumb']);
     // diff/manage tag counts - not critical
     if(isset($_POST['tags']) && !empty($_POST['tags']))
     {
@@ -333,6 +294,47 @@ class ApiPhotoController extends BaseController
     return self::success("photo {$id} updated", $photoUpdatedId);
   }
 
+  /**
+    * Retrieve a photo from the remote datasource.
+    *
+    * @param string $id ID of the photo to be deleted.
+    * @return string Standard JSON envelope
+    */
+  public static function view($id)
+  {
+    if(isset($_GET['actions']) && $_GET['actions'] == 'true')
+      $photo = getDb()->getPhotoWithActions($id);
+    else
+      $photo = getDb()->getPhoto($id);
+
+    if(!isset($photo['id']))
+      return self::notFound("Photo {$id} not found", false);
+
+    // if specific sizes are requested then make sure we return them
+    $sizes = array();
+    if(isset($_GET['returnSizes']))
+    {
+      $sizes = (array)explode(',', $_GET['returnSizes']);
+    }
+
+    $photo = self::pruneSizes($photo, $sizes);
+
+    if(isset($sizes))
+    {
+      $protocol = Utility::getProtocol(false);
+      if(isset($_GET['protocol']))
+        $protocol = $_GET['protocol'];
+
+      foreach($sizes as $size)
+      {
+        $options = Photo::generateFragmentReverse($size);
+        $photo["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+      }
+    }
+
+    return self::success("Photo {$id}", $photo);
+  }
+
   private static function parseFilters($filterOpts)
   {
     // If the user is logged in then we can display photos based on group membership
@@ -343,14 +345,14 @@ class ApiPhotoController extends BaseController
     }
     elseif(User::isLoggedIn())
     {
-      /*$userGroups = User::getGroups(User::getEmailAddress());
+      $userGroups = Group::getGroups(User::getEmailAddress());
       if(!empty($userGroups))
       {
         $permission = -1;
         $groupIds = array();
         foreach($userGroups as $group)
           $groupIds[] = $group['id'];
-      }*/
+      }
     }
 
     // This section enables in path parameters which are normally GET
@@ -394,10 +396,10 @@ class ApiPhotoController extends BaseController
     if(isset($filters['protocol']))
       $protocol = $filters['protocol'];
 
-    if($permission == 0 || $permission = 1)
+    if($permission == 0)
       $filters['permission'] = $permission;
-    else
-      $filters['groups'] = $groups;
+    elseif($permission == -1)
+      $filters['groups'] = $groupIds;
     
     return array('filters' => $filters, 'pageSize' => $pageSize, 'protocol' => $protocol, 'page' => $page);
   }

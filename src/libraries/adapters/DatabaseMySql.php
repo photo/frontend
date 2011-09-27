@@ -42,6 +42,18 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete a group from the database
+    *
+    * @param string $id ID of the group to delete
+    * @return boolean
+    */
+  public function deleteGroup($id)
+  {
+    // TODO: fill this in Gh-27
+    return false;
+  }
+
+  /**
     * Delete a photo from the database
     *
     * @param string $id ID of the photo to delete
@@ -62,6 +74,18 @@ class DatabaseMySql implements DatabaseInterface
   public function getCredential($id)
   {
     // TODO: fill this in Gh-78
+    return array();
+  }
+
+  /**
+    * Retrieve group from the database specified by $id
+    *
+    * @param string $id id of the group to return
+    * @return mixed Array on success, FALSE on failure 
+    */
+  public function getGroup($id = null)
+  {
+    // TODO: fill this in Gh-27
     return array();
   }
 
