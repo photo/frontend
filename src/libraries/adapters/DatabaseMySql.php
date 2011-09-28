@@ -48,8 +48,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteCredential($id)
   {
-    // TODO: fill this in Gh-78
-    return false;
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}credential` WHERE id=:id", array(':id' => $id));
+    return ($res == 1);
   }
 
   /**
@@ -84,8 +84,13 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getCredential($id)
   {
-    // TODO: fill this in Gh-78
-    return array();
+    $cred = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE id=:id",
+                               array(':id' => $id));
+    if(empty($cred))
+    {
+      return false;
+    }
+    return self::normalizeCredential($cred);
   }
 
   /**
@@ -95,8 +100,18 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getCredentials()
   {
-    // TODO: fill this in Gh-78
-    return array();
+    $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE status=1",
+                               array());
+    if($res === false || empty($res))
+    {
+      return false;
+    }
+    $credentials = array();
+    foreach($res as $cred)
+    {
+      $credentials[] = self::normalizeCredential($cred);
+    }
+    return $credential;
   }
 
   /**
@@ -317,8 +332,18 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postCredential($id, $params)
   {
-    // TODO: fill this in Gh-78
-    return true;
+    $params = self::prepareCredential($params);
+    $bindings = array();
+    if(isset($params['::bindings']))
+    {
+      $bindings = $params['::bindings'];
+    }
+    $stmt = self::sqlUpdateExplode($params, $bindings);
+    $bindings[':id'] = $id;
+
+    $result = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}credential` SET {$stmt} WHERE id=:id", $bindings);
+
+    return ($result == 1);
   }
 
   /**
@@ -488,8 +513,13 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putCredential($id, $params)
   {
-    // TODO: fill this in Gh-78
-    return true;
+    if(!isset($params['id']))
+      $params['id'] = $id;
+    $params = self::prepareCredential($params);
+    $stmt = self::sqlInsertExplode($params);
+    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}credential` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
+
+    return ($result !== false);
   }
 
   /**
@@ -546,7 +576,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $stmt = self::sqlInsertExplode($params);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}user` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
-    return true;
+    return ($result != -1);
   }
 
   /**
@@ -562,7 +592,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       $this->createSchema();
     }
-    else if($version < 1)
+    else if($version < 2)
     {
       return $this->upgradeFrom($version);
     }
@@ -617,7 +647,7 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($stmt)) {
         $stmt .= ",";
       }
-      if(!empty($bindings[$value]))
+      if(!empty($bindings) && !empty($bindings[$value]))
         $stmt .= "{$key}={$value}";
       else
         $stmt .= "{$key}='{$value}'";
@@ -641,7 +671,7 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($stmt['vals']))
         $stmt['vals'] .= ",";
       $stmt['cols'] .= $key;
-      if(!empty($bindings[$value]))
+      if(!empty($bindings) && !empty($bindings[$value]))
         $stmt['vals'] .= "{$value}";
       else
         $stmt['vals'] .= "'{$value}'";
@@ -713,6 +743,14 @@ class DatabaseMySql implements DatabaseInterface
     return $raw;
   }
 
+  private function normalizeCredential($raw)
+  {
+    if(isset($raw['permissions']) && !empty($raw['permissions']))
+      $raw['permissions'] = (array)explode(',', $raw['permissions']);
+
+    return $raw;
+  }
+
   /**
     * Formats a photo to be updated or added to the database.
     * Primarily to properly format tags as an array.
@@ -769,6 +807,16 @@ class DatabaseMySql implements DatabaseInterface
     return $params;
   }
 
+  /** Prepare credential to store in the database
+   */
+  private function prepareCredential($params)
+  {
+    if(isset($params['permissions']))
+      $params['permissions'] = implode(',', $params['permissions']);
+
+    return $params;
+  }
+
   /**
     * Inserts a new version of photo with $id and $versions
     * TODO this should be in a json field in the photo table
@@ -818,8 +866,34 @@ class DatabaseMySql implements DatabaseInterface
    */
   private function upgradeFrom($version)
   {
-    if($version != 1)
+    if($version < 1)
       return false;
+    switch($version) {      	
+    case 1:
+      // after version 1 we added credential
+      //
+      $result = getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}credential`"
+        . "(`id` varchar(255) NOT NULL UNIQUE,"
+	. "`name` varchar(255) DEFAULT NULL,"
+	. "`image` text DEFAULT NULL,"
+	. "`clientSecret` varchar(255) DEFAULT NULL,"
+	. "`userToken` varchar(255) DEFAULT NULL,"
+	. "`userSecret` varchar(255) DEFAULT NULL,"
+	. "`permissions` varchar(255) DEFAULT NULL,"
+	. "`verifier` varchar(255) DEFAULT NULL,"
+	. "`type` varchar(100) DEFAULT NULL,"
+	. "`status` int DEFAULT 0,"
+	. "PRIMARY KEY(`id`)"
+	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+      if($result === false) {
+        return false;
+      }
+      getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}admin`"
+        . "SET `value`='2' WHERE `key`='version'");
+      // OTHER
+    case 2:
+      break;
+    }
     return true;
   }
 
@@ -835,7 +909,7 @@ class DatabaseMySql implements DatabaseInterface
         . "`value` varchar(255) NOT NULL)"
         . "ENGINE=InnoDB DEFAULT CHARSET=utf8");
     getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}admin`"
-        . "(`key`, `value`) VALUES('version', '1')");
+        . "(`key`, `value`) VALUES('version', '2')");
 
     getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}photo`"
         . "(`id` varchar(255) NOT NULL,"
@@ -887,6 +961,19 @@ class DatabaseMySql implements DatabaseInterface
         . "`lastPhotoId` varchar(255),"
         . "`lastActionId` varchar(255),"
         . "PRIMARY KEY(`id`)"
+	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}credential`"
+        . "`id` varchar(255) NOT NULL UNIQUE,"
+	. "`name` varchar(255) DEFAULT NULL,"
+	. "`image` text DEFAULT NULL,"
+	. "`clientSecret` varchar(255) DEFAULT NULL,"
+	. "`userToken` varchar(255) DEFAULT NULL,"
+	. "`userSecret` varchar(255) DEFAULT NULL,"
+	. "`permissions` varchar(255) DEFAULT NULL,"
+	. "`verifier` varchar(255) DEFAULT NULL,"
+	. "`type` varchar(100) DEFAULT NULL,"
+	. "`status` int DEFAULT 0,"
+	. "PRIMARY KEY(`id`)"
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
     getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}action`"
         . "(`id` varchar(255) NOT NULL UNIQUE,"
