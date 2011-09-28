@@ -57,6 +57,21 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `credential` (
+  `id` varchar(255) NOT NULL UNIQUE,
+  `name` varchar(255) DEFAULT NULL,
+  `image` text DEFAULT NULL,
+  `clientSecret` varchar(255) DEFAULT NULL,
+  `userToken` varchar(255) DEFAULT NULL,
+  `userSecret` varchar(255) DEFAULT NULL,
+  `permissions` varchar(255) DEFAULT NULL,
+  `verifier` varchar(255) DEFAULT NULL,
+  `type` int,
+  `status` int DEFAULT 0,
+
+  PRIMARY KEY(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 CREATE TABLE IF NOT EXISTS `action` (
   `id` varchar(255) NOT NULL UNIQUE,
