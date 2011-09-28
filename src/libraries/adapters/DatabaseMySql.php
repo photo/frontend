@@ -333,12 +333,15 @@ class DatabaseMySql implements DatabaseInterface
   public function postCredential($id, $params)
   {
     $params = self::prepareCredential($params);
-
-    $bindings = $params['::bindings'];
+    $bindings = array();
+    if(isset($params['::bindings']))
+    {
+      $bindings = $params['::bindings'];
+    }
     $stmt = self::sqlUpdateExplode($params, $bindings);
     $bindings[':id'] = $id;
 
-    $result = getDatabase()->execute("UPDATE credential SET {$stmt} WHERE id=:id", $bindings);
+    $result = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}credential` SET {$stmt} WHERE id=:id", $bindings);
 
     return ($result == 1);
   }
