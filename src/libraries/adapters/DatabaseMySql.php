@@ -333,14 +333,17 @@ class DatabaseMySql implements DatabaseInterface
   public function postCredential($id, $params)
   {
     $params = self::prepareCredential($params);
-
-    $bindings = $params['::bindings'];
+    $bindings = array();
+    if(isset($params['::bindings']))
+    {
+      $bindings = $params['::bindings'];
+    }
     $stmt = self::sqlUpdateExplode($params, $bindings);
     $bindings[':id'] = $id;
 
-    $result = getDatabase()->execute("UPDATE credential SET {$stmt} WHERE id=:id", $bindings);
+    $result = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}credential` SET {$stmt} WHERE id=:id", $bindings);
 
-    return true;
+    return ($result == 1);
   }
 
   /**
@@ -516,7 +519,7 @@ class DatabaseMySql implements DatabaseInterface
     $stmt = self::sqlInsertExplode($params);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}credential` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
 
-    return true;
+    return ($result !== false);
   }
 
   /**
@@ -878,7 +881,7 @@ class DatabaseMySql implements DatabaseInterface
 	. "`userSecret` varchar(255) DEFAULT NULL,"
 	. "`permissions` varchar(255) DEFAULT NULL,"
 	. "`verifier` varchar(255) DEFAULT NULL,"
-	. "`type` int,"
+	. "`type` varchar(100) DEFAULT NULL,"
 	. "`status` int DEFAULT 0,"
 	. "PRIMARY KEY(`id`)"
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
@@ -968,7 +971,7 @@ class DatabaseMySql implements DatabaseInterface
 	. "`userSecret` varchar(255) DEFAULT NULL,"
 	. "`permissions` varchar(255) DEFAULT NULL,"
 	. "`verifier` varchar(255) DEFAULT NULL,"
-	. "`type` int,"
+	. "`type` varchar(100) DEFAULT NULL,"
 	. "`status` int DEFAULT 0,"
 	. "PRIMARY KEY(`id`)"
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
