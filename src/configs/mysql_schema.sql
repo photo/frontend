@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `credential` (
   `userSecret` varchar(255) DEFAULT NULL,
   `permissions` varchar(255) DEFAULT NULL,
   `verifier` varchar(255) DEFAULT NULL,
-  `type` int,
+  `type` varchar(100) DEFAULT NULL,
   `status` int DEFAULT 0,
 
   PRIMARY KEY(`id`)
