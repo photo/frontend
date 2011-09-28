@@ -48,8 +48,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteCredential($id)
   {
-    // TODO: fill this in Gh-78
-    return false;
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}credential` WHERE id=:id", array(':id' => $id));
+    return ($res == 1);
   }
 
   /**
@@ -84,7 +84,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getCredential($id)
   {
-    $cred = getDatabase()->one("SELECT * FROM credential WHERE id=:id",
+    $cred = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE id=:id",
                                array(':id' => $id));
     if(empty($cred))
     {
@@ -100,8 +100,18 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getCredentials()
   {
-    // TODO: fill this in Gh-78
-    return array();
+    $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE status=1",
+                               array());
+    if($res === false || empty($res))
+    {
+      return false;
+    }
+    $credentials = array();
+    foreach($res as $cred)
+    {
+      $credentials[] = self::normalizeCredential($cred);
+    }
+    return $credential;
   }
 
   /**
@@ -322,7 +332,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postCredential($id, $params)
   {
-    $cred = self::prepareCredential($params);
+    $params = self::prepareCredential($params);
 
     $bindings = $params['::bindings'];
     $stmt = self::sqlUpdateExplode($params, $bindings);
@@ -502,10 +512,9 @@ class DatabaseMySql implements DatabaseInterface
   {
     if(!isset($params['id']))
       $params['id'] = $id;
-    $cred = self::prepareCredential($params);
-    
+    $params = self::prepareCredential($params);
     $stmt = self::sqlInsertExplode($params);
-    $result = getDatabase()->execute("INSERT INTO credential ({$stmt['cols']}) VALUES ({$stmt['vals']})");
+    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}credential` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
 
     return true;
   }
@@ -635,7 +644,7 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($stmt)) {
         $stmt .= ",";
       }
-      if(!empty($bindings[$value]))
+      if(!empty($bindings) && !empty($bindings[$value]))
         $stmt .= "{$key}={$value}";
       else
         $stmt .= "{$key}='{$value}'";
@@ -659,7 +668,7 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($stmt['vals']))
         $stmt['vals'] .= ",";
       $stmt['cols'] .= $key;
-      if(!empty($bindings[$value]))
+      if(!empty($bindings) && !empty($bindings[$value]))
         $stmt['vals'] .= "{$value}";
       else
         $stmt['vals'] .= "'{$value}'";
