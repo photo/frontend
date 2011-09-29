@@ -72,6 +72,14 @@ CREATE TABLE IF NOT EXISTS `credential` (
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `group` (
+  `id` varchar(255) NOT NULL UNIQUE,
+  `appId` varchar(255),
+  `name` varchar(255),
+  `members` TEXT,
+
+  PRIMARY KEY(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE IF NOT EXISTS `action` (
   `id` varchar(255) NOT NULL UNIQUE,
