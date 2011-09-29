@@ -8,6 +8,7 @@
  */
 class DatabaseMySql implements DatabaseInterface
 {
+  const currentSchemaVersion = 3;
   /**
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
@@ -60,8 +61,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteGroup($id)
   {
-    // TODO: fill this in Gh-27
-    return false;
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}group` WHERE id=:id", array(':id' => $id));
+    return ($res == 1);
   }
 
   /**
@@ -152,16 +153,18 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getCredentials()
   {
-    $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE status=1",
-                               array());
+    $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE status=1");
     if($res === false)
     {
       return false;
     }
     $credentials = array();
-    foreach($res as $cred)
+    if(!empty($res))
     {
-      $credentials[] = self::normalizeCredential($cred);
+      foreach($res as $cred)
+      {
+        $credentials[] = self::normalizeCredential($cred);
+      }
     }
     return $credentials;
   }
@@ -174,8 +177,13 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getGroup($id = null)
   {
-    // TODO: fill this in Gh-27
-    return array();
+    $res = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE `id`='{$id}'");
+    if($res === false || empty($res))
+    {
+      return false;
+    }
+
+    return self::normalizeGroup($res);
   }
 
   /**
@@ -186,8 +194,29 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getGroups($email = null)
   {
-    // TODO: fill this in Gh-27
-    return array();
+    if(empty($email))
+    {
+      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE `id` IS NOT NULL ORDER BY `name`");
+    }
+    else
+    {
+      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE members in ('{$email}') AND `id` IS NOT NULL ORDER BY `id`");
+    }
+
+    if($res !== false)
+    {
+      $groups = array();
+      if(!empty($res))
+      {
+        foreach($res as $group)
+        {
+          $groups[] = self::normalizeGroup($group);
+        }
+      }
+      return $groups;
+    }
+
+    return false;
   }
 
   /**
@@ -431,8 +460,18 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postGroup($id, $params)
   {
-    // TODO: fill this in Gh-27
-    return true;
+    $params = self::prepareGroup($id, $params);
+    $bindings = array();
+    if(isset($params['::bindings']))
+    {
+      $bindings = $params['::bindings'];
+    }
+    $stmt = self::sqlUpdateExplode($params, $bindings);
+    $bindings[':id'] = $id;
+
+    $result = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}group` SET {$stmt} WHERE id=:id", $bindings);
+
+    return ($result == 1);
   }
 
   /**
@@ -701,7 +740,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       $this->createSchema();
     }
-    else if($version < 2)
+    else if($version < self::currentSchemaVersion)
     {
       return $this->upgradeFrom($version);
     }
@@ -860,6 +899,19 @@ class DatabaseMySql implements DatabaseInterface
     return $raw;
   }
 
+
+  /**
+    * Normalizes data from simpleDb into schema definition
+    *
+    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @return array
+    */
+  private function normalizeGroup($raw)
+  {
+    if(isset($raw['members']) && !empty($raw['members']))
+      $raw['members'] = (array)explode(',', $raw['members']);
+  }
+
   /**
     * Formats a photo to be updated or added to the database.
     * Primarily to properly format tags as an array.
@@ -948,6 +1000,23 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Formats a group to be updated or added to the database.
+    * Primarily to properly format members as an array.
+    *
+    * @param string $id ID of the group.
+    * @param array $params Parameters for the group to be normalized.
+    * @return array
+    */
+  private function prepareGroup($id, $params)
+  {
+    if(!isset($params['members']))
+      $params['members'] = array();
+    elseif(!is_array($params['members']))
+      $params['members'] = (array)explode(',', $params['members']);
+    return $params;
+  }
+
+  /**
     * Inserts a new version of photo with $id and $versions
     * TODO this should be in a json field in the photo table
     *
@@ -1018,10 +1087,19 @@ class DatabaseMySql implements DatabaseInterface
       if($result === false) {
         return false;
       }
-      getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}admin`"
-        . "SET `value`='2' WHERE `key`='version'");
-      // OTHER
     case 2:
+      // after version 2 we added group
+      getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}group`"
+        . "(`id` varchar(255) NOT NULL UNIQUE,"
+	. "`appId` varchar(255),"
+	. "`name` varchar(255),"
+	. "`members` TEXT,"
+	. "PRIMARY KEY(`id`)"
+	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+      getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}admin`"
+        . "SET `value`='" . self::currentSchemaVersion ."' WHERE `key`='version'");
+      // OTHER
+    case 3:
       break;
     }
     return true;
@@ -1039,7 +1117,7 @@ class DatabaseMySql implements DatabaseInterface
         . "`value` varchar(255) NOT NULL)"
         . "ENGINE=InnoDB DEFAULT CHARSET=utf8");
     getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}admin`"
-        . "(`key`, `value`) VALUES('version', '2')");
+        . "(`key`, `value`) VALUES('version', '" . self::currentSchemaVersion . "')");
 
     getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}photo`"
         . "(`id` varchar(255) NOT NULL,"
@@ -1103,6 +1181,13 @@ class DatabaseMySql implements DatabaseInterface
 	. "`verifier` varchar(255) DEFAULT NULL,"
 	. "`type` varchar(100) DEFAULT NULL,"
 	. "`status` int DEFAULT 0,"
+	. "PRIMARY KEY(`id`)"
+	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}group`"
+        . "(`id` varchar(255) NOT NULL UNIQUE,"
+	. "`appId` varchar(255),"
+	. "`name` varchar(255),"
+	. "`members` TEXT,"
 	. "PRIMARY KEY(`id`)"
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
     getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}action`"
