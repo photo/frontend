@@ -111,7 +111,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       $credentials[] = self::normalizeCredential($cred);
     }
-    return $credential;
+    return $credentials;
   }
 
   /**
