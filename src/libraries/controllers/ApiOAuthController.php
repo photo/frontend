@@ -20,7 +20,7 @@ class ApiOAuthController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     $res = getDb()->getCredentials();
-    if($res)
+    if($res !== false)
       return self::success('Oauth Credentials', $res);
     else
       return self::error('Could not retrieve credentials', false);
