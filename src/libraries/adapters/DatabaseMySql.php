@@ -102,7 +102,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE status=1",
                                array());
-    if($res === false || empty($res))
+    if($res === false)
     {
       return false;
     }
