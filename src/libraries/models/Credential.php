@@ -194,24 +194,7 @@ class Credential
       return $this->oauthParams;
 
     $this->oauthParams = array();
-    // fetch values from header
-    // See issue 171: getallheaders() might not be available on FastCGI or non-Apache.
-    if(function_exists('getallheaders'))
-    {
-      $headers = getallheaders();
-    }
-    else
-    {
-      $headers = array();
-      // solution suggested by http://us.php.net/manual/en/function.apache-request-headers.php#70810
-      foreach ($_SERVER as $name => $value)
-      {
-	if (substr($name, 0, 5) == 'HTTP_')
-        {
-	  $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-        }
-      }
-    }
+    $headers = Utility::getAllHeaders();
     foreach($headers as $name => $header)
     {
       if(stripos($name, 'authorization') === 0)
