@@ -181,4 +181,30 @@ class Utility
     $years = intval($days / 365);
     return self::returnValue("{$prefix} {$years} " . self::plural($years, 'year', false) . " ago {$suffix}", $write);
   }
+
+  /**
+   * Safe equivalent of getallheaders() the work more often.
+   */
+  public static function getAllHeaders()
+  {
+    // fetch values from header
+    // See issue 171: getallheaders() might not be available on FastCGI or non-Apache.
+    if(function_exists('getallheaders'))
+    {
+      $headers = getallheaders();
+    }
+    else
+    {
+      $headers = array();
+      // solution suggested by http://us.php.net/manual/en/function.apache-request-headers.php#70810
+      foreach ($_SERVER as $name => $value)
+      {
+        if (substr($name, 0, 5) == 'HTTP_')
+        {
+          $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+        }
+      }
+    }
+    return $headers;
+  }
 }
