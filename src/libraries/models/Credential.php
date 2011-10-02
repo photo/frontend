@@ -194,8 +194,7 @@ class Credential
       return $this->oauthParams;
 
     $this->oauthParams = array();
-    // fetch values from header
-    $headers = getallheaders();
+    $headers = Utility::getAllHeaders();
     foreach($headers as $name => $header)
     {
       if(stripos($name, 'authorization') === 0)

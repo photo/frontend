@@ -8,7 +8,7 @@
         <?php if($i == $currentPage) { ?>
           <li class="on"><p><span class="audible">You're currently on page </span><?php echo $i; ?></p></li>
         <?php } else { ?>
-          <li><a href="<?php echo preg_replace('#/page-\d+#', '', $requestUri); ?>/page-<?php echo $i; ?>"><span class="audible">Page </span><?php echo $i; ?></a></li>
+          <li><a href="<?php echo preg_replace('#(/page-\d+)?/list#', '', $requestUri); ?>/page-<?php echo $i; ?>/list"><span class="audible">Page </span><?php echo $i; ?></a></li>
         <?php } ?>
       <?php } ?>
     </ul>
