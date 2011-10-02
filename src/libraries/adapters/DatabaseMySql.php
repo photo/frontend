@@ -963,7 +963,7 @@ class DatabaseMySql implements DatabaseInterface
         . "PRIMARY KEY(`id`)"
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
     getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}credential`"
-        . "`id` varchar(255) NOT NULL UNIQUE,"
+        . "(`id` varchar(255) NOT NULL UNIQUE,"
 	. "`name` varchar(255) DEFAULT NULL,"
 	. "`image` text DEFAULT NULL,"
 	. "`clientSecret` varchar(255) DEFAULT NULL,"
