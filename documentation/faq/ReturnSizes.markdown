@@ -5,7 +5,7 @@ Open Photo API / Photo Upload
 ----------------------------------------
 
 ### Understanding the `returnSizes` parameter and how to use it
-For the [GET /photo/view.json][GetPhoto] [GET /photos/list.json][GetPhotos] you can pass in an optional `returnSizes` parameter.
+For the [GET /photo/view.json][GetPhoto] and [GET /photos/list.json][GetPhotos] you can pass in an optional `returnSizes` parameter.
 If you need a path to a photo then you'll want to make sure you pass this parameter in else your response won't contain any URLs.
 
 We also have a more detailed look at how [photos are generated][photogeneration].
