@@ -133,8 +133,8 @@ The response is in a standard [response envelope][Envelope].
       ]
     }
 
-[Envelope]: api/Envelope.markdown
-[Photo]: schemas/Photo.markdown
+[Envelope]: ../api/Envelope.markdown
+[Photo]: ../schemas/Photo.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters
@@ -143,5 +143,5 @@ The response is in a standard [response envelope][Envelope].
 [example-php]: #example-php
 [response]: #response
 [sample]: #sample
-[photogeneration]: faq/PhotoGeneration.markdown
-[ReturnSizes]: faq/ReturnSizes.markdown
+[photogeneration]: ../faq/PhotoGeneration.markdown
+[ReturnSizes]: ../faq/ReturnSizes.markdown
