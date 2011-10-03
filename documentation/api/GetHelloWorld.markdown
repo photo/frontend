@@ -1,4 +1,4 @@
-Open Photo API / Get Photos
+Open Photo API / Hello World
 =======================
 #### OpenPhoto, a photo service for the masses
 
@@ -16,9 +16,9 @@ Open Photo API / Get Photos
 ----------------------------------------
 
 <a name="purpose"></a>
-### Purpose of the Get Tags API
+### Purpose of the Get Hello World API
 
-Use this API to get a user's tags.
+This endpoint is used to test connectivity and/or authentication. Any parameters passed in the query string are returned in the response.
 
 ----------------------------------------
 
@@ -27,12 +27,12 @@ Use this API to get a user's tags.
 
 _Authentication: optional_
 
-    GET /tags/list.json
+    GET /hello.json
 
 <a name="parameters"></a>
 ### Parameters
 
-_None_
+1.  auth (optional), Pass this in with a value of `true` to test OAuth requests.
 
 ----------------------------------------
 
@@ -42,12 +42,13 @@ _None_
 <a name="example-curl"></a>
 #### Command line curl
 
-    curl "http://jmathai.openphoto.me/tags/list.json"
+    curl "http://jmathai.openphoto.me/hello.json"
+    curl "http://jmathai.openphoto.me/hello.json?auth=true"
 
 <a name="example-php"></a>
 #### PHP
 
-    $ch = curl_init('http://jmathai.openphoto.me/tags/list.json');
+    $ch = curl_init('http://jmathai.openphoto.me/hello.json');
     curl_exec($ch);
 
 ----------------------------------------
@@ -65,37 +66,15 @@ The response is in a standard [response envelope][Envelope].
 #### Sample
 
     {
-      "message":"",
+      "message":"Hello, world!",
       "code":200,
       "result":
-      [
-        {
-          "id": "mountain",
-          "count": 1
-        },
-        {
-          "id": "jaisen",
-          "count": 10,
-          "email": "jaisen@jmathai.com"
-        },
-        {
-          "id": "New York",
-          "count": 9,
-          "latitude": 12.3456,
-          "longitude": 78.9012
-        },
-        {
-          "id": "Sunnyvale",
-          "count":23 
-          "latitude": 13.579,
-          "longitude": 24.68
-        },
-        ....
-      ]
+      {
+        "__route__":"\/hello.json"
+      }
     }
 
 [Envelope]: api/Envelope.markdown
-[Tag]: schemas/Tag.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters
@@ -104,4 +83,5 @@ The response is in a standard [response envelope][Envelope].
 [example-php]: #example-php
 [response]: #response
 [sample]: #sample
+
 

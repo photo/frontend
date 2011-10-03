@@ -29,12 +29,12 @@ _NOTE:_ Always pass in the `returnSizes` parameter for sizes you plan on using. 
 
 _Authentication: optional_
 
-    GET /photo/:id.json
+    GET /photo/:id/view.json
 
 <a name="parameters"></a>
 ### Parameters
 
-1.  returnSizes (optional), The photo sizes you'd like in the response. Specify every size you plan on using.
+1.  returnSizes (optional), The photo sizes you'd like in the response. Specify every size you plan on using. [Docs for this parameter][ReturnSizes]
 
 ----------------------------------------
 
@@ -110,4 +110,5 @@ The response is in a standard [response envelope][Envelope].
 [example-php]: #example-php
 [response]: #response
 [sample]: #sample
-[photogeneration]: ../PhotoGeneration.markdown
+[photogeneration]: faq/PhotoGeneration.markdown
+[ReturnSizes]: faq/ReturnSizes.markdown
