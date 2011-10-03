@@ -256,7 +256,9 @@ class DatabaseSimpleDb implements DatabaseInterface
     foreach($responses[0]->body->SelectResult->Item as $photo)
       $photos[] = $this->normalizePhoto($photo);
 
-    $photos[0]['totalRows'] = intval($responses[1]->body->SelectResult->Item->Attribute->Value);
+    if(!empty($photos))
+      $photos[0]['totalRows'] = intval($responses[1]->body->SelectResult->Item->Attribute->Value);
+
     return $photos;
   }
 
