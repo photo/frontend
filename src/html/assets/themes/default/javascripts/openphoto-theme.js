@@ -115,7 +115,7 @@ var opTheme = (function() {
           url = $(form).attr('action');
 
         if(tags.length > 0)
-          location.href = url+'/tags-'+tags;
+          location.href = url.replace('/list', '')+'/tags-'+tags+'/list';
         else
           location.href = url;
         return false;
