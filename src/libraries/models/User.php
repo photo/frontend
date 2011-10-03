@@ -112,12 +112,38 @@ class User
 
   public static function isLoggedIn()
   {
-    return getSession()->get('email') != '';
+    if(getCredential()->isOAuthRequest())
+    {
+      if(!getCredential()->checkRequest())
+      {
+        return false;
+      }
+      return true;
+    }
+    else
+    {
+      return getSession()->get('email') != '';
+    }
   }
 
   public static function isOwner()
   {
-    return isset(getConfig()->get('user')->email) && getSession()->get('email') == getConfig()->get('user')->email;
+    if(getCredential()->isOAuthRequest())
+    {
+      if(!getCredential()->checkRequest())
+      {
+        return false;
+      }
+      return true;
+    }
+    elseif(!self::isLoggedIn())
+    {
+      return false;
+    }
+    else
+    {
+      return isset(getConfig()->get('user')->email) && getSession()->get('email') == getConfig()->get('user')->email;
+    }
   }
 
   /**
