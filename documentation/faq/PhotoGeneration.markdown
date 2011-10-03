@@ -106,5 +106,8 @@ The `returnSizes` parameter takes values in the form of _WxH[[xA]xB]_ which mean
 
 Additional options include `CR` and `BW`. `CR` tells the API to crop the photo to be exactly _width_ by _height_. It does a center crop and minimizes the portion of the photo that is cropped. `BW` applies a greyscale filter to the photo. `100x100xCRxBW` means the photo will have a key of `path100x100xCRxBW` and will be exactly _100_ by _100_, cropped and greyscale.
 
+For more information on the `returnSizes` parameter see our [documentation on returnSizes][ReturnSizes].
+
 [GetPhotos]: api/GetPhotos.markdown
 [GetPhoto]: api/GetPhoto.markdown
+[ReturnSizes]: faq/ReturnSizes.markdown

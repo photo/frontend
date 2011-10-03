@@ -3,7 +3,7 @@ Documentation
 #### OpenPhoto, a photo service for the masses
 
 This is a list of common questions that people have about OpenPhoto. 
-If you have one which is not on this list send us a message via <a href="http://twitter.com/openphotome">Twiter</a> or <a href="mailto:jaisen@openphoto.me">email</a>.
+If you have one which is not on this list send us a message via <a href="http://twitter.com/openphoto">Twitter</a> or <a href="mailto:hello@openphoto.me">email</a>.
 
 ### What exactly is OpenPhoto?
 
@@ -55,12 +55,13 @@ It depends on who you use but here are some guidelines.
 
 ### When will the OpenPhoto software be completed?
 
-The initial version should be ready by the end of July (2011). 
-This will allow anyone to download the source code and set it up on their server.
-We'll be working to make that easier by partnering with sites like dotCloud and providing ready to use AMIs for AWS or Rackspace.
+You can set up the OpenPhoto software using [any of the guides][guides].
 
 ----------------------------------------
 
 ### When will the hosted version of OpenPhoto be available?
 
-We are aiming to have it ready by the end of August (2011).
+We are aiming to have it ready by the end of November (2011).
+
+[guides]: guides/Readme.markdown
+
