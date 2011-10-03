@@ -171,33 +171,33 @@ class ApiPhotoController extends BaseController
     extract(self::parseFilters($filterOpts));
     $db = getDb();
     $photos = $db->getPhotos($filters, $pageSize);
-    if($photos)
+
+    if(empty($photos))
+      return self::success('Your search did not return any photos', null);
+    elseif($photos === false)
+      return self::error('Could not retrieve photos', false);
+
+
+    $sizes = array();
+    if(isset($filters['returnSizes']))
+      $sizes = (array)explode(',', $filters['returnSizes']);
+
+    foreach($photos as $key => $photo)
     {
-      $sizes = array();
-      if(isset($filters['returnSizes']))
-        $sizes = (array)explode(',', $filters['returnSizes']);
+      // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
+      // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
+      $photos[$key] = self::pruneSizes($photo, $sizes);
 
-      foreach($photos as $key => $photo)
+      if(isset($sizes))
       {
-        // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
-        // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
-        $photos[$key] = self::pruneSizes($photo, $sizes);
-
-        if(isset($sizes))
+        foreach($sizes as $size)
         {
-          foreach($sizes as $size)
-          {
-            // TODO call API
-            // here we put a previously deleted key back in - ah, the things we do for consistency
-            $options = Photo::generateFragmentReverse($size);
-            $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
-          }
+          // TODO call API
+          // here we put a previously deleted key back in - ah, the things we do for consistency
+          $options = Photo::generateFragmentReverse($size);
+          $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
         }
       }
-    }
-    else
-    {
-      return self::error('Could not retrieve photos', false);
     }
 
     $photos[0]['pageSize'] = $pageSize;
