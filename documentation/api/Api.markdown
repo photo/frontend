@@ -8,8 +8,6 @@ Open Photo API
 
 The Open Photo API uses [OAuth1.0a][oauth1.0a] for authentication. See the complete [guide on authentication][authentication] for details.
 
-_NOTE:_ OAuth2 isn't yet enabled.
-
 ### What's the response format?
 
 Every API endpoint returns a JSON response in a [standard envelope][Envelope].
@@ -73,6 +71,7 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
 [PostPhotoDelete]: PostPhotoDelete.markdown
 [GetPhotos]: GetPhotos.markdown
 [GetPhoto]: GetPhoto.markdown
+[PostPhotoUpdate]: PostPhotoUpdate.markdown
 [PostPhotoUpload]: PostPhotoUpload.markdown
 [GetPhotoNextPrevious]: GetPhotoNextPrevious.markdown
 [GetTags]: GetTags.markdown
