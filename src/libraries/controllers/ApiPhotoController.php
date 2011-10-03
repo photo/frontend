@@ -17,11 +17,17 @@ class ApiPhotoController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb($_POST['crumb']);
+    $res = getApi()->invoke("/photo/{$id}/view.json");
     $status = Photo::delete($id);
     if($status)
+    {
+      Tag::updateTagCounts($res['result']['tags'], array());
       return self::success('Photo deleted successfully', $id);
+    }
     else
+    {
       return self::error('Photo deletion failure', false);
+    }
   }
 
   /**
@@ -301,7 +307,7 @@ class ApiPhotoController extends BaseController
   /**
     * Retrieve a photo from the remote datasource.
     *
-    * @param string $id ID of the photo to be deleted.
+    * @param string $id ID of the photo to be viewed.
     * @return string Standard JSON envelope
     */
   public static function view($id)

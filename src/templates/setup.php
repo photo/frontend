@@ -27,7 +27,7 @@
   </div>
   <div id="setup-step-2"<?php echo ($step != 2) ? ' class="hidden"' : ''?>>
     <form action="/setup/2" method="post">
-      <h2>Site Settings <em>(<a href="">what's this?</a>)</em></h2>
+      <h2>Site Settings <em>(the defaults work just fine<!--<a href="">what's this?</a>-->)</em></h2>
       <label for="imageLibrary">Select Image Library</label>
       <?php if(isset($imageLibs)) { ?>
         <select name="imageLibrary" id="imageLibrary">
@@ -51,9 +51,9 @@
   </div>
   <div id="setup-step-3"<?php echo ($step != 3) ? ' class="hidden"' : ''?>>
     <form class="validate" action="/setup/3" method="post">
-      <h2>Credentials <em>(<a href="">what's this?</a>)</em></h2>
+      <h2>Credentials<!-- <em>(<a href="">what's this?</a>)</em>--></h2>
       <?php if(isset($usesAws) && $usesAws) { ?>
-        <h3>Enter your Amazon credentials <em>(<a href="">what's this?</a>)</em></h3>
+        <h3>Enter your Amazon credentials <em>(<a href="http://s3.amazonaws.com/mturk/tools/pages/aws-access-identifiers/aws-identifier.html">what's this?</a>)</em></h3>
         <label for="awsKey">Amazon Access Key ID</label>
         <input type="password" name="awsKey" id="awsKey" size="50" autocomplete="off" data-validation="required">
         <label for="awsSecret">Amazon Secret Access Key</label>
