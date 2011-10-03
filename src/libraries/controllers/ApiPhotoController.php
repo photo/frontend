@@ -373,23 +373,25 @@ class ApiPhotoController extends BaseController
       $filterOpts = (array)explode('/', $filterOpts);
       foreach($filterOpts as $value)
       {
-        $parts = explode('-', $value);
-        if(count($parts) != 2)
+        $dashPosition = strpos($value, '-');
+        if(!$dashPosition)
           continue;
 
-        switch($parts[0])
+        $parameterKey = substr($value, 0, $dashPosition);
+        $parameterValue = substr($value, ($dashPosition+1));
+        switch($parameterKey)
         {
           case 'pageSize':
-            $pageSize = intval($parts[1]);
+            $pageSize = intval($parameterValue);
             break;
           case 'sortBy':
             $sortOptions = (array)explode(',', $value);
-            if(count($sortOptions) != 2 || preg_match('/[^a-zA-Z0-9,]/', $parts[1]))
+            if(count($sortOptions) != 2 || preg_match('/[^a-zA-Z0-9,]/', $parameterValue))
               continue;
-            $filters[$parts[0]] = $parts[1];
+            $filters[$parameterKey] = $parameterValue;
             break;
           default:
-            $filters[$parts[0]] = $parts[1];
+            $filters[$parameterKey] = $parameterValue;
             break;
         }
       }
