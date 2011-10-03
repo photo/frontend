@@ -67,7 +67,7 @@ class Tag
 
   public static function sanitize($tag)
   {
-    return preg_replace('/[^a-zA-Z0-9]/', '', $tag);
+    return preg_replace('/,/', '', $tag);
   }
 
   public static function sanitizeTagsAsString($tags)
