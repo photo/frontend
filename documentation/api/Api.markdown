@@ -41,10 +41,10 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
     Get a user's photo.
 1.  [GET /photos/list.json][GetPhotos]
     Get a list of the user's photos.
+1.  [GET /photo/:id/nextprevious.json][GetPhotoNextPrevious]
+    Get the next and previous photo.
 1.  [POST /photo/upload.json][PostPhotoUpload]
     Upload a new photo.
-1.  [POST /photo/:id/nextprevious.json][GetPhotoNextPrevious]
-    Get the next and previous photo.
 
 #### Tag endpoints
 1.  [GET /tags/list.json][GetTags]
