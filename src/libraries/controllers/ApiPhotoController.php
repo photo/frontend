@@ -174,9 +174,6 @@ class ApiPhotoController extends BaseController
 
     if(empty($photos))
       return self::success('Your search did not return any photos', null);
-    elseif($photos === false)
-      return self::error('Could not retrieve photos', false);
-
 
     $sizes = array();
     if(isset($filters['returnSizes']))
