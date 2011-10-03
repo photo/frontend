@@ -23,13 +23,15 @@ Since a [Photo][Photo] object has a predictable set of properties it means that 
 ### Available schemas
 
 1. [User][User] - Settings for a user.
+1. [Credential][Credential] - Properties for a user's OAuth credential.
 1. [Photo][Photo] - Properties for a single photo.
 1. [Action][Action] - Comments and favorites on a photo.
 1. [Tag][Tag] - Meta information for tags.
 
 ----------------------------------------
 
-[User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
-[Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
-[Action]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Action.markdown
-[Tag]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Tag.markdown
+[User]: User.markdown
+[Credential]: Credential.markdown
+[Photo]: Photo.markdown
+[Action]: Action.markdown
+[Tag]: Tag.markdown

@@ -123,8 +123,8 @@ The response is in a standard [response envelope][Envelope].
       }
     }
 
-[Envelope]: api/Envelope.markdown
-[Photo]: schemas/Photo.markdown
+[Envelope]: Envelope.markdown
+[Photo]: ../schemas/Photo.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters

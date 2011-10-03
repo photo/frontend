@@ -36,6 +36,6 @@ Adding `xCR` means that the photo will be exactly _200px_ by _200px_ and cropped
 ### Accessing the paths in the response
 The name of the URL attribute in the response is, by convention, `pathWxH` where `WxH` is the value passed in to returnSizes.
 
-[GetPhoto]: api/GetPhoto.markdown
-[GetPhotos]: api/GetPhotos.markdown
-[photogeneration]: faq/PhotoGeneration.markdown
+[GetPhoto]: ../api/GetPhoto.markdown
+[GetPhotos]: ../api/GetPhotos.markdown
+[photogeneration]: ../faq/PhotoGeneration.markdown

@@ -8,8 +8,8 @@ OpenPhoto / Guides
 1.  [Installation on Ubuntu with Cherokee][guideinstallubuntucherokee]
 1.  [Installation via Amazon EC2 OpenPhoto AMI][guideinstallamazonec2]
 
-[guideinstallubuntuapache]: guides/InstallationUbuntuApache.markdown
-[guideinstallosxmacports]: guides/InstallationOSXMacports.markdown
-[guideinstallsuse]: guides/InstallationSUSE.markdown
-[guideinstallubuntucherokee]: guides/InstallationUbuntuCherokee.markdown
-[guideinstallamazonec2]: guides/InstallationUsingOpenPhotoEC2-AMI.markdown
+[guideinstallubuntuapache]: InstallationUbuntuApache.markdown
+[guideinstallosxmacports]: InstallationOSXMacports.markdown
+[guideinstallsuse]: InstallationSUSE.markdown
+[guideinstallubuntucherokee]: InstallationUbuntuCherokee.markdown
+[guideinstallamazonec2]: InstallationUsingOpenPhotoEC2-AMI.markdown

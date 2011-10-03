@@ -102,6 +102,6 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
   * pathBase, The URL of the base version of the photo, used for photo generation
   * pathWxH, A pseudo key which represents any resized version of a photo and it's URL
 
-[User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
-[Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
-[Action]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Action.markdown
+[User]: User.markdown
+[Photo]: Photo.markdown
+[Action]: Action.markdown
