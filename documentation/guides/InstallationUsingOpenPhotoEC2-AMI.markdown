@@ -54,7 +54,3 @@ Verify the apache user has write access to the /home/ubuntu/openphoto/src/config
 	ls -ld ./configs
 	
 	drwxr-xr-x 3 www-data www-data 4096 2011-08-20 02:37 configs
-
-
-	
-

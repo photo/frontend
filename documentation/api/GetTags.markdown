@@ -94,8 +94,8 @@ The response is in a standard [response envelope][Envelope].
       ]
     }
 
-[Envelope]: api/Envelope.markdown
-[Tag]: schemas/Tag.markdown
+[Envelope]: Envelope.markdown
+[Tag]: ../schemas/Tag.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters

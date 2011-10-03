@@ -27,6 +27,6 @@ This includes the last uploaded [Photo][Photo]  and [Action][Action] id.
   * lastPhotoId, most recent photo id
   * lastActionId, most recent action id
 
-[User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
-[Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
-[Action]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Action.markdown
+[User]: User.markdown
+[Photo]: Photo.markdown
+[Action]: Action.markdown

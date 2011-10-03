@@ -50,6 +50,6 @@ This includes comments and favorites and could include other social actions in t
   * status, Binary value if the action is active or not
 
 
-[User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
-[Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
-[Action]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Action.markdown
+[User]: User.markdown
+[Photo]: Photo.markdown
+[Action]: Action.markdown

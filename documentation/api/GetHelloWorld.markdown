@@ -74,7 +74,7 @@ The response is in a standard [response envelope][Envelope].
       }
     }
 
-[Envelope]: api/Envelope.markdown
+[Envelope]: Envelope.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters

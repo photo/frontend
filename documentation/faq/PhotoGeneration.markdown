@@ -108,6 +108,6 @@ Additional options include `CR` and `BW`. `CR` tells the API to crop the photo t
 
 For more information on the `returnSizes` parameter see our [documentation on returnSizes][ReturnSizes].
 
-[GetPhotos]: api/GetPhotos.markdown
-[GetPhoto]: api/GetPhoto.markdown
-[ReturnSizes]: faq/ReturnSizes.markdown
+[GetPhotos]: ../api/GetPhotos.markdown
+[GetPhoto]: ../api/GetPhoto.markdown
+[ReturnSizes]: ../faq/ReturnSizes.markdown

@@ -100,8 +100,8 @@ The response is in a standard [response envelope][Envelope].
       }
     }
 
-[Envelope]: api/Envelope.markdown
-[Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
+[Envelope]: Envelope.markdown
+[Photo]: ../schemas/Photo.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters
@@ -110,5 +110,5 @@ The response is in a standard [response envelope][Envelope].
 [example-php]: #example-php
 [response]: #response
 [sample]: #sample
-[photogeneration]: faq/PhotoGeneration.markdown
-[ReturnSizes]: faq/ReturnSizes.markdown
+[photogeneration]: ../faq/PhotoGeneration.markdown
+[ReturnSizes]: ../faq/ReturnSizes.markdown

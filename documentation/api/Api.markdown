@@ -37,12 +37,12 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
 1.  [POST /tag/:id/update.json][PostTag]
     Modify meta data for a user's tag.
 
-[Envelope]: api/Envelope.markdown
-[GetHelloWorld]: api/GetHelloWorld.markdown
-[GetPhotos]: api/GetPhotos.markdown
-[GetPhoto]: api/GetPhoto.markdown
-[GetTags]: api/GetTags.markdown
-[PostPhotoUpload]: api/PostPhotoUpload.markdown
-[PostTag]: api/PostTag.markdown
-[authentication]: api/Authentication.markdown
+[Envelope]: Envelope.markdown
+[GetHelloWorld]: GetHelloWorld.markdown
+[GetPhotos]: GetPhotos.markdown
+[GetPhoto]: GetPhoto.markdown
+[GetTags]: GetTags.markdown
+[PostPhotoUpload]: PostPhotoUpload.markdown
+[PostTag]: PostTag.markdown
+[authentication]: Authentication.markdown
 [oauth1.0a]: http://oauth.net/core/1.0a/

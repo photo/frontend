@@ -63,5 +63,5 @@ You can set up the OpenPhoto software using [any of the guides][guides].
 
 We are aiming to have it ready by the end of November (2011).
 
-[guides]: guides/Readme.markdown
+[guides]: ../guides/Guides.markdown
 

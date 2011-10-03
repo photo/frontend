@@ -29,7 +29,7 @@ A Group consists of an `id`, `name` and array of `email addresses`.
   * name, the name of the group
   * members: a set of email addresses who belong to this group
 
-[User]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/User.markdown
-[Photo]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Photo.markdown
-[Action]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Action.markdown
+[User]: User.markdown
+[Photo]: Photo.markdown
+[Action]: Action.markdown
 
