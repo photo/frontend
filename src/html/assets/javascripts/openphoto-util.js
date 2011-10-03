@@ -310,7 +310,6 @@
 
             var head = document.getElementsByTagName('head')[0],
                 script = document.createElement('script'),
-                scope,
                 callback;
 
             script.type = "text/javascript";
@@ -352,7 +351,6 @@
 
             var head = document.getElementsByTagName('head')[0],
                 link = document.createElement('link'),
-                scope,
                 callback;
 
             link.type = 'text/css';

@@ -1,5 +1,5 @@
 <h1>OAuth Credentials</h1>
-<?php if(count($credentials) > 0) { ?>
+<?php if(is_array($credentials) && count($credentials) > 0) { ?>
   <ul>
     <?php foreach($credentials as $credential) { ?>
       <li><?php Utility::safe($credential['name']); ?> (<a href="/oauth/<?php echo $credential['id']; ?>/delete" class="credential-delete-click">delete</a>)</li>
@@ -12,7 +12,7 @@
 <hr>
 
 <h1>Groups</h1>
-<?php if(count($groups) > 0) { ?>
+<?php if(is_array($groups) && count($groups) > 0) { ?>
   <ul class="credentials">
     <?php foreach($groups as $group) { ?>
       <li>
