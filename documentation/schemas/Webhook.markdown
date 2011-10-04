@@ -29,7 +29,7 @@ http://wiki.webhooks.org/w/page/13385124/FrontPage
 
 ### Schema description
 
-  * id, base 36 value of a base 10 auto-incremented value
+  * id, A random unique 40 byte string to identify the webhook
   * appId, A string identifing the application creating this entry
   * callback, URL to which the event information is POSTed
   * topic, An enumerated string with predefined values (i.e. photoupload, photoupdate, newcomment, etc.)
