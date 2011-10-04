@@ -112,7 +112,10 @@ class OAuthController extends BaseController
       curl_close($ch);
       parse_str($tok);
       setcookie('oauth', $tok);
-      echo sprintf('You exchanged a request token for an access token<br><a href="?reloaded=1">Reload to make an OAuth request</a>', $oauth_token, $oauth_token_secret);
+      if(!isset($oauth_token) || !isset($oauth_token_secret))
+        echo sprintf('Invalid response when getting an access token: %s', $tok);
+      else
+        echo sprintf('You exchanged a request token for an access token<br><a href="?reloaded=1">Reload to make an OAuth request</a>', $oauth_token, $oauth_token_secret);
     }
     else if(!isset($_GET['reloaded']))
     {
