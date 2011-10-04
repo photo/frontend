@@ -12,6 +12,18 @@
 <hr>
 
 <h1>Groups</h1>
+<form method="post" action="/group/create" method="post">
+  <label>Name</label>
+  <input type="text" placeholder="Name of new group" value="" name="name">
+
+  <label>Members</label>
+  <input type="text" placeholder="Email addresses of members (separate with commas)" value="" name="members">
+  
+  <button type="submit" class="group-update-click">Create a new group</button>
+</form><!--(<a href="/group/<?php echo $group['id']; ?>/delete" class="group-delete-click">delete</a>)-->
+
+<hr>
+
 <?php if(is_array($groups) && count($groups) > 0) { ?>
   <ul class="credentials">
     <?php foreach($groups as $group) { ?>

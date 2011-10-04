@@ -46,17 +46,21 @@ var opTheme = (function() {
         }, 'json');
         return false;
       },
-      groupUpdate: function(ev) {
+      groupPost: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
             form = el.parent(),
-            url = form.attr('action')+'.json';
-
+            url = form.attr('action')+'.json',
+            isCreate = (url.search('create') > -1);
         OP.Util.makeRequest(url, form.serializeArray(), function(response) {
-          if(response.code === 200)
-            opTheme.message.confirm('Group updated successfully.');
-          else
+          if(response.code === 200) {
+            if(isCreate)
+              location.href = location.href;
+            else
+              opTheme.message.confirm('Group updated successfully.');
+          } else {
             opTheme.message.error('Could not update group.');
+          }
         }, 'json');
         return false;
       },
@@ -408,7 +412,7 @@ var opTheme = (function() {
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
-        OP.Util.on('click:group-update', opTheme.callback.groupUpdate);
+        OP.Util.on('click:group-update', opTheme.callback.groupPost);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
 
