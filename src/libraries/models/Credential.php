@@ -170,6 +170,11 @@ class Credential
       getLogger()->warn(sprintf('Could not find consumer for key %s', $provider->consumer_key));
       return OAUTH_CONSUMER_KEY_UNKNOWN;
     }
+    elseif($consumer['type'] == self::typeRequest && $consumer['verifier'] != $provider->verifier)
+    {
+      getLogger()->warn(sprintf('Invalid OAuth verifier: %s', $provider->verifier));
+      return OAUTH_VERIFIER_INVALID;
+    }
 
     $provider->token_secret = $consumer['userSecret'];
     return OAUTH_OK;
