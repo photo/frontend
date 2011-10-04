@@ -12,8 +12,6 @@ OpenPhoto works similarly to Flickr, Smugmug and other photo sharing services wi
 All photos, tags and comments are stored in your personal cloud accounts with companies like Amazon, Rackspace or Google. 
 This means you can easily switch between OpenPhoto services, use more than one at a time or stop using them altogether while retaining all of your photos, tags and comments.
 
-See our [FAQ][FAQ] for more information.
-
 ----------------------------------------
 
 ### Why should I use OpenPhoto?
