@@ -4,7 +4,7 @@ Documentation
 
 ----------------------------------------
 
-### What's a Action object for?
+### What's an Action object for?
 
 The Social object stores social actions taken on a user's [Photo][Photo].
 This includes comments and favorites and could include other social actions in the future.
