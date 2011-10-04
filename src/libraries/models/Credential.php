@@ -227,7 +227,8 @@ class Credential
   public function isOAuthRequest()
   {
     $params = $this->getOAuthParameters();
-    return !empty($params);
+    // oauth_token and oauth_callback can be passed in for authenticated endpoints to obtain a credential
+    return (count($params) > 2);
   }
 }
 
