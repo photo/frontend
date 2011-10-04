@@ -405,12 +405,19 @@ class DatabaseMySql implements DatabaseInterface
   public function postTag($id, $params)
   {
     if(!isset($params['id']))
+    {
       $params['id'] = $id;
+    }
+    $params = self::prepareTag($params);
+    if(isset($params['::bindings']))
+      $bindings = $params['::bindings'];
+    else
+      $bindings = array();
 
-    $stmtIns = self::sqlInsertExplode($params);
-    $stmtUpd = self::sqlUpdateExplode($params);
+    $stmtIns = self::sqlInsertExplode($params, $bindings);
+    $stmtUpd = self::sqlUpdateExplode($params, $bindings);
 
-    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}tag` ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']}) ON DUPLICATE KEY UPDATE {$stmtUpd}");
+    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}tag` ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']}) ON DUPLICATE KEY UPDATE {$stmtUpd}", $bindings);
     return ($result !== false);
   }
 
@@ -449,7 +456,8 @@ class DatabaseMySql implements DatabaseInterface
     $justTags = array_keys($tagsToUpdate);
 
     // TODO call getTags instead
-    $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE id IN ('" . implode("','", $justTags) . "')");
+    $in_stmt = implode("','", $justTags);
+    $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE id IN (':in')", array (':in' => $in_stmt) );
     if(!empty($res))
     {
       foreach($res as $val)
@@ -800,6 +808,11 @@ class DatabaseMySql implements DatabaseInterface
       $bindings[':description'] = $params['description'];
       $params['description'] = ':description';
     }
+    if(!empty($params['tags']))
+    {
+      $bindings[':tags'] = $params['tags'];
+      $params['tags'] = ':tags';
+    }
     if(!empty($bindings))
     {
       $params['::bindings'] = $bindings;
@@ -807,6 +820,22 @@ class DatabaseMySql implements DatabaseInterface
     return $params;
   }
 
+  /** Prepare tags to store in the database
+   */
+  private function prepareTag($params)
+  {
+    $bindings = array();
+    if(!empty($params['id']))
+    {
+      $bindings[':id'] = $params['id'];
+      $params['id'] = ':id';
+    }
+    if(!empty($bindings))
+    {
+      $params['::bindings'] = $bindings;
+    }
+    return $params;    
+  }
   /** Prepare credential to store in the database
    */
   private function prepareCredential($params)
