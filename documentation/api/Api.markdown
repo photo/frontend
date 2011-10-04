@@ -54,16 +54,15 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
 
 #### Webhook endpoints
 1.  [GET /webhook/list.json][GetWebhooks]
-    Get a user's tags.
+    An internal private API to list the user's webhooks.
 1.  [GET /webhook/:id/view.json][GetWebhook]
-    Get a user's tags.
+    Get a user's webhook by id.
 1.  [POST /webhook/create.json][PostWebhookCreate]
-    Get a user's tags.
+    Create a new webhook for the user.
 1.  [POST /webhook/:id/delete.json][PostWebHookDelete]
-    Modify meta data for a user's tag.
+    Delete an existing webhook.
 1.  [POST /webhook/:id/update.json][PostWebHookUpdate]
-    Modify meta data for a user's tag.
-
+    Update an eixsting webhook.
 
 #### Group endpoints
 1.  [GET /group/:id/view.json][GetGroup]
@@ -76,6 +75,18 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
     Delete a group.
 1.  [POST /group/update.json][PostGroupUpdate]
     Update a group.
+
+#### Webhook endpoints
+1.  [GET /webhook/list.json][GetWebhooks]
+    An internal private API to list the user's webhooks.
+1.  [GET /webhook/:id/view.json][GetWebhook]
+    Get a user's webhook by id.
+1.  [POST /webhook/create.json][PostWebhookCreate]
+    Create a new webhook for the user.
+1.  [POST /webhook/:id/delete.json][PostWebHookDelete]
+    Delete an existing webhook.
+1.  [POST /webhook/:id/update.json][PostWebHookUpdate]
+    Update an eixsting webhook.
 
 [Envelope]: Envelope.markdown
 [GetHelloWorld]: GetHelloWorld.markdown

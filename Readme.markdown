@@ -45,4 +45,4 @@ There are importing tools available to make the switch easy.
 [aws]: http://aws.amazon.com/
 [s3]: http://aws.amazon.com/s3/
 [simpledb]: http://aws.amazon.com/simpledb/
-[FAQ]: https://github.com/openphoto/frontend/blob/master/documentation/FAQ.markdown
+[FAQ]: frontend/documentation/faq/Faq.markdown
