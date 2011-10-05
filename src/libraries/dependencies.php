@@ -24,6 +24,7 @@ require getConfig()->get('paths')->controllers . '/UserController.php';
 require getConfig()->get('paths')->controllers . '/ApiOAuthController.php';
 require getConfig()->get('paths')->controllers . '/OAuthController.php';
 require getConfig()->get('paths')->controllers . '/ApiWebhookController.php';
+require getConfig()->get('paths')->controllers . '/WebhookController.php';
 
 // libraries
 require getConfig()->get('paths')->external . '/aws/sdk.class.php';
