@@ -12,7 +12,7 @@ class DatabaseMySql implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
+  private $errors = array(), $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
 
   /**
     * Constructor
@@ -74,6 +74,29 @@ class DatabaseMySql implements DatabaseInterface
   {
     $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE id=:id", array(':id' => $id));
     return ($res == 1);
+  }
+
+  /**
+    * Delete a webhook from the database
+    *
+    * @param string $id ID of the webhook to delete
+    * @return boolean
+    */
+  public function deleteWebhook($id)
+  {
+    // Gh-193
+    return false;
+  }
+
+  /**
+    * Get a list of errors
+    *
+    * @return array
+    */
+  public function errors()
+  {
+    // Gh-193
+    return $this->errors;
   }
 
   /**
@@ -224,6 +247,29 @@ class DatabaseMySql implements DatabaseInterface
       $photos[0]['totalRows'] = $result['COUNT(*)'];
     }
     return $photos;
+  }
+
+  /**
+    * Get a webhook specified by $id
+    *
+    * @param string $id ID of the webhook to retrieve
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getWebhook($id)
+  {
+    // See Gh-193
+    return false;
+  }
+
+  /**
+    * Get all webhooks for a user
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getWebhooks()
+  {
+    // See Gh-193
+    return false;
   }
 
   private function buildQuery($filters, $limit, $offset)
@@ -489,6 +535,19 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Update the information for the webhook record.
+    *
+    * @param string $id ID of the webhook to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function postWebhook($id, $params)
+  {
+    // See Gh-193
+    return false;
+  }
+
+  /**
     * Add a new action to the database
     * This method does not overwrite existing values present in $params - hence "new action".
     *
@@ -577,6 +636,19 @@ class DatabaseMySql implements DatabaseInterface
     $stmt = self::sqlInsertExplode($params);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}user` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return ($result != -1);
+  }
+
+  /**
+    * Add a new webhook to the database
+    *
+    * @param string $id ID of the webhook to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putWebhook($id, $params)
+  {
+    // See Gh-193
+    return false;
   }
 
   /**

@@ -298,6 +298,8 @@ class SetupController
           $dbErrors[] = 'We were unable to properly connect to your MySql database server. Please verify that the host, username and password are correct and have proper permissions to create a database.';
         else
           $dbErrors[] = 'An unknown error occurred while setting up your file system. Check your error logsto see if there\'s more information about the error.';
+
+        $dbErrors = array_merge($dbErrors, $dbObj->errors());
       }
 
       if($fsErrors === false && $dbErrors === false)

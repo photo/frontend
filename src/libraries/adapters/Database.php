@@ -8,11 +8,14 @@
 interface DatabaseInterface
 {
   public function __construct();
+  //
+  public function errors();
   // delete methods can delete or toggle status
   public function deleteAction($id);
   public function deleteCredential($id);
   public function deleteGroup($id);
   public function deletePhoto($id);
+  public function deleteWebhook($id);
   // get methods read
   public function getCredential($id);
   public function getCredentials();
@@ -25,6 +28,8 @@ interface DatabaseInterface
   public function getUser();
   public function getTag($tag);
   public function getTags($filter = array());
+  public function getWebhook($id);
+  public function getWebhooks();
   // post methods update
   public function postCredential($id, $params);
   public function postGroup($id, $params);
@@ -33,6 +38,7 @@ interface DatabaseInterface
   public function postTag($id, $params);
   public function postTags($params);
   public function postTagsCounter($params);
+  public function postWebhook($id, $params);
   // put methods create but do not update
   public function putGroup($id, $params);
   public function putAction($id, $params);
@@ -40,6 +46,8 @@ interface DatabaseInterface
   public function putPhoto($id, $params);
   public function putUser($id, $params);
   public function putTag($id, $params);
+  public function putWebhook($id, $params);
+  // general methods
   public function initialize();
 }
 
