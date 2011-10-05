@@ -12,7 +12,7 @@ require "{$epiPath}/Epi.php";
 Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
 Epi::setPath('view', '');
-Epi::init('api','cache','config','form','logger','route','session-php','template','database');
+Epi::init('api','cache','config','curl','form','logger','route','session-php','template','database');
 EpiSession::employ(EpiSession::PHP);
 getSession();
 
