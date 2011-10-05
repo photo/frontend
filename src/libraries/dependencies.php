@@ -23,6 +23,8 @@ require getConfig()->get('paths')->controllers . '/ApiUserController.php';
 require getConfig()->get('paths')->controllers . '/UserController.php';
 require getConfig()->get('paths')->controllers . '/ApiOAuthController.php';
 require getConfig()->get('paths')->controllers . '/OAuthController.php';
+require getConfig()->get('paths')->controllers . '/ApiWebhookController.php';
+require getConfig()->get('paths')->controllers . '/WebhookController.php';
 
 // libraries
 require getConfig()->get('paths')->external . '/aws/sdk.class.php';
@@ -44,6 +46,7 @@ require getConfig()->get('paths')->models . '/Group.php';
 require getConfig()->get('paths')->models . '/Photo.php';
 require getConfig()->get('paths')->models . '/Tag.php';
 require getConfig()->get('paths')->models . '/User.php';
+require getConfig()->get('paths')->models . '/Webhook.php';
 require getConfig()->get('paths')->models . '/Theme.php';
 require getConfig()->get('paths')->models . '/Image.php';
 require getConfig()->get('paths')->models . '/ImageImageMagick.php';
