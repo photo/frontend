@@ -77,10 +77,10 @@ class ApiWebhookController extends BaseController
     *
     * @return string Standard JSON envelope
     */
-  public static function list_()
+  public static function list_($topic = null)
   {
     //getAuthentication()->requireAuthentication();
-    $webhooks = Webhook::getAll();
+    $webhooks = Webhook::getAll($topic);
     if($webhooks)
       return self::success("Successfully retrieved webhooks", $webhooks);
     else

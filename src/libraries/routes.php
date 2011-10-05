@@ -47,6 +47,13 @@ getRoute()->get('/user/logout', array('UserController', 'logout')); // logout
 getRoute()->get('/user/settings', array('UserController', 'settings'));
 
 /*
+ * Webhook endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /webhook[s][/{id}]/{action}
+ */
+getRoute()->post('/webhook/subscribe', array('WebhookController', 'subscribe'));
+
+/*
  * OAuth endpoints
  * All oauth endpoints follow the same convention.
  * /v{version}/oauth/{action}

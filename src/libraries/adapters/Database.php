@@ -29,7 +29,7 @@ interface DatabaseInterface
   public function getTag($tag);
   public function getTags($filter = array());
   public function getWebhook($id);
-  public function getWebhooks();
+  public function getWebhooks($topic = null);
   // post methods update
   public function postCredential($id, $params);
   public function postGroup($id, $params);

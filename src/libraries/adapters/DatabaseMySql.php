@@ -266,7 +266,7 @@ class DatabaseMySql implements DatabaseInterface
     *
     * @return mixed Array on success, FALSE on failure
     */
-  public function getWebhooks()
+  public function getWebhooks($topic = null)
   {
     // See Gh-193
     return false;

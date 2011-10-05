@@ -16,6 +16,7 @@ class Webhook
     */
   public static function add($params)
   {
+    $params = self::getValidAttributes($params);
     if(!isset($params['callback']) || !isset($params['topic']))
     {
       getLogger()->info(sprintf('Not all required paramaters were passed in to add(), %s', json_encode($params)));
@@ -66,9 +67,9 @@ class Webhook
     *
     * @return array
     */
-  public static function getAll()
+  public static function getAll($topic = null)
   {
-    return getDb()->getWebhooks();
+    return getDb()->getWebhooks($topic);
   }
 
   /**
@@ -80,6 +81,17 @@ class Webhook
   public static function update($id, $params)
   {
     return getDb()->postWebhook($id, $params);
+  }
+
+  public static function getValidAttributes($params)
+  {
+    $valid = array('id' => 1, 'appId' => 1, 'callback' => 1, 'topic' => 1, 'verifyToken' => 1, 'challenge' => 1, 'secret' => 1);
+    foreach((array)$params as $key => $val)
+    {
+      if(!isset($valid[$key]))
+        unset($params[$key]);
+    }
+    return $params;
   }
 
   /**

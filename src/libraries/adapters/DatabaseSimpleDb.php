@@ -383,9 +383,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     *
     * @return mixed Array on success, FALSE on failure
     */
-  public function getWebhooks()
+  public function getWebhooks($topic = null)
   {
-    $res = $this->db->select("SELECT * FROM `{$this->domainWebhook}`", array('ConsistentRead' => 'true'));
+    if($topic)
+      $res = $this->db->select("SELECT * FROM `{$this->domainWebhook}` WHERE topic='{$topic}'", array('ConsistentRead' => 'true'));
+    else
+      $res = $this->db->select("SELECT * FROM `{$this->domainWebhook}`", array('ConsistentRead' => 'true'));
 
     $this->logErrors($res);
     if(!$res->isOK())
