@@ -52,22 +52,10 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
 1.  [POST /tag/:id/update.json][PostTag]
     Modify meta data for a user's tag.
 
-#### Webhook endpoints
-1.  [GET /webhook/list.json][GetWebhooks]
-    An internal private API to list the user's webhooks.
-1.  [GET /webhook/:id/view.json][GetWebhook]
-    Get a user's webhook by id.
-1.  [POST /webhook/create.json][PostWebhookCreate]
-    Create a new webhook for the user.
-1.  [POST /webhook/:id/delete.json][PostWebHookDelete]
-    Delete an existing webhook.
-1.  [POST /webhook/:id/update.json][PostWebHookUpdate]
-    Update an eixsting webhook.
-
 #### Group endpoints
 1.  [GET /group/:id/view.json][GetGroup]
     Get a group.
-1.  [GET /group/list.json][GetGroups]
+1.  [GET /groups/list.json][GetGroups]
     Get a listing of a user's groups.
 1.  [POST /group/create.json][PostGroupCreate]
     Create a group.
@@ -77,10 +65,10 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
     Update a group.
 
 #### Webhook endpoints
-1.  [GET /webhook/list.json][GetWebhooks]
-    An internal private API to list the user's webhooks.
 1.  [GET /webhook/:id/view.json][GetWebhook]
     Get a user's webhook by id.
+1.  [GET /webhooks/list.json][GetWebhooks]
+    An internal private API to list the user's webhooks.
 1.  [POST /webhook/create.json][PostWebhookCreate]
     Create a new webhook for the user.
 1.  [POST /webhook/:id/delete.json][PostWebHookDelete]

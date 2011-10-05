@@ -31,7 +31,7 @@ class EpiApi
 
   public function invoke($route, $httpMethod = EpiRoute::httpGet, $params = array())
   {
-    $routeDef = getRoute()->getRoute($route, $httpMethod);
+    $routeDef = $this->getRoute($route, $httpMethod);
 
     // this is ugly but required if internal and external calls are to work
     $tmps = array();
@@ -48,6 +48,45 @@ class EpiApi
       $GLOBALS[$type] = $value; 
 
     return $retval;
+  }
+
+  /**
+   * EpiApi::getRoute($route); 
+   * @name  getRoute
+   * @author  Jaisen Mathai <jaisen@jmathai.com>
+   * @param string $route
+   * @method getRoute
+   * @static method
+   */
+  public function getRoute($route, $httpMethod)
+  {
+    foreach($this->regexes as $ind => $regex)
+    {
+      if(preg_match($regex, $route, $arguments))
+      {
+        array_shift($arguments);
+        $def = $this->routes[$ind];
+        if($httpMethod != $def['httpMethod'])
+        {
+          continue;
+        }
+        else if(is_array($def['callback']) && method_exists($def['callback'][0], $def['callback'][1]))
+        {
+          if(Epi::getSetting('debug'))
+            getDebug()->addMessage(__CLASS__, sprintf('Matched %s : %s : %s : %s', $httpMethod, $this->route, json_encode($def['callback']), json_encode($arguments)));
+          return array('callback' => $def['callback'], 'args' => $arguments, 'postprocess' => true);
+        }
+        else if(function_exists($def['callback']))
+        {
+          if(Epi::getSetting('debug'))
+            getDebug()->addMessage(__CLASS__, sprintf('Matched %s : %s : %s : %s', $httpMethod, $this->route, json_encode($def['callback']), json_encode($arguments)));
+          return array('callback' => $def['callback'], 'args' => $arguments, 'postprocess' => true);
+        }
+
+        EpiException::raise(new EpiException('Could not call ' . json_encode($def) . " for route {$regex}"));
+      }
+    }
+    EpiException::raise(new EpiException("Could not find route {$this->route} from {$_SERVER['REQUEST_URI']}"));
   }
 
   /**

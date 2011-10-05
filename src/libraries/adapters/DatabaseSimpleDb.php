@@ -11,7 +11,8 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $db, $domainAction, $domainCredential, $domainPhoto, $domainTag, $domainUser;
+  private $db, $domainAction, $domainCredential, $domainPhoto, 
+    $domainTag, $domainUser, $domainWebhook, $errors = array();
 
   /**
     * Constructor
@@ -27,6 +28,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->domainGroup = getConfig()->get('aws')->simpleDbDomain.'Group';
     $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'User';
     $this->domainTag = getConfig()->get('aws')->simpleDbDomain.'Tag';
+    $this->domainWebhook = getConfig()->get('aws')->simpleDbDomain.'Webhook';
   }
 
   /**
@@ -47,6 +49,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function deleteAction($id)
   {
     $res = $this->db->delete_attributes($this->domainAction, $id);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
@@ -58,6 +61,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function deleteCredential($id)
   {
     $res = $this->db->delete_attributes($this->domainCredential, $id);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
@@ -70,6 +74,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function deleteGroup($id)
   {
     $res = $this->db->delete_attributes($this->domainGroup, $id);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
@@ -82,7 +87,31 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function deletePhoto($id)
   {
     $res = $this->db->delete_attributes($this->domainPhoto, $id);
+    $this->logErrors($res);
     return $res->isOK();
+  }
+
+  /**
+    * Delete a webhook from the database
+    *
+    * @param string $id ID of the webhook to delete
+    * @return boolean
+    */
+  public function deleteWebhook($id)
+  {
+    $res = $this->db->delete_attributes($this->domainWebhook, $id);
+    $this->logErrors($res);
+    return $res->isOK();
+  }
+
+  /**
+    * Get a list of errors
+    *
+    * @return array
+    */
+  public function errors()
+  {
+    return $this->errors;
   }
 
   /**
@@ -94,6 +123,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getCredential($id)
   {
     $res = $this->db->select("SELECT * FROM `{$this->domainCredential}` WHERE itemName()='{$id}' AND status='1'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))
       return self::normalizeCredential($res->body->SelectResult->Item);
     else
@@ -108,6 +138,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getCredentials()
   {
     $res = $this->db->select("SELECT * FROM `{$this->domainCredential}` WHERE status='1'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))
     {
       $credentials = array();
@@ -130,6 +161,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getGroup($id = null)
   {
     $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))
       return self::normalizeGroup($res->body->SelectResult->Item);
     else
@@ -149,6 +181,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     else
       $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE members in ('{$email}') AND `name` IS NOT NULL ORDER BY `name`", array('ConsistentRead' => 'true'));
 
+    $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))
     {
       $groups = array();
@@ -171,6 +204,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getPhoto($id)
   {
     $res = $this->db->select("SELECT * FROM `{$this->domainPhoto}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))
       return self::normalizePhoto($res->body->SelectResult->Item);
     else
@@ -194,6 +228,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$buildQuery['where']} AND dateTaken>'{$photo['dateTaken']}' ORDER BY dateTaken ASC LIMIT 1");
     $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$buildQuery['where']} AND dateTaken<'{$photo['dateTaken']}' ORDER BY dateTaken DESC LIMIT 1");
     $responses = $this->db->batch($queue)->send();
+    $this->logErrors($responses);
     if(!$responses->areOK())
       return false;
 
@@ -219,6 +254,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
     $this->db->batch($queue)->select("SELECT * FROM `{$this->domainAction}` WHERE targetType='photo' AND targetId='{$id}'", array('ConsistentRead' => 'true'));
     $responses = $this->db->batch($queue)->send();
+    $this->logErrors($responses);
     if(!$responses->areOk())
       return false;
 
@@ -237,6 +273,8 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Get a list of a user's photos filtered by $filter, $limit and $offset
     *
     * @param array $filters Filters to be applied before obtaining the result
+    * @param int $limit Total results to return
+    * @param offset $offset Starting point of results to return
     * @return mixed Array on success, FALSE on failure
     */
   public function getPhotos($filters = array(), $limit, $offset = null)
@@ -249,6 +287,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->db->batch($queue)->select("SELECT COUNT(*) FROM `{$this->domainPhoto}` {$buildQuery['where']}", $buildQuery['params']);
     $responses = $this->db->batch($queue)->send();
 
+    $this->logErrors($responses);
     if(!$responses->areOK())
       return false;
 
@@ -272,6 +311,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getTag($tag)
   {
     $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE itemName()='{$tag}')", array('ConsistentRead' => 'false'));
+    $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))
       return self::normalizeTag($res->body->SelectResult->Item);
 
@@ -288,6 +328,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getTags($filters = array())
   {
     $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE `count` IS NOT NULL AND `count` > '0' AND itemName() IS NOT NULL ORDER BY itemName()", array('ConsistentRead' => 'false'));
+    $this->logErrors($res);
     $tags = array();
     if(isset($res->body->SelectResult))
     {
@@ -312,12 +353,59 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getUser()
   {
     $res = $this->db->select("SELECT * FROM `{$this->domainUser}` WHERE itemName()='1'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))
       return self::normalizeUser($res->body->SelectResult->Item);
     elseif(isset($res->body->SelectResult))
       return null;
     else
       return false;
+  }
+
+  /**
+    * Get a webhook specified by $id
+    *
+    * @param string $id ID of the webhook to retrieve
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getWebhook($id)
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainWebhook}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeWebhook($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
+    * Get all webhooks for a user
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getWebhooks()
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainWebhook}`", array('ConsistentRead' => 'true'));
+
+    $this->logErrors($res);
+    if(!$res->isOK())
+      return false;
+    
+
+    if(isset($res->body->SelectResult))
+    {
+      if(isset($res->body->SelectResult->Item))
+      {
+        $webhooks = array();
+        foreach($res->body->SelectResult->Item as $webhook)
+          $webhooks[] = $this->normalizeWebhook($webhook);
+
+        return $webhooks;
+      }
+
+      return null;
+    }
+    return false;
   }
 
   /**
@@ -328,23 +416,26 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function initialize()
   {
-    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Credential|Group|Tag|User)?$/");
-    if(count($domains) == 6)
+    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Credential|Group|Tag|User|Webhook)?$/");
+    if(count($domains) == 7)
       return true;
 
+    $domainsToCreate = array($this->domainAction, $this->domainCredential, $this->domainGroup, 
+      $this->domainPhoto, $this->domainTag, $this->domainUser, $this->domainWebhook);
+
     $queue = new CFBatchRequest();
-    $this->db->batch($queue)->create_domain($this->domainAction);
-    $this->db->batch($queue)->create_domain($this->domainCredential);
-    $this->db->batch($queue)->create_domain($this->domainGroup);
-    $this->db->batch($queue)->create_domain($this->domainPhoto);
-    $this->db->batch($queue)->create_domain($this->domainTag);
-    $this->db->batch($queue)->create_domain($this->domainUser);
-    $responses = $this->db->batch($queue)->send();
-    if(!$responses->areOK())
+    foreach($domainsToCreate as $domainToCreate)
     {
-      foreach($responses as $response)
-        getLogger()->crit(sprintf('Could not created SimpleDb domains. Repsonse: %s', var_export($response, 1)));
+      if(!in_array($domainToCreate, $domains))
+      {
+        $this->db->batch($queue)->create_domain($domainToCreate);
+        getLogger()->info(sprintf('Queueing request to create domain: %s', $domainToCreate));
+      }
     }
+
+    $responses = $this->db->batch($queue)->send();
+    getLogger()->info(sprintf('Attempting to create %d domains.', count($responses)));
+    $this->logErrors($responses);
     return $responses->areOK();
   }
 
@@ -372,6 +463,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function postCredential($id, $params)
   {
     $res = $this->db->put_attributes($this->domainCredential, $id, $params, true);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
@@ -386,6 +478,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   {
     $params = self::prepareGroup($id, $params);
     $res = $this->db->put_attributes($this->domainGroup, $id, $params, true);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
@@ -401,6 +494,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   {
     $params = self::preparePhoto($id, $params);
     $res = $this->db->put_attributes($this->domainPhoto, $id, $params, true);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
@@ -415,6 +509,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function postTag($id, $params)
   {
     $res = $this->db->put_attributes($this->domainTag, $id, $params, true);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
@@ -444,6 +539,7 @@ class DatabaseSimpleDb implements DatabaseInterface
       $this->db->batch($queue)->put_attributes($this->domainTag, $tag, $tagObj, true);
     }
     $responses = $this->db->batch($queue)->send();
+    $this->logErrors($responses);
     return $responses->areOK();
   }
 
@@ -465,6 +561,7 @@ class DatabaseSimpleDb implements DatabaseInterface
 
     // TODO call getTags instead
     $res = $this->db->select($sql = "SELECT * FROM `{$this->domainTag}` WHERE itemName() IN ('" . implode("','", $justTags) . "')");
+    $this->logErrors($res);
     if(isset($res->body->SelectResult))
     {
       if(isset($res->body->SelectResult->Item))
@@ -491,7 +588,6 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $this->postTags($updatedTags);
   }
 
-
   /**
     * Update the information for the user record.
     * This method overwrites existing values present in $params.
@@ -504,6 +600,22 @@ class DatabaseSimpleDb implements DatabaseInterface
   {
     // make sure we don't overwrite an existing user record
     $res = $this->db->put_attributes($this->domainUser, $id, $params, true);
+    $this->logErrors($res);
+    return $res->isOK();
+  }
+
+  /**
+    * Update the information for the webhook record.
+    *
+    * @param string $id ID of the webhook to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function postWebhook($id, $params)
+  {
+    // make sure we don't overwrite an existing user record
+    $res = $this->db->put_attributes($this->domainWebhook, $id, $params, true);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
@@ -518,6 +630,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function putAction($id, $params)
   {
     $res = $this->db->put_attributes($this->domainAction, $id, $params);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
@@ -532,6 +645,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function putCredential($id, $params)
   {
     $res = $this->db->put_attributes($this->domainCredential, $id, $params);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
@@ -555,6 +669,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   {
     $params = self::preparePhoto($id, $params);
     $res = $this->db->put_attributes($this->domainPhoto, $id, $params);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
@@ -585,11 +700,31 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function putUser($id, $params)
   {
-    // make sure we don't overwrite an existing user record
     $res = $this->db->put_attributes($this->domainUser, $id, $params);
+    $this->logErrors($res);
     return $res->isOK();
   }
 
+  /**
+    * Add a new webhook to the database
+    *
+    * @param string $id ID of the webhook to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putWebhook($id, $params)
+  {
+    return $this->postWebhook($id, $params);
+  }
+
+  /**
+    * Query builder for searching photos.
+    *
+    * @param array $filters Filters to be applied before obtaining the result
+    * @param int $limit Total results to return
+    * @param offset $offset Starting point of results to return
+    * @return array Components required to build the query
+    */
   private function buildQuery($filters, $limit, $offset)
   {
     // TODO: support logic for multiple conditions
@@ -669,6 +804,26 @@ class DatabaseSimpleDb implements DatabaseInterface
       return "WHERE {$add} ";
     else
       return "{$existing} AND {$add} ";
+  }
+
+  private function logErrors($res)
+  {
+    if($res instanceof CFArray)
+    {
+      foreach($res as $r)
+        $this->logErrors($r);
+    }
+    else
+    {
+      if(!$res->isOK())
+      {
+        foreach($res->body->Errors as $error)
+        {
+          $message = $this->errors[] = sprintf('Amazon Web Services error (code %s): %s', $error->Error->Code, $error->Error->Message);
+          getLogger()->crit($message);
+        }
+      }
+    }
   }
 
   /**
@@ -802,6 +957,25 @@ class DatabaseSimpleDb implements DatabaseInterface
       $user[$name] = $value;
     }
     return $user;
+  }
+
+  /**
+    * Normalizes data from simpleDb into schema definition
+    *
+    * @param SimpleXMLObject $raw A user from SimpleDb in SimpleXML.
+    * @return array
+    */
+  private function normalizeWebhook($raw)
+  {
+    $webhook = array();
+    $webhook['id'] = strval($raw->Name);
+    foreach($raw->Attribute as $item)
+    {
+      $name = (string)$item->Name;
+      $value = (string)$item->Value;
+      $webhook[$name] = $value;
+    }
+    return $webhook;
   }
 
   /**
