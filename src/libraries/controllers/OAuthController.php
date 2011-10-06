@@ -155,12 +155,6 @@ class OAuthController extends BaseController
 
   public static function tokenAccess()
   {
-    if(!getCredential()->checkRequest())
-    {
-      echo 'oauth_error=invalid_request';
-      return;
-    }
-
     $token = $_POST['oauth_token'];
     $verifier = $_POST['oauth_verifier'];
     $consumer = getDb()->getCredential($token);
@@ -171,6 +165,10 @@ class OAuthController extends BaseController
     elseif($consumer['verifier'] != $verifier)
     {
       echo 'oauth_error=oauth_invalid_verifier';
+    }
+    elseif($consumer['type'] != Credential::typeRequest)
+    {
+      echo 'oauth_error=already_exchanged';
     }
     else
     {
