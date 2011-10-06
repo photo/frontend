@@ -264,6 +264,21 @@ class ApiPhotoController extends BaseController
       if(isset($returnSizes))
         $params = array('returnSizes' => $returnSizes);
       $photo = getApi()->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => $params));
+
+      // webhooks
+      // TODO, fire and forget
+      $webhookApi = getApi()->invoke('/webhooks/photo.upload/list.json', EpiRoute::httpGet);
+      if(!empty($webhookApi['result']) && is_array($webhookApi['result']))
+      {
+        $chs = $webhookHandles = array();
+        $photoAsArgs = $photo['result'];
+        $photoAsArgs['tags'] = implode(',', $photoAsArgs['tags']);
+        foreach($webhookApi['result'] as $key => $hook)
+        {
+          Http::fireAndForget($hook['callback'], 'POST', $photoAsArgs);
+          getLogger()->info(sprintf('Webhook callback executing for photo.upload: %s', $hook['callback']));
+        }
+      }
       return self::created("Photo {$photoId} uploaded successfully", $photo['result']);
     }
 
@@ -285,10 +300,10 @@ class ApiPhotoController extends BaseController
     // diff/manage tag counts - not critical
     if(isset($_POST['tags']) && !empty($_POST['tags']))
     {
-      $photo = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
-      if($photo)
+      $photoBefore = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+      if($photoBefore)
       {
-        $existingTags = $photo['result']['tags'];
+        $existingTags = $photoBefore['result']['tags'];
         $updatedTags = (array)explode(',', $_POST['tags']);
         Tag::updateTagCounts($existingTags, $updatedTags);
       }
@@ -298,6 +313,7 @@ class ApiPhotoController extends BaseController
       unset($_POST['crumb']);
     }
     $photoUpdatedId = Photo::update($id, $_POST);
+
     return self::success("photo {$id} updated", $photoUpdatedId);
   }
 
