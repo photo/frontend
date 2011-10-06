@@ -1,8 +1,16 @@
 <h1>OAuth Credentials</h1>
 <?php if(is_array($credentials) && count($credentials) > 0) { ?>
-  <ul>
+  <ul class="credentials">
     <?php foreach($credentials as $credential) { ?>
-      <li><?php Utility::safe($credential['name']); ?> (<a href="/oauth/<?php echo $credential['id']; ?>/delete" class="credential-delete-click">delete</a>)</li>
+      <li>
+        <?php Utility::safe($credential['name']); ?> (<a href="/oauth/<?php echo $credential['id']; ?>/delete" class="credential-delete-click">delete</a>)
+        <ul>
+          <li>Consumer key: <?php Utility::safe($credential['id']); ?></li>
+          <li>Consumer secret: <?php Utility::safe($credential['clientSecret']); ?></li>
+          <li>OAuth token: <?php Utility::safe($credential['userToken']); ?></li>
+          <li>OAuth token secret: <?php Utility::safe($credential['userSecret']); ?></li>
+        </ul>
+      </li>
     <?php } ?>
   </ul>
 <?php } else { ?>
@@ -25,7 +33,7 @@
 <hr>
 
 <?php if(is_array($groups) && count($groups) > 0) { ?>
-  <ul class="credentials">
+  <ul class="groups">
     <?php foreach($groups as $group) { ?>
       <li>
         <form method="post" action="/group/<?php Utility::safe($group['id']); ?>/update" method="post">
