@@ -16,7 +16,7 @@ class ApiPhotoController extends BaseController
   public static function delete($id)
   {
     getAuthentication()->requireAuthentication();
-    getAuthentication()->requireCrumb($_POST['crumb']);
+    getAuthentication()->requireCrumb();
     $res = getApi()->invoke("/photo/{$id}/view.json");
     $status = Photo::delete($id);
     if($status)
@@ -215,7 +215,7 @@ class ApiPhotoController extends BaseController
   public static function upload()
   {
     getAuthentication()->requireAuthentication();
-    getAuthentication()->requireCrumb($_POST['crumb']);
+    getAuthentication()->requireCrumb();
     $attributes = $_POST;
     if(isset($attributes['returnSizes']))
     {
@@ -296,7 +296,7 @@ class ApiPhotoController extends BaseController
   public static function update($id)
   {
     getAuthentication()->requireAuthentication();
-    getAuthentication()->requireCrumb($_POST['crumb']);
+    getAuthentication()->requireCrumb();
     // diff/manage tag counts - not critical
     if(isset($_POST['tags']) && !empty($_POST['tags']))
     {

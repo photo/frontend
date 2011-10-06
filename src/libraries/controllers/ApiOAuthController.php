@@ -18,7 +18,7 @@ class ApiOAuthController extends BaseController
 
   public static function view($id)
   {
-    //getAuthentication()->requireAuthentication();
+    getAuthentication()->requireAuthentication();
     $res = getDb()->getCredential($id);
     if($res !== false)
       return self::success('Oauth Credential', $res);

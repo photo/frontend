@@ -16,7 +16,7 @@ class ApiActionController extends BaseController
   public static function create($targetId, $targetType)
   {
     getAuthentication()->requireAuthentication(false);
-    getAuthentication()->requireCrumb($_POST['crumb']);
+    getAuthentication()->requireCrumb();
     $params = $_POST;
     $params['targetId'] = $targetId;
     $params['targetType'] = $targetType;
@@ -42,7 +42,7 @@ class ApiActionController extends BaseController
   public static function delete($id)
   {
     getAuthentication()->requireAuthentication();
-    getAuthentication()->requireCrumb($_POST['crumb']);
+    getAuthentication()->requireCrumb();
     $status = Action::delete($id);
     if($status)
       return self::success('Action deleted successfully', $id);
