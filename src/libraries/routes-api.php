@@ -51,8 +51,9 @@ getApi()->get('/user/logout.json', array('ApiUserController', 'logout'), EpiApi:
 /*
  * OAuth endpoints
  * All oauth endpoints follow the same convention.
- * /v{version}/oauth/{action}
+ * /v{version}/oauth[/{id}]/{action}
  */
+getApi()->get('/oauth/([a-zA-Z0-9]+)/view.json', array('ApiOAuthController', 'view'), EpiApi::external);
 getApi()->get('/oauth/list.json', array('ApiOAuthController', 'list_'), EpiApi::external);
 getApi()->post('/oauth/([a-zA-Z0-9]+)/delete.json', array('ApiOAuthController', 'delete'), EpiApi::external);
 

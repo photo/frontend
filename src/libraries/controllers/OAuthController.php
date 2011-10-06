@@ -155,7 +155,12 @@ class OAuthController extends BaseController
 
   public static function tokenAccess()
   {
-    // TODO check oauth_verifier
+    if(!getCredential()->checkRequest())
+    {
+      echo 'oauth_error=invalid_request';
+      return;
+    }
+
     $token = $_POST['oauth_token'];
     $verifier = $_POST['oauth_verifier'];
     $consumer = getDb()->getCredential($token);
