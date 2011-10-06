@@ -42,9 +42,14 @@ class Authentication
     *
     * @param $crumb the crumb posted to validate
     */
-  public function requireCrumb($crumb)
+  public function requireCrumb($crumb = null)
   {
-     if(getSession()->get('crumb') != $crumb)
+    if(getCredential()->isOAuthRequest())
+      return;
+    elseif($crumb === null && isset($_REQUEST['crumb']))
+      $crumb = $_REQUEST['crumb'];
+
+    if(getSession()->get('crumb') != $crumb)
       OPException::raise(new OPAuthorizationException('Crumb does not match'));
   }
 }
