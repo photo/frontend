@@ -16,6 +16,16 @@ class ApiOAuthController extends BaseController
       return self::error('Could not delete credential', false);
   }
 
+  public static function view($id)
+  {
+    //getAuthentication()->requireAuthentication();
+    $res = getDb()->getCredential($id);
+    if($res !== false)
+      return self::success('Oauth Credential', $res);
+    else
+      return self::error('Could not retrieve credential', false);
+  }
+
   public static function list_()
   {
     getAuthentication()->requireAuthentication();
