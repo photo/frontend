@@ -23,6 +23,6 @@ if(file_exists($configFile))
 {
   getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
   require getConfig()->get('paths')->libraries . '/dependencies.php';
+  if(Utility::isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(__FILE__)), getConfig()->get('site')->theme)))
+    getConfig()->load($mobileSettings);
 }
-if(Utility::isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(__FILE__)), getConfig()->get('site')->theme)))
-  getConfig()->load($mobileSettings);
