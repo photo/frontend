@@ -1,6 +1,6 @@
 <h1 class="audible">Your Tags</h1>
 <?php if(empty($tags)) { ?>
-  You don't have any tags yet.
+  Sorry, no photos have been tagged.
 <?php } else { ?>
   <ol class="tag-cloud">
     <?php foreach($tags as $tag) { ?>

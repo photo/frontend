@@ -1,3 +1,7 @@
+.audible, .offscreen {
+  position:absolute;
+  left: -9999em;
+}
 .photoheader {
     background-color: #EFEFEF;
     background-image: url("../images/header-logo.png");
