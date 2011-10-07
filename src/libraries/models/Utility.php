@@ -93,6 +93,21 @@ class Utility
     return self::returnValue(date('l, F jS, Y \a\t g:ia', $ts), $write);
   }
 
+  public static function getPaginationParams($currentPage, $totalPages, $pagesToDisplay)
+  {
+    $start = 1;
+    $end = $pagesToDisplay;
+    if($currentPage > ($pagesToDisplay / 2) && $totalPages > $pagesToDisplay)
+      $start = floor($currentPage - ($pagesToDisplay / 2));
+
+    if($totalPages < $pagesToDisplay)
+      $end = $totalPages;
+    else
+      $end = $start+$pagesToDisplay;
+
+    return range($start, $end);
+  }
+
   public static function getProtocol($write = true)
   {
     $protocol = $_SERVER['SERVER_PORT'] != '443' ? 'http' : 'https';
