@@ -19,6 +19,16 @@
         <label>Longitude</label>
         <input type="text" name="longitude" value="<?php Utility::safe($photo['longitude']); ?>">
 
+        <label>Permission</label>
+        <div>
+          <input type="radio" name="permission" value="0" <?php if($photo['permission'] == 0) { ?> checked="checked" <?php } ?>>
+          Private
+        </div>
+        <div>
+          <input type="radio" name="permission" value="1" <?php if($photo['permission'] == 1) { ?> checked="checked" <?php } ?>>
+          Public
+        </div>
+
         <?php if(count($groups) > 0) { ?>
           <label>Groups</label>
           <?php foreach($groups as $group) { ?>

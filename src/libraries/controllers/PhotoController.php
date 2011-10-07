@@ -77,19 +77,20 @@ class PhotoController extends BaseController
     */
   public static function list_($filterOpts = null)
   {
+    $returnSizes = sprintf('%s,%s', getConfig()->get('photoSizes')->thumbnail, getConfig()->get('photoSizes')->detail);
     if($filterOpts)
-      $photos = getApi()->invoke("/photos/{$filterOpts}/list.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
+      $photos = getApi()->invoke("/photos/{$filterOpts}/list.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $returnSizes)));
     else
-      $photos = getApi()->invoke("/photos/list.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->thumbnail)));
+      $photos = getApi()->invoke("/photos/list.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $returnSizes)));
 
-    $photos = $photos['result'];
+    $photos = (array)$photos['result'];
 
     $pagination = array('requestUri' => $_SERVER['REQUEST_URI'], 'currentPage' => $photos[0]['currentPage'],
       'pageSize' => $photos[0]['pageSize'], 'totalPages' => $photos[0]['totalPages']);
 
 
-    $body = getTheme()->get('photos.php', array('photos' => $photos, 'pagination' => $pagination, 'options' => $filterOpts));
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'photos'));
+    $body = getTheme()->get(Utility::getTemplate('photos.php'), array('photos' => $photos, 'pagination' => $pagination, 'options' => $filterOpts));
+    getTheme()->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'photos'));
   }
 
   /**

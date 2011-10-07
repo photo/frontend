@@ -1,6 +1,31 @@
 <?php
 class Utility
 {
+  private static $isMobile;
+
+  public static function callApis($apisToCall)
+  {
+    $params = array();
+    if(!empty($apisToCall))
+    {
+      foreach($apisToCall as $name => $api)
+      {
+        $apiParts = explode(' ', $api);
+        $apiMethod = strtoupper($apiParts[0]);
+        $apiMethod = $apiMethod == 'GET' ? EpiRoute::httpGet : EpiRoute::httpPost;
+        $apiUrlParts = parse_url($apiParts[1]);
+        $apiParams = array();
+        if(isset($apiUrlParts['query']))
+          parse_str($apiUrlParts['query'], $apiParams);
+
+        $response = getApi()->invoke($apiUrlParts['path'], $apiMethod, array("_{$apiMethod}" => $apiParams));
+        $params[$name] = $response['result'];
+
+      }
+    }
+    return $params;
+  }
+
   public static function decrypt($string, $secret = null, $salt = null)
   {
     if($secret === null)
@@ -104,6 +129,28 @@ class Utility
         return false;
         break;
     }
+  }
+
+  public static function isMobile()
+  {
+    if(self::$isMobile !== null)
+      return self::$isMobile;
+
+    $detect = new Mobile_Detect();
+    self::$isMobile = $detect->isMobile();
+    return self::$isMobile;
+  }
+
+  public static function getTemplate($template)
+  {
+    if(!self::isMobile())
+      return $template;
+
+    $mobileTemplate = str_replace('.php', '-mobile.php', $template);
+    if(!getTheme()->fileExists($mobileTemplate))
+      return $template;
+
+    return $mobileTemplate;
   }
 
   public static function licenseLong($key, $write = true)
