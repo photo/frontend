@@ -1,5 +1,5 @@
 <?php if($photos[0]['totalRows'] > 0) { ?>
-  <?php getTheme()->display('partials/pagination.php', $pagination); ?>
+  <?php getTheme()->display('partials/pagination.php', $pages); ?>
   <ul class="photo-grid grid-200">
     <?php foreach($photos as $photo) { ?>
       <li class="grid-item id-<?php Utility::safe($photo['id']); ?>">
@@ -14,7 +14,7 @@
     <?php } ?>
   </ul>
   <br clear="all">
-  <?php getTheme()->display('partials/pagination.php', array_merge($pagination, array('labelPosition' => 'bottom'))); ?>
+  <?php getTheme()->display('partials/pagination.php', array_merge($pages, array('labelPosition' => 'bottom'))); ?>
 <?php } else { ?>
   <?php if(User::isOwner()) { ?>
     <h1>There don't seem to be any photos. You should <a href="<?php Url::photosUpload(); ?>">upload</a> some.</h1>

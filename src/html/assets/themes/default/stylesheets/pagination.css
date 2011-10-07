@@ -37,11 +37,11 @@
 
 
 .pagination .on {
-    
 }
 
 .pagination .on p {
     display: inline;
-    color: #999;
-    border: 2px solid #43C2FD;
+    color: #43C2FD;
+    border-width: 2px;
+    background-color:#fff;
 }

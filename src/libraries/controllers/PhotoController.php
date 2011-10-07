@@ -89,13 +89,16 @@ class PhotoController extends BaseController
 
     $photos = (array)$photos['result'];
 
-    $pagination = array();
+    $pages = array('pages' => array());
     if(!empty($photos))
-      $pagination = array('requestUri' => $_SERVER['REQUEST_URI'], 'currentPage' => $photos[0]['currentPage'],
-        'pageSize' => $photos[0]['pageSize'], 'totalPages' => $photos[0]['totalPages']);
+    {
+      $pages['pages'] = Utility::getPaginationParams($photos[0]['currentPage'], $photos[0]['totalPages'], getConfig()->get('pagination')->pagesToDisplay);
+      $pages['currentPage'] = $photos[0]['currentPage'];
+      $pages['totalPages'] = $photos[0]['totalPages'];
+      $pages['requestUri'] = $_SERVER['REQUEST_URI'];
+    }
 
-
-    $body = getTheme()->get(Utility::getTemplate('photos.php'), array('photos' => $photos, 'pagination' => $pagination, 'options' => $filterOpts));
+    $body = getTheme()->get(Utility::getTemplate('photos.php'), array('photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
     getTheme()->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'photos'));
   }
 
