@@ -1,5 +1,7 @@
 <div data-role="page" data-add-back-btn="true" id="Gallery1" class="gallery-page" data-theme="c">
-	<div data-role="header" class="photoheader" data-theme="c"></div>
+  <div data-role="header" class="photoheader" data-theme="c">
+    <a href="/" data-icon="home" class="ui-btn-right">Home</a>
+  </div>
 	<div data-role="content">	
     <?php if(empty($tags)) { ?>
       Sorry, no photos have been tagged.
