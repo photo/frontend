@@ -48,27 +48,14 @@ class GeneralController extends BaseController
     */
   public static function home()
   {
-    if(!getTheme()->fileExists('templates/front.php'))
+    $template = Utility::getTemplate('front.php');
+    if(!getTheme()->fileExists($template))
       getRoute()->redirect(Url::photosView(null, false));
 
-    $apisToCall = getConfig()->get('front-apis');
-    $params = array();
-    foreach($apisToCall as $name => $api)
-    {
-      $apiParts = explode(' ', $api);
-      $apiMethod = strtoupper($apiParts[0]);
-      $apiMethod = $apiMethod == 'GET' ? EpiRoute::httpGet : EpiRoute::httpPost;
-      $apiUrlParts = parse_url($apiParts[1]);
-      $apiParams = array();
-      if(isset($apiUrlParts['query']))
-        parse_str($apiUrlParts['query'], $apiParams);
-
-      $response = getApi()->invoke($apiUrlParts['path'], $apiMethod, array("_{$apiMethod}" => $apiParams));
-      $params[$name] = $response['result'];
-
-    }
-    $body = getTheme()->get('front.php', $params);
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'front'));
+    $apisToCall = getConfig()->get('frontApis');
+    $params = Utility::callApis($apisToCall);
+    $body = getTheme()->get($template, $params);
+    getTheme()->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'front'));
   }
 
 }

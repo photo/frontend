@@ -1,0 +1,41 @@
+.photoheader {
+    background-color: #EFEFEF;
+    background-image: url("../images/header-logo.png");
+    background-position: center top;
+    background-repeat: no-repeat;
+    height: 38px;
+}
+.gallery {
+    list-style: none outside none;
+    margin: 0;
+    padding: 0;
+}
+.gallery:after {
+    clear: both;
+    content: ".";
+    display: block;
+    height: 0;
+    visibility: hidden;
+}
+.gallery li {
+    float: left;
+    width: 33.3333%;
+}
+.gallery li a {
+    border: 1px solid #3C3C3C;
+    display: block;
+    margin: 5px;
+}
+.gallery li img {
+    display: block;
+    height: auto;
+    width: 100%;
+}
+#Gallery1 .ui-content, #Gallery2 .ui-content {
+    overflow: hidden;
+}
+.center-wrapper {
+    margin: 0 auto;
+    text-align: center;
+}
+

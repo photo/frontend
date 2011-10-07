@@ -50,7 +50,7 @@ class Theme
 
   public function fileExists($path)
   {
-    return file_exists(sprintf('%s/%s', $this->themeDir, $path));
+    return file_exists(sprintf('%s/templates/%s', $this->themeDir, $path));
   }
 
   public function get($template, $params = null)
