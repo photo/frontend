@@ -166,8 +166,8 @@ class PhotoController extends BaseController
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
       $crumb = getSession()->get('crumb');
-      $body = getTheme()->get('photo-details.php', array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
-      getTheme()->display('template.php', array('body' => $body, 'page' => 'photo-details'));
+      $body = getTheme()->get(Utility::getTemplate('photo-details.php'), array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
+      getTheme()->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'photo-details'));
     }
     else
     {
