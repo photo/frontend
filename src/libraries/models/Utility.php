@@ -100,7 +100,7 @@ class Utility
     if($currentPage > ($pagesToDisplay / 2) && $totalPages > $pagesToDisplay)
       $start = floor($currentPage - ($pagesToDisplay / 2));
 
-    if($totalPages < $pagesToDisplay)
+    if($totalPages <= $pagesToDisplay)
       $end = $totalPages;
     else
       $end = $start+$pagesToDisplay;

@@ -379,7 +379,7 @@ class ApiPhotoController extends BaseController
     }
 
     // This section enables in path parameters which are normally GET
-    $pageSize = getConfig()->get('site')->pageSize;
+    $pageSize = getConfig()->get('pagination')->pageSize;
     $filters = array('sortBy' => 'dateTaken,desc');
     if($filterOpts !== null)
     {

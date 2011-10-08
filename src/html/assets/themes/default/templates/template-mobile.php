@@ -19,6 +19,7 @@
     <link rel="apple-touch-icon" href="<?php getTheme()->asset('image', 'apple-touch-icon.png'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'jquery.mobile.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'photoswipe.css'); ?>">
+    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'pagination.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'mobile.css'); ?>">
 </head>
 <body class="<?php echo $page; ?>">
