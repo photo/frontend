@@ -50,6 +50,8 @@ div.photo-details .photo-column {
 div.photo-details .photo-column img {
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
+    width:90%;
+    margin:auto;
     display:block;
 }
 div.photo-details .image-pagination {
