@@ -8,7 +8,7 @@
  */
 class DatabaseMySql implements DatabaseInterface
 {
-  const currentSchemaVersion = 3;
+  const currentSchemaVersion = 4;
   /**
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
@@ -97,8 +97,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteWebhook($id)
   {
-    // Gh-193
-    return false;
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}webhook` WHERE id=:id", array(':id' => $id));
+    return ($res == 1);
   }
 
   /**
@@ -108,7 +108,6 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function errors()
   {
-    // Gh-193
     return $this->errors;
   }
 
@@ -315,8 +314,11 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getWebhook($id)
   {
-    // See Gh-193
-    return false;
+    $webhook = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}webhook` WHERE id=:id", array(':id' => $id));
+//    $this->logErrors($webhook);
+    if(empty($webhook))
+      return false;
+    return self::normalizeWebhook($webhook);
   }
 
   /**
@@ -326,8 +328,23 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getWebhooks($topic = null)
   {
-    // See Gh-193
-    return false;
+    if($topic)
+      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}webhook` WHERE `topic`='{$topic}'");
+    else
+      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}webhook`");
+
+//    $this->logErrors($res);
+    if($res === false)
+      return false;
+    if(empty($res))
+      return null;
+
+    $webhooks = array();
+    foreach($res as $webhook)
+    {
+      $webhooks[] = self::normalizeWebhook($webhook);
+    }
+    return $webhooks;
   }
 
   private function buildQuery($filters, $limit, $offset)
@@ -607,7 +624,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $stmt = self::sqlUpdateExplode($params);
     $res = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}user` SET {$stmt} WHERE id=:id", array(':id' => $id));
-    return $res = 1;
+    return ($res == 1);
   }
 
   /**
@@ -619,8 +636,9 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postWebhook($id, $params)
   {
-    // See Gh-193
-    return false;
+    $stmt = self::sqlUpdateExplode($params);
+    $res = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}webhook` SET {$stmt} WHERE id=:id", array(':id' => $id));
+    return ($res == 1);
   }
 
   /**
@@ -729,8 +747,9 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putWebhook($id, $params)
   {
-    // See Gh-193
-    return false;
+    $stmt = self::sqlInsertExplode($params);
+    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}webhook` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    return ($result != -1);
   }
 
   /**
@@ -881,6 +900,11 @@ class DatabaseMySql implements DatabaseInterface
     * @return array
     */
   private function normalizeTag($raw)
+  {
+    return $raw;
+  }
+
+  private function normalizeWebhook($raw)
   {
     return $raw;
   }
@@ -1104,10 +1128,23 @@ class DatabaseMySql implements DatabaseInterface
 	. "`members` TEXT,"
 	. "PRIMARY KEY(`id`)"
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+    case 3:
+      // after version 3 we added webhook and index to the admin table
+      getDatabase()->execute("ALTER TABLE `{$this->mySqlTablePrefix}admin` "
+        . "ADD PRIMARY KEY (`key`) ADD UNIQUE KEY (`key`)");
+      getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}webhook`"
+        . "(`id` varchar(255) NOT NULL UNIQUE,"
+	. "`appId` varchar(255),"
+	. "`callback` varchar(1000),"
+	. "`topic` varchar(255),"
+	. "PRIMARY KEY(`id`)"
+	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+      getDatabase()->execute("ALTER TABLE `{$this->mySqlTablePrefix}user` "
+        . "ADD `lastWebhookId` varchar(255) DEFAULT NULL");
       getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}admin`"
         . "SET `value`='" . self::currentSchemaVersion ."' WHERE `key`='version'");
       // OTHER
-    case 3:
+    case 4:
       break;
     }
     return true;
@@ -1122,8 +1159,10 @@ class DatabaseMySql implements DatabaseInterface
   {
     getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}admin`"
         . "(`key` varchar(255) NOT NULL,"
-        . "`value` varchar(255) NOT NULL)"
-        . "ENGINE=InnoDB DEFAULT CHARSET=utf8");
+        . "`value` varchar(255) NOT NULL,"
+	. "PRIMARY KEY (`key`),"
+	. "UNIQUE KEY `key` (`key`)"
+        . ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
     getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}admin`"
         . "(`key`, `value`) VALUES('version', '" . self::currentSchemaVersion . "')");
 
@@ -1176,6 +1215,7 @@ class DatabaseMySql implements DatabaseInterface
         . "(`id` varchar(255) NOT NULL UNIQUE,"
         . "`lastPhotoId` varchar(255),"
         . "`lastActionId` varchar(255),"
+        . "`lastWebhookId` varchar(255) DEFAULT NULL,"
         . "PRIMARY KEY(`id`)"
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
     getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}credential`"
@@ -1224,6 +1264,14 @@ class DatabaseMySql implements DatabaseInterface
 	. "VALUES ("
 	. "'1', NULL , NULL"
 	. ");");
+
+    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}webhook`"
+        . "(`id` varchar(255) NOT NULL UNIQUE,"
+	. "`appId` varchar(255),"
+	. "`callback` varchar(1000),"
+	. "`topic` varchar(255),"
+	. "PRIMARY KEY(`id`)"
+	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
 
     return true;
   }
