@@ -87,7 +87,7 @@ class PhotoController extends BaseController
     else
       $photos = getApi()->invoke("/photos/list.json", EpiRoute::httpGet, $params);
 
-    $photos = (array)$photos['result'];
+    $photos = $photos['result'];
 
     $pages = array('pages' => array());
     if(!empty($photos))

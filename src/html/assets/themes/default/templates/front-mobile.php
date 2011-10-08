@@ -17,7 +17,7 @@
     </ul> 
 	</div>
 	<div data-role="footer" data-theme="c">
-		<h4>The OpenPhoto Project &#169; 2011</h4>
+    <h4>The OpenPhoto Project &#169; <?php echo date('Y'); ?></h4>
 	</div>
 </div>
 

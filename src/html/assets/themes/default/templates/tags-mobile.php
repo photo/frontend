@@ -1,6 +1,6 @@
 <div data-role="page" data-add-back-btn="true" id="Gallery1" class="gallery-page" data-theme="c">
   <div data-role="header" class="photoheader" data-theme="c">
-    <a href="/" data-icon="home" class="ui-btn-right">Home</a>
+    <a href="/" data-icon="home" class="ui-btn-right" rel="external">Home</a>
   </div>
 	<div data-role="content">	
     <?php if(empty($tags)) { ?>
@@ -18,6 +18,6 @@
     <?php } ?>
   </div>
 	<div data-role="footer" data-theme="c">
-		<h4>The OpenPhoto Project &#169; 2011</h4>
+    <h4>The OpenPhoto Project &#169; <?php echo date('Y'); ?></h4>
 	</div>
 </div>

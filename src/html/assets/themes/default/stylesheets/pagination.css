@@ -41,7 +41,6 @@
 
 .pagination .on p {
     display: inline;
-    color: #43C2FD;
-    border-width: 2px;
+    color: #ccc;
     background-color:#fff;
 }
