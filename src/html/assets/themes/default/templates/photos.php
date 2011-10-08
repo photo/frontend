@@ -1,4 +1,4 @@
-<?php if($photos[0]['totalRows'] > 0) { ?>
+<?php if(!empty($photos)) { ?>
   <?php getTheme()->display('partials/pagination.php', $pages); ?>
   <ul class="photo-grid grid-200">
     <?php foreach($photos as $photo) { ?>
