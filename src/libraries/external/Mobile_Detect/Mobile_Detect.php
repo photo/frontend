@@ -36,8 +36,11 @@ class Mobile_Detect
 
 	public function __construct()
 	{
-		$this->userAgent = $_SERVER['HTTP_USER_AGENT'];
-		$this->accept = $_SERVER['HTTP_ACCEPT'];
+    $this->userAgent = $this->accept = '';
+    if(isset($_SERVER['HTTP_USER_AGENT']))
+      $this->userAgent = $_SERVER['HTTP_USER_AGENT'];
+    if(isset($_SERVER['HTTP_ACCEPT']))
+      $this->accept = $_SERVER['HTTP_ACCEPT'];
 
 		if (isset($_SERVER['HTTP_X_WAP_PROFILE']) || isset($_SERVER['HTTP_PROFILE'])) {
 			$this->isMobile = true;
