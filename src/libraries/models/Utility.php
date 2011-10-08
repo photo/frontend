@@ -103,7 +103,7 @@ class Utility
     if($totalPages <= $pagesToDisplay)
       $end = $totalPages;
     else
-      $end = $start+$pagesToDisplay;
+      $end = min($totalPages, ($start+$pagesToDisplay));
 
     return range($start, $end);
   }
