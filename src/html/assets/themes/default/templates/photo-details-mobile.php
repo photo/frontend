@@ -21,7 +21,7 @@
         <?php } ?>
       </div>
       <div class="photo-column">
-        <img class="photo" style="width:<?php Utility::safe($photo['thisWidth']); ?>px; margin:auto;" width="<?php Utility::safe($photo['thisWidth']); ?>" height="<?php Utility::safe($photo['thisHeight']); ?>" src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" alt="<?php Utility::safe($photo['title']); ?>">
+        <img class="photo" src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" alt="<?php Utility::safe($photo['title']); ?>">
         <h1><?php Utility::safe($photo['title']); ?></h1>
         <p class="description"><?php Utility::safe($photo['description']); ?></p>
       </div>
