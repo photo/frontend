@@ -8,6 +8,17 @@
 class Tag
 {
   /**
+    * Delete a tag.
+    *
+    * @param array $tags An array of Tag objects optionally passed in else queried from the database.
+    * @return array Tag object augmented with a "weight" property.
+    */
+  public static function delete($id)
+  {
+    return getDb()->deleteTag($id);
+  }
+
+  /**
     * Updates count values in tags when an object is updates.
     * Keeps track of # of objects tagged in the Tag object itself.
     * Both params are a full set of tags before and after the update.
