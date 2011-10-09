@@ -104,7 +104,7 @@ class OAuthController extends BaseController
     {
       $token = $_GET['oauth_token'];
       $verifier = $_GET['oauth_verifier'];
-      $ch = curl_init(sprintf('http://%s/v1/oauth/token/access', $_SERVER['HTTP_HOST']));
+      $ch = curl_init(sprintf('%s://%s/v1/oauth/token/access', Utility::getProtocol(false), $_SERVER['HTTP_HOST']));
       curl_setopt($ch, CURLOPT_POST, 1);
       curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
       curl_setopt($ch, CURLOPT_POSTFIELDS, array('oauth_token' => $token, 'oauth_verifier' => $verifier));
@@ -119,8 +119,8 @@ class OAuthController extends BaseController
     }
     else if(!isset($_GET['reloaded']))
     {
-      $callback = sprintf('http://%s/v1/oauth/flow', $_SERVER['HTTP_HOST']);
-      echo sprintf('<a href="http://%s/v1/oauth/authorize?oauth_callback=%s">Create a new client id</a>', $_SERVER['HTTP_HOST'], urlencode($callback));
+      $callback = sprintf('%s://%s/v1/oauth/flow', Utility::getProtocol(false), $_SERVER['HTTP_HOST']);
+      echo sprintf('<a href="%s://%s/v1/oauth/authorize?oauth_callback=%s">Create a new client id</a>', Utility::getProtocol(false), $_SERVER['HTTP_HOST'], urlencode($callback));
     }
     else
     {
