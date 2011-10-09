@@ -66,7 +66,6 @@ class Url
   public static function tagsAsLinks($tags, $write = true)
   {
     $ret = array();
-    sort($tags);
     foreach($tags as $tag)
       $ret[] = sprintf('<a href="%s">%s</a>', self::photosView("tags-{$tag}", false), Utility::safe($tag, false));
 

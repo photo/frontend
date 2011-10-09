@@ -39,7 +39,7 @@ class Tag
   {
     if($tags === null)
     {
-      $tags = getApi()->invoke("/tags.json");
+      $tags = getApi()->invoke("/tags/list.json");
       $tags = $tags['result'];
     }
 
@@ -73,6 +73,7 @@ class Tag
   public static function sanitizeTagsAsString($tags)
   {
     $tagsArray = (array)explode(',', $tags);
+    natcasesort($tagsArray);
     foreach($tagsArray as $key => $val)
       $tagsArray[$key] = self::sanitize($val);
 

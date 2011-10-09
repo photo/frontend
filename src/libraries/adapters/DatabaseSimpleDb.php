@@ -917,6 +917,8 @@ class DatabaseSimpleDb implements DatabaseInterface
           $photo[$name][] = $value;
         continue;
       }
+      if(isset($photo['tags']))
+        natcasesort($photo['tags']);
 
       $photo[$name] = $value;
     }
