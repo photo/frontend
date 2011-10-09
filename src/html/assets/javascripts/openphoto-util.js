@@ -554,6 +554,7 @@
                 uploadStartCallback : function(){},
                 uploadProgressCallback : function(){},
                 uploadFinishedCallback : function(){},
+                permission : function(){alert("permission")},
                 photoTags : function(){alert("photoTags")},
                 photoLicense : function(){alert("photoLicense")},
                 allowDuplicates : false,
@@ -733,6 +734,7 @@
                 formData.append("photo",file);
                 formData.append("license", that.options.photoLicense(file.queueIndex));
                 formData.append("tags", that.options.photoTags(file.queueIndex));
+                formData.append("permission", that.options.permission(file.queueIndex));
                 xhr.open("POST", that.options.uploadPath, true);  
                 
                 xhr.onload = function(e) {

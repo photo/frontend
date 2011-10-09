@@ -18,6 +18,11 @@
     <div>
       <label for="tags">Tags</label><input type="text" name="tags" class="tags" placeholder="Optional comma separated list">
     </div>
+    <div>
+      <label for="tags">Permission</label>
+      <input type="radio" name="permission" value="1" checked="checked"> Public
+      <input type="radio" name="permission" value="0"> Private
+    </div>
   </div><!-- .options -->
   <div id="drop-zone" class="waiting">
     <p class="instructions">Drop photos here to apply settings and upload</p>
