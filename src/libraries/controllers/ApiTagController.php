@@ -8,6 +8,20 @@
 class ApiTagController extends BaseController
 {
   /**
+    * Delete a tag in the tag database.
+    *
+    * @return string Standard JSON envelope 
+    */
+  public static function delete($tag)
+  {
+    getAuthentication()->requireAuthentication();
+    $res = Tag::delete($tag);
+    if($res)
+      return self::success('Tag created/updated successfully', getDb()->getTag($tag));
+    else
+      return self::error('Tag could not be created/updated', false);
+  }
+  /**
     * Update or create a tag in the tag database.
     *
     * @return string Standard JSON envelope 

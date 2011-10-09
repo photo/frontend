@@ -92,6 +92,19 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Delete a tag from the database
+    *
+    * @param string $id ID of the tag to delete
+    * @return boolean
+    */
+  public function deleteTag($id)
+  {
+    $res = $this->db->delete_attributes($this->domainTag, $id);
+    $this->logErrors($res);
+    return $res->isOK();
+  }
+
+  /**
     * Delete a webhook from the database
     *
     * @param string $id ID of the webhook to delete

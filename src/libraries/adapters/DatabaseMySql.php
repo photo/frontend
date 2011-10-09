@@ -77,6 +77,18 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete a tag from the database
+    *
+    * @param string $id ID of the tag to delete
+    * @return boolean
+    */
+  public function deleteTag($id)
+  {
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}tag` WHERE id=:id", array(':id' => $id));
+    return ($res == 1);
+  }
+
+  /**
     * Delete a webhook from the database
     *
     * @param string $id ID of the webhook to delete
