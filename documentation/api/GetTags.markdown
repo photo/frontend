@@ -8,7 +8,7 @@ Open Photo API / Get Photos
 1. [Endpoint][endpoint]
 1. [Parameters][parameters]
 1. [Examples][examples]
-  * [Curl][example-curl]
+  * [Command line][example-cli]
   * [PHP][example-php]
 1. [Response][response]
   * [Sample][sample]
@@ -39,16 +39,16 @@ _None_
 <a name="examples"></a>
 ### Examples
 
-<a name="example-curl"></a>
-#### Command line curl
+<a name="example-cli"></a>
+#### Command Line (using [openphoto-php][openphoto-php])
 
-    curl "http://jmathai.openphoto.me/tags/list.json"
+    ./openphoto -p -h current.openphoto.me -e /tags/list.json
 
 <a name="example-php"></a>
-#### PHP
+#### PHP (using [openphoto-php][openphoto-php])
 
-    $ch = curl_init('http://jmathai.openphoto.me/tags/list.json');
-    curl_exec($ch);
+    $client = new OpenPhotoOAuth($host, $consumerKey, $consumerSecret, $oauthToken, $oauthTokenSecret);
+    $response = $client->get("/tags/list.json");
 
 ----------------------------------------
 
@@ -100,8 +100,8 @@ The response is in a standard [response envelope][Envelope].
 [endpoint]: #endpoint
 [parameters]: #parameters
 [examples]: #examples
-[example-curl]: #example-curl
+[example-cli]: #example-cli
 [example-php]: #example-php
 [response]: #response
 [sample]: #sample
-
+[openphoto-php]: https://github.com/openphoto/openphoto-php

@@ -8,7 +8,7 @@ Open Photo API / Get Photo
 1. [Endpoint][endpoint]
 1. [Parameters][parameters]
 1. [Examples][examples]
-  * [Curl][example-curl]
+  * [Command line][example-cli]
   * [PHP][example-php]
 1. [Response][response]
   * [Sample][sample]
@@ -18,7 +18,7 @@ Open Photo API / Get Photo
 <a name="purpose"></a>
 ### Purpose of the Get Photo API
 
-Use this API to get a single of photo for a user.
+Use this API to get a for a user's photo.
 
 _NOTE:_ Always pass in the `returnSizes` parameter for sizes you plan on using. It's the only way to guarantee that a URL for that size will be present in the response. See [Photo Generation][photogeneration] for details.
 
@@ -41,16 +41,16 @@ _Authentication: optional_
 <a name="examples"></a>
 ### Examples
 
-<a name="example-curl"></a>
-#### Command line curl
+<a name="example-cli"></a>
+#### Command Line (using [openphoto-php][openphoto-php])
 
-    curl http://jmathai.openphoto.me/photo/abc.json
+    ./openphoto -p -h current.openphoto.me -e /photo/b/view.json
 
 <a name="example-php"></a>
-#### PHP
+#### PHP (using [openphoto-php][openphoto-php])
 
-    $ch = curl_init('http://jmathai.openphoto.me/photo/abc.json');
-    curl_exec($ch);
+    $client = new OpenPhotoOAuth($host, $consumerKey, $consumerSecret, $oauthToken, $oauthTokenSecret);
+    $response = $client->get("/photo/b/view.json");
 
 ----------------------------------------
 
@@ -70,6 +70,7 @@ The response is in a standard [response envelope][Envelope].
       "message":"",
       "code":200,
       "result":{
+        "id":"hl"
         "tags":[
           ""
         ],
@@ -96,7 +97,6 @@ The response is in a standard [response envelope][Envelope].
         "dateUploaded":"1311045188",
         "exifCameraModel":"",
         "path200x200":"\/custom\/201107\/1311045184-opme7Z0WBh_200x200.jpg",
-        "id":"hl"
       }
     }
 
@@ -106,9 +106,10 @@ The response is in a standard [response envelope][Envelope].
 [endpoint]: #endpoint
 [parameters]: #parameters
 [examples]: #examples
-[example-curl]: #example-curl
+[example-cli]: #example-cli
 [example-php]: #example-php
 [response]: #response
 [sample]: #sample
 [photogeneration]: ../faq/PhotoGeneration.markdown
 [ReturnSizes]: ../faq/ReturnSizes.markdown
+[openphoto-php]: https://github.com/openphoto/openphoto-php

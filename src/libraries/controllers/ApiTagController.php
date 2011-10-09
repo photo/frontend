@@ -17,7 +17,7 @@ class ApiTagController extends BaseController
     getAuthentication()->requireAuthentication();
     $res = Tag::delete($tag);
     if($res)
-      return self::success('Tag created/updated successfully', getDb()->getTag($tag));
+      return self::success('Tag deleted successfully', $tag);
     else
       return self::error('Tag could not be created/updated', false);
   }
@@ -33,9 +33,14 @@ class ApiTagController extends BaseController
     $params = Tag::validateParams($_POST);
     $res = getDb()->postTag($tag, $params);
     if($res)
-      return self::success('Tag created/updated successfully', getDb()->getTag($tag));
+    {
+      $tag = getApi()->invoke("/tag/{$tag}/view.json", EpiRoute::httpGet);
+      return self::success('Tag created/updated successfully', $tag['result']);
+    }
     else
+    {
       return self::error('Tag could not be created/updated', false);
+    }
   }
 
   /**
