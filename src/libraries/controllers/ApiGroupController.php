@@ -41,7 +41,7 @@ class ApiGroupController extends BaseController
     if($res === false)
       return self::error('Could not delete group', false);
 
-    return self::error('Successfully deleted group', true);
+    return self::error('Successfully deleted group', $id);
   }
 
   /**
