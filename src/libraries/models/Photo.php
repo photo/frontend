@@ -278,9 +278,8 @@ class Photo
       foreach($iptc as $iptckey => $iptcval)
       {
         if($iptckey == 'tags')
-	{
-	  $tags_array = $iptcval;
-	  $iptcval = implode(',', $iptcval);
+        {
+          $iptcval = implode(',', $iptcval);
         }
         $attributes[$iptckey] = $iptcval;
       }
@@ -329,8 +328,9 @@ class Photo
       unlink($localFileCopy);
       if($stored)
       {
-        if(isset($tags_array))
-          Tag::updateTagCounts(array(), $tags_array);
+        if(isset($attributes['tags']) && !empty($attributes['tags']))
+          Tag::updateTagCounts(array(), (array)explode(',', $attributes['tags']));
+
         getLogger()->info("Photo ({$id}) successfully stored to the database");
         return $id;
       }

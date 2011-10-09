@@ -255,11 +255,6 @@ class ApiPhotoController extends BaseController
         }
       }
 
-      if(isset($_POST['tags']) && !empty($_POST['tags']))
-      {
-        $tags = (array)explode(',', $_POST['tags']);
-        Tag::updateTagCounts(array(), $tags);
-      }
       $params = array();
       if(isset($returnSizes))
         $params = array('returnSizes' => $returnSizes);
@@ -298,21 +293,22 @@ class ApiPhotoController extends BaseController
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
     // diff/manage tag counts - not critical
-    if(isset($_POST['tags']) && !empty($_POST['tags']))
+    $params = $_POST;
+    if(isset($params['tags']) && !empty($params['tags']))
     {
       $photoBefore = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
       if($photoBefore)
       {
         $existingTags = $photoBefore['result']['tags'];
-        $updatedTags = (array)explode(',', $_POST['tags']);
+        $updatedTags = (array)explode(',', $params['tags']);
         Tag::updateTagCounts($existingTags, $updatedTags);
       }
     }
-    if(isset($_POST['crumb']))
+    if(isset($params['crumb']))
     {
-      unset($_POST['crumb']);
+      unset($params['crumb']);
     }
-    $photoUpdatedId = Photo::update($id, $_POST);
+    $photoUpdatedId = Photo::update($id, $params);
 
     return self::success("photo {$id} updated", $photoUpdatedId);
   }
