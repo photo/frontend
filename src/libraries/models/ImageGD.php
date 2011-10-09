@@ -34,7 +34,7 @@ class ImageGD implements ImageInterface
     */
   public function __construct($filename)
   {
-    $this->image = imagecreatefromjpeg($filename);
+    $this->image = @imagecreatefromjpeg($filename);
     if(!$this->image)
       OPException::raise(new OPInvalidImageException('Could not create jpeg with GD library'));
 		$this->width = imagesx($this->image);

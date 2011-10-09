@@ -303,6 +303,7 @@ var opTheme = (function() {
           that.options.uploadStartCallback = that.uploadStart;
           that.options.uploadProgressCallback = that.uploadProgress;
           that.options.uploadFinishedCallback = that.uploadFinished;
+          that.options.permission = that.permission;
           that.options.photoTags = that.photoTags;
           that.options.photoLicense = that.photoLicense;
           OP.Util.upload.init(that.options);
@@ -360,6 +361,7 @@ var opTheme = (function() {
       pushToUI : function(files) {
         // get current tags and license data to apply to each photo
         var tags = $("#uploader-frame .tags").val();
+        var permission = $("#uploader-frame input[name=permission]").val();
         var license = $("#uploader-frame .license").val();
         if (license == "_custom_") {
           license = $("#uploader-frame .custom input").val();
@@ -367,7 +369,7 @@ var opTheme = (function() {
         var html = [];
         for (var i=0; i < files.length; i++) {
           var size = (parseInt(files[i].size) / 1048576).toFixed(2) + "MB";
-          html.push("<div id='file-",files[i]["queueIndex"],"' class='photo waiting' tags='",tags,"' license='",license,"'><span class='name'>",files[i].name,"</span><span class='size'>",size,"</span><span class='progress'></span></div>");
+          html.push("<div id='file-",files[i]["queueIndex"],"' class='photo waiting' tags='",tags,"' license='",license,"' permission='",permission,"'><span class='name'>",files[i].name,"</span><span class='size'>",size,"</span><span class='progress'></span></div>");
         }
         this.$dropZone.append(html.join(""));
         OP.Util.upload.kickOffUploads();
@@ -389,6 +391,10 @@ var opTheme = (function() {
         $("#file-"+queueIndex).removeClass("uploading").addClass("finished");
         if(response.code == 202)
           $("#file-"+queueIndex).append("<img class='thumb' src='"+response.result.path50x50xCR+"'/>");
+      },
+      
+      permission : function(queueIndex) {
+        return $("#file-"+queueIndex).attr("permission");
       },
       
       photoLicense : function(queueIndex) {

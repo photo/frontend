@@ -82,7 +82,7 @@ div#upload ul#upload-queue div.progress > div.complete{
 #uploader-frame .custom input { width: 170px; }
 #uploader-frame p { color: gray; font-size: 11px; }
 #uploader-frame .options > div { padding-bottom: 5px; }
-#uploader-frame label { display: inline-block; width: 50px; }
+#uploader-frame label { display: inline-block; width: 70px; }
 #uploader-frame .tags { width: 400px; }
 
 /* drop zone has three states */
