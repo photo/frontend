@@ -16,9 +16,9 @@ Open Photo API / Get Photos
 ----------------------------------------
 
 <a name="purpose"></a>
-### Purpose of the delete Group API
+### Purpose of the update Tag API
 
-Use this API to delete a group.
+Use this API to update a tag.
 
 ----------------------------------------
 
@@ -27,12 +27,15 @@ Use this API to delete a group.
 
 _Authentication: required_
 
-    POST /group/:id/delete.json
+    POST /tag/:id/update.json
 
 <a name="parameters"></a>
 ### Parameters
 
-_None_
+1.  count (optional), Number of photos which contain this tag
+1.  email (optional), An email address that corresponds to this tag
+1.  latitude (optional), _i.e. 34.76_ - A decimal representation of latitude.
+1.  longitude (optional), _i.e. -87.45_ - A decimal representation of longitude.
 
 ----------------------------------------
 
@@ -42,13 +45,13 @@ _None_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -X POST -h current.openphoto.me -e /group/a/delete.json
+    ./openphoto -p -X POST -h current.openphoto.me -e /tag/sunnyvale/update.json -F 'count=10'
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])
 
     $client = new OpenPhotoOAuth($host, $consumerKey, $consumerSecret, $oauthToken, $oauthTokenSecret);
-    $response = $client->post("/group/a/delete.json");
+    $response = $client->post("/tag/sunnyvale/update.json", array('count' => 10));
 
 ----------------------------------------
 
@@ -59,7 +62,7 @@ The response is in a standard [response envelope][Envelope].
 
 * _message_, A string describing the result. Don't use this for anything but reading.
 * _code_, _200_ on success
-* _result_, A boolean
+* _result_, A [Tag][Tag] object or FALSE on error
 
 <a name="sample"></a>
 #### Sample
@@ -67,11 +70,15 @@ The response is in a standard [response envelope][Envelope].
     {
       "message":"",
       "code":200,
-      "result": true
+      "result":
+      {
+        "id": "mountain",
+        "count": 1
+      }
     }
 
 [Envelope]: Envelope.markdown
-[Group]: ../schemas/Group.markdown
+[Tag]: ../schemas/Tag.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters
@@ -81,3 +88,4 @@ The response is in a standard [response envelope][Envelope].
 [response]: #response
 [sample]: #sample
 [openphoto-php]: https://github.com/openphoto/openphoto-php
+

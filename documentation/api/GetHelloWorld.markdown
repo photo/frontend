@@ -68,7 +68,7 @@ The response is in a standard [response envelope][Envelope].
 
 * _message_, A string describing the result. Don't use this for anything but reading.
 * _code_, _200_ on success
-* _result_, An array of [Tag][Tag] objects
+* _result_, Any GET parameters passed in to the request plus `__route__`.
 
 <a name="sample"></a>
 #### Sample

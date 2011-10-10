@@ -41,7 +41,7 @@ class ApiGroupController extends BaseController
     if($res === false)
       return self::error('Could not delete group', false);
 
-    return self::error('Successfully deleted group', $id);
+    return self::error('Successfully deleted group', true);
   }
 
   /**
@@ -57,9 +57,14 @@ class ApiGroupController extends BaseController
     $res = Group::update($id, $_POST);
 
     if($res)
-      return self::success("Updated group {$id}.", true);
+    {
+      $group = getApi()->invoke("/group/{$id}/view.json", EpiRoute::httpGet);
+      return self::success("Updated group {$id}.", $group['result']);
+    }
     else
+    {
       return self::error('Could not update this group.', false);
+    }
   }
 
   /**

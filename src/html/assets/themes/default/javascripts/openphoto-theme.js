@@ -14,11 +14,12 @@ var opTheme = (function() {
         ev.preventDefault();
       
         var el = $(ev.target),
-          	url = el.attr('href')+'.json';
+          	url = el.attr('href')+'.json'
+            id = el.attr('data-id');
       
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 200)
-            $(".action-container-"+response.result).hide('medium', function(){ $(this).remove(); });
+            $(".action-container-"+id).hide('medium', function(){ $(this).remove(); });
           else
             opTheme.message.error('Could not delete the photo.');
         }, 'json');

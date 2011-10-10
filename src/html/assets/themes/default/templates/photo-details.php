@@ -72,7 +72,7 @@
           <?php if(User::isOwner()) { ?>
             <form method="post" action="<?php Url::actionDelete($action['id']); ?>">
               <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
-              (<a href="<?php Url::actionDelete($action['id']); ?>" class="action-delete-click">delete</a>)
+              (<a href="<?php Url::actionDelete($action['id']); ?>" class="action-delete-click" data-id="<?php Utility::safe($action['id']); ?>">delete</a>)
             </form>
           <?php } ?>
         </div>

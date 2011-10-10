@@ -22,7 +22,7 @@ class ApiPhotoController extends BaseController
     if($status)
     {
       Tag::updateTagCounts($res['result']['tags'], array());
-      return self::success('Photo deleted successfully', $id);
+      return self::success('Photo deleted successfully', true);
     }
     else
     {
@@ -310,7 +310,13 @@ class ApiPhotoController extends BaseController
     }
     $photoUpdatedId = Photo::update($id, $params);
 
-    return self::success("photo {$id} updated", $photoUpdatedId);
+    if($photoUpdatedId)
+    {
+      $photo = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+      return self::success("photo {$id} updated", $photo['result']);
+    }
+
+    return self::error("photo {$id} could not be updated", false);
   }
 
   /**
