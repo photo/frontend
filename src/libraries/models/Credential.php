@@ -158,7 +158,6 @@ class Credential
       // might need a better way to do this
       return false;
     }
-
     $consumer = $this->getConsumer($provider->consumer_key);
     if(!$consumer)
     {
