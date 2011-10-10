@@ -8,7 +8,7 @@ Open Photo API / Hello World
 1. [Endpoint][endpoint]
 1. [Parameters][parameters]
 1. [Examples][examples]
-  * [Curl][example-curl]
+  * [Command line][example-cli]
   * [PHP][example-php]
 1. [Response][response]
   * [Sample][sample]
@@ -39,17 +39,25 @@ _Authentication: optional_
 <a name="examples"></a>
 ### Examples
 
-<a name="example-curl"></a>
-#### Command line curl
+<a name="example-cli"></a>
+#### Command Line (using [openphoto-php][openphoto-php])
 
-    curl "http://jmathai.openphoto.me/hello.json"
-    curl "http://jmathai.openphoto.me/hello.json?auth=true"
+    # without authentication
+    ./openphoto -p -h current.openphoto.me -e /hello.json
+
+    # with authentication
+    ./openphoto -p -h current.openphoto.me -e /hello.json -F 'auth=true'
 
 <a name="example-php"></a>
-#### PHP
+#### PHP (using [openphoto-php][openphoto-php])
 
-    $ch = curl_init('http://jmathai.openphoto.me/hello.json');
-    curl_exec($ch);
+    // without authentication
+    $client = new OpenPhotoOAuth($host);
+    $response = $client->get("/hello.json");
+
+    // with authentication
+    $client = new OpenPhotoOAuth($host, $consumerKey, $consumerSecret, $oauthToken, $oauthTokenSecret);
+    $response = $client->get("/hello.json", array('auth' => 'true'));
 
 ----------------------------------------
 
@@ -79,9 +87,8 @@ The response is in a standard [response envelope][Envelope].
 [endpoint]: #endpoint
 [parameters]: #parameters
 [examples]: #examples
-[example-curl]: #example-curl
+[example-cli]: #example-cli
 [example-php]: #example-php
 [response]: #response
 [sample]: #sample
-
-
+[openphoto-php]: https://github.com/openphoto/openphoto-php
