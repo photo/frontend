@@ -144,6 +144,22 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Retrieve a credential by userToken
+    *
+    * @param string $userToken userToken of the credential to get
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getCredentialByUserToken($userToken)
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainCredential}` WHERE userToken='{$userToken}' AND status='1'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeCredential($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
     * Retrieve credentials
     *
     * @return mixed Array on success, FALSE on failure
