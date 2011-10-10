@@ -76,27 +76,30 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
 1.  [POST /webhook/:id/update.json][PostWebHookUpdate]
     Update an eixsting webhook.
 
+<!--
+;[PostTag]: PostTag.markdown
+;[PostGroupCreate]: PostGroupCreate.markdown
+;[PostGroupDelete]: PostGroupDelete.markdown
+;[PostGroupUpdate]: PostGroupUpdate.markdown
+;[GetGroup]: GetGroup.markdown
+;[GetGroups]: GetGroups.markdown
+;[PostWebhookCreate]: PostWebhookCreate.markdown
+;[PostWebhookDelete]: PostWebhookDelete.markdown
+;[PostWebhookUpdate]: PostWebhookUpdate.markdown
+;[GetWebhook]: GetWebhook.markdown
+;[GetWebhooks]: GetWebhooks.markdown
+;[PostActionCreate]: PostActionCreate.markdown
+;[PostActionDelete]: PostActionDelete.markdown
+;[PostPhotoDelete]: PostPhotoDelete.markdown
+;[PostPhotoUpdate]: PostPhotoUpdate.markdown
+-->
+
 [Envelope]: Envelope.markdown
 [GetHelloWorld]: GetHelloWorld.markdown
-[PostActionCreate]: PostActionCreate.markdown
-[PostActionDelete]: PostActionDelete.markdown
-[PostPhotoDelete]: PostPhotoDelete.markdown
 [GetPhotos]: GetPhotos.markdown
 [GetPhoto]: GetPhoto.markdown
-[PostPhotoUpdate]: PostPhotoUpdate.markdown
 [PostPhotoUpload]: PostPhotoUpload.markdown
 [GetPhotoNextPrevious]: GetPhotoNextPrevious.markdown
 [GetTags]: GetTags.markdown
-[PostTag]: PostTag.markdown
-[PostGroupCreate]: PostGroupCreate.markdown
-[PostGroupDelete]: PostGroupDelete.markdown
-[PostGroupUpdate]: PostGroupUpdate.markdown
-[GetGroup]: GetGroup.markdown
-[GetGroups]: GetGroups.markdown
-[PostWebhookCreate]: PostWebhookCreate.markdown
-[PostWebhookDelete]: PostWebhookDelete.markdown
-[PostWebhookUpdate]: PostWebhookUpdate.markdown
-[GetWebhook]: GetWebhook.markdown
-[GetWebhooks]: GetWebhooks.markdown
 [authentication]: Authentication.markdown
 [oauth1.0a]: http://oauth.net/core/1.0a/
