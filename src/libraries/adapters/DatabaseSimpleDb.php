@@ -946,10 +946,18 @@ class DatabaseSimpleDb implements DatabaseInterface
           $photo[$name][] = $value;
         continue;
       }
-      if(isset($photo['tags']))
-        natcasesort($photo['tags']);
 
       $photo[$name] = $value;
+    }
+
+    // we have to do this because natcasesort preserves array keys and turns it into an object literal (not an array literal)
+    if(isset($photo['tags']))
+    {
+      $tags = $photo['tags'];
+      natcasesort($tags);
+      $photo['tags'] = array();
+      foreach($tags as $tag)
+        $photo['tags'][] = $tag;
     }
 
     return $photo;

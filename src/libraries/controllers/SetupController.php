@@ -417,6 +417,7 @@ class SetupController
       '{templates}' => "{$baseDir}/templates",
       '{themes}' => "{$htmlDir}/assets/themes",
       '{exiftran}' => exec('which exiftran'),
+      '{autoTagWithDate}' => '1',
       '{localSecret}' => $secret,
       '{awsKey}' => "",
       '{awsSecret}' => "", 

@@ -288,6 +288,18 @@ class Photo
         if(!isset($attributes[$default]))
           $attributes[$default] = null;
       }
+
+      $dateUploaded = time();
+      $dateTaken = @$exif['dateTaken'];
+
+      if(getConfig()->get('photos')->autoTagWithDate == 1)
+      {
+        $dateTags = sprintf('%s,%s', date('F', $dateTaken), date('Y', $dateTaken));
+        if(!isset($attributes['tags']))
+          $attributes['tags'] = $dateTags;
+        $attributes['tags'] .= ",{$dateTags}";
+      }
+
       if(isset($exif['latitude']))
         $attributes['latitude'] = floatval($exif['latitude']);
       if(isset($exif['longitude']))
@@ -295,8 +307,6 @@ class Photo
       if(isset($attributes['tags']) && !empty($attributes['tags']))
         $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
 
-      $dateUploaded = time();
-      $dateTaken = @$exif['dateTaken'];
       $attributes = array_merge(
         self::getDefaultAttributes(),
         array(
