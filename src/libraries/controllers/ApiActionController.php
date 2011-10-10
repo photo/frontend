@@ -45,7 +45,7 @@ class ApiActionController extends BaseController
     getAuthentication()->requireCrumb();
     $status = Action::delete($id);
     if($status)
-      return self::success('Action deleted successfully', $id);
+      return self::success('Action deleted successfully', true);
     else
       return self::error('Action deletion failure', false);
   }

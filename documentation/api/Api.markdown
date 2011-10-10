@@ -49,7 +49,9 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
 #### Tag endpoints
 1.  [GET /tags/list.json][GetTags]
     Get a user's tags.
-1.  [POST /tag/:id/update.json][PostTag]
+1.  [POST /tag/:id/create.json][PostTagCreate]
+    Create a tag for the user.
+1.  [POST /tag/:id/update.json][PostTagUpdate]
     Modify meta data for a user's tag.
 
 #### Group endpoints
@@ -77,29 +79,30 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
     Update an eixsting webhook.
 
 <!--
-;[PostTag]: PostTag.markdown
-;[PostGroupCreate]: PostGroupCreate.markdown
-;[PostGroupDelete]: PostGroupDelete.markdown
-;[PostGroupUpdate]: PostGroupUpdate.markdown
-;[GetGroup]: GetGroup.markdown
-;[GetGroups]: GetGroups.markdown
 ;[PostWebhookCreate]: PostWebhookCreate.markdown
 ;[PostWebhookDelete]: PostWebhookDelete.markdown
 ;[PostWebhookUpdate]: PostWebhookUpdate.markdown
 ;[GetWebhook]: GetWebhook.markdown
 ;[GetWebhooks]: GetWebhooks.markdown
-;[PostActionCreate]: PostActionCreate.markdown
-;[PostActionDelete]: PostActionDelete.markdown
-;[PostPhotoDelete]: PostPhotoDelete.markdown
-;[PostPhotoUpdate]: PostPhotoUpdate.markdown
 -->
 
 [Envelope]: Envelope.markdown
 [GetHelloWorld]: GetHelloWorld.markdown
 [GetPhotos]: GetPhotos.markdown
 [GetPhoto]: GetPhoto.markdown
-[PostPhotoUpload]: PostPhotoUpload.markdown
 [GetPhotoNextPrevious]: GetPhotoNextPrevious.markdown
+[PostPhotoDelete]: PostPhotoDelete.markdown
+[PostPhotoUpdate]: PostPhotoUpdate.markdown
+[PostPhotoUpload]: PostPhotoUpload.markdown
+[PostActionCreate]: PostActionCreate.markdown
+[PostActionDelete]: PostActionDelete.markdown
 [GetTags]: GetTags.markdown
+[PostTagCreate]: PostTagCreate.markdown
+[PostTagUpdate]: PostTagUpdate.markdown
+[GetGroup]: GetGroup.markdown
+[GetGroups]: GetGroups.markdown
+[PostGroupCreate]: PostGroupCreate.markdown
+[PostGroupUpdate]: PostGroupUpdate.markdown
+[PostGroupDelete]: PostGroupDelete.markdown
 [authentication]: Authentication.markdown
 [oauth1.0a]: http://oauth.net/core/1.0a/
