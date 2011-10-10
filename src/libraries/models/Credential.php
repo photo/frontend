@@ -25,15 +25,16 @@ class Credential
       return false;
     }
 
-    $random = bin2hex($this->provider->generateToken(25));
-    $id = substr($random, 0, 30);
+    $randomConsumer = bin2hex($this->provider->generateToken(25));
+    $randomUser = bin2hex($this->provider->generateToken(20));
+    $id = substr($randomConsumer, 0, 30);
     $params = array(
       'name' => $name,
-      'clientSecret' => substr($random, -10),
-      /*'user_token' => '',
-      'user_secret' => '',*/
+      'clientSecret' => substr($randomConsumer, -10),
+      'userToken' => substr($randomUser, 0, 30),
+      'userSecret' => substr($randomUser, -10),
       'permissions' => $permissions,
-      'verifier' => substr($random, 30, 10),
+      'verifier' => substr($randomConsumer, 30, 10),
       'type' => self::typeUnauthorizedRequest,
       'status' => self::statusActive
     );
@@ -44,7 +45,7 @@ class Credential
     return false;
   }
 
-  public function addUserToken($id, $convertToAccessToken = false)
+  public function convertToken($id, $toTokenType)
   {
     if(!class_exists('OAuthProvider'))
     {
@@ -52,13 +53,7 @@ class Credential
       return false;
     }
 
-    $random = bin2hex($this->provider->generateToken(20));
-    $params = array(
-      'userToken' => substr($random, 0, 30),
-      'userSecret' => substr($random, -10)
-    );
-    if($convertToAccessToken)
-      $params['type'] = self::typeAccess;
+    $params = array('type' => $toTokenType);
     return getDb()->postCredential($id, $params);
   }
 
@@ -218,8 +213,8 @@ class Credential
       }
     }
 
-    // override with values from GET
-    foreach($_GET as $key => $value)
+    // override with values from REQUEST
+    foreach($_REQUEST as $key => $value)
     {
       if(strpos($key, 'oauth_') === 0)
         $this->oauthParams[$key] = $value;

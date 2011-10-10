@@ -129,6 +129,23 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Retrieve a credential by userToken
+    *
+    * @param string $userToken userToken of the credential to get
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getCredentialByUserToken($userToken)
+  {
+    $cred = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE userToken=:userToken",
+                               array(':userToken' => $userToken));
+    if(empty($cred))
+    {
+      return false;
+    }
+    return self::normalizeCredential($cred);
+  }
+
+  /**
     * Retrieve credentials
     *
     * @return mixed Array on success, FALSE on failure

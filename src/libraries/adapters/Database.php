@@ -19,6 +19,7 @@ interface DatabaseInterface
   public function deleteWebhook($id);
   // get methods read
   public function getCredential($id);
+  public function getCredentialByUserToken($userToken);
   public function getCredentials();
   public function getPhotoNextPrevious($id);
   public function getGroup($id = null);
