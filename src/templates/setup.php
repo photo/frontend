@@ -17,7 +17,7 @@
     <?php } ?>
   <?php } ?>
   <div id="setup-step-1"<?php echo ($step != 1) ? ' class="hidden"' : ''?>>
-    <form class="validate" action="/setup" method="post">
+    <form class="validate" action="/setup<?php echo $qs ?>" method="post">
       <h2>User Settings <em>(<a href="">what's this?</a>)</em></h2>
       <label for="email">Email address</label>
       <input type="text" name="email" id="email" <?php if(isset($email)) { ?>value="<?php Utility::safe($email); ?>"<?php } ?> data-validation="required email">
@@ -26,38 +26,38 @@
     </form>
   </div>
   <div id="setup-step-2"<?php echo ($step != 2) ? ' class="hidden"' : ''?>>
-    <form action="/setup/2" method="post">
+    <form action="/setup/2<?php echo $qs; ?>" method="post">
       <h2>Site Settings <em>(the defaults work just fine<!--<a href="">what's this?</a>-->)</em></h2>
       <label for="imageLibrary">Select Image Library</label>
       <?php if(isset($imageLibs)) { ?>
         <select name="imageLibrary" id="imageLibrary">
           <?php foreach($imageLibs as $key => $val) { ?>
-            <option value="<?php echo $key; ?>"><?php echo $val; ?></option>
+            <option value="<?php echo $key; ?>"<?php echo ($imageLibrary == $key) ? ' selected="selected"' : '' ?>><?php echo $val; ?></option>
           <?php } ?>
         </select>
       <?php } ?>
       <label>Select Database</label>
       <select name="database">
-        <option value="SimpleDb">Amazon SimpleDb</option>
-        <option value="MySql">MySQL</option>
+        <option value="SimpleDb"<?php echo ($database == 'SimpleDb') ? ' selected="selected"' : '' ?>>Amazon SimpleDb</option>
+        <option value="MySql"<?php echo ($database == 'MySql') ? ' selected="selected"' : '' ?>>MySQL</option>
       </select>
       <label for="fileSystem">Select File System</label>
       <select name="fileSystem">
-        <option value="S3">Amazon S3</option>
-        <option value="LocalFs">Local filesystem</option>
+        <option value="S3"<?php echo ($filesystem == 'S3') ? ' selected="selected"' : '' ?>>Amazon S3</option>
+        <option value="LocalFs"<?php echo ($filesystem == 'LocalFs') ? ' selected="selected"' : '' ?>>Local filesystem</option>
       </select>
       <button type="submit">Continue to Step 3</button>
     </form>
   </div>
   <div id="setup-step-3"<?php echo ($step != 3) ? ' class="hidden"' : ''?>>
-    <form class="validate" action="/setup/3" method="post">
+    <form class="validate" action="/setup/3<?php echo $qs; ?>" method="post">
       <h2>Credentials<!-- <em>(<a href="">what's this?</a>)</em>--></h2>
       <?php if(isset($usesAws) && $usesAws) { ?>
         <h3>Enter your Amazon credentials <em>(<a href="http://s3.amazonaws.com/mturk/tools/pages/aws-access-identifiers/aws-identifier.html">what's this?</a>)</em></h3>
         <label for="awsKey">Amazon Access Key ID</label>
-        <input type="password" name="awsKey" id="awsKey" size="50" autocomplete="off" data-validation="required">
+        <input type="password" name="awsKey" id="awsKey" size="50" autocomplete="off" data-validation="required" value="<?php echo $awsKey; ?>">
         <label for="awsSecret">Amazon Secret Access Key</label>
-        <input type="password" name="awsSecret" id="awsSecret" size="50" autocomplete="off" data-validation="required">
+        <input type="password" name="awsSecret" id="awsSecret" size="50" autocomplete="off" data-validation="required" value="<?php echo $awsSecret; ?>">
         <?php if(isset($usesS3) && $usesS3) { ?>
           <label for="s3Bucket">Amazon S3 Bucket Name <em>(<a href="">what's this?</a>)</em></label>
           <?php if(isset($s3Bucket) && !empty($s3Bucket)) { ?>
@@ -78,22 +78,22 @@
       <?php if(isset($usesMySql) && !empty($usesMySql)) { ?>
         <h3>Enter your MySQL credentials <em>(<a href="">what's this?</a>)</em></h3>
         <label for="mySqlHost">MySQL Host</label>
-        <input type="text" name="mySqlHost" id="mySqlHost" size="50" autocomplete="off" data-validation="required">
+        <input type="text" name="mySqlHost" id="mySqlHost" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlHost; ?>">
         <label for="mySqlUser">MySQL Username</label>
-        <input type="text" name="mySqlUser" id="mySqlUser" size="50" autocomplete="off" data-validation="required">
+        <input type="text" name="mySqlUser" id="mySqlUser" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlUser; ?>">
         <label for="mySqlPassword">MySQL Password</label>
-        <input type="password" name="mySqlPassword" id="mySqlPassword" size="50" autocomplete="off" data-validation="required">
+        <input type="password" name="mySqlPassword" id="mySqlPassword" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlPassword; ?>">
         <label for="mySqlDb">MySQL Database <em>(this needs to already exist)</em></label>
-        <input type="text" name="mySqlDb" value="openphoto" id="mySqlDb" size="50" autocomplete="off" data-validation="required">
+        <input type="text" name="mySqlDb" value="openphoto" id="mySqlDb" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlDb; ?>">
         <label for="mySqlTablePrefix">Table prefix</label>
-        <input type="text" name="mySqlTablePrefix" value="op_" id="mySqlTablePrefix" size="50" autocomplete="off" data-validation="required">
+        <input type="text" name="mySqlTablePrefix" value="op_" id="mySqlTablePrefix" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlTablePrefix; ?>">
       <?php } ?>
       <?php if(isset($usesLocalFs) && !empty($usesLocalFs)) { ?>
         <h3>Enter your local file system credentials <em>(<a href="">what's this?</a>)</em></h3>
         <label for="fsRoot">File system root</label>
-        <input type="text" name="fsRoot" id="fsRoot" size="50" data-validation="required">
+        <input type="text" name="fsRoot" id="fsRoot" size="50" data-validation="required" value="<?php echo $fsRoot; ?>">
           <label for="fsHost">File system hostname for download URL</label>
-        <input type="text" name="fsHost" id="fsHost" size="50" data-validation="required">
+        <input type="text" name="fsHost" id="fsHost" size="50" data-validation="required" value="<?php echo $fsHost; ?>">
       <?php } ?>
       <button type="submit">Complete setup</button>
     </form>
