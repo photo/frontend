@@ -19,10 +19,35 @@ getSession();
 getConfig()->load('defaults.ini');
 getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getConfig()->get('site')->theme));
 $configFile = sprintf('%s/generated/%s.ini', Epi::getPath('config'), getenv('HTTP_HOST'));
-if(file_exists($configFile))
+
+$runSetup = false;
+if(file_exists($configFile) && strpos($_SERVER['REQUEST_URI'], '/setup')!== false && isset($_GET['edit']))
+  $runSetup = true;
+
+if(file_exists($configFile) && !$runSetup)
 {
   getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
   require getConfig()->get('paths')->libraries . '/dependencies.php';
   if(Utility::isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(__FILE__)), getConfig()->get('site')->theme)))
     getConfig()->load($mobileSettings);
+}
+else
+{
+  if(file_exists($configFile))
+    getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
+    
+  // setup and enable routes for setup
+  $baseDir = dirname(dirname(__FILE__));
+  $paths = new stdClass;
+  $paths->libraries = "{$baseDir}/libraries";
+  $paths->controllers = "{$baseDir}/libraries/controllers";
+  $paths->external = "{$baseDir}/libraries/external";
+  $paths->adapters = "{$baseDir}/libraries/adapters";
+  $paths->models = "{$baseDir}/libraries/models";
+  $paths->templates = "{$baseDir}/templates";
+  $paths->themes = "{$baseDir}/html/assets/themes";
+  getConfig()->set('paths', $paths);
+  require getConfig()->get('paths')->libraries . '/routes-setup.php';
+  require getConfig()->get('paths')->libraries . '/dependencies.php';
+  require getConfig()->get('paths')->controllers . '/SetupController.php';
 }
