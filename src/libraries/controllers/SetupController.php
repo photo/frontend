@@ -67,7 +67,7 @@ class SetupController
     {
       getSession()->set('step', 2);
       getSession()->set('appId', $appId);
-      getSession()->set('email', $email);
+      getSession()->set('ownerEmail', $email);
 
       $qs = '';
       if(isset($_GET['edit']))
@@ -77,7 +77,7 @@ class SetupController
     }
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('emai' => $email, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
+    $body = getTemplate()->get($template, array('email' => $email, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -158,6 +158,8 @@ class SetupController
 
     $step = 3;
     $appId = getSession()->get('appId');
+    $database = getSession()->get('database');
+    $filesystem = getSession()->get('filesystem');
     $usesAws = (getSession()->get('database') == 'SimpleDb' || getSession()->get('fileSystem') == 'S3') ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesLocalFs = (getSession()->get('fileSystem') == 'LocalFs') ? true : false;
@@ -178,8 +180,8 @@ class SetupController
 
     if(getConfig()->get('credentials') != null)
     {
-      $awsKey = str_replace('/', '', getConfig()->get('credentials')->awsKey);
-      $awsSecret = str_replace('/', '', getConfig()->get('credentials')->awsSecret);
+      $awsKey = Utility::decrypt(getConfig()->get('credentials')->awsKey);
+      $awsSecret = Utility::decrypt(getConfig()->get('credentials')->awsSecret);
     }
     if(getConfig()->get('aws') != null)
     {
@@ -190,7 +192,7 @@ class SetupController
     {
       $mySqlHost = getConfig()->get('mysql')->mySqlHost;
       $mySqlUser = getConfig()->get('mysql')->mySqlUser;
-      $mySqlPassword = getConfig()->get('mysql')->mySqlPassword;
+      $mySqlPassword = Utility::decrypt(getConfig()->get('mysql')->mySqlPassword);
       $mySqlDb = getConfig()->get('mysql')->mySqlDb;
       $mySqlTablePrefix = getConfig()->get('mysql')->mySqlTablePrefix;
     }
@@ -205,7 +207,13 @@ class SetupController
       $qs = '?edit';
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket, 'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb, 'mySqlPassword' => $mySqlPassword, 'mySqlTablePrefix' => $mySqlTablePrefix, 'fsRoot' => $fsRoot, 'fsHost' => $fsHost, 'qs' => $qs, 'appId' => $appId));
+    $body = getTemplate()->get($template, array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 
+      'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 
+      'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket, 
+      'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb, 
+      'mySqlPassword' => $mySqlPassword, 'mySqlTablePrefix' => $mySqlTablePrefix, 'fsRoot' => $fsRoot, 'fsHost' => $fsHost, 
+      'qs' => $qs, 'appId' => $appId));
+
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -218,6 +226,8 @@ class SetupController
   {
     $step = 3;
     $secret = self::getSecret();
+    $database = getSession()->get('database');
+    $filesystem = getSession()->get('filesystem');
     $appId = getSession()->get('appId');
     $usesAws = (getSession()->get('database') == 'SimpleDb' || getSession()->get('fileSystem') == 'S3') ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
@@ -399,8 +409,15 @@ class SetupController
     if(is_array($writeErrors))
       $errors = array_merge($errors, $writeErrors);
 
+    $qs = '';
+    if(isset($_GET['edit']))
+      $qs = '?edit';
+
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket, 'simpleDbDomain' => $simpleDbDomain, 'appId' => $appId, 'errors' => $errors));
+    $body = getTemplate()->get($template, array('step' => $step, 'database' => $database, 'filesystem' => $filesystem, 
+      'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 
+      'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket, 
+      'simpleDbDomain' => $simpleDbDomain, 'appId' => $appId, 'qs' => $qs, 'errors' => $errors));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -417,12 +434,20 @@ class SetupController
 
   public static function getSecret()
   {
+    if(getConfig()->get('secrets') !== null)
+    {
+      $secret = getConfig()->get('secrets')->secret;
+      getSession()->set('secret', $secret);
+      return $secret;
+    }
+
     $secret = getSession()->get('secret');
     if(!$secret)
     {
       $secret = sha1(uniqid(true));
       getSession()->set('secret', $secret);
     }
+
     return $secret;
   }
 
@@ -503,13 +528,16 @@ class SetupController
       '{mySqlTablePrefix}' => "",
       '{fsRoot}' => "",
       '{fsHost}' => "",
-      '{email}' => getSession()->get('email')
+      '{email}' => getSession()->get('ownerEmail')
     );
 
     $pReplace = array();
     $session = getSession()->getAll();
     foreach($session as $key => $val)
-      $pReplace["{{$key}}"] = $val;
+    {
+      if($key != 'email')
+        $pReplace["{{$key}}"] = $val;
+    }
 
     $replacements = array_merge($replacements, $pReplace);
     $generatedIni = str_replace(
@@ -522,6 +550,12 @@ class SetupController
     if(!$iniWritten)
       return false;
 
+    // clean up the session
+    foreach($session as $key => $val)
+    {
+      if($key != 'email')
+        getSession()->set($key, '');
+    }
     return true;
   }
 }

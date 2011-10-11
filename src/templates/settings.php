@@ -1,3 +1,10 @@
+<h1>Reconfigure settings</h1>
+<div>
+  <a href="/setup?edit" class="button">Start Now</a>
+</div>
+
+<hr>
+
 <h1>OAuth Credentials</h1>
 <?php if(is_array($credentials) && count($credentials) > 0) { ?>
   <ul class="credentials">
