@@ -910,6 +910,8 @@ class DatabaseMySql implements DatabaseInterface
   {
     if(isset($raw['members']) && !empty($raw['members']))
       $raw['members'] = (array)explode(',', $raw['members']);
+
+    return $raw;
   }
 
   /**
