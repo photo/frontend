@@ -1,4 +1,4 @@
-<h1>Reconfigure settings</h1>
+<h1>Reconfigure settings</h1><br>
 <div>
   <a href="/setup?edit" class="button">Start Now</a>
 </div>
