@@ -35,8 +35,16 @@ class SetupController
     else
       $errors = '';
 
+    $email = '';
+    if(getConfig()->get('user') != null)
+      $email = getConfig()->get('user')->email;
+
+    $qs = '';
+    if(isset($_GET['edit']))
+      $qs = '?edit';
+
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('imageLibs' => $imageLibs, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
+    $body = getTemplate()->get($template, array('imageLibs' => $imageLibs, 'appId' => $appId, 'step' => $step, 'email' => $email, 'qs' => $qs, 'errors' => $errors));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -61,7 +69,11 @@ class SetupController
       getSession()->set('appId', $appId);
       getSession()->set('email', $email);
 
-      getRoute()->redirect('/setup/2');
+      $qs = '';
+      if(isset($_GET['edit']))
+        $qs = '?edit';
+
+      getRoute()->redirect('/setup/2' . $qs);
     }
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
@@ -89,8 +101,24 @@ class SetupController
     if(extension_loaded('gd') && function_exists('gd_info'))
       $imageLibs['GD'] = 'GD';
 
+    $imageLibrary = '';
+    if(getConfig()->get('modules') != null)
+      $imageLibrary = getConfig()->get('modules')->image;
+
+    $database = '';
+    $filesystem = '';
+    if(getConfig()->get('systems') != null)
+    {
+      $database = getConfig()->get('systems')->database;
+      $filesystem = getConfig()->get('systems')->fileSystem;
+    }
+
+    $qs = '';
+    if(isset($_GET['edit']))
+      $qs = '?edit';
+
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('imageLibs' => $imageLibs, 'appId' => 'openphoto-frontend', 'step' => $step));
+    $body = getTemplate()->get($template, array('imageLibs' => $imageLibs, 'appId' => 'openphoto-frontend', 'imageLibrary' => $imageLibrary, 'database' => $database, 'filesystem' => $filesystem, 'qs' => $qs, 'step' => $step));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -105,7 +133,11 @@ class SetupController
       getSession()->set('imageLibrary', $_POST['imageLibrary']);
       getSession()->set('database', $_POST['database']);
       getSession()->set('fileSystem', $_POST['fileSystem']);
-      getRoute()->redirect('/setup/3');
+
+      $qs = '';
+      if(isset($_GET['edit']))
+        $qs = '?edit';
+      getRoute()->redirect('/setup/3' . $qs);
   }
 
   /**
@@ -132,8 +164,48 @@ class SetupController
     $usesS3 = (getSession()->get('fileSystem') == 'S3') ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
 
+    $awsKey = '';
+    $awsSecret = '';
+    $s3Bucket = '';
+    $simpleDbDomain = '';
+    $mySqlHost = '';
+    $mySqlUser = '';
+    $mySqlPassword = '';
+    $mySqlDb = '';
+    $mySqlTablePrefix = '';
+    $fsRoot = '';
+    $fsHost = '';
+
+    if(getConfig()->get('credentials') != null)
+    {
+      $awsKey = str_replace('/', '', getConfig()->get('credentials')->awsKey);
+      $awsSecret = str_replace('/', '', getConfig()->get('credentials')->awsSecret);
+    }
+    if(getConfig()->get('aws') != null)
+    {
+      $s3Bucket = getConfig()->get('aws')->s3BucketName;
+      $simpleDbDomain = getConfig()->get('aws')->simpleDbDomain;
+    }
+    if(getConfig()->get('mysql') != null)
+    {
+      $mySqlHost = getConfig()->get('mysql')->mySqlHost;
+      $mySqlUser = getConfig()->get('mysql')->mySqlUser;
+      $mySqlPassword = getConfig()->get('mysql')->mySqlPassword;
+      $mySqlDb = getConfig()->get('mysql')->mySqlDb;
+      $mySqlTablePrefix = getConfig()->get('mysql')->mySqlTablePrefix;
+    }
+    if(getConfig()->get('localfs') != null)
+    {
+      $fsRoot = getConfig()->get('localfs')->fsRoot;
+      $fsHost = getConfig()->get('localfs')->fsHost;
+    }
+
+    $qs = '';
+    if(isset($_GET['edit']))
+      $qs = '?edit';
+
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 'usesSimpleDb' => $usesSimpleDb, 'appId' => $appId));
+    $body = getTemplate()->get($template, array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket, 'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb, 'mySqlPassword' => $mySqlPassword, 'mySqlTablePrefix' => $mySqlTablePrefix, 'fsRoot' => $fsRoot, 'fsHost' => $fsHost, 'qs' => $qs, 'appId' => $appId));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -328,7 +400,7 @@ class SetupController
       $errors = array_merge($errors, $writeErrors);
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 'usesSimpleDb' => $usesSimpleDb, 's3Bucket' => $s3Bucket, 'simpleDbDomain' => $simpleDbDomain, 'appId' => $appId, 'errors' => $errors));
+    $body = getTemplate()->get($template, array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket, 'simpleDbDomain' => $simpleDbDomain, 'appId' => $appId, 'errors' => $errors));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -419,7 +491,7 @@ class SetupController
       '{exiftran}' => exec('which exiftran'),
       '{localSecret}' => $secret,
       '{awsKey}' => "",
-      '{awsSecret}' => "", 
+      '{awsSecret}' => "",
       '{s3Bucket}' => getSession()->get('s3BucketName'),
       '{s3Host}' => getSession()->get('s3BucketName') . '.s3.amazonaws.com',
       '{simpleDbDomain}' => "",
