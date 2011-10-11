@@ -1123,7 +1123,7 @@ class DatabaseMySql implements DatabaseInterface
         . "PRIMARY KEY(`id`)"
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
 
-    getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}user` ("
+    getDatabase()->execute("INSERT IGNORE INTO `{$this->mySqlTablePrefix}user` ("
         . "`id` ,"
 	. "`lastPhotoId` ,"
 	. "`lastActionId`"
