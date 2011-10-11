@@ -21,7 +21,7 @@ getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirnam
 $configFile = sprintf('%s/generated/%s.ini', Epi::getPath('config'), getenv('HTTP_HOST'));
 
 $runSetup = false;
-if(file_exists($configFile) && strpos($_SERVER['REQUEST_URI'], '/setup')!== false && isset($_GET['edit']))
+if(file_exists($configFile) && strpos($_SERVER['REQUEST_URI'], '/setup') !== false && isset($_GET['edit']))
   $runSetup = true;
 
 if(file_exists($configFile) && !$runSetup)
@@ -50,4 +50,8 @@ else
   require getConfig()->get('paths')->libraries . '/routes-setup.php';
   require getConfig()->get('paths')->libraries . '/dependencies.php';
   require getConfig()->get('paths')->controllers . '/SetupController.php';
+
+  // Before we run the setup in edit mode, we need to validate ownership
+  if(isset($_GET['edit']) && !User::isOwner())
+    getRoute()->run('/error/403');
 }
