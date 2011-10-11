@@ -73,9 +73,9 @@ nav .on {
     height: 22px;
     z-index: 1;
     -moz-border-bottom-right-radius: 3px;
-    -webkit-border-bottom-right-radius: 3px;
     -moz-border-bottom-left-radius: 3px;
-    -webkit-border-bottom-left-radius: 3px;
+    -webkit-border-radius: 0px 0px 3px 3px;
+    border-radius: 0px 0px 3px 3px; 
 }
 
 #searchbar input {
