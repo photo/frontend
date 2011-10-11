@@ -5,7 +5,7 @@
 
 <hr>
 
-<h1>OAuth Credentials</h1>
+<h1>OAuth Credentials</h1><br>
 <?php if(is_array($credentials) && count($credentials) > 0) { ?>
   <ul class="credentials">
     <?php foreach($credentials as $credential) { ?>
