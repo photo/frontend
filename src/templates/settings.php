@@ -35,7 +35,7 @@
   <input type="text" placeholder="Email addresses of members (separate with commas)" value="" name="members">
   
   <button type="submit" class="group-update-click">Create a new group</button>
-</form><!--(<a href="/group/<?php echo $group['id']; ?>/delete" class="group-delete-click">delete</a>)-->
+</form>
 
 <hr>
 
