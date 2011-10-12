@@ -38,7 +38,7 @@ class GeneralController extends BaseController
   public static function error500()
   {
     $body = getTheme()->get('error500.php');
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'front'));
+    getTheme()->display('template.php', array('body' => $body, 'page' => 'error'));
   }
 
   /**

@@ -202,7 +202,7 @@ class Credential
         foreach($parameters as $parameter)
         {
           list($key, $value) = explode('=', $parameter);
-          $key = trim($key);
+          $key = trim(substr($key, strpos($key, 'oauth_')));
           $value = trim($value);
           if(strpos($key, 'oauth_') !== 0)
             continue;

@@ -55,8 +55,7 @@ class OAuthController extends BaseController
       // change the status from unauthorized_request to request
       $token = $_GET['oauth_token'];
       $consumer = getDb()->getCredentialByUserToken($token);
-      getCredential()->convertToken($consumer['id'], Credential::typeRequest);
-      $res = getDb()->postCredential($token, array('type' => Credential::typeRequest));
+      $res = getCredential()->convertToken($consumer['id'], Credential::typeRequest);
       if(!$res)
       {
         // TODO templatize this
@@ -116,8 +115,11 @@ class OAuthController extends BaseController
       {
         $consumer = getDb()->getCredential($token);
         $oauth = new OAuth($consumerKey,$consumerSecret,OAUTH_SIG_METHOD_HMACSHA1,OAUTH_AUTH_TYPE_AUTHORIZATION);
+        $oauth->setVersion('1.0a');
         $oauth->setToken($token, $tokenSecret);
-        $accessToken = $oauth->getAccessToken(sprintf('%s://%s/v1/oauth/token/access?oauth_verifier=%s', Utility::getProtocol(false), $_SERVER['HTTP_HOST'], $verifier));
+        $accessToken = $oauth->getAccessToken(sprintf('%s://%s/v1/oauth/token/access', Utility::getProtocol(false), $_SERVER['HTTP_HOST']), null, $verifier);
+        $accessToken['oauth_consumer_key'] = $consumerKey;
+        $accessToken['oauth_consumer_secret'] = $consumerSecret;
         setcookie('oauth', http_build_query($accessToken));
         if(!isset($accessToken['oauth_token']) || !isset($accessToken['oauth_token_secret']))
           echo sprintf('Invalid response when getting an access token: %s', http_build_query($accessToken));
@@ -189,8 +191,7 @@ class OAuthController extends BaseController
     {
       getCredential()->convertToken($consumer['id'], Credential::typeAccess);
       $consumer = getDb()->getCredentialByUserToken($token);
-      printf('oauth_token=%s&oauth_token_secret=%s&oauth_consumer_key=%s&oauth_consumer_secret=%s',
-        $consumer['userToken'], $consumer['userSecret'], $consumer['id'], $consumer['clientSecret']);
+      printf('oauth_token=%s&oauth_token_secret=%s', $consumer['userToken'], $consumer['userSecret']);
     }
   }
 

@@ -24,6 +24,7 @@ $runSetup = false;
 if(file_exists($configFile) && strpos($_SERVER['REQUEST_URI'], '/setup') !== false && isset($_GET['edit']))
   $runSetup = true;
 
+// if the config file exists and we're not running the setup, proceed as normal
 if(file_exists($configFile) && !$runSetup)
 {
   getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
@@ -33,6 +34,7 @@ if(file_exists($configFile) && !$runSetup)
 }
 else
 {
+  // if we're running setup and the config file exists, load it to prepopulate the form
   if(file_exists($configFile))
     getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
     
