@@ -13,6 +13,7 @@ interface FileSystemInterface
   public function putPhotos($files);
   public function getHost();
   public function initialize();
+  public function normalizePath($filename);
   // TODO enable this
   //public function inject($name, $value);
 }
@@ -40,14 +41,17 @@ function getFs(/*$type*/)
 
   switch($type)
   {
-    case 'Dropbox':
-      $filesystem = new FileSystemDropbox();
-      break;
-    case 'LocalFs':
+    case 'Local':
       $filesystem = new FileSystemLocal();
+      break;
+    case 'LocalDropbox':
+      $filesystem = new FileSystemLocalDropbox();
       break;
     case 'S3':
       $filesystem = new FileSystemS3();
+      break;
+    case 'S3Dropbox':
+      $filesystem = new FileSystemS3Dropbox();
       break;
   }
 
