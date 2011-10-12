@@ -40,11 +40,14 @@ function getFs(/*$type*/)
 
   switch($type)
   {
-    case 'S3':
-      $filesystem = new FileSystemS3();
+    case 'Dropbox':
+      $filesystem = new FileSystemDropbox();
       break;
     case 'LocalFs':
       $filesystem = new FileSystemLocal();
+      break;
+    case 'S3':
+      $filesystem = new FileSystemS3();
       break;
   }
 
