@@ -49,6 +49,98 @@ class SetupController
   }
 
   /**
+    * Gets Dropbox info from the user
+    *
+    * @return string HTML
+    */
+  public static function setupDropbox()
+  {
+    extract(self::getDefaultConfigParams());
+    $credentials = getConfig()->get('credentials');
+    $dropbox = getConfig()->get('dropbox');
+    if($credentials !== null)
+    {
+      if(isset($credentials->dropboxKey))
+        $dropboxKey = Utility::decrypt($credentials->dropboxKey);
+      if(isset($credentials->dropboxSecret))
+        $dropboxSecret = Utility::decrypt($credentials->dropboxSecret);
+      if(isset($dropbox->dropboxFolder))
+        $dropboxFolder = $dropbox->dropboxFolder;
+    }
+
+    $qs = '';
+    if(isset($_GET['edit']))
+      $qs = '?edit';
+
+    $template = sprintf('%s/setupDropbox.php', getConfig()->get('paths')->templates);
+    $body = getTemplate()->get($template, array('dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs));
+    getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
+  }
+
+  /**
+    * Handles callback from Dropbox oauth flow
+    *
+    * @return void HTTP redirect (to dropbox.com)
+    */
+  public static function setupDropboxCallback()
+  {
+    try
+    {
+      $dropboxToken = getSession()->get('dropboxToken');
+      $dropboxKey = getSession()->get('flowDropboxKey');
+      $dropboxSecret = getSession()->get('flowDropboxSecret');
+      $oauth = new Dropbox_OAuth_PHP($dropboxKey, $dropboxSecret);
+      $oauth->setToken($dropboxToken);
+      $accessToken = $oauth->getAccessToken();
+      getSession()->set('dropboxFolder', getSession()->get('flowDropboxFolder'));
+      getSession()->set('dropboxKey', Utility::encrypt(getSession()->get('flowDropboxKey')));
+      getSession()->set('dropboxSecret', Utility::encrypt(getSession()->get('flowDropboxSecret')));
+      getSession()->set('dropboxToken', Utility::encrypt($accessToken['token']));
+      getSession()->set('dropboxTokenSecret', Utility::encrypt($accessToken['token_secret']));
+
+      $qs = '';
+      if(isset($_GET['edit']))
+        $qs = '?edit';
+
+      getRoute()->redirect(sprintf('%s%s', '/setup/3', $qs));
+    }
+    catch(Dropbox_Exception $e)
+    {
+      getLogger()->crit(sprintf('An error occured getting the Dropbox authorize url. Message: %s', $e->getMessage()));
+      getRoute()->run('/error/500');
+    }
+  }
+
+  /**
+    * Gets authorize URL and redirects to dropbox
+    *
+    * @return void HTTP redirect (to dropbox.com)
+    */
+  public static function setupDropboxPost()
+  {
+    $qs = '';
+    if(isset($_GET['edit']))
+      $qs = '?edit';
+
+    try
+    {
+      getSession()->set('flowDropboxKey', $_POST['dropboxKey']);
+      getSession()->set('flowDropboxSecret', $_POST['dropboxSecret']);
+      getSession()->set('flowDropboxFolder', $_POST['dropboxFolder']);
+      $callback = urlencode(sprintf('%s://%s%s%s', Utility::getProtocol(false), getenv('HTTP_HOST'), '/setup/dropbox/callback', $qs));
+      $oauth = new Dropbox_OAuth_PHP($_POST['dropboxKey'], $_POST['dropboxSecret']);
+      getSession()->set('dropboxToken', $oauth->getRequestToken());
+      $url = $oauth->getAuthorizeUrl($callback);
+      getRoute()->redirect($url, null, true);
+    }
+    catch(Dropbox_Exception $e)
+    {
+      getLogger()->crit(sprintf('An error occured getting the Dropbox authorize url. Message: %s', $e->getMessage()));
+      getRoute()->run('/error/500');
+    }
+  }
+
+  /**
     * Posts the setup values from step 1 of the form, checks them, and saves in session
     *
     * @return void HTTP redirect (setup step 2)
@@ -137,7 +229,10 @@ class SetupController
       $qs = '';
       if(isset($_GET['edit']))
         $qs = '?edit';
-      getRoute()->redirect('/setup/3' . $qs);
+      if(stristr($_POST['fileSystem'], 'Dropbox') !== false)
+        getRoute()->redirect('/setup/dropbox' . $qs);
+      else
+        getRoute()->redirect('/setup/3' . $qs);
   }
 
   /**
@@ -161,15 +256,23 @@ class SetupController
     $appId = getSession()->get('appId');
     $database = getSession()->get('database');
     $filesystem = getSession()->get('filesystem');
-    $usesAws = (getSession()->get('database') == 'SimpleDb' || getSession()->get('fileSystem') == 'S3') ? true : false;
+    $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
-    $usesLocalFs = (getSession()->get('fileSystem') == 'LocalFs') ? true : false;
-    $usesS3 = (getSession()->get('fileSystem') == 'S3') ? true : false;
-    $usesDropbox = (getSession()->get('fileSystem') == 'Dropbox') ? true : false;
+    $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
+    $usesS3 = (stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
+    $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
 
-
-    if(getConfig()->get('credentials') != null)
+    $dropboxKey = getSession()->get('dropboxKey');
+    if($dropboxKey)
+    {
+      $dropboxFolder = getSession()->get('dropboxFolder');
+      $dropboxKey = Utility::decrypt(getSession()->get('dropboxKey'));
+      $dropboxSecret = Utility::decrypt(getSession()->get('dropboxSecret'));
+      $dropboxToken = Utility::decrypt(getSession()->get('dropboxToken'));
+      $dropboxTokenSecret = Utility::decrypt(getSession()->get('dropboxTokenSecret'));
+    }
+    elseif(getConfig()->get('credentials') != null)
     {
       $credentials = getConfig()->get('credentials');
       if(isset($credentials->awsKey))
@@ -185,11 +288,13 @@ class SetupController
       if(isset($credentials->dropboxTokenSecret))
         $dropboxTokenSecret = Utility::decrypt($credentials->dropboxTokenSecret);
     }
+
     if(getConfig()->get('aws') != null)
     {
       $s3Bucket = getConfig()->get('aws')->s3BucketName;
       $simpleDbDomain = getConfig()->get('aws')->simpleDbDomain;
     }
+
     if(getConfig()->get('mysql') != null)
     {
       $mysql = getConfig()->get('mysql');
@@ -199,12 +304,14 @@ class SetupController
       $mySqlDb = $mysql->mySqlDb;
       $mySqlTablePrefix = $mysql->mySqlTablePrefix;
     }
+
     if(getConfig()->get('localfs') != null)
     {
       $fsRoot = getConfig()->get('localfs')->fsRoot;
       $fsHost = getConfig()->get('localfs')->fsHost;
     }
-    if(getConfig()->get('dropbox') != null)
+
+    if(!isset($dropboxFolder) && getConfig()->get('dropbox') != null)
     {
       $dropboxFolder = getConfig()->get('dropbox')->dropboxFolder;
     }
@@ -221,7 +328,7 @@ class SetupController
       'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb, 
       'mySqlPassword' => $mySqlPassword, 'mySqlTablePrefix' => $mySqlTablePrefix, 'fsRoot' => $fsRoot, 'fsHost' => $fsHost, 
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken, 
-      'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs, 'appId' => $appId));
+      'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
 
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
@@ -239,12 +346,12 @@ class SetupController
     $database = getSession()->get('database');
     $filesystem = getSession()->get('filesystem');
     $appId = getSession()->get('appId');
-    $usesAws = (getSession()->get('database') == 'SimpleDb' || getSession()->get('fileSystem') == 'S3') ? true : false;
+    $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
-    $usesLocalFs = (getSession()->get('fileSystem') == 'LocalFs') ? true : false;
-    $usesS3 = (getSession()->get('fileSystem') == 'S3') ? true : false;
-    $usesDropbox = (getSession()->get('fileSystem') == 'Dropbox') ? true : false;
+    $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
+    $usesS3 = (stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
+    $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
     $awsErrors = false;
     $mySqlErrors = false;
     $localFsErrors = false;
@@ -294,7 +401,7 @@ class SetupController
       $mySqlErrors = getForm()->hasErrors($input);
     }
 
-    if($usesLocalFs || $usesDropbox)
+    if($usesLocalFs)
     {
       $fsRoot = $_POST['fsRoot'];
       $fsHost = $_POST['fsHost'];
@@ -353,7 +460,7 @@ class SetupController
         $mysql->mySqlDb = $mySqlDb;
         $mysql->mySqlTablePrefix = $mySqlTablePrefix;
       }
-      if($usesLocalFs || $usesDropbox)
+      if($usesLocalFs)
       {
         getSession()->set('fsRoot', $fsRoot);
         getSession()->set('fsHost', $fsHost);
@@ -406,8 +513,6 @@ class SetupController
           $fsErrors[] = 'We were unable to initialize your S3 bucket.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/s3/">signed up for AWS S3</a>.</li><li>Double check your AWS credentials.</li><li>S3 bucket names are globally unique, make sure yours isn\'t already in use by someone else.</li><li>S3 bucket names can\'t have certain special characters. Try using just alpha-numeric characters and periods.</li></ul>';
         else if($usesLocalFs)
           $fsErrors[] = "We were unable to set up your local file system using <em>{$fsObj->fsRoot}</em>. Make sure that the following user has proper permissions ({$user}).";
-        else if($usesDropbox)
-          $fsErrors[] = "We were unable to set up your local file system using <em>{$fsObj->fsRoot}</em> and your Dropbox account. Make sure that the following user has proper permissions ({$user}) and that your Dropbox information is correct.";
         else
           $fsErrors[] = 'An unknown error occurred while setting up your file system. Check your error logs to see if there\'s more information about the error.';
       }
@@ -460,7 +565,7 @@ class SetupController
       'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb, 
       'mySqlPassword' => $mySqlPassword, 'mySqlTablePrefix' => $mySqlTablePrefix, 'fsRoot' => $fsRoot, 'fsHost' => $fsHost, 
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken, 
-      'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs, 'appId' => $appId));
+      'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -499,7 +604,7 @@ class SetupController
     return array('awsKey' => '', 'awsSecret' => '', 's3Bucket' => '', 'simpleDbDomain' => '', 'mySqlHost' => '', 
       'mySqlUser' => '', 'mySqlPassword' => '', 'mySqlDb' => '', 'mySqlTablePrefix' => '', 
       'fsRoot' => '', 'fsHost' => '', 'dropboxFolder' => '', 'dropboxKey' => '', 'dropboxSecret' => '', 
-      'dropboxKey' => '', 'dropboxToken' => '', 'dropboxTokenSecret' => '');
+      'dropboxKey' => '', 'dropboxToken' => '', 'dropboxTokenSecret' => '', 'errors' => '');
   }
 
   /**

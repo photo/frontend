@@ -6,20 +6,11 @@
  * @author Hub Figuiere <hub@figuiere.net>
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class FileSystemDropbox extends FileSystemLocal implements FileSystemInterface
+class FileSystemDropboxBase 
 {
-  private $root;
-  private $urlBase;
-  private $dropbox;
-  private $dropboxFolder;
-  private $directoryMask;
-
-  public function __construct()
+  private $parent;
+  public function __construct($parent)
   {
-    parent::__construct();
-    $fsConfig = getConfig()->get('localfs');
-    $this->root = $fsConfig->fsRoot;
-    $this->host = $fsConfig->fsHost;
     $this->directoryMask = 'Y_m_F';
     $oauth = new Dropbox_OAuth_PHP(Utility::decrypt(getConfig()->get('credentials')->dropboxKey), Utility::decrypt(getConfig()->get('credentials')->dropboxSecret));
     $oauth->setToken(array(
@@ -28,74 +19,28 @@ class FileSystemDropbox extends FileSystemLocal implements FileSystemInterface
     ));
     $this->dropbox = new Dropbox_API($oauth);
     $this->dropboxFolder = getConfig()->get('dropbox')->dropboxFolder;
+    $this->parent = $parent;
   }
 
   public function deletePhoto($id)
   {
     $photo = getDb()->getPhoto($id);
-    $exif = Photo::readExif(parent::normalizePath($photo['pathOriginal']));
-    $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
+    $directory = urlencode(date($this->directoryMask, $photo['dateTaken']));
     try
     {
-      $deleteStatus = $this->dropbox->delete(sprintf('%s/%s/%s', $this->dropboxFolder, $directory, basename($photo['pathOriginal'])));
+      $this->dropbox->delete(sprintf('%s/%s/%s', $this->dropboxFolder, $directory, basename($photo['pathOriginal'])));
+      return true;
     }
     catch(Dropbox_Exception $e)
     {
       getLogger()->crit(sprintf('Could not delete photo (%s). Message: %s', $id, $e->getMessage()));
-      return false;
+      return true;
     }
-    return parent::deletePhoto($id);
-  }
-
-  /**
-   * Get photo will copy the photo to a temporary file.
-   *
-   */
-  public function getPhoto($filename)
-  {
-    return parent::getPhoto($filename);
-  }
-
-  public function putPhoto($localFile, $remoteFile)
-  {
-    if(strpos($remoteFile, '/original/') !== false)
-    {
-      $exif = Photo::readExif($localFile);
-      $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
-      $this->putFileInDirectory($directory, $localFile, basename($remoteFile));
-    }
-    return parent::putPhoto($localFile, $remoteFile);
-  }
-
-  public function putPhotos($files)
-  {
-    foreach($files as $file)
-    {
-      list($localFile, $remoteFile) = each($file);
-      if(strpos($remoteFile, '/original/') !== false)
-      {
-        $exif = Photo::readExif($localFile);
-        $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
-        $this->putFileInDirectory($directory, $localFile, basename($remoteFile));
-      }
-    }
-    return parent::putPhotos($files);
-  }
-
-  /**
-    * Get the hostname for the remote filesystem to be used in constructing public URLs.
-    * @return string
-    */
-  public function getHost()
-  {
-    return $this->host;
   }
 
   public function initialize()
   {
-    $localStatus = parent::initialize();
     $dropboxStatus = false;
-
     $folderDoesNotExist = false;
     try
     {
@@ -123,7 +68,35 @@ class FileSystemDropbox extends FileSystemLocal implements FileSystemInterface
       }
     }
 
-    return $localStatus && $dropboxStatus;
+    return $dropboxStatus;
+  }
+
+  public function putPhoto($localFile, $remoteFile)
+  {
+    if(strpos($remoteFile, '/original/') !== false)
+    {
+      $exif = Photo::readExif($localFile);
+      $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
+      if(!$this->putFileInDirectory($directory, $localFile, basename($remoteFile)))
+        return false;
+    }
+    return true;
+  }
+
+  public function putPhotos($files)
+  {
+    foreach($files as $file)
+    {
+      list($localFile, $remoteFile) = each($file);
+      if(strpos($remoteFile, '/original/') !== false)
+      {
+        $exif = Photo::readExif($localFile);
+        $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
+        if(!$this->putFileInDirectory($directory, $localFile, basename($remoteFile)))
+          return false;
+      }
+    }
+    return true;
   }
 
   private function putFileInDirectory($directory, $localFile, $destinationName)
@@ -155,6 +128,16 @@ class FileSystemDropbox extends FileSystemLocal implements FileSystemInterface
       }
     }
 
-    $this->dropbox->putFile(sprintf('%s/%s', $destinationDirectory, $destinationName), $localFile);
+    try
+    {
+      $this->dropbox->putFile(sprintf('%s/%s', $destinationDirectory, $destinationName), $localFile);
+      getLogger()->info(sprintf('Successfully stored file (%s) on dropbox.', $destinationName));
+      return true;
+    }
+    catch(Dropbox_Exception $e)
+    {
+      getLogger()->crit(sprintf('Could not put file on dropbox. Message: %s', $e->getMessage()));
+    }
+    return false;
   }
 }

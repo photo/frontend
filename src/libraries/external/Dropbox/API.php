@@ -23,7 +23,7 @@ class Dropbox_API {
     /**
      * API URl
      */
-    protected $api_url = 'api.dropbox.com/0/';
+    protected $api_url = 'api.dropbox.com/1/';
     
     /**
      * Content API URl

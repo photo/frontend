@@ -44,8 +44,9 @@
       <label for="fileSystem">Select File System</label>
       <select name="fileSystem">
         <option value="S3"<?php echo ($filesystem == 'S3') ? ' selected="selected"' : '' ?>>Amazon S3</option>
-        <option value="Dropbox"<?php echo ($filesystem == 'Dropbox') ? ' selected="selected"' : '' ?>>Dropbox + Local filesystem</option>
-        <option value="LocalFs"<?php echo ($filesystem == 'LocalFs') ? ' selected="selected"' : '' ?>>Local filesystem</option>
+        <option value="S3Dropbox"<?php echo ($filesystem == 'S3Dropbox') ? ' selected="selected"' : '' ?>>Amazon S3 + Dropbox</option>
+        <option value="Local"<?php echo ($filesystem == 'Local') ? ' selected="selected"' : '' ?>>Local filesystem</option>
+        <option value="LocalDropbox"<?php echo ($filesystem == 'LocalDropbox') ? ' selected="selected"' : '' ?>>Local filesystem + Dropbox</option>
       </select>
       <button type="submit">Continue to Step 3</button>
     </form>
@@ -89,19 +90,19 @@
         <label for="mySqlTablePrefix">Table prefix</label>
         <input type="text" name="mySqlTablePrefix" value="op_" id="mySqlTablePrefix" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlTablePrefix; ?>">
       <?php } ?>
-      <?php if((isset($usesLocalFs) && !empty($usesLocalFs)) || (isset($usesDropbox) && !empty($usesDropbox))) { ?>
+      <?php if((isset($usesLocalFs) && !empty($usesLocalFs))) { ?>
         <h3>Enter your local file system credentials <em>(<a href="">what's this?</a>)</em></h3>
         <label for="fsRoot">File system root</label>
         <input type="text" name="fsRoot" id="fsRoot" size="50" placeholder="/home/username/openphoto/src/html/photos (full path to writable directory)" data-validation="required" value="<?php echo $fsRoot; ?>">
         <label for="fsHost">File system hostname for download URL</label>
         <input type="text" name="fsHost" id="fsHost" size="50" placeholder="example.com/photos (no http:// or trailing slash)" data-validation="required" value="<?php echo $fsHost; ?>">
-        <?php if(isset($usesDropbox) && !empty($usesDropbox)) { ?>
-          <input type="hidden" name="dropboxKey" value="<?php Utility::safe($dropboxKey); ?>">
-          <input type="hidden" name="dropboxSecret" value="<?php Utility::safe($dropboxSecret); ?>">
-          <input type="hidden" name="dropboxToken" value="<?php Utility::safe($dropboxToken); ?>">
-          <input type="hidden" name="dropboxTokenSecret" value="<?php Utility::safe($dropboxTokenSecret); ?>">
-          <input type="hidden" name="dropboxFolder" value="<?php Utility::safe($dropboxFolder); ?>">
-        <?php } ?>
+      <?php } ?>
+      <?php if(isset($usesDropbox) && !empty($usesDropbox)) { ?>
+        <input type="hidden" name="dropboxKey" value="<?php Utility::safe($dropboxKey); ?>">
+        <input type="hidden" name="dropboxSecret" value="<?php Utility::safe($dropboxSecret); ?>">
+        <input type="hidden" name="dropboxToken" value="<?php Utility::safe($dropboxToken); ?>">
+        <input type="hidden" name="dropboxTokenSecret" value="<?php Utility::safe($dropboxTokenSecret); ?>">
+        <input type="hidden" name="dropboxFolder" value="<?php Utility::safe($dropboxFolder); ?>">
       <?php } ?>
       <button type="submit">Complete setup</button>
     </form>
