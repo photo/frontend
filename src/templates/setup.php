@@ -1,5 +1,5 @@
 <div id="setup">
-  <h1>Create your OpenPhoto site <em><a href="/setup/restart">(start over)</a></em></h1>
+  <h1>Create your OpenPhoto site <?php if(!isset($_GET['edit'])) { ?><em><a href="/setup/restart">(start over)</a></em><?php } ?></h1>
   <ol id="setup-steps">
     <?php for($i = 1; $i <= 3; $i++) { ?>
       <li<?php echo ($step == $i) ? ' class="current"' : ''; ?>><?php echo $i; ?></li>
@@ -22,6 +22,7 @@
       <label for="email">Email address</label>
       <input type="text" name="email" id="email" <?php if(isset($email)) { ?>value="<?php Utility::safe($email); ?>"<?php } ?> data-validation="required email">
       <input type="hidden" name="appId" id="appId" <?php if(isset($appId)) { ?>value="<?php Utility::safe($appId); ?>"<?php } ?>>
+      <button type="button" onclick="window.location = '/'">Cancel</button>
       <button type="submit">Continue to Step 2</button>
     </form>
   </div>
@@ -46,6 +47,7 @@
         <option value="S3"<?php echo ($filesystem == 'S3') ? ' selected="selected"' : '' ?>>Amazon S3</option>
         <option value="LocalFs"<?php echo ($filesystem == 'LocalFs') ? ' selected="selected"' : '' ?>>Local filesystem</option>
       </select>
+      <button type="button" onclick="window.location = '/'">Cancel</button>
       <button type="submit">Continue to Step 3</button>
     </form>
   </div>
@@ -95,6 +97,7 @@
           <label for="fsHost">File system hostname for download URL</label>
         <input type="text" name="fsHost" id="fsHost" size="50" data-validation="required" value="<?php echo $fsHost; ?>">
       <?php } ?>
+      <button type="button" onclick="window.location = '/'">Cancel</button>
       <button type="submit">Complete setup</button>
     </form>
   </div>
