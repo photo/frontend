@@ -206,6 +206,47 @@ class Photo
   }
 
   /**
+    * Reads exif data from a photo.
+    *
+    * @param $photo Path to the photo.
+    * @return array 
+    */
+  public static function readExif($photo)
+  {
+    $exif = @exif_read_data($photo);
+    if(!$exif)
+      return null;
+    $size = getimagesize($photo);
+    $dateTaken = $exif['FileDateTime'];
+    if(array_key_exists('DateTime', $exif))
+    {
+      $dateTime = explode(' ', $exif['DateTime']);
+      $date = explode(':', $dateTime[0]);
+      $time = explode(':', $dateTime[1]);
+      $dateTaken = @mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]);
+    }
+
+    $exif_array = array('dateTaken' => $dateTaken, 'width' => $size[0], 
+      'height' => $size[1], 'cameraModel' => @$exif['Model'], 
+      'cameraMake' => @$exif['Make'],
+      'ISO' => @$exif['ISOSpeedRatings'],
+      'exposureTime' => @$exif['ExposureTime']);
+
+    if(isset($exif['GPSLongitude'])) {
+      $exif_array['longitude'] = self::getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
+    }
+
+    if(isset($exif['GPSLatitude'])) {
+      $exif_array['latitude'] = self::getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
+    }
+
+    $exif_array['FNumber'] = self::frac2Num(@$exif['FNumber']);
+    $exif_array['focalLength'] = self::frac2Num(@$exif['FocalLength']);
+
+    return $exif_array;
+  }
+
+  /**
     * Update the attributes of a photo in the database.
     *
     * @param string $id The id of the photo.
@@ -440,47 +481,6 @@ class Photo
     $flip = ($hemi == 'W' or $hemi == 'S') ? -1 : 1;
 
     return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
-  }
-
-  /**
-    * Reads exif data from a photo.
-    *
-    * @param $photo Path to the photo.
-    * @return array 
-    */
-  private static function readExif($photo)
-  {
-    $exif = @exif_read_data($photo);
-    if(!$exif)
-      return null;
-    $size = getimagesize($photo);
-    $dateTaken = $exif['FileDateTime'];
-    if(array_key_exists('DateTime', $exif))
-    {
-      $dateTime = explode(' ', $exif['DateTime']);
-      $date = explode(':', $dateTime[0]);
-      $time = explode(':', $dateTime[1]);
-      $dateTaken = @mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]);
-    }
-
-    $exif_array = array('dateTaken' => $dateTaken, 'width' => $size[0], 
-      'height' => $size[1], 'cameraModel' => @$exif['Model'], 
-      'cameraMake' => @$exif['Make'],
-      'ISO' => @$exif['ISOSpeedRatings'],
-      'exposureTime' => @$exif['ExposureTime']);
-
-    if(isset($exif['GPSLongitude'])) {
-      $exif_array['longitude'] = self::getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
-    }
-
-    if(isset($exif['GPSLatitude'])) {
-      $exif_array['latitude'] = self::getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
-    }
-
-    $exif_array['FNumber'] = self::frac2Num(@$exif['FNumber']);
-    $exif_array['focalLength'] = self::frac2Num(@$exif['FocalLength']);
-
-    return $exif_array;
   }
 
 
