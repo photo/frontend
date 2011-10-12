@@ -86,7 +86,7 @@ class FileSystemLocal implements FileSystemInterface
     return file_exists($this->root);
   }
 
-  private function normalizePath($path)
+  protected function normalizePath($path)
   {
     return $this->root . $path;
   }
