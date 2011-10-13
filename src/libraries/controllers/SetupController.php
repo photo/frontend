@@ -56,14 +56,15 @@ class SetupController
   public static function setupDropbox()
   {
     extract(self::getDefaultConfigParams());
+    $secret = self::getSecret();
     $credentials = getConfig()->get('credentials');
     $dropbox = getConfig()->get('dropbox');
     if($credentials !== null)
     {
       if(isset($credentials->dropboxKey))
-        $dropboxKey = Utility::decrypt($credentials->dropboxKey);
+        $dropboxKey = Utility::decrypt($credentials->dropboxKey, $secret);
       if(isset($credentials->dropboxSecret))
-        $dropboxSecret = Utility::decrypt($credentials->dropboxSecret);
+        $dropboxSecret = Utility::decrypt($credentials->dropboxSecret, $secret);
       if(isset($dropbox->dropboxFolder))
         $dropboxFolder = $dropbox->dropboxFolder;
     }
@@ -92,11 +93,12 @@ class SetupController
       $oauth = new Dropbox_OAuth_PHP($dropboxKey, $dropboxSecret);
       $oauth->setToken($dropboxToken);
       $accessToken = $oauth->getAccessToken();
+      $secret = self::getSecret();
       getSession()->set('dropboxFolder', getSession()->get('flowDropboxFolder'));
-      getSession()->set('dropboxKey', Utility::encrypt(getSession()->get('flowDropboxKey')));
-      getSession()->set('dropboxSecret', Utility::encrypt(getSession()->get('flowDropboxSecret')));
-      getSession()->set('dropboxToken', Utility::encrypt($accessToken['token']));
-      getSession()->set('dropboxTokenSecret', Utility::encrypt($accessToken['token_secret']));
+      getSession()->set('dropboxKey', Utility::encrypt(getSession()->get('flowDropboxKey'), $secret));
+      getSession()->set('dropboxSecret', Utility::encrypt(getSession()->get('flowDropboxSecret'), $secret));
+      getSession()->set('dropboxToken', Utility::encrypt($accessToken['token'], $secret));
+      getSession()->set('dropboxTokenSecret', Utility::encrypt($accessToken['token_secret'], $secret));
 
       $qs = '';
       if(isset($_GET['edit']))
@@ -252,6 +254,7 @@ class SetupController
     }
 
     extract(self::getDefaultConfigParams());
+    $secret = self::getSecret();
     $step = 3;
     $appId = getSession()->get('appId');
     $database = getSession()->get('database');
@@ -267,26 +270,26 @@ class SetupController
     if($dropboxKey)
     {
       $dropboxFolder = getSession()->get('dropboxFolder');
-      $dropboxKey = Utility::decrypt(getSession()->get('dropboxKey'));
-      $dropboxSecret = Utility::decrypt(getSession()->get('dropboxSecret'));
-      $dropboxToken = Utility::decrypt(getSession()->get('dropboxToken'));
-      $dropboxTokenSecret = Utility::decrypt(getSession()->get('dropboxTokenSecret'));
+      $dropboxKey = Utility::decrypt(getSession()->get('dropboxKey'), $secret);
+      $dropboxSecret = Utility::decrypt(getSession()->get('dropboxSecret'), $secret);
+      $dropboxToken = Utility::decrypt(getSession()->get('dropboxToken'), $secret);
+      $dropboxTokenSecret = Utility::decrypt(getSession()->get('dropboxTokenSecret'), $secret);
     }
     elseif(getConfig()->get('credentials') != null)
     {
       $credentials = getConfig()->get('credentials');
       if(isset($credentials->awsKey))
-        $awsKey = Utility::decrypt($credentials->awsKey);
+        $awsKey = Utility::decrypt($credentials->awsKey, $secret);
       if(isset($credentials->awsSecret))
-        $awsSecret = Utility::decrypt($credentials->awsSecret);
+        $awsSecret = Utility::decrypt($credentials->awsSecret, $secret);
       if(isset($credentials->dropboxKey))
-        $dropboxKey = Utility::decrypt($credentials->dropboxKey);
+        $dropboxKey = Utility::decrypt($credentials->dropboxKey, $secret);
       if(isset($credentials->dropboxSecret))
-        $dropboxSecret = Utility::decrypt($credentials->dropboxSecret);
+        $dropboxSecret = Utility::decrypt($credentials->dropboxSecret, $secret);
       if(isset($credentials->dropboxToken))
-        $dropboxToken = Utility::decrypt($credentials->dropboxToken);
+        $dropboxToken = Utility::decrypt($credentials->dropboxToken, $secret);
       if(isset($credentials->dropboxTokenSecret))
-        $dropboxTokenSecret = Utility::decrypt($credentials->dropboxTokenSecret);
+        $dropboxTokenSecret = Utility::decrypt($credentials->dropboxTokenSecret, $secret);
     }
 
     if(getConfig()->get('aws') != null)
@@ -300,7 +303,7 @@ class SetupController
       $mysql = getConfig()->get('mysql');
       $mySqlHost = $mysql->mySqlHost;
       $mySqlUser = $mysql->mySqlUser;
-      $mySqlPassword = Utility::decrypt($mysql->mySqlPassword);
+      $mySqlPassword = Utility::decrypt($mysql->mySqlPassword, $secret);
       $mySqlDb = $mysql->mySqlDb;
       $mySqlTablePrefix = $mysql->mySqlTablePrefix;
     }
@@ -471,15 +474,15 @@ class SetupController
 
       if($usesDropbox)
       {
-        getSession()->set('dropboxKey', Utility::encrypt($dropboxKey));
-        getSession()->set('dropboxSecret', Utility::encrypt($dropboxSecret));
-        getSession()->set('dropboxToken', Utility::encrypt($dropboxToken));
-        getSession()->set('dropboxTokenSecret', Utility::encrypt($dropboxTokenSecret));
+        getSession()->set('dropboxKey', Utility::encrypt($dropboxKey, $secret));
+        getSession()->set('dropboxSecret', Utility::encrypt($dropboxSecret, $secret));
+        getSession()->set('dropboxToken', Utility::encrypt($dropboxToken, $secret));
+        getSession()->set('dropboxTokenSecret', Utility::encrypt($dropboxTokenSecret, $secret));
         getSession()->set('dropboxFolder', $dropboxFolder);
-        $credentials->dropboxKey = Utility::encrypt($dropboxKey);
-        $credentials->dropboxSecret = Utility::encrypt($dropboxSecret);
-        $credentials->dropboxToken = Utility::encrypt($dropboxToken);
-        $credentials->dropboxTokenSecret = Utility::encrypt($dropboxTokenSecret);
+        $credentials->dropboxKey = Utility::encrypt($dropboxKey, $secret);
+        $credentials->dropboxSecret = Utility::encrypt($dropboxSecret, $secret);
+        $credentials->dropboxToken = Utility::encrypt($dropboxToken, $secret);
+        $credentials->dropboxTokenSecret = Utility::encrypt($dropboxTokenSecret, $secret);
         $dropbox = new stdClass;
         $dropbox->dropboxFolder = $dropboxFolder;
       }
