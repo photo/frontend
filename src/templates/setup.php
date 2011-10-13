@@ -1,5 +1,5 @@
 <div id="setup">
-  <h1>Create your OpenPhoto site <em><a href="/setup/restart">(start over)</a></em></h1>
+  <h1>Create your OpenPhoto site <?php if(!isset($_GET['edit'])) { ?><em><a href="/setup/restart">(start over)</a></em><?php } ?></h1>
   <ol id="setup-steps">
     <?php for($i = 1; $i <= 3; $i++) { ?>
       <li<?php echo ($step == $i) ? ' class="current"' : ''; ?>><?php echo $i; ?></li>
@@ -22,6 +22,7 @@
       <label for="email">Email address</label>
       <input type="text" name="email" id="email" <?php if(isset($email)) { ?>value="<?php Utility::safe($email); ?>"<?php } ?> data-validation="required email">
       <input type="hidden" name="appId" id="appId" <?php if(isset($appId)) { ?>value="<?php Utility::safe($appId); ?>"<?php } ?>>
+      <?php if(isset($_GET['edit'])) { ?><button type="button" onclick="window.location = '/'">Cancel</button><?php } ?>
       <button type="submit">Continue to Step 2</button>
     </form>
   </div>
@@ -48,6 +49,7 @@
         <option value="Local"<?php echo ($filesystem == 'Local') ? ' selected="selected"' : '' ?>>Local filesystem</option>
         <option value="LocalDropbox"<?php echo ($filesystem == 'LocalDropbox') ? ' selected="selected"' : '' ?>>Local filesystem + Dropbox</option>
       </select>
+      <?php if(isset($_GET['edit'])) { ?><button type="button" onclick="window.location = '/'">Cancel</button><?php } ?>
       <button type="submit">Continue to Step 3</button>
     </form>
   </div>
@@ -104,6 +106,7 @@
         <input type="hidden" name="dropboxTokenSecret" value="<?php Utility::safe($dropboxTokenSecret); ?>">
         <input type="hidden" name="dropboxFolder" value="<?php Utility::safe($dropboxFolder); ?>">
       <?php } ?>
+      <?php if(isset($_GET['edit'])) { ?><button type="button" onclick="window.location = '/'">Cancel</button><?php } ?>
       <button type="submit">Complete setup</button>
     </form>
   </div>
