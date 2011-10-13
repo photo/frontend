@@ -662,7 +662,13 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putGroup($id, $params)
   {
-    return $this->postGroup($id, $params);
+    if(!isset($params['id']))
+      $params['id'] = $id;
+    $params = self::prepareGroup($id, $params);
+    $stmt = self::sqlInsertExplode($params);
+    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}group` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
+
+    return ($result !== false);
   }
 
   /**
@@ -1012,9 +1018,9 @@ class DatabaseMySql implements DatabaseInterface
   private function prepareGroup($id, $params)
   {
     if(!isset($params['members']))
-      $params['members'] = array();
-    elseif(!is_array($params['members']))
-      $params['members'] = (array)explode(',', $params['members']);
+      $params['members'] = '';
+    elseif(is_array($params['members']))
+      $params['members'] = implode(',', $params['members']);
     return $params;
   }
 

@@ -27,10 +27,11 @@ class FileSystemLocal implements FileSystemInterface
     {
       if(strncmp($key, 'path', 4) === 0) {
         $path = self::normalizePath($value);
-        $ret = unlink($path);
+        if(!@unlink($path))
+          return false;
       }
     }
-    return $ret;
+    return true;
   }
 
   /**
@@ -56,7 +57,7 @@ class FileSystemLocal implements FileSystemInterface
     if(!file_exists($dirname)) {
       mkdir($dirname, 0775, true);
     }
-    //
+    getLogger()->info(sprintf('Copying from %s to %s', $localFile, $remoteFile));
     return copy($localFile, $remoteFile);
   }
 
@@ -65,7 +66,7 @@ class FileSystemLocal implements FileSystemInterface
     foreach($files as $file)
     {
       list($localFile, $remoteFile) = each($file);
-      $res = $this->putPhoto($localFile, $remoteFile);
+      $res = self::putPhoto($localFile, $remoteFile);
       if(!$res)
         return false;
     }
@@ -86,7 +87,7 @@ class FileSystemLocal implements FileSystemInterface
     return file_exists($this->root);
   }
 
-  private function normalizePath($path)
+  public function normalizePath($path)
   {
     return $this->root . $path;
   }

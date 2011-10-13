@@ -65,11 +65,3 @@ getRoute()->get('/v[1]/oauth/token/access', array('OAuthController', 'tokenAcces
 getRoute()->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenRequest'));
 getRoute()->get('/v[1]/oauth/test', array('OAuthController', 'test'));
 getRoute()->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
-
-/*
- * Error endpoints
- * All error endpoints follow the same convention.
- * /error/{code}
- */
-getRoute()->get('/error/403', array('GeneralController', 'error403'));
-getRoute()->get('/error/404', array('GeneralController', 'error404'));
