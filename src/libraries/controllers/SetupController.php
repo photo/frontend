@@ -28,6 +28,18 @@ class SetupController
     if(extension_loaded('gd') && function_exists('gd_info'))
       $imageLibs['GD'] = 'GD';
 
+    $imageLibrary = '';
+    if(getConfig()->get('modules') != null)
+      $imageLibrary = getConfig()->get('modules')->image;
+
+    $database = '';
+    $filesystem = '';
+    if(getConfig()->get('systems') != null)
+    {
+      $database = getConfig()->get('systems')->database;
+      $filesystem = getConfig()->get('systems')->fileSystem;
+    }
+
     $errors = self::verifyRequirements($imageLibs);
 
     if(count($errors) > 0)
@@ -44,7 +56,8 @@ class SetupController
       $qs = '?edit';
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('imageLibs' => $imageLibs, 'appId' => $appId, 'step' => $step, 'email' => $email, 'qs' => $qs, 'errors' => $errors));
+    $body = getTemplate()->get($template, array('filesystem' => $filesystem, 'database' => $database, 'imageLibs' => $imageLibs, 
+      'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'qs' => $qs, 'errors' => $errors));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
