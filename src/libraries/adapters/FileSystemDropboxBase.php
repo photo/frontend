@@ -29,13 +29,17 @@ class FileSystemDropboxBase
     try
     {
       $this->dropbox->delete(sprintf('%s/%s/%s', $this->dropboxFolder, $directory, basename($photo['pathOriginal'])));
-      return true;
+    }
+    catch(Dropbox_Exception_NotFound $e)
+    {
+      getLogger()->info('Photo does not exist on dropbox. Skipping delete operation.');
     }
     catch(Dropbox_Exception $e)
     {
       getLogger()->crit(sprintf('Could not delete photo (%s). Message: %s', $id, $e->getMessage()));
-      return true;
+      return false;
     }
+    return true;
   }
 
   public function initialize()
