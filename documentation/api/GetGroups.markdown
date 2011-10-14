@@ -103,7 +103,7 @@ The response is in a standard [response envelope][Envelope].
     }
 
 [Envelope]: Envelope.markdown
-[Photo]: ../schemas/Group.markdown
+[Group]: ../schemas/Group.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters
