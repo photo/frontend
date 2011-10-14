@@ -93,7 +93,7 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
 [PostGroupUpdate]: PostGroupUpdate.markdown
 [PostGroupDelete]: PostGroupDelete.markdown
 [GetWebhook]: GetWebhook.markdown
-[PostWebhookSubscribe]: PostWebHookSubscribe.markdown
+[PostWebhookSubscribe]: PostWebhookSubscribe.markdown
 [PostWebhookDelete]: PostWebhookDelete.markdown
 [authentication]: Authentication.markdown
 [oauth1.0a]: http://oauth.net/core/1.0a/
