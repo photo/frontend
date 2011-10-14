@@ -47,7 +47,7 @@ There are importing tools available to make the switch easy.
 [aws]: http://aws.amazon.com/
 [s3]: http://aws.amazon.com/s3/
 [simpledb]: http://aws.amazon.com/simpledb/
-[api]: documentation/api/Api.markdown
-[faq]: documentation/faq/Faq.markdown
-[schemas]: documentation/schemas/Schemas.markdown
-[guides]: documentation/guides/Guides.markdown
+[api]: https://github.com/openphoto/frontend/blob/master/documentation/api/Api.markdown
+[faq]: https://github.com/openphoto/frontend/blob/master/documentation/faq/Faq.markdown
+[schemas]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Schemas.markdown
+[guides]: https://github.com/openphoto/frontend/blob/master/documentation/guides/Guides.markdown
