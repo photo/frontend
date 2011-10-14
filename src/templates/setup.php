@@ -1,5 +1,5 @@
 <div id="setup">
-  <h1>Create your OpenPhoto site <em><a href="/setup/restart">(start over)</a></em></h1>
+  <h1>Create your OpenPhoto site <?php if(empty($qs)) { ?><em><a href="/setup/restart">(start over)</a></em><?php } ?></h1>
   <ol id="setup-steps">
     <?php for($i = 1; $i <= 3; $i++) { ?>
       <li<?php echo ($step == $i) ? ' class="current"' : ''; ?>><?php echo $i; ?></li>
@@ -18,9 +18,9 @@
   <?php } ?>
   <div id="setup-step-1"<?php echo ($step != 1) ? ' class="hidden"' : ''?>>
     <form class="validate" action="/setup<?php echo $qs ?>" method="post">
-      <h2>User Settings <em>(<a href="">what's this?</a>)</em></h2>
+      <h2>User Settings</h2>
       <label for="email">Email address</label>
-      <input type="text" name="email" id="email" <?php if(isset($email)) { ?>value="<?php Utility::safe($email); ?>"<?php } ?> data-validation="required email">
+      <input type="text" name="email" id="email" placeholder="user@example.com" <?php if(isset($email)) { ?>value="<?php Utility::safe($email); ?>"<?php } ?> data-validation="required email">
       <input type="hidden" name="appId" id="appId" <?php if(isset($appId)) { ?>value="<?php Utility::safe($appId); ?>"<?php } ?>>
       <button type="submit">Continue to Step 2</button>
     </form>
@@ -55,11 +55,11 @@
     <form class="validate" action="/setup/3<?php echo $qs; ?>" method="post">
       <h2>Credentials<!-- <em>(<a href="">what's this?</a>)</em>--></h2>
       <?php if(isset($usesAws) && $usesAws) { ?>
-        <h3>Enter your Amazon credentials <em>(<a href="http://s3.amazonaws.com/mturk/tools/pages/aws-access-identifiers/aws-identifier.html">what's this?</a>)</em></h3>
+        <h3>Enter your Amazon credentials <em>(<a href="https://aws-portal.amazon.com/gp/aws/developer/account/index.html?action=access-key" target="_blank">what's this?</a>)</em></h3>
         <label for="awsKey">Amazon Access Key ID</label>
-        <input type="password" name="awsKey" id="awsKey" size="50" autocomplete="off" data-validation="required" value="<?php echo $awsKey; ?>">
+        <input type="password" name="awsKey" id="awsKey" placeholder="Your AWS access key" size="50" autocomplete="off" data-validation="required" value="<?php echo $awsKey; ?>">
         <label for="awsSecret">Amazon Secret Access Key</label>
-        <input type="password" name="awsSecret" id="awsSecret" size="50" autocomplete="off" data-validation="required" value="<?php echo $awsSecret; ?>">
+        <input type="password" name="awsSecret" id="awsSecret" placeholder="Your AWS access secret" size="50" autocomplete="off" data-validation="required" value="<?php echo $awsSecret; ?>">
         <?php if(isset($usesS3) && $usesS3) { ?>
           <label for="s3Bucket">Amazon S3 Bucket Name</label>
           <?php if(isset($s3Bucket) && !empty($s3Bucket)) { ?>
@@ -78,23 +78,23 @@
         <?php } ?>
       <?php } ?>
       <?php if(isset($usesMySql) && !empty($usesMySql)) { ?>
-        <h3>Enter your MySQL credentials <em>(<a href="">what's this?</a>)</em></h3>
+        <h3>Enter your MySQL credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
         <label for="mySqlHost">MySQL Host</label>
-        <input type="text" name="mySqlHost" id="mySqlHost" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlHost; ?>">
+        <input type="text" name="mySqlHost" id="mySqlHost" placeholder="Your MySql host (i.e. 127.0.0.1)" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlHost; ?>">
         <label for="mySqlUser">MySQL Username</label>
-        <input type="text" name="mySqlUser" id="mySqlUser" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlUser; ?>">
+        <input type="text" name="mySqlUser" id="mySqlUser" placeholder="Your MySql username" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlUser; ?>">
         <label for="mySqlPassword">MySQL Password</label>
-        <input type="password" name="mySqlPassword" id="mySqlPassword" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlPassword; ?>">
+        <input type="password" name="mySqlPassword" id="mySqlPassword" placeholder="Your MySql password" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlPassword; ?>">
         <label for="mySqlDb">MySQL Database <em>(this needs to already exist)</em></label>
-        <input type="text" name="mySqlDb" value="openphoto" id="mySqlDb" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlDb; ?>">
-        <label for="mySqlTablePrefix">Table prefix</label>
-        <input type="text" name="mySqlTablePrefix" value="op_" id="mySqlTablePrefix" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlTablePrefix; ?>">
+        <input type="text" name="mySqlDb" placeholder="Name of your MySql database" value="openphoto" id="mySqlDb" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlDb; ?>">
+        <label for="mySqlTablePrefix">Table prefix <em>(optional)</em></label>
+        <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" value="op_" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
       <?php } ?>
       <?php if((isset($usesLocalFs) && !empty($usesLocalFs))) { ?>
-        <h3>Enter your local file system credentials <em>(<a href="">what's this?</a>)</em></h3>
-        <label for="fsRoot">File system root</label>
+        <h3>Enter your local file system credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
+        <label for="fsRoot">File system root <em>(Must be writable by Apache user)</em></label>
         <input type="text" name="fsRoot" id="fsRoot" size="50" placeholder="/home/username/openphoto/src/html/photos (full path to writable directory)" data-validation="required" value="<?php echo $fsRoot; ?>">
-        <label for="fsHost">File system hostname for download URL</label>
+        <label for="fsHost">File system hostname for download URL <em>(Web accessible w/o "http://")</em></label>
         <input type="text" name="fsHost" id="fsHost" size="50" placeholder="example.com/photos (no http:// or trailing slash)" data-validation="required" value="<?php echo $fsHost; ?>">
       <?php } ?>
       <?php if(isset($usesDropbox) && !empty($usesDropbox)) { ?>

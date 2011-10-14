@@ -50,6 +50,8 @@ class SetupController
     $email = '';
     if(getConfig()->get('user') != null)
       $email = getConfig()->get('user')->email;
+    elseif(User::isLoggedIn())
+      $email = getSession()->get('email');
 
     $qs = '';
     if(isset($_GET['edit']))
@@ -151,7 +153,7 @@ class SetupController
     catch(Dropbox_Exception $e)
     {
       getLogger()->crit(sprintf('An error occured getting the Dropbox authorize url. Message: %s', $e->getMessage()));
-      getRoute()->run('/error/500');
+      getRoute()->run('/error/500', EpiRoute::httpGet);
     }
   }
 
@@ -288,7 +290,7 @@ class SetupController
       $dropboxToken = Utility::decrypt(getSession()->get('dropboxToken'), $secret);
       $dropboxTokenSecret = Utility::decrypt(getSession()->get('dropboxTokenSecret'), $secret);
     }
-    elseif(getConfig()->get('credentials') != null)
+    if(getConfig()->get('credentials') != null)
     {
       $credentials = getConfig()->get('credentials');
       if(isset($credentials->awsKey))
