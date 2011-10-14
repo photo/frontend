@@ -197,6 +197,13 @@ var opTheme = (function() {
 									errors.push(new Array(child, message));
 								}
 							}
+
+							if(dataValidationArray[i] == 'alphanumeric') {
+								if(!opTheme.formHandlers.passesAlphaNumeric(child)) {
+									var message = child.prev().html() + ' can only contain alpha-numeric characters';
+									errors.push(new Array(child, message));
+								}
+							}
 						}
 					}
 				});
@@ -210,6 +217,11 @@ var opTheme = (function() {
 				$('input[data-placeholder]').live('focus', opTheme.formHandlers.placeholderFocus);
 				$('input[data-placeholder]').live('blur', opTheme.formHandlers.placeholderBlur);
 			},
+
+      passesAlphaNumeric: function(obj) {
+				var regex = /^[a-zA-Z0-9]+$/;
+				return regex.test(obj.val());
+      },
 
 			passesDate: function(obj) {
 				var regex = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
@@ -352,11 +364,11 @@ var opTheme = (function() {
       },
       
       duplicate : function() {
-        opTheme.messageBox("duplicate image");
+        opTheme.message.error("duplicate image");
       },
       
       notImage : function() {
-        opTheme.messageBox("not an image file");
+        opTheme.message.error("not an image file");
       },
       
       pushToUI : function(files) {
@@ -505,7 +517,7 @@ var opTheme = (function() {
 					errors[0][0].focus();
 
 					// bring up the error message box
-					opTheme.messageBox(messageHtml);
+					opTheme.message.error(messageHtml);
 				}
 			}
 		},

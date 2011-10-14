@@ -34,3 +34,15 @@ class OPAuthorizationException extends OPException{}
 class OPAuthorizationOAuthException extends OPAuthorizationException{}
 class OPAuthorizationSessionException extends OPAuthorizationException{}
 class OPInvalidImageException extends OPException{}
+
+function op_exception_handler($exception)
+{
+  static $handled;
+  if(!$handled)
+  {
+    getLogger()->warn(sprintf('Uncaught exception (%s:%s): %s', $exception->getFile(), $exception->getLine(), $exception->getMessage()));
+    getRoute()->run('/error/500');
+    $handled = 1;
+  }
+}
+set_exception_handler('op_exception_handler');
