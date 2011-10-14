@@ -5,19 +5,19 @@
       <form method="post" action="<?php Url::photoUpdate($photo['id']); ?>">
         <input type="hidden" name="crumb" value="<?php Utility::safe($crumb); ?>">
         <label>Title</label>
-        <input type="text" name="title" value="<?php Utility::safe($photo['title']); ?>">
+        <input type="text" name="title" placeholder="A title to describe your photo" value="<?php Utility::safe($photo['title']); ?>">
 
         <label>Description</label>
-        <textarea name="description"><?php Utility::safe($photo['description']); ?></textarea>
+        <textarea name="description" placeholder="A description of the photo (typically longer than the title)"><?php Utility::safe($photo['description']); ?></textarea>
 
         <label>Tags</label>
-        <input type="text" name="tags" value="<?php Utility::safe(implode(',', $photo['tags'])); ?>">
+        <input type="text" name="tags" placeholder="A comma separated list of tags" value="<?php Utility::safe(implode(',', $photo['tags'])); ?>">
 
         <label>Latitude</label>
-        <input type="text" name="latitude" value="<?php Utility::safe($photo['latitude']); ?>">
+        <input type="text" name="latitude" placeholder="A latitude value for the location of this photo (i.e. 49.7364565)" value="<?php Utility::safe($photo['latitude']); ?>">
 
         <label>Longitude</label>
-        <input type="text" name="longitude" value="<?php Utility::safe($photo['longitude']); ?>">
+        <input type="text" name="longitude" placeholder="A longitude value for the location of this photo (i.e. 181.34523224)" value="<?php Utility::safe($photo['longitude']); ?>">
 
         <label>Permission</label>
         <div>
