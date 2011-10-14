@@ -1,7 +1,8 @@
 <h1>Reconfigure settings</h1>
-<div>
-  <a href="/setup?edit" class="button">Start Now</a>
-</div>
+<form action="/setup">
+  <button type="submit">Start Now</button>
+  <input type="hidden" name="edit">
+</form>
 
 <hr>
 
