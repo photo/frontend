@@ -7,11 +7,6 @@ Open Photo API / Get Photo
 1. [Purpose][purpose]
 1. [Endpoint][endpoint]
 1. [Parameters][parameters]
-1. [Examples][examples]
-  * [Command line][example-cli]
-  * [PHP][example-php]
-1. [Response][response]
-  * [Sample][sample]
 
 ----------------------------------------
 
@@ -23,6 +18,7 @@ Use this API to create a new webhook for a user.
 This API differs from our others in that it's both interactive and does not return a [Standard Envelope][Envelope]. These are the steps required to complete a webhook subscription.
 
 <a name="verification"></a>
+
 1.  The consumer _(you)_ makes a POST request to the provider _(the API host)_ to `http://apihost.com/webhook/subscribe` with the <a href="#">required parameters</a>.
 1.  The provider makes a GET request back to your `callback` URL passing along a `mode`, `topic`, and `challenge` parameter. A `verifyToken` parameter is passed back if originally supplied.
 1.  The consumer must validate that the subscription was intended (typically using the `verifyToken`) and print out the `challenge` value with a HTTP 200 response code.
