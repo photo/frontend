@@ -133,7 +133,7 @@ class Utility
         return false;
         break;
       case 'tags':
-        if(!empty($route) && preg_match('#^/tags$#', $route))
+        if(!empty($route) && preg_match('#^/tags/list#', $route))
           return true;
         return false;
         break;

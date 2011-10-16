@@ -1,0 +1,5 @@
+#message-box {position:fixed; bottom:0; left:0; width:100%; height:120px; background-color:#EFEFEF; opacity:.7; color:#565050; padding:15px;}
+#message-box div {width:100%; margin:auto;}
+a.message-close {text-decoration:underline; cursor:pointer; color:#43c2fd; position:absolute; top:5px; right:45px;}
+#message-box.error {color:#ca1616;}
+#message-box.confirm {color:#6c9e6d;}
