@@ -45,6 +45,8 @@ getRoute()->get('/tags/list', array('TagController', 'list_')); // view tags
  */
 getRoute()->get('/user/logout', array('UserController', 'logout')); // logout
 getRoute()->get('/user/settings', array('UserController', 'settings'));
+getRoute()->post('/user/login/mobile', array('UserController', 'loginMobile'));
+getRoute()->post('/user/mobile/passphrase', array('UserController', 'mobilePassphrase'));
 
 /*
  * Webhook endpoints follow the same convention.

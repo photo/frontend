@@ -29,14 +29,21 @@ class OAuthController extends BaseController
       }
       else
       {
-        $body = getTheme()->get('oauthApprove.php', array('consumer' => $consumer));
-        getTheme()->display('template.php', array('body' => $body, 'page' => 'oauth-approve'));
+        $bodyTemplate = sprintf('%s/oauthApprove.php', getConfig()->get('paths')->templates);
+        $template = sprintf('%s/template.php', getConfig()->get('paths')->templates);
+        $params = array('consumer' => $consumer);
+        $body = getTemplate()->get($bodyTemplate, $params);
+        getTemplate()->display($template, array('body' => $body, 'page' => 'oauth-approve'));
       }
     }
     else
     {
-      $body = getTheme()->get('oauthCreate.php', array('callback' => $callback));
-      getTheme()->display('template.php', array('body' => $body, 'page' => 'oauth-create'));
+      $bodyTemplate = sprintf('%s/oauthCreate.php', getConfig()->get('paths')->templates);
+      $template = sprintf('%s/template.php', getConfig()->get('paths')->templates);
+      $params = array('callback' => $callback, 'redirect' => $_SERVER['REQUEST_URI']);
+      $params['error'] = isset($_GET['error']) && $_GET['error'] == 1;
+      $body = getTemplate()->get($bodyTemplate, $params);
+      getTemplate()->display($template, array('body' => $body, 'page' => 'oauth-create'));
     }
   }
 
@@ -81,7 +88,7 @@ class OAuthController extends BaseController
     {
       // no oauth token so this call is to create a credential
       // TODO make permissions an array
-      $consumerKey = getCredential()->add($_POST['name'], $_POST['permissions']);
+      $consumerKey = getCredential()->add($_POST['name'], array()/*$_POST['permissions']*/);
       if(!$consumerKey)
       {
         getLogger()->warn(sprintf('Could not add credential for: %s', json_encode($consumerKey)));

@@ -1,0 +1,51 @@
+body {
+    font: 18px/170% 'Lucida Grande','Lucida Sans Unicode',Geneva,Verdana,Sans-Serif;
+    color: #bbb;
+}
+body .container{
+  padding:10px;
+}
+header{
+  height:50px;
+  background-color:#ddd;
+  display:block;
+}
+header h1{
+  width:181px;
+  height:35px;
+  background:url("/assets/images/logo.png") no-repeat;
+  margin:auto;
+  position:relative;
+  top:5px;
+}
+h1 {
+  font-size:18px;
+}
+label, input, button {
+  width:90%;
+  display:block;
+  margin:auto;
+  margin-bottom:10px;
+}
+label{
+  font-weight:bold;
+}
+input{
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  padding:10px 0;
+}
+button {
+  padding:10px 0;
+  border:solid 2px #bbb;
+  background-color:#ddd;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+}
+ol.steps{
+  list-style-type:decimal;
+  margin:0 0 0 20px;
+  padding:0 0 0 20px;
+}
+input.checkbox {
+}
