@@ -28,8 +28,6 @@ class ApiUserController extends BaseController
   public static function loginMobile()
   {
     $mobilePassphrase = User::getMobilePassphrase();
-    getLogger()->info(var_export($mobilePassphrase, 1));
-    getLogger()->info(var_export($_POST, 1));
 
     if(empty($mobilePassphrase) || !isset($_POST['passphrase']) || $mobilePassphrase['phrase'] != $_POST['passphrase'])
       return self::forbidden('Unable to authenticate', false);
