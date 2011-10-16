@@ -17,7 +17,6 @@ class UserController extends BaseController
     $redirect = '/';
     if(isset($_POST['redirect']))
       $redirect = $_POST['redirect'];
-    getLogger()->info(var_export($response, 1));
 
     if($response['code'] == 200)
       getRoute()->redirect($redirect);
