@@ -48,6 +48,7 @@ getApi()->get('/tags/list.json', array('ApiTagController', 'view'), EpiApi::exte
  * /user/{action}.json
  */
 getApi()->post('/user/login.json', array('ApiUserController', 'login'), EpiApi::external);
+getApi()->post('/user/login/mobile.json', array('ApiUserController', 'loginMobile'), EpiApi::external);
 getApi()->get('/user/logout.json', array('ApiUserController', 'logout'), EpiApi::external);
 
 /*

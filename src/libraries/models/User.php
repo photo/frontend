@@ -10,6 +10,8 @@
   */
 class User
 {
+  const mobilePassphraseExpiry = 900; // 15 minutes
+
   /**
     * A user object that caches the value once it's been fetched from the remote datasource.
     * @access private
@@ -50,6 +52,23 @@ class User
   public static function groupUpdate()
   {
 
+  }
+
+  /**
+    * Get mobile passphrase key
+    * @return string
+    */
+  public static function getMobilePassphrase()
+  {
+    $phrase = getCache()->get(self::getMobilePassphraseKey());
+    if(empty($phrase))
+      return null;
+
+    $parts = explode('-', $phrase);
+    if($parts[1] < time())
+      return null;
+
+    return array('phrase' => $parts[0], 'expiresAt' => $parts[1]);
   }
 
   /**
@@ -170,14 +189,46 @@ class User
     if(!isset($response['status']) || $response['status'] != 'okay')
       return false;
 
-    getSession()->set('email', $response['email']);
-    getSession()->set('crumb', md5(getConfig()->get('secrets')->secret . time()));
+    self::setEmail($response['email']);
     return true;
   }
 
+  /**
+    * Log a user out.
+    *
+    * @return voic
+    */
   public static function logout()
   {
     getSession()->end();
+  }
+
+  /**
+    * Set the session email.
+    *
+    * @return voic
+    */
+  public static function setEmail($email)
+  {
+    getSession()->set('email', $email);
+    getSession()->set('crumb', md5(getConfig()->get('secrets')->secret . time()));
+  }
+
+  /**
+    * Sets the mobile passphrase key
+    *
+    * @return string
+    */
+  public static function setMobilePassphrase($destroy = false)
+  {
+    if($destroy === true)
+    {
+      getCache()->set(self::getMobilePassphraseKey(), '');
+      return null;
+    }
+    $phrase = sprintf('%s-%s', substr(md5(uniqid()), 0, 6), time()+self::mobilePassphraseExpiry);
+    getCache()->set(self::getMobilePassphraseKey(), $phrase, self::mobilePassphraseExpiry);
+    return $phrase;
   }
 
   /**
@@ -193,7 +244,6 @@ class User
     return getDb()->putUser(1, self::getDefaultAttributes());
   }
 
-
   /**
     * Default attributes for a new user record.
     *
@@ -202,6 +252,16 @@ class User
   private static function getDefaultAttributes()
   {
     return array('lastPhotoId' => '', 'lastActionId' => '');
+  }
+
+  /**
+    * Mobile passphrase key.
+    *
+    * @return array
+    */
+  private static function getMobilePassphraseKey()
+  {
+    return sprintf('%s-%s', 'mobile.passphrase.key', getenv('HTTP_HOST'));
   }
 
   /**

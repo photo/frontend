@@ -161,7 +161,7 @@ class Utility
       return $template;
 
     $mobileTemplate = str_replace('.php', '-mobile.php', $template);
-    if(!getTheme()->fileExists($mobileTemplate))
+    if(!file_exists($mobileTemplate) && !getTheme()->fileExists($mobileTemplate))
       return $template;
 
     return $mobileTemplate;
