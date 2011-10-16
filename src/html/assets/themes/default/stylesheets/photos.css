@@ -171,6 +171,7 @@ ul.comments li{
   clear:both;
 }
 ul.comments li div.date{
+  clear: both;
   font-size:smaller;
   font-style:italic;
 }
