@@ -69,9 +69,9 @@ nav .on {
     padding: 10px;
     position: relative;
     top:-1px;
-    width: 227px; /* Fixes firefox bug where search input and search button are one 2 different lines */
+    width: 227px;
     height: 22px;
-    z-index: 16; /* Shows menus above photos on the homepage*/
+    z-index: 100; 
     -moz-border-bottom-right-radius: 3px;
     -moz-border-bottom-left-radius: 3px;
     -webkit-border-radius: 0px 0px 3px 3px;
