@@ -198,7 +198,10 @@ ul.comments li form {
     display:inline;
 }
 
-.owner-edit h3 {
+.owner-edit{
+  min-height:600px;
+}
+.owner-edit h1 {
   border-top:solid 1px #aaa;
   border-bottom:solid 1px #aaa;
   background-color: #ddd;
@@ -220,8 +223,23 @@ ul.comments li form {
   margin:0 0 10px 0;
   width:350px;
 }
+.owner-edit form button {
+  display:block;
+  clear:both;
+}
+.owner-edit form input[type="radio"] {
+  float:left;
+  margin:5px 5px 0 0;
+}
 .owner-edit form label + textarea {
   height:50px;
+}
+
+.owner-edit form ul ol{
+  margin:0 0 0 25px;
+}
+.owner-edit{
+  clear:left;
 }
 
 .owner-edit .delete {
@@ -248,5 +266,3 @@ input, textarea, select{
     color:#404040;
     padding:3px;
 }
-
-
