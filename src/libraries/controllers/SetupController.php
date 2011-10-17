@@ -707,6 +707,7 @@ class SetupController
       '{dropboxFolder}' => "",
       '{fsRoot}' => "",
       '{fsHost}' => "",
+      '{temp}' => sys_get_temp_dir(),
       '{email}' => getSession()->get('ownerEmail')
     );
 
