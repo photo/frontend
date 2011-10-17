@@ -1837,4 +1837,23 @@ div#upload ul#upload-queue div.progress > div.complete{
   background-image:-o-linear-gradient( center bottom, rgb(214,105,163) 37%, rgb(235,113,178) 69% );
 }
 #drop-zone .photo .thumb { position:absolute; left:3px; top:3px; -moz-border-radius:3px; -webkit-border-radius:3px; }
+/* settings */
+.settings form label {
+  display:block;
+  font-weight:bold;
+}
+.settings form label + input, .settings form label + textarea {
+  display:block;
+  margin:0 0 10px 0;
+  width:350px;
+}
+.settings ul.groups li {
+  margin:0 0 20px 0;
+}
+.settings ul.credentials, .settings ul.webhooks {
+  margin: 0 0 0 25px;
+}
+.settings ul.credentials ul, .settings ul.webhooks ul {
+  margin: 0 0 0 25px;
+}
 
