@@ -68,7 +68,8 @@
                 'photo-thumbnail-click':'click:photo-thumbnail',
                 'photo-update-click':'click:photo-update',
                 'search-click':'click:search',
-                'settings-click':'click:settings'      
+                'settings-click':'click:settings',
+                'webhook-delete-click':'click:webhook-delete'
             },
             
             'keydown': {

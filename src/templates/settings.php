@@ -40,6 +40,24 @@
 
 <hr>
 
+<h1>Webhooks</h1>
+<?php if(is_array($webhooks) && count($webhooks) > 0) { ?>
+  <ul class="webhooks">
+    <?php foreach($webhooks as $webhook) { ?>
+      <li>
+        <?php Utility::safe($webhook['callback']); ?> (<a href="/webhook/<?php Utility::safe($webhook['id']); ?>/delete" class="webhook-delete-click">delete</a>)
+        <ul>
+          <li>Topic: <?php Utility::safe($webhook['topic']); ?></li>
+        </ul>
+      </li>
+    <?php } ?>
+  </ul>
+<?php } else { ?>
+  <p>You have no Webhooks.</p>
+<?php } ?>
+
+<hr>
+
 <h1>Groups</h1>
 <form method="post" action="/group/create" method="post">
   <label>Name</label>
