@@ -347,8 +347,8 @@ class SetupController
       $qs = '?edit';
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    // copyed to/from setup3Post()
-    $body = getTemplate()->get($template, array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 
+    // copied to/from setup3Post()
+    $body = getTemplate()->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 
       'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket, 
       'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb, 
@@ -584,8 +584,8 @@ class SetupController
       $qs = '?edit';
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    // copyed to/from setup3()
-    $body = getTemplate()->get($template, array('step' => $step, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 
+    // copied to/from setup3()
+    $body = getTemplate()->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql, 
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3, 
       'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket, 
       'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb, 
