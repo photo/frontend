@@ -1,0 +1,21 @@
+body.error h1 {
+  text-align:center;
+  font-size:2em;
+}
+
+body.error p {
+  display:block;
+  margin: 10px 0;
+}
+
+body.error p>img{
+  display:block;
+  width:600px;
+  height:399px;
+  margin:auto;
+  -webkit-box-shadow: 2px 2px 2px #888;
+  -moz-box-shadow: 2px 2px 2px #888;
+  box-shadow: 2px 2px 2px #888;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}

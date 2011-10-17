@@ -48,6 +48,7 @@ getApi()->get('/tags/list.json', array('ApiTagController', 'view'), EpiApi::exte
  * /user/{action}.json
  */
 getApi()->post('/user/login.json', array('ApiUserController', 'login'), EpiApi::external);
+getApi()->post('/user/login/mobile.json', array('ApiUserController', 'loginMobile'), EpiApi::external);
 getApi()->get('/user/logout.json', array('ApiUserController', 'logout'), EpiApi::external);
 
 /*
@@ -77,6 +78,6 @@ getApi()->get('/groups/list.json', array('ApiGroupController', 'list_'), EpiApi:
  */
 getApi()->post('/webhook/create.json', array('ApiWebhookController', 'create'), EpiApi::internal);
 getApi()->post('/webhook/([a-zA-Z0-9]+)/delete.json', array('ApiWebhookController', 'delete'), EpiApi::external);
-getApi()->post('/webhook/([a-zA-Z0-9]+)/update.json', array('ApiWebhookController', 'update'), EpiApi::external);
+getApi()->post('/webhook/([a-zA-Z0-9]+)/update.json', array('ApiWebhookController', 'update'), EpiApi::internal);
 getApi()->get('/webhook/([a-zA-Z0-9]+)/view.json', array('ApiWebhookController', 'view'), EpiApi::external);
 getApi()->get('/webhooks/?(.*)?/list.json', array('ApiWebhookController', 'list_'), EpiApi::internal);

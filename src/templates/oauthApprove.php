@@ -1,12 +1,7 @@
 <?php if(User::isOwner()) { ?>
-  <h1>Would you like ot grant <?php echo $consumer['name']; ?> access to your account?</h1>
+  <h1>Grant <em><?php echo $consumer['name']; ?></em>?</h1>
   <p>
-    <h2>You are providing the following permissions</h2>
-    <ul>
-      <?php foreach($consumer['permissions'] as $permission) { ?>
-        <li><?php echo $permission; ?></li>
-      <?php } ?>
-    </ul>
+    By clicking approve you are granting this application access to your account.
   </p>
   <form method="post">
     <input type="hidden" name="client_key" value="<?php Utility::safe($consumer['id']); ?>">

@@ -1,0 +1,38 @@
+/**
+ * OpenPhoto Default Theme
+ *
+ * Basic styles
+ */
+
+
+body {
+    font: 12px/170% 'Lucida Grande','Lucida Sans Unicode',Geneva,Verdana,Sans-Serif;
+    color: #bbb;
+}
+
+button {
+    border: none;
+    background: transparent;
+}
+
+ul {
+    list-style: none;
+}
+
+.audible,
+.offscreen {
+    position: absolute;
+    left: -9999em;
+}
+
+::-webkit-input-placeholder {
+   color: #aaa;
+}
+
+:-moz-placeholder {
+   color: #aaa;
+}
+.error{
+  color:#8B0000;
+  text-align:center;
+}

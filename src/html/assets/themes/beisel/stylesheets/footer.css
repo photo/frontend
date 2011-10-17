@@ -1,0 +1,15 @@
+/**
+ * OpenPhoto Default Theme
+ *
+ * Footer styles
+ */
+
+footer {
+    height: 50px;
+    background-color: #EFEFEF;
+    border-top: solid 1px #CFCFCF;
+    color: #999;
+    text-align: center;
+    line-height: 50px;
+    margin-top: 1em;
+}

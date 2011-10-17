@@ -1,12 +1,16 @@
-OpenPhoto
-=======================
-#### OpenPhoto - A free, hosted, portable and open source photo sharing service
+<img src="frontend/raw/master/files/creative/logo.png" style="width:234px; height:43px; margin:auto;">
 
-----------------------------------------
 
 ### What is OpenPhoto?
 
-#### OpenPhoto is a way to store and share your photos while keeping control and ownership of them
+1.  [FAQ][faq], Answers to the most common questions.
+1.  [API][api], Documentation to get started building applications on OpenPhoto.
+1.  [Schemas][schemas], Description of what the different objects in OpenPhoto look like (i.e. a photo or a comment).
+1.  [Guides][guides], Detailed guides to help you get the OpenPhoto software installed on various systems.
+
+----------------------------------------
+
+### How does OpenPhoto work?
 
 OpenPhoto works similarly to Flickr, Smugmug and other photo sharing services with one major difference: you retain ownership and give OpenPhoto access to use them.
 All photos, tags and comments are stored in your personal cloud accounts with companies like Amazon, Rackspace or Google. 
@@ -43,4 +47,7 @@ There are importing tools available to make the switch easy.
 [aws]: http://aws.amazon.com/
 [s3]: http://aws.amazon.com/s3/
 [simpledb]: http://aws.amazon.com/simpledb/
-[FAQ]: frontend/documentation/faq/Faq.markdown
+[api]: https://github.com/openphoto/frontend/blob/master/documentation/api/Api.markdown
+[faq]: https://github.com/openphoto/frontend/blob/master/documentation/faq/Faq.markdown
+[schemas]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Schemas.markdown
+[guides]: https://github.com/openphoto/frontend/blob/master/documentation/guides/Guides.markdown

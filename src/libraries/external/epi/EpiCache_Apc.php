@@ -20,12 +20,15 @@ class EpiCache_Apc extends EpiCache
     }
   }
 
-  public function set($key = null, $value = null)
+  public function set($key = null, $value = null, $expiry = null)
   {
     if(empty($key) || $value === null)
       return false;
 
-    apc_store($key, $value, $this->expiry);
+    if($expiry === null)
+      $expiry = $this->expiry;
+
+    apc_store($key, $value, $expiry);
     $this->setEpiCache($key, $value);
     return true;
   }
