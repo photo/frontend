@@ -27,6 +27,16 @@ class FileSystemLocalDropbox extends FileSystemLocal implements FileSystemInterf
   }
 
   /**
+    * Gets diagnostic information for debugging.
+    *
+    * @return array
+    */
+  public function diagnostics()
+  {
+    return array_merge($this->dropbox->diagnostics(), parent::diagnostics());
+  }
+
+  /**
    * Get photo will copy the photo to a temporary file.
    *
    */

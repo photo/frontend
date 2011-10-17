@@ -102,6 +102,23 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Gets diagnostic information for debugging.
+    *
+    * @return array
+    */
+  public function diagnostics()
+  {
+    $diagnostics = array();
+    $res = getDatabase()->execute("SELECT * FROM `{$this->mySqlTablePrefix}photo` LIMIT 1");
+    if($res == 1)
+      $diagnostics[] = Utility::diagnosticLine(true, 'Database connectivity is okay.');
+    else
+      $diagnostics[] = Utility::diagnosticLine(false, 'Could not properly connect to the database.');
+
+    return $diagnostics;
+  }
+
+  /**
     * Get a list of errors
     *
     * @return array

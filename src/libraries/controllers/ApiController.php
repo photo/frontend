@@ -7,6 +7,29 @@
 class ApiController extends BaseController
 {
   /**
+    * A diagnostics endpoint used to verify backends are working.
+    *
+    * @return string Standard JSON envelope 
+    */
+  public static function diagnostics()
+  {
+    getAuthentication()->requireAuthentication();
+    $isOkay = true;
+    $fsDiagnostics = getFs()->diagnostics();
+    $dbDiagnostics = getDb()->diagnostics();
+    foreach(array_merge($fsDiagnostics, $dbDiagnostics) as $diag)
+    {
+      if($diag['status'] === false)
+        $isOkay = false;
+    }
+
+    if($isOkay)
+      return self::success('Diagnostics PASSED!', array('filesystem' => $fsDiagnostics, 'database' => $dbDiagnostics));
+    else
+      return self::success('Diagnostics FAILED!', array('filesystem' => $fsDiagnostics, 'database' => $dbDiagnostics));
+  }
+
+  /**
     * A diagnostics endpoint used to verify calls are working.
     *
     * @return string Standard JSON envelope 

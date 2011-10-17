@@ -32,6 +32,32 @@ class FileSystemLocal implements FileSystemInterface
   }
 
   /**
+    * Gets diagnostic information for debugging.
+    *
+    * @return array
+    */
+  public function diagnostics()
+  {
+    $diagnostics = array();
+    if(is_writable($this->root))
+      $diagnostics[] = Utility::diagnosticLine(true, 'File system is writable.');
+    else
+      $diagnostics[] = Utility::diagnosticLine(false, 'File system is NOT writable.');
+
+    $ch = curl_init(sprintf('%s://%s/', trim(Utility::getProtocol(false)), $this->host));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $result = curl_exec($ch);
+    $resultCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    if($resultCode == '403')
+      $diagnostics[] = Utility::diagnosticLine(true, 'Photo path correctly returns 403.');
+    else
+      $diagnostics[] = Utility::diagnosticLine(false, sprintf('Photo path returns %d instead of 403.', $resultCode));
+
+    return $diagnostics;
+  }
+
+  /**
    * Get photo will copy the photo to a temporary file.
    *
    */

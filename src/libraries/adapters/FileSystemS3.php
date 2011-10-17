@@ -46,6 +46,28 @@ class FileSystemS3 implements FileSystemInterface
   }
 
   /**
+    * Gets diagnostic information for debugging.
+    *
+    * @return array
+    */
+  public function diagnostics()
+  {
+    $diagnostics = array();
+    $aclCheck = $this->fs->get_bucket_acl($this->bucket);
+    if((int)$aclCheck->status == 200)
+    {
+      $storageSize = $this->fs->get_bucket_filesize($this->bucket, true);
+      $diagnostics[] = Utility::diagnosticLine(true, sprintf('Connection to bucket "%s" is okay.', $this->bucket));
+      $diagnostics[] = Utility::diagnosticLine(true, sprintf('Total space used in bucket "%s" is %s.', $this->bucket, $storageSize));
+    }
+    else
+    {
+      $diagnostics[] = Utility::diagnosticLine(false, sprintf('Connection to bucket "%s" is NOT okay.', $this->bucket));
+    }
+    return $diagnostics;
+  }
+
+  /**
     * Retrieves a photo from the remote file system as specified by $filename.
     * This file is stored locally and the path to the local file is returned.
     *
