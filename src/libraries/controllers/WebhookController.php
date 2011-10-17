@@ -13,7 +13,7 @@ class WebhookController extends BaseController
     */
   public static function subscribe()
   {
-    //getAuthentication()->requireAuthentication();
+    getAuthentication()->requireAuthentication();
     $params = $_POST;
     $params['verify'] = 'sync';
     if(isset($params['callback']) && isset($params['mode']) && isset($params['topic']))
@@ -52,21 +52,26 @@ class WebhookController extends BaseController
           if($apiWebhook['code'] === 200)
           {
             header('HTTP/1.1 204 No Content');
+            getLogger()->info(sprintf('Webhook successfully created: %s', json_encode($params)));
             return;
           }
         }
-        getLogger()->warn(sprintf('The verification call failed to meet requirements. Code: %d, Response: %s, Expected: %s, URL: %s', $handle->code, $handle->data, $challenge, $url));
+        $message = sprintf('The verification call failed to meet requirements. Code: %d, Response: %s, Expected: %s, URL: %s', $handle->code, $handle->data, $challenge, $url);
+        getLogger()->warn($message);
       }
       else
       {
-        getLogger()->warn(sprintf('Callback url was invalid: %s', $params['callback']));
+        $message = sprintf('Callback url was invalid: %s', $params['callback']);
+        getLogger()->warn($message);
       }
     }
     else
     {
-      getLogger()->warn(sprintf('Not all required parameters were passed in to webhook subscribe: %s', json_encode($params)));
+      $message = sprintf('Not all required parameters were passed in to webhook subscribe: %s', json_encode($params));
+      getLogger()->warn($message);
     }
 
     header('HTTP/1.1 400 Bad Request');
+    echo $message;
   }
 }

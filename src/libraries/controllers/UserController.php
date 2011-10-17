@@ -57,11 +57,12 @@ class UserController extends BaseController
     getAuthentication()->requireAuthentication();
     $credentials = getApi()->invoke('/oauth/list.json', EpiRoute::httpGet);
     $groups = getApi()->invoke('/groups/list.json', EpiRoute::httpGet);
+    $webhooks = getApi()->invoke('/webhooks/list.json', EpiRoute::httpGet);
     $mobilePassphrase = User::getMobilePassphrase();
     if(!empty($mobilePassphrase))
       $mobilePassphrase['minutes'] = ceil(($mobilePassphrase['expiresAt']-time())/60);
     $template = sprintf('%s/settings.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('credentials' => $credentials['result'], 'groups' => $groups['result'], 'mobilePassphrase' => $mobilePassphrase));
+    $body = getTemplate()->get($template, array('credentials' => $credentials['result'], 'webhooks' => $webhooks['result'], 'groups' => $groups['result'], 'mobilePassphrase' => $mobilePassphrase));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'settings'));
   }
 }
