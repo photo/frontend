@@ -17,7 +17,6 @@ EpiSession::employ(EpiSession::PHP);
 getSession();
 
 getConfig()->load('defaults.ini');
-getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getConfig()->get('site')->theme));
 $configFile = sprintf('%s/generated/%s.ini', Epi::getPath('config'), getenv('HTTP_HOST'));
 
 $runSetup = false;
@@ -29,7 +28,8 @@ if(file_exists($configFile) && !$runSetup)
 {
   getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
   require getConfig()->get('paths')->libraries . '/dependencies.php';
-  if(Utility::isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(__FILE__)), getConfig()->get('site')->theme)))
+  getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName()));
+  if(Utility::isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName())))
     getConfig()->load($mobileSettings);
 }
 else
@@ -52,6 +52,7 @@ else
   require getConfig()->get('paths')->libraries . '/routes-setup.php';
   require getConfig()->get('paths')->libraries . '/dependencies.php';
   require getConfig()->get('paths')->controllers . '/SetupController.php';
+  getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName()));
 
   // Before we run the setup in edit mode, we need to validate ownership
   if(isset($_GET['edit']) && !User::isOwner())
