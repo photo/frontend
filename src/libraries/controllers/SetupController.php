@@ -39,6 +39,8 @@ class SetupController
       $database = getConfig()->get('systems')->database;
       $filesystem = getConfig()->get('systems')->fileSystem;
     }
+    $theme = getTheme()->getThemeName();
+    $themes = getTheme()->getThemes();
 
     $errors = self::verifyRequirements($imageLibs);
 
@@ -58,8 +60,8 @@ class SetupController
       $qs = '?edit';
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('filesystem' => $filesystem, 'database' => $database, 'imageLibs' => $imageLibs, 
-      'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'qs' => $qs, 'errors' => $errors));
+    $body = getTemplate()->get($template, array('filesystem' => $filesystem, 'database' => $database, 'themes' => $themes, 'theme' => $theme, 
+      'imageLibs' => $imageLibs, 'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'qs' => $qs, 'errors' => $errors));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -167,6 +169,7 @@ class SetupController
     $step = 1;
     $appId = isset($_POST['appId']) ? $_POST['appId'] : '';
     $email = isset($_POST['email']) ? $_POST['email'] : '';
+    $theme = isset($_POST['theme']) ? $_POST['theme'] : '';
     $input = array(
       array('Email', $email, 'required')
     );
@@ -177,6 +180,7 @@ class SetupController
       getSession()->set('step', 2);
       getSession()->set('appId', $appId);
       getSession()->set('ownerEmail', $email);
+      getSession()->set('theme', $theme);
 
       $qs = '';
       if(isset($_GET['edit']))
@@ -708,6 +712,7 @@ class SetupController
       '{fsRoot}' => "",
       '{fsHost}' => "",
       '{temp}' => sys_get_temp_dir(),
+      '{theme}' => getSession()->get('theme'),
       '{email}' => getSession()->get('ownerEmail')
     );
 

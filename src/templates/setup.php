@@ -21,6 +21,15 @@
       <h2>User Settings</h2>
       <label for="email">Email address</label>
       <input type="text" name="email" id="email" placeholder="user@example.com" <?php if(isset($email)) { ?>value="<?php Utility::safe($email); ?>"<?php } ?> data-validation="required email">
+
+      <label for="theme">Select a theme</label>
+      <select name="theme">
+        <?php foreach($themes as $theme) { ?>
+          <option value="<?php Utility::safe($theme); ?>"><?php echo ucwords(Utility::safe($theme, false)); ?></option>
+        <?php } ?>
+      </select>
+      <input type="text" name="email" id="email" placeholder="user@example.com" <?php if(isset($email)) { ?>value="<?php Utility::safe($email); ?>"<?php } ?> data-validation="required email">
+
       <input type="hidden" name="appId" id="appId" <?php if(isset($appId)) { ?>value="<?php Utility::safe($appId); ?>"<?php } ?>>
       <button type="submit">Continue to Step 2</button>
     </form>

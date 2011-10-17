@@ -67,6 +67,20 @@ class Theme
     return $this->theme;
   }
 
+  public function getThemes()
+  {
+    $dir = dir(getConfig()->get('paths')->themes);
+    $dirs = array();
+    while (($name = $dir->read()) !== false)
+    {
+      if(substr($name, 0, 1) == '.')
+        continue;
+
+      $dirs[] = $name;
+    }
+    return $dirs;
+  }
+
   public function meta($page, $key, $write = true)
   {
     if(isset(getConfig()->get($page)->$key))
