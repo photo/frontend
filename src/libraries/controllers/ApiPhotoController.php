@@ -52,7 +52,7 @@ class ApiPhotoController extends BaseController
       if(isset($photo['license']))
         $license = $photo['license'];
       $markup = getTemplate()->get($template, array('photo' => $photo, 'groups' => $groups, 'licenses' => Utility::getLicenses($license), 'crumb' => getSession()->get('crumb')));
-      return self::success('Photo deleted successfully', array('markup' => $markup));
+      return self::success('Photo edit markup', array('markup' => $markup));
     }
 
     return self::error('Photo edit markup failure', false);

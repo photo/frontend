@@ -1,8 +1,8 @@
 /* ---
 
 Project:		openphoto.me
-Version:		0.3
-Last change:	16/10/11
+Version:		0.4
+Last change:	17/10/11
 Author:			Tobias Beisel / www.beisel.biz
 
 Index:
@@ -19,8 +19,10 @@ Index:
   04.03 Pagnination
   04.04 Photos
   04.05 Photos detail
-  04.06 Tags
-  04.07 Setup
+  04.06 Photo edit
+  04.07 Tags
+  04.08 Setup
+  04.09 Settings
 05 Footer
 
 
@@ -170,6 +172,92 @@ a:hover {
 
 .hidden {
 	display:none;
+}
+
+button {
+	background:#999;
+	background:-moz-linear-gradient(top, #999 0%, #666 100%);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#999), color-stop(100%,#666));
+	background:-webkit-linear-gradient(top, #999 0%,#666 100%);
+	background:-o-linear-gradient(top, #999 0%,#666 100%);
+	background:-ms-linear-gradient(top, #999 0%,#666 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#999', endColorstr='#666',GradientType=0 );
+	background:linear-gradient(top, #999 0%,#666 100%);
+	-moz-border-radius-topleft:5px;
+	-moz-border-radius-topright:5px;
+	-moz-border-radius-bottomright:5px;
+	-moz-border-radius-bottomleft:5px;
+	-webkit-border-radius:5px 5px 5px 5px;
+	border-radius:5px 5px 5px 5px;
+	border:1px solid #666;
+	color:white;
+	cursor:pointer;
+	display:inline-block;
+	font-weight:bold;
+	height:20px;
+	margin:0 10px 0 0;
+	padding:0 10px;
+	text-shadow:0px -1px 1px #333;
+	filter:dropshadow(color=#333, offx=0, offy=-1);
+	text-align:center;
+	vertical-align:center;
+	width:auto;
+}
+
+button:hover {
+	background:#666;
+	background:-moz-linear-gradient(top, #666 0%, #999 100%);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#666), color-stop(100%,#999));
+	background:-webkit-linear-gradient(top, #666 0%,#999 100%);
+	background:-o-linear-gradient(top, #666 0%,#999 100%);
+	background:-ms-linear-gradient(top, #666 0%,#999 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#666', endColorstr='#999',GradientType=0 );
+	background:linear-gradient(top, #666 0%,#999 100%);
+	text-shadow:0px 1px 1px #333;
+	filter:dropshadow(color=#333, offx=0, offy=1);
+}
+
+button:active {
+	background:#4ac4fd;
+	background:-moz-linear-gradient(top, #4ac4fd 0%, #9cdefc 98%);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#4ac4fd), color-stop(98%,#9cdefc));
+	background:-webkit-linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
+	background:-o-linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
+	background:-ms-linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
+	filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#4ac4fd', endColorstr='#9cdefc',GradientType=0 );
+	background:linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
+	border:1px solid #4ac4fd;
+	text-shadow:0px 1px 1px #4ac4fd;
+	filter:dropshadow(color=#4ac4fd, offx=0, offy=1);
+}
+
+input[type=text],
+input[type=password],
+textarea {
+	-moz-border-radius-topleft:5px;
+	-moz-border-radius-topright:5px;
+	-moz-border-radius-bottomright:5px;
+	-moz-border-radius-bottomleft:5px;
+	-webkit-border-radius:5px 5px 5px 5px;
+	border-radius:5px 5px 5px 5px;
+	border:1px solid #666;
+	margin:0;
+	padding:3px;
+}
+
+input[type=text]:hover,
+input[type=password]:hover,
+textarea:hover {
+	border:1px solid #999;
+}
+
+input[type=text]:focus,
+input[type=text]:active,
+input[type=password]:focus,
+input[type=password]:active,
+textarea:focus,
+textarea:active {
+	border:1px solid #4ac4fd;
 }
 
 @-webkit-keyframes reset {0% {opacity:0;} 100% {opacity:0;}}
@@ -440,6 +528,7 @@ nav ul li#nav-browserid {
 	border-left:1px solid #eee;
 	color:#666;
 	cursor:pointer;
+	display:inline-block;
 	float:right;
 	margin:0;
 	padding:0;
@@ -775,12 +864,17 @@ html[xmlns] .slides {
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
 	bottom:25px;
+	-webkit-box-shadow:inset 0px 0px 5px 0px #0296f2;
+	-moz-box-shadow:inset 0px 0px 5px 0px #0296f2;
+	box-shadow:inset 0px 0px 5px 0px #0296f2;
 	color:#fff;
 	font-size:14px;
 	left:100px;
-	line-height:170%;
-/*	padding:5px 10px; I need a possibility in front.php to show and hide the description! */
+	line-height:17px;
+	padding:5px 10px;
 	position:absolute;
+	text-shadow:0px 1px 1px #0296f2;
+	filter:dropshadow(color=#0296f2, offx=0, offy=1);
 }
 
 .flex-direction-nav li a {
@@ -1228,7 +1322,7 @@ section.photo-column img {
 aside.sidebar {
 	display:block;
 	float:right;
-	margin:8px 0 0 0;
+	margin:0;
 	width:300px;
 }
 
@@ -1466,61 +1560,7 @@ aside.sidebar .meta li.edit span {
 }
 
 .comment-form button {
-	background:#999;
-	background:-moz-linear-gradient(top, #999 0%, #666 100%);
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#999), color-stop(100%,#666));
-	background:-webkit-linear-gradient(top, #999 0%,#666 100%);
-	background:-o-linear-gradient(top, #999 0%,#666 100%);
-	background:-ms-linear-gradient(top, #999 0%,#666 100%);
-	filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#999', endColorstr='#666',GradientType=0 );
-	background:linear-gradient(top, #999 0%,#666 100%);
-	-moz-border-radius-topleft:5px;
-	-moz-border-radius-topright:5px;
-	-moz-border-radius-bottomright:5px;
-	-moz-border-radius-bottomleft:5px;
-	-webkit-border-radius:5px 5px 5px 5px;
-	border-radius:5px 5px 5px 5px;
-	border:1px solid #666;
-	color:white;
-	cursor:pointer;
-	display:inline-block;
-	font-weight:bold;
 	float:left;
-	height:20px;
-	margin:0 10px 0 0;
-	padding:0 10px;
-	text-shadow:0px -1px 1px #333;
-	filter:dropshadow(color=#333, offx=0, offy=-1);
-	text-align:center;
-	vertical-align:center;
-	width:auto;
-}
-
-.comment-form button:hover {
-	background:#666;
-	background:-moz-linear-gradient(top, #666 0%, #999 100%);
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#666), color-stop(100%,#999));
-	background:-webkit-linear-gradient(top, #666 0%,#999 100%);
-	background:-o-linear-gradient(top, #666 0%,#999 100%);
-	background:-ms-linear-gradient(top, #666 0%,#999 100%);
-	filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#666', endColorstr='#999',GradientType=0 );
-	background:linear-gradient(top, #666 0%,#999 100%);
-	text-shadow:0px 1px 1px #333;
-	filter:dropshadow(color=#333, offx=0, offy=1);
-}
-
-.comment-form button:active {
-	background:#4ac4fd;
-	background:-moz-linear-gradient(top, #4ac4fd 0%, #9cdefc 98%);
-	background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#4ac4fd), color-stop(98%,#9cdefc));
-	background:-webkit-linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
-	background:-o-linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
-	background:-ms-linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
-	filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#4ac4fd', endColorstr='#9cdefc',GradientType=0 );
-	background:linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
-	border:1px solid #4ac4fd;
-	text-shadow:0px 1px 1px #4ac4fd;
-	filter:dropshadow(color=#4ac4fd, offx=0, offy=1);
 }
 
 .comment-form {
@@ -1555,7 +1595,7 @@ aside.sidebar .meta li.edit span {
 	border:1px solid #ccc;
 	margin:0;
 	padding:3px;
-	width:100%;
+	width:99%;
 }
 
 .comment-form textarea:hover {
@@ -1628,7 +1668,82 @@ aside.sidebar .meta li.edit span {
 	width:15px;
 }
 
-/* 04.06 Tags **************************************************** */
+/* 04.06 Photo edit ********************************************** */
+
+.detail-form {
+	margin:15px 0;
+}
+
+.detail-form form ul li {
+	list-style-type:none;
+	margin:0 0 10px 0;
+}
+
+.detail-form form ul li.groups {
+	border-top:1px solid #ccc;
+	border-bottom:1px solid #ccc;
+	padding:10px 0;
+}
+
+.detail-form form ul li button {
+	margin-left:120px;
+}
+
+.detail-form form ul li label,
+.detail-form form ul li ul li label {
+	cursor:pointer;
+	display:inline-block;
+	vertical-align:top;
+	width:120px;
+}
+
+.detail-form form ul li ul li label {
+	margin-top:2px;
+	width:auto;
+}
+
+.detail-form form ul li input[type=text],
+.detail-form form ul li textarea {
+	display:inline-block;
+	width:400px;
+}
+
+.detail-form form ul li ul li input[type=checkbox],
+.detail-form form ul li ol li input[type=radio] {
+	display:inline-block;
+}
+
+.detail-form form ul li textarea {
+	height:100px;
+}
+
+.detail-form form ul li ul,
+.detail-form form ul li ol {
+	display:inline-block;
+}
+
+.detail-form form ul li ul li {
+	float:left;
+	margin:0;
+	width:100px;
+}
+
+.detail-form form ul li ol li {
+	float:none;
+	margin:0;
+}
+
+.delete {
+	position:relative;
+}
+
+.delete form button {
+	position:absolute;
+	top:-30px;
+	right:0;
+}
+
+/* 04.07 Tags **************************************************** */
 
 .tag-cloud li {
 	list-style-type:none;
@@ -1676,9 +1791,176 @@ aside.sidebar .meta li.edit span {
     font-size:21px;
 }
 
-/* 04.07 Setup *************************************************** */
+/* 04.08 Setup *************************************************** */
 
+div#setup h1 {
+	margin-top:28px;
+}
 
+ol#setup-steps:after {
+	content:"Setup";
+	background: #ccc;
+	background: -moz-linear-gradient(top, #ccc 0%, #bebebe 99%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ccc), color-stop(99%,#bebebe));
+	background: -webkit-linear-gradient(top, #ccc 0%,#bebebe 99%);
+	background: -o-linear-gradient(top, #ccc 0%,#bebebe 99%);
+	background: -ms-linear-gradient(top, #ccc 0%,#bebebe 99%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ccc', endColorstr='#bebebe',GradientType=0 );
+	background: linear-gradient(top, #ccc 0%,#bebebe 99%);
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-moz-border-radius-bottomright: 0px;
+	-moz-border-radius-bottomleft: 0px;
+	-webkit-border-radius: 5px 5px 0px 0px;
+	border-radius: 5px 5px 0px 0px;
+	-webkit-box-shadow: inset 0px 0px 5px 0px #999;
+	-moz-box-shadow: inset 0px 0px 5px 0px #999;
+	box-shadow: inset 0px 0px 5px 0px #999;
+	color:#666;
+	height:25px;
+	margin:0;
+	padding:7px 5px 3px 10px;
+	position:absolute;
+	top:65px;
+	left:0;
+	text-align:left;
+	text-shadow: 0px 1px 0px #f1f1f1;
+	filter: dropshadow(color=#f1f1f1, offx=0, offy=1);
+	width:975px;
+}
+
+ol#setup-steps li.current {
+	background:#4ac4fd;
+	background:-moz-linear-gradient(top, #4ac4fd 0%, #9cdefc 98%);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#4ac4fd), color-stop(98%,#9cdefc));
+	background:-webkit-linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
+	background:-o-linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
+	background:-ms-linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
+	filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#4ac4fd', endColorstr='#9cdefc',GradientType=0 );
+	background:linear-gradient(top, #4ac4fd 0%,#9cdefc 98%);
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-box-shadow: inset 0px 0px 4px 0px #333;
+	-moz-box-shadow: inset 0px 0px 4px 0px #333;
+	box-shadow: inset 0px 0px 4px 0px #333;
+	cursor:text;
+	color:white;
+	font-weight:bold;
+	padding:3px 8px 1px 10px;
+	text-shadow: 0px 1px 0px #666;
+	filter: dropshadow(color=#666, offx=0, offy=1);
+	width:10px;
+}
+
+ol#setup-steps li {
+	background:#ffffff;
+	background:-moz-linear-gradient(top, #ffffff 49%, #f1f1f1 100%);
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(49%,#ffffff), color-stop(100%,#f1f1f1));
+	background:-webkit-linear-gradient(top, #ffffff 49%,#f1f1f1 100%);
+	background:-o-linear-gradient(top, #ffffff 49%,#f1f1f1 100%);
+	background:-ms-linear-gradient(top, #ffffff 49%,#f1f1f1 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#f1f1f1',GradientType=0 );
+	background:linear-gradient(top, #ffffff 49%,#f1f1f1 100%);
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-webkit-box-shadow: inset 0px 0px 4px 0px #333;
+	-moz-box-shadow: inset 0px 0px 4px 0px #333;
+	box-shadow: inset 0px 0px 4px 0px #333;
+	color:#666;
+	display:block;
+	padding:3px 8px 1px 10px;
+	position:absolute;
+	text-shadow: 0px 1px 0px #fff;
+	filter: dropshadow(color=#fff, offx=0, offy=1);	
+	list-style-type:none;
+	width:10px;
+	z-index:1;
+}
+
+ol#setup-steps li:nth-child(3n+1) {
+	top:70px;
+	right:71px;
+}
+
+ol#setup-steps li:nth-child(3n+2) {
+	top:70px;
+	right:38px;
+}
+
+ol#setup-steps li:nth-child(3n+3) {
+	top:70px;
+	right:5px;
+}
+
+div#setup h2 {
+	margin:10px 0 10px 0;
+}
+
+div#setup h3 {
+	margin:0 0 10px 0;
+}
+
+.validate label,
+#setup-step-2 form label,
+#setup-step-3 form label {
+	display:inline-block;
+	vertical-align:top;
+	width:160px;
+}
+
+.validate input[type=text],
+.validate select,
+#setup-step-2 form select,
+#setup-step-3 form input[type=password] {
+	display:inline-block;
+	width:350px;
+}
+
+.validate input#email,
+#setup-step-2 form select,
+#setup-step-3 form input#awsKey,
+#setup-step-3 form input#awsSecret,
+#setup-step-3 form input#s3Bucket,
+#setup-step-3 form input#mySqlHost,
+#setup-step-3 form input#mySqlUser,
+#setup-step-3 form input#mySqlPassword,
+#setup-step-3 form input#mySqlDb,
+#setup-step-3 form input#mySqlTablePrefix,
+#setup-step-3 form input#fsRoot,
+#setup-step-3 form input#fsHost {
+	margin:0 400px 10px 0;
+}
+
+.validate button,
+#setup-step-2 form button,
+#setup-step-3 form button {
+	display:block;
+	margin:10px 0 0 164px;
+}
+
+/* 04.09 Settings ************************************************ */
+
+.settings form label {
+	display:block;
+	font-weight:bold;
+}
+.settings form label + input, .settings form label + textarea {
+	display:block;
+	margin:0 0 10px 0;
+	width:350px;
+}
+.settings ul.groups li {
+	list-style-type:none;
+	margin:0 0 20px 0;
+}
+.settings ul.credentials, .settings ul.webhooks {
+	margin: 0 0 0 25px;
+}
+.settings ul.credentials ul, .settings ul.webhooks ul {
+	margin: 0 0 0 25px;
+}
 
 /* 05 Footer ###################################################################### */
 
@@ -1837,23 +2119,15 @@ div#upload ul#upload-queue div.progress > div.complete{
   background-image:-o-linear-gradient( center bottom, rgb(214,105,163) 37%, rgb(235,113,178) 69% );
 }
 #drop-zone .photo .thumb { position:absolute; left:3px; top:3px; -moz-border-radius:3px; -webkit-border-radius:3px; }
-/* settings */
-.settings form label {
-  display:block;
-  font-weight:bold;
+.owner-edit .delete {
+  margin-top:20px;
 }
-.settings form label + input, .settings form label + textarea {
-  display:block;
-  margin:0 0 10px 0;
-  width:350px;
+.owner-edit h1 {
+  border-top:solid 1px #aaa;
+  border-bottom:solid 1px #aaa;
+  background-color: #ddd;
+  padding:4px 0;
+  text-align:center;
+  color:#666;
+  margin:10px 0;
 }
-.settings ul.groups li {
-  margin:0 0 20px 0;
-}
-.settings ul.credentials, .settings ul.webhooks {
-  margin: 0 0 0 25px;
-}
-.settings ul.credentials ul, .settings ul.webhooks ul {
-  margin: 0 0 0 25px;
-}
-
