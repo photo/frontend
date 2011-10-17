@@ -236,7 +236,7 @@ class ApiPhotoController extends BaseController
     elseif(isset($_POST['photo']))
     {
       unset($attributes['photo']);
-      $localFile = tempnam(getConfig()->get('server')->tempDir, 'opme');
+      $localFile = tempnam(getConfig()->get('paths')->temp, 'opme');
       $name = basename($localFile).'.jpg';
       file_put_contents($localFile, base64_decode($_POST['photo']));
       $photoId = Photo::upload($localFile, $name, $attributes);

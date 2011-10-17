@@ -142,7 +142,22 @@ var opTheme = (function() {
           if (ref) {
               location.href = ref;
           }
-      }
+      },
+      webhookDelete: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href')+'.json';
+
+        OP.Util.makeRequest(url, {}, function(response) {
+          if(response.code === 200) {
+            el.parent().remove();
+            opTheme.message.confirm('Credential successfully deleted.');
+          } else {
+            opTheme.message.error('Could not delete credential.');
+          }
+        }, 'json');
+        return false;
+      },
     },
     formHandlers: {
 			hasErrors: function(form, attribute) {
@@ -432,6 +447,7 @@ var opTheme = (function() {
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
         OP.Util.on('click:group-update', opTheme.callback.groupPost);
+        OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
 

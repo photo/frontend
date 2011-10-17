@@ -14,7 +14,7 @@ class OPException extends Exception
         }
         else
         {
-          getRoute()->run('/error/403');
+          getRoute()->run('/error/403', EpiRoute::httpGet);
         }
         die();
         break;
@@ -41,7 +41,7 @@ function op_exception_handler($exception)
   if(!$handled)
   {
     getLogger()->warn(sprintf('Uncaught exception (%s:%s): %s', $exception->getFile(), $exception->getLine(), $exception->getMessage()));
-    getRoute()->run('/error/500');
+    getRoute()->run('/error/500', EpiRoute::httpGet);
     $handled = 1;
   }
 }
