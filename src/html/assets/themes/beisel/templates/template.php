@@ -11,23 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.ico'); ?>">
     <link rel="apple-touch-icon" href="<?php getTheme()->asset('image', 'apple-touch-icon.png'); ?>">
-	<link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'main.css'); ?>">
-	<script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
-	<script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
-	<script>
-	  OP.Util.init(jQuery, {
-	    js: {
-	      assets: [
-	        '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
-	        '<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', 
-	        '<?php getTheme()->asset('javascript', 'jquery.cycle.min.js '); ?>', 
-	        '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>',
-	        '<?php getTheme()->asset('javascript', 'jquery.flexslider-min.js'); ?>'
-	      ],
-	      onComplete: function(){ opTheme.init.attach(); }
-	    }
-	  });
-	</script>
+    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'main.css'); ?>">
 </head>
 
 <body class="<?php echo $page; ?>">
@@ -48,6 +32,34 @@
 		</footer>
 
 	</div>
-
+	<script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
+	<script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
+	<script>
+	  OP.Util.init(jQuery, {
+	    js: {
+	      assets: [
+	        '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
+	        '<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', 
+	        '<?php getTheme()->asset('javascript', 'jquery.cycle.min.js '); ?>', 
+	        '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>',
+	        '<?php getTheme()->asset('javascript', 'jquery.flexslider-min.js'); ?>'
+	      ],
+        onComplete: function(){ 
+          opTheme.init.attach(); 
+          $(window).load(function() {
+            $('.flexslider').flexslider({
+              animation: "slide",
+              controlsContainer: ".flex-container",
+              controlNav: true,
+              pausePlay: false,
+              directionNav: true,
+              nextText: "<span title='Next'>Next</span>",
+              prevText: "<span title='Previous'>Previous</span>"
+            });
+          });
+        }
+	    }
+	  });
+	</script>
 </body>
 </html>
