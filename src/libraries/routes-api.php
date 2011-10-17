@@ -81,3 +81,10 @@ getApi()->post('/webhook/([a-zA-Z0-9]+)/delete.json', array('ApiWebhookControlle
 getApi()->post('/webhook/([a-zA-Z0-9]+)/update.json', array('ApiWebhookController', 'update'), EpiApi::internal);
 getApi()->get('/webhook/([a-zA-Z0-9]+)/view.json', array('ApiWebhookController', 'view'), EpiApi::external);
 getApi()->get('/webhooks/?(.*)?/list.json', array('ApiWebhookController', 'list_'), EpiApi::internal);
+
+/*
+ * System endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /system/{action}.json
+ */
+getApi()->get('/system/diagnostics.json', array('ApiController', 'diagnostics'), EpiApi::external);

@@ -10,6 +10,7 @@ interface DatabaseInterface
   public function __construct();
   //
   public function errors();
+  public function diagnostics();
   // delete methods can delete or toggle status
   public function deleteAction($id);
   public function deleteCredential($id);

@@ -118,6 +118,34 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Gets diagnostic information for debugging.
+    *
+    * @return array
+    */
+  public function diagnostics()
+  {
+    $diagnostics = array();
+    $domains = array('', 'Action', 'Credential', 'Group', 'User', 'Tag', 'Webhook');
+    $queue = new CFBatchRequest();
+    foreach($domains as $domain)
+      $this->db->batch($queue)->domain_metadata("{$this->domainPhoto}{$domain}");
+    $responses = $this->db->batch($queue)->send();
+    if($responses->areOK())
+    {
+      $diagnostics[] = Utility::diagnosticLine(true, 'All SimpleDb domains are accessible.');
+    }
+    else
+    {
+      foreach($responses as $key => $res)
+      {
+        if((int)$res->status !== 200)
+          $diagnostics[] = Utility::diagnosticLine(false, sprintf('The SimpleDb domains "%s" is NOT accessible.', $domains[$key]));
+      }
+    }
+    return $diagnostics;
+  }
+
+  /**
     * Get a list of errors
     *
     * @return array
@@ -1004,7 +1032,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   /**
     * Normalizes data from simpleDb into schema definition
     *
-    * @param SimpleXMLObject $raw A user from SimpleDb in SimpleXML.
+    * @param SimpleXMLObject $raw A webhook from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeWebhook($raw)

@@ -42,6 +42,12 @@ class Utility
     return $decryptedString;
   }
 
+  public static function diagnosticLine($status, $message)
+  {
+    $label = $status ? 'success' : 'failure';
+    return array('status' => $status, 'label' => $label, 'message' => $message);
+  }
+
   public static function encrypt($string, $secret = null, $salt = null)
   {
     if($secret === null)
