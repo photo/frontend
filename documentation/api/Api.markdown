@@ -67,24 +67,12 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
     Update a group.
 
 #### Webhook endpoints
+1.  [POST /webhook/subscribe][PostWebHookSubscribe]
+    Update an eixsting webhook.
 1.  [GET /webhook/:id/view.json][GetWebhook]
     Get a user's webhook by id.
-1.  [GET /webhooks/list.json][GetWebhooks]
-    An internal private API to list the user's webhooks.
-1.  [POST /webhook/create.json][PostWebhookCreate]
-    Create a new webhook for the user.
 1.  [POST /webhook/:id/delete.json][PostWebHookDelete]
     Delete an existing webhook.
-1.  [POST /webhook/:id/update.json][PostWebHookUpdate]
-    Update an eixsting webhook.
-
-<!--
-;[PostWebhookCreate]: PostWebhookCreate.markdown
-;[PostWebhookDelete]: PostWebhookDelete.markdown
-;[PostWebhookUpdate]: PostWebhookUpdate.markdown
-;[GetWebhook]: GetWebhook.markdown
-;[GetWebhooks]: GetWebhooks.markdown
--->
 
 [Envelope]: Envelope.markdown
 [GetHelloWorld]: GetHelloWorld.markdown
@@ -104,5 +92,8 @@ Every API endpoint returns a JSON response in a [standard envelope][Envelope].
 [PostGroupCreate]: PostGroupCreate.markdown
 [PostGroupUpdate]: PostGroupUpdate.markdown
 [PostGroupDelete]: PostGroupDelete.markdown
+[GetWebhook]: GetWebhook.markdown
+[PostWebhookSubscribe]: PostWebhookSubscribe.markdown
+[PostWebhookDelete]: PostWebhookDelete.markdown
 [authentication]: Authentication.markdown
 [oauth1.0a]: http://oauth.net/core/1.0a/

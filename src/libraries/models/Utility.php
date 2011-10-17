@@ -133,7 +133,7 @@ class Utility
         return false;
         break;
       case 'tags':
-        if(!empty($route) && preg_match('#^/tags$#', $route))
+        if(!empty($route) && preg_match('#^/tags/list#', $route))
           return true;
         return false;
         break;
@@ -161,7 +161,7 @@ class Utility
       return $template;
 
     $mobileTemplate = str_replace('.php', '-mobile.php', $template);
-    if(!getTheme()->fileExists($mobileTemplate))
+    if(!file_exists($mobileTemplate) && !getTheme()->fileExists($mobileTemplate))
       return $template;
 
     return $mobileTemplate;

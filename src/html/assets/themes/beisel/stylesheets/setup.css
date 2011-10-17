@@ -1,0 +1,37 @@
+div#setup h1{ font-size:1.5em; margin-bottom:10px; }
+div#setup h1 em{ font-size:.5em; }
+div#setup h2{ color:#3072b3; margin-bottom:15px; }
+div#setup h3{ font-size:1em; margin:15px 0 5px 0; }
+div#setup ul.errors, div#setup p.error{ color:#ca1616; }
+div#setup form em{ font-size:.75em; }
+div#setup label{ font-size:1.15em; color:#404040; display:block; position:relative; }
+div#setup label em{ font-size:.6em; position:relative; top:-2px; left:3px; }
+div#setup label + input, div#setup label + textarea, div#setup label + select{ margin-bottom:20px; display:block; }
+div#setup{ width:400px; margin:auto; }
+div#setup ol#setup-steps{
+  list-style:none;
+  height:50px;
+  margin:0;
+  padding:0;
+}
+div#setup ol#setup-steps li{
+  background-color:#ddd;
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+  -o-border-radius: 20px;
+  padding:10px 18px;
+  margin:0 10px 0 0;
+  float:left;
+}
+div#setup ol#setup-steps li.current{
+  background-color:#3072b3;
+  color:#eee;
+}
+div#setup ul.errors ul {
+  list-style-type:lower-roman;
+  margin: 2px 0 5px 25px;
+  color:#666;
+}
+div#setup ul.errors em {
+  font-style: italic;
+}

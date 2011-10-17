@@ -39,3 +39,12 @@ ul {
     margin-top: 2em;
     min-height: 600px;
 }
+
+::-webkit-input-placeholder {
+   color: #aaa;
+}
+
+:-moz-placeholder {
+   color: #aaa;
+}
+

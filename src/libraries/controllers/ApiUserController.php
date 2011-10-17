@@ -10,8 +10,6 @@ class ApiUserController extends BaseController
     * Log a user in via BrowserID
     *
     * @return string Standard JSON envelope 
-    *
-    * @return string Standard JSON envelope 
     */
   public static function login()
   {
@@ -20,6 +18,24 @@ class ApiUserController extends BaseController
       return self::success('User was logged in successfully', array('email' => getSession()->get('email')));
     else
       return self::error('User was not able to be logged in', false);
+  }
+
+  /**
+    * Log a user in via mobilePassphrase
+    *
+    * @return string Standard JSON envelope 
+    */
+  public static function loginMobile()
+  {
+    $mobilePassphrase = User::getMobilePassphrase();
+
+    if(empty($mobilePassphrase) || !isset($_POST['passphrase']) || $mobilePassphrase['phrase'] != $_POST['passphrase'])
+      return self::forbidden('Unable to authenticate', false);
+
+    $email = getConfig()->get('user')->email;
+    User::setEmail($email);
+    User::setMobilePassphrase(true); // unset
+    return self::success('User was logged in successfully', array('email' => getSession()->get('email')));
   }
 
   /**
