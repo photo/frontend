@@ -26,7 +26,7 @@ class ApiController extends BaseController
     if($isOkay)
       return self::success('Diagnostics PASSED!', array('filesystem' => $fsDiagnostics, 'database' => $dbDiagnostics));
     else
-      return self::success('Diagnostics FAILED!', array('filesystem' => $fsDiagnostics, 'database' => $dbDiagnostics));
+      return self::error('Diagnostics FAILED!', array('filesystem' => $fsDiagnostics, 'database' => $dbDiagnostics));
   }
 
   /**
