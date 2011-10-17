@@ -153,8 +153,8 @@
 
             //attach events      
             this.attachEvent( 'body', 'click', this.onviewevent, this);
-            this.attachEvent( 'body', 'keydown', this.onkeydownevent, this);
-
+            this.attachEvent( 'html', 'keydown', this.onkeydownevent, this);
+            
             //load additional js in order specified
             for(i=0, j=js.length; i<j; i++) {
                 this.loadScript( js[i], this._handleScriptLoad, this );
