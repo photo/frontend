@@ -22,7 +22,7 @@
 		  <?php getTheme()->display('partials/header.php'); ?>
 		</header>
 
-		<article id="content" role="main">
+		<article id="main" role="main">
 		  <!-- body -->
 		  <?php echo $body; ?>
 		</article>

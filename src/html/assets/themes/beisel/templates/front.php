@@ -14,7 +14,9 @@
 					<?php foreach($photos as $photo) { ?>
 					<li>
 						<a href="<?php Url::photoView($photo['id']); ?>" title="Click to see detail"><img src="<?php Url::photoUrl($photo, '800x450xCR'); ?>" /></a>
-						<p class="flex-caption"><?php Utility::safe($photo['title']); ?></p>
+						<?php if(isset($photo['title']) && !empty($photo['title'])) { ?>
+							<p class="flex-caption"><?php Utility::safe($photo['title']); ?></p>
+						<?php } ?>
 					</li>
 				  	<?php } ?>
 				 </ul>

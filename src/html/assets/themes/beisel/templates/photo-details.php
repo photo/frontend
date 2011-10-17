@@ -3,8 +3,8 @@
 </div>
 
 <section class="photo-column">
-	<h1><?php Utility::safe($photo['title']); ?></h1>
 	<img class="photo" width="<?php Utility::safe($photo['thisWidth']); ?>" height="<?php Utility::safe($photo['thisHeight']); ?>" src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" alt="<?php Utility::safe($photo['title']); ?>">
+	<h1><?php Utility::safe($photo['title']); ?></h1>
 	<p class="description"><?php Utility::safe($photo['description']); ?></p>
 	<?php if(count($photo['actions']) > 0) { ?>
 	  <ul class="comments" id="comments">
@@ -71,7 +71,7 @@
 		</li>
 		<?php } else { ?>
 			<li class="previous empty">
-				<img src="<?php getTheme()->asset('image', 'empty.png'); ?>" alt="No photo" />
+				<img src="<?php getTheme()->asset('image', 'empty.png'); ?>" alt="No previous photo" />
 			</li>
 		<?php } ?>
 		<?php if(!empty($photo['next'])) { ?>
@@ -84,7 +84,7 @@
 		</li>
 		<?php } else { ?>
 			<li class="next empty">
-				<img src="<?php getTheme()->asset('image', 'empty.png'); ?>" alt="No photo" />
+				<img src="<?php getTheme()->asset('image', 'empty.png'); ?>" alt="No next photo" />
 			</li>
 		<?php } ?>
 	</ul>
@@ -93,16 +93,18 @@
 	<ul class="meta">
 		<li class="date"><span></span><?php Utility::dateLong($photo['dateTaken']); ?></li>
 		<li class="heart"><span></span><strong><?php echo count($photo['actions']); ?></strong> <a href="#comments" class="action-jump-click" title="Jump to favorites &amp; comments">favorites &amp; comments</a></li>
-		<li class="tags"><span></span><?php Url::tagsAsLinks($photo['tags']); ?></li>
-		<?php if(isset($photo['license'])) { ?>
-		<li class="license"><span></span><?php Utility::licenseLong($photo['license']); ?></li>
+		<?php if(isset($photo['tags']) && !empty($photo['tags'])) { ?>
+      <li class="tags"><span></span><?php Url::tagsAsLinks($photo['tags']); ?></li>
 		<?php } ?>
-		<?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
-		<li class="location">
-			<span></span>
-			<?php Utility::safe($photo['latitude']); ?>, <?php Utility::safe($photo['longitude']); ?>
-			<img src="<?php Utility::staticMapUrl($photo['latitude'], $photo['longitude'], 14, '255x150'); ?>" class="map">
-		</li>
+		<?php if(isset($photo['license']) && !empty($photo['license'])) { ?>
+      <li class="license"><span></span><?php Utility::licenseLong($photo['license']); ?></li>
+		<?php } ?>
+		<?php if(isset($photo['latitude']) && !empty($photo['latitude'])) { ?>
+      <li class="location">
+        <span></span>
+        <?php Utility::safe($photo['latitude']); ?>, <?php Utility::safe($photo['longitude']); ?>
+        <img src="<?php Utility::staticMapUrl($photo['latitude'], $photo['longitude'], 14, '255x150'); ?>" class="map">
+      </li>
 		<?php } ?>
 		<?php if(!empty($photo['exifCameraMake']) && !empty($photo['exifCameraMake'])) { ?>
 		<li class="exif">
