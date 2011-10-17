@@ -11,7 +11,11 @@ class Theme
 
   public function __construct()
   {
-    $this->theme = getConfig()->get('site')->theme;
+    $this->theme = getConfig()->get('defaults')->theme;
+    $themeConfig = getConfig()->get('theme');
+    if($themeConfig !== null)
+      $this->theme = $themeConfig->name;
+
     $this->themeDir = sprintf('%s/%s', getConfig()->get('paths')->themes, $this->theme);
     $this->themeDirWeb = str_replace(sprintf('%s/html', dirname(dirname(dirname(__FILE__)))), '', $this->themeDir);
   }
@@ -56,6 +60,25 @@ class Theme
   public function get($template, $params = null)
   {
     return getTemplate()->get("{$this->themeDir}/templates/{$template}", $params);
+  }
+
+  public function getThemeName()
+  {
+    return $this->theme;
+  }
+
+  public function getThemes()
+  {
+    $dir = dir(getConfig()->get('paths')->themes);
+    $dirs = array();
+    while (($name = $dir->read()) !== false)
+    {
+      if(substr($name, 0, 1) == '.')
+        continue;
+
+      $dirs[] = $name;
+    }
+    return $dirs;
   }
 
   public function meta($page, $key, $write = true)
