@@ -14,9 +14,6 @@ class FileSystemLocal implements FileSystemInterface
   {
     $config = getConfig()->get('localfs');
     $this->root = $config->fsRoot;
-    if(!file_exists($this->root)) {
-      mkdir($this->root, 0775, true);
-    }
     $this->host = $config->fsHost;
   }
 
@@ -84,6 +81,9 @@ class FileSystemLocal implements FileSystemInterface
 
   public function initialize()
   {
+    if(!file_exists($this->root)) {
+      mkdir($this->root, 0775, true);
+    }
     return file_exists($this->root);
   }
 
