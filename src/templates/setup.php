@@ -81,7 +81,7 @@
           <?php if(isset($simpleDbDomain) && !empty($simpleDbDomain)) { ?>
             <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" value="<?php Utility::safe($simpleDbDomain); ?>" data-validation="required">
           <?php } else { ?>
-            <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" value="openphoto" data-validation="required">
+            <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" data-validation="required">
           <?php } ?>
         <?php } ?>
       <?php } ?>
@@ -96,7 +96,7 @@
         <label for="mySqlDb">MySQL Database <em>(this needs to already exist)</em></label>
         <input type="text" name="mySqlDb" placeholder="Name of your MySql database" id="mySqlDb" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlDb; ?>">
         <label for="mySqlTablePrefix">Table prefix <em>(optional)</em></label>
-        <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" value="op_" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
+        <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
       <?php } ?>
       <?php if((isset($usesLocalFs) && !empty($usesLocalFs))) { ?>
         <h3>Enter your local file system credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
