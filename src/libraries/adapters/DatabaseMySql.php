@@ -8,7 +8,7 @@
  */
 class DatabaseMySql implements DatabaseInterface
 {
-  const currentSchemaVersion = 4;
+  const currentSchemaVersion = 5;
   /**
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
@@ -1165,10 +1165,12 @@ class DatabaseMySql implements DatabaseInterface
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
       getDatabase()->execute("ALTER TABLE `{$this->mySqlTablePrefix}user` "
         . "ADD `lastWebhookId` varchar(255) DEFAULT NULL");
+    case 4:
+      // fixed the group support
+      getDatabase()->execute("alter table `{$this->mySqlTablePrefix}user` ADD lastGroupId varchar(255) default null");
+
       getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}admin`"
         . "SET `value`='" . self::currentSchemaVersion ."' WHERE `key`='version'");
-      // OTHER
-    case 4:
       break;
     }
     return true;
@@ -1240,6 +1242,7 @@ class DatabaseMySql implements DatabaseInterface
         . "`lastPhotoId` varchar(255),"
         . "`lastActionId` varchar(255),"
         . "`lastWebhookId` varchar(255) DEFAULT NULL,"
+	. "`lastGroupId` varchar(255) DEFAULT NULL,"
         . "PRIMARY KEY(`id`)"
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
     getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}credential`"
