@@ -971,6 +971,13 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function preparePhoto($id, $params)
   {
+    $stored_exif_array = array();
+    $current_photo = getDatabase()->one("SELECT exif FROM `{$this->mySqlTablePrefix}photo` WHERE id=:id", array(':id' => $id));
+    if($current_photo && isset($current_photo['exif']))
+      $stored_exif_array = (array)json_decode($current_photo['exif']);
+
+//    print "stored_exif " . print_r($stored_exif_array,true); 
+
     $bindings = array();
     $params['id'] = $id;
     if(isset($params['tags']) && is_array($params['tags']))
@@ -991,6 +998,9 @@ class DatabaseMySql implements DatabaseInterface
                        'longitude' => 0);
 
     $exif_array = array_intersect_key($params, $exif_keys);
+//    print "exif_array 1 " . print_r($exif_array,true); 
+    $exif_array = array_merge($stored_exif_array, $exif_array);
+//    print "exif_array 2 " . print_r($exif_array,true); 
     if(!empty($exif_array))
     {
       foreach(array_keys($exif_keys) as $key)
