@@ -7,7 +7,8 @@
   </p>
   <div id="setup-dropbox">
     <form action="/setup/dropbox<?php Utility::safe($qs); ?>" method="post" class="validate">
-      <h3>Enter your Dropbox App credentials</h3>
+      <h2>Enter your Dropbox App credentials</h2>
+
       <label for="dropboxKey">Dropbox Key <em>(<a href="https://www.dropbox.com/developers/apps" target="_blank">found under options</a>)</em></label>
       <input type="password" name="dropboxKey" id="dropboxKey" size="50" autocomplete="off" data-validation="required" placeholder="Dropbox consumer key or app key" value="<?php echo $dropboxKey; ?>">
 
