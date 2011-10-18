@@ -12,9 +12,18 @@ class Theme
   public function __construct()
   {
     $this->theme = getConfig()->get('defaults')->theme;
+    $behavior = getConfig()->get('behavior');
     $themeConfig = getConfig()->get('theme');
-    if($themeConfig !== null)
+    if($behavior !== null && Utility::isMobile() && $behavior->useDefaultMobile == '1')
+    {
+      $this->theme = getConfig()->get('defaults')->theme;
+      if(file_exists($mobileSettings = sprintf('%s/%s/config/settings-mobile.ini', getConfig()->get('paths')->themes, $this->getThemeName())))
+        getConfig()->load($mobileSettings);
+    }
+    elseif($themeConfig !== null)
+    {
       $this->theme = $themeConfig->name;
+    }
 
     $this->themeDir = sprintf('%s/%s', getConfig()->get('paths')->themes, $this->theme);
     $this->themeDirWeb = str_replace(sprintf('%s/html', dirname(dirname(dirname(__FILE__)))), '', $this->themeDir);
@@ -97,10 +106,14 @@ class Theme
   *
   * @return object A theme object
   */
-function getTheme()
+function getTheme($singleton = true)
 {
   static $theme;
-  if(!$theme)
+  if($singleton && !$theme)
+  {
     $theme = new Theme();
-  return $theme;
+    return $theme;
+  }
+
+  return new Theme();
 }

@@ -29,7 +29,7 @@ if(file_exists($configFile) && !$runSetup)
   getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
   require getConfig()->get('paths')->libraries . '/dependencies.php';
   getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName()));
-  if(Utility::isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName())))
+  if(Utility::isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(__FILE__)), getTheme(false)->getThemeName())))
     getConfig()->load($mobileSettings);
 }
 else
