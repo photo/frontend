@@ -1903,6 +1903,7 @@ div#setup h3 {
 }
 
 .validate label,
+#setup-dropbox form label,
 #setup-step-2 form label,
 #setup-step-3 form label {
 	display:inline-block;
@@ -1912,6 +1913,7 @@ div#setup h3 {
 
 .validate input[type=text],
 .validate select,
+#setup-dropbox form input,
 #setup-step-2 form select,
 #setup-step-3 form input[type=password] {
 	display:inline-block;
@@ -1929,11 +1931,13 @@ div#setup h3 {
 #setup-step-3 form input#mySqlDb,
 #setup-step-3 form input#mySqlTablePrefix,
 #setup-step-3 form input#fsRoot,
-#setup-step-3 form input#fsHost {
+#setup-step-3 form input#fsHost,
+#setup-dropbox form input {
 	margin:0 400px 10px 0;
 }
 
 .validate button,
+#setup-dropbox form button,
 #setup-step-2 form button,
 #setup-step-3 form button {
 	display:block;
