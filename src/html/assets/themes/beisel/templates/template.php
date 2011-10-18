@@ -46,17 +46,19 @@
 	      ],
         onComplete: function(){ 
           opTheme.init.attach(); 
-          $(window).load(function() {
-            $('.flexslider').flexslider({
-              animation: "slide",
-              controlsContainer: ".flex-container",
-              controlNav: true,
-              pausePlay: false,
-              directionNav: true,
-              nextText: "<span title='Next'>Next</span>",
-              prevText: "<span title='Previous'>Previous</span>"
+          if($("section#slideshow").length > 0) {
+            $(window).load(function() {
+              $('.flexslider').flexslider({
+                animation: "slide",
+                controlsContainer: ".flex-container",
+                controlNav: true,
+                pausePlay: false,
+                directionNav: true,
+                nextText: "<span title='Next'>Next</span>",
+                prevText: "<span title='Previous'>Previous</span>"
+              });
             });
-          });
+          }
         }
 	    }
 	  });
