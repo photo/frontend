@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `lastPhotoId` varchar(255),
   `lastActionId` varchar(255),
   `lastWebhookId` varchar(255) DEFAULT NULL,
+  `lastGroupId` varchar(255) DEFAULT NULL,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
