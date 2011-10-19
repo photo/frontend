@@ -386,7 +386,7 @@ var opTheme = (function() {
       pushToUI : function(files) {
         // get current tags and license data to apply to each photo
         var tags = $("#uploader-frame .tags").val();
-        var permission = $("#uploader-frame input[name=permission]").val();
+        var permission = $("#uploader-frame input[name=permission]:checked").val();
         var license = $("#uploader-frame .license").val();
         if (license == "_custom_") {
           license = $("#uploader-frame .custom input").val();
