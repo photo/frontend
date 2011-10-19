@@ -375,10 +375,8 @@ class DatabaseMySql implements DatabaseInterface
       {
         switch($name)
         {
-          case 'tags':
-            if(!is_array($value))
-              $value = (array)explode(',', $value);
-            $where = $this->buildWhere($where, ' MATCH(tags) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)');
+          case 'groups':
+            $where = $this->buildWhere($where, '(MATCH(groups) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)) OR permission="1")');
             break;
           case 'page':
             if($value > 1)
@@ -387,10 +385,18 @@ class DatabaseMySql implements DatabaseInterface
               $offset = ($limit * $value) - $limit;
             }
             break;
+          case 'permission':
+            $where = $this->buildWhere($where, "permission='1'");
+            break;
           case 'sortBy':
             $sortBy = 'ORDER BY ' . str_replace(',', ' ', $value);
             $field = substr($value, 0, strpos($value, ','));
             $where = $this->buildWhere($where, "{$field} is not null");
+            break;
+          case 'tags':
+            if(!is_array($value))
+              $value = (array)explode(',', $value);
+            $where = $this->buildWhere($where, ' MATCH(tags) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)');
             break;
         }
       }
