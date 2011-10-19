@@ -8,7 +8,7 @@
  */
 class DatabaseMySql implements DatabaseInterface
 {
-  const currentSchemaVersion = 4;
+  const currentSchemaVersion = 5;
   /**
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
@@ -375,10 +375,8 @@ class DatabaseMySql implements DatabaseInterface
       {
         switch($name)
         {
-          case 'tags':
-            if(!is_array($value))
-              $value = (array)explode(',', $value);
-            $where = $this->buildWhere($where, ' MATCH(tags) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)');
+          case 'groups':
+            $where = $this->buildWhere($where, '(MATCH(groups) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)) OR permission="1")');
             break;
           case 'page':
             if($value > 1)
@@ -387,10 +385,18 @@ class DatabaseMySql implements DatabaseInterface
               $offset = ($limit * $value) - $limit;
             }
             break;
+          case 'permission':
+            $where = $this->buildWhere($where, "permission='1'");
+            break;
           case 'sortBy':
             $sortBy = 'ORDER BY ' . str_replace(',', ' ', $value);
             $field = substr($value, 0, strpos($value, ','));
             $where = $this->buildWhere($where, "{$field} is not null");
+            break;
+          case 'tags':
+            if(!is_array($value))
+              $value = (array)explode(',', $value);
+            $where = $this->buildWhere($where, ' MATCH(tags) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)');
             break;
         }
       }
@@ -971,12 +977,11 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function preparePhoto($id, $params)
   {
+    // we need to get the Exif metadata to not clobber it.
     $stored_exif_array = array();
     $current_photo = getDatabase()->one("SELECT exif FROM `{$this->mySqlTablePrefix}photo` WHERE id=:id", array(':id' => $id));
     if($current_photo && isset($current_photo['exif']))
       $stored_exif_array = (array)json_decode($current_photo['exif']);
-
-//    print "stored_exif " . print_r($stored_exif_array,true); 
 
     $bindings = array();
     $params['id'] = $id;
@@ -998,9 +1003,7 @@ class DatabaseMySql implements DatabaseInterface
                        'longitude' => 0);
 
     $exif_array = array_intersect_key($params, $exif_keys);
-//    print "exif_array 1 " . print_r($exif_array,true); 
     $exif_array = array_merge($stored_exif_array, $exif_array);
-//    print "exif_array 2 " . print_r($exif_array,true); 
     if(!empty($exif_array))
     {
       foreach(array_keys($exif_keys) as $key)
@@ -1168,10 +1171,12 @@ class DatabaseMySql implements DatabaseInterface
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
       getDatabase()->execute("ALTER TABLE `{$this->mySqlTablePrefix}user` "
         . "ADD `lastWebhookId` varchar(255) DEFAULT NULL");
+    case 4:
+      // fixed the group support
+      getDatabase()->execute("alter table `{$this->mySqlTablePrefix}user` ADD lastGroupId varchar(255) default null");
+
       getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}admin`"
         . "SET `value`='" . self::currentSchemaVersion ."' WHERE `key`='version'");
-      // OTHER
-    case 4:
       break;
     }
     return true;
@@ -1243,6 +1248,7 @@ class DatabaseMySql implements DatabaseInterface
         . "`lastPhotoId` varchar(255),"
         . "`lastActionId` varchar(255),"
         . "`lastWebhookId` varchar(255) DEFAULT NULL,"
+	. "`lastGroupId` varchar(255) DEFAULT NULL,"
         . "PRIMARY KEY(`id`)"
 	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
     getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}credential`"
