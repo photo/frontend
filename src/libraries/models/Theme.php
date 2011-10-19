@@ -7,6 +7,7 @@
  */
 class Theme
 {
+  const themeDefault = 'default';
   private $theme, $themeDir, $themeDirWeb;
 
   public function __construct()
@@ -16,7 +17,7 @@ class Theme
     $themeConfig = getConfig()->get('theme');
     if($behavior !== null && Utility::isMobile() && $behavior->useDefaultMobile == '1')
     {
-      $this->theme = getConfig()->get('defaults')->theme;
+      $this->theme = self::themeDefault;
       if(file_exists($mobileSettings = sprintf('%s/%s/config/settings-mobile.ini', getConfig()->get('paths')->themes, $this->getThemeName())))
         getConfig()->load($mobileSettings);
     }
