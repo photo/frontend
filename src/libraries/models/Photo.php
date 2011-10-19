@@ -502,9 +502,12 @@ class Photo
         // TODO deal with charset
         // TODO with alternates as both of these are arrays.
         // TODO eventually HTML-ify the description
-        $iptc_array['title'] = $iptc['2#105'][0];
-        $iptc_array['description'] = $iptc['2#120'][0];
-        $iptc_array['tags'] = $iptc['2#025'];
+        if(isset($iptc['2#105']))
+          $iptc_array['title'] = $iptc['2#105'][0];
+        if(isset($iptc['2#120']))
+          $iptc_array['description'] = $iptc['2#120'][0];
+        if(isset($iptc['2#025']))
+          $iptc_array['tags'] = $iptc['2#025'];
       }
     }
     return $iptc_array;
