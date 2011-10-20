@@ -8,7 +8,7 @@
  */
 class DatabaseMySql implements DatabaseInterface
 {
-  const currentSchemaVersion = 5;
+  const currentSchemaVersion = 6;
   /**
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
@@ -216,7 +216,7 @@ class DatabaseMySql implements DatabaseInterface
     }
     else
     {
-      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE members in ('{$email}') AND `id` IS NOT NULL ORDER BY `id`");
+      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE MATCH (members) AGAINST('+{$email}' IN BOOLEAN MODE) AND `id` IS NOT NULL ORDER BY `id`");
     }
 
     if($res !== false)
@@ -376,7 +376,9 @@ class DatabaseMySql implements DatabaseInterface
         switch($name)
         {
           case 'groups':
-            $where = $this->buildWhere($where, '(MATCH(groups) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)) OR permission="1")');
+            if(!is_array($value))
+              $value = (array)explode(',', $value);
+            $where = $this->buildWhere($where, '(MATCH(groups) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE) OR permission="1")');
             break;
           case 'page':
             if($value > 1)
@@ -907,6 +909,7 @@ class DatabaseMySql implements DatabaseInterface
     }
 
     $photo['tags'] = explode(",", $photo['tags']);
+    $photo['groups'] = explode(",", $photo['groups']);
 
     $exif_array = (array)json_decode($photo['exif']);
     $photo = array_merge($photo, $exif_array);
@@ -987,6 +990,8 @@ class DatabaseMySql implements DatabaseInterface
     $params['id'] = $id;
     if(isset($params['tags']) && is_array($params['tags']))
       $params['tags'] = implode(',', $params['tags']) ;
+    if(isset($params['groups']) && is_array($params['groups']))
+      $params['groups'] = implode(',', $params['groups']) ;
 
     $exif_keys = array('exifOrientation' => 0,
                        'exifCameraMake' => 0,
@@ -1174,7 +1179,9 @@ class DatabaseMySql implements DatabaseInterface
     case 4:
       // fixed the group support
       getDatabase()->execute("alter table `{$this->mySqlTablePrefix}user` ADD lastGroupId varchar(255) default null");
-
+    case 5:
+      getDatabase()->execute("ALTER TABLE `{$this->mySqlTablePrefix}photo` ADD `groups` text AFTER `pathBase`, ADD FULLTEXT(`groups`)");
+      getDatabase()->execute("ALTER TABLE `{$this->mySqlTablePrefix}group` ENGINE=MyISAM, ADD FULLTEXT(`members`)");
       getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}admin`"
         . "SET `value`='" . self::currentSchemaVersion ."' WHERE `key`='version'");
       break;
@@ -1224,10 +1231,11 @@ class DatabaseMySql implements DatabaseInterface
 	. "`dateUploadedYear` int(11) DEFAULT NULL,"
 	. "`pathOriginal` varchar(1000) DEFAULT NULL,"
 	. "`pathBase` varchar(1000) DEFAULT NULL,"
+	. "`groups` text,"
 	. "`tags` text,"
 	. "PRIMARY KEY (`id`),"
 	. "UNIQUE KEY `id` (`id`),"
-	. "FULLTEXT (`tags`)"
+	. "FULLTEXT (`tags`, `groups`)"
 	. ") ENGINE=MyISAM DEFAULT CHARSET=utf8");
     getDatabase()->execute("CREATE TABLE IF NOT EXISTS "
         . "`{$this->mySqlTablePrefix}photoVersion`"
@@ -1269,8 +1277,9 @@ class DatabaseMySql implements DatabaseInterface
 	. "`appId` varchar(255),"
 	. "`name` varchar(255),"
 	. "`members` TEXT,"
-	. "PRIMARY KEY(`id`)"
-	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
+	. "PRIMARY KEY(`id`),"
+	. "FULLTEXT(`members`)"
+	. ") ENGINE=MyISAM DEFAULT CHARSET=utf8");
     getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}action`"
         . "(`id` varchar(255) NOT NULL UNIQUE,"
 	. "`appId` varchar(255),"
