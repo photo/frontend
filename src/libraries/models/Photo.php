@@ -502,8 +502,15 @@ class Photo
         // TODO deal with charset
         // TODO with alternates as both of these are arrays.
         // TODO eventually HTML-ify the description
+
+	// get the title.
+	// sometime (like from Adobe software) it is in 2#005 instead of 2#105
+	// see https://github.com/openphoto/frontend/issues/260
         if(isset($iptc['2#105']))
           $iptc_array['title'] = $iptc['2#105'][0];
+	else if(isset($iptc['2#005']))
+          $iptc_array['title'] = $iptc['2#005'][0];
+	
         if(isset($iptc['2#120']))
           $iptc_array['description'] = $iptc['2#120'][0];
         if(isset($iptc['2#025']))
