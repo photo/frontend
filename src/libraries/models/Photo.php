@@ -336,9 +336,10 @@ class Photo
       if(getConfig()->get('photos')->autoTagWithDate == 1)
       {
         $dateTags = sprintf('%s,%s', date('F', $dateTaken), date('Y', $dateTaken));
-        if(!isset($attributes['tags']))
+        if(!isset($attributes['tags']) || empty($attributes['tags']))
           $attributes['tags'] = $dateTags;
-        $attributes['tags'] .= ",{$dateTags}";
+        else
+          $attributes['tags'] .= ",{$dateTags}";
       }
 
       if(isset($exif['latitude']))
