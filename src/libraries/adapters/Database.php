@@ -33,6 +33,9 @@ interface DatabaseInterface
   public function getTags($filter = array());
   public function getWebhook($id);
   public function getWebhooks($topic = null);
+  // upgrade
+  public function identity();
+  public function executeScript($file, $database);
   // post methods update
   public function postCredential($id, $params);
   public function postGroup($id, $params);

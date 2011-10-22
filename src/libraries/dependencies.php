@@ -1,14 +1,4 @@
 <?php
-// public or api routes
-require getConfig()->get('paths')->libraries . '/routes-api.php';
-require getConfig()->get('paths')->libraries . '/routes.php';
-
-// error endpoints
-getRoute()->get('/error/403', array('GeneralController', 'error403'));
-getRoute()->get('/error/404', array('GeneralController', 'error404'));
-getRoute()->get('/error/500', array('GeneralController', 'error500'));
-getRoute()->get('.*', array('GeneralController', 'error404'));
-
 // exceptions
 require getConfig()->get('paths')->libraries . '/exceptions.php';
 
@@ -25,6 +15,7 @@ require getConfig()->get('paths')->controllers . '/PhotoController.php';
 require getConfig()->get('paths')->controllers . '/ApiTagController.php';
 require getConfig()->get('paths')->controllers . '/TagController.php';
 require getConfig()->get('paths')->controllers . '/ApiUserController.php';
+require getConfig()->get('paths')->controllers . '/UpgradeController.php';
 require getConfig()->get('paths')->controllers . '/UserController.php';
 require getConfig()->get('paths')->controllers . '/ApiOAuthController.php';
 require getConfig()->get('paths')->controllers . '/OAuthController.php';
@@ -59,6 +50,7 @@ require getConfig()->get('paths')->models . '/User.php';
 require getConfig()->get('paths')->models . '/Webhook.php';
 require getConfig()->get('paths')->models . '/Http.php';
 require getConfig()->get('paths')->models . '/Theme.php';
+require getConfig()->get('paths')->models . '/Upgrade.php';
 require getConfig()->get('paths')->models . '/Image.php';
 require getConfig()->get('paths')->models . '/ImageImageMagick.php';
 require getConfig()->get('paths')->models . '/ImageGraphicsMagick.php';

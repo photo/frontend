@@ -67,3 +67,13 @@ getRoute()->get('/v[1]/oauth/token/access', array('OAuthController', 'tokenAcces
 getRoute()->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenRequest'));
 getRoute()->get('/v[1]/oauth/test', array('OAuthController', 'test'));
 getRoute()->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
+
+require getConfig()->get('paths')->libraries . '/routes-api.php';
+if($runUpgrade)
+  require getConfig()->get('paths')->libraries . '/routes-upgrade.php';
+
+// error endpoints
+getRoute()->get('/error/403', array('GeneralController', 'error403'));
+getRoute()->get('/error/404', array('GeneralController', 'error404'));
+getRoute()->get('/error/500', array('GeneralController', 'error500'));
+getRoute()->get('.*', array('GeneralController', 'error404'));

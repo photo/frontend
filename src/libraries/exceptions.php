@@ -3,12 +3,13 @@ class OPException extends Exception
 {
   public static function raise($exception)
   {
+    getLogger()->warn($exception->getMessage());
     $class = get_class($exception);
     switch($class)
     {
       case 'OPAuthorizationException':
       case 'OPAuthorizationSessionException':
-        if(substr($_GET['__route__'], -5) == '.json')
+        if(isset($_GET['__route__']) && substr($_GET['__route__'], -5) == '.json')
         {
           echo json_encode(BaseController::forbidden('You do not have sufficient permissions to access this page.'));
         }
@@ -19,7 +20,6 @@ class OPException extends Exception
         die();
         break;
       case 'OPAuthorizationOAuthException':
-        getLogger()->warn($exception->getMessage());
         echo json_encode(BaseController::forbidden($exception->getMessage()));
         die();
         break;

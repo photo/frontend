@@ -13,6 +13,8 @@ interface FileSystemInterface
   public function putPhotos($files);
   public function getHost();
   public function initialize();
+  public function identity();
+  public function executeScript($file, $filesysem);
   public function diagnostics();
   public function normalizePath($filename);
   // TODO enable this

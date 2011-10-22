@@ -9,7 +9,7 @@
 <h1>Mobile Passphrase</h1>
 <form method="post" action="/user/mobile/passphrase">
   <?php if(!empty($mobilePassphrase)) { ?>
-    <div>Your mobile passphrase is: <strong><?php Utility::safe($mobilePassphrase['phrase']); ?><strong></div>
+    <div>Your mobile passphrase is: <strong><?php Utility::safe($mobilePassphrase['phrase']); ?></strong></div>
     <div><em>Expires in <?php Utility::safe($mobilePassphrase['minutes']); ?> minutes.</em></div>
     <button type="submit">Reset Passphrase</button>
   <?php } else { ?>

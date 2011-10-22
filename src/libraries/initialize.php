@@ -19,6 +19,9 @@ getSession();
 getConfig()->load('defaults.ini');
 $configFile = sprintf('%s/generated/%s.ini', Epi::getPath('config'), getenv('HTTP_HOST'));
 
+$loginEndpoint = false;
+if(isset($_GET['__route__']) && preg_match('#/user/(login|logout)#', $_GET['__route__']))
+  $loginEndpoint = true;
 $runSetup = false;
 if(file_exists($configFile) && strpos($_SERVER['REQUEST_URI'], '/setup') !== false && isset($_GET['edit']))
   $runSetup = true;
@@ -28,6 +31,13 @@ if(file_exists($configFile) && !$runSetup)
 {
   getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
   require getConfig()->get('paths')->libraries . '/dependencies.php';
+
+  // check if the system needs to upgraded for new code
+  $runUpgrade = false;
+  if(!getUpgrade()->isCurrent())
+    $runUpgrade = true;
+  require getConfig()->get('paths')->libraries . '/routes.php';
+
   getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName()));
   if(Utility::isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(__FILE__)), getTheme(false)->getThemeName())))
     getConfig()->load($mobileSettings);

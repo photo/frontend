@@ -34,6 +34,43 @@ class FileSystemS3Dropbox extends FileSystemS3 implements FileSystemInterface
   }
 
   /**
+    * Executes an upgrade script
+    *
+    * @return void
+    */
+  public function executeScript($file, $filesystem)
+  {
+    if($filesystem == 'dropbox')
+      echo file_get_contents($file);
+    else
+      parent::executeScript($file, $filesystem);
+  }
+
+  /**
+    * Get the hostname for the remote filesystem to be used in constructing public URLs.
+    * @return string
+    */
+  /*public function getHost()
+  {
+    return $this->host;
+  }*/
+
+  public function initialize()
+  {
+    return $this->dropbox->initialize() && parent::initialize();
+  }
+
+  /**
+    * Identification method to return array of strings.
+    *
+    * @return array
+    */
+  public function identity()
+  {
+    return array_merge(array('dropbox'), parent::identity());
+  }
+
+  /**
    * Get photo will copy the photo to a temporary file.
    *
    */
@@ -52,17 +89,8 @@ class FileSystemS3Dropbox extends FileSystemS3 implements FileSystemInterface
     return $this->dropbox->putPhotos($files) && parent::putPhotos($files);
   }
 
-  /**
-    * Get the hostname for the remote filesystem to be used in constructing public URLs.
-    * @return string
-    */
-  /*public function getHost()
+  public function normalizePath($path)
   {
-    return $this->host;
-  }*/
-
-  public function initialize()
-  {
-    return $this->dropbox->initialize() && parent::initialize();
+    return parent::normalizePath($path);
   }
 }

@@ -58,6 +58,19 @@ class FileSystemLocal implements FileSystemInterface
   }
 
   /**
+    * Executes an upgrade script
+    *
+    * @return void
+    */
+  public function executeScript($file, $filesystem)
+  {
+    if($filesystem != 'local')
+      return;
+
+    echo file_get_contents($file);
+  }
+
+  /**
    * Get photo will copy the photo to a temporary file.
    *
    */
@@ -111,6 +124,16 @@ class FileSystemLocal implements FileSystemInterface
       mkdir($this->root, 0775, true);
     }
     return file_exists($this->root);
+  }
+
+  /**
+    * Identification method to return array of strings.
+    *
+    * @return array
+    */
+  public function identity()
+  {
+    return array('local');
   }
 
   public function normalizePath($path)
