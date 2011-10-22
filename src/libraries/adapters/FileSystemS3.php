@@ -68,6 +68,19 @@ class FileSystemS3 implements FileSystemInterface
   }
 
   /**
+    * Executes an upgrade script
+    *
+    * @return void
+    */
+  public function executeScript($file, $filesystem)
+  {
+    if($filesystem != 's3')
+      return;
+
+    echo file_get_contents($file);
+  }
+
+  /**
     * Retrieves a photo from the remote file system as specified by $filename.
     * This file is stored locally and the path to the local file is returned.
     *
@@ -198,6 +211,16 @@ class FileSystemS3 implements FileSystemInterface
     if(!$res->isOK())
       getLogger()->crit('Failed to set bucket policy');
     return $res->isOK();
+  }
+
+  /**
+    * Identification method to return array of strings.
+    *
+    * @return array
+    */
+  public function identity()
+  {
+    return array('s3');
   }
 
   /**

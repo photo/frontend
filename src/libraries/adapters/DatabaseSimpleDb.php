@@ -156,6 +156,19 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Executes an upgrade script
+    *
+    * @return void
+    */
+  public function executeScript($file, $database)
+  {
+    if($database != 'simpledb')
+      return;
+
+    echo file_get_contents($file);
+  }
+
+  /**
     * Retrieve a credential with $id
     *
     * @param string $id ID of the credential to get
@@ -497,6 +510,16 @@ class DatabaseSimpleDb implements DatabaseInterface
     getLogger()->info(sprintf('Attempting to create %d domains.', count($responses)));
     $this->logErrors($responses);
     return $responses->areOK();
+  }
+
+  /**
+    * Identification method to return array of strings.
+    *
+    * @return array
+    */
+  public function identity()
+  {
+    return array('simpledb');
   }
 
   /**
