@@ -41,7 +41,11 @@ function op_exception_handler($exception)
   if(!$handled)
   {
     getLogger()->warn(sprintf('Uncaught exception (%s:%s): %s', $exception->getFile(), $exception->getLine(), $exception->getMessage()));
-    getRoute()->run('/error/500', EpiRoute::httpGet);
+    if(isset($_GET['__route__']) && substr($_GET['__route__'], -5) == '.json')
+      echo json_encode(BaseController::error('An unknown error occurred.'));
+    else
+      getRoute()->run('/error/500', EpiRoute::httpGet);
+
     $handled = 1;
   }
 }

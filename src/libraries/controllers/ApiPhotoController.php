@@ -21,7 +21,7 @@ class ApiPhotoController extends BaseController
     $status = Photo::delete($id);
     if($status)
     {
-      Tag::updateTagCounts($res['result']['tags'], array());
+      Tag::updateTagCounts($res['result']['tags'], array(), 1);
       return self::success('Photo deleted successfully', true);
     }
     else
@@ -260,8 +260,6 @@ class ApiPhotoController extends BaseController
         $params = array('returnSizes' => $returnSizes);
       $photo = getApi()->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => $params));
 
-      // webhooks
-      // TODO, fire and forget
       $webhookApi = getApi()->invoke('/webhooks/photo.upload/list.json', EpiRoute::httpGet);
       if(!empty($webhookApi['result']) && is_array($webhookApi['result']))
       {
@@ -297,11 +295,16 @@ class ApiPhotoController extends BaseController
     if(isset($params['tags']) && !empty($params['tags']))
     {
       $photoBefore = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+      $photoBefore = $photoBefore['result'];
+      getLogger()->info('photosBefore');
       if($photoBefore)
       {
-        $existingTags = $photoBefore['result']['tags'];
+        $existingTags = $photoBefore['tags'];
         $updatedTags = (array)explode(',', $params['tags']);
-        Tag::updateTagCounts($existingTags, $updatedTags);
+        $permission = $photoBefore['permission'];
+        if(isset($params['permission']))
+          $permission = $params['permission'];
+        Tag::updateTagCounts($existingTags, $updatedTags, $permission);
       }
     }
     if(isset($params['crumb']))

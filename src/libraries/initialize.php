@@ -9,6 +9,7 @@ $basePath = dirname(dirname(__FILE__));
 $epiPath = "{$basePath}/libraries/external/epi";
 require "{$epiPath}/Epi.php";
 
+Epi::setSetting('exceptions', true);
 Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
 Epi::setPath('view', '');

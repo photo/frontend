@@ -44,16 +44,6 @@ class User
     return getSession()->get('email');
   }
 
-  public static function groupCreate()
-  {
-
-  }
-
-  public static function groupUpdate()
-  {
-
-  }
-
   /**
     * Get mobile passphrase key
     * @return string
@@ -80,7 +70,7 @@ class User
   {
     $type = ucwords($type);
     $key = "last{$type}Id";
-    $user = self::getUserRecord();    
+    $user = self::getUserRecord();
     if($user === false)
       return false;
 
@@ -242,7 +232,7 @@ class User
     */
   private static function create()
   {
-    return getDb()->putUser(1, self::getDefaultAttributes());
+    return getDb()->putUser(getConfig()->get('user')->email, self::getDefaultAttributes());
   }
 
   /**
@@ -252,7 +242,7 @@ class User
     */
   private static function getDefaultAttributes()
   {
-    return array('lastPhotoId' => '', 'lastActionId' => '');
+    return array('lastPhotoId' => '', 'lastActionId' => '', 'lastGroupId' => '', 'lastWebhookId' => '');
   }
 
   /**
@@ -276,6 +266,7 @@ class User
     */
   private static function update($params)
   {
-    return getDb()->postUser(1, $params);
+    $params = array_merge(self::getDefaultAttributes(), $params);
+    return getDb()->postUser($params);
   }
 }

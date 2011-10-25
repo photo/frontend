@@ -380,7 +380,7 @@ class Photo
       if($stored)
       {
         if(isset($attributes['tags']) && !empty($attributes['tags']))
-          Tag::updateTagCounts(array(), (array)explode(',', $attributes['tags']));
+          Tag::updateTagCounts(array(), (array)explode(',', $attributes['tags']), $attributes['permission']);
 
         getLogger()->info("Photo ({$id}) successfully stored to the database");
         return $id;

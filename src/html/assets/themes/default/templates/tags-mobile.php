@@ -9,7 +9,7 @@
       <ul data-role="listview" data-inset="true">
         <?php foreach($tags as $tag) { ?>
           <li class="size-<?php Utility::safe($tag['weight']); ?>">
-            <a href="<?php Url::photosView("tags-{$tag['id']}"); ?>" title="<?php Utility::safe($tag['count']); ?> photos">
+            <a href="<?php Url::photosView("tags-{$tag['id']}"); ?>" title="<?php Utility::safe($tag[$tagField]); ?> photos">
               <?php Utility::safe($tag['id']); ?>
             </a>
           </li>

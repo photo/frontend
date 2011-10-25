@@ -39,7 +39,7 @@ getApi()->get('/photo/([a-zA-Z0-9]+)/nextprevious/?(.+)?.json', array('ApiPhotoC
 getApi()->post('/tag/create.json', array('ApiTagController', 'create'), EpiApi::external); // post a tag (/tag/{id}/update.json)
 getApi()->post('/tag/(.+)/delete.json', array('ApiTagController', 'delete'), EpiApi::external); // post a tag (/tag/{id}/update.json)
 getApi()->post('/tag/(.+)/update.json', array('ApiTagController', 'update'), EpiApi::external); // post a tag (/tag/{id}/update.json)
-getApi()->get('/tags/list.json', array('ApiTagController', 'view'), EpiApi::external); // retrieve tags
+getApi()->get('/tags/list.json', array('ApiTagController', 'list_'), EpiApi::external); // retrieve tags
 
 /*
  * User endpoints
