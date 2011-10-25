@@ -15,8 +15,9 @@ class TagController extends BaseController
   {
     $tags = getApi()->invoke("/tags/list.json");
     $groupedTags = Tag::groupByWeight($tags['result']);
+    $tagField = User::isOwner() ? 'countPrivate' : 'countPublic';
 
-    $body = getTheme()->get(Utility::getTemplate('tags.php'), array('tags' => $groupedTags));
+    $body = getTheme()->get(Utility::getTemplate('tags.php'), array('tags' => $groupedTags, 'tagField' => $tagField));
     getTheme()->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'tags'));
   }
 }

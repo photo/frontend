@@ -397,7 +397,10 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function getTags($filters = array())
   {
-    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE `count` IS NOT NULL AND `count` > '0' AND itemName() IS NOT NULL ORDER BY itemName()", array('ConsistentRead' => 'false'));
+    $countField = 'countPublic';
+    if(isset($filter['permission']) && $filter['permission'] == 0)
+      $countField = 'countPrivate';
+    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL ORDER BY itemName()", array('ConsistentRead' => 'false'));
     $this->logErrors($res);
     $tags = array();
     if(isset($res->body->SelectResult))
@@ -626,51 +629,6 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $responses->areOK();
   }
 
- /**
-    * Update counts for multiple tags by incrementing or decrementing.
-    * The $params should include the tag and increment value as a key/value pair.
-    * {tag1: 10, sunnyvale: 3}
-    *
-    * @param array $params Tags and related attributes to update.
-    * @return boolean
-    */
-  public function postTagsCounter($params)
-  {
-    $tagsToUpdate = $tagsFromDb = array();
-    foreach($params as $tag => $changeBy)
-      $tagsToUpdate[$tag] = $changeBy;
-
-    $justTags = array_keys($tagsToUpdate);
-
-    // TODO call getTags instead
-    $res = $this->db->select($sql = "SELECT * FROM `{$this->domainTag}` WHERE itemName() IN ('" . implode("','", $justTags) . "')");
-    $this->logErrors($res);
-    if(isset($res->body->SelectResult))
-    {
-      if(isset($res->body->SelectResult->Item))
-      {
-        foreach($res->body->SelectResult->Item as $val)
-          $tagsFromDb[] = self::normalizeTag($val);
-      }
-    }
-
-    // track the tags which need to be updated
-    // start with ones which already exist in the database and increment them accordingly
-    $updatedTags = array();
-    foreach($tagsFromDb as $key => $tagFromDb)
-    {
-      $thisTag = $tagFromDb['id'];
-      $changeBy = $tagsToUpdate[$thisTag];
-      $updatedTags[] = array('id' => $thisTag, 'count' => $tagFromDb['count']+$changeBy);
-      // unset so we can later loop over tags which didn't already exist
-      unset($tagsToUpdate[$thisTag]);
-    }
-    // these are new tags
-    foreach($tagsToUpdate as $tag => $count)
-      $updatedTags[] = array('id' => $tag, 'count' => $count);
-    return $this->postTags($updatedTags);
-  }
-
   /**
     * Update the information for the user record.
     * This method overwrites existing values present in $params.
@@ -679,7 +637,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @param array $params Attributes to update.
     * @return boolean
     */
-  public function postUser($id, $params)
+  public function postUser($params)
   {
     // make sure we don't overwrite an existing user record
     $res = $this->db->put_attributes($this->domainUser, $id, $params, true);
@@ -781,7 +739,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @param array $params Attributes to update.
     * @return boolean
     */
-  public function putUser($id, $params)
+  public function putUser($params)
   {
     $res = $this->db->put_attributes($this->domainUser, $id, $params);
     $this->logErrors($res);

@@ -13,7 +13,7 @@ class DatabaseMySql implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $errors = array(), $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
+  private $errors = array(), $owner, $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
 
   /**
     * Constructor
@@ -28,6 +28,7 @@ class DatabaseMySql implements DatabaseInterface
     foreach($mysql as $key => $value) {
       $this->{$key} = $value;
     }
+    $this->owner = getConfig()->get('user')->email;
   }
 
   /**
@@ -38,7 +39,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteAction($id)
   {
-    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}action` WHERE id=:id", array(':id' => $id));
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}action` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res == 1);
   }
 
@@ -49,7 +50,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteCredential($id)
   {
-    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}credential` WHERE id=:id", array(':id' => $id));
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}credential` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res == 1);
   }
 
@@ -61,7 +62,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteGroup($id)
   {
-    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}group` WHERE id=:id", array(':id' => $id));
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}group` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res == 1);
   }
 
@@ -73,7 +74,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deletePhoto($id)
   {
-    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE id=:id", array(':id' => $id));
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    // TODO delete all versions
     return ($res == 1);
   }
 
@@ -85,8 +87,9 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteTag($id)
   {
-    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}tag` WHERE id=:id", array(':id' => $id));
-    return ($res == 1);
+    $resDel = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $resClean = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`=:owner AND `tag`=:tag", array(':owner' => $this->owner, ':tag' => $id));
+    return ($resDel == 1);
   }
 
   /**
@@ -97,7 +100,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteWebhook($id)
   {
-    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}webhook` WHERE id=:id", array(':id' => $id));
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}webhook` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res == 1);
   }
 
@@ -109,7 +112,7 @@ class DatabaseMySql implements DatabaseInterface
   public function diagnostics()
   {
     $diagnostics = array();
-    $res = getDatabase()->execute("SELECT * FROM `{$this->mySqlTablePrefix}photo` LIMIT 1");
+    $res = getDatabase()->execute("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE owner=:owner LIMIT 1", array(':owner' => $this->owner));
     if($res == 1)
       $diagnostics[] = Utility::diagnosticLine(true, 'Database connectivity is okay.');
     else
@@ -149,8 +152,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getCredential($id)
   {
-    $cred = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE id=:id",
-                               array(':id' => $id));
+    $cred = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE `id`=:id AND owner=:owner",
+                               array(':id' => $id, ':owner' => $this->owner));
     if(empty($cred))
     {
       return false;
@@ -166,8 +169,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getCredentialByUserToken($userToken)
   {
-    $cred = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE userToken=:userToken",
-                               array(':userToken' => $userToken));
+    $cred = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE userToken=:userToken AND owner=:owner",
+                               array(':userToken' => $userToken, ':owner' => $this->owner));
     if(empty($cred))
     {
       return false;
@@ -182,7 +185,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getCredentials()
   {
-    $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE status=1");
+    $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE owner=:owner AND status=1", array(':owner' => $this->owner));
     if($res === false)
     {
       return false;
@@ -206,7 +209,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getGroup($id = null)
   {
-    $res = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE `id`='{$id}'");
+    $res = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE `id`='{$id}' AND owner=:owner", array(':owner' => $this->owner));
     if($res === false || empty($res))
     {
       return false;
@@ -225,11 +228,11 @@ class DatabaseMySql implements DatabaseInterface
   {
     if(empty($email))
     {
-      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE `id` IS NOT NULL ORDER BY `name`");
+      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE `id` IS NOT NULL AND owner=:owner ORDER BY `name`", array(':owner' => $this->owner));
     }
     else
     {
-      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE members in ('{$email}') AND `id` IS NOT NULL ORDER BY `id`");
+      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE members in ('{$email}') AND `id` IS NOT NULL AND owner=:owner ORDER BY `id`", array(':owner' => $this->owner));
     }
 
     if($res !== false)
@@ -256,7 +259,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getPhoto($id)
   {
-    $photo = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE id=:id", array(':id' => $id));
+    $photo = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     if(empty($photo))
       return false;
     return self::normalizePhoto($photo);
@@ -270,11 +273,12 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getPhotoNextPrevious($id, $filterOpts = null)
   {
-    $buildQuery = self::buildQuery($filterOpts, null, null);
+    $buildQuery = $this->buildQuery($filterOpts, null, null);
     $photo = $this->getPhoto($id);
     if(!$photo)
       return false;
 
+    // owner is in buildQuery
     $photo_prev = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND dateTaken> :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken ASC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
     $photo_next = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND dateTaken< :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
 
@@ -300,8 +304,8 @@ class DatabaseMySql implements DatabaseInterface
     $photo['actions'] = array();
     if($photo)
     {
-      $actions = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}action` WHERE targetType='photo' AND targetId=:id",
-      	       array(':id' => $id));
+      $actions = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}action` WHERE owner=:owner AND targetType='photo' AND targetId=:id",
+      	       array(':id' => $id, ':owner' => $this->owner));
       if(!empty($actions))
       {
         foreach($actions as $action)
@@ -319,8 +323,9 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
-    $query = self::buildQuery($filters, $limit, $offset);
+    $query = $this->buildQuery($filters, $limit, $offset);
 
+    // buildQuery includes owner
     $photos = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}photo` {$query['where']} {$query['sortBy']} {$query['limit']} {$query['offset']}");
     if(empty($photos))
       return false;
@@ -344,8 +349,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getWebhook($id)
   {
-    $webhook = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}webhook` WHERE id=:id", array(':id' => $id));
-//    $this->logErrors($webhook);
+    $webhook = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}webhook` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     if(empty($webhook))
       return false;
     return self::normalizeWebhook($webhook);
@@ -359,9 +363,9 @@ class DatabaseMySql implements DatabaseInterface
   public function getWebhooks($topic = null)
   {
     if($topic)
-      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}webhook` WHERE `topic`='{$topic}'");
+      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}webhook` WHERE owner=:owner AND `topic`='{$topic}'", array(':owner' => $this->owner));
     else
-      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}webhook`");
+      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}webhook` owner=:owner", array(':owner' => $this->owner));
 
 //    $this->logErrors($res);
     if($res === false)
@@ -380,7 +384,7 @@ class DatabaseMySql implements DatabaseInterface
   private function buildQuery($filters, $limit, $offset)
   {
     // TODO: support logic for multiple conditions
-    $where = '';
+    $where = "WHERE owner='{$this->owner}'";
     $sortBy = 'ORDER BY dateTaken DESC';
     if(!empty($filters) && is_array($filters))
     {
@@ -407,9 +411,16 @@ class DatabaseMySql implements DatabaseInterface
             $where = $this->buildWhere($where, "{$field} is not null");
             break;
           case 'tags':
+            // TODO there are a few issues here
+            // 1) It's inefficient (uses file sort)
+            // 2) It's using OR logic instead of AND
             if(!is_array($value))
               $value = (array)explode(',', $value);
-            $where = $this->buildWhere($where, ' MATCH(tags) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)');
+            foreach($value as $k => $v)
+              $value[$k] = mysql_real_escape_string($v);
+            $subquery = sprintf("id IN (SELECT element FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`='%s' AND `type`='%s' AND `tag` IN ('%s'))",
+              mysql_real_escape_string($this->owner), 'photo', implode("','", $value));
+            $where = $this->buildWhere($where, $subquery);
             break;
         }
       }
@@ -436,7 +447,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getTag($tag)
   {
-    $tag = getDatabase()->one('SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE id=:id', array(':id' => $tag));
+    $tag = getDatabase()->one('SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND owner=:owner', array(':id' => $tag));
     // TODO this should be in the normalize method
     if($tag['params'])
       $tag = array_merge($tag, json_decode($tag['params'], 1));
@@ -453,14 +464,20 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getTags($filter = array())
   {
-    $tags = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `count` IS NOT NULL AND `count` > '0' AND id IS NOT NULL ORDER BY id");
+    $countField = 'countPublic';
+    if(isset($filter['permission']) && $filter['permission'] == 0)
+      $countField = 'countPrivate';
+    $tags = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE id IS NOT NULL AND owner=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY id", array(':owner' => $this->owner));
     foreach($tags as $key => $tag)
     {
       // TODO this should be in the normalize method
-      if($tag['params'])
-        $tags[$key] = array_merge($tag, json_decode($tag['params'], 1));
+      if($tag['extra'])
+        $tags[$key] = array_merge($tag, json_decode($tag['extra'], 1));
       unset($tags[$key]['params']);
     }
+    if(empty($tags))
+      return null;
+
     return $tags;
   }
 
@@ -471,12 +488,12 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getUser()
   {
-    $res = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE id='1'");
+    $res = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $this->owner));
     if($res)
     {
       return self::normalizeUser($res);
     }
-    return false;
+    return null;
   }
 
   /**
@@ -507,8 +524,9 @@ class DatabaseMySql implements DatabaseInterface
     }
     $stmt = self::sqlUpdateExplode($params, $bindings);
     $bindings[':id'] = $id;
+    $bindings[':owner'] = $this->owner;
 
-    $result = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}credential` SET {$stmt} WHERE id=:id", $bindings);
+    $result = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}credential` SET {$stmt} WHERE `id`=:id AND owner=:owner", $bindings);
 
     return ($result == 1);
   }
@@ -531,8 +549,9 @@ class DatabaseMySql implements DatabaseInterface
     }
     $stmt = self::sqlUpdateExplode($params, $bindings);
     $bindings[':id'] = $id;
+    $bindings[':owner'] = $this->owner;
 
-    $result = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}group` SET {$stmt} WHERE id=:id", $bindings);
+    $result = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}group` SET {$stmt} WHERE `id`=:id AND owner=:owner", $bindings);
 
     return ($result == 1);
   }
@@ -547,6 +566,9 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postPhoto($id, $params)
   {
+    $tags = false;
+    if(isset($params['tags']))
+      $tags = !empty($params['tags']) ? (array)explode(',', $params['tags']) : null;
     $params = self::preparePhoto($id, $params);
     unset($params['id']);
 
@@ -564,10 +586,21 @@ class DatabaseMySql implements DatabaseInterface
       $bindings = $params['::bindings'];
       $stmt = self::sqlUpdateExplode($params, $bindings);
       $bindings[':id'] = $id;
-      $res = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}photo` SET {$stmt} WHERE id=:id", $bindings);
+      $bindings[':owner'] = $this->owner;
+      $res = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}photo` SET {$stmt} WHERE `id`=:id AND owner=:owner", $bindings);
     }
     if(!empty($versions))
       $resVersions = $this->postVersions($id, $versions);
+
+    if($tags !== false)
+    {
+      $this->deleteTagsFromElement($id, 'photo');
+      if(!empty($tags))
+      {
+        foreach($tags as $tag)
+          $this->addTagToElement($id, $tag, 'photo');
+      }
+    }
     return (isset($res) && $res == 1) || (isset($resVersions) && $resVersions);
   }
 
@@ -585,6 +618,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       $params['id'] = $id;
     }
+    $params['owner'] = $this->owner;
     $params = self::prepareTag($params);
     if(isset($params['::bindings']))
       $bindings = $params['::bindings'];
@@ -617,47 +651,6 @@ class DatabaseMySql implements DatabaseInterface
     return $res;
   }
 
- /**
-    * Update counts for multiple tags by incrementing or decrementing.
-    * The $params should include the tag in the `id` field.
-    * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
-    *
-    * @param array $params Tags and related attributes to update.
-    * @return boolean
-    */
-  public function postTagsCounter($params)
-  {
-    $tagsToUpdate = $tagsFromDb = array();
-    foreach($params as $tag => $changeBy)
-      $tagsToUpdate[$tag] = $changeBy;
-    $justTags = array_keys($tagsToUpdate);
-
-    // TODO call getTags instead
-    $in_stmt = implode("','", $justTags);
-    $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE id IN (':in')", array (':in' => $in_stmt) );
-    if(!empty($res))
-    {
-      foreach($res as $val)
-        $tagsFromDb[] = self::normalizeTag($val);
-    }
-
-    // track the tags which need to be updated
-    // start with ones which already exist in the database and increment them accordingly
-    $updatedTags = array();
-    foreach($tagsFromDb as $key => $tagFromDb)
-    {
-      $thisTag = $tagFromDb['id'];
-      $changeBy = $tagsToUpdate[$thisTag];
-      $updatedTags[] = array('id' => $thisTag, 'count' => $tagFromDb['count']+$changeBy);
-      // unset so we can later loop over tags which didn't already exist
-      unset($tagsToUpdate[$thisTag]);
-    }
-    // these are new tags
-    foreach($tagsToUpdate as $tag => $count)
-      $updatedTags[] = array('id' => $tag, 'count' => $count);
-    return $this->postTags($updatedTags);
-  }
-
   /**
     * Update the information for the user record.
     * This method overwrites existing values present in $params.
@@ -666,10 +659,10 @@ class DatabaseMySql implements DatabaseInterface
     * @param array $params Attributes to update.
     * @return boolean
     */
-  public function postUser($id, $params)
+  public function postUser($params)
   {
-    $stmt = self::sqlUpdateExplode($params);
-    $res = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}user` SET {$stmt} WHERE id=:id", array(':id' => $id));
+    $params = self::prepareUser($params);
+    $res = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}user` SET `extra`=:extra WHERE `id`=:id", array(':id' => $this->owner, ':extra' => $params));
     return ($res == 1);
   }
 
@@ -683,7 +676,7 @@ class DatabaseMySql implements DatabaseInterface
   public function postWebhook($id, $params)
   {
     $stmt = self::sqlUpdateExplode($params);
-    $res = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}webhook` SET {$stmt} WHERE id=:id", array(':id' => $id));
+    $res = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}webhook` SET {$stmt} WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res == 1);
   }
 
@@ -745,16 +738,25 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putPhoto($id, $params)
   {
+    $params['owner'] = $this->owner;
+    $tags = null;
+    if(isset($params['tags']) && !empty($params['tags']))
+      $tags = (array)explode(',', $params['tags']);
     $params = self::preparePhoto($id, $params);
     $bindings = $params['::bindings'];
     $stmt = self::sqlInsertExplode($params, $bindings);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}photo` ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
+    if(!empty($tags))
+    {
+      foreach($tags as $tag)
+        $this->addTagToElement($id, $tag, 'photo');
+    }
     return ($result !== false);
   }
 
   /**
     * Add a new tag to the database
-    * This method does not overwrite existing values present in $params - hence "new user".
+    * This method does not overwrite existing values present in $params - hence "new tag".
     *
     * @param string $id ID of the user to update which is always 1.
     * @param array $params Attributes to update.
@@ -762,10 +764,6 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putTag($id, $params)
   {
-    if(!isset($params['count']))
-      $count = 0;
-    else
-      $count = max(0, intval($params['count']));
     return $this->postTag($id, $params);
   }
 
@@ -777,10 +775,10 @@ class DatabaseMySql implements DatabaseInterface
     * @param array $params Attributes to update.
     * @return boolean
     */
-  public function putUser($id, $params)
+  public function putUser($params)
   {
-    $stmt = self::sqlInsertExplode($params);
-    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}user` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $params = self::prepareUser($params);
+    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`extra`) VALUES (:id,:extra)", array(':id' => $this->owner, ':extra' => $params['extra']));
     return ($result != -1);
   }
 
@@ -819,6 +817,19 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Insert tags into the mapping table
+    *
+    * @param string $id Element id (id of the photo or video)
+    * @param string $tag Tag to be added
+    * @param string $type Element type (photo or video)
+    * @return boolean
+    */
+  private function addTagToElement($id, $tag, $type)
+  {
+    getDatabase()->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementTag`(`owner`, `type`, `element`, `tag`) VALUES(:owner, :type, :element, :tag)", array(':owner' => $this->owner, ':type' => $type, ':element' => $id, ':tag' => $tag));
+  }
+
+  /**
     * Utility function to help build the WHERE clause for SELECT statements.
     * (Taken from DatabaseSimpleDb)
     * TODO possibly put duplicate code in a utility class
@@ -836,6 +847,19 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete tags for an element from the mapping table
+    *
+    * @param string $id Element id (id of the photo or video)
+    * @param string $tag Tag to be added
+    * @param string $type Element type (photo or video)
+    * @return boolean
+    */
+  private function deleteTagsFromElement($id, $type)
+  {
+    getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':owner' => $this->owner, ':type' => $type, ':element' => $id));
+  }
+
+  /**
     * Get all the versions of a given photo
     * TODO this can be eliminated once versions are in the json field
     *
@@ -844,34 +868,11 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function getPhotoVersions($id)
   {
-    $versions = getDatabase()->all("SELECT `key`,path FROM `{$this->mySqlTablePrefix}photoVersion` WHERE id=:id",
-                 array(':id' => $id));
+    $versions = getDatabase()->all("SELECT `key`,path FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `id`=:id AND owner=:owner",
+                 array(':id' => $id, ':owner' => $this->owner));
     if(empty($versions))
       return false;
     return $versions;
-  }
-
-  /**
-   * Explode params associative array into SQL update statement lists
-   * Return a string
-   * TODO, have this work with PDO named parameters
-   */
-  private function sqlUpdateExplode($params, $bindings = array())
-  {
-    $stmt = '';
-    foreach($params as $key => $value)
-    {
-      if($key == '::bindings')
-        continue;
-      if(!empty($stmt)) {
-        $stmt .= ",";
-      }
-      if(!empty($bindings) && !empty($bindings[$value]))
-        $stmt .= "{$key}={$value}";
-      else
-        $stmt .= "{$key}='{$value}'";
-    }
-    return $stmt;
   }
 
   /**
@@ -893,7 +894,7 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($bindings) && !empty($bindings[$value]))
         $stmt['vals'] .= "{$value}";
       else
-        $stmt['vals'] .= "'{$value}'";
+        $stmt['vals'] .= sprintf("'%s'", mysql_real_escape_string($value));
     }
     return $stmt;
   }
@@ -964,6 +965,13 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function normalizeUser($raw)
   {
+    $jsonParsed = json_decode($raw['extra'], 1);
+    if(!empty($jsonParsed))
+    {
+      foreach($jsonParsed as $key => $value)
+        $raw[$key] = $value;
+    }
+    unset($raw['extra']);
     return $raw;
   }
 
@@ -990,6 +998,16 @@ class DatabaseMySql implements DatabaseInterface
     return $raw;
   }
 
+  /** Prepare credential to store in the database
+   */
+  private function prepareCredential($params)
+  {
+    if(isset($params['permissions']))
+      $params['permissions'] = implode(',', $params['permissions']);
+
+    return $params;
+  }
+
   /**
     * Formats a photo to be updated or added to the database.
     * Primarily to properly format tags as an array.
@@ -1002,7 +1020,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     // we need to get the Exif metadata to not clobber it.
     $stored_exif_array = array();
-    $current_photo = getDatabase()->one("SELECT exif FROM `{$this->mySqlTablePrefix}photo` WHERE id=:id", array(':id' => $id));
+    $current_photo = getDatabase()->one("SELECT exif FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id", array(':id' => $id));
     if($current_photo && isset($current_photo['exif']))
       $stored_exif_array = (array)json_decode($current_photo['exif']);
 
@@ -1074,14 +1092,18 @@ class DatabaseMySql implements DatabaseInterface
     }
     return $params;    
   }
-  /** Prepare credential to store in the database
-   */
-  private function prepareCredential($params)
-  {
-    if(isset($params['permissions']))
-      $params['permissions'] = implode(',', $params['permissions']);
 
-    return $params;
+  /** Prepare user to store in the database
+   */
+  private function prepareUser($params)
+  {
+    $ret = array();
+    if(isset($params) && is_array($params) && !empty($params))
+    {
+      foreach($params as $key => $val)
+        $ret[$key] = $val;
+    }
+    return json_encode($ret);
   }
 
   /**
@@ -1115,220 +1137,33 @@ class DatabaseMySql implements DatabaseInterface
     {
       // TODO this is gonna fail if we already have the version -- hfiguiere
       // Possibly use REPLACE INTO? -- jmathai
-      $result = getDatabase()->execute("INSERT INTO {$this->mySqlTablePrefix}photoVersion (id, `key`, path) VALUES('{$id}', '{$key}', '{$value}')");
+      $result = getDatabase()->execute("INSERT INTO {$this->mySqlTablePrefix}photoVersion (`id`, `owner`, `key`, `path`) VALUES(:id, :owner, :key, :value)",
+        array(':id' => $id, ':owner' => $this->owner, ':key' => $key, ':value' => $value));
     }
     // TODO, what type of return value should we have here -- jmathai
     return ($result != 1);
   }
 
   /**
-   * Check the Db Version.
-   * 
-   * This shouldn't fail unless you don't have database access
-   * But if the DB is empty (ie don't have the tables), it returns 0
-   * @return the numeric version. 0 means no DB
+   * Explode params associative array into SQL update statement lists
+   * Return a string
+   * TODO, have this work with PDO named parameters
    */
-  private function checkDbVersion()
+  private function sqlUpdateExplode($params, $bindings = array())
   {
-    $version = 0;
-    $result = getDatabase()->one("SHOW TABLES LIKE '{$this->mySqlTablePrefix}admin'");
-    if(!empty($result))
+    $stmt = '';
+    foreach($params as $key => $value)
     {
-      $result = getDatabase()->one("SELECT value FROM {$this->mySqlTablePrefix}admin WHERE `key`='version'");
-      if(!empty($result) && isset($result['value']))
-      {
-        $version = $result['value'];
+      if($key == '::bindings')
+        continue;
+      if(!empty($stmt)) {
+        $stmt .= ",";
       }
+      if(!empty($bindings) && !empty($bindings[$value]))
+        $stmt .= "{$key}={$value}";
+      else
+        $stmt .= sprintf("%s='%s'", $key, mysql_real_escape_string($value));
     }
-    return $version;
-  }
-  /**
-   * Upgrade from a version to the current schema
-   *
-   * @param int $version version of the database found
-   * @return false if failed
-   */
-  private function upgradeFrom($version)
-  {
-    if($version < 1)
-      return false;
-    switch($version) {      	
-    case 1:
-      // after version 1 we added credential
-      //
-      $result = getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}credential`"
-        . "(`id` varchar(255) NOT NULL UNIQUE,"
-	. "`name` varchar(255) DEFAULT NULL,"
-	. "`image` text DEFAULT NULL,"
-	. "`clientSecret` varchar(255) DEFAULT NULL,"
-	. "`userToken` varchar(255) DEFAULT NULL,"
-	. "`userSecret` varchar(255) DEFAULT NULL,"
-	. "`permissions` varchar(255) DEFAULT NULL,"
-	. "`verifier` varchar(255) DEFAULT NULL,"
-	. "`type` varchar(100) DEFAULT NULL,"
-	. "`status` int DEFAULT 0,"
-	. "PRIMARY KEY(`id`)"
-	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-      if($result === false) {
-        return false;
-      }
-    case 2:
-      // after version 2 we added group
-      getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}group`"
-        . "(`id` varchar(255) NOT NULL UNIQUE,"
-	. "`appId` varchar(255),"
-	. "`name` varchar(255),"
-	. "`members` TEXT,"
-	. "PRIMARY KEY(`id`)"
-	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-    case 3:
-      // after version 3 we added webhook and index to the admin table
-      getDatabase()->execute("ALTER TABLE `{$this->mySqlTablePrefix}admin` "
-        . "ADD PRIMARY KEY (`key`) ADD UNIQUE KEY (`key`)");
-      getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}webhook`"
-        . "(`id` varchar(255) NOT NULL UNIQUE,"
-	. "`appId` varchar(255),"
-	. "`callback` varchar(1000),"
-	. "`topic` varchar(255),"
-	. "PRIMARY KEY(`id`)"
-	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-      getDatabase()->execute("ALTER TABLE `{$this->mySqlTablePrefix}user` "
-        . "ADD `lastWebhookId` varchar(255) DEFAULT NULL");
-    case 4:
-      // fixed the group support
-      getDatabase()->execute("alter table `{$this->mySqlTablePrefix}user` ADD lastGroupId varchar(255) default null");
-
-      getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}admin`"
-        . "SET `value`='" . self::currentSchemaVersion ."' WHERE `key`='version'");
-      break;
-    }
-    return true;
-  }
-
-  /**
-    * Create the database schema
-    * Make sure to enforce the version
-    * @return true on success.
-    */
-  private function createSchema()
-  {
-    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}admin`"
-        . "(`key` varchar(255) NOT NULL,"
-        . "`value` varchar(255) NOT NULL,"
-	. "PRIMARY KEY (`key`),"
-	. "UNIQUE KEY `key` (`key`)"
-        . ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-    getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}admin`"
-        . "(`key`, `value`) VALUES('version', '" . self::currentSchemaVersion . "')");
-
-    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}photo`"
-        . "(`id` varchar(255) NOT NULL,"
-	. "`appId` varchar(255) NOT NULL,"
-	. "`host` varchar(255) DEFAULT NULL,"
-	. "`title` varchar(255) DEFAULT NULL,"
-	. "`description` text,"
-	. "`key` varchar(255) DEFAULT NULL,"
-	. "`hash` varchar(255) DEFAULT NULL,"
-	. "`size` int(11) DEFAULT NULL,"
-	. "`width` int(11) DEFAULT NULL,"
-	. "`height` int(11) DEFAULT NULL,"
-	. "`exif` text,"
-	. "`views` int(11) DEFAULT NULL,"
-	. "`status` int(11) DEFAULT NULL,"
-	. "`permission` int(11) DEFAULT NULL,"
-	. "`license` varchar(255) DEFAULT NULL,"
-	. "`dateTaken` int(11) DEFAULT NULL,"
-	. "`dateTakenDay` int(11) DEFAULT NULL,"
-	. "`dateTakenMonth` int(11) DEFAULT NULL,"
-	. "`dateTakenYear` int(11) DEFAULT NULL,"
-	. "`dateUploaded` int(11) DEFAULT NULL,"
-	. "`dateUploadedDay` int(11) DEFAULT NULL,"
-	. "`dateUploadedMonth` int(11) DEFAULT NULL,"
-	. "`dateUploadedYear` int(11) DEFAULT NULL,"
-	. "`pathOriginal` varchar(1000) DEFAULT NULL,"
-	. "`pathBase` varchar(1000) DEFAULT NULL,"
-	. "`tags` text,"
-	. "PRIMARY KEY (`id`),"
-	. "UNIQUE KEY `id` (`id`),"
-	. "FULLTEXT (`tags`)"
-	. ") ENGINE=MyISAM DEFAULT CHARSET=utf8");
-    getDatabase()->execute("CREATE TABLE IF NOT EXISTS "
-        . "`{$this->mySqlTablePrefix}photoVersion`"
-        . "(`id` varchar(255),"
-        . "`key` varchar(255),"
-        . "`path` varchar(1000),"
-        . "PRIMARY KEY(`id`,`key`)"
-        . ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}tag`"
-        . "(`id` varchar(255) NOT NULL,"
-	. "`count` int(11) DEFAULT NULL,"
-	. "`params` text NOT NULL,"
-	. "PRIMARY KEY(`id`),"
-	. "UNIQUE KEY `id` (`id`)"
-        . ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}user`"
-        . "(`id` varchar(255) NOT NULL UNIQUE,"
-        . "`lastPhotoId` varchar(255),"
-        . "`lastActionId` varchar(255),"
-        . "`lastWebhookId` varchar(255) DEFAULT NULL,"
-	. "`lastGroupId` varchar(255) DEFAULT NULL,"
-        . "PRIMARY KEY(`id`)"
-	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}credential`"
-        . "(`id` varchar(255) NOT NULL UNIQUE,"
-	. "`name` varchar(255) DEFAULT NULL,"
-	. "`image` text DEFAULT NULL,"
-	. "`clientSecret` varchar(255) DEFAULT NULL,"
-	. "`userToken` varchar(255) DEFAULT NULL,"
-	. "`userSecret` varchar(255) DEFAULT NULL,"
-	. "`permissions` varchar(255) DEFAULT NULL,"
-	. "`verifier` varchar(255) DEFAULT NULL,"
-	. "`type` varchar(100) DEFAULT NULL,"
-	. "`status` int DEFAULT 0,"
-	. "PRIMARY KEY(`id`)"
-	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}group`"
-        . "(`id` varchar(255) NOT NULL UNIQUE,"
-	. "`appId` varchar(255),"
-	. "`name` varchar(255),"
-	. "`members` TEXT,"
-	. "PRIMARY KEY(`id`)"
-	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}action`"
-        . "(`id` varchar(255) NOT NULL UNIQUE,"
-	. "`appId` varchar(255),"
-	. "`targetId` varchar(255),"
-	. "`targetType` varchar(255),"
-	. "`email` varchar(255),"
-	. "`name` varchar(255),"
-	. "`avatar` varchar(255),"
-	. "`website` varchar(255),"
-	. "`targetUrl` varchar(1000),"
-	. "`permalink` varchar(1000),"
-	. "`type` varchar(255),"
-	. "`value` varchar(255),"
-	. "`datePosted` varchar(255),"
-	. "`status` integer,"
-        . "PRIMARY KEY(`id`)"
-	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-
-    getDatabase()->execute("INSERT IGNORE INTO `{$this->mySqlTablePrefix}user` ("
-        . "`id` ,"
-	. "`lastPhotoId` ,"
-	. "`lastActionId`"
-	. ")"
-	. "VALUES ("
-	. "'1', NULL , NULL"
-	. ");");
-
-    getDatabase()->execute("CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}webhook`"
-        . "(`id` varchar(255) NOT NULL UNIQUE,"
-	. "`appId` varchar(255),"
-	. "`callback` varchar(1000),"
-	. "`topic` varchar(255),"
-	. "PRIMARY KEY(`id`)"
-	. ") ENGINE=InnoDB DEFAULT CHARSET=utf8");
-
-    return true;
+    return $stmt;
   }
 }

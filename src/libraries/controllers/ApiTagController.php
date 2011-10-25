@@ -62,9 +62,12 @@ class ApiTagController extends BaseController
     *
     * @return string Standard JSON envelope 
     */
-  public static function view()
+  public static function list_()
   {
-    $tags = getDb()->getTags();
+    $filters = array();
+    if(User::isOwner())
+      $filters['permission'] = 0;
+    $tags = getDb()->getTags($filters);
     return self::success('Tags for the user', $tags);
   }
 }
