@@ -230,9 +230,17 @@ class DatabaseMySql implements DatabaseInterface
   {
 
     if(empty($email))
-      $res = getDatabase()->all("SELECT grp.*, memb.email FROM `{$this->mySqlTablePrefix}group` AS grp INNER JOIN `{$this->mySqlTablePrefix}groupMember` AS memb ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` WHERE `grp`.`id` IS NOT NULL AND `grp`.`owner`=:owner ORDER BY `grp`.`name`", array(':owner' => $this->owner));
+      $res = getDatabase()->all("SELECT `grp`.*, `memb`.`email` 
+        FROM `{$this->mySqlTablePrefix}group` AS `grp` 
+        INNER JOIN `{$this->mySqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
+        WHERE `grp`.`id` IS NOT NULL AND `grp`.`owner`=:owner 
+        ORDER BY `grp`.`name`", array(':owner' => $this->owner));
     else
-      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE members in ('{$email}') AND `id` IS NOT NULL AND owner=:owner ORDER BY `id`", array(':owner' => $this->owner));
+      $res = getDatabase()->all("SELECT `grp`.*, `memb`.`email` 
+        FROM `{$this->mySqlTablePrefix}group` AS `grp` 
+        INNER JOIN `{$this->mySqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
+        WHERE `memb`.`email`=:email AND `grp`.`id` IS NOT NULL AND `grp`.`owner`=:owner 
+        ORDER BY `grp`.`name`", array(':email' => $email, ':owner' => $this->owner));
 
     if($res !== false)
     {
@@ -330,13 +338,16 @@ class DatabaseMySql implements DatabaseInterface
     $query = $this->buildQuery($filters, $limit, $offset);
 
     // buildQuery includes owner
-    $photos = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}photo` {$query['where']} {$query['sortBy']} {$query['limit']} {$query['offset']}");
+    $photos = getDatabase()->all($sql = "SELECT * FROM `{$this->mySqlTablePrefix}photo` {$query['where']} {$query['sortBy']} {$query['limit']} {$query['offset']}");
     if(empty($photos))
       return false;
     for($i = 0; $i < count($photos); $i++)
     {
       $photos[$i] = self::normalizePhoto($photos[$i]);
     }
+
+    // TODO evaluate SQL_CALC_FOUND_ROWS (indexes with the query builder might be hard to optimize)
+    // http://www.mysqlperformanceblog.com/2007/08/28/to-sql_calc_found_rows-or-not-to-sql_calc_found_rows/
     $result = getDatabase()->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}photo` {$query['where']}");
     if(!empty($result))
     {
@@ -397,7 +408,14 @@ class DatabaseMySql implements DatabaseInterface
         switch($name)
         {
           case 'groups':
-            $where = $this->buildWhere($where, '(MATCH(groups) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)) OR permission="1")');
+          //$where = $this->buildWhere($where, '(MATCH(groups) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)) OR permission="1")');
+            if(!is_array($value))
+              $value = (array)explode(',', $value);
+            foreach($value as $k => $v)
+              $value[$k] = $this->_($v);
+            $subquery = sprintf("(id IN (SELECT element FROM `{$this->mySqlTablePrefix}elementGroup` WHERE `owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
+              $this->_($this->owner), 'photo', implode("','", $value));
+            $where = $this->buildWhere($where, $subquery);
             break;
           case 'page':
             if($value > 1)
@@ -421,9 +439,9 @@ class DatabaseMySql implements DatabaseInterface
             if(!is_array($value))
               $value = (array)explode(',', $value);
             foreach($value as $k => $v)
-              $value[$k] = mysql_real_escape_string($v);
+              $value[$k] = $this->_($v);
             $subquery = sprintf("id IN (SELECT element FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`='%s' AND `type`='%s' AND `tag` IN ('%s'))",
-              mysql_real_escape_string($this->owner), 'photo', implode("','", $value));
+              $this->_($this->owner), 'photo', implode("','", $value));
             $where = $this->buildWhere($where, $subquery);
             break;
         }
@@ -601,7 +619,8 @@ class DatabaseMySql implements DatabaseInterface
       {
         $this->deleteGroupsFromElement($id, 'photo');
         $this->addGroupsToElement($id, $params['groups'], 'photo');
-        $params['groups'] = implode(',', $params['groups']);
+        // TODO: Generalize this and use for tags too -- @jmathai
+        $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), implode(',', $params['groups']));
       }
       $params = self::preparePhoto($id, $params);
       unset($params['id']);
@@ -861,7 +880,7 @@ class DatabaseMySql implements DatabaseInterface
 
     $sql = "REPLACE INTO `{$this->mySqlTablePrefix}groupMember`(`owner`, `group`, `email`) VALUES ";
     foreach($members as $member)
-      $sql .= sprintf("('%s', '%s', '%s'),", mysql_real_escape_string($this->owner), mysql_real_escape_string($id), mysql_real_escape_string($member));
+      $sql .= sprintf("('%s', '%s', '%s'),", $this->_($this->owner), $this->_($id), $this->_($member));
 
     $sql = substr($sql, 0, -1);
     $res = getDatabase()->execute($sql);
@@ -881,9 +900,20 @@ class DatabaseMySql implements DatabaseInterface
     if(empty($id) || empty($groups) || empty($type))
       return false;
 
+    $hasGroup = false;
     $sql = "REPLACE INTO `{$this->mySqlTablePrefix}elementGroup`(`owner`, `type`, `element`, `group`) VALUES";
     foreach($groups as $group)
-      $sql .= sprintf("('%s', '%s', '%s', '%s'),", mysql_real_escape_string($this->owner), mysql_real_escape_string($type), mysql_real_escape_string($id), mysql_real_escape_string($group));
+    {
+      if(strlen($group) > 0)
+      {
+        $sql .= sprintf("('%s', '%s', '%s', '%s'),", $this->_($this->owner), $this->_($type), $this->_($id), $this->_($group));
+        $hasGroup = true;
+      }
+    }
+
+    if(!$hasGroup)
+      return false;
+
     $sql = substr($sql, 0, -1);
     $res = getDatabase()->execute($sql);
     return $res > 0;
@@ -995,7 +1025,7 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($bindings) && !empty($bindings[$value]))
         $stmt['vals'] .= "{$value}";
       else
-        $stmt['vals'] .= sprintf("'%s'", mysql_real_escape_string($value));
+        $stmt['vals'] .= sprintf("'%s'", $this->_($value));
     }
     return $stmt;
   }
@@ -1031,8 +1061,8 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
 
-    $photo['tags'] = (array)explode(",", $photo['tags']);
-    $photo['groups'] = (array)explode(",", $photo['groups']);
+    $photo['tags'] = strlen($photo['tags']) ? (array)explode(",", $photo['tags']) : array();
+    $photo['groups'] = strlen($photo['groups']) ? (array)explode(",", $photo['groups']) : array();
 
     $exif = (array)json_decode($photo['exif']);
     $extra = (array)json_decode($photo['extra']);
@@ -1242,11 +1272,22 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($stmt)) {
         $stmt .= ",";
       }
-      if(!empty($bindings) && !empty($bindings[$value]))
+      if(!empty($bindings) && isset($bindings[$value]))
         $stmt .= "`{$key}`={$value}";
       else
-        $stmt .= sprintf("`%s`=%s", $key, mysql_real_escape_string($value));
+        $stmt .= sprintf("`%s`='%s'", $key, $this->_($value));
     }
     return $stmt;
+  }
+
+  /**
+   * Wrapper function for escaping strings for queries
+   *
+   * @param string $str String to be escaped
+   * @return string
+   */
+  private function _($str)
+  {
+    return mysql_real_escape_string($str);
   }
 }
