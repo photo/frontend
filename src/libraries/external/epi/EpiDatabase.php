@@ -34,7 +34,7 @@ class EpiDatabase
       $sth = $this->prepare($sql, $params);
       if(!$sth)
         return false;
-      else if(preg_match('/insert/i', $sql))
+      else if(preg_match('/(insert|replace)/i', $sql))
         return $this->dbh->lastInsertId();
       else
         return $sth->rowCount();

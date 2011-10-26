@@ -209,13 +209,15 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getGroup($id = null)
   {
-    $res = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE `id`='{$id}' AND owner=:owner", array(':owner' => $this->owner));
+    $res = getDatabase()->all("SELECT grp.*, memb.* FROM `{$this->mySqlTablePrefix}group` AS grp INNER JOIN `{$this->mySqlTablePrefix}groupMember` AS memb ON `grp`.`owner`=`memb`.`owner` WHERE `grp`.`id`=:id AND `grp`.`owner`=:owner", array(':id' => $id ,':owner' => $this->owner));
     if($res === false || empty($res))
-    {
       return false;
-    }
 
-    return self::normalizeGroup($res);
+    $group = array('id' => $res[0]['id'], 'owner' => $res[0]['owner'], 'name' => $res[0]['name'], 'permission' => $res[0]['permission'], 'members' => array());
+    foreach($res as $r)
+      $group['members'][] = $r['email'];
+
+    return self::normalizeGroup($group);
   }
 
   /**
@@ -226,24 +228,26 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getGroups($email = null)
   {
+
     if(empty($email))
-    {
-      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE `id` IS NOT NULL AND owner=:owner ORDER BY `name`", array(':owner' => $this->owner));
-    }
+      $res = getDatabase()->all("SELECT grp.*, memb.email FROM `{$this->mySqlTablePrefix}group` AS grp INNER JOIN `{$this->mySqlTablePrefix}groupMember` AS memb ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` WHERE `grp`.`id` IS NOT NULL AND `grp`.`owner`=:owner ORDER BY `grp`.`name`", array(':owner' => $this->owner));
     else
-    {
       $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}group` WHERE members in ('{$email}') AND `id` IS NOT NULL AND owner=:owner ORDER BY `id`", array(':owner' => $this->owner));
-    }
 
     if($res !== false)
     {
       $groups = array();
       if(!empty($res))
       {
+        $tempGroups = array();
         foreach($res as $group)
         {
-          $groups[] = self::normalizeGroup($group);
+          if(!isset($tempGroups[$group['id']]))
+            $tempGroups[$group['id']] = array('id' => $group['id'], 'name' => $group['name'], 'owner' => $group['owner'], 'permission' => $group['permission'], 'members' => array());
+          $tempGroups[$group['id']]['members'][] = $group['email'];
         }
+        foreach($tempGroups as $g)
+          $groups[] = self::normalizeGroup($g);
       }
       return $groups;
     }
@@ -365,7 +369,7 @@ class DatabaseMySql implements DatabaseInterface
     if($topic)
       $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}webhook` WHERE owner=:owner AND `topic`='{$topic}'", array(':owner' => $this->owner));
     else
-      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}webhook` owner=:owner", array(':owner' => $this->owner));
+      $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}webhook` WHERE owner=:owner", array(':owner' => $this->owner));
 
 //    $this->logErrors($res);
     if($res === false)
@@ -541,6 +545,12 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postGroup($id, $params)
   {
+    $members = false;
+    if(isset($params['members']))
+    {
+      $members = !empty($params['members']) ? (array)explode(',', $params['members']) : null;
+      unset($params['members']);
+    }
     $params = self::prepareGroup($id, $params);
     $bindings = array();
     if(isset($params['::bindings']))
@@ -552,8 +562,13 @@ class DatabaseMySql implements DatabaseInterface
     $bindings[':owner'] = $this->owner;
 
     $result = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}group` SET {$stmt} WHERE `id`=:id AND owner=:owner", $bindings);
+    if($members !== false)
+    {
+      $this->deleteGroupMembers($id);
+      $this->addGroupMembers($id, $members);
+    }
 
-    return ($result == 1);
+    return $result !== false;
   }
 
   /**
@@ -597,6 +612,7 @@ class DatabaseMySql implements DatabaseInterface
       $this->deleteTagsFromElement($id, 'photo');
       if(!empty($tags))
       {
+        // TODO combine this into a multi row insert in addTagsToElement
         foreach($tags as $tag)
           $this->addTagToElement($id, $tag, 'photo');
       }
@@ -719,13 +735,21 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putGroup($id, $params)
   {
+    $params['owner'] = $this->owner;
     if(!isset($params['id']))
       $params['id'] = $id;
+    $members = false;
+    if(isset($params['members']))
+    {
+      $members = !empty($params['members']) ? (array)explode(',', $params['members']) : null;
+      unset($params['members']);
+    }
     $params = self::prepareGroup($id, $params);
     $stmt = self::sqlInsertExplode($params);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}group` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
-
-    return ($result !== false);
+    if($members !== false)
+      $this->addGroupMembers($id, $members);
+    return $result !== false;
   }
 
   /**
@@ -817,6 +841,27 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Add members to a group
+    *
+    * @param string $id Group id
+    * @param array $members Members to be added
+    * @return boolean
+    */
+  private function addGroupMembers($id, $members)
+  {
+    if(empty($id) || empty($members))
+      return false;
+
+    $sql = "REPLACE INTO `{$this->mySqlTablePrefix}groupMember`(`owner`, `group`, `email`) VALUES ";
+    foreach($members as $member)
+      $sql .= sprintf("('%s', '%s', '%s'),", mysql_real_escape_string($this->owner), mysql_real_escape_string($id), mysql_real_escape_string($member));
+
+    $sql = substr($sql, 0, -1);
+    $res = getDatabase()->execute($sql);
+    return $res > 0;
+  }
+
+  /**
     * Insert tags into the mapping table
     *
     * @param string $id Element id (id of the photo or video)
@@ -826,7 +871,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function addTagToElement($id, $tag, $type)
   {
-    getDatabase()->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementTag`(`owner`, `type`, `element`, `tag`) VALUES(:owner, :type, :element, :tag)", array(':owner' => $this->owner, ':type' => $type, ':element' => $id, ':tag' => $tag));
+    $res = getDatabase()->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementTag`(`owner`, `type`, `element`, `tag`) VALUES(:owner, :type, :element, :tag)", array(':owner' => $this->owner, ':type' => $type, ':element' => $id, ':tag' => $tag));
+    return $res > 0;
   }
 
   /**
@@ -847,6 +893,18 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete members from a group
+    *
+    * @param string $id Element id (id of the photo or video)
+    * @return boolean
+    */
+  private function deleteGroupMembers($id)
+  {
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}groupMember` WHERE `owner`=:owner AND `group`=:group", array(':owner' => $this->owner, ':group' => $id));
+    return $res !== false;
+  }
+
+  /**
     * Delete tags for an element from the mapping table
     *
     * @param string $id Element id (id of the photo or video)
@@ -857,6 +915,7 @@ class DatabaseMySql implements DatabaseInterface
   private function deleteTagsFromElement($id, $type)
   {
     getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':owner' => $this->owner, ':type' => $type, ':element' => $id));
+    return $res !== false;
   }
 
   /**
@@ -992,9 +1051,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function normalizeGroup($raw)
   {
-    if(isset($raw['members']) && !empty($raw['members']))
-      $raw['members'] = (array)explode(',', $raw['members']);
-
+    if(!isset($raw['members']) || empty($raw['members']))
+      $raw['members'] = array();
     return $raw;
   }
 
@@ -1116,10 +1174,6 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function prepareGroup($id, $params)
   {
-    if(!isset($params['members']))
-      $params['members'] = '';
-    elseif(is_array($params['members']))
-      $params['members'] = implode(',', $params['members']);
     return $params;
   }
 
