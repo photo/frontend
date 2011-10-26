@@ -58,6 +58,7 @@ class Action
   {
     return array(
       'appId' => getConfig()->get('application')->appId,
+      'owner' => getConfig()->get('user')->email,
       'email' => '',
       'name' => '',
       'avatar' => '',
