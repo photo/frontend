@@ -48,10 +48,11 @@
 				<label>Groups</label>
 				<ol>
 					<li>
-				  		<?php foreach($groups as $group) { ?>
-				    		<input type="checkbox" name="groups[]" value="<?php Utility::safe($group['id']); ?>" <?php if(isset($photo['groups']) && in_array($group['id'], $photo['groups'])) { ?> checked="checked" <?php } ?>>
-				    	<?php Utility::licenseLong($group['name']); ?>
-				  	<?php } ?>
+            <input type="checkbox" name="groups[]" value="" <?php if(empty($photo['groups'])) { ?> checked="checked" <?php } ?>> None
+            <?php foreach($groups as $group) { ?>
+              <input type="checkbox" name="groups[]" value="<?php Utility::safe($group['id']); ?>" <?php if(isset($photo['groups']) && in_array($group['id'], $photo['groups'])) { ?> checked="checked" <?php } ?>>
+              <?php Utility::licenseLong($group['name']); ?>
+            <?php } ?>
 					</li>
 				</ol>
 			</li>
