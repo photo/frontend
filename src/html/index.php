@@ -8,6 +8,25 @@
 
 require sprintf('%s/libraries/initialize.php', dirname(dirname(__FILE__)));
 
+// If custom route is not being used, try some more common routing cases
+if (!isset($_GET['__route__']))
+{
+  if (isset($_SERVER['PATH_INFO']))
+  {
+    $_GET['__route__'] = $_SERVER['PATH_INFO'];
+  }
+  else if (isset($_SERVER['REQUEST_URI']))
+  {
+    if ($request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH))
+    {
+      $_GET['__route__'] = $request_uri;
+    }
+  } else if (isset($_SERVER['PHP_SELF']))
+  {
+    $_GET['__route__'] = $_SERVER['PHP_SELF'];
+  }
+}
+
 // if we're not running setup and the config file exists, proceed as normal
 // else no config file then load up the setup dependencies
 if(!$runSetup && file_exists($configFile))
