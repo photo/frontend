@@ -721,6 +721,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putCredential($id, $params)
   {
+    $params['owner'] = $this->owner;
     if(!isset($params['id']))
       $params['id'] = $id;
     $params = self::prepareCredential($params);
@@ -803,7 +804,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $params = self::prepareUser($params);
     $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`extra`) VALUES (:id,:extra)", array(':id' => $this->owner, ':extra' => $params['extra']));
-    return ($result != -1);
+    return $result !== false;
   }
 
   /**
@@ -816,8 +817,8 @@ class DatabaseMySql implements DatabaseInterface
   public function putWebhook($id, $params)
   {
     $stmt = self::sqlInsertExplode($params);
-    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}webhook` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
-    return ($result != -1);
+    $result = getDatabase()->execute("INSERT INTO `{$this->mySqlTablePrefix}webhook` (id,owner,{$stmt['cols']}) VALUES (:id,:owner,{$stmt['vals']})", array(':id' => $id, ':owner' => $this->owner));
+    return $result !== false;
   }
 
   /**
@@ -914,7 +915,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function deleteTagsFromElement($id, $type)
   {
-    getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':owner' => $this->owner, ':type' => $type, ':element' => $id));
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':owner' => $this->owner, ':type' => $type, ':element' => $id));
     return $res !== false;
   }
 
@@ -1214,9 +1215,9 @@ class DatabaseMySql implements DatabaseInterface
         $stmt .= ",";
       }
       if(!empty($bindings) && !empty($bindings[$value]))
-        $stmt .= "{$key}={$value}";
+        $stmt .= "`{$key}`={$value}";
       else
-        $stmt .= sprintf("%s='%s'", $key, mysql_real_escape_string($value));
+        $stmt .= sprintf("`%s`='%s'", $key, mysql_real_escape_string($value));
     }
     return $stmt;
   }
