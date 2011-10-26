@@ -26,10 +26,11 @@ CREATE TABLE IF NOT EXISTS `photo` (
   `dateUploadedYear` int(11) DEFAULT NULL,
   `pathOriginal` varchar(1000) DEFAULT NULL,
   `pathBase` varchar(1000) DEFAULT NULL,
+  `groups` text,
   `tags` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-  FULLTEXT (`tags`)
+  FULLTEXT (`tags`,`groups`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 
