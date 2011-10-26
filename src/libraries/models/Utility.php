@@ -233,19 +233,19 @@ class Utility
     elseif($hours < 24)
       return self::returnValue("{$prefix} {$hours} " . self::plural($hours, 'hour', false) . " ago {$suffix}", $write);
 
-    $days = intval($seconds / 86400);
+    $days = intval(round($seconds / 86400));
     if($days <= 7)
       return self::returnValue("{$prefix} {$days} " . self::plural($days, 'day', false) . " ago {$suffix}", $write);
 
-    $weeks = intval($days / 7);
+    $weeks = intval(round($days / 7));
     if($weeks <= 4)
       return self::returnValue("{$prefix} {$weeks} " . self::plural($weeks, 'week', false) . " ago {$suffix}", $write);
 
-    $months = intval($days / 30);
+    $months = intval(round($days / 30));
     if($months < 12)
       return self::returnValue("{$prefix} {$months} " . self::plural($months, 'month', false) . " ago {$suffix}", $write);
 
-    $years = intval($days / 365);
+    $years = intval(round($days / 365));
     return self::returnValue("{$prefix} {$years} " . self::plural($years, 'year', false) . " ago {$suffix}", $write);
   }
 
