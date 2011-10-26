@@ -296,7 +296,6 @@ class ApiPhotoController extends BaseController
     {
       $photoBefore = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
       $photoBefore = $photoBefore['result'];
-      getLogger()->info('photosBefore');
       if($photoBefore)
       {
         $existingTags = $photoBefore['tags'];
