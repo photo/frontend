@@ -30,6 +30,7 @@
       </select>
 
       <input type="hidden" name="appId" id="appId" <?php if(isset($appId)) { ?>value="<?php Utility::safe($appId); ?>"<?php } ?>>
+      <input type="hidden" name="skipConfig" id="skipConfig" <?php if($skipConfig == 1) { ?>value="<?php Utility::safe($skipConfig); ?>"<?php } ?>>
       <button type="submit">Continue to Step 2</button>
     </form>
   </div>
@@ -114,5 +115,11 @@
       <?php } ?>
       <button type="submit">Complete setup</button>
     </form>
+  </div>
+  <div id="setup-step-4"<?php echo ($step != 4) ? ' class="hidden"' : ''?>>
+    <h2>Configuration</h2>
+    <p>Copy and paste the details below into a file named <code><?php Utility::safe($iniName); ?></code> in the folder <code><?php Utility::safe($generatedDir); ?></code> (you may have to create this folder)</p>
+    <textarea cols="80" rows="65"><?php Utility::safe($generatedIni) ?></textarea>
+    <p>Once the configuration is in place, <a href="/">you're done!</a>.</p>
   </div>
 </div>

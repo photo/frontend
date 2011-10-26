@@ -5,6 +5,8 @@ div#setup h3{ font-size:1em; margin:15px 0 5px 0; }
 div#setup ul.errors, div#setup p.error{ color:#ca1616; }
 div#setup form em{ font-size:.75em; }
 div#setup label{ font-size:1.15em; color:#404040; display:block; position:relative; }
+div#setup p{ font-size:1.0em; color:#404040; display:block; position:relative; margin-bottom:20px; }
+div#setup p code{ font-size:1.0em; font-family: monospace, sans-serif; background-color:#ddd; border: 1px solid #eee; color:#404040; display:block; position:relative; }
 div#setup label em{ font-size:.6em; position:relative; top:-2px; left:3px; }
 div#setup label + input, div#setup label + textarea, div#setup label + select{ margin-bottom:20px; display:block; }
 div#setup{ width:400px; margin:auto; }

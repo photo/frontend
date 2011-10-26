@@ -42,12 +42,24 @@ class SetupController
     $theme = getTheme()->getThemeName();
     $themes = getTheme()->getThemes();
 
-    $errors = self::verifyRequirements($imageLibs);
+    $warnings = self::verifyRequirements($imageLibs);
 
-    if(count($errors) > 0)
-      $step = 0;
-    else
-      $errors = '';
+    $skipConfig = 0;
+    foreach ($warnings as $error => $message) {
+      switch ($error)
+      {
+      case 'config_not_writable':
+        $skipConfig = 1;
+        $step = 1;
+        break;
+      case 'cannot_create_generated':
+      case 'generated_not_writable':
+      case 'no_image_lib':
+      default:
+        $step = 0;
+        break;
+      }
+    }
 
     $email = '';
     if(getConfig()->get('user') != null)
@@ -61,7 +73,7 @@ class SetupController
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
     $body = getTemplate()->get($template, array('filesystem' => $filesystem, 'database' => $database, 'themes' => $themes, 'theme' => $theme, 
-      'imageLibs' => $imageLibs, 'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'qs' => $qs, 'errors' => $errors));
+      'imageLibs' => $imageLibs, 'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'qs' => $qs, 'errors' => $warnings, 'skipConfig' => $skipConfig));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -167,11 +179,12 @@ class SetupController
     */
   public static function setupPost()
   {
-    $step = 1;
-    $appId = isset($_POST['appId']) ? $_POST['appId'] : '';
-    $email = isset($_POST['email']) ? $_POST['email'] : '';
-    $theme = isset($_POST['theme']) ? $_POST['theme'] : '';
-    $input = array(
+    $step       = 1;
+    $appId      = isset($_POST['appId']) ? $_POST['appId'] : '';
+    $email      = isset($_POST['email']) ? $_POST['email'] : '';
+    $theme      = isset($_POST['theme']) ? $_POST['theme'] : '';
+    $skipConfig = isset($_POST['skipConfig']) ? $_POST['skipConfig'] : '';
+    $input      = array(
       array('Email', $email, 'required')
     );
 
@@ -182,6 +195,7 @@ class SetupController
       getSession()->set('appId', $appId);
       getSession()->set('ownerEmail', $email);
       getSession()->set('theme', $theme);
+      getSession()->set('skipConfig', $skipConfig);
 
       $qs = '';
       if(isset($_GET['edit']))
@@ -558,7 +572,7 @@ class SetupController
       {
         $writeError = self::writeConfigFile();
         if($writeErrors === false)
-          getRoute()->redirect('/?m=welcome');
+          getRoute()->redirect('/');
         else
           $writeErrors[] = "We were unable to save your settings file. Please make sure that the following user has proper permissions to write to src/configs ({$user}).";
       }
@@ -640,36 +654,40 @@ class SetupController
     */
   private static function verifyRequirements($imageLibs)
   {
-    $errors = array();
+    $warnings = array();
     $configDir = Utility::getBaseDir() . '/configs';
     $generatedDir = "{$configDir}/generated";
 
     if(file_exists($generatedDir) && is_writable($generatedDir) && !empty($imageLibs))
       # No errors, return empty array
-      return $errors;
+      return $warnings;
 
     $user = exec("whoami");
     if(empty($user))
       $user = 'Apache user';
 
     if(!is_writable($configDir))
-      $errors[] = "Insufficient privileges to complete setup.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$configDir}</em>.</li></ul>";
-
-    if(!file_exists($generatedDir))
     {
-      $createDir = mkdir($generatedDir, 0700);
-      if(!$createDir)
-        $errors[] = "Could not create configuration directory.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
+      $warnings['config_not_writable'] = "<em>{$configDir}</em> is not writable. <ul><li>You can either make the directory writable by <em>{$user}</em> or,</li><li>manually upload the config at the end of the setup.</li></ul>";
     }
-    elseif(!is_writable($generatedDir))
+    else
     {
-      $errors[] = "Directory exist but is not writable.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
+      if(!file_exists($generatedDir))
+      {
+        $createDir = mkdir($generatedDir, 0700);
+        if(!$createDir)
+          $warnings['cannot_create_generated'] = "Could not create configuration directory.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
+      }
+      elseif(!is_writable($generatedDir))
+      {
+        $warnings['generated_not_writable'] = "Directory exist but is not writable.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
+      }
+
+      if(empty($imageLibs))
+        $warnings['no_image_lib'] = 'No suitable image library exists.<ul><li>Make sure that one of the following are installed: <em><a href="http://php.net/imagick">Imagick</a></em>, <em><a href="http://php.net/gmagick">Gmagick</a></em>, or <em><a href="http://php.net/gd">GD</a></em>.</li></ul>';
     }
 
-    if(empty($imageLibs))
-      $errors[] = 'No suitable image library exists.<ul><li>Make sure that one of the following are installed: <em><a href="http://php.net/imagick">Imagick</a></em>, <em><a href="http://php.net/gmagick">Gmagick</a></em>, or <em><a href="http://php.net/gd">GD</a></em>.</li></ul>';
-
-    return $errors;
+    return $warnings;
   }
 
   /**
@@ -737,9 +755,21 @@ class SetupController
       file_get_contents("{$configDir}/template.ini")
     );
 
-    $iniWritten = file_put_contents(sprintf("%s/generated/%s.ini", $configDir, getenv('HTTP_HOST')), $generatedIni);
-    if(!$iniWritten)
-      return false;
+    if (getSession()->get('skipConfig') == 1)
+    {
+      $step = 4;
+      $iniName = sprintf("%s.ini", getenv('HTTP_HOST'));
+      $generatedDir = $configDir . '/generated/';
+      // Output config to a text box for copying.
+      $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
+      $body = getTemplate()->get($template, array('step' => $step, 'generatedIni' => $generatedIni, 'iniName' => $iniName, 'generatedDir' => $generatedDir));
+      getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
+    }
+    else {
+      $iniWritten = file_put_contents(sprintf("%s/generated/%s.ini", $configDir, getenv('HTTP_HOST')), $generatedIni);
+      if(!$iniWritten)
+        return false;
+    }
 
     // clean up the session
     foreach($session as $key => $val)
