@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `op_action` (
 --
 
 CREATE TABLE IF NOT EXISTS `op_credential` (
-  `id` varchar(6) NOT NULL,
+  `id` varchar(30) NOT NULL,
   `owner` varchar(255) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `image` text,
@@ -45,16 +45,34 @@ CREATE TABLE IF NOT EXISTS `op_credential` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `op_elementGroup`
+--
+
+CREATE TABLE IF NOT EXISTS `op_elementGroup` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `owner` varchar(255) NOT NULL,
+  `type` enum('photo') NOT NULL,
+  `element` varchar(6) NOT NULL,
+  `group` varchar(6) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `owner` (`owner`,`type`,`element`,`group`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `op_elementTag`
 --
 
 CREATE TABLE IF NOT EXISTS `op_elementTag` (
-  `id` varchar(6) NOT NULL,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `owner` varchar(255) NOT NULL,
   `type` enum('photo') NOT NULL,
   `element` varchar(6) NOT NULL DEFAULT 'photo',
   `tag` varchar(255) NOT NULL,
-  UNIQUE KEY `id` (`id`,`type`,`element`,`tag`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Tag mapping table for photos (and videos in the future)';
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id` (`owner`,`type`,`element`,`tag`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Tag mapping table for photos (and videos in the future)';
 
 -- --------------------------------------------------------
 
@@ -67,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `op_group` (
   `owner` varchar(255) NOT NULL,
   `appId` varchar(255) DEFAULT NULL,
   `name` varchar(255) DEFAULT NULL,
-  `members` text,
+  `permission` tinyint(4) NOT NULL COMMENT 'Bitmask of permissions',
   UNIQUE KEY `id` (`id`,`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -78,13 +96,13 @@ CREATE TABLE IF NOT EXISTS `op_group` (
 --
 
 CREATE TABLE IF NOT EXISTS `op_groupMember` (
-  `id` varchar(6) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `owner` varchar(255) NOT NULL,
-  `group` varchar(255) NOT NULL,
+  `group` varchar(6) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `permission` tinyint(3) unsigned NOT NULL COMMENT 'bitmask of permissions',
-  UNIQUE KEY `id` (`id`,`owner`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `owner` (`owner`,`group`,`email`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -104,7 +122,8 @@ CREATE TABLE IF NOT EXISTS `op_photo` (
   `size` int(11) DEFAULT NULL,
   `width` int(11) DEFAULT NULL,
   `height` int(11) DEFAULT NULL,
-  `extra` varchar(1000) DEFAULT NULL,
+  `extra` text,
+  `exif` text,
   `views` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
   `permission` int(11) DEFAULT NULL,
@@ -120,6 +139,7 @@ CREATE TABLE IF NOT EXISTS `op_photo` (
   `pathOriginal` varchar(1000) DEFAULT NULL,
   `pathBase` varchar(1000) DEFAULT NULL,
   `tags` varchar(1000) DEFAULT NULL,
+  `groups` varchar(1000) DEFAULT NULL,
   UNIQUE KEY `id` (`id`,`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -144,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `op_photoVersion` (
 --
 
 CREATE TABLE IF NOT EXISTS `op_tag` (
-  `id` varchar(6) NOT NULL,
+  `id` varchar(255) NOT NULL,
   `owner` varchar(255) NOT NULL,
   `countPublic` int(11) NOT NULL DEFAULT '0',
   `countPrivate` int(11) NOT NULL DEFAULT '0',
@@ -161,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `op_tag` (
 CREATE TABLE IF NOT EXISTS `op_user` (
   `id` varchar(255) NOT NULL COMMENT 'User''s email address',
   `extra` text NOT NULL,
-  UNIQUE KEY `owner` (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -178,3 +198,4 @@ CREATE TABLE IF NOT EXISTS `op_webhook` (
   `topic` varchar(255) DEFAULT NULL,
   UNIQUE KEY `id` (`id`,`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
