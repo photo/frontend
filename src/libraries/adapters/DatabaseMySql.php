@@ -8,7 +8,7 @@
  */
 class DatabaseMySql implements DatabaseInterface
 {
-  const currentSchemaVersion = 5;
+  const currentSchemaVersion = 6;
   /**
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
@@ -407,7 +407,6 @@ class DatabaseMySql implements DatabaseInterface
         switch($name)
         {
           case 'groups':
-          //$where = $this->buildWhere($where, '(MATCH(groups) AGAINST(\'+",' . implode('," +"', $value) . ',"\' IN BOOLEAN MODE)) OR permission="1")');
             if(!is_array($value))
               $value = (array)explode(',', $value);
             foreach($value as $k => $v)

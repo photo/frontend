@@ -659,11 +659,11 @@ class SetupController
     {
       $createDir = mkdir($generatedDir, 0700);
       if(!$createDir)
-        $errors[] = "Could not create configuration directory.<ul><li>Make sure the user <um>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
+        $errors[] = "Could not create configuration directory.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
     }
     elseif(!is_writable($generatedDir))
     {
-      $errors[] = "Directory exist but is not writable.<ul><li>Make sure the user <um>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
+      $errors[] = "Directory exist but is not writable.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
     }
 
     if(empty($imageLibs))
