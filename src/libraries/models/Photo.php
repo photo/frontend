@@ -149,7 +149,7 @@ class Photo
   {
     $fragment = self::generateFragment($width, $height, $options);
     $hash = self::generateHash($id, $width, $height, $options);
-    return sprintf('/photo/%s/create/%s/%s.jpg', $id, $hash, $fragment);
+    return sprintf('/photo/%s/create/%s/%s.jpe', $id, $hash, $fragment);
   }
 
   /**
@@ -412,7 +412,7 @@ class Photo
     $fragment = self::generateFragment($width, $height, $options);
     $customPath = preg_replace('#^/base/#', '/custom/', $basePath);
     $customName = substr($customPath, 0, strrpos($customPath, '.'));
-    return "{$customName}_{$fragment}.jpg";
+    return "{$customName}_{$fragment}.jpe";
   }
 
   /**
