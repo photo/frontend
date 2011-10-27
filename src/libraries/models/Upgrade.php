@@ -14,12 +14,13 @@ class Upgrade
   public function __construct()
   {
     $this->scriptsDir = sprintf('%s/upgrade', getConfig()->get('paths')->configs);
-    $this->currentVersion = getConfig()->get('defaults')->currentVersion;
+    $defaults = getConfig()->get('defaults');
+    $this->currentVersion = $defaults->currentVersion;
     $siteConfig = getConfig()->get('site');
-    if(isset($siteConfig->lastVersion))
+    if(isset($siteConfig->lastVersion) && !empty($siteConfig->lastVersion))
       $this->lastVersion = getConfig()->get('site')->lastVersion;
     else
-      $this->lastVersion = getConfig()->get('defaults')->lastVersion;
+      $this->lastVersion = $defaults->lastVersion;
 
     $currentParts = explode('.', $this->currentVersion);
     $this->currentMajorVersion = $currentParts[0];

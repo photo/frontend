@@ -716,7 +716,7 @@ class SetupController
       '{fsRoot}' => "",
       '{fsHost}' => "",
       '{temp}' => sys_get_temp_dir(),
-      '{lastVersion}' => getConfig()->get('site')->currentVersion,
+      '{lastVersion}' => getConfig()->get('defaults')->currentVersion,
       '{theme}' => getSession()->get('theme'),
       '{email}' => getSession()->get('ownerEmail')
     );

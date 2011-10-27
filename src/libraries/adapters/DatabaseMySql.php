@@ -382,7 +382,6 @@ class DatabaseMySql implements DatabaseInterface
     else
       $res = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}webhook` WHERE owner=:owner", array(':owner' => $this->owner));
 
-//    $this->logErrors($res);
     if($res === false)
       return false;
     if(empty($res))
@@ -788,6 +787,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putPhoto($id, $params)
   {
+    $params['id'] = $id;
     $params['owner'] = $this->owner;
     $tags = null;
     if(isset($params['tags']) && !empty($params['tags']))
@@ -854,6 +854,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function initialize()
   {
+    /*
     $version = $this->checkDbVersion();
     if($version == 0)
     {
@@ -863,6 +864,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       return $this->upgradeFrom($version);
     }
+    */
     return true;
   }
 
@@ -1022,7 +1024,7 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($stmt['vals']))
         $stmt['vals'] .= ",";
       $stmt['cols'] .= $key;
-      if(!empty($bindings) && !empty($bindings[$value]))
+      if(!empty($bindings) && array_key_exists($value, $bindings))
         $stmt['vals'] .= "{$value}";
       else
         $stmt['vals'] .= sprintf("'%s'", $this->_($value));
@@ -1272,7 +1274,7 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($stmt)) {
         $stmt .= ",";
       }
-      if(!empty($bindings) && isset($bindings[$value]))
+      if(!empty($bindings) && array_key_exists($value, $bindings))
         $stmt .= "`{$key}`={$value}";
       else
         $stmt .= sprintf("`%s`='%s'", $key, $this->_($value));
