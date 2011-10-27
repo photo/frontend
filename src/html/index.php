@@ -21,7 +21,8 @@ if (!isset($_GET['__route__']))
     {
       $_GET['__route__'] = $request_uri;
     }
-  } else if (isset($_SERVER['PHP_SELF']))
+  }
+  else if (isset($_SERVER['PHP_SELF']))
   {
     $_GET['__route__'] = $_SERVER['PHP_SELF'];
   }
