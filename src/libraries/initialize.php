@@ -45,6 +45,7 @@ if(file_exists($configFile) && !$runSetup)
 }
 else
 {
+  $runUpgrade = false;
   // if we're running setup and the config file exists, load it to prepopulate the form
   if(file_exists($configFile))
     getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
@@ -61,6 +62,7 @@ else
   $paths->themes = "{$baseDir}/html/assets/themes";
   getConfig()->set('paths', $paths);
   require getConfig()->get('paths')->libraries . '/routes-setup.php';
+  require getConfig()->get('paths')->libraries . '/routes-error.php';
   require getConfig()->get('paths')->libraries . '/dependencies.php';
   require getConfig()->get('paths')->controllers . '/SetupController.php';
   getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName()));
