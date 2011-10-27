@@ -141,7 +141,7 @@ class DatabaseMySql implements DatabaseInterface
     if($database != 'mysql')
       return;
 
-    echo file_get_contents($file);
+    include $file;
   }
 
   /**
