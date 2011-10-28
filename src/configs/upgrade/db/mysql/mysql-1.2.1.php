@@ -288,9 +288,13 @@ mysql_1_2_1($sql);
 /*********** // user tables ***********/
 
 
+$sql = <<<SQL
+  UPDATE `{$this->mySqlTablePrefix}admin` SET `value`=:version WHERE `key`=:key
+SQL;
+mysql_1_2_1($sql, array(':key' => 'version', ':version' => '1.2.1'));
+
 function mysql_1_2_1($sql, $params = array())
 {
-  global $errors;
   try
   {
     getDatabase()->execute($sql, $params);

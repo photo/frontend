@@ -1,8 +1,6 @@
---
--- Table structure for table `op_action`
---
-
-CREATE TABLE IF NOT EXISTS `op_action` (
+<?php
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}action` (
   `id` varchar(6) NOT NULL,
   `owner` varchar(255) NOT NULL,
   `appId` varchar(255) DEFAULT NULL,
@@ -20,14 +18,21 @@ CREATE TABLE IF NOT EXISTS `op_action` (
   `status` int(11) DEFAULT NULL,
   UNIQUE KEY `id` (`id`,`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+mysql_base($sql);
 
--- --------------------------------------------------------
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}admin` (
+  `key` varchar(255) NOT NULL,
+  `value` varchar(255) NOT NULL,
+  PRIMARY KEY (`key`),
+  UNIQUE KEY `key` (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+mysql_base($sql);
 
---
--- Table structure for table `op_credential`
---
-
-CREATE TABLE IF NOT EXISTS `op_credential` (
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}credential` (
   `id` varchar(30) NOT NULL,
   `owner` varchar(255) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -41,14 +46,11 @@ CREATE TABLE IF NOT EXISTS `op_credential` (
   `status` int(11) DEFAULT '0',
   UNIQUE KEY `id` (`id`,`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+mysql_base($sql);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `op_elementGroup`
---
-
-CREATE TABLE IF NOT EXISTS `op_elementGroup` (
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}elementGroup` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `owner` varchar(255) NOT NULL,
   `type` enum('photo') NOT NULL,
@@ -57,14 +59,11 @@ CREATE TABLE IF NOT EXISTS `op_elementGroup` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `owner` (`owner`,`type`,`element`,`group`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+SQL;
+mysql_base($sql);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `op_elementTag`
---
-
-CREATE TABLE IF NOT EXISTS `op_elementTag` (
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}elementTag` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `owner` varchar(255) NOT NULL,
   `type` enum('photo') NOT NULL,
@@ -73,14 +72,11 @@ CREATE TABLE IF NOT EXISTS `op_elementTag` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`owner`,`type`,`element`,`tag`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Tag mapping table for photos (and videos in the future)';
+SQL;
+mysql_base($sql);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `op_group`
---
-
-CREATE TABLE IF NOT EXISTS `op_group` (
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}group` (
   `id` varchar(6) NOT NULL,
   `owner` varchar(255) NOT NULL,
   `appId` varchar(255) DEFAULT NULL,
@@ -88,14 +84,11 @@ CREATE TABLE IF NOT EXISTS `op_group` (
   `permission` tinyint(4) NOT NULL COMMENT 'Bitmask of permissions',
   UNIQUE KEY `id` (`id`,`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+mysql_base($sql);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `op_groupMember`
---
-
-CREATE TABLE IF NOT EXISTS `op_groupMember` (
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}groupMember` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `owner` varchar(255) NOT NULL,
   `group` varchar(6) NOT NULL,
@@ -103,14 +96,11 @@ CREATE TABLE IF NOT EXISTS `op_groupMember` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `owner` (`owner`,`group`,`email`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+SQL;
+mysql_base($sql);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `op_photo`
---
-
-CREATE TABLE IF NOT EXISTS `op_photo` (
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}photo` (
   `id` varchar(6) NOT NULL,
   `owner` varchar(255) NOT NULL,
   `appId` varchar(255) NOT NULL,
@@ -142,28 +132,22 @@ CREATE TABLE IF NOT EXISTS `op_photo` (
   `groups` varchar(1000) DEFAULT NULL,
   UNIQUE KEY `id` (`id`,`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+mysql_base($sql);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `op_photoVersion`
---
-
-CREATE TABLE IF NOT EXISTS `op_photoVersion` (
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}photoVersion` (
   `id` varchar(6) NOT NULL DEFAULT '',
   `owner` varchar(255) NOT NULL,
   `key` varchar(255) NOT NULL DEFAULT '',
   `path` varchar(1000) DEFAULT NULL,
   UNIQUE KEY `id` (`id`,`owner`,`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+mysql_base($sql);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `op_tag`
---
-
-CREATE TABLE IF NOT EXISTS `op_tag` (
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}tag` (
   `id` varchar(255) NOT NULL,
   `owner` varchar(255) NOT NULL,
   `countPublic` int(11) NOT NULL DEFAULT '0',
@@ -171,26 +155,20 @@ CREATE TABLE IF NOT EXISTS `op_tag` (
   `extra` text NOT NULL,
   UNIQUE KEY `id` (`id`,`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+mysql_base($sql);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `op_user`
---
-
-CREATE TABLE IF NOT EXISTS `op_user` (
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}user` (
   `id` varchar(255) NOT NULL COMMENT 'User''s email address',
   `extra` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+mysql_base($sql);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `op_webhook`
---
-
-CREATE TABLE IF NOT EXISTS `op_webhook` (
+$sql = <<<SQL
+CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}webhook` (
   `id` varchar(6) NOT NULL,
   `owner` varchar(255) NOT NULL,
   `appId` varchar(255) DEFAULT NULL,
@@ -198,4 +176,25 @@ CREATE TABLE IF NOT EXISTS `op_webhook` (
   `topic` varchar(255) DEFAULT NULL,
   UNIQUE KEY `id` (`id`,`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+mysql_base($sql);
 
+$sql = <<<SQL
+  INSERT INTO `{$this->mySqlTablePrefix}admin` (`key`,`value`) 
+  VALUES (:key, :value)
+SQL;
+mysql_base($sql, array(':key' => 'version', ':value' => '1.2.1'));
+
+
+function mysql_base($sql, $params = array())
+{
+  try
+  {
+    getDatabase()->execute($sql, $params);
+    getLogger()->info($sql);
+  }
+  catch(Exception $e)
+  {
+    getLogger()->crit($e->getMessage()); 
+  }
+}
