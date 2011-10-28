@@ -93,6 +93,10 @@ class Upgrade
     $scripts = array('db' => array(), 'fs' => array());
     $databases = getDb()->identity();
     $databaseVersion = getDb()->version();
+    // Backwards compatibility
+    // Before the upgrade code the database was versioned as an int
+    if(!preg_match('/\d\.\d\.\d\./', $databaseVersion))
+      $databaseVersion = '1.2.0';
     $databaseVersionParts = explode('.', $databaseVersion);
     $databaseMajorVersion = $databaseVersionParts[0];
     $databaseMinorVersion = $databaseVersionParts[1];

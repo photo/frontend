@@ -20,7 +20,11 @@ class UpgradeController extends BaseController
     getUpgrade()->performUpgrade();
     $configFile = sprintf('%s/generated/%s.ini', getConfig()->get('paths')->configs, getenv('HTTP_HOST'));
     $config = file_get_contents($configFile);
-    $config = preg_replace('/lastCodeVersion="\d+.\d+.\d+"/', sprintf('lastCodeVersion="%s"', getUpgrade()->getCurrentVersion()), $config);
+    // Backwards compatibility
+    if(strstr($config, 'lastCodeVersion="') !== false)
+      $config = preg_replace('/lastCodeVersion="\d+\.\d+\.\d+"/', sprintf('lastCodeVersion="%s"', getUpgrade()->getCurrentVersion()), $config);
+    else // Before the upgrade code the lastCodeVersion was not in the config template
+      $config = sprintf("[site]\nlastCodeVersion=\"%s\"\n\n", getUpgrade()->getCurrentVersion()) . $config;
     file_put_contents($configFile, $config);
     getRoute()->redirect('/');
   }
