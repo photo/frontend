@@ -12,7 +12,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @access private
     */
   private $db, $domainAction, $domainCredential, $domainPhoto, 
-    $domainTag, $domainUser, $domainWebhook, $errors = array();
+    $domainTag, $domainUser, $domainWebhook, $errors = array(), $owner;
 
   /**
     * Constructor
@@ -29,6 +29,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'User';
     $this->domainTag = getConfig()->get('aws')->simpleDbDomain.'Tag';
     $this->domainWebhook = getConfig()->get('aws')->simpleDbDomain.'Webhook';
+
+    $user = getConfig()->get('user');
+    if($user !== null)
+      $this->owner = $user->email;
+    $u = $this->getUser();
+    getLogger()->info(var_export($u, 1));
   }
 
   /**
@@ -423,9 +429,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     *
     * @return mixed Array on success, NULL if user record is empty, FALSE on error
     */
-  public function getUser()
+  public function getUser($owner = null)
   {
-    $res = $this->db->select("SELECT * FROM `{$this->domainUser}` WHERE itemName()='1'", array('ConsistentRead' => 'true'));
+    if($owner === null)
+      $owner = $this->owner;
+
+    $res = $this->db->select("SELECT * FROM `{$this->domainUser}` WHERE itemName()='{$owner}'", array('ConsistentRead' => 'true'));
     $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))
       return self::normalizeUser($res->body->SelectResult->Item);
@@ -640,7 +649,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function postUser($params)
   {
     // make sure we don't overwrite an existing user record
-    $res = $this->db->put_attributes($this->domainUser, $id, $params, true);
+    $res = $this->db->put_attributes($this->domainUser, $this->owner, $params, true);
     $this->logErrors($res);
     return $res->isOK();
   }
@@ -741,7 +750,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function putUser($params)
   {
-    $res = $this->db->put_attributes($this->domainUser, $id, $params);
+    $res = $this->db->put_attributes($this->domainUser, $this->owner, $params);
     $this->logErrors($res);
     return $res->isOK();
   }
