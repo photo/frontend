@@ -509,9 +509,12 @@ class DatabaseMySql implements DatabaseInterface
     *
     * @return mixed Array on success, NULL if user record is empty, FALSE on error
     */
-  public function getUser()
+  public function getUser($owner = null)
   {
-    $res = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $this->owner));
+    if($owner === null)
+      $owner = $this->owner;
+
+    $res = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
     if($res)
     {
       return self::normalizeUser($res);
