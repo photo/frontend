@@ -516,6 +516,9 @@ class SetupController
       $secrets = new stdClass;
       $secrets->secret = self::getSecret();
 
+      $user = new stdClass;
+      $user->email = getSession()->get('ownerEmail');
+
       // save the config info
       getConfig()->set('credentials', $credentials);
       if($usesAws)
@@ -528,6 +531,7 @@ class SetupController
         getConfig()->set('dropbox', $dropbox);
       getConfig()->set('systems', $systems);
       getConfig()->set('secrets', $secrets);
+      getConfig()->set('user', $user);
 
       $fsObj = getFs();
       $dbObj = getDb();
@@ -716,7 +720,7 @@ class SetupController
       '{fsRoot}' => "",
       '{fsHost}' => "",
       '{temp}' => sys_get_temp_dir(),
-      '{lastVersion}' => getConfig()->get('defaults')->currentVersion,
+      '{lastCodeVersion}' => getConfig()->get('defaults')->currentCodeVersion,
       '{theme}' => getSession()->get('theme'),
       '{email}' => getSession()->get('ownerEmail')
     );

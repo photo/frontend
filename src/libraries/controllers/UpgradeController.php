@@ -18,5 +18,10 @@ class UpgradeController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     getUpgrade()->performUpgrade();
+    $configFile = sprintf('%s/generated/%s.ini', getConfig()->get('paths')->configs, getenv('HTTP_HOST'));
+    $config = file_get_contents($configFile);
+    $config = preg_replace('/lastCodeVersion="\d+.\d+.\d+"/', sprintf('lastCodeVersion="%s"', getUpgrade()->getCurrentVersion()), $config);
+    file_put_contents($configFile, $config);
+    getRoute()->redirect('/');
   }
 }

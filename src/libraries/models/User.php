@@ -151,8 +151,11 @@ class User
     }
     else
     {
-      $len = max(strlen(getSession()->get('email')), strlen(getConfig()->get('user')->email));
-      return isset(getConfig()->get('user')->email) && strncmp(getSession()->get('email'), getConfig()->get('user')->email, $len) === 0;
+      $user = getConfig()->get('user');
+      if($user === null)
+        return false;
+      $len = max(strlen(getSession()->get('email')), strlen($user->email));
+      return isset($user->email) && strncmp(getSession()->get('email'), $user->email, $len) === 0;
     }
   }
 

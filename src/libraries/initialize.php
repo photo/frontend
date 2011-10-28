@@ -46,6 +46,7 @@ if(file_exists($configFile) && !$runSetup)
 else
 {
   $runUpgrade = false;
+  $runSetup = true;
   // if we're running setup and the config file exists, load it to prepopulate the form
   if(file_exists($configFile))
     getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
@@ -54,6 +55,7 @@ else
   $baseDir = dirname(dirname(__FILE__));
   $paths = new stdClass;
   $paths->libraries = "{$baseDir}/libraries";
+  $paths->configs = "{$baseDir}/configs";
   $paths->controllers = "{$baseDir}/libraries/controllers";
   $paths->external = "{$baseDir}/libraries/external";
   $paths->adapters = "{$baseDir}/libraries/adapters";

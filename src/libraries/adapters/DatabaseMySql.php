@@ -28,7 +28,10 @@ class DatabaseMySql implements DatabaseInterface
     foreach($mysql as $key => $value) {
       $this->{$key} = $value;
     }
-    $this->owner = getConfig()->get('user')->email;
+
+    $user = getConfig()->get('user');
+    if($user !== null)
+      $this->owner = $user->email;
   }
 
   /**
@@ -527,6 +530,28 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Initialize the database by creating the database and tables needed.
+    * This is called from the Setup controller.
+    *
+    * @return boolean
+    */
+  public function initialize()
+  {
+    if($this->version() !== '0.0.0')
+      return true;
+
+    try
+    {
+      $this->executeScript(sprintf('%s/upgrade/db/mysql/mysql-base.php', getConfig()->get('paths')->configs), 'mysql');
+      return true;
+    }
+    catch(EpiDatabaseException $e)
+    {
+      return false;
+    }
+  }
+
+  /**
     * Update the information for an existing credential.
     * This method overwrites existing values present in $params.
     *
@@ -846,25 +871,24 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Initialize the database by creating the database and tables needed.
-    * This is called from the Setup controller.
+    * Get the current database version
     *
-    * @return boolean
+    * @return string Version number
     */
-  public function initialize()
+  public function version()
   {
-    /*
-    $version = $this->checkDbVersion();
-    if($version == 0)
+    try
     {
-      $this->createSchema();
+      $result = getDatabase()->one("SELECT * from `{$this->mySqlTablePrefix}admin` WHERE `key`=:key", array(':key' => 'version'));
+      if($result)
+        return $result['value'];
     }
-    else if($version < self::currentSchemaVersion)
+    catch(EpiDatabaseException $e)
     {
-      return $this->upgradeFrom($version);
+      return '0.0.0';
     }
-    */
-    return true;
+
+    return '0.0.0';
   }
 
   /**

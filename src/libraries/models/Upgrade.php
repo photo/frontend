@@ -2,76 +2,86 @@
 class Upgrade
 {
   private $scriptsDir,
-    $currentVersion, // version of the source code
-    $currentMajorVersion,
-    $currentMinorVersion,
-    $currentTrivialVersion,
-    $lastVersion, // version since last upgrade
-    $lastMajorVersion,
-    $lastMinorVersion,
-    $lastTrivialVersion;
+    $currentCodeVersion, // version of the source code
+    $currentCodeMajorVersion,
+    $currentCodeMinorVersion,
+    $currentCodeTrivialVersion,
+    $lastCodeVersion, // version of the source code
+    $dbVersion, // database version
+    $dbMajorVersion,
+    $dbMinorVersion,
+    $dbTrivialVersion,
+    $fsVersion, // filesystem version
+    $fsMajorVersion,
+    $fsMinorVersion,
+    $fsTrivialVersion;
 
   public function __construct()
   {
     $this->scriptsDir = sprintf('%s/upgrade', getConfig()->get('paths')->configs);
     $defaults = getConfig()->get('defaults');
-    $this->currentVersion = $defaults->currentVersion;
+    $this->currentCodeVersion = $defaults->currentCodeVersion;
+    $currentParts = explode('.', $this->currentCodeVersion);
+    $this->currentCodeMajorVersion = $currentParts[0];
+    $this->currentCodeMinorVersion = $currentParts[1];
+    $this->currentCodeTrivialVersion = $currentParts[2];
+
     $siteConfig = getConfig()->get('site');
-    if(isset($siteConfig->lastVersion) && !empty($siteConfig->lastVersion))
-      $this->lastVersion = getConfig()->get('site')->lastVersion;
+    if(isset($siteConfig->lastCodeVersion) && !empty($siteConfig->lastCodeVersion))
+      $this->lastCodeVersion = getConfig()->get('site')->lastCodeVersion;
     else
-      $this->lastVersion = $defaults->lastVersion;
-
-    $currentParts = explode('.', $this->currentVersion);
-    $this->currentMajorVersion = $currentParts[0];
-    $this->currentMinorVersion = $currentParts[1];
-    $this->currentTrivialVersion = $currentParts[2];
-
-    $lastParts = explode('.', $this->lastVersion);
-    $this->lastMajorVersion = $lastParts[0];
-    $this->lastMinorVersion = $lastParts[1];
-    $this->lastTrivialVersion = $lastParts[2];
+      $this->lastCodeVersion = $defaults->lastCodeVersion;
+    $lastParts = explode('.', $this->lastCodeVersion);
+    $this->lastCodeMajorVersion = $lastParts[0];
+    $this->lastCodeMinorVersion = $lastParts[1];
+    $this->lastCodeTrivialVersion = $lastParts[2];
   }
 
   public function getCurrentVersion()
   {
-    return $this->currentVersion;
+    return $this->currentCodeVersion;
   }
 
   public function getLastVersion()
   {
-    return $this->lastVersion;
+    return $this->lastCodeVersion;
   }
 
   public function isCurrent()
   {
-    return $this->currentVersion == $this->lastVersion;
+    return $this->currentCodeVersion == $this->lastCodeVersion;
   }
 
-  public function performUpgrade()
+  public function performUpgrade($systems = array('db','fs'))
   {
     $scripts = $this->getUpgradeVersions();
     if($scripts === false)
       return true;
 
-    foreach($scripts['db'] as $database => $versions)
+    if(in_array('db', $systems))
     {
-      foreach($versions as $version)
+      foreach($scripts['db'] as $database => $versions)
       {
-        foreach($version as $file)
+        foreach($versions as $version)
         {
-          getDb()->executeScript($file, $database);
+          foreach($version as $file)
+          {
+            getDb()->executeScript($file, $database);
+          }
         }
       }
     }
 
-    foreach($scripts['fs'] as $filesystem => $versions)
+    if(in_array('fs', $systems))
     {
-      foreach($versions as $version)
+      foreach($scripts['fs'] as $filesystem => $versions)
       {
-        foreach($version as $file)
+        foreach($versions as $version)
         {
-          getFs()->executeScript($file, $filesystem);
+          foreach($version as $file)
+          {
+            getFs()->executeScript($file, $filesystem);
+          }
         }
       }
     }
@@ -82,6 +92,12 @@ class Upgrade
     $scriptsExist = false;
     $scripts = array('db' => array(), 'fs' => array());
     $databases = getDb()->identity();
+    $databaseVersion = getDb()->version();
+    $databaseVersionParts = explode('.', $databaseVersion);
+    $databaseMajorVersion = $databaseVersionParts[0];
+    $databaseMinorVersion = $databaseVersionParts[1];
+    $databaseTrivialVersion = $databaseVersionParts[2];
+
     foreach($databases as $database)
     {
       $scripts['db'][$database] = array();
@@ -95,17 +111,17 @@ class Upgrade
         {
           $version = $matches[0];
           $versionParts = explode('.', $version);
-          if($versionParts[0] > $this->lastMajorVersion && $versionParts[0] <= $this->currentMajorVersion)
+          if($versionParts[0] > $databaseMajorVersion && $versionParts[0] <= $this->currentCodeMajorVersion)
           {
             $scripts['db'][$database][$version][] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
           }
-          elseif($versionParts[1] > $this->lastMinorVersion && $versionParts[1] <= $this->currentMinofVersion)
+          elseif($versionParts[1] > $databaseMinorVersion && $versionParts[1] <= $this->currentCodeMinorVersion)
           {
             $scripts['db'][$database][$version][] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
           }
-          elseif($versionParts[2] > $this->lastTrivialVersion && $versionParts[2] <= $this->currentTrivialVersion)
+          elseif($versionParts[2] > $databaseTrivialVersion && $versionParts[2] <= $this->currentCodeTrivialVersion)
           {
             $scripts['db'][$database][$version][] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
@@ -114,7 +130,8 @@ class Upgrade
       }
     }
 
-    $filesystems = getFs()->identity();
+    /*$filesystems = getFs()->identity();
+    $filesysemVersion = getFs()->version();
     foreach($filesystems as $filesystem)
     {
       $scripts['fs'][$filesystem] = array();
@@ -128,24 +145,24 @@ class Upgrade
         {
           $version = $matches[0];
           $versionParts = explode('.', $version);
-          if($versionParts[0] > $this->lastMajorVersion && $versionParts[0] <= $this->currentMajorVersion)
+          if($versionParts[0] > $this->lastCodeMajorVersion && $versionParts[0] <= $this->currentCodeMajorVersion)
           {
             $scripts['fs'][$filesystem][$version][] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
           }
-          elseif($versionParts[1] > $this->lastMinorVersion && $versionParts[1] <= $this->currentMinofVersion)
+          elseif($versionParts[1] > $this->lastCodeMinorVersion && $versionParts[1] <= $this->currentCodeMinorVersion)
           {
             $scripts['fs'][$filesystem][$version][] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
           }
-          elseif($versionParts[2] > $this->lastTrivialVersion && $versionParts[2] <= $this->currentTrivialVersion)
+          elseif($versionParts[2] > $this->lastCodeTrivialVersion && $versionParts[2] <= $this->currentCodeTrivialVersion)
           {
             $scripts['fs'][$filesystem][$version][] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
           }
         }
       }
-    }
+    }*/
 
     if($scriptsExist)
       return $scripts;
