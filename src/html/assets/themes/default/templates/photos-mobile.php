@@ -6,7 +6,7 @@
     <?php if(!empty($photos)) { ?>
       <ul class="gallery">
         <?php foreach($photos as $photo) { ?>
-          <li><a href="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" rel="external"><img src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->thumbnail); ?>" alt="Image 001" /></a></li>
+          <li><a href="<?php Url::photoView($photo['id'], $options); ?>" rel="external"><img src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->thumbnail); ?>" alt="Image 001" /></a></li>
         <?php } ?>
       </ul>
       <?php getTheme()->display('partials/pagination.php', array_merge(array('labelPosition' => 'bottom'), $pages)); ?>
