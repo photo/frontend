@@ -66,6 +66,7 @@ class Upgrade
         {
           foreach($version as $file)
           {
+            getLogger()->info(sprintf('Calling executeScript on %s file %s', $database, $file));
             getDb()->executeScript($file, $database);
           }
         }
@@ -80,6 +81,7 @@ class Upgrade
         {
           foreach($version as $file)
           {
+            getLogger()->info(sprintf('Calling executeScript on %s file %s', $filesystem, $file));
             getFs()->executeScript($file, $filesystem);
           }
         }
@@ -95,7 +97,7 @@ class Upgrade
     $databaseVersion = getDb()->version();
     // Backwards compatibility
     // Before the upgrade code the database was versioned as an int
-    if(!preg_match('/\d\.\d\.\d\./', $databaseVersion))
+    if(!preg_match('/\d\.\d\.\d/', $databaseVersion))
       $databaseVersion = '1.2.0';
     $databaseVersionParts = explode('.', $databaseVersion);
     $databaseMajorVersion = $databaseVersionParts[0];
