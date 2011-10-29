@@ -34,7 +34,7 @@ _Authentication: optional_
 <a name="parameters"></a>
 ### Parameters
 
-1.  returnSizes (optional), The photo sizes you'd like in the response. Specify every size you plan on using. [Docs for this parameter][ReturnSizes] 
+1.  returnSizes (optional), The photo sizes you'd like in the response. Specify every size you plan on using. [Docs for this parameter][ReturnSizes]
 1.  pageSize (optional), Number of photos to return per request.
 1.  page (optional), Page number when browsing through photos. Starts at 1.
 1.  tags (optional), _i.e. dog,cat_ - A comma delimited string of strings.

@@ -11,7 +11,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $db, $domainAction, $domainCredential, $domainPhoto, 
+  private $db, $domainAction, $domainCredential, $domainPhoto,
     $domainTag, $domainUser, $domainWebhook, $errors = array();
 
   /**
@@ -213,7 +213,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Retrieve group from the database specified by $id
     *
     * @param string $id id of the group to return
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getGroup($id = null)
   {
@@ -229,7 +229,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Retrieve groups from the database optionally filter by member (email)
     *
     * @param string $email email address to filter by
-    * @return mixed Array on success, NULL on empty, FALSE on failure 
+    * @return mixed Array on success, NULL on empty, FALSE on failure
     */
   public function getGroups($email = null)
   {
@@ -450,7 +450,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->logErrors($res);
     if(!$res->isOK())
       return false;
-    
+
 
     if(isset($res->body->SelectResult))
     {
@@ -480,7 +480,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     if(count($domains) == 7)
       return true;
 
-    $domainsToCreate = array($this->domainAction, $this->domainCredential, $this->domainGroup, 
+    $domainsToCreate = array($this->domainAction, $this->domainCredential, $this->domainGroup,
       $this->domainPhoto, $this->domainTag, $this->domainUser, $this->domainWebhook);
 
     $queue = new CFBatchRequest();

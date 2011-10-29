@@ -23,7 +23,7 @@ class DatabaseMySql implements DatabaseInterface
   public function __construct()
   {
     $mysql = getConfig()->get('mysql');
-    EpiDatabase::employ('mysql', $mysql->mySqlDb, 
+    EpiDatabase::employ('mysql', $mysql->mySqlDb,
                         $mysql->mySqlHost, $mysql->mySqlUser, Utility::decrypt($mysql->mySqlPassword));
     foreach($mysql as $key => $value) {
       $this->{$key} = $value;
@@ -189,7 +189,7 @@ class DatabaseMySql implements DatabaseInterface
     * Retrieve group from the database specified by $id
     *
     * @param string $id id of the group to return
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getGroup($id = null)
   {
@@ -206,7 +206,7 @@ class DatabaseMySql implements DatabaseInterface
     * Retrieve groups from the database optionally filter by member (email)
     *
     * @param string $email email address to filter by
-    * @return mixed Array on success, NULL on empty, FALSE on failure 
+    * @return mixed Array on success, NULL on empty, FALSE on failure
     */
   public function getGroups($email = null)
   {
@@ -900,9 +900,9 @@ class DatabaseMySql implements DatabaseInterface
     $photo['appId'] = getConfig()->get('application')->appId;
 
     $versions = $this->getPhotoVersions($photo['id']);
-    if($versions && !empty($versions)) 
+    if($versions && !empty($versions))
     {
-      foreach($versions as $version) 
+      foreach($versions as $version)
       {
         $photo[$version['key']] = $version['path'];
       }
@@ -1054,7 +1054,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       $params['::bindings'] = $bindings;
     }
-    return $params;    
+    return $params;
   }
   /** Prepare credential to store in the database
    */
@@ -1105,7 +1105,7 @@ class DatabaseMySql implements DatabaseInterface
 
   /**
    * Check the Db Version.
-   * 
+   *
    * This shouldn't fail unless you don't have database access
    * But if the DB is empty (ie don't have the tables), it returns 0
    * @return the numeric version. 0 means no DB
@@ -1134,7 +1134,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     if($version < 1)
       return false;
-    switch($version) {      	
+    switch($version) {
     case 1:
       // after version 1 we added credential
       //
