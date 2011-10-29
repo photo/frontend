@@ -16,13 +16,13 @@ Every API returns a JSON response adhering to the following format.
 
 #### Message
 
-The _message_ is a string which describes the action taken. 
+The _message_ is a string which describes the action taken.
 It's purely for informational purposes and should never be used in your code or relied on.
 
 #### Code
 
-The _code_ is an integer representing the status of the API call. 
-Typically the _code_ value should be _200_ but anything between _200_ and _299_ indicates a successful response. 
+The _code_ is an integer representing the status of the API call.
+Typically the _code_ value should be _200_ but anything between _200_ and _299_ indicates a successful response.
 The photo upload API, for example, will return a _202_ response indicating that the resource has been created.
 
 Below are some common codes:
@@ -35,7 +35,7 @@ Below are some common codes:
 
 #### Result
 
-The _result_ can be any simple or complex value. 
-Consult the documentation for the endpoint you're using for information on what the _result_ will be. 
-The purpose of the _result_ is to allow you to continue processing the request. 
+The _result_ can be any simple or complex value.
+Consult the documentation for the endpoint you're using for information on what the _result_ will be.
+The purpose of the _result_ is to allow you to continue processing the request.
 We'll try to return the information you'll most likely need and aim to keep you from having to make a subsequent call to get it.

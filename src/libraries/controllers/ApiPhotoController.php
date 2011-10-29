@@ -427,7 +427,7 @@ class ApiPhotoController extends BaseController
       $filters['permission'] = $permission;
     elseif($permission == -1)
       $filters['groups'] = $groupIds;
-    
+
     return array('filters' => $filters, 'pageSize' => $pageSize, 'protocol' => $protocol, 'page' => $page);
   }
 }

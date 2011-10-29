@@ -72,7 +72,7 @@ The response is in a standard [response envelope][Envelope].
       "result" : {
         "previous" : {
           "tags" : [
-            
+
           ],
           "id" : "bo",
           "appId" : "openphoto-frontend",
@@ -109,7 +109,7 @@ The response is in a standard [response envelope][Envelope].
         },
         "next" : {
           "tags" : [
-            
+
           ],
           "id" : "63",
           "appId" : "current.openphoto.me",
