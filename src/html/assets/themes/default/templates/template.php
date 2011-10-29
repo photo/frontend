@@ -55,8 +55,8 @@
       js: {
         assets: [
           '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
-          '<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', 
-          '<?php getTheme()->asset('javascript', 'jquery.cycle.min.js '); ?>', 
+          '<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>',
+          '<?php getTheme()->asset('javascript', 'jquery.cycle.min.js '); ?>',
           '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'
         ],
         onComplete: function(){ opTheme.init.attach(); }

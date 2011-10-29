@@ -9,7 +9,7 @@ class ApiController extends BaseController
   /**
     * A diagnostics endpoint used to verify backends are working.
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function diagnostics()
   {
@@ -32,7 +32,7 @@ class ApiController extends BaseController
   /**
     * A diagnostics endpoint used to verify calls are working.
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function hello()
   {

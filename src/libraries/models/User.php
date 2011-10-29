@@ -37,7 +37,7 @@ class User
   /**
     * Get the email address of the logged in user.
     *
-    * @return string 
+    * @return string
     */
   public static function getEmailAddress()
   {
@@ -80,7 +80,7 @@ class User
   {
     $type = ucwords($type);
     $key = "last{$type}Id";
-    $user = self::getUserRecord();    
+    $user = self::getUserRecord();
     if($user === false)
       return false;
 

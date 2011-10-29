@@ -20,7 +20,7 @@ class ImageImageMagick implements ImageInterface
     * Constructor which initializes the Imagick object.
     *
     * @param string $filename Full path to the file which will be manipulated
-    * @return void 
+    * @return void
     */
   public function __construct($filename)
   {
@@ -43,7 +43,7 @@ class ImageImageMagick implements ImageInterface
     * @param int $width Width of the resulting image
     * @param int $height Height of the resulting image
     * @param boolean $maintainAspectRatio When false it will crop to exact $width and $height else it will scale using "best fit"
-    * @return void 
+    * @return void
     */
   public function scale($width, $height, $maintainAspectRatio = true)
   {
@@ -56,7 +56,7 @@ class ImageImageMagick implements ImageInterface
   /**
     * Greyscale an image
     *
-    * @return void 
+    * @return void
     */
   public function greyscale()
   {
@@ -67,7 +67,7 @@ class ImageImageMagick implements ImageInterface
     * Save modifications to the image to the file system
     *
     * @param string $outputFile The file to write the modifications to.
-    * @return void 
+    * @return void
     */
   public function write($outputFile)
   {

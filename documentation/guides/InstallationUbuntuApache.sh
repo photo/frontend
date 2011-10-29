@@ -4,7 +4,7 @@
 # Run with sudo for best results
 #######################################
 SECONDS=0
-if [[ "$(/usr/bin/whoami)" != "root" ]]; then 
+if [[ "$(/usr/bin/whoami)" != "root" ]]; then
     echo "This script must be run as root or using sudo.Script aborted."
     exit 1
 fi
@@ -104,7 +104,7 @@ echo ""
 
 # finding IP address and compensating for possible EC2 installation
 EC2=`curl --silent --connect-timeout 1 http://169.254.169.254/latest/meta-data/public-hostname`
-if [[ $EC2 != "" ]]; 
+if [[ $EC2 != "" ]];
 then
 	IP=`echo $EC2 | sed -rn 's/ec2-(.*?)\.compute.*/\1/p' | sed 's/-/./g'`
 else

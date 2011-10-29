@@ -18,7 +18,7 @@ Open Photo API / Photo Upload
 <a name="purpose"></a>
 ### Purpose of the Photo update API
 
-This API is used to update an existing photo's metadata for a user. 
+This API is used to update an existing photo's metadata for a user.
 
 ----------------------------------------
 
