@@ -33,8 +33,6 @@ class DatabaseSimpleDb implements DatabaseInterface
     $user = getConfig()->get('user');
     if($user !== null)
       $this->owner = $user->email;
-    $u = $this->getUser();
-    getLogger()->info(var_export($u, 1));
   }
 
   /**
@@ -171,7 +169,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     if($database != 'simpledb')
       return;
 
-    echo file_get_contents($file);
+    include $file;
   }
 
   /**
@@ -501,27 +499,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function initialize()
   {
-    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Credential|Group|Tag|User|Webhook)?$/");
-    if(count($domains) == 7)
+    if($this->version() !== '0.0.0')
       return true;
 
-    $domainsToCreate = array($this->domainAction, $this->domainCredential, $this->domainGroup, 
-      $this->domainPhoto, $this->domainTag, $this->domainUser, $this->domainWebhook);
-
-    $queue = new CFBatchRequest();
-    foreach($domainsToCreate as $domainToCreate)
-    {
-      if(!in_array($domainToCreate, $domains))
-      {
-        $this->db->batch($queue)->create_domain($domainToCreate);
-        getLogger()->info(sprintf('Queueing request to create domain: %s', $domainToCreate));
-      }
-    }
-
-    $responses = $this->db->batch($queue)->send();
-    getLogger()->info(sprintf('Attempting to create %d domains.', count($responses)));
-    $this->logErrors($responses);
-    return $responses->areOK();
+    // simpledb-base.php sets $status
+    $this->executeScript(sprintf('%s/upgrade/db/simpledb/simpledb-base.php', getConfig()->get('paths')->configs), 'simpledb');
+    return $status;
   }
 
   /**
@@ -765,6 +748,20 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function putWebhook($id, $params)
   {
     return $this->postWebhook($id, $params);
+  }
+
+  /**
+    * Get the current database version
+    *
+    * @return string Version number
+    */
+  public function version()
+  {
+    $user = $this->getUser();
+    if(!$user || !isset($user['version']))
+      return '0.0.0';
+
+    return $user['version'];
   }
 
   /**
