@@ -22,7 +22,7 @@ getRoute()->post('/action/([a-zA-Z0-9]+)/(photo)/create', array('ActionControlle
  * /photo/{id}[/{additional}]
  */
 getRoute()->get('/photo/([a-zA-Z0-9]+)/edit', array('PhotoController', 'edit')); // edit form for a photo (/photo/{id}/edit)
-getRoute()->get('/photo/([a-zA-Z0-9]+)/create/([a-z0-9]+)/([0-9]+)x([0-9]+)x?(.*).jpg', array('PhotoController', 'create')); // create a version of a photo (/photo/create/{id}/{options}.jpg)
+getRoute()->get('/photo/([a-zA-Z0-9]+)/create/([a-z0-9]+)/([0-9]+)x([0-9]+)x?(.*).jpe', array('PhotoController', 'create')); // create a version of a photo (/photo/create/{id}/{options}.jpg)
 getRoute()->get('/photo/([a-zA-Z0-9]+)/view/?(.+)?', array('PhotoController', 'view')); // view a photo (/photo/{id}/view[/{options}])
 getRoute()->post('/photo/([a-zA-Z0-9]+)/update', array('PhotoController', 'update')); // update a photo (/photo/{id}/update
 getRoute()->post('/photo/upload', array('PhotoController', 'uploadPost')); // upload a photo
