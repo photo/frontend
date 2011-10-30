@@ -2,7 +2,7 @@
   <div data-role="header" class="photoheader" data-theme="c">
     <a href="/" data-icon="home" class="ui-btn-right" rel="external">Home</a>
   </div>
-	<div data-role="content">	
+	<div data-role="content">
     <div class="photo-details">
       <div class="image-pagination">
         <?php if(!empty($photo['previous'])) { ?>
@@ -53,9 +53,9 @@
           </ul>
         </li>
       </ul>
-    </div> 
+    </div>
 	</div>
-	
+
 	<div data-role="footer" data-theme="c">
     <h4>The OpenPhoto Project &#169; <?php echo date('Y'); ?></h4>
 	</div>

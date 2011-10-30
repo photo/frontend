@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Dropbox API class 
- * 
- * @package Dropbox 
+ * Dropbox API class
+ *
+ * @package Dropbox
  * @copyright Copyright (C) 2010 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/dropbox-php/wiki/License MIT
  */
 class Dropbox_API {
@@ -19,45 +19,45 @@ class Dropbox_API {
      * Dropbox root-path
      */
     const ROOT_DROPBOX = 'dropbox';
-    
+
     /**
      * API URl
      */
     protected $api_url = 'api.dropbox.com/1/';
-    
+
     /**
      * Content API URl
      */
     protected $api_content_url = 'api-content.dropbox.com/0/';
 
     /**
-     * OAuth object 
-     * 
+     * OAuth object
+     *
      * @var Dropbox_OAuth
      */
     protected $oauth;
-    
+
     /**
-     * Default root-path, this will most likely be 'sandbox' or 'dropbox' 
-     * 
-     * @var string 
+     * Default root-path, this will most likely be 'sandbox' or 'dropbox'
+     *
+     * @var string
      */
     protected $root;
-    
+
     /**
-     * Determines if connections should use SSL or not.  
+     * Determines if connections should use SSL or not.
      * Defaults to true in construtor
-     * 
+     *
      * @deprecated New Dropbox rest calls require SSL.
      * @var boolean
      */
     protected $useSSL;
 
     /**
-     * Constructor 
-     * 
+     * Constructor
+     *
      * @param Dropbox_OAuth Dropbox_Auth object
-     * @param string $root default root path (sandbox or dropbox) 
+     * @param string $root default root path (sandbox or dropbox)
      */
     public function __construct(Dropbox_OAuth $oauth, $root = self::ROOT_DROPBOX, $useSSL = true) {
 
@@ -85,18 +85,18 @@ class Dropbox_API {
      *   * token
      *   * secret
      *
-     * @param string $email 
-     * @param string $password 
-     * @return array 
+     * @param string $email
+     * @param string $password
+     * @return array
      */
     public function getToken($email, $password) {
 
         $data = $this->oauth->fetch($this->api_url . 'token', array(
-            'email' => $email, 
+            'email' => $email,
             'password' => $password
         ),'POST');
 
-        $data = json_decode($data['body']); 
+        $data = json_decode($data['body']);
         return array(
             'token' => $data->token,
             'token_secret' => $data->secret,
@@ -105,9 +105,9 @@ class Dropbox_API {
     }
 
     /**
-     * Returns information about the current dropbox account 
-     * 
-     * @return stdclass 
+     * Returns information about the current dropbox account
+     *
+     * @return stdclass
      */
     public function getAccountInfo() {
 
@@ -119,11 +119,11 @@ class Dropbox_API {
     /**
      * Creates a new Dropbox account
      *
-     * @param string $email 
-     * @param string $first_name 
-     * @param string $last_name 
-     * @param string $password 
-     * @return bool 
+     * @param string $email
+     * @param string $first_name
+     * @param string $last_name
+     * @param string $password
+     * @return bool
      */
     public function createAccount($email, $first_name, $last_name, $password) {
 
@@ -134,17 +134,17 @@ class Dropbox_API {
             'password'   => $password,
           ), 'POST');
 
-        return $result['body']==='OK'; 
+        return $result['body']==='OK';
 
     }
 
 
     /**
-     * Returns a file's contents 
-     * 
-     * @param string $path path 
-     * @param string $root Use this to override the default root path (sandbox/dropbox) 
-     * @return string 
+     * Returns a file's contents
+     *
+     * @param string $path path
+     * @param string $root Use this to override the default root path (sandbox/dropbox)
+     * @return string
      */
     public function getFile($path = '', $root = null) {
 
@@ -158,10 +158,10 @@ class Dropbox_API {
     /**
      * Uploads a new file
      *
-     * @param string $path Target path (including filename) 
-     * @param string $file Either a path to a file or a stream resource 
-     * @param string $root Use this to override the default root path (sandbox/dropbox)  
-     * @return bool 
+     * @param string $path Target path (including filename)
+     * @param string $file Either a path to a file or a stream resource
+     * @param string $root Use this to override the default root path (sandbox/dropbox)
+     * @return bool
      */
     public function putFile($path, $file, $root = null) {
 
@@ -178,10 +178,10 @@ class Dropbox_API {
         } elseif (!is_resource($file)) {
             throw new Dropbox_Exception('File must be a file-resource or a string');
         }
-        $result=$this->multipartFetch($this->api_content_url . 'files/' . 
+        $result=$this->multipartFetch($this->api_content_url . 'files/' .
                 $root . '/' . trim($directory,'/'), $file, $filename);
-        
-        if(!isset($result["httpStatus"]) || $result["httpStatus"] != 200) 
+
+        if(!isset($result["httpStatus"]) || $result["httpStatus"] != 200)
             throw new Dropbox_Exception("Uploading file to Dropbox failed");
 
         return true;
@@ -189,14 +189,14 @@ class Dropbox_API {
 
 
     /**
-     * Copies a file or directory from one location to another 
+     * Copies a file or directory from one location to another
      *
      * This method returns the file information of the newly created file.
      *
-     * @param string $from source path 
-     * @param string $to destination path 
-     * @param string $root Use this to override the default root path (sandbox/dropbox)  
-     * @return stdclass 
+     * @param string $from source path
+     * @param string $to destination path
+     * @param string $root Use this to override the default root path (sandbox/dropbox)
+     * @return stdclass
      */
     public function copy($from, $to, $root = null) {
 
@@ -208,13 +208,13 @@ class Dropbox_API {
     }
 
     /**
-     * Creates a new folder 
+     * Creates a new folder
      *
      * This method returns the information from the newly created directory
      *
-     * @param string $path 
-     * @param string $root Use this to override the default root path (sandbox/dropbox)  
-     * @return stdclass 
+     * @param string $path
+     * @param string $root Use this to override the default root path (sandbox/dropbox)
+     * @return stdclass
      */
     public function createFolder($path, $root = null) {
 
@@ -232,10 +232,10 @@ class Dropbox_API {
      * Deletes a file or folder.
      *
      * This method will return the metadata information from the deleted file or folder, if successful.
-     * 
-     * @param string $path Path to new folder 
-     * @param string $root Use this to override the default root path (sandbox/dropbox)  
-     * @return array 
+     *
+     * @param string $path Path to new folder
+     * @param string $root Use this to override the default root path (sandbox/dropbox)
+     * @return array
      */
     public function delete($path, $root = null) {
         if (is_null($root)) $root = $this->root;
@@ -245,14 +245,14 @@ class Dropbox_API {
     }
 
     /**
-     * Moves a file or directory to a new location 
+     * Moves a file or directory to a new location
      *
      * This method returns the information from the newly created directory
      *
-     * @param mixed $from Source path 
+     * @param mixed $from Source path
      * @param mixed $to destination path
-     * @param string $root Use this to override the default root path (sandbox/dropbox) 
-     * @return stdclass 
+     * @param string $root Use this to override the default root path (sandbox/dropbox)
+     * @return stdclass
      */
     public function move($from, $to, $root = null) {
 
@@ -272,7 +272,7 @@ class Dropbox_API {
      * @param string $path Path to directory or file
      * @param string $root Use this to override the default root path (sandbox/dropbox)
      * @deprecated This method is no longer supported
-     * @return array 
+     * @return array
      */
     public function getLinks($path, $root = null) {
 
@@ -280,22 +280,22 @@ class Dropbox_API {
 
         /*
         if (is_null($root)) $root = $this->root;
-        
+
         $response = $this->oauth->fetch($this->api_url . 'links/' . $root . '/' . ltrim($path,'/'));
         return json_decode($response,true);
-        */ 
+        */
 
     }
 
     /**
      * Returns file and directory information
-     * 
-     * @param string $path Path to receive information from 
+     *
+     * @param string $path Path to receive information from
      * @param bool $list When set to true, this method returns information from all files in a directory. When set to false it will only return infromation from the specified directory.
      * @param string $hash If a hash is supplied, this method simply returns true if nothing has changed since the last request. Good for caching.
-     * @param int $fileLimit Maximum number of file-information to receive 
-     * @param string $root Use this to override the default root path (sandbox/dropbox) 
-     * @return array|true 
+     * @param int $fileLimit Maximum number of file-information to receive
+     * @param string $root Use this to override the default root path (sandbox/dropbox)
+     * @return array|true
      */
     public function getMetaData($path, $list = true, $hash = null, $fileLimit = null, $root = null) {
 
@@ -305,28 +305,28 @@ class Dropbox_API {
             'list' => $list,
         );
 
-        if (!is_null($hash)) $args['hash'] = $hash; 
-        if (!is_null($fileLimit)) $args['file_limit'] = $fileLimit; 
+        if (!is_null($hash)) $args['hash'] = $hash;
+        if (!is_null($fileLimit)) $args['file_limit'] = $fileLimit;
 
         $path = str_replace(array('%2F','~'), array('/','%7E'), rawurlencode($path));
         $response = $this->oauth->fetch($this->api_url . 'metadata/' . $root . '/' . ltrim($path,'/'), $args);
 
         /* 304 is not modified */
         if ($response['httpStatus']==304) {
-            return true; 
+            return true;
         } else {
             return json_decode($response['body'],true);
         }
 
-    } 
+    }
 
     /**
-     * Returns a thumbnail (as a string) for a file path. 
-     * 
-     * @param string $path Path to file 
-     * @param string $size small, medium or large 
-     * @param string $root Use this to override the default root path (sandbox/dropbox)  
-     * @return string 
+     * Returns a thumbnail (as a string) for a file path.
+     *
+     * @param string $path Path to file
+     * @param string $size small, medium or large
+     * @param string $root Use this to override the default root path (sandbox/dropbox)
+     * @return string
      */
     public function getThumbnail($path, $size = 'small', $root = null) {
 
@@ -338,11 +338,11 @@ class Dropbox_API {
     }
 
     /**
-     * This method is used to generate multipart POST requests for file upload 
-     * 
-     * @param string $uri 
-     * @param array $arguments 
-     * @return bool 
+     * This method is used to generate multipart POST requests for file upload
+     *
+     * @param string $uri
+     * @param array $arguments
+     * @return bool
      */
     protected function multipartFetch($uri, $file, $filename) {
 
@@ -362,7 +362,7 @@ class Dropbox_API {
         $body.="--" . $boundary . "--";
 
         // Dropbox requires the filename to also be part of the regular arguments, so it becomes
-        // part of the signature. 
+        // part of the signature.
         $uri.='?file=' . $filename;
 
         return $this->oauth->fetch($uri, $body, 'POST', $headers);

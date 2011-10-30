@@ -36,7 +36,7 @@
         var scope = scope || window;
 
         lib( element ).live(etype, lib.proxy(callback, scope) );
-        
+
         //key events need to use bind, for some reason only gets triggered
         //when you input in textareas or inputs with jQuery
         if (etype === "keydown" || etype === "keypress" || etype === "keyup") {
@@ -58,8 +58,8 @@
         lib( element ).die( type );
 
     }
-    
-    
+
+
     /**
     * Makes an ajax post request
     * @param {string} url to make request to
@@ -70,9 +70,9 @@
     * @method makeRequest
     */
     OU.makeRequest = function(url, data, callback, format) {
-    
+
     	lib.post(url, data, callback, format);
-    	
+
     }
 
 

@@ -2,10 +2,10 @@
 
 /**
  * Dropbox OAuth
- * 
- * @package Dropbox 
+ *
+ * @package Dropbox
  * @copyright Copyright (C) 2010 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/dropbox-php/wiki/License MIT
  */
 
@@ -26,13 +26,13 @@ class Dropbox_OAuth_PHP extends Dropbox_OAuth {
 
     /**
      * Constructor
-     * 
-     * @param string $consumerKey 
-     * @param string $consumerSecret 
+     *
+     * @param string $consumerKey
+     * @param string $consumerSecret
      */
     public function __construct($consumerKey, $consumerSecret) {
 
-        if (!class_exists('OAuth')) 
+        if (!class_exists('OAuth'))
             throw new Dropbox_Exception('The OAuth class could not be found! Did you install and enable the oauth extension?');
 
         $this->OAuth = new OAuth($consumerKey, $consumerSecret,OAUTH_SIG_METHOD_HMACSHA1,OAUTH_AUTH_TYPE_URI);
@@ -45,9 +45,9 @@ class Dropbox_OAuth_PHP extends Dropbox_OAuth {
      *
      * The tokens can also be passed as an array into the first argument.
      * The array must have the elements token and token_secret.
-     * 
-     * @param string|array $token 
-     * @param string $token_secret 
+     *
+     * @param string|array $token
+     * @param string $token_secret
      * @return void
      */
     public function setToken($token, $token_secret = null) {
@@ -59,17 +59,17 @@ class Dropbox_OAuth_PHP extends Dropbox_OAuth {
 
 
     /**
-     * Fetches a secured oauth url and returns the response body. 
-     * 
-     * @param string $uri 
-     * @param mixed $arguments 
-     * @param string $method 
-     * @param array $httpHeaders 
-     * @return string 
+     * Fetches a secured oauth url and returns the response body.
+     *
+     * @param string $uri
+     * @param mixed $arguments
+     * @param string $method
+     * @param array $httpHeaders
+     * @return string
      */
     public function fetch($uri, $arguments = array(), $method = 'GET', $httpHeaders = array()) {
 
-        try { 
+        try {
             $this->OAuth->fetch($uri, $arguments, $method, $httpHeaders);
             $result = $this->OAuth->getLastResponse();
             $lastResponseInfo = $this->OAuth->getLastResponseInfo();
@@ -91,9 +91,9 @@ class Dropbox_OAuth_PHP extends Dropbox_OAuth {
                     break;
                 case 403 :
                     throw new Dropbox_Exception_Forbidden('Forbidden. This could mean a bad OAuth request, or a file or folder already existing at the target location.');
-                case 404 : 
+                case 404 :
                     throw new Dropbox_Exception_NotFound('Resource at uri: ' . $uri . ' could not be found');
-                case 507 : 
+                case 507 :
                     throw new Dropbox_Exception_OverQuota('This dropbox is full');
                 default:
                     // rethrowing
@@ -107,10 +107,10 @@ class Dropbox_OAuth_PHP extends Dropbox_OAuth {
     /**
      * Requests the OAuth request token.
      *
-     * @return void 
+     * @return void
      */
     public function getRequestToken() {
-        
+
         try {
 
             $tokens = $this->OAuth->getRequestToken(self::URI_REQUEST_TOKEN);
@@ -131,8 +131,8 @@ class Dropbox_OAuth_PHP extends Dropbox_OAuth {
      *
      * This method requires the 'unauthorized' request tokens
      * and, if successful will set the authorized request tokens.
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public function getAccessToken() {
 

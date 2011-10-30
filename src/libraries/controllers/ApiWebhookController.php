@@ -21,7 +21,7 @@ class ApiWebhookController extends BaseController
       return self::success("Webhook {$id} created", array_merge(array('id' => $id), $params));
     else
       return self::error("Error creating webhook {$id}", false);
-  }  
+  }
 
   /**
     * Delete a webhook specified by the ID.
@@ -32,7 +32,7 @@ class ApiWebhookController extends BaseController
   public static function delete($id)
   {
     //getAuthentication()->requireAuthentication();
-    $status = Webhook::delete($id);   
+    $status = Webhook::delete($id);
     if($status)
       return self::success('Webhook deleted successfully', true);
     else

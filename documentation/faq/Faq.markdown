@@ -2,7 +2,7 @@ Documentation
 =======================
 #### OpenPhoto, a photo service for the masses
 
-This is a list of common questions that people have about OpenPhoto. 
+This is a list of common questions that people have about OpenPhoto.
 If you have one which is not on this list send us a message via <a href="http://twitter.com/openphoto">Twitter</a> or <a href="mailto:hello@openphoto.me">email</a>.
 
 ### What exactly is OpenPhoto?
@@ -11,33 +11,33 @@ The short answer is that OpenPhoto is a way to store and share your photos witho
 
 The long answer is that OpenPhoto consists of two parts: a specification and an implementation.
 
-The specification is a set of guidelines that define exactly how your photos are stored, how they are accessed and much more. 
-This helps make the entire system open and enables other developers to build functionality on top of your photos. 
+The specification is a set of guidelines that define exactly how your photos are stored, how they are accessed and much more.
+This helps make the entire system open and enables other developers to build functionality on top of your photos.
 The documentation makes up the majority of the specification.
 
-The implementation is code which adheres to the specification and provides functionality. 
-The OpenPhoto.me website is an example where the funtionality provided is the ability to store and share photos. 
-Another example would be if a developer created an Instagram like application adhering to the specification. 
+The implementation is code which adheres to the specification and provides functionality.
+The OpenPhoto.me website is an example where the funtionality provided is the ability to store and share photos.
+Another example would be if a developer created an Instagram like application adhering to the specification.
 That would be another implementation which provides the functionality of easily sharing photos from your phone with filters.
 
 ----------------------------------------
 
 ### What makes OpenPhoto different from Flickr, Smugmug, iCloud or any other service?
 
-Normally you pay one company to store your photos and to provide services to share them. 
+Normally you pay one company to store your photos and to provide services to share them.
 This means that you can't do much if they raise their prices, shut down their service or another site comes along.
 
-These sites may offer APIs but they typically enable addon services and rarely competing services. 
+These sites may offer APIs but they typically enable addon services and rarely competing services.
 Your photos are still stored on the company's servers who provide the base service.
 
-With OpenPhoto you can switch between services, use more than one at a time or stop using the service and continue to have your photos stored. 
+With OpenPhoto you can switch between services, use more than one at a time or stop using the service and continue to have your photos stored.
 
 ----------------------------------------
 
 ### If OpenPhoto is open sourced then why isn't it free?
 
-For clarity, OpenPhoto is both free and open sourced (FOSS). 
-Typically what you end up paying for is storage from someone like Amazon or Rackspace. 
+For clarity, OpenPhoto is both free and open sourced (FOSS).
+Typically what you end up paying for is storage from someone like Amazon or Rackspace.
 
 Amazon offers 5GB of storage for free which means if you don't need any additional space then using OpenPhoto is entirely free.
 
