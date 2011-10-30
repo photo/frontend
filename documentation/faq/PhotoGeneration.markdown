@@ -17,7 +17,7 @@ This call returns the following response.
     {
       "code" : 200,
       "message" : "Photo 63",
-      "result" : { 
+      "result" : {
         "appId" : "current.openphoto.me",
         "creativeCommons" : "BY-NC",
         "dateTaken" : "1313010850",
@@ -57,10 +57,10 @@ The most important keys in the response are `path123x123` and `path200x200`. Eit
 
 It's important to realize that the photo isn't generated and stored until this URL is called. This typically happens when the browser tries to display this photo. Once that has happened then the _123x123_ version exists both in the database and file system and calling the same API again returns a different URL for `path123x123`.
 
-    { 
+    {
       "code" : 200,
       "message" : "Photo 63",
-      "result" : { 
+      "result" : {
         "appId" : "current.openphoto.me",
         "creativeCommons" : "BY-NC",
         "dateTaken" : "1313010850",
@@ -99,7 +99,7 @@ The URL for `path123x123` now points to a static resource.
 You can specify multiple sizes for the `returnSizes` delimited by commas.
 
     curl "http://current.openphoto.me/photo/63.json?returnSizes=123x123,300x300xBW"
-    
+
 ### Understanding options for returnSizes
 
 The `returnSizes` parameter takes values in the form of _WxH[[xA]xB]_ which means it starts with a numeric _width_ and _height_. The most simple form is limited to specifying just a _width_ and _height_. This looks like `200x200` or `125x300`.

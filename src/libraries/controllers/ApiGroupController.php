@@ -1,7 +1,7 @@
 <?php
 /**
   * Group controller for API endpoints.
-  * 
+  *
   * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 class ApiGroupController extends BaseController
@@ -10,7 +10,7 @@ class ApiGroupController extends BaseController
     * Create a new group
     * Returns the newly created group or false as the response data
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function create()
   {
@@ -31,7 +31,7 @@ class ApiGroupController extends BaseController
   /**
     * Delete a group
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function delete($id)
   {
@@ -48,7 +48,7 @@ class ApiGroupController extends BaseController
     * Update an existing group
     * Returns the newly created group or false as the response data
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function update($id)
   {
@@ -70,7 +70,7 @@ class ApiGroupController extends BaseController
   /**
     * Get the owner's groups
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function list_()
   {
@@ -87,7 +87,7 @@ class ApiGroupController extends BaseController
     * Get the owner's group as specified by the groupId
     *
     * @param string $id The id of the group
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function view($id)
   {

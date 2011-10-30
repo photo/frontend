@@ -2,7 +2,7 @@
   <form method="post">
     <label>App Name</label>
     <input type="text" name="name" placeholder="Enter a name">
-    
+
     <!--<label>Permission</label>
     <ul>
       <li><input type="checkbox" name="permissions[]" value="read" class="checkbox" checked="true"> Read</li>

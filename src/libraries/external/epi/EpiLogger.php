@@ -19,7 +19,7 @@ class EpiLogger
       }
     }
   }
-  
+
   public function crit($message, $exception = null)
   {
     if(!isset($this->levels[self::Crit]))
@@ -27,7 +27,7 @@ class EpiLogger
 
     $this->log($message, self::Crit, $exception);
   }
-  
+
   public function info($message, $exception = null)
   {
     if(!isset($this->levels[self::Info]))
@@ -35,7 +35,7 @@ class EpiLogger
 
     $this->log($message, self::Info, $exception);
   }
-  
+
   public function warn($message, $exception = null)
   {
     if(!isset($this->levels[self::Warn]))

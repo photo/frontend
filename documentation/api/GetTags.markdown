@@ -86,7 +86,7 @@ The response is in a standard [response envelope][Envelope].
         },
         {
           "id": "Sunnyvale",
-          "count":23 
+          "count":23
           "latitude": 13.579,
           "longitude": 24.68
         },
