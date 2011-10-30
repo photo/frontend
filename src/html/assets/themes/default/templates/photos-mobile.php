@@ -2,7 +2,7 @@
   <div data-role="header" class="photoheader" data-theme="c">
     <a href="/" data-icon="home" class="ui-btn-right" rel="external">Home</a>
   </div>
-	<div data-role="content">	
+	<div data-role="content">
     <?php if(!empty($photos)) { ?>
       <ul class="gallery">
         <?php foreach($photos as $photo) { ?>
@@ -14,7 +14,7 @@
       <h2>Sorry, no photos to see.</h2>
     <?php } ?>
 	</div>
-	
+
 	<div data-role="footer" data-theme="c">
     <h4>The OpenPhoto Project &#169; <?php echo date('Y'); ?></h4>
 	</div>
