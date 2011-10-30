@@ -7,7 +7,7 @@
       <div class="image-pagination">
         <?php if(!empty($photo['previous'])) { ?>
           <div class="previous">
-            <a href="<?php Url::photoView($photo['previous']['id'], $options); ?>" style="background:url(<?php Url::photoUrl($photo['previous'], getConfig()->get('photoSizes')->nextPrevious); ?>) top left no-repeat;"><span class="audible">Go to previous photo</span></a>
+            <a href="<?php Url::photoView($photo['previous']['id'], $options); ?>" style="background:url(<?php Url::photoUrl($photo['previous'], getConfig()->get('photoSizes')->nextPrevious); ?>) top left no-repeat;" data-direction="reverse"><span class="audible">Go to previous photo</span></a>
           </div>
         <?php } else { ?>
           <div class="empty"></div>
