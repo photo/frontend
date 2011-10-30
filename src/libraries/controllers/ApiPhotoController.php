@@ -216,7 +216,7 @@ class ApiPhotoController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-    $attributes = $_POST;
+    $attributes = $_REQUEST;
     if(isset($attributes['returnSizes']))
     {
       $returnSizes = $attributes['returnSizes'];
