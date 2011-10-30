@@ -1,7 +1,7 @@
 <?php
 /**
   * Tag controller for HTML endpoints.
-  * 
+  *
   * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 class TagController extends BaseController

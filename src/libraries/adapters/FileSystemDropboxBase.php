@@ -6,7 +6,7 @@
  * @author Hub Figuiere <hub@figuiere.net>
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class FileSystemDropboxBase 
+class FileSystemDropboxBase
 {
   private $parent;
   public function __construct($parent)

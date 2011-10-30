@@ -332,7 +332,7 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSBatchSuccessResponse));
     $db = getDb();
     $db->inject('db', $this->sdbStub);
-    $res = $db->postTags(array(array('id' => 'foo'))); 
+    $res = $db->postTags(array(array('id' => 'foo')));
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for postTags');
   }
 
@@ -343,7 +343,7 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSBatchFailureResponse));
     $db = getDb();
     $db->inject('db', $this->sdbStub);
-    $res = $db->postTags(array(array('id' => 'foo'))); 
+    $res = $db->postTags(array(array('id' => 'foo')));
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for postTags');
   }
 
@@ -357,7 +357,7 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSBatchSuccessResponse));
     $db = getDb();
     $db->inject('db', $this->sdbStub);
-    $res = $db->postTagsCounter(array('foo0' => 1, 'foo1' => 2)); 
+    $res = $db->postTagsCounter(array('foo0' => 1, 'foo1' => 2));
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for postTags');
   }
 
@@ -368,7 +368,7 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSBatchFailureResponse));
     $db = getDb();
     $db->inject('db', $this->sdbStub);
-    $res = $db->postTags(array('tag' => array('id' => 'foo'))); 
+    $res = $db->postTags(array('tag' => array('id' => 'foo')));
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for postTags');
   }
 

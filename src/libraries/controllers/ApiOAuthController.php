@@ -1,7 +1,7 @@
 <?php
 /**
   * OAuth controller for API endpoints.
-  * 
+  *
   * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 class ApiOAuthController extends BaseController
