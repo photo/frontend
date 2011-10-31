@@ -9,23 +9,23 @@
   <?php if(count($photo['actions']) > 0) { ?>
     <ul class="comments" id="comments">
       <?php foreach($photo['actions'] as $action) { ?>
-        <li class="action-container-<?php echo $action['id']; ?>">
+        <li class="action-container-<?php Utility::safe($action['id']); ?>">
           <img src="<?php Utility::safe(User::getAvatarFromEmail(40, $action['email'])); ?>" class="avatar">
           <div>
             <strong><?php Utility::getEmailHandle($action['email']); ?> <small>(<?php Utility::safe(Utility::dateLong($action['datePosted'])); ?>)</small></strong>
-                <?php if($action['type'] == 'comment') { ?>
-                  <span><?php Utility::safe($action['value']); ?></span>
-                <?php } else { ?>
-                  <span>Marked this photo as a favorite.</span>
-                <?php } ?>
-                <span class="date">
-                  <?php if(User::isOwner()) { ?>
-                    <form method="post" action="<?php Url::actionDelete($action['id']); ?>">
-                      <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
-                      <a href="<?php Url::actionDelete($action['id']); ?>" class="action-delete-click"><span></span>Delete comment</a>
-                    </form>
-                  <?php } ?>
-                </span>
+            <?php if($action['type'] == 'comment') { ?>
+              <span><?php Utility::safe($action['value']); ?></span>
+            <?php } else { ?>
+              <span>Marked this photo as a favorite.</span>
+            <?php } ?>
+            <span class="date">
+              <?php if(User::isOwner()) { ?>
+                <form method="post" action="<?php Url::actionDelete($action['id']); ?>">
+                  <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
+                  <a href="<?php Url::actionDelete($action['id']); ?>" data-id="<?php Utility::safe($action['id']); ?>" class="action-delete-click"><span></span>Delete comment</a>
+                </form>
+              <?php } ?>
+            </span>
           </div>
         </li>
       <?php } ?>
