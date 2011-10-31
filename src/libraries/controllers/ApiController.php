@@ -41,4 +41,18 @@ class ApiController extends BaseController
 
     return self::success('Hello, world!', $_GET);
   }
+
+  /**
+    * API to get versions of the source, filesystem and database
+    *
+    * @return string Standard JSON envelope
+    */
+  public static function version()
+  {
+    getAuthentication()->requireAuthentication();
+    $systemVersion = getConfig()->get('site')->lastCodeVersion;
+    $databaseVersion = getDb()->version();
+    $filesystemVersion = '0.0.0';
+    return self::success('System versions', array('system' => $systemVersion, 'database' => $databaseVersion, 'filesystem' => $filesystemVersion));
+  }
 }
