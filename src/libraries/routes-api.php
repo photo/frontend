@@ -88,3 +88,4 @@ getApi()->get('/webhooks/?(.*)?/list.json', array('ApiWebhookController', 'list_
  * /system/{action}.json
  */
 getApi()->get('/system/diagnostics.json', array('ApiController', 'diagnostics'), EpiApi::external);
+getApi()->get('/system/version.json', array('ApiController', 'version'), EpiApi::external);
