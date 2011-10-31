@@ -366,6 +366,7 @@ class SetupController
     */
   public static function setup3Post()
   {
+    getSession()->set('isEditMode', isset($_GET['edit']));
     extract(self::getDefaultConfigParams());
     $step = 3;
     $secret = self::getSecret();
@@ -551,7 +552,7 @@ class SetupController
         if($usesAws)
           $dbErrors[] = 'We were unable to initialize your SimpleDb domains.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/simpledb/">signed up for AWS SimpleDb</a>.</li><li>Double check your AWS credentials.</li><li>SimpleDb domains cannot contain special characters such as periods.</li><li>Sometimes the SimpleDb create domain API is unstable. Try again later or check the error log if you have access to it.</li></ul>';
         else if($usesMySql)
-          $dbErrors[] = 'We were unable to properly connect to your MySql database server. Please verify that the host, username and password are correct and have proper permissions to create a database.';
+          $dbErrors[] = 'We were unable to initialize your account in MySql. <ul><li>Please verify that the host, username and password are correct and have proper permissions to create a database.</li><li>Make sure your email address is not already in use.</li></ul>';
         else
           $dbErrors[] = 'An unknown error occurred while setting up your file system. Check your error logsto see if there\'s more information about the error.';
 
