@@ -2,7 +2,7 @@
   <div data-role="header" class="photoheader" data-theme="c">
     <a href="/" data-icon="home" class="ui-btn-right" rel="external">Home</a>
   </div>
-	<div data-role="content">	
+	<div data-role="content">
     <?php if(empty($tags)) { ?>
       Sorry, no photos have been tagged.
     <?php } else { ?>

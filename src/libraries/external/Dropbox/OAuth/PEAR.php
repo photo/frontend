@@ -2,17 +2,17 @@
 
 /**
  * Dropbox OAuth
- * 
- * @package Dropbox 
+ *
+ * @package Dropbox
  * @copyright Copyright (C) 2010 Rooftop Solutions. All rights reserved.
- * @author Evert Pot (http://www.rooftopsolutions.nl/) 
+ * @author Evert Pot (http://www.rooftopsolutions.nl/)
  * @license http://code.google.com/p/dropbox-php/wiki/License MIT
  */
 
 
 /**
  * This class is used to sign all requests to dropbox
- * 
+ *
  * This classes use the PEAR HTTP_OAuth package. Make sure this is installed.
  */
 class Dropbox_OAuth_PEAR extends Dropbox_OAuth {
@@ -26,18 +26,18 @@ class Dropbox_OAuth_PEAR extends Dropbox_OAuth {
 
     /**
      * OAuth consumer key
-     * 
-     * We need to keep this around for later. 
-     * 
-     * @var string 
+     *
+     * We need to keep this around for later.
+     *
+     * @var string
      */
     protected $consumerKey;
 
     /**
      * Constructor
-     * 
-     * @param string $consumerKey 
-     * @param string $consumerSecret 
+     *
+     * @param string $consumerKey
+     * @param string $consumerSecret
      */
     public function __construct($consumerKey, $consumerSecret) {
 
@@ -47,7 +47,7 @@ class Dropbox_OAuth_PEAR extends Dropbox_OAuth {
             include 'HTTP/OAuth/Consumer.php';
 
         }
-        if (!class_exists('HTTP_OAuth_Consumer')) 
+        if (!class_exists('HTTP_OAuth_Consumer'))
             throw new Dropbox_Exception('The HTTP_OAuth_Consumer class could not be found! Did you install the pear HTTP_OAUTH class?');
 
         $this->OAuth = new HTTP_OAuth_Consumer($consumerKey, $consumerSecret);
@@ -60,9 +60,9 @@ class Dropbox_OAuth_PEAR extends Dropbox_OAuth {
      *
      * The tokens can also be passed as an array into the first argument.
      * The array must have the elements token and token_secret.
-     * 
-     * @param string|array $token 
-     * @param string $token_secret 
+     *
+     * @param string|array $token
+     * @param string $token_secret
      * @return void
      */
     public function setToken($token, $token_secret = null) {
@@ -74,20 +74,20 @@ class Dropbox_OAuth_PEAR extends Dropbox_OAuth {
     }
 
     /**
-     * Fetches a secured oauth url and returns the response body. 
-     * 
-     * @param string $uri 
-     * @param mixed $arguments 
-     * @param string $method 
-     * @param array $httpHeaders 
-     * @return string 
+     * Fetches a secured oauth url and returns the response body.
+     *
+     * @param string $uri
+     * @param mixed $arguments
+     * @param string $method
+     * @param array $httpHeaders
+     * @return string
      */
     public function fetch($uri, $arguments = array(), $method = 'GET', $httpHeaders = array())
     {
-        $httpRequest = new HTTP_Request2(null, 
-                HTTP_Request2::METHOD_GET, 
+        $httpRequest = new HTTP_Request2(null,
+                HTTP_Request2::METHOD_GET,
                 array(
-                    'ssl_verify_peer' => false, 
+                    'ssl_verify_peer' => false,
                     'ssl_verify_host' => false
                 )
         );
@@ -97,7 +97,7 @@ class Dropbox_OAuth_PEAR extends Dropbox_OAuth {
         $consumerRequest->setUrl($uri);
         $consumerRequest->setMethod($method);
         $consumerRequest->setSecrets($this->OAuth->getSecrets());
-     
+
         $parameters = array(
             'oauth_consumer_key'     => $this->consumerKey,
             'oauth_signature_method' => 'HMAC-SHA1',
@@ -132,9 +132,9 @@ class Dropbox_OAuth_PEAR extends Dropbox_OAuth {
                 break;
             case 403 :
                 throw new Dropbox_Exception_Forbidden('Forbidden. This could mean a bad OAuth request, or a file or folder already existing at the target location.');
-            case 404 : 
+            case 404 :
                 throw new Dropbox_Exception_NotFound('Resource at uri: ' . $uri . ' could not be found');
-            case 507 : 
+            case 507 :
                 throw new Dropbox_Exception_OverQuota('This dropbox is full');
 
         }
@@ -148,11 +148,11 @@ class Dropbox_OAuth_PEAR extends Dropbox_OAuth {
 
     /**
      * Requests the OAuth request token.
-     * 
+     *
      * @return void
      */
     public function getRequestToken() {
-        
+
         $this->OAuth->getRequestToken(self::URI_REQUEST_TOKEN);
         $this->setToken($this->OAuth->getToken(), $this->OAuth->getTokenSecret());
         return $this->getToken();
@@ -164,8 +164,8 @@ class Dropbox_OAuth_PEAR extends Dropbox_OAuth {
      *
      * This method requires the 'unauthorized' request tokens
      * and, if successful will set the authorized request tokens.
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public function getAccessToken() {
 

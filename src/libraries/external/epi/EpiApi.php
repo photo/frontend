@@ -45,13 +45,13 @@ class EpiApi
 
     // restore sanity
     foreach($tmps as $type => $value)
-      $GLOBALS[$type] = $value; 
+      $GLOBALS[$type] = $value;
 
     return $retval;
   }
 
   /**
-   * EpiApi::getRoute($route); 
+   * EpiApi::getRoute($route);
    * @name  getRoute
    * @author  Jaisen Mathai <jaisen@jmathai.com>
    * @param string $route

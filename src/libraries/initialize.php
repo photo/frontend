@@ -50,7 +50,7 @@ else
   // if we're running setup and the config file exists, load it to prepopulate the form
   if(file_exists($configFile))
     getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
-    
+
   // setup and enable routes for setup
   $baseDir = dirname(dirname(__FILE__));
   $paths = new stdClass;

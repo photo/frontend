@@ -13,7 +13,7 @@ class Photo
     * This deletes the original photo and all versions.
     *
     * @param string $id ID of the photo
-    * @return boolean 
+    * @return boolean
     */
   public static function delete($id)
   {
@@ -33,7 +33,7 @@ class Photo
     * @param int $width Width of the photo to generate
     * @param int $height Height of the photo to generate
     * @param string $options Options for the photo such as crop (CR) and greyscale (BW)
-    * @return string 
+    * @return string
     */
   public static function generateCustomKey($width, $height, $options = null)
   {
@@ -47,7 +47,7 @@ class Photo
     * @param int $width Width of the photo to generate
     * @param int $height Height of the photo to generate
     * @param string $options Options for the photo such as crop (CR) and greyscale (BW)
-    * @return string 
+    * @return string
     */
   public static function generateFragment($width, $height, $options)
   {
@@ -63,7 +63,7 @@ class Photo
     * The $options must start with a width and height (i.e. 800x600)
     *
     * @param string $options Options for the photo such as crop (CR) and greyscale (BW)
-    * @return array 
+    * @return array
     */
   public static function generateFragmentReverse($options)
   {
@@ -82,7 +82,7 @@ class Photo
     * @param string $param1 any parameter value
     * ...
     * @param string $paramN any parameter value
-    * @return string 
+    * @return string
     */
   public static function generateHash(/*$args1, $args2, ...*/)
   {
@@ -101,7 +101,7 @@ class Photo
     * These paths will also be the initial versions of the photo that are stored in the file system and database.
     *
     * @param string $photoName File name of the photo
-    * @return array 
+    * @return array
     */
   public static function generatePaths($photoName)
   {
@@ -142,7 +142,7 @@ class Photo
     * @param int $width The width of the requested photo.
     * @param int $height The height of the requested photo.
     * @param string $options Optional options to be applied on the photo
-    * @return string 
+    * @return string
     */
   // TODO make private and called via an API in the photo controller
   public static function generateUrlInternal($id, $width, $height, $options = null)
@@ -209,7 +209,7 @@ class Photo
     * Reads exif data from a photo.
     *
     * @param $photo Path to the photo.
-    * @return array 
+    * @return array
     */
   public static function readExif($photo)
   {
@@ -226,8 +226,8 @@ class Photo
       $dateTaken = @mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]);
     }
 
-    $exif_array = array('dateTaken' => $dateTaken, 'width' => $size[0], 
-      'height' => $size[1], 'cameraModel' => @$exif['Model'], 
+    $exif_array = array('dateTaken' => $dateTaken, 'width' => $size[0],
+      'height' => $size[1], 'cameraModel' => @$exif['Model'],
       'cameraMake' => @$exif['Make'],
       'ISO' => @$exif['ISOSpeedRatings'],
       'exposureTime' => @$exif['ExposureTime']);
@@ -386,7 +386,7 @@ class Photo
         getLogger()->info("Photo ({$id}) successfully stored to the database");
         return $id;
       }
-      else 
+      else
       {
         getLogger()->warn("Photo ({$id}) could NOT be stored to the database");
         return false;
@@ -424,7 +424,7 @@ class Photo
   {
     return array(
       'appId' => getConfig()->get('application')->appId,
-      'host' => getFs()->getHost(), 
+      'host' => getFs()->getHost(),
       'views' => 0,
       'status' => 1,
       'permission' => 0, // TODO
@@ -439,7 +439,7 @@ class Photo
     * @param $param2 One of the options
     * ...
     * @param $paramN One of the options
-    * @return boolean 
+    * @return boolean
     */
   private static function isValidateHash(/*$hash, $args1, $args2, ...*/)
   {
@@ -454,7 +454,7 @@ class Photo
     return (substr(sha1(implode('.', $args)), 0, 5) == $hash);
   }
 
-  private static function frac2Num($frac) 
+  private static function frac2Num($frac)
   {
     $parts = explode('/', $frac);
 
@@ -470,10 +470,10 @@ class Photo
     return floatval($parts[0]) / floatval($parts[1]);
   }
 
-  /*** GPS Utils 
-   * from http://stackoverflow.com/questions/2526304/php-extract-gps-exif-data 
+  /*** GPS Utils
+   * from http://stackoverflow.com/questions/2526304/php-extract-gps-exif-data
    **/
-  private static function getGps($exifCoord, $hemi) 
+  private static function getGps($exifCoord, $hemi)
   {
     $degrees = count($exifCoord) > 0 ? self::frac2Num($exifCoord[0]) : 0;
     $minutes = count($exifCoord) > 1 ? self::frac2Num($exifCoord[1]) : 0;
@@ -489,7 +489,7 @@ class Photo
     * Reads IPTC data from a photo.
     *
     * @param $photo Path to the photo.
-    * @return array 
+    * @return array
     */
   private static function readIptc($photo)
   {
@@ -511,7 +511,7 @@ class Photo
           $iptc_array['title'] = $iptc['2#105'][0];
 	else if(isset($iptc['2#005']))
           $iptc_array['title'] = $iptc['2#005'][0];
-	
+
         if(isset($iptc['2#120']))
           $iptc_array['description'] = $iptc['2#120'][0];
         if(isset($iptc['2#025']))

@@ -2,8 +2,8 @@
 
 /**
  * Dropbox OAuth
- * 
- * @package Dropbox 
+ *
+ * @package Dropbox
  * @copyright Copyright (C) 2010 Stefan Motz
  * @author Stefan Motz (http://www.multimediamotz.de/)
  * @license MIT
@@ -29,9 +29,9 @@ class Dropbox_OAuth_Wordpress extends Dropbox_OAuth {
 
     /**
      * Constructor
-     * 
-     * @param string $consumerKey 
-     * @param string $consumerSecret 
+     *
+     * @param string $consumerKey
+     * @param string $consumerSecret
      */
     public function __construct($consumerKey, $consumerSecret) {
         if (!(defined('ABSPATH') && defined('WPINC')))
@@ -45,13 +45,13 @@ class Dropbox_OAuth_Wordpress extends Dropbox_OAuth {
     }
 
     /**
-     * Fetches a secured oauth url and returns the response body. 
-     * 
-     * @param string $uri 
-     * @param mixed $arguments 
-     * @param string $method 
-     * @param array $httpHeaders 
-     * @return string 
+     * Fetches a secured oauth url and returns the response body.
+     *
+     * @param string $uri
+     * @param mixed $arguments
+     * @param string $method
+     * @param array $httpHeaders
+     * @return string
      */
     public function fetch($uri, $arguments = array(), $method = 'GET', $httpHeaders = array()) {
 
@@ -149,7 +149,7 @@ class Dropbox_OAuth_Wordpress extends Dropbox_OAuth {
     /**
      * Requests the OAuth request token.
      *
-     * @return void 
+     * @return void
      */
     public function getRequestToken() {
         $result = $this->fetch(self::URI_REQUEST_TOKEN, array(), 'POST');
@@ -168,8 +168,8 @@ class Dropbox_OAuth_Wordpress extends Dropbox_OAuth {
      *
      * This method requires the 'unauthorized' request tokens
      * and, if successful will set the authorized request tokens.
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public function getAccessToken() {
         $result = $this->fetch(self::URI_ACCESS_TOKEN, array(), 'POST');

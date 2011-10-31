@@ -10,22 +10,22 @@ var opTheme = (function() {
         log("keyboard!!!!");
       },
       actionDelete: function(ev) {
-      
+
         ev.preventDefault();
-      
+
         var el = $(ev.target),
           	url = el.attr('href')+'.json'
             id = el.attr('data-id');
-      
+
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 200)
             $(".action-container-"+id).hide('medium', function(){ $(this).remove(); });
           else
             opTheme.message.error('Could not delete the photo.');
         }, 'json');
-        
+
         return false;
-        
+
       },
       commentJump: function(ev) {
         ev.preventDefault();
@@ -75,11 +75,11 @@ var opTheme = (function() {
         });
       },
       photoDelete: function(ev) {
-      
+
         ev.preventDefault();
         var el = $(ev.target),
           	url = el.parent().attr('action')+'.json';
-      
+
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 200) {
             el.html('This photo has been deleted');
@@ -315,7 +315,7 @@ var opTheme = (function() {
         }
       }
     },
-    
+
     upload: {
       init: function() {
         var that = this; // that references upload
@@ -338,7 +338,7 @@ var opTheme = (function() {
           that.licenseChange();
         }
       },
-      
+
       options : {
         simultaneousUploadLimit : 3,
         frameId : "uploader-frame",
@@ -347,7 +347,7 @@ var opTheme = (function() {
         returnSizes : "50x50xCR",
         allowDuplicates : false
       },
-      
+
       licenseChange : function() {
         $("#uploader-frame .license").bind("change", function() {
           if ($(this).val() == "_custom_") {
@@ -359,33 +359,33 @@ var opTheme = (function() {
           }
         });
       },
-      
+
       /**
       * !! REMINDER !!
-      * These functions are going to be called from within the 
-      * opTheme.upload.options object so 'this' points back to 
+      * These functions are going to be called from within the
+      * opTheme.upload.options object so 'this' points back to
       * the options object
       **/
       dragEnter : function() {
         this.$dropZone.removeClass("waiting active").addClass("hover");
       },
-      
+
       dragLeave : function() {
         this.$dropZone.removeClass("hover").addClass("active");
       },
-      
+
       dragDrop : function() {
         this.$dropZone.removeClass("hover").addClass("active");
       },
-      
+
       duplicate : function() {
         opTheme.message.error("duplicate image");
       },
-      
+
       notImage : function() {
         opTheme.message.error("not an image file");
       },
-      
+
       pushToUI : function(files) {
         // get current tags and license data to apply to each photo
         var tags = $("#uploader-frame .tags").val();
@@ -402,17 +402,17 @@ var opTheme = (function() {
         this.$dropZone.append(html.join(""));
         OP.Util.upload.kickOffUploads();
       },
-      
+
       uploadStart : function(queueIndex) {
         $("#file-"+queueIndex).removeClass("waiting").addClass("uploading");
       },
-      
+
       uploadProgress : function(queueIndex, percent) {
         $("#file-"+queueIndex+" .progress").animate({
           "width":percent+"%"
         }, 500);
       },
-      
+
       uploadFinished : function(queueIndex, status, response) {
         var thisClass = response.code == 202 ? 'finished' : 'error';
         $("#file-"+queueIndex+" .progress").addClass(thisClass);
@@ -420,15 +420,15 @@ var opTheme = (function() {
         if(response.code == 202)
           $("#file-"+queueIndex).append("<img class='thumb' src='"+response.result.path50x50xCR+"'/>");
       },
-      
+
       permission : function(queueIndex) {
         return $("#file-"+queueIndex).attr("permission");
       },
-      
+
       photoLicense : function(queueIndex) {
         return $("#file-"+queueIndex).attr("license");
       },
-      
+
       photoTags : function(queueIndex) {
         return $("#file-"+queueIndex).attr("tags");
       }
@@ -457,7 +457,7 @@ var opTheme = (function() {
         $('form.validate').each(opTheme.formHandlers.init);
       }
     },
-    
+
     message: {
       close: function() {
         if(timeoutId != undefined) {

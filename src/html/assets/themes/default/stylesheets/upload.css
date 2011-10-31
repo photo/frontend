@@ -52,7 +52,7 @@ div#upload ul#upload-queue div.progress{
   -moz-border-radius-bottomright: 4px;
   -moz-border-radius-bottomleft: 4px;
   -webkit-border-radius: 0px 0px 4px 4px;
-  border-radius: 0px 0px 4px 4px; 
+  border-radius: 0px 0px 4px 4px;
 
 }
 div#upload ul#upload-queue div.progress > div{
@@ -61,7 +61,7 @@ div#upload ul#upload-queue div.progress > div{
   -moz-border-radius-bottomright: 4px;
   -moz-border-radius-bottomleft: 4px;
   -webkit-border-radius: 0px 0px 4px 4px;
-  border-radius: 0px 0px 4px 4px; 
+  border-radius: 0px 0px 4px 4px;
   background-image:url("../images/progress.gif");
 }
 div#upload ul#upload-queue div.progress > div.complete{
@@ -103,9 +103,9 @@ div#upload ul#upload-queue div.progress > div.complete{
 #drop-zone .photo { width: 100%; position: relative; height: 32px; z-index: 5; padding: 17px 0 6px 0;}
 #drop-zone .photo .name { margin-left: 60px; }
 #drop-zone .photo .size { float: right; margin-right: 5px; }
-#drop-zone .photo > span.progress { 
+#drop-zone .photo > span.progress {
   z-index: -1;
-  display: block; 
+  display: block;
   height: 100%;
   background-color: #e5e88b;
   background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #e5e88b), color-stop(1, #f0f2ac));
@@ -119,7 +119,7 @@ div#upload ul#upload-queue div.progress > div.complete{
   top: 0px;
   overflow: hidden;
 }
-#drop-zone .photo > span.progress.finished { 
+#drop-zone .photo > span.progress.finished {
   background-color: rgb(43,194,83);
   background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(43,194,83)), color-stop(1, rgb(84,240,84)) );
   background-image: -webkit-linear-gradient( center bottom, rgb(43,194,83) 37%, rgb(84,240,84) 69% );
@@ -127,7 +127,7 @@ div#upload ul#upload-queue div.progress > div.complete{
   background-image: -ms-linear-gradient( center bottom, rgb(43,194,83) 37%, rgb(84,240,84) 69% );
   background-image: -o-linear-gradient( center bottom, rgb(43,194,83) 37%, rgb(84,240,84) 69% );
 }
-#drop-zone .photo > span.progress.error { 
+#drop-zone .photo > span.progress.error {
   background-color: rgb(214,105,163);
   background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(214,105,163)), color-stop(1, rgb(235,113,178)) );
   background-image: -webkit-linear-gradient( center bottom, rgb(214,105,163) 37%, rgb(235,113,178) 69% );
