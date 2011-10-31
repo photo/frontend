@@ -10,11 +10,11 @@
 	  <ul class="comments" id="comments">
 	    <?php foreach($photo['actions'] as $action) { ?>
 	      <li class="action-container-<?php echo $action['id']; ?>">
-	        <img src="<?php echo User::getAvatarFromEmail(40, $action['email']); ?>" class="avatar">
+	        <img src="<?php Utility::safe(User::getAvatarFromEmail(40, $action['email'])); ?>" class="avatar">
 			<div>
-				<strong><?php echo getSession()->get('email'); ?> <small>(<?php echo Utility::dateLong($action['datePosted']); ?>)</small></strong>
+				<strong><?php Utility::getEmailHandle($action['email']); ?> <small>(<?php Utility::safe(Utility::dateLong($action['datePosted'])); ?>)</small></strong>
 		        <?php if($action['type'] == 'comment') { ?>
-		          <span><?php echo $action['value']; ?></span>
+		          <span><?php Utility::safe($action['value']); ?></span>
 		        <?php } else { ?>
 		          <span>Marked this photo as a favorite.</span>
 		        <?php } ?>
