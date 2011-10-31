@@ -170,6 +170,7 @@ class DatabaseSimpleDb implements DatabaseInterface
       return;
 
     include $file;
+    return $status;
   }
 
   /**
@@ -503,7 +504,7 @@ class DatabaseSimpleDb implements DatabaseInterface
       return true;
 
     // simpledb-base.php sets $status
-    $this->executeScript(sprintf('%s/upgrade/db/simpledb/simpledb-base.php', getConfig()->get('paths')->configs), 'simpledb');
+    $status = $this->executeScript(sprintf('%s/upgrade/db/simpledb/simpledb-base.php', getConfig()->get('paths')->configs), 'simpledb');
     return $status;
   }
 
