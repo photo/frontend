@@ -23,7 +23,7 @@ class DatabaseMySql implements DatabaseInterface
   public function __construct()
   {
     $mysql = getConfig()->get('mysql');
-    EpiDatabase::employ('mysql', $mysql->mySqlDb, 
+    EpiDatabase::employ('mysql', $mysql->mySqlDb,
                         $mysql->mySqlHost, $mysql->mySqlUser, Utility::decrypt($mysql->mySqlPassword));
     foreach($mysql as $key => $value) {
       $this->{$key} = $value;
@@ -208,7 +208,7 @@ class DatabaseMySql implements DatabaseInterface
     * Retrieve group from the database specified by $id
     *
     * @param string $id id of the group to return
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getGroup($id = null)
   {
@@ -227,7 +227,7 @@ class DatabaseMySql implements DatabaseInterface
     * Retrieve groups from the database optionally filter by member (email)
     *
     * @param string $email email address to filter by
-    * @return mixed Array on success, NULL on empty, FALSE on failure 
+    * @return mixed Array on success, NULL on empty, FALSE on failure
     */
   public function getGroups($email = null)
   {
@@ -1095,9 +1095,9 @@ class DatabaseMySql implements DatabaseInterface
     $photo['appId'] = getConfig()->get('application')->appId;
 
     $versions = $this->getPhotoVersions($photo['id']);
-    if($versions && !empty($versions)) 
+    if($versions && !empty($versions))
     {
-      foreach($versions as $version) 
+      foreach($versions as $version)
       {
         $photo[$version['key']] = $version['path'];
       }
@@ -1249,7 +1249,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       $params['::bindings'] = $bindings;
     }
-    return $params;    
+    return $params;
   }
 
   /** Prepare user to store in the database
@@ -1301,8 +1301,9 @@ class DatabaseMySql implements DatabaseInterface
 
   /**
    * Explode params associative array into SQL update statement lists
-   * Return a string
    * TODO, have this work with PDO named parameters
+   *
+   * Return a string
    */
   private function sqlUpdateExplode($params, $bindings = array())
   {

@@ -31,10 +31,8 @@
             js: {
                 assets: [
                     '<?php getTheme()->asset('javascript', 'jquery.mobile.js'); ?>',
-                    '<?php getTheme()->asset('javascript', 'ps.js'); ?>',
                     '<?php getTheme()->asset('javascript', 'openphoto-theme-mobile.js'); ?>'
-                ],
-                onComplete: function(){ opTheme.init.attach(window.Code.PhotoSwipe); }
+                    ]
             }
         });
     </script>

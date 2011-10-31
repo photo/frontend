@@ -1,7 +1,7 @@
 <?php
 /**
   * User controller for API endpoints.
-  * 
+  *
   * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 class ApiUserController extends BaseController
@@ -9,7 +9,7 @@ class ApiUserController extends BaseController
   /**
     * Log a user in via BrowserID
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function login()
   {
@@ -23,7 +23,7 @@ class ApiUserController extends BaseController
   /**
     * Log a user in via mobilePassphrase
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function loginMobile()
   {
@@ -41,7 +41,7 @@ class ApiUserController extends BaseController
   /**
     * Log a user out.
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function logout()
   {
@@ -53,7 +53,7 @@ class ApiUserController extends BaseController
     * Update a group
     *
     * @param string $id id of the group to update
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function postGroup($id = null)
   {

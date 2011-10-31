@@ -52,12 +52,12 @@ class AWSBatchSuccessResponse extends AWSSuccessResponse
 
   public function create_domain()
   {
-    return new AWSSuccessResponse;    
+    return new AWSSuccessResponse;
   }
 
   public function create_object()
   {
-    return new AWSSuccessResponse;    
+    return new AWSSuccessResponse;
   }
 
   public function put_attributes()
@@ -79,7 +79,7 @@ class AWSBatchSuccessResponse extends AWSSuccessResponse
         $retval = array(new AWSPhotoMockSdb($this->count));
         break;
       default:
-        $retval = new AWSSuccessResponse;    
+        $retval = new AWSSuccessResponse;
         break;
     }
     return $retval;
@@ -100,7 +100,7 @@ class AWSBatchFailureResponse extends AWSFailureResponse
 
   public function send()
   {
-    return new AWSFailureResponse;    
+    return new AWSFailureResponse;
   }
 
   public function put_attributes()
@@ -110,7 +110,7 @@ class AWSBatchFailureResponse extends AWSFailureResponse
 
   public function create_object()
   {
-    return new AWSFailureResponse;    
+    return new AWSFailureResponse;
   }
 }
 

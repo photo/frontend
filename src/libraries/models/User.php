@@ -37,7 +37,7 @@ class User
   /**
     * Get the email address of the logged in user.
     *
-    * @return string 
+    * @return string
     */
   public static function getEmailAddress()
   {

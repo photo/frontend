@@ -65,7 +65,7 @@
 
   <label>Members</label>
   <input type="text" placeholder="Email addresses of members (separate with commas)" value="" name="members">
-  
+
   <button type="submit" class="group-update-click">Create a new group</button>
 </form>
 
@@ -81,7 +81,7 @@
 
           <label>Members</label>
           <input type="text" value="<?php Utility::safe(implode(',', $group['members'])); ?>" name="members">
-          
+
           <button type="submit" class="group-update-click">Update</button>
         </form><!--(<a href="/group/<?php echo $group['id']; ?>/delete" class="group-delete-click">delete</a>)-->
       </li>

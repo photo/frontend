@@ -6,7 +6,7 @@ class EpiCache
   private static $instances, $employ;
   private $cached, $hash;
   private function __construct(){}
-  
+
   /*
    * @param  type  required
    * @params optional
@@ -46,7 +46,7 @@ class EpiCache
     $params = func_get_args();
     return $this->get(implode('.', $params));
   }
- 
+
   protected function setByKey()
   {
     $params = func_get_args();
