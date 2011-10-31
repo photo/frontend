@@ -42,6 +42,7 @@ class OAuthController extends BaseController
       $template = sprintf('%s/template.php', getConfig()->get('paths')->templates);
       $params = array('callback' => $callback, 'redirect' => $_SERVER['REQUEST_URI']);
       $params['error'] = isset($_GET['error']) && $_GET['error'] == 1;
+      $params['name'] = isset($_GET['name']) ? $_GET['name'] : '';
       $body = getTemplate()->get($bodyTemplate, $params);
       getTemplate()->display($template, array('body' => $body, 'page' => 'oauth-create'));
     }
@@ -143,7 +144,8 @@ class OAuthController extends BaseController
     else if(!isset($_GET['reloaded']))
     {
       $callback = sprintf('%s://%s/v1/oauth/flow', Utility::getProtocol(false), $_SERVER['HTTP_HOST']);
-      echo sprintf('<a href="%s://%s/v1/oauth/authorize?oauth_callback=%s">Create a new client id</a>', Utility::getProtocol(false), $_SERVER['HTTP_HOST'], urlencode($callback));
+      $name = isset($_GET['name']) ? $_GET['name'] : 'OAuth Test Flow';
+      echo sprintf('<a href="%s://%s/v1/oauth/authorize?oauth_callback=%s&name=%s">Create a new client id</a>', Utility::getProtocol(false), $_SERVER['HTTP_HOST'], urlencode($callback), urlencode($name));
     }
     else
     {
