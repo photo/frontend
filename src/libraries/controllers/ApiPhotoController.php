@@ -217,6 +217,9 @@ class ApiPhotoController extends BaseController
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
     $attributes = $_REQUEST;
+    if(isset($attributes['__route__']))
+      unset($attributes['__route__']);
+
     if(isset($attributes['returnSizes']))
     {
       $returnSizes = $attributes['returnSizes'];
@@ -334,8 +337,34 @@ class ApiPhotoController extends BaseController
     else
       $photo = getDb()->getPhoto($id);
 
+    // check permissions
     if(!isset($photo['id']))
+    {
       return self::notFound("Photo {$id} not found", false);
+    }
+    elseif(!User::isOwner())
+    {
+      if($photo['permission'] == 0)
+      {
+        if(!User::isLoggedIn() || (isset($photo['groups']) && empty($photo['groups'])))
+          return self::notFound("Photo {$id} not found", false);
+
+        // can't call API since we're not the owner
+        $userGroups = getDb()->getGroups(User::getEmailAddress());
+        $isInGroup = false;
+        foreach($userGroups as $group)
+        {
+          if(in_array($group['id'], $photo['groups']))
+          {
+            $isInGroup = true;
+            break;;
+          }
+        }
+
+        if(!$isInGroup)
+          return self::notFound("Photo {$id} not found", false);
+      }
+    }
 
     // if specific sizes are requested then make sure we return them
     $sizes = array();
