@@ -540,8 +540,22 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function initialize()
   {
-    if($this->version() !== '0.0.0')
+    // email address has to be unique
+    // getting a null back from getUser() means we can proceed
+    if($this->version() !== '0.0.0' && getSession()->get('isEditMode') === false)
+    {
+      $userConfig = getConfig()->get('user');
+      $user = true;
+      if(isset($userConfig->email))
+        $user = $this->getUser($userConfig->email);
+
+      if($user !== null)
+      {
+        getLogger()->crit(sprintf('Could not initialize user for MySql due to email conflict (%s).', $userConfig->email));
+        return false;
+      }
       return true;
+    }
 
     try
     {
