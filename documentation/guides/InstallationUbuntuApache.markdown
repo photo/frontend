@@ -28,6 +28,7 @@ Once you've confirmed that your cloud account is setup you can get started on yo
 There are also a few optional but recommended packages and modules.
 
     apt-get install php5-imagick exiftran
+    pecl install oauth
     a2enmod deflate
     a2enmod expires
     a2enmod headers
