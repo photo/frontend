@@ -41,6 +41,7 @@ class User
     */
   public static function getEmailAddress()
   {
+    // TODO support oauth calls
     return getSession()->get('email');
   }
 

@@ -76,6 +76,9 @@ class ApiGroupController extends BaseController
   {
     getAuthentication()->requireAuthentication();
 
+    if(!User::isOwner())
+      return self::forbidden('You do not have permission to access this API.', false);
+
     $groups = Group::getGroups();
     if($groups === false)
       return self::error('An error occurred trying to get your groups', false);
