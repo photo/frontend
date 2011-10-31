@@ -81,7 +81,7 @@
           <?php if(isset($simpleDbDomain) && !empty($simpleDbDomain)) { ?>
             <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" value="<?php Utility::safe($simpleDbDomain); ?>" data-validation="required">
           <?php } else { ?>
-            <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" data-validation="required">
+            <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" value="openphoto" data-validation="required">
           <?php } ?>
         <?php } ?>
       <?php } ?>
