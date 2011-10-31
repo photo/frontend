@@ -98,6 +98,11 @@ class Utility
     return self::returnValue(date('l, F jS, Y \a\t g:ia', $ts), $write);
   }
 
+  public static function getEmailHandle($email, $write = true)
+  {
+    return self::returnValue(substr($email, 0, strpos($email, '@')), $write);
+  }
+
   public static function getPaginationParams($currentPage, $totalPages, $pagesToDisplay)
   {
     $start = 1;
