@@ -719,7 +719,7 @@ article {
 	text-align:center;
 }
 
-.photos #wrapper article {
+.front #wrapper article, .photos #wrapper article {
 	padding-right:0;
 	text-align:center;
 }
