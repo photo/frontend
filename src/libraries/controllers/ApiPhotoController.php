@@ -21,7 +21,7 @@ class ApiPhotoController extends BaseController
     $status = Photo::delete($id);
     if($status)
     {
-      Tag::updateTagCounts($res['result']['tags'], array(), 1);
+      Tag::updateTagCounts($res['result']['tags'], array(), 1, 1);
       return self::success('Photo deleted successfully', true);
     }
     else
@@ -306,7 +306,7 @@ class ApiPhotoController extends BaseController
         $permission = $photoBefore['permission'];
         if(isset($params['permission']))
           $permission = $params['permission'];
-        Tag::updateTagCounts($existingTags, $updatedTags, $permission);
+        Tag::updateTagCounts($existingTags, $updatedTags, $permission, $photoBefore['permission']);
       }
     }
     if(isset($params['crumb']))

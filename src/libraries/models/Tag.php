@@ -28,18 +28,31 @@ class Tag
     * @param int $permission Permission of the photo.
     * @return boolean
     */
-  public static function updateTagCounts($existingTags, $updatedTags, $permission)
+  public static function updateTagCounts($existingTags, $updatedTags, $permission, $priorPermission)
   {
     // we increment public photos by 1 only if they are public
-    $publicIncrement = $permission == 1 ? 1 : 0;
+    // if the privacy changes then we add or remove from the increment value
+    $publicIncrement = ($permission == 1) ? 1 : 0;
+    $privacyChangeIncrement = 0;
+    if($priorPermission !== null)
+    {
+      if($priorPermission == 1 && $permission == 0)
+        $privacyChangeIncrement = -1;
+      elseif($priorPermission == 0 && $permission == 1)
+        $privacyChangeIncrement = 1;
+    }
 
+    // here we determine which arrays are new, deleted and already existing
     $tagsToDecrement = array_diff($existingTags, $updatedTags);
     $tagsToIncrement = array_diff($updatedTags, $existingTags);
+    $tagsToMutateForPrivacy = array_intersect($existingTags, $updatedTags);
     $tagsToUpdate = array();
     foreach($tagsToDecrement as $tg)
       $tagsToUpdate[self::sanitize($tg)] = -1;
     foreach($tagsToIncrement as $tg)
       $tagsToUpdate[self::sanitize($tg)] = 1;
+    foreach($tagsToMutateForPrivacy as $tg) // these already exist but we may need to update counts if the privacy changed
+      $tagsToUpdate[self::sanitize($tg)] = 0;
 
     $tagsFromDb = array();
     $allTags = getDb()->getTags(array('permission' => 0));
@@ -59,7 +72,16 @@ class Tag
     {
       $thisTag = $tagFromDb['id'];
       $changeBy = $tagsToUpdate[$thisTag];
-      $updatedTags[] = array('id' => $thisTag, 'countPrivate' => $tagFromDb['countPrivate']+$changeBy, 'countPublic' => $tagFromDb['countPublic']+($changeBy*$publicIncrement));
+      $publicCount = $tagFromDb['countPublic']+($changeBy*$publicIncrement);
+
+      // in the event that the tag wasn't added/removed but already existed we have to check if the privacy changed
+      if(in_array($tagFromDb['id'], $tagsToMutateForPrivacy))
+        $publicCount += $privacyChangeIncrement;
+      $updatedTags[] = array(
+        'id' => $thisTag, 
+        'countPrivate' => ($tagFromDb['countPrivate']+$changeBy), 
+        'countPublic' => $publicCount
+      );
       // unset so we can later loop over tags which didn't already exist
       unset($tagsToUpdate[$thisTag]);
     }
