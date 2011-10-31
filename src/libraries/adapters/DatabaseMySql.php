@@ -490,7 +490,7 @@ class DatabaseMySql implements DatabaseInterface
     $countField = 'countPublic';
     if(isset($filter['permission']) && $filter['permission'] == 0)
       $countField = 'countPrivate';
-    $tags = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE id IS NOT NULL AND owner=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY id", array(':owner' => $this->owner));
+    $tags = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY `id`", array(':owner' => $this->owner));
     foreach($tags as $key => $tag)
     {
       // TODO this should be in the normalize method
