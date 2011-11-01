@@ -67,3 +67,9 @@ getRoute()->get('/v[1]/oauth/token/access', array('OAuthController', 'tokenAcces
 getRoute()->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenRequest'));
 getRoute()->get('/v[1]/oauth/test', array('OAuthController', 'test'));
 getRoute()->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
+
+require getConfig()->get('paths')->libraries . '/routes-api.php';
+if($runUpgrade)
+  require getConfig()->get('paths')->libraries . '/routes-upgrade.php';
+
+require getConfig()->get('paths')->libraries . '/routes-error.php';

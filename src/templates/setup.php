@@ -21,6 +21,14 @@
       <h2>User Settings</h2>
       <label for="email">Email address</label>
       <input type="text" name="email" id="email" placeholder="user@example.com" <?php if(isset($email)) { ?>value="<?php Utility::safe($email); ?>"<?php } ?> data-validation="required email">
+
+      <label for="theme">Select a theme</label>
+      <select name="theme">
+        <?php foreach($themes as $thisTheme) { ?>
+          <option value="<?php Utility::safe($thisTheme); ?>" <?php if($theme == $thisTheme){ ?> selected="selected" <?php } ?>><?php echo ucwords(Utility::safe($thisTheme, false)); ?></option>
+        <?php } ?>
+      </select>
+
       <input type="hidden" name="appId" id="appId" <?php if(isset($appId)) { ?>value="<?php Utility::safe($appId); ?>"<?php } ?>>
       <button type="submit">Continue to Step 2</button>
     </form>
@@ -86,9 +94,9 @@
         <label for="mySqlPassword">MySQL Password</label>
         <input type="password" name="mySqlPassword" id="mySqlPassword" placeholder="Your MySql password" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlPassword; ?>">
         <label for="mySqlDb">MySQL Database <em>(this needs to already exist)</em></label>
-        <input type="text" name="mySqlDb" placeholder="Name of your MySql database" value="openphoto" id="mySqlDb" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlDb; ?>">
+        <input type="text" name="mySqlDb" placeholder="Name of your MySql database" id="mySqlDb" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlDb; ?>">
         <label for="mySqlTablePrefix">Table prefix <em>(optional)</em></label>
-        <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" value="op_" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
+        <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
       <?php } ?>
       <?php if((isset($usesLocalFs) && !empty($usesLocalFs))) { ?>
         <h3>Enter your local file system credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>

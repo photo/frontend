@@ -1,15 +1,16 @@
+<?php $thumbnailSize = isset($_GET['size']) ? $_GET['size'] : '280x186xCR'; ?>
 <?php if(!empty($photos)) { ?>
   <?php getTheme()->display('partials/pagination.php', $pages); ?>
   <ul class="photo-grid">
     <?php foreach($photos as $photo) { ?>
       <li class="grid-item id-<?php Utility::safe($photo['id']); ?>">
         <a href="<?php Url::photoView($photo['id'], $options); ?>">
-			<img src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->thumbnail); ?>" alt="<?php Utility::safe($photo['title']); ?>" />
+			<img src="<?php Url::photoUrl($photo, $thumbnailSize); ?>" alt="<?php Utility::safe($photo['title']); ?>" />
 	        <ul class="meta">
 	          <li class="age"><?php Utility::timeAsText($photo['dateTaken'], 'Taken'); ?></li>
 	          <li class="permission"><span class="<?php Utility::permissionAsText($photo['permission']); ?>" title="Photo is <?php Utility::permissionAsText($photo['permission']); ?>"></li>
-			  <?php if(!empty($photo['tags'])) { ?><li class="tags"><span title="Photo has tags"></span></li><?php } ?>
-			  <?php if(!empty($photo['latitude'])) { ?><li class="geo"><span title="Photo has geo informations"></span></li><?php } ?>
+			  <?php if(isset($photo['tags']) && !empty($photo['tags'])) { ?><li class="tags"><span title="Photo has tags"></span></li><?php } ?>
+			  <?php if(isset($photo['latitude']) && !empty($photo['latitude'])) { ?><li class="geo"><span title="Photo has geo informations"></span></li><?php } ?>
 	        </ul>
 		</a>
       </li>

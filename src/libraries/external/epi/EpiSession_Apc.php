@@ -27,7 +27,7 @@ class EpiSession_Apc implements EpiSessionInterface
   {
     if(empty($key))
       return false;
-    
+
     $this->store[$key] = $value;
     apc_store($this->key, $this->store);
     return $value;

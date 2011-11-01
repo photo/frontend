@@ -7,11 +7,25 @@
  */
 class Theme
 {
+  const themeDefault = 'default';
   private $theme, $themeDir, $themeDirWeb;
 
   public function __construct()
   {
-    $this->theme = getConfig()->get('site')->theme;
+    $this->theme = getConfig()->get('defaults')->theme;
+    $behavior = getConfig()->get('behavior');
+    $themeConfig = getConfig()->get('theme');
+    if($behavior !== null && Utility::isMobile() && $behavior->useDefaultMobile == '1')
+    {
+      $this->theme = self::themeDefault;
+      if(file_exists($mobileSettings = sprintf('%s/%s/config/settings-mobile.ini', getConfig()->get('paths')->themes, $this->getThemeName())))
+        getConfig()->load($mobileSettings);
+    }
+    elseif($themeConfig !== null)
+    {
+      $this->theme = $themeConfig->name;
+    }
+
     $this->themeDir = sprintf('%s/%s', getConfig()->get('paths')->themes, $this->theme);
     $this->themeDirWeb = str_replace(sprintf('%s/html', dirname(dirname(dirname(__FILE__)))), '', $this->themeDir);
   }
@@ -58,6 +72,25 @@ class Theme
     return getTemplate()->get("{$this->themeDir}/templates/{$template}", $params);
   }
 
+  public function getThemeName()
+  {
+    return $this->theme;
+  }
+
+  public function getThemes()
+  {
+    $dir = dir(getConfig()->get('paths')->themes);
+    $dirs = array();
+    while (($name = $dir->read()) !== false)
+    {
+      if(substr($name, 0, 1) == '.')
+        continue;
+
+      $dirs[] = $name;
+    }
+    return $dirs;
+  }
+
   public function meta($page, $key, $write = true)
   {
     if(isset(getConfig()->get($page)->$key))
@@ -74,10 +107,14 @@ class Theme
   *
   * @return object A theme object
   */
-function getTheme()
+function getTheme($singleton = true)
 {
   static $theme;
-  if(!$theme)
+  if($singleton && !$theme)
+  {
     $theme = new Theme();
-  return $theme;
+    return $theme;
+  }
+
+  return new Theme();
 }

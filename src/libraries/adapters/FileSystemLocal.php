@@ -32,6 +32,45 @@ class FileSystemLocal implements FileSystemInterface
   }
 
   /**
+    * Gets diagnostic information for debugging.
+    *
+    * @return array
+    */
+  public function diagnostics()
+  {
+    $diagnostics = array();
+    if(is_writable($this->root))
+      $diagnostics[] = Utility::diagnosticLine(true, 'File system is writable.');
+    else
+      $diagnostics[] = Utility::diagnosticLine(false, 'File system is NOT writable.');
+
+    $ch = curl_init(sprintf('%s://%s/', trim(Utility::getProtocol(false)), $this->host));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $result = curl_exec($ch);
+    $resultCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    if($resultCode == '403')
+      $diagnostics[] = Utility::diagnosticLine(true, 'Photo path correctly returns 403.');
+    else
+      $diagnostics[] = Utility::diagnosticLine(false, sprintf('Photo path returns %d instead of 403.', $resultCode));
+
+    return $diagnostics;
+  }
+
+  /**
+    * Executes an upgrade script
+    *
+    * @return void
+    */
+  public function executeScript($file, $filesystem)
+  {
+    if($filesystem != 'local')
+      return;
+
+    echo file_get_contents($file);
+  }
+
+  /**
    * Get photo will copy the photo to a temporary file.
    *
    */
@@ -39,7 +78,7 @@ class FileSystemLocal implements FileSystemInterface
   {
     $filename = self::normalizePath($filename);
     if(file_exists($filename)) {
-      $tmpname = tempnam(getConfig()->get('server')->tempDir, 'opme');
+      $tmpname = tempnam(getConfig()->get('paths')->temp, 'opme');
       copy($filename, $tmpname);
       return $tmpname;
     }
@@ -85,6 +124,16 @@ class FileSystemLocal implements FileSystemInterface
       mkdir($this->root, 0775, true);
     }
     return file_exists($this->root);
+  }
+
+  /**
+    * Identification method to return array of strings.
+    *
+    * @return array
+    */
+  public function identity()
+  {
+    return array('local');
   }
 
   public function normalizePath($path)

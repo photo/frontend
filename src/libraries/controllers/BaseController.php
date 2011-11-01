@@ -1,7 +1,7 @@
 <?php
 /**
   * Base controller extended by all other controllers.
-  * 
+  *
   * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 class BaseController
@@ -20,7 +20,7 @@ class BaseController
     *
     * @param string $message A friendly message to describe the operation
     * @param mixed $result The result with values needed by the caller to take action.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function created($message, $result = null)
   {
@@ -32,7 +32,7 @@ class BaseController
     *
     * @param string $message A friendly message to describe the operation
     * @param mixed $result The result with values needed by the caller to take action.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function error($message, $result = null)
   {
@@ -44,7 +44,7 @@ class BaseController
     *
     * @param string $message A friendly message to describe the operation
     * @param mixed $result The result with values needed by the caller to take action.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function success($message, $result = null)
   {
@@ -56,7 +56,7 @@ class BaseController
     *
     * @param string $message A friendly message to describe the operation
     * @param mixed $result The result with values needed by the caller to take action.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function forbidden($message, $result = null)
   {
@@ -68,7 +68,7 @@ class BaseController
     *
     * @param string $message A friendly message to describe the operation
     * @param mixed $result The result with values needed by the caller to take action.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function notFound($message, $result = null)
   {
@@ -80,7 +80,7 @@ class BaseController
     *
     * @param string $message A friendly message to describe the operation
     * @param mixed $result The result with values needed by the caller to take action.
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   private static function json($message, $code, $result = null)
   {

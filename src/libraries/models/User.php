@@ -37,21 +37,12 @@ class User
   /**
     * Get the email address of the logged in user.
     *
-    * @return string 
+    * @return string
     */
   public static function getEmailAddress()
   {
+    // TODO support oauth calls
     return getSession()->get('email');
-  }
-
-  public static function groupCreate()
-  {
-
-  }
-
-  public static function groupUpdate()
-  {
-
   }
 
   /**
@@ -80,7 +71,7 @@ class User
   {
     $type = ucwords($type);
     $key = "last{$type}Id";
-    $user = self::getUserRecord();    
+    $user = self::getUserRecord();
     if($user === false)
       return false;
 
@@ -161,7 +152,11 @@ class User
     }
     else
     {
-      return isset(getConfig()->get('user')->email) && getSession()->get('email') == getConfig()->get('user')->email;
+      $user = getConfig()->get('user');
+      if($user === null)
+        return false;
+      $len = max(strlen(getSession()->get('email')), strlen($user->email));
+      return isset($user->email) && strncmp(getSession()->get('email'), $user->email, $len) === 0;
     }
   }
 
@@ -241,7 +236,7 @@ class User
     */
   private static function create()
   {
-    return getDb()->putUser(1, self::getDefaultAttributes());
+    return getDb()->putUser(getConfig()->get('user')->email, self::getDefaultAttributes());
   }
 
   /**
@@ -251,7 +246,7 @@ class User
     */
   private static function getDefaultAttributes()
   {
-    return array('lastPhotoId' => '', 'lastActionId' => '');
+    return array('lastPhotoId' => '', 'lastActionId' => '', 'lastGroupId' => '', 'lastWebhookId' => '');
   }
 
   /**
@@ -275,6 +270,7 @@ class User
     */
   private static function update($params)
   {
-    return getDb()->postUser(1, $params);
+    $params = array_merge(self::getDefaultAttributes(), $params);
+    return getDb()->postUser($params);
   }
 }

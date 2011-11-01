@@ -39,7 +39,7 @@ getApi()->get('/photo/([a-zA-Z0-9]+)/nextprevious/?(.+)?.json', array('ApiPhotoC
 getApi()->post('/tag/create.json', array('ApiTagController', 'create'), EpiApi::external); // post a tag (/tag/{id}/update.json)
 getApi()->post('/tag/(.+)/delete.json', array('ApiTagController', 'delete'), EpiApi::external); // post a tag (/tag/{id}/update.json)
 getApi()->post('/tag/(.+)/update.json', array('ApiTagController', 'update'), EpiApi::external); // post a tag (/tag/{id}/update.json)
-getApi()->get('/tags/list.json', array('ApiTagController', 'view'), EpiApi::external); // retrieve tags
+getApi()->get('/tags/list.json', array('ApiTagController', 'list_'), EpiApi::external); // retrieve tags
 
 /*
  * User endpoints
@@ -81,3 +81,11 @@ getApi()->post('/webhook/([a-zA-Z0-9]+)/delete.json', array('ApiWebhookControlle
 getApi()->post('/webhook/([a-zA-Z0-9]+)/update.json', array('ApiWebhookController', 'update'), EpiApi::internal);
 getApi()->get('/webhook/([a-zA-Z0-9]+)/view.json', array('ApiWebhookController', 'view'), EpiApi::external);
 getApi()->get('/webhooks/?(.*)?/list.json', array('ApiWebhookController', 'list_'), EpiApi::internal);
+
+/*
+ * System endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /system/{action}.json
+ */
+getApi()->get('/system/diagnostics.json', array('ApiController', 'diagnostics'), EpiApi::external);
+getApi()->get('/system/version.json', array('ApiController', 'version'), EpiApi::external);

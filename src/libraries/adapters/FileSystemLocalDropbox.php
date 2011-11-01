@@ -27,6 +27,29 @@ class FileSystemLocalDropbox extends FileSystemLocal implements FileSystemInterf
   }
 
   /**
+    * Gets diagnostic information for debugging.
+    *
+    * @return array
+    */
+  public function diagnostics()
+  {
+    return array_merge($this->dropbox->diagnostics(), parent::diagnostics());
+  }
+
+  /**
+    * Executes an upgrade script
+    *
+    * @return void
+    */
+  public function executeScript($file, $filesystem)
+  {
+    if($filesystem == 'dropbox')
+      echo file_get_contents($file);
+    else
+      parent::executeScript($file, $filesystem);
+  }
+
+  /**
    * Get photo will copy the photo to a temporary file.
    *
    */
@@ -57,6 +80,16 @@ class FileSystemLocalDropbox extends FileSystemLocal implements FileSystemInterf
   public function initialize()
   {
     return $this->dropbox->initialize() && parent::initialize();
+  }
+
+  /**
+    * Identification method to return array of strings.
+    *
+    * @return array
+    */
+  public function identity()
+  {
+    return array_merge(array('dropbox'), parent::identity());
   }
 
   public function normalizePath($path)

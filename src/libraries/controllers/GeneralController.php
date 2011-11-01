@@ -37,6 +37,7 @@ class GeneralController extends BaseController
     */
   public static function error500()
   {
+    header('HTTP/1.0 500 Internal Server Error');
     $body = getTheme()->get('error500.php');
     getTheme()->display('template.php', array('body' => $body, 'page' => 'error'));
   }

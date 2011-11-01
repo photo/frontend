@@ -14,11 +14,12 @@ var opTheme = (function() {
         ev.preventDefault();
       
         var el = $(ev.target),
-          	url = el.attr('href')+'.json';
+          	url = el.attr('href')+'.json'
+            id = el.attr('data-id');
       
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 200)
-            $(".action-container-"+response.result).hide('medium', function(){ $(this).remove(); });
+            $(".action-container-"+id).hide('medium', function(){ $(this).remove(); });
           else
             opTheme.message.error('Could not delete the photo.');
         }, 'json');
@@ -138,7 +139,22 @@ var opTheme = (function() {
           if (ref) {
               location.href = ref;
           }
-      }
+      },
+      webhookDelete: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href')+'.json';
+
+        OP.Util.makeRequest(url, {}, function(response) {
+          if(response.code === 200) {
+            el.parent().remove();
+            opTheme.message.confirm('Credential successfully deleted.');
+          } else {
+            opTheme.message.error('Could not delete credential.');
+          }
+        }, 'json');
+        return false;
+      },
     },
     formHandlers: {
 			hasErrors: function(form, attribute) {
@@ -193,6 +209,13 @@ var opTheme = (function() {
 									errors.push(new Array(child, message));
 								}
 							}
+
+							if(dataValidationArray[i] == 'alphanumeric') {
+								if(!opTheme.formHandlers.passesAlphaNumeric(child)) {
+									var message = child.prev().html() + ' can only contain alpha-numeric characters';
+									errors.push(new Array(child, message));
+								}
+							}
 						}
 					}
 				});
@@ -206,6 +229,11 @@ var opTheme = (function() {
 				$('input[data-placeholder]').live('focus', opTheme.formHandlers.placeholderFocus);
 				$('input[data-placeholder]').live('blur', opTheme.formHandlers.placeholderBlur);
 			},
+
+      passesAlphaNumeric: function(obj) {
+				var regex = /^[a-zA-Z0-9]+$/;
+				return regex.test(obj.val());
+      },
 
 			passesDate: function(obj) {
 				var regex = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
@@ -348,17 +376,17 @@ var opTheme = (function() {
       },
       
       duplicate : function() {
-        opTheme.messageBox("duplicate image");
+        opTheme.message.error("duplicate image");
       },
       
       notImage : function() {
-        opTheme.messageBox("not an image file");
+        opTheme.message.error("not an image file");
       },
       
       pushToUI : function(files) {
         // get current tags and license data to apply to each photo
         var tags = $("#uploader-frame .tags").val();
-        var permission = $("#uploader-frame input[name=permission]").val();
+        var permission = $("#uploader-frame input[name=permission]:checked").val();
         var license = $("#uploader-frame .license").val();
         if (license == "_custom_") {
           license = $("#uploader-frame .custom input").val();
@@ -410,10 +438,13 @@ var opTheme = (function() {
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:photo-edit', opTheme.callback.photoEdit);
+        OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
+        OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
         OP.Util.on('click:group-update', opTheme.callback.groupPost);
+        OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
 
@@ -499,7 +530,7 @@ var opTheme = (function() {
 					errors[0][0].focus();
 
 					// bring up the error message box
-					opTheme.messageBox(messageHtml);
+					opTheme.message.error(messageHtml);
 				}
 			}
 		},

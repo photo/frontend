@@ -4,7 +4,7 @@
  *
  * This contains the EpiRoute class as wel as the EpiException abstract class
  * @author  Jaisen Mathai <jaisen@jmathai.com>
- * @version 1.0  
+ * @version 1.0
  * @package EpiRoute
  */
 
@@ -47,7 +47,7 @@ class EpiRoute
   {
     $this->addRoute($route, $callback, self::httpPost, $isApi);
   }
-  
+
   /**
    * NOT YET IMPLEMENTED
    * request('/', 'function', array(EpiRoute::httpGet, EpiRoute::httpPost));
@@ -85,9 +85,9 @@ class EpiRoute
         $this->$method($route['path'], $route['function']);
     }
   }
-  
+
   /**
-   * EpiRoute::run($_GET['__route__'], $_['routes']); 
+   * EpiRoute::run($_GET['__route__'], $_['routes']);
    * @name  run
    * @author  Jaisen Mathai <jaisen@jmathai.com>
    * @param string $route
@@ -116,7 +116,7 @@ class EpiRoute
 
 
   /**
-   * EpiRoute::getRoute($route); 
+   * EpiRoute::getRoute($route);
    * @name  getRoute
    * @author  Jaisen Mathai <jaisen@jmathai.com>
    * @param string $route
@@ -163,7 +163,7 @@ class EpiRoute
   }
 
   /**
-   * EpiRoute::redirect($url); 
+   * EpiRoute::redirect($url);
    * @name  redirect
    * @author  Jaisen Mathai <jaisen@jmathai.com>
    * @param string $url

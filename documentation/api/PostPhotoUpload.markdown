@@ -18,7 +18,7 @@ Open Photo API / Photo Upload
 <a name="purpose"></a>
 ### Purpose of the Photo Upload API
 
-This API is used to upload a new photo for a user. 
+This API is used to upload a new photo for a user.
 
 ----------------------------------------
 

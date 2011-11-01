@@ -22,12 +22,13 @@ Once you've confirmed that your cloud account is setup you can get started on yo
 
     apt-get update
     apt-get upgrade
-    apt-get install apache2 php5 libapache2-mod-php5 php5-curl php5-mcrypt
+    apt-get install apache2 php5 libapache2-mod-php5 php5-curl php5-mcrypt php-apc
     a2enmod rewrite
 
 There are also a few optional but recommended packages and modules.
 
     apt-get install php5-imagick exiftran
+    pecl install oauth
     a2enmod deflate
     a2enmod expires
     a2enmod headers
