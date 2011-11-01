@@ -202,44 +202,43 @@
         * @method onkeydownevent
         */
         this.onkeydownevent = function(e) {
-          log('[Util] keydownevent: ' + e.target);
+            
+            log('[Util] keydownevent: ' + e.target);
+            
+            var targ = e.target || e.srcElement,
+                classes = targ.className.split(" "),
+                length = classes.length,
+                map = this.eventMap[e.type],
+                nodeName = targ.nodeName.toLowerCase(),
+                keyCode = e.keyCode,
+                cls;
 
-          var targ = e.target || e.srcElement,
-            classes = targ.className.split(" "),
-            length = classes.length,
-            map = this.eventMap[e.type],
-            nodeName = targ.nodeName.toLowerCase(),
-            keyCode = e.keyCode,
-            cls;
-
-          if (nodeName === "textarea" || nodeName === "input") {
-
-            //i don't think there is a case where the user needs to know
-            //if the user is inputing text, but just in case, lets fire
-            //a custom event on user input
-            this.fire( 'keydown:user-input', e);
-
-          } else {
-
-            //the event map for key press can be two dimensional, it can be
-            //keycode, or className then keyCode, if keyCode, fire the custom event
-            if (map[keyCode]) {
-              this.fire( map[keyCode], e);
+            if (nodeName === "textarea" || nodeName === "input") {
+            
+                //i don't think there is a case where the user needs to know
+                //if the user is inputing text, but just in case, lets fire
+                //a custom event on user input
+                this.fire( 'keydown:user-input', e);
+                
+            } else {
+                
+                //the event map for key press can be two dimensional, it can be
+                //keycode, or className then keyCode, if keyCode, fire the custom event
+                if (map[keyCode]) {
+                    this.fire( map[keyCode], e);
+                }
+                
+                //both className and keycode
+                while (length--) {
+                    cls = classes[length];
+                    if (map[cls] && map[cls][keyCode]) {
+                        //do not prevent the default action, let the callback
+                        //function do it if it wants
+                        this.fire( map[cls][keyCode], e);
+                    }
+                }
+            
             }
-
-            //both className and keycode
-            while (length--) {
-                  cls = classes[length];
-                  if (map[cls] && map[cls][keyCode]) {
-                      //do not prevent the default action, let the callback
-                      //function do it if it wants
-                      this.fire( map[cls][keyCode], e);
-                  }
-              }
-
-
-          }
-
 
         };
 
