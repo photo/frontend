@@ -69,9 +69,17 @@
     * @return {void}
     * @method makeRequest
     */
-    OU.makeRequest = function(url, data, callback, format) {
+    OU.makeRequest = function(url, data, callback, format, method) {
 
-    	lib.post(url, data, callback, format);
+        //default to a post
+        var oFormat = format || "json",
+            oMethod = method || "post";
+        
+        if (oMethod === "post") {
+            lib.post(url, data, callback, oFormat);
+        } else {
+            lib.get(url, data, callback, oFormat);
+        }
 
     }
 
