@@ -22,7 +22,7 @@ var opTheme = (function() {
             $(".action-container-"+id).hide('medium', function(){ $(this).remove(); });
           else
             opTheme.message.error('Could not delete the photo.');
-        }, 'json');
+        });
         
         return false;
         
@@ -44,7 +44,7 @@ var opTheme = (function() {
           } else {
             opTheme.message.error('Could not delete credential.');
           }
-        }, 'json');
+        });
         return false;
       },
       groupPost: function(ev) {
@@ -62,7 +62,7 @@ var opTheme = (function() {
           } else {
             opTheme.message.error('Could not update group.');
           }
-        }, 'json');
+        });
         return false;
       },
       login: function(ev) {
@@ -87,7 +87,7 @@ var opTheme = (function() {
           } else {
             opTheme.message.error('Could not delete the photo.');
           }
-        }, 'json');
+        });
         return false;
       },
       photoEdit: function(ev) {
@@ -97,15 +97,16 @@ var opTheme = (function() {
         if($("div.owner-edit").length == 1) {
           $.scrollTo($('div.owner-edit'), 200);
         } else {
-          // TODO use makeRequest once it supports GET
-          $.get(url, {}, function(response){
+          
+          OP.Util.makeRequest(url, {}, function(response){
             if(response.code === 200) {
               $("#main").append(response.result.markup);
               $.scrollTo($('div.owner-edit'), 200);
             } else {
               opTheme.message.error('Could not load the form to edit this photo.');
             }
-          }, 'json');
+          });
+          
         }
         return false;
       },
@@ -152,7 +153,7 @@ var opTheme = (function() {
           } else {
             opTheme.message.error('Could not delete credential.');
           }
-        }, 'json');
+        });
         return false;
       },
     },
@@ -551,7 +552,7 @@ var opTheme = (function() {
       },
       loginSuccess: function(assertion) {
         var params = {assertion: assertion};
-        OP.Util.makeRequest('/user/login.json', params, opTheme.user.loginProcessed, 'json');
+        OP.Util.makeRequest('/user/login.json', params, opTheme.user.loginProcessed);
       }
     },
   };
