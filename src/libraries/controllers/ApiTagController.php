@@ -10,7 +10,7 @@ class ApiTagController extends BaseController
   /**
     * Delete a tag in the tag database.
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function delete($tag)
   {
@@ -25,7 +25,7 @@ class ApiTagController extends BaseController
   /**
     * Create a tag in the tag database.
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function create()
   {
@@ -38,7 +38,7 @@ class ApiTagController extends BaseController
   /**
     * Update a tag in the tag database.
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
   public static function update($tag)
   {
@@ -60,11 +60,14 @@ class ApiTagController extends BaseController
   /**
     * Return all tags.
     *
-    * @return string Standard JSON envelope 
+    * @return string Standard JSON envelope
     */
-  public static function view()
+  public static function list_()
   {
-    $tags = getDb()->getTags();
+    $filters = array();
+    if(User::isOwner())
+      $filters['permission'] = 0;
+    $tags = getDb()->getTags($filters);
     return self::success('Tags for the user', $tags);
   }
 }

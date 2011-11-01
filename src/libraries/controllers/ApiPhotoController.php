@@ -21,7 +21,7 @@ class ApiPhotoController extends BaseController
     $status = Photo::delete($id);
     if($status)
     {
-      Tag::updateTagCounts($res['result']['tags'], array());
+      Tag::updateTagCounts($res['result']['tags'], array(), 1, 1);
       return self::success('Photo deleted successfully', true);
     }
     else
@@ -52,7 +52,7 @@ class ApiPhotoController extends BaseController
       if(isset($photo['license']))
         $license = $photo['license'];
       $markup = getTemplate()->get($template, array('photo' => $photo, 'groups' => $groups, 'licenses' => Utility::getLicenses($license), 'crumb' => getSession()->get('crumb')));
-      return self::success('Photo deleted successfully', array('markup' => $markup));
+      return self::success('Photo edit markup', array('markup' => $markup));
     }
 
     return self::error('Photo edit markup failure', false);
@@ -216,7 +216,10 @@ class ApiPhotoController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-    $attributes = $_POST;
+    $attributes = $_REQUEST;
+    if(isset($attributes['__route__']))
+      unset($attributes['__route__']);
+
     if(isset($attributes['returnSizes']))
     {
       $returnSizes = $attributes['returnSizes'];
@@ -236,7 +239,7 @@ class ApiPhotoController extends BaseController
     elseif(isset($_POST['photo']))
     {
       unset($attributes['photo']);
-      $localFile = tempnam(getConfig()->get('server')->tempDir, 'opme');
+      $localFile = tempnam(getConfig()->get('paths')->temp, 'opme');
       $name = basename($localFile).'.jpg';
       file_put_contents($localFile, base64_decode($_POST['photo']));
       $photoId = Photo::upload($localFile, $name, $attributes);
@@ -260,8 +263,6 @@ class ApiPhotoController extends BaseController
         $params = array('returnSizes' => $returnSizes);
       $photo = getApi()->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => $params));
 
-      // webhooks
-      // TODO, fire and forget
       $webhookApi = getApi()->invoke('/webhooks/photo.upload/list.json', EpiRoute::httpGet);
       if(!empty($webhookApi['result']) && is_array($webhookApi['result']))
       {
@@ -297,11 +298,15 @@ class ApiPhotoController extends BaseController
     if(isset($params['tags']) && !empty($params['tags']))
     {
       $photoBefore = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+      $photoBefore = $photoBefore['result'];
       if($photoBefore)
       {
-        $existingTags = $photoBefore['result']['tags'];
+        $existingTags = $photoBefore['tags'];
         $updatedTags = (array)explode(',', $params['tags']);
-        Tag::updateTagCounts($existingTags, $updatedTags);
+        $permission = $photoBefore['permission'];
+        if(isset($params['permission']))
+          $permission = $params['permission'];
+        Tag::updateTagCounts($existingTags, $updatedTags, $permission, $photoBefore['permission']);
       }
     }
     if(isset($params['crumb']))
@@ -332,8 +337,34 @@ class ApiPhotoController extends BaseController
     else
       $photo = getDb()->getPhoto($id);
 
+    // check permissions
     if(!isset($photo['id']))
+    {
       return self::notFound("Photo {$id} not found", false);
+    }
+    elseif(!User::isOwner())
+    {
+      if($photo['permission'] == 0)
+      {
+        if(!User::isLoggedIn() || (isset($photo['groups']) && empty($photo['groups'])))
+          return self::notFound("Photo {$id} not found", false);
+
+        // can't call API since we're not the owner
+        $userGroups = getDb()->getGroups(User::getEmailAddress());
+        $isInGroup = false;
+        foreach($userGroups as $group)
+        {
+          if(in_array($group['id'], $photo['groups']))
+          {
+            $isInGroup = true;
+            break;;
+          }
+        }
+
+        if(!$isInGroup)
+          return self::notFound("Photo {$id} not found", false);
+      }
+    }
 
     // if specific sizes are requested then make sure we return them
     $sizes = array();
@@ -427,7 +458,7 @@ class ApiPhotoController extends BaseController
       $filters['permission'] = $permission;
     elseif($permission == -1)
       $filters['groups'] = $groupIds;
-    
+
     return array('filters' => $filters, 'pageSize' => $pageSize, 'protocol' => $protocol, 'page' => $page);
   }
 }

@@ -12,7 +12,7 @@ class Action
     * Accepts a set of params that must include a type and targetType
     *
     * @param array $params Params describing the action to be added
-    * @return mixed Action ID on success, false on failure 
+    * @return mixed Action ID on success, false on failure
     */
   public static function add($params)
   {
@@ -58,6 +58,7 @@ class Action
   {
     return array(
       'appId' => getConfig()->get('application')->appId,
+      'owner' => getConfig()->get('user')->email,
       'email' => '',
       'name' => '',
       'avatar' => '',

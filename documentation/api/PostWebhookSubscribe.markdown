@@ -31,7 +31,7 @@ This API differs from our others in that it's both interactive and does not retu
 
 _Authentication: required_
 
-    POST /webhook/create.json
+    POST /webhook/subscribe
 
 <a name="parameters"></a>
 ### Parameters

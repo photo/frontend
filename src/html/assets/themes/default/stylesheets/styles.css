@@ -44,8 +44,8 @@ header>div{
   height:48px;
   border-bottom:solid 1px #fff;
 }
-header ul{ 
-  list-style-type:none; 
+header ul{
+  list-style-type:none;
   display: inline-block;
   position:relative;
   left:200px;
@@ -74,7 +74,7 @@ header ul li a{
 }
 div#searchbar{
   display:none;
-  position:relative; 
+  position:relative;
   width:226px;
   top:1px;
   padding:10px;
@@ -110,12 +110,12 @@ div#photos ul.grid>li {
   width:200px;
   height:225px;
   padding: 25px 40px 25px 0;
-} 
+}
 div#photos ul.grid>li>a>img{
   -moz-box-shadow: 2px 2px 2px #888;
   -webkit-box-shadow: 2px 2px 2px #888;
 }
-div#photos ul.grid ul.options { 
+div#photos ul.grid ul.options {
   margin:0;
   padding:0;
   list-style:none;

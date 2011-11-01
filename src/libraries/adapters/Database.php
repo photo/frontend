@@ -10,6 +10,7 @@ interface DatabaseInterface
   public function __construct();
   //
   public function errors();
+  public function diagnostics();
   // delete methods can delete or toggle status
   public function deleteAction($id);
   public function deleteCredential($id);
@@ -27,26 +28,28 @@ interface DatabaseInterface
   public function getPhoto($id);
   public function getPhotoWithActions($id);
   public function getPhotos($filter = array(), $limit, $offset = null);
-  public function getUser();
+  public function getUser($owner = null);
   public function getTag($tag);
   public function getTags($filter = array());
   public function getWebhook($id);
   public function getWebhooks($topic = null);
+  // upgrade
+  public function identity();
+  public function executeScript($file, $database);
   // post methods update
   public function postCredential($id, $params);
   public function postGroup($id, $params);
   public function postPhoto($id, $params);
-  public function postUser($id, $params);
+  public function postUser($params);
   public function postTag($id, $params);
   public function postTags($params);
-  public function postTagsCounter($params);
   public function postWebhook($id, $params);
   // put methods create but do not update
   public function putGroup($id, $params);
   public function putAction($id, $params);
   public function putCredential($id, $params);
   public function putPhoto($id, $params);
-  public function putUser($id, $params);
+  public function putUser($params);
   public function putTag($id, $params);
   public function putWebhook($id, $params);
   // general methods

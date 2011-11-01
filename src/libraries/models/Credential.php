@@ -41,7 +41,7 @@ class Credential
     $res = getDb()->putCredential($id, $params);
     if($res)
       return $id;
-    
+
     return false;
   }
 
@@ -67,7 +67,7 @@ class Credential
 
     try
     {
-      $this->provider->consumerHandler(array($this,'checkConsumer'));	
+      $this->provider->consumerHandler(array($this,'checkConsumer'));
       $this->provider->timestampNonceHandler(array($this,'checkTimestampAndNonce'));
       $this->provider->tokenHandler(array($this,'checkToken'));
       $this->provider->setParam('__route__', null);
@@ -121,7 +121,7 @@ class Credential
     if(!$cache)
       $cache = array();
     list($lastTimestamp, $nonces) = each($cache);
-    if($provider->timestamp > (time()+300) || $provider->timestamp < $lastTimestamp) 
+    if($provider->timestamp > (time()+300) || $provider->timestamp < $lastTimestamp)
     {
       // timestamp can't be more then 30 seconds into the future
       // or prior to the last timestamp

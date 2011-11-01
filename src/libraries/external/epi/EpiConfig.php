@@ -64,7 +64,7 @@ class EpiConfig
 
     self::$instance = new EpiConfig;
     return self::$instance;
-  }  
+  }
 }
 
 function getConfig()

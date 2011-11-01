@@ -1,8 +1,8 @@
 <?php if(User::isOwner()) { ?>
   <form method="post">
     <label>App Name</label>
-    <input type="text" name="name" placeholder="Enter a name">
-    
+    <input type="text" name="name" placeholder="Enter a name" value="<?php Utility::safe($name); ?>">
+
     <!--<label>Permission</label>
     <ul>
       <li><input type="checkbox" name="permissions[]" value="read" class="checkbox" checked="true"> Read</li>

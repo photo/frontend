@@ -12,7 +12,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @access private
     */
   private $db, $domainAction, $domainCredential, $domainPhoto, 
-    $domainTag, $domainUser, $domainWebhook, $errors = array();
+    $domainTag, $domainUser, $domainWebhook, $errors = array(), $owner;
 
   /**
     * Constructor
@@ -29,6 +29,10 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'User';
     $this->domainTag = getConfig()->get('aws')->simpleDbDomain.'Tag';
     $this->domainWebhook = getConfig()->get('aws')->simpleDbDomain.'Webhook';
+
+    $user = getConfig()->get('user');
+    if($user !== null)
+      $this->owner = $user->email;
   }
 
   /**
@@ -118,6 +122,34 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Gets diagnostic information for debugging.
+    *
+    * @return array
+    */
+  public function diagnostics()
+  {
+    $diagnostics = array();
+    $domains = array('', 'Action', 'Credential', 'Group', 'User', 'Tag', 'Webhook');
+    $queue = new CFBatchRequest();
+    foreach($domains as $domain)
+      $this->db->batch($queue)->domain_metadata("{$this->domainPhoto}{$domain}");
+    $responses = $this->db->batch($queue)->send();
+    if($responses->areOK())
+    {
+      $diagnostics[] = Utility::diagnosticLine(true, 'All SimpleDb domains are accessible.');
+    }
+    else
+    {
+      foreach($responses as $key => $res)
+      {
+        if((int)$res->status !== 200)
+          $diagnostics[] = Utility::diagnosticLine(false, sprintf('The SimpleDb domains "%s" is NOT accessible.', $domains[$key]));
+      }
+    }
+    return $diagnostics;
+  }
+
+  /**
     * Get a list of errors
     *
     * @return array
@@ -125,6 +157,20 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function errors()
   {
     return $this->errors;
+  }
+
+  /**
+    * Executes an upgrade script
+    *
+    * @return void
+    */
+  public function executeScript($file, $database)
+  {
+    if($database != 'simpledb')
+      return;
+
+    include $file;
+    return $status;
   }
 
   /**
@@ -185,7 +231,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Retrieve group from the database specified by $id
     *
     * @param string $id id of the group to return
-    * @return mixed Array on success, FALSE on failure 
+    * @return mixed Array on success, FALSE on failure
     */
   public function getGroup($id = null)
   {
@@ -201,7 +247,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Retrieve groups from the database optionally filter by member (email)
     *
     * @param string $email email address to filter by
-    * @return mixed Array on success, NULL on empty, FALSE on failure 
+    * @return mixed Array on success, NULL on empty, FALSE on failure
     */
   public function getGroups($email = null)
   {
@@ -356,7 +402,10 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function getTags($filters = array())
   {
-    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE `count` IS NOT NULL AND `count` > '0' AND itemName() IS NOT NULL ORDER BY itemName()", array('ConsistentRead' => 'false'));
+    $countField = 'countPublic';
+    if(isset($filter['permission']) && $filter['permission'] == 0)
+      $countField = 'countPrivate';
+    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL ORDER BY itemName()", array('ConsistentRead' => 'false'));
     $this->logErrors($res);
     $tags = array();
     if(isset($res->body->SelectResult))
@@ -379,9 +428,12 @@ class DatabaseSimpleDb implements DatabaseInterface
     *
     * @return mixed Array on success, NULL if user record is empty, FALSE on error
     */
-  public function getUser()
+  public function getUser($owner = null)
   {
-    $res = $this->db->select("SELECT * FROM `{$this->domainUser}` WHERE itemName()='1'", array('ConsistentRead' => 'true'));
+    if($owner === null)
+      $owner = $this->owner;
+
+    $res = $this->db->select("SELECT * FROM `{$this->domainUser}` WHERE itemName()='{$owner}'", array('ConsistentRead' => 'true'));
     $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))
       return self::normalizeUser($res->body->SelectResult->Item);
@@ -422,7 +474,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->logErrors($res);
     if(!$res->isOK())
       return false;
-    
+
 
     if(isset($res->body->SelectResult))
     {
@@ -448,27 +500,22 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function initialize()
   {
-    $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Credential|Group|Tag|User|Webhook)?$/");
-    if(count($domains) == 7)
+    if($this->version() !== '0.0.0')
       return true;
 
-    $domainsToCreate = array($this->domainAction, $this->domainCredential, $this->domainGroup, 
-      $this->domainPhoto, $this->domainTag, $this->domainUser, $this->domainWebhook);
+    // simpledb-base.php sets $status
+    $status = $this->executeScript(sprintf('%s/upgrade/db/simpledb/simpledb-base.php', getConfig()->get('paths')->configs), 'simpledb');
+    return $status;
+  }
 
-    $queue = new CFBatchRequest();
-    foreach($domainsToCreate as $domainToCreate)
-    {
-      if(!in_array($domainToCreate, $domains))
-      {
-        $this->db->batch($queue)->create_domain($domainToCreate);
-        getLogger()->info(sprintf('Queueing request to create domain: %s', $domainToCreate));
-      }
-    }
-
-    $responses = $this->db->batch($queue)->send();
-    getLogger()->info(sprintf('Attempting to create %d domains.', count($responses)));
-    $this->logErrors($responses);
-    return $responses->areOK();
+  /**
+    * Identification method to return array of strings.
+    *
+    * @return array
+    */
+  public function identity()
+  {
+    return array('simpledb');
   }
 
   /**
@@ -575,51 +622,6 @@ class DatabaseSimpleDb implements DatabaseInterface
     return $responses->areOK();
   }
 
- /**
-    * Update counts for multiple tags by incrementing or decrementing.
-    * The $params should include the tag and increment value as a key/value pair.
-    * {tag1: 10, sunnyvale: 3}
-    *
-    * @param array $params Tags and related attributes to update.
-    * @return boolean
-    */
-  public function postTagsCounter($params)
-  {
-    $tagsToUpdate = $tagsFromDb = array();
-    foreach($params as $tag => $changeBy)
-      $tagsToUpdate[$tag] = $changeBy;
-
-    $justTags = array_keys($tagsToUpdate);
-
-    // TODO call getTags instead
-    $res = $this->db->select($sql = "SELECT * FROM `{$this->domainTag}` WHERE itemName() IN ('" . implode("','", $justTags) . "')");
-    $this->logErrors($res);
-    if(isset($res->body->SelectResult))
-    {
-      if(isset($res->body->SelectResult->Item))
-      {
-        foreach($res->body->SelectResult->Item as $val)
-          $tagsFromDb[] = self::normalizeTag($val);
-      }
-    }
-
-    // track the tags which need to be updated
-    // start with ones which already exist in the database and increment them accordingly
-    $updatedTags = array();
-    foreach($tagsFromDb as $key => $tagFromDb)
-    {
-      $thisTag = $tagFromDb['id'];
-      $changeBy = $tagsToUpdate[$thisTag];
-      $updatedTags[] = array('id' => $thisTag, 'count' => $tagFromDb['count']+$changeBy);
-      // unset so we can later loop over tags which didn't already exist
-      unset($tagsToUpdate[$thisTag]);
-    }
-    // these are new tags
-    foreach($tagsToUpdate as $tag => $count)
-      $updatedTags[] = array('id' => $tag, 'count' => $count);
-    return $this->postTags($updatedTags);
-  }
-
   /**
     * Update the information for the user record.
     * This method overwrites existing values present in $params.
@@ -628,10 +630,10 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @param array $params Attributes to update.
     * @return boolean
     */
-  public function postUser($id, $params)
+  public function postUser($params)
   {
     // make sure we don't overwrite an existing user record
-    $res = $this->db->put_attributes($this->domainUser, $id, $params, true);
+    $res = $this->db->put_attributes($this->domainUser, $this->owner, $params, true);
     $this->logErrors($res);
     return $res->isOK();
   }
@@ -730,9 +732,9 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @param array $params Attributes to update.
     * @return boolean
     */
-  public function putUser($id, $params)
+  public function putUser($params)
   {
-    $res = $this->db->put_attributes($this->domainUser, $id, $params);
+    $res = $this->db->put_attributes($this->domainUser, $this->owner, $params);
     $this->logErrors($res);
     return $res->isOK();
   }
@@ -747,6 +749,20 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function putWebhook($id, $params)
   {
     return $this->postWebhook($id, $params);
+  }
+
+  /**
+    * Get the current database version
+    *
+    * @return string Version number
+    */
+  public function version()
+  {
+    $user = $this->getUser();
+    if(!$user || !isset($user['version']))
+      return '0.0.0';
+
+    return $user['version'];
   }
 
   /**
@@ -1004,7 +1020,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   /**
     * Normalizes data from simpleDb into schema definition
     *
-    * @param SimpleXMLObject $raw A user from SimpleDb in SimpleXML.
+    * @param SimpleXMLObject $raw A webhook from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeWebhook($raw)

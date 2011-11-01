@@ -2,14 +2,14 @@
   <div data-role="header" class="photoheader" data-theme="c">
     <a href="/" data-icon="home" class="ui-btn-right" rel="external">Home</a>
   </div>
-	<div data-role="content">	
+	<div data-role="content">
     <?php if(empty($tags)) { ?>
       Sorry, no photos have been tagged.
     <?php } else { ?>
       <ul data-role="listview" data-inset="true">
         <?php foreach($tags as $tag) { ?>
           <li class="size-<?php Utility::safe($tag['weight']); ?>">
-            <a href="<?php Url::photosView("tags-{$tag['id']}"); ?>" title="<?php Utility::safe($tag['count']); ?> photos">
+            <a href="<?php Url::photosView("tags-{$tag['id']}"); ?>" title="<?php Utility::safe($tag[$tagField]); ?> photos">
               <?php Utility::safe($tag['id']); ?>
             </a>
           </li>

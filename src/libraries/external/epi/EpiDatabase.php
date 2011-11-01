@@ -6,7 +6,7 @@ class EpiDatabase
   private $_type, $_name, $_host, $_user, $_pass;
   public $dbh;
   private function __construct(){}
-  
+
   public static function getInstance($type, $name, $host = 'localhost', $user = 'root', $pass = '')
   {
     $args = func_get_args();
@@ -22,8 +22,8 @@ class EpiDatabase
     self::$instances[$hash]->_pass = $pass;
     return self::$instances[$hash];
   }
-  
-  /** 
+
+  /**
    * @return false in case of error
    */
   public function execute($sql = false, $params = array())
@@ -34,7 +34,7 @@ class EpiDatabase
       $sth = $this->prepare($sql, $params);
       if(!$sth)
         return false;
-      else if(preg_match('/insert/i', $sql))
+      else if(preg_match('/(insert|replace)/i', $sql))
         return $this->dbh->lastInsertId();
       else
         return $sth->rowCount();
@@ -45,7 +45,7 @@ class EpiDatabase
       return false;
     }
   }
-  
+
   public function insertId()
   {
     $this->init();
@@ -55,7 +55,7 @@ class EpiDatabase
     }
     return false;
   }
-  
+
   public function all($sql = false, $params = array())
   {
     $this->init();
@@ -70,7 +70,7 @@ class EpiDatabase
       return false;
     }
   }
-  
+
   public function one($sql = false, $params = array())
   {
     $this->init();

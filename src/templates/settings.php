@@ -9,7 +9,7 @@
 <h1>Mobile Passphrase</h1>
 <form method="post" action="/user/mobile/passphrase">
   <?php if(!empty($mobilePassphrase)) { ?>
-    <div>Your mobile passphrase is: <strong><?php Utility::safe($mobilePassphrase['phrase']); ?><strong></div>
+    <div>Your mobile passphrase is: <strong><?php Utility::safe($mobilePassphrase['phrase']); ?></strong></div>
     <div><em>Expires in <?php Utility::safe($mobilePassphrase['minutes']); ?> minutes.</em></div>
     <button type="submit">Reset Passphrase</button>
   <?php } else { ?>
@@ -65,7 +65,7 @@
 
   <label>Members</label>
   <input type="text" placeholder="Email addresses of members (separate with commas)" value="" name="members">
-  
+
   <button type="submit" class="group-update-click">Create a new group</button>
 </form>
 
@@ -81,7 +81,7 @@
 
           <label>Members</label>
           <input type="text" value="<?php Utility::safe(implode(',', $group['members'])); ?>" name="members">
-          
+
           <button type="submit" class="group-update-click">Update</button>
         </form><!--(<a href="/group/<?php echo $group['id']; ?>/delete" class="group-delete-click">delete</a>)-->
       </li>

@@ -7,7 +7,7 @@
   <p class="step two">2.</p>
   <div class="options">
     <div>
-      <p>*Changes to these options will not effect files already dropped.</p>
+      <p>*Changes to these options will not affect files already dropped.</p>
     </div>
     <div>
       <label for="license">License</label>

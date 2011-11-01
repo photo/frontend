@@ -47,12 +47,12 @@ class Url
     else
       return Utility::returnValue(sprintf('/photos/%s/list', $options), $write);
   }
-  
+
   public static function photoUpload($write = true)
   {
     return Utility::returnValue('/photos/upload', $write);
   }
-  
+
   public static function photosUpload($write = true)
   {
     return Utility::returnValue('/photos/upload', $write);

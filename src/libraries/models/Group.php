@@ -44,7 +44,7 @@ class Group
   /**
     * Get the next ID to be used for a action, group or photo.
     * The ID is a base 32 string that represents an autoincrementing integer.
-    * @return string 
+    * @return string
     */
   public static function getGroups($email = null)
   {

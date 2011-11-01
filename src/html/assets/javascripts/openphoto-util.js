@@ -14,8 +14,8 @@
     var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
         BROWSER_ID_SRC = 'https://browserid.org/include.js',
         log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } };
-         
-    
+
+
     /**
     * Class that contains all utility functions for OpenPhoto
     * We can use a Constructor function in this case since we will
@@ -26,7 +26,7 @@
     function Util() {
 
         /**
-        * default configuration options 
+        * default configuration options
         * user can optionally specify an onComplete attribute in the css/js
         * object which will execute when the assets are loaded.
         * @type {object}
@@ -50,7 +50,7 @@
         * @property eventMap
         */
         this.eventMap = {
-      
+
             'click': {
                 'action-box-click':'click:action-box',
                 'action-delete-click':'click:action-delete',
@@ -71,12 +71,12 @@
                 'settings-click':'click:settings',
                 'webhook-delete-click':'click:webhook-delete'
             },
-            
+
             'keydown': {
                 37: 'keydown:browse-previous',
                 39: 'keydown:browse-next'
             }
-      
+
         };
 
         /**
@@ -85,20 +85,20 @@
         * @property _customEvents
         */
         this._customEvents = {};
-        
+
         /**
         * Count of the number of scripts loaded
         * @type {Number}
         * @property _scriptLoadCount
         */
         this._scriptLoadCount = 0;
-        
+
         /**
         * Count of the number of css loaded
         * @type {Number}
         * @property _cssLoadCount
         */
-        this._cssLoadCount = 0;    
+        this._cssLoadCount = 0;
 
         /**
         * initialization method
@@ -124,7 +124,7 @@
 
             // we specify what library type in the .ini file
             // either jQuery or YUI - and then the user can load
-            // additional css/js assets by specifying the files in the 
+            // additional css/js assets by specifying the files in the
             // js config - as specified by the plugin file (that will be user generated).
 
             //the library is a requirement, by default jQuery will be loaded
@@ -143,7 +143,7 @@
         * @method _init
         */
         this._init = function() {
-  
+
             log('[Util] _init:')
 
             var js = this.config.js.assets,
@@ -151,7 +151,7 @@
                 i,
                 length;
 
-            //attach events      
+            //attach events
             this.attachEvent( 'body', 'click', this.onviewevent, this);
             this.attachEvent( 'html', 'keydown', this.onkeydownevent, this);
             
@@ -162,10 +162,10 @@
 
             //load additional css in order specified
             for(i=0, j=css.length; i<j; i++) {
-                this.loadCss( css[i], this._handleCssLoad, this ); 
+                this.loadCss( css[i], this._handleCssLoad, this );
             }
-  
-        };  
+
+        };
 
         /**
         * handles events - delegates based on className
@@ -182,19 +182,19 @@
                 length = classes.length,
                 map = this.eventMap[e.type],
                 cls;
-                
+
             while (length--) {
                 cls = classes[length];
                 if (map[cls]) {
                     //do not prevent the default action, let the callback
                     //function do it if it wants
-                    this.fire( map[cls], e);    
-                }      
-            }    
-  
-  
+                    this.fire( map[cls], e);
+                }
+            }
+
+
         };
-        
+
         /**
         * handles keydown events
         * @param {Event} e
@@ -203,7 +203,7 @@
         */
         this.onkeydownevent = function(e) {
           log('[Util] keydownevent: ' + e.target);
-          
+
           var targ = e.target || e.srcElement,
             classes = targ.className.split(" "),
             length = classes.length,
@@ -211,38 +211,38 @@
             nodeName = targ.nodeName.toLowerCase(),
             keyCode = e.keyCode,
             cls;
-            
+
           if (nodeName === "textarea" || nodeName === "input") {
-          
+
             //i don't think there is a case where the user needs to know
-            //if the user is inputing text, but just in case, lets fire 
+            //if the user is inputing text, but just in case, lets fire
             //a custom event on user input
             this.fire( 'keydown:user-input', e);
-          
+
           } else {
-            
+
             //the event map for key press can be two dimensional, it can be
             //keycode, or className then keyCode, if keyCode, fire the custom event
             if (map[keyCode]) {
               this.fire( map[keyCode], e);
             }
-                        
+
             //both className and keycode
             while (length--) {
                   cls = classes[length];
                   if (map[cls] && map[cls][keyCode]) {
                       //do not prevent the default action, let the callback
                       //function do it if it wants
-                      this.fire( map[cls][keyCode], e);    
-                  }      
+                      this.fire( map[cls][keyCode], e);
+                  }
               }
-          
-          
+
+
           }
-          
-        
+
+
         };
-    
+
         /* -------------------------------------------------
         *         Utilities
         * ------------------------------------------------- */
@@ -264,9 +264,9 @@
             //load the script and attach the event handlers onload
             this.loadScript(url, this._init, this);
             this.loadScript(BROWSER_ID_SRC);
-          
+
         };
-    
+
         /**
         * Shallow merge of all objects passed into it in order of the objects passed in
         * this is just needed to merge the config, but will probably be overwritten by
@@ -295,7 +295,7 @@
 
             return merged;
 
-        };    
+        };
 
         /**
         * Utility function to dynamically load a script
@@ -306,7 +306,7 @@
         * @method loadScript
         */
         this.loadScript = function(url, fn, scope) {
-  
+
             log('[Util] loadScript');
 
             var head = document.getElementsByTagName('head')[0],
@@ -334,7 +334,7 @@
             }
 
             head.appendChild(script);
-  
+
         };
 
 
@@ -347,7 +347,7 @@
         * @method loadScript
         */
         this.loadCss = function(url, fn, scope) {
-  
+
             log('[Util] loadCss');
 
             var head = document.getElementsByTagName('head')[0],
@@ -376,9 +376,9 @@
             }
 
             head.appendChild(link);
-  
+
         };
-        
+
         /**
         * The user can specify a callback to execute when all of the javascript assets
         * have loaded.  This helper method keeps track of the number of javascript assets
@@ -387,15 +387,15 @@
         * @method _handleScriptLoad
         */
         this._handleScriptLoad = function() {
-            
+
             this._scriptLoadCount++;
-            
+
             if ( (this._scriptLoadCount === this.config.js.assets.length) && (typeof(this.config.js.onComplete) !== 'undefined')) {
                 this.config.js.onComplete();
-            }          
-            
+            }
+
         }
-        
+
         /**
         * The user can specify a callback to execute when all of the css assets
         * have loaded.  This helper method keeps track of the number of css assets
@@ -404,13 +404,13 @@
         * @method _handleCssLoad
         */
         this._handleCssLoad = function() {
-            
+
             this._cssLoadCount++;
-            
+
             if ( (this._cssLoadCount === this.config.css.assets.length) && (typeof(this.config.css.onComplete) !== 'undefined')) {
                 this.config.css.onComplete();
-            }            
-            
+            }
+
         }
 
         /**
@@ -419,7 +419,7 @@
         * @method detectLibrary
         */
         this.detectLibrary = function() {
-  
+
             //very simple for now, but we can extend it later
             var lib = '';
 
@@ -438,16 +438,16 @@
             }
 
             return lib;
-  
-        };  
+
+        };
 
 
         /* -------------------------------------------------
         *         Custom Events
         * ------------------------------------------------- */
-    
+
         /**
-        * Subscribe to a custom event - the callback will be executed when the custom event is fired 
+        * Subscribe to a custom event - the callback will be executed when the custom event is fired
         * @param {string} eventName - the name of the custom event to subscribe to
         * @param {Function} callback - the callback function that will be executed when the event is fired
         * @param {Object} scope - the scope of the callback function (what this will refer to)
@@ -508,7 +508,7 @@
                     }
                 }
             }
-  
+
         };
 
         /**
@@ -532,8 +532,8 @@
             }
 
         };
-        
-        
+
+
         /**
         * Object containing everything needed to upload photos
         *
@@ -562,7 +562,7 @@
                 returnSizes : "25x25xCR",
                 crumb : null
             },
-            
+
             parent : this,
             droppedFiles : {},
             simultaneousUploads : 0,
@@ -570,8 +570,8 @@
             uploadQueue : [],
             uploadQueueIndex : 0,
             xhrs : [],
-            
-            
+
+
             /**
             * initialize upload area and functions
             * @param {object} options - object defining options to override defaults
@@ -588,7 +588,7 @@
                     this._fallbackUploader();
                 }
             },
-            
+
             /**
             * enable or disable duplicate photo name checking
             * @param {bool} state should duplicates be allowed?
@@ -602,10 +602,10 @@
                     this.options.allowDuplicates = false;
                 }
             },
-            
+
             _uploadEventHandlers : function() {
                 /*
-                    TODO prevent page from leaving with confirmation if user drops photo in wrong 
+                    TODO prevent page from leaving with confirmation if user drops photo in wrong
                     place or hits key to navigate before all uploads are done
                 */
                 var that = this;
@@ -614,7 +614,7 @@
                 that._addListener(that.dropZone, 'dragleave', that._handleDragLeave, that);
                 that._addListener(that.dropZone, 'drop', that._handleFileDrop, that);
             },
-            
+
             /**
             * wrapper for addEventListener to enable passing along the 'that' context
             * @param target dom element to attach to
@@ -630,30 +630,30 @@
                     callback(e,context);
                 }, false);
             },
-            
+
             _handleDragEnter : function(e, that) {
                 e.stopPropagation();
                 e.preventDefault();
                 that.options.dragEnterCallback()
             },
-            
+
             _handleDragLeave : function(e, that) {
                 e.stopPropagation();
                 e.preventDefault();
                 that.options.dragLeaveCallback();
             },
-            
+
             /**
             * when user's mouse moves over dropzone while draggin files
             *
-            * if we don't prevent default, dropping the file 
+            * if we don't prevent default, dropping the file
             * wil cause the browser to redirect to the file location
             **/
             _handleDragOver : function(e, that) {
                 e.stopPropagation();
                 e.preventDefault();
             },
-            
+
             _handleFileDrop : function(e, that) {
                 e.stopPropagation();
                 e.preventDefault();
@@ -661,7 +661,7 @@
                 var files = e.dataTransfer.files;
                 that._checkForDuplicates(files);
             },
-            
+
             _checkForDuplicates : function(files) {
                 var that = this;
                 if (!that.allowDuplicates) {
@@ -678,7 +678,7 @@
                 }
                 that._validateIsImage(files);
             },
-            
+
             _validateIsImage : function(files) {
                 var that = this;
                 /*
@@ -687,7 +687,7 @@
                 // that.options.notImageCallback();
                 that._indexAndStack(files);
             },
-            
+
             /**
             * each file receives a reference number so that it can be correlated to
             * its coresponding UI representation
@@ -700,8 +700,8 @@
                 }
                 that.options.pushToUICallback(files);
             },
-            
-            
+
+
             // theme must call this to start uploading files
             kickOffUploads : function() {
                 var that = this;
@@ -721,14 +721,14 @@
                     }
                 }
             },
-            
+
             _ajaxToServer : function(file) {
                 var that = this;
-                
+
                 that.simultaneousUploads++;
                 var xhr = new XMLHttpRequest();
                 that.xhrs.push(xhr);
-                
+
                 var formData = new FormData();
                 formData.append("crumb",that.options.crumb);
                 formData.append("returnSizes",that.options.returnSizes);
@@ -736,8 +736,8 @@
                 formData.append("license", that.options.photoLicense(file.queueIndex));
                 formData.append("tags", that.options.photoTags(file.queueIndex));
                 formData.append("permission", that.options.permission(file.queueIndex));
-                xhr.open("POST", that.options.uploadPath, true);  
-                
+                xhr.open("POST", that.options.uploadPath, true);
+
                 xhr.onload = function(e) {
                     that.simultaneousUploads--;
                     // tell theme we finished
@@ -751,10 +751,10 @@
                         that.options.uploadProgressCallback(file.queueIndex, progress);
                     }
                 };
-                
+
                 xhr.send(formData);
             },
-            
+
             _fallbackUploader : function() {
                 /*
                     TODO actually fallback to other uploader

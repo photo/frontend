@@ -3,12 +3,13 @@ class OPException extends Exception
 {
   public static function raise($exception)
   {
+    getLogger()->warn($exception->getMessage());
     $class = get_class($exception);
     switch($class)
     {
       case 'OPAuthorizationException':
       case 'OPAuthorizationSessionException':
-        if(substr($_GET['__route__'], -5) == '.json')
+        if(isset($_GET['__route__']) && substr($_GET['__route__'], -5) == '.json')
         {
           echo json_encode(BaseController::forbidden('You do not have sufficient permissions to access this page.'));
         }
@@ -19,7 +20,6 @@ class OPException extends Exception
         die();
         break;
       case 'OPAuthorizationOAuthException':
-        getLogger()->warn($exception->getMessage());
         echo json_encode(BaseController::forbidden($exception->getMessage()));
         die();
         break;
@@ -41,7 +41,11 @@ function op_exception_handler($exception)
   if(!$handled)
   {
     getLogger()->warn(sprintf('Uncaught exception (%s:%s): %s', $exception->getFile(), $exception->getLine(), $exception->getMessage()));
-    getRoute()->run('/error/500', EpiRoute::httpGet);
+    if(isset($_GET['__route__']) && substr($_GET['__route__'], -5) == '.json')
+      echo json_encode(BaseController::error('An unknown error occurred.'));
+    else
+      getRoute()->run('/error/500', EpiRoute::httpGet);
+
     $handled = 1;
   }
 }

@@ -6,7 +6,7 @@
  * @author Hub Figuiere <hub@figuiere.net>
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class FileSystemDropboxBase 
+class FileSystemDropboxBase
 {
   private $parent;
   public function __construct($parent)
@@ -40,6 +40,28 @@ class FileSystemDropboxBase
       return false;
     }
     return true;
+  }
+
+  public function diagnostics()
+  {
+    $diagnostics = array();
+    try
+    {
+      $queryDropboxFolder = $this->dropbox->getMetaData($this->dropboxFolder);
+      if(isset($queryDropboxFolder['is_deleted']) && $queryDropboxFolder['is_deleted'] == 1)
+        $diagnostics[] = Utility::diagnosticLine(false, 'The specified Dropbox directory has been deleted.');
+      else
+        $diagnostics[] = Utility::diagnosticLine(true, 'The Dropbox directory exists and looks okay.');
+    }
+    catch(Dropbox_Exception_NotFound $e)
+    {
+      $diagnostics[] = Utility::diagnosticLine(false, 'Could not get meta data for your Dropbox Directory.');
+    }
+    catch(Dropbox_Exception $e)
+    {
+      $diagnostics[] = Utility::diagnosticLine(false, 'An unknown error occured when trying to connect to Dropbox.');
+    }
+    return $diagnostics;
   }
 
   public function initialize()
