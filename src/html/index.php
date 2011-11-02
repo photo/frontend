@@ -16,11 +16,7 @@ if($loginEndpoint || (!$runUpgrade && !$runSetup && file_exists($configFile)))
 }
 elseif($runUpgrade)
 {
-  // we need to perform the upgrade
-  if(isset($_GET['__route__']) && strpos($_GET['__route__'], '/upgrade') === false)
-    getRoute()->run('/upgrade', EpiRoute::httpGet);
-  else
-    getRoute()->run();
+  getRoute()->run('/upgrade', ($_SERVER['REQUEST_METHOD'] == 'GET' ? EpiRoute::httpGet : EpiRoute::httpPost));
 }
 elseif($runSetup)
 {
