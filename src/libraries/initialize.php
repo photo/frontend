@@ -18,7 +18,12 @@ EpiSession::employ(EpiSession::PHP);
 getSession();
 
 getConfig()->load('defaults.ini');
-$configFile = sprintf('%s/generated/%s.ini', Epi::getPath('config'), getenv('HTTP_HOST'));
+
+// backwards compatibility for 1.2.1 -> 1.2.2 upgrade
+// TODO remove in 2.0.0
+$configFile = sprintf('%s/userdata/configs/%s.ini', $basePath, getenv('HTTP_HOST'));
+if(!file_exists($configFile))
+  $configFile = sprintf('%s/generated/%s.ini', Epi::getPath('config'), getenv('HTTP_HOST'));
 
 $loginEndpoint = false;
 if(isset($_GET['__route__']) && preg_match('#/user/(login|logout)#', $_GET['__route__']))
@@ -30,7 +35,7 @@ if(file_exists($configFile) && strpos($_SERVER['REQUEST_URI'], '/setup') !== fal
 // if the config file exists and we're not running the setup, proceed as normal
 if(file_exists($configFile) && !$runSetup)
 {
-  getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
+  getConfig()->load($configFile);
   require getConfig()->get('paths')->libraries . '/dependencies.php';
 
   // check if the system needs to upgraded for new code
@@ -49,7 +54,7 @@ else
   $runSetup = true;
   // if we're running setup and the config file exists, load it to prepopulate the form
   if(file_exists($configFile))
-    getConfig()->load(sprintf('generated/%s.ini', getenv('HTTP_HOST')));
+    getConfig()->load($configFile);
 
   // setup and enable routes for setup
   $baseDir = dirname(dirname(__FILE__));
