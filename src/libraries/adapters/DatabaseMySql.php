@@ -148,6 +148,23 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Retrieve an action with $id
+    *
+    * @param string $id ID of the action to get
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAction($id)
+  {
+    $action = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}action` WHERE `id`=:id AND owner=:owner",
+                               array(':id' => $id, ':owner' => $this->owner));
+    if(empty($action))
+    {
+      return false;
+    }
+    return self::normalizeCredential($action);
+  }
+
+  /**
     * Retrieve a credential with $id
     *
     * @param string $id ID of the credential to get

@@ -35,8 +35,8 @@
     <form method="post" action="<?php Url::actionCreate($photo['id'], 'photo'); ?>">
       <textarea rows="5" cols="50" name="value" class="comment" <?php if(!User::isLoggedIn()) { ?>disabled="true"<?php } ?> ></textarea>
       <input type="hidden" name="type" value="comment">
-      <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
-      <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
+      <input type="hidden" name="targetUrl" value="<?php Utility::safe(sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])); ?>">
+      <input type="hidden" name="crumb" value="<?php Utility::safe($crumb); ?>">
       <div class="buttons">
       <?php if(User::isLoggedIn()) { ?>
         <button type="submit">Leave a comment</button>
@@ -49,8 +49,8 @@
       <form method="post" action="<?php Url::actionCreate($photo['id'], 'photo'); ?>">
         <input type="hidden" name="value" value="1">
         <input type="hidden" name="type" value="favorite">
-        <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
-        <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
+        <input type="hidden" name="targetUrl" value="<?php Utility::safe(sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])); ?>">
+        <input type="hidden" name="crumb" value="<?php Utility::safe($crumb); ?>">
         <button type="submit">Favorite</button>
       </form>
     <?php } ?>

@@ -11,6 +11,11 @@ class PluginBase
 
   }
 
+  public function onAction($params)
+  {
+    getLogger()->info('Plugin onAction called');
+  }
+
   public function onBody()
   {
     getLogger()->info('Plugin onBody called');
