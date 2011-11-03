@@ -422,8 +422,7 @@ class SetupController
         array('MySQL Host', $mySqlHost, 'required'),
         array('MySQL Username', $mySqlUser, 'required'),
         array('MySQL Password', $mySqlPassword, 'required'),
-        array('MySQL Database', $mySqlDb, 'required'),
-        array('MySQL Table Prefix', $mySqlTablePrefix, 'required')
+        array('MySQL Database', $mySqlDb, 'required')
       );
       $mySqlErrors = getForm()->hasErrors($input);
     }
@@ -646,8 +645,8 @@ class SetupController
   private static function verifyRequirements($imageLibs)
   {
     $errors = array();
-    $configDir = Utility::getBaseDir() . '/configs';
-    $generatedDir = "{$configDir}/generated";
+    $configDir = Utility::getBaseDir() . '/userdata/configs';
+    $generatedDir = "{$configDir}";
 
     if(file_exists($generatedDir) && is_writable($generatedDir) && !empty($imageLibs))
       # No errors, return empty array
@@ -746,7 +745,7 @@ class SetupController
       file_get_contents("{$configDir}/template.ini")
     );
 
-    $iniWritten = file_put_contents(sprintf("%s/generated/%s.ini", $configDir, getenv('HTTP_HOST')), $generatedIni);
+    $iniWritten = file_put_contents(sprintf("%s/userdata/configs/%s.ini", $baseDir, getenv('HTTP_HOST')), $generatedIni);
     if(!$iniWritten)
       return false;
 
