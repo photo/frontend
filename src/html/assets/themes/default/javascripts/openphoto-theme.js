@@ -97,15 +97,14 @@ var opTheme = (function() {
         if($("div.owner-edit").length == 1) {
           $.scrollTo($('div.owner-edit'), 200);
         } else {
-          // TODO use makeRequest once it supports GET
-          $.get(url, {}, function(response){
+          OP.Util.makeRequest(url, {}, function(response){
             if(response.code === 200) {
               $("#main").append(response.result.markup);
               $.scrollTo($('div.owner-edit'), 200);
             } else {
               opTheme.message.error('Could not load the form to edit this photo.');
             }
-          }, 'json');
+          }, 'json', 'get');
         }
         return false;
       },

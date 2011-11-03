@@ -134,6 +134,11 @@ class Tag
     return $tags;
   }
 
+  public static function removeDuplicatesFromString($tags)
+  {
+    return implode(',', array_unique((array)explode(',', $tags)));
+  }
+
   public static function sanitize($tag)
   {
     return preg_replace('/,/', '', $tag);
