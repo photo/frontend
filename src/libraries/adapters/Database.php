@@ -19,6 +19,7 @@ interface DatabaseInterface
   public function deleteTag($id);
   public function deleteWebhook($id);
   // get methods read
+  public function getAction($id);
   public function getCredential($id);
   public function getCredentialByUserToken($userToken);
   public function getCredentials();

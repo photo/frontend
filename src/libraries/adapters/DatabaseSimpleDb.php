@@ -174,6 +174,22 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Retrieve an action with $id
+    *
+    * @param string $id ID of the action to get
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAction($id)
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainAction}` WHERE itemName()='{$id}' AND status='1'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeAction($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
     * Retrieve a credential with $id
     *
     * @param string $id ID of the credential to get

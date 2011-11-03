@@ -22,15 +22,17 @@ class ApiActionController extends BaseController
     $params['targetType'] = $targetType;
     $params['email'] = getSession()->get('email');
     if(isset($_POST['crumb']))
-    {
       unset($params['crumb']);
-    }
-    $id = Action::add($params);
+    $id = Action::create($params);
 
     if($id)
-      return self::success("Action {$id} created on {$targetType} {$targetId}", array_merge(array('id' => $id), $params));
-    else
-      return self::error("Error creating action {$id} on {$targetType} {$targetId}", false);
+    {
+      $action = Action::view($id);
+      getPlugin()->invoke('onAction', $action);
+      return self::success("Action {$id} created on {$targetType} {$targetId}", $action);
+    }
+
+    return self::error("Error creating action {$id} on {$targetType} {$targetId}", false);
   }
 
   /**
@@ -48,5 +50,21 @@ class ApiActionController extends BaseController
       return self::success('Action deleted successfully', true);
     else
       return self::error('Action deletion failure', false);
+  }
+
+  /**
+    * Retrieve a single action
+    *
+    * @param string $id The ID of the action to be retrieved.
+    * @return string Standard JSON envelope
+    */
+  public static function view($id)
+  {
+    getAuthentication()->requireAuthentication(false);
+    $action = Action::view($id);
+    if($action)
+      return self::success("Action {$id}", $action);
+
+    return self::error("Could not retrieve action {$id}", false);
   }
 }

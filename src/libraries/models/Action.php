@@ -14,7 +14,7 @@ class Action
     * @param array $params Params describing the action to be added
     * @return mixed Action ID on success, false on failure
     */
-  public static function add($params)
+  public static function create($params)
   {
     if(!isset($params['type']) || !isset($params['targetType']))
       return false;
@@ -26,6 +26,7 @@ class Action
       return false;
     }
     $params = array_merge(self::getDefaultAttributes(), $params);
+    $params['permalink'] = sprintf('%s#action-%s', $params['targetUrl'], $id);
     $db = getDb();
     $action = $db->putAction($id, $params);
     if(!$action)
@@ -46,6 +47,17 @@ class Action
   public static function delete($id)
   {
     return getDb()->deleteAction($id);
+  }
+
+  /**
+    * Retrieve a specific action.
+    *
+    * @param string $id ID of the action to be retrieved.
+    * @return boolean
+    */
+  public static function view($id)
+  {
+    return getDb()->getAction($id);
   }
 
   /**
