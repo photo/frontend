@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'photoswipe.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'pagination.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'mobile.css'); ?>">
+    <?php getPlugin()->invoke('onHead', array('page' => $page)); ?>
 </head>
 <body class="<?php echo $page; ?>">
     <?php echo $body; ?>
@@ -36,5 +37,6 @@
             }
         });
     </script>
+    <?php getPlugin()->invoke('onBody', array('page' => $page)); ?>
 </body>
 </html>

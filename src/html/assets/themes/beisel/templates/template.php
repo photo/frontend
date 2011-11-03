@@ -12,6 +12,7 @@
     <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.ico'); ?>">
     <link rel="apple-touch-icon" href="<?php getTheme()->asset('image', 'apple-touch-icon.png'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'main.css'); ?>">
+    <?php getPlugin()->invoke('onHead', array('page' => $page)); ?>
 </head>
 
 <body class="<?php echo $page; ?>">
@@ -28,7 +29,7 @@
 		</article>
 
 		<footer>
-		    <a href="http://theopenphotoproject.org" title="Learn more about the OpenPhoto project">The OpenPhoto Project</a> &copy; 2011
+      <a href="http://theopenphotoproject.org" title="Learn more about the OpenPhoto project">The OpenPhoto Project</a> &copy; 2011
 		</footer>
 
 	</div>
@@ -63,5 +64,6 @@
 	    }
 	  });
 	</script>
+  <?php getPlugin()->invoke('onBody', array('page' => $page)); ?>
 </body>
 </html>
