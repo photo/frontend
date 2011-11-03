@@ -3,7 +3,7 @@ $userdataPath = sprintf('%s/userdata', dirname(getConfig()->get('paths')->librar
 $pluginPath = sprintf('%s/plugins', $userdataPath);
 $configPath = sprintf('%s/configs', $userdataPath);
 $docrootPath = sprintf('%s/html', dirname(getConfig()->get('paths')->libraries));
-$pluginSystemPath = sprintf('%s/plugins', dirname(getConfig()->get('paths')->libraries));
+$pluginSystemPath = sprintf('%s/plugins', getConfig()->get('paths')->libraries);
 
 @mkdir($pluginPath);
 @mkdir($configPath);

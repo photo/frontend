@@ -47,6 +47,10 @@ if(file_exists($configFile) && !$runSetup)
   getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName()));
   if(Utility::isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(__FILE__)), getTheme(false)->getThemeName())))
     getConfig()->load($mobileSettings);
+
+  // initializes plugins
+  getPlugin();
+  getPlugin()->invoke('onLoad');
 }
 else
 {

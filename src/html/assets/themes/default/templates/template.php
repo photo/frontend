@@ -30,6 +30,7 @@
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'settings.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'setup.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'message-box.css'); ?>">
+    <?php getPlugin()->invoke('onHead', array('page' => $page)); ?>
 </head>
 
 <body class="<?php echo $page; ?>">
@@ -63,5 +64,6 @@
       }
     });
   </script>
+  <?php getPlugin()->invoke('onBody', array('page' => $page)); ?>
 </body>
 </html>
