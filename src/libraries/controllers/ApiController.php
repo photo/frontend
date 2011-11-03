@@ -52,7 +52,10 @@ class ApiController extends BaseController
     getAuthentication()->requireAuthentication();
     $systemVersion = getConfig()->get('site')->lastCodeVersion;
     $databaseVersion = getDb()->version();
+    $databaseType = getDb()->identity();
     $filesystemVersion = '0.0.0';
-    return self::success('System versions', array('system' => $systemVersion, 'database' => $databaseVersion, 'filesystem' => $filesystemVersion));
+    $filesystemType = getFs()->identity();
+    return self::success('System versions', array('system' => $systemVersion, 'database' => $databaseVersion, 'databaseType' => $databaseType,
+      'filesystem' => $filesystemVersion, 'filesystemType' => $filesystemType));
   }
 }
