@@ -105,7 +105,7 @@ var opTheme = (function() {
             } else {
               opTheme.message.error('Could not load the form to edit this photo.');
             }
-          });
+          }, 'json', 'get');
           
         }
         return false;

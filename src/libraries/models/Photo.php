@@ -259,7 +259,10 @@ class Photo
       return $id;
 
     if(isset($attributes['tags']) && !empty($attributes['tags']))
+    {
+      $attributes['tags'] = Tag::removeDuplicatesFromString($attributes['tags']);
       $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
+    }
 
     $status = getDb()->postPhoto($id, $attributes);
     if(!$status)
@@ -347,7 +350,10 @@ class Photo
       if(isset($exif['longitude']))
         $attributes['longitude'] = floatval($exif['longitude']);
       if(isset($attributes['tags']) && !empty($attributes['tags']))
-        $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
+      {
+        $attributes['tags'] = Tag::removeDuplicatesFromString($attributes['tags']);
+        $attributes['tags'] = Tag::sanitizeTagsAsString(array_unique($attributes['tags']));
+      }
 
       $attributes = array_merge(
         self::getDefaultAttributes(),
