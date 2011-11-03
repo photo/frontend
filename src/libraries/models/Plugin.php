@@ -27,7 +27,12 @@ class Plugin
   private function getActive()
   {
     $active = array();
-    $pluginsFromConf = (array)explode(',', getConfig()->get('plugins')->activePlugins);
+    $confPlugins = getConfig()->get('plugins');
+    if($confPlugins !== null)
+      $pluginsFromConf = (array)explode(',', $confPlugins->activePlugins);
+    else
+      $pluginsFromConf = array();
+
     $plugins = $this->getAll();
 
     foreach($plugins as $plugin)
