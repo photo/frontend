@@ -1135,7 +1135,7 @@ ol.sizechoose li.on a {
 
 .sizechoose li.sizesmall.on a,
 .sizechoose li.sizesmall.on a:hover {
-	background:transparent url("../images/icons.png") 14px -939px no-repeat;	
+  background: transparent url("../images/icons.png") 14px -937px no-repeat; 
 }
 
 .sizechoose li.sizemiddle a {
