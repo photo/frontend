@@ -557,10 +557,11 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function initialize()
   {
-    // email address has to be unique
-    // getting a null back from getUser() means we can proceed
+    // we're not running setup for the first time and we're not in edit mode
     if($this->version() !== '0.0.0' && getSession()->get('isEditMode') === false)
     {
+      // email address has to be unique
+      // getting a null back from getUser() means we can proceed
       $userConfig = getConfig()->get('user');
       $user = true;
       if(isset($userConfig->email))
@@ -573,16 +574,19 @@ class DatabaseMySql implements DatabaseInterface
       }
       return true;
     }
-
-    try
+    elseif($this->version() === '0.0.0')
     {
-      $this->executeScript(sprintf('%s/upgrade/db/mysql/mysql-base.php', getConfig()->get('paths')->configs), 'mysql');
-      return true;
+      try
+      {
+        $this->executeScript(sprintf('%s/upgrade/db/mysql/mysql-base.php', getConfig()->get('paths')->configs), 'mysql');
+        return true;
+      }
+      catch(EpiDatabaseException $e)
+      {
+        return false;
+      }
     }
-    catch(EpiDatabaseException $e)
-    {
-      return false;
-    }
+    return true;
   }
 
   /**
