@@ -266,7 +266,6 @@ class ApiPhotoController extends BaseController
       $webhookApi = getApi()->invoke('/webhooks/photo.upload/list.json', EpiRoute::httpGet);
       if(!empty($webhookApi['result']) && is_array($webhookApi['result']))
       {
-        $chs = $webhookHandles = array();
         $photoAsArgs = $photo['result'];
         $photoAsArgs['tags'] = implode(',', $photoAsArgs['tags']);
         foreach($webhookApi['result'] as $key => $hook)
