@@ -43,7 +43,7 @@ class DatabaseMySql implements DatabaseInterface
   public function deleteAction($id)
   {
     $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}action` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
-    return ($res == 1);
+    return ($res !== false);
   }
 
   /**
@@ -54,7 +54,7 @@ class DatabaseMySql implements DatabaseInterface
   public function deleteCredential($id)
   {
     $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}credential` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
-    return ($res == 1);
+    return ($res !== false);
   }
 
   /**
@@ -66,7 +66,7 @@ class DatabaseMySql implements DatabaseInterface
   public function deleteGroup($id)
   {
     $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}group` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
-    return ($res == 1);
+    return ($res !== false);
   }
 
   /**
@@ -79,7 +79,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     // TODO delete all versions
-    return ($res == 1);
+    return ($res !== false);
   }
 
   /**
@@ -92,7 +92,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     $resDel = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     $resClean = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`=:owner AND `tag`=:tag", array(':owner' => $this->owner, ':tag' => $id));
-    return ($resDel == 1);
+    return ($resDel !== false);
   }
 
   /**
@@ -104,7 +104,7 @@ class DatabaseMySql implements DatabaseInterface
   public function deleteWebhook($id)
   {
     $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}webhook` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
-    return ($res == 1);
+    return ($res !== false);
   }
 
   /**
@@ -607,7 +607,7 @@ class DatabaseMySql implements DatabaseInterface
 
     $result = getDatabase()->execute("UPDATE `{$this->mySqlTablePrefix}credential` SET {$stmt} WHERE `id`=:id AND owner=:owner", $bindings);
 
-    return ($result == 1);
+    return ($result !== false);
   }
 
   /**
@@ -699,7 +699,7 @@ class DatabaseMySql implements DatabaseInterface
           $this->addTagToElement($id, $tag, 'photo');
       }
     }
-    return (isset($res) && $res == 1) || (isset($resVersions) && $resVersions);
+    return (isset($res) && $res !== false) || (isset($resVersions) && $resVersions);
   }
 
   /**
@@ -975,7 +975,7 @@ class DatabaseMySql implements DatabaseInterface
 
     $sql = substr($sql, 0, -1);
     $res = getDatabase()->execute($sql);
-    return $res > 0;
+    return $res !== false;
   }
 
   /**
@@ -989,7 +989,7 @@ class DatabaseMySql implements DatabaseInterface
   private function addTagToElement($id, $tag, $type)
   {
     $res = getDatabase()->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementTag`(`owner`, `type`, `element`, `tag`) VALUES(:owner, :type, :element, :tag)", array(':owner' => $this->owner, ':type' => $type, ':element' => $id, ':tag' => $tag));
-    return $res > 0;
+    return $res !== false;
   }
 
   /**

@@ -264,7 +264,6 @@ class Photo
       $attributes['tags'] = Tag::removeDuplicatesFromString($attributes['tags']);
       $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
     }
-
     $status = getDb()->postPhoto($id, $attributes);
     if(!$status)
       return false;
@@ -512,12 +511,12 @@ class Photo
         // TODO with alternates as both of these are arrays.
         // TODO eventually HTML-ify the description
 
-	// get the title.
-	// sometime (like from Adobe software) it is in 2#005 instead of 2#105
-	// see https://github.com/openphoto/frontend/issues/260
+        // get the title.
+        // sometime (like from Adobe software) it is in 2#005 instead of 2#105
+        // see https://github.com/openphoto/frontend/issues/260
         if(isset($iptc['2#105']))
           $iptc_array['title'] = $iptc['2#105'][0];
-	else if(isset($iptc['2#005']))
+        else if(isset($iptc['2#005']))
           $iptc_array['title'] = $iptc['2#005'][0];
 
         if(isset($iptc['2#120']))
