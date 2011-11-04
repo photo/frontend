@@ -258,6 +258,7 @@ class Photo
     if(empty($attributes))
       return $id;
 
+    $attributes = self::whitelistParams($attributes);
     if(isset($attributes['tags']) && !empty($attributes['tags']))
     {
       $attributes['tags'] = Tag::removeDuplicatesFromString($attributes['tags']);
@@ -289,6 +290,7 @@ class Photo
       getLogger()->crit('Could not fetch next photo ID');
       return false;
     }
+    $attributes = self::whitelistParams($attributes);
     $paths = Photo::generatePaths($name);
     $exiftran = getConfig()->get('modules')->exiftran;
     if(is_executable($exiftran))
@@ -525,5 +527,31 @@ class Photo
       }
     }
     return $iptc_array;
+  }
+
+  private static function whitelistParams($attributes)
+  {
+    $returnAttrs = array();
+    $matches = array('id' => 1,'host' => 1,'appId' => 1,'title' => 1,'description' => 1,'key' => 1,'hash' => 1,'tags' => 1,'size' => 1,'width' => 1,
+                     'height' => 1,'altitude' => 1, 'latitude' => 1,'longitude' => 1,'views' => 1,'status' => 1,'permission' => 1,'groups' => 1,'license' => 1);
+    $patterns = array('exif.*' => 1,'date.*' => 1,'path.*' => 1);
+    foreach($attributes as $key => $val)
+    {
+      if(isset($matches[$key]))
+      {
+        $returnAttrs[$key] = $val;
+        continue;
+      }
+
+      foreach($patterns as $pattern)
+      {
+        if(preg_match("/^{$pattern}$/", $key))
+        {
+          $returnAttrs[$key] = $val;
+          continue;
+        }
+      }
+    }
+    return $returnAttrs;
   }
 }
