@@ -22,7 +22,7 @@ class Webhook
       getLogger()->info(sprintf('Not all required paramaters were passed in to add(), %s', json_encode($params)));
       return false;
     }
-    $id = User::getNextId('webhook');
+    $id = md5(rand());
     if($id === false)
     {
       getLogger()->crit('Could not fetch next webhook ID');

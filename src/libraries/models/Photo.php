@@ -353,7 +353,7 @@ class Photo
       if(isset($attributes['tags']) && !empty($attributes['tags']))
       {
         $attributes['tags'] = Tag::removeDuplicatesFromString($attributes['tags']);
-        $attributes['tags'] = Tag::sanitizeTagsAsString(array_unique($attributes['tags']));
+        $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
       }
 
       $attributes = array_merge(
