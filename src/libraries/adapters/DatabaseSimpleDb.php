@@ -833,6 +833,8 @@ class DatabaseSimpleDb implements DatabaseInterface
       $iterator = max(1, intval($offset - 1));
       $nextToken = null;
       $params = array('ConsistentRead' => 'true');
+      if(!isset($page))
+        $page = 1;
       $currentPage = 1;
       $thisLimit = min($iterator, $offset);
       do
