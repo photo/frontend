@@ -23,7 +23,7 @@ elseif($runSetup)
   // if we're not in the setup path (anything other than /setup) then redirect to the setup
   // otherwise we're on one of the setup steps already, so just run it
   if(!isset($_GET['__route__']) || strpos($_GET['__route__'], '/setup') === false)
-    getRoute()->run('/setup', EpiRoute::httpGet);
+    getRoute()->redirect('/setup');
   else
     getRoute()->run();
 }
