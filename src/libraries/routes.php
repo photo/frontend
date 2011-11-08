@@ -1,4 +1,6 @@
 <?php
+require getConfig()->get('paths')->libraries . '/routes-api.php';
+
 /*
  * Home page, optionally redirects if the theme doesn't have a front.php
  */
@@ -68,7 +70,6 @@ getRoute()->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenReq
 getRoute()->get('/v[1]/oauth/test', array('OAuthController', 'test'));
 getRoute()->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
 
-require getConfig()->get('paths')->libraries . '/routes-api.php';
 if($runUpgrade)
   require getConfig()->get('paths')->libraries . '/routes-upgrade.php';
 
