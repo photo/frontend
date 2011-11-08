@@ -114,6 +114,8 @@ CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}photo` (
   `height` int(11) DEFAULT NULL,
   `extra` text,
   `exif` text,
+  `latitude` float(10,6) DEFAULT NULL,
+  `longitude` float(10,6) DEFAULT NULL,
   `views` int(11) DEFAULT NULL,
   `status` int(11) DEFAULT NULL,
   `permission` int(11) DEFAULT NULL,
@@ -128,8 +130,8 @@ CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}photo` (
   `dateUploadedYear` int(11) DEFAULT NULL,
   `pathOriginal` varchar(1000) DEFAULT NULL,
   `pathBase` varchar(1000) DEFAULT NULL,
-  `tags` varchar(1000) DEFAULT NULL,
-  `groups` varchar(1000) DEFAULT NULL,
+  `groups` text,
+  `tags` text,
   UNIQUE KEY `id` (`id`,`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQL;

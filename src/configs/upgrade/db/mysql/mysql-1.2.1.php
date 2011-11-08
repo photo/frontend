@@ -287,7 +287,6 @@ SQL;
 mysql_1_2_1($sql);
 /*********** // user tables ***********/
 
-
 $sql = <<<SQL
   UPDATE `{$this->mySqlTablePrefix}admin` SET `value`=:version WHERE `key`=:key
 SQL;
