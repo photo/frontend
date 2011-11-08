@@ -21,9 +21,9 @@ This upgrade requires that you create a new directory. Execute the following com
 <br><br>
 <div>
   Create a directory named <em>userdata</em>.
-  <pre><code>mkdir <?php echo $userdataDirectory; ?>
+  <pre><code>mkdir <?php echo $userdataDirectory; ?></code></pre>
 </div>
 <div>
   Change ownership to webserver user <em><?php echo exec('whoami'); ?></em>. This may require sudo.
-  <pre><code>chown <?php echo sprintf('%s %s', exec('whoami'), $userdataDirectory); ?> 
+  <pre><code>chown <?php echo sprintf('%s %s', exec('whoami'), $userdataDirectory); ?></code></pre>
 </div>
