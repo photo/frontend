@@ -83,17 +83,17 @@ class Upgrade
         {
           $version = $matches[0];
           $versionParts = explode('.', $version);
-          if($versionParts[0] > $this->lastCodeVersion && $versionParts[0] <= $this->currentCodeMajorVersion)
+          if($versionParts[0] > $this->lastCodeMajorVersion)
           {
             $scripts['readme'][$version] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
           }
-          elseif($versionParts[1] > $this->lastCodeVersion && $versionParts[1] <= $this->currentCodeMinorVersion)
+          elseif($versionParts[0] == $this->lastCodeMajorVersion && $versionParts[1] > $this->lastCodeMinorVersion)
           {
             $scripts['readme'][$version] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
           }
-          elseif($versionParts[2] > $this->lastCodeVersion && $versionParts[2] <= $this->currentCodeTrivialVersion)
+          elseif($versionParts[0] == $this->lastCodeMajorVersion && $versionParts[1] == $this->lastCodeMinorVersion && $versionParts[2] > $this->lastCodeTrivialVersion)
           {
             $scripts['readme'][$version] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
@@ -116,17 +116,17 @@ class Upgrade
         {
           $version = $matches[0];
           $versionParts = explode('.', $version);
-          if($versionParts[0] > $this->lastCodeVersion && $versionParts[0] <= $this->currentCodeMajorVersion)
+          if($versionParts[0] > $this->lastCodeMajorVersion)
           {
             $scripts['base'][$version][] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
           }
-          elseif($versionParts[1] > $this->lastCodeVersion && $versionParts[1] <= $this->currentCodeMinorVersion)
+          elseif($versionParts[0] == $this->lastCodeMajorVersion && $versionParts[1] > $this->lastCodeMinorVersion)
           {
             $scripts['base'][$version][] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
           }
-          elseif($versionParts[2] > $this->lastCodeVersion && $versionParts[2] <= $this->currentCodeTrivialVersion)
+          elseif($versionParts[0] == $this->lastCodeMajorVersion && $versionParts[1] == $this->lastCodeMinorVersion && $versionParts[2] > $this->lastCodeTrivialVersion)
           {
             $scripts['base'][$version][] = sprintf('%s/%s', $dirname, $entry);
             $scriptsExist = true;
@@ -152,17 +152,17 @@ class Upgrade
           {
             $version = $matches[0];
             $versionParts = explode('.', $version);
-            if($versionParts[0] > $databaseMajorVersion && $versionParts[0] <= $this->currentCodeMajorVersion)
+            if($versionParts[0] > $databaseMajorVersion)
             {
               $scripts['db'][$database][$version][] = sprintf('%s/%s', $dirname, $entry);
               $scriptsExist = true;
             }
-            elseif($versionParts[1] > $databaseMinorVersion && $versionParts[1] <= $this->currentCodeMinorVersion)
+            elseif($versionParts[0] == $databaseMajorVersion && $versionParts[1] > $databaseMinorVersion)
             {
               $scripts['db'][$database][$version][] = sprintf('%s/%s', $dirname, $entry);
               $scriptsExist = true;
             }
-            elseif($versionParts[2] > $databaseTrivialVersion && $versionParts[2] <= $this->currentCodeTrivialVersion)
+            elseif($versionParts[0] == $databaseMajorVersion && $versionParts[1] == $databaseMinorVersion && $versionParts[2] > $databaseTrivialVersion)
             {
               $scripts['db'][$database][$version][] = sprintf('%s/%s', $dirname, $entry);
               $scriptsExist = true;

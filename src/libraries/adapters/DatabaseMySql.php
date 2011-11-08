@@ -1230,8 +1230,6 @@ class DatabaseMySql implements DatabaseInterface
         case 'exifFocalLength':
         case 'exifISOSpeed':
         case 'gpsAltitude':
-        case 'latitude':
-        case 'longitude':
           $exif[$key] = $value;
           break;
         case 'extra':
