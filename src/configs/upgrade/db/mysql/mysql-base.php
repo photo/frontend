@@ -1,5 +1,10 @@
 <?php
 $sql = <<<SQL
+CREATE DATABASE IF NOT EXISTS `{$this->mySqlDb}`
+SQL;
+mysql_base($sql);
+
+$sql = <<<SQL
 CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}action` (
   `id` varchar(6) NOT NULL,
   `owner` varchar(255) NOT NULL,
