@@ -23,11 +23,13 @@ Once you've confirmed that your cloud account is setup you can get started on yo
     zypper in apache2 php5 apache2-mod-php5 php5-curl php5-mcrypt
 
 Ensure you have mod_rewrite enabled
+
     a2enmod rewrite
 
 There are also a few optional but recommended packages and modules. Add the PHP Extensions repo.
-    zypper ar http://download.opensuse.org/repositories/server:/php:/extensions/openSUSE_11.4 php:extensions
-    zypper in php5-imagick exiftran
+
+    zypper ar http://download.opensuse.org/repositories/server:/php:/extensions/openSUSE_11.4 php:extensions    
+    zypper in php5-imagick php5-oauth php5-APC exiftran
     a2enmod deflate
     a2enmod expires
     a2enmod headers
