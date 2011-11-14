@@ -10,9 +10,13 @@ This guide instructs you on how to install OpenPhoto on an Ubuntu server.
 
 ### Prerequisites
 
-#### Cloud Accounts
+#### Database and File System Options
 
-Before setting up your server you'll need to make sure you have your cloud accounts set up. If you're using Amazon then make sure you've enabled both S3 and SimpleDb.
+##### MySql 
+You'll need to provide credentials for a MySql database. If the database doesn't already exist it will be created. If the user doesn't have `CREATE DATABASE` permissions then make sure it's already created.
+
+##### AWS
+If you're going to use AWS services then You'll need to be signed up for them.
 
 * http://aws.amazon.com/simpledb/
 * http://aws.amazon.com/s3/
@@ -22,7 +26,7 @@ Once you've confirmed that your cloud account is setup you can get started on yo
 
     apt-get update
     apt-get upgrade
-    apt-get install apache2 php5 libapache2-mod-php5 php5-curl php5-mcrypt php-apc
+    apt-get install apache2 php5 libapache2-mod-php5 php5-curl php5-gd php5-mcrypt php-apc
     a2enmod rewrite
 
 There are also a few optional but recommended packages and modules.
@@ -49,13 +53,14 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
 
     cd /var/www
     wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
-    tar -zxvf --group=www-data --owner=www-data openphoto.tar.gz
+    tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
+    chown -R www-data:www-data yourdomain.com
 
-Assuming that this is a development machine you can make the config writable by the user Apache runs as. Most likely `www-data`.
+Assuming that this is a development machine you only need to make the config writable by the user Apache runs as. Most likely `www-data`.
 
-    mkdir /var/www/yourdomain.com/src/configs/generated
-    chown www-data:www-data /var/www/yourdomain.com/src/configs/generated
+    mkdir /var/www/yourdomain.com/src/userdata
+    chown www-data:www-data /var/www/yourdomain.com/src/userdata
 
 ----------------------------------------
 
@@ -67,14 +72,15 @@ You'll need to copy the sample virtual host configuration file from the source t
 
     cp /var/www/yourdomain.com/src/configs/openphoto-vhost.conf /etc/apache2/sites-available/openphoto
 
+You'll need to replace instances of `/path/to/openphoto/html/directory` with `/var/www/yourdomain.com/src/html` or wherever you placed the code. Depending on which modules you installed you may have to comment out some of the `Expires*` directives.
+
+    vi /etc/apache2/sites-available/openphoto
+
 Now enable openphoto and disable Apache's default virtual host.
 
     a2dissite default
     a2ensite openphoto
 
-Now you'll need to replace instances of `/path/to/openphoto/html/directory` with `/var/www/yourdomain.com/src/html` or wherever you placed the code.
-
-    vi /etc/apache2/sites-enabled/openphoto-vhost.conf
 
 By default, any access to ini files is denied with a "Not Found" 404 HTTP code.  To enable a 404, or Forbidden return code, change the following lines in the virtual host file.
 

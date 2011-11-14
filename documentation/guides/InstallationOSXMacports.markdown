@@ -10,9 +10,13 @@ This guide instructs you on how to install OpenPhoto on a Macintosh OSX computer
 
 ### Prerequisites
 
-#### Cloud Accounts
+#### Database and File System Options
 
-Before setting up your server you'll need to make sure you have your cloud accounts set up. If you're using Amazon then make sure you've enabled both S3 and SimpleDb.
+##### MySql 
+You'll need to provide credentials for a MySql database. If the database doesn't already exist it will be created. If the user doesn't have `CREATE DATABASE` permissions then make sure it's already created.
+
+##### AWS
+If you're going to use AWS services then You'll need to be signed up for them.
 
 * http://aws.amazon.com/simpledb/
 * http://aws.amazon.com/s3/
@@ -39,6 +43,24 @@ Download and install the source code. We recommend `~/Sites/yourdomain.com` but 
 
 #### Using git clone
 
+    apt-get install git-core
+    git clone git@github.com:openphoto/frontend.git /var/www/yourdomain.com
+    chown -R www-data:www-data /var/www/yourdomain.com
+
+#### Using tar
+
+    cd /var/www
+    wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
+    tar -zxvf openphoto.tar.gz
+    mv openphoto-frontend-* yourdomain.com
+    chown -R www-data:www-data yourdomain.com
+
+Assuming that this is a development machine you can make the config writable by the user Apache runs as. Most likely `www-data`.
+
+    mkdir /var/www/yourdomain.com/src/userdata
+    chown www-data:www-data /var/www/yourdomain.com/src/configs/generated
+#### Using git clone
+
     # install git if you don't have it already
     port install git-core
     git clone git@github.com:openphoto/frontend.git ~/Sites/yourdomain.com
@@ -47,13 +69,14 @@ Download and install the source code. We recommend `~/Sites/yourdomain.com` but 
 
     cd ~/Sites
     wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
-    tar -zxvf --group=www-data --owner=www-data openphoto.tar.gz
+    tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
+    chown -R www-data:www-data yourdomain.com
 
 Assuming that this is a development machine you can make the config writable by the user Apache runs as. Most likely `_www`.
 
-    mkdir ~/Sites/yourdomain.com/src/configs/generated
-    chown _www ~/Sites/yourdomain.com/src/configs/generated
+    mkdir ~/Sites/yourdomain.com/src/userdata
+    chown _www ~/Sites/yourdomain.com/src/userdata
 
 ----------------------------------------
 
