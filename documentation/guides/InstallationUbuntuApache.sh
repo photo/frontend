@@ -28,7 +28,7 @@ echo "===================================================="
 echo ""
 echo ""
 
-apt-get install --assume-yes --quiet apache2 php5 libapache2-mod-php5 php5-curl curl php5-mcrypt
+apt-get install --assume-yes --quiet apache2 php5 libapache2-mod-php5 php5-curl curl php5-gd php5-mcrypt php-apc
 a2enmod rewrite
 
 echo ""
@@ -40,6 +40,7 @@ echo ""
 echo ""
 
 apt-get install --assume-yes --quiet php5-imagick exiftran
+pecl install oauth
 a2enmod deflate
 a2enmod expires
 a2enmod headers
@@ -65,8 +66,8 @@ echo "===================================================="
 echo ""
 echo ""
 
-mkdir /var/www/openphoto/src/configs/generated
-chown www-data:www-data /var/www/openphoto/src/configs/generated
+mkdir /var/www/openphoto/src/userdata
+chown www-data:www-data /var/www/openphoto/src/userdata
 
 echo ""
 echo ""
