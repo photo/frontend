@@ -12,9 +12,13 @@ To have a recent version of Cherokee, I advice to add the ppa maintained with la
 
 ### Prerequisites
 
-#### Cloud Accounts
+#### Database and File System Options
 
-Before setting up your server you'll need to make sure you have your cloud accounts set up. If you're using Amazon then make sure you've enabled both S3 and SimpleDb.
+##### MySql 
+You'll need to provide credentials for a MySql database. If the database doesn't already exist it will be created. If the user doesn't have `CREATE DATABASE` permissions then make sure it's already created.
+
+##### AWS
+If you're going to use AWS services then You'll need to be signed up for them.
 
 * http://aws.amazon.com/simpledb/
 * http://aws.amazon.com/s3/
@@ -47,13 +51,14 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
 
     cd /var/www
     wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
-    tar -zxvf --group=www-data --owner=www-data openphoto.tar.gz
+    tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
+    chown -R www-data:www-data yourdomain.com
 
 Assuming that this is a development machine you can make the config writable by the user Apache runs as. Most likely `www-data`.
 
-    mkdir /var/www/yourdomain.com/src/configs/generated
-    chown www-data:www-data /var/www/yourdomain.com/src/configs/generated
+    mkdir /var/www/yourdomain.com/src/userdata
+    chown www-data:www-data /var/www/yourdomain.com/src/userdata
 
 ----------------------------------------
 

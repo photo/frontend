@@ -10,9 +10,13 @@ This guide instructs you on how to install OpenPhoto on an openSUSE server.
 
 ### Prerequisites
 
-#### Cloud Accounts
+#### Database and File System Options
 
-Before setting up your server you'll need to make sure you have your cloud accounts set up. If you're using Amazon then make sure you've enabled both S3 and SimpleDb.
+##### MySql 
+You'll need to provide credentials for a MySql database. If the database doesn't already exist it will be created. If the user doesn't have `CREATE DATABASE` permissions then make sure it's already created.
+
+##### AWS
+If you're going to use AWS services then You'll need to be signed up for them.
 
 * http://aws.amazon.com/simpledb/
 * http://aws.amazon.com/s3/
@@ -23,11 +27,13 @@ Once you've confirmed that your cloud account is setup you can get started on yo
     zypper in apache2 php5 apache2-mod-php5 php5-curl php5-mcrypt
 
 Ensure you have mod_rewrite enabled
+
     a2enmod rewrite
 
 There are also a few optional but recommended packages and modules. Add the PHP Extensions repo.
-    zypper ar http://download.opensuse.org/repositories/server:/php:/extensions/openSUSE_11.4 php:extensions
-    zypper in php5-imagick exiftran
+
+    zypper ar http://download.opensuse.org/repositories/server:/php:/extensions/openSUSE_11.4 php:extensions    
+    zypper in php5-imagick php5-oauth php5-APC exiftran
     a2enmod deflate
     a2enmod expires
     a2enmod headers
@@ -50,11 +56,12 @@ Download and install the source code. We recommend `/srv/www/htdocs/yourdomain.c
     wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
     tar -zxvf --group=www --owner=wwwrun openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
+    chown -R wwwrun:www yourdomain.com
 
 Assuming that this is a development machine you can make the config writable by the user Apache runs as. Most likely `wwwrun`.
 
-    mkdir /srv/www/htsdocs/yourdomain.com/src/configs/generated
-    chown wwwrun:www /srv/www/htdocs/yourdomain.com/src/configs/generated
+    mkdir /srv/www/htsdocs/yourdomain.com/src/userdata
+    chown wwwrun:www /srv/www/htdocs/yourdomain.com/src/userdata
 
 ----------------------------------------
 

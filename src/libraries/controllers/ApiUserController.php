@@ -35,7 +35,10 @@ class ApiUserController extends BaseController
     $email = getConfig()->get('user')->email;
     User::setEmail($email);
     User::setMobilePassphrase(true); // unset
-    return self::success('User was logged in successfully', array('email' => getSession()->get('email')));
+    if(isset($_POST['redirect']))
+      getRoute()->redirect($_POST['redirect']);
+    else
+      return self::success('User was logged in successfully', array('email' => getSession()->get('email')));
   }
 
   /**

@@ -645,8 +645,8 @@ class SetupController
   private static function verifyRequirements($imageLibs)
   {
     $errors = array();
-    $configDir = Utility::getBaseDir() . '/userdata/configs';
-    $generatedDir = "{$configDir}";
+    $configDir = Utility::getBaseDir() . '/userdata';
+    $generatedDir = "{$configDir}/configs";
 
     if(file_exists($generatedDir) && is_writable($generatedDir) && !empty($imageLibs))
       # No errors, return empty array
