@@ -48,9 +48,9 @@
 				<label>Groups</label>
 				<ol>
 					<li>
-            <input type="checkbox" name="groups[]" value="" <?php if(empty($photo['groups'])) { ?> checked="checked" <?php } ?>> None
+            <input type="checkbox" name="groups[]" value="" <?php if(empty($photo['groups'])) { ?> checked="checked" <?php } ?> class="group-checkbox-click group-checkbox none"> None
             <?php foreach($groups as $group) { ?>
-              <input type="checkbox" name="groups[]" value="<?php Utility::safe($group['id']); ?>" <?php if(isset($photo['groups']) && in_array($group['id'], $photo['groups'])) { ?> checked="checked" <?php } ?>>
+              <input type="checkbox" name="groups[]" value="<?php Utility::safe($group['id']); ?>" <?php if(isset($photo['groups']) && in_array($group['id'], $photo['groups'])) { ?> checked="checked" <?php } ?> class="group-checkbox-click group-checkbox">
               <?php Utility::licenseLong($group['name']); ?>
             <?php } ?>
 					</li>

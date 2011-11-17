@@ -47,6 +47,14 @@ var opTheme = (function() {
         }, 'json');
         return false;
       },
+      groupCheckbox: function(ev) {
+        var el = $(ev.target);
+        if(el.hasClass("none") && el.is(":checked")) {
+          $("input.group-checkbox:not(.none)").removeAttr("checked");
+        } else if(el.is(":checked")) {
+          $("input.group-checkbox.none").removeAttr("checked");
+        }
+      },
       groupPost: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
@@ -436,16 +444,17 @@ var opTheme = (function() {
 
     init: {
       attach: function() {
+        OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
+        OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
+        OP.Util.on('click:group-checkbox', opTheme.callback.groupCheckbox);
+        OP.Util.on('click:group-update', opTheme.callback.groupPost);
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:photo-edit', opTheme.callback.photoEdit);
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:search', opTheme.callback.searchByTags);
-        OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:settings', opTheme.callback.settings);
-        OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
-        OP.Util.on('click:group-update', opTheme.callback.groupPost);
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
