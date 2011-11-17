@@ -57,6 +57,7 @@
                 'action-jump-click':'click:action-jump',
                 'action-post-click':'click:action-post',
                 'credential-delete-click':'click:credential-delete',
+                'group-checkbox-click':'click:group-checkbox',
                 'group-update-click':'click:group-update',
                 'login-click':'click:login',
                 'map-jump-click':'click:map-jump',
