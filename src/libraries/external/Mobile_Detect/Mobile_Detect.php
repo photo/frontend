@@ -23,11 +23,11 @@ class Mobile_Detect
 	protected $isGeneric = null;
 	protected $devices = array(
 		"android" => "android.*mobile",
-		"androidtablet" => "android(?!.*mobile)",
+		//"androidtablet" => "android(?!.*mobile)",
 		"blackberry" => "blackberry",
-		"blackberrytablet" => "rim tablet os",
+		//"blackberrytablet" => "rim tablet os",
 		"iphone" => "(iphone|ipod)",
-		"ipad" => "(ipad)",
+		//"ipad" => "(ipad)",
 		"palm" => "(avantgo|blazer|elaine|hiptop|palm|plucker|xiino)",
 		"windows" => "windows ce; (iemobile|ppc|smartphone)",
 		"windowsphone" => "windows phone os",
