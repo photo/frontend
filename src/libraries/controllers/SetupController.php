@@ -536,13 +536,13 @@ class SetupController
       $fsObj = getFs();
       $dbObj = getDb();
 
-      $user = exec("whoami");
+      $serverUser = exec("whoami");
       if(!$fsObj->initialize())
       {
         if($usesAws)
           $fsErrors[] = 'We were unable to initialize your S3 bucket.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/s3/">signed up for AWS S3</a>.</li><li>Double check your AWS credentials.</li><li>S3 bucket names are globally unique, make sure yours isn\'t already in use by someone else.</li><li>S3 bucket names can\'t have certain special characters. Try using just alpha-numeric characters and periods.</li></ul>';
         else if($usesLocalFs)
-          $fsErrors[] = "We were unable to set up your local file system using <em>{$fsObj->fsRoot}</em>. Make sure that the following user has proper permissions ({$user}).";
+          $fsErrors[] = "We were unable to set up your local file system using <em>{$fsObj->fsRoot}</em>. Make sure that the following user has proper permissions ({$serverUser}).";
         else
           $fsErrors[] = 'An unknown error occurred while setting up your file system. Check your error logs to see if there\'s more information about the error.';
       }
@@ -562,9 +562,22 @@ class SetupController
       {
         $writeError = self::writeConfigFile();
         if($writeErrors === false)
-          getRoute()->redirect('/?m=welcome');
+        {
+          if(isset($_GET['edit']))
+          {
+            getRoute()->redirect('/?m=welcome');
+          }
+          else
+          {
+            // setting up a new site, we should log them in and redirect them to the upload form (Gh-290)
+            User::setEmail($user->email);
+            getRoute()->redirect('/photos/upload?m=welcome');
+          }
+        }
         else
+        {
           $writeErrors[] = "We were unable to save your settings file. Please make sure that the following user has proper permissions to write to src/configs ({$user}).";
+        }
       }
     }
 
