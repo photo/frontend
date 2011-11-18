@@ -715,6 +715,7 @@ article {
 }
 
 .tags #wrapper article,
+.upload .insufficient,
 .error #wrapper article {
   text-align:center;
 }
@@ -733,6 +734,7 @@ article h1 {
 }
 
 .error #wrapper article img,
+.upload .insufficient img,
 article img.front {
  -webkit-animation-name: moveme, smooth;
   -webkit-animation-duration:1s;
@@ -1944,6 +1946,25 @@ div#setup h3 {
   margin:10px 0 0 164px;
 }
 
+/*  Upload ************************************************ */
+body.upload .poweredby {
+  font-style:italic;
+  font-size:12px;
+  display:block;
+  text-align:right;
+}
+body.upload .upload-complete {
+  font-size:30px;
+  margin:10px 0 30px;
+  text-align:center;
+  display:none;
+}
+body.upload .upload-complete img {
+  position:relative;
+  left:-5px;
+  top:5px;
+}
+
 /* 04.09 Settings ************************************************ */
 
 .settings form label {
@@ -1990,142 +2011,6 @@ footer a:hover {
 
 /* unsorted */
 
-body.upload h1 {
-  font-size:2em;
-}
-div#upload {
-  padding:10px 0;
-}
-div#upload label span input {
-    z-index:999;
-    line-height:0;
-    font-size:21px;
-    position:absolute;
-    border:solid 1px red;
-    top:-2px;
-    left:-305px;
-    opacity:0;
-    filter:alpha(opacity = 0);
-    -ms-filter:"alpha(opacity=0)";
-    cursor:pointer;
-    _cursor:hand;
-    margin:0;
-    padding:0;
-}
-div#upload ul#upload-queue{
-  list-style:none;
-  margin:0;
-  padding:0;
-}
-div#upload ul#upload-queue li{
-  margin:10px 0;
-  padding:10px 0;
-}
-div#upload ul#upload-queue li label{
-  padding:0;
-  margin:0;
-}
-div#upload ul#upload-queue li img, div#upload ul#upload-queue li div.img{
-  border:solid 2px #eee;
-}
-div#upload ul#upload-queue li div.img{
-  width:100px;
-  height:100px;
-  font-weight:bold;
-  font-size:larger;
-  line-height:100px;
-  text-align:center;
-}
-div#upload ul#upload-queue div.progress{
-  height:15px;
-  width:102px;
-  background-color:#efefef;
-  border:solid 1px #eee;
-  border-bottom-left-radius:4px;
-  border-bottom-right-radius:4px;
-}
-div#upload ul#upload-queue div.progress > div{
-  height:100%;
-  width:0;
-  border-bottom-left-radius:4px;
-  border-bottom-right-radius:4px;
-  background-image:url("../images/progress.gif");
-}
-div#upload ul#upload-queue div.progress > div.complete{
-  background-image:none;
-  background-color:#43c2fd;
-}
-
-/****************************
-* STYLES FOR NEW UPLOADER
-****************************/
-#fallback { display:none; }
-#uploader-frame { width:700px; height:600px; margin:0 auto; background-color:#EFEFEF; padding:10px 50px 10px 50px; border-bottom:solid 1px #CFCFCF; border-right:solid 1px #CFCFCF; position:relative; }
-#drop-zone { width:600px; height:500px; margin:0px auto; color:black; overflow-x:hidden; overflow-y:auto; border:1px solid #54c6fb; }
-
-/* step indicators */
-#uploader-frame .step { position:absolute; left:21px; font-size:60px; }
-#uploader-frame .step.one { top:33px; }
-#uploader-frame .step.two { top:116px; }
-
-/* options in dropzone */
-#uploader-frame .options { width:600px; margin:0 auto; color:black; }
-#uploader-frame .custom { display:none; }
-#uploader-frame .custom input { width:170px; }
-#uploader-frame p { color:gray; font-size:11px; }
-#uploader-frame .options > div { padding-bottom:5px; }
-#uploader-frame label { display:inline-block; width:70px; }
-#uploader-frame .tags { width:400px; }
-
-/* drop zone has three states */
-#drop-zone.waiting { background-color:#BDBDBD; }
-#drop-zone.hover { background-color:#54c6fb; }
-#drop-zone.active { background-color:#BDBDBD; }
-
-/* drop zone wating instructions */
-#drop-zone .instructions { display:none; margin:28px 0 0 20px; font-size:20px; }
-#drop-zone.waiting .instructions{ display:block; }
-
-/* photo in drop zone */
-#drop-zone .photo { width:100%; position:relative; height:32px; z-index:5; padding:17px 0 6px 0;}
-#drop-zone .photo .name { margin-left:60px; }
-#drop-zone .photo .size { float:right; margin-right:5px; }
-#drop-zone .photo > span.progress { 
-  z-index:-1;
-  display:block; 
-  height:100%;
-  background-color:#e5e88b;
-  background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0, #e5e88b), color-stop(1, #f0f2ac));
-  background-image:-webkit-linear-gradient( center bottom, color-stop(0, #e5e88b) 37%, color-stop(1, #f0f2ac)) 69%);
-  background-image:-moz-linear-gradient( center bottom, color-stop(0, #e5e88b) 37%, color-stop(1, #f0f2ac)) 69%);
-  background-image:-ms-linear-gradient( center bottom, color-stop(0, #e5e88b) 37%, color-stop(1, #f0f2ac)) 69%);
-  background-image:-o-linear-gradient( center bottom, color-stop(0, #e5e88b) 37%, color-stop(1, #f0f2ac)) 69%);
-  -webkit-box-shadow:inset 0 2px 9px  rgba(255,255,255,0.3), inset 0 -2px 6px rgba(0,0,0,0.4);
-  -moz-box-shadow:inset 0 2px 9px  rgba(255,255,255,0.3), inset 0 -2px 6px rgba(0,0,0,0.4);
-  position:absolute;
-  top:0px;
-  overflow:hidden;
-}
-#drop-zone .photo > span.progress.finished { 
-  background-color:rgb(43,194,83);
-  background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(43,194,83)), color-stop(1, rgb(84,240,84)) );
-  background-image:-webkit-linear-gradient( center bottom, rgb(43,194,83) 37%, rgb(84,240,84) 69% );
-  background-image:-moz-linear-gradient( center bottom, rgb(43,194,83) 37%, rgb(84,240,84) 69% );
-  background-image:-ms-linear-gradient( center bottom, rgb(43,194,83) 37%, rgb(84,240,84) 69% );
-  background-image:-o-linear-gradient( center bottom, rgb(43,194,83) 37%, rgb(84,240,84) 69% );
-}
-#drop-zone .photo > span.progress.error { 
-  background-color:rgb(214,105,163);
-  background-image:-webkit-gradient(linear, left bottom, left top, color-stop(0, rgb(214,105,163)), color-stop(1, rgb(235,113,178)) );
-  background-image:-webkit-linear-gradient( center bottom, rgb(214,105,163) 37%, rgb(235,113,178) 69% );
-  background-image:-moz-linear-gradient( center bottom, rgb(214,105,163) 37%, rgb(235,113,178) 69% );
-  background-image:-ms-linear-gradient( center bottom, rgb(214,105,163) 37%, rgb(235,113,178) 69% );
-  background-image:-o-linear-gradient( center bottom, rgb(214,105,163) 37%, rgb(235,113,178) 69% );
-}
-#drop-zone .photo .thumb { position:absolute; left:3px; top:3px; -moz-border-radius:3px; -webkit-border-radius:3px; }
-.owner-edit .delete {
-  margin-top:20px;
-}
 .owner-edit h1 {
   border-top:solid 1px #aaa;
   border-bottom:solid 1px #aaa;
@@ -2140,3 +2025,183 @@ div#upload ul#upload-queue div.progress > div.complete{
 a.message-close {text-decoration:underline; cursor:pointer; color:#43c2fd; position:absolute; top:5px; right:45px;}
 #message-box.error {color:#ca1616;}
 #message-box.confirm {color:#6c9e6d;}
+
+/* 
+   Plupload
+------------------------------------------------------------------- */
+
+.plupload_button {
+	display: -moz-inline-box; /* FF < 3*/
+	display: inline-block;
+	font: normal 12px sans-serif;
+	text-decoration: none;
+  color: #42454a;
+  border: 1px solid #bababa;
+  padding: 2px 8px 3px 20px;
+	margin-right: 4px;
+  background: #f3f3f3 url('../images/buttons.png') no-repeat 0 center;
+  outline: 0;
+
+  /* Optional rounded corners for browsers that support it */
+  -moz-border-radius: 3px;
+  -khtml-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.plupload_button:hover {
+	color: #000;
+	text-decoration: none;
+}
+
+.plupload_disabled, a.plupload_disabled:hover {
+    color: #737373;
+    border-color: #c5c5c5;
+    background: #ededed url('../images/buttons-disabled.png') no-repeat 0 center;
+	cursor: default;
+}
+
+.plupload_add {
+	background-position: -181px center;
+}
+
+.plupload_wrapper {
+	font: normal 11px Verdana,sans-serif;
+	width: 100%;
+}
+
+.plupload_container {
+	padding: 8px;
+	background: url('../images/transp50.png');
+	/*-moz-border-radius: 5px;*/
+}
+
+.plupload_container input {
+	border: 1px solid #DDD;
+	font: normal 11px Verdana,sans-serif;
+	width: 98%;
+}
+
+.plupload_header {background: #2A2C2E url('../images/backgrounds.gif') repeat-x;}
+.plupload_header_content {
+	background: url('../images/backgrounds.gif') no-repeat 0 -317px;
+	min-height: 56px;
+	padding-left: 60px;
+	color: #FFF;
+}
+.plupload_header_title {
+	font: normal 18px sans-serif;
+	padding: 6px 0 3px;
+}
+.plupload_header_text {
+	font: normal 12px sans-serif;
+}
+
+.plupload_filelist {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.plupload_scroll .plupload_filelist {
+	/*height: 185px;*/
+	background: #F5F5F5;
+  clear:both;
+	/*overflow-y: scroll;*/
+}
+
+.plupload_filelist li {
+	padding: 10px 8px;
+	background: #F5F5F5 url('../images/backgrounds.gif') repeat-x 0 -156px;
+	border-bottom: 1px solid #DDD;
+}
+
+.plupload_filelist_header, .plupload_filelist_footer {
+	background: #DFDFDF;
+	padding: 8px 8px;
+	color: #42454A;
+}
+.plupload_filelist_header {	
+	border-top: 1px solid #EEE;
+	border-bottom: 1px solid #CDCDCD;
+}
+
+.plupload_filelist_footer {border-top: 1px solid #FFF; height: 22px; line-height: 20px; vertical-align: middle;}
+.plupload_file_name {float: left; overflow: hidden}
+.plupload_file_status {color: #777;}
+.plupload_file_status span {color: #42454A;}
+.plupload_file_size, .plupload_file_status, .plupload_progress {
+	float: right;
+	width: 80px;
+}
+.plupload_file_size, .plupload_file_status, .plupload_file_action {text-align: right;}
+
+.plupload_filelist .plupload_file_name {width: 205px}
+
+.plupload_file_action {
+	float: right;
+	width: 16px;
+	height: 16px;
+	margin-left: 15px;
+}
+
+.plupload_file_action * {
+	display: none;
+	width: 16px;
+	height: 16px;
+}
+
+li.plupload_uploading {background: #ECF3DC url('../images/backgrounds.gif') repeat-x 0 -238px;}
+li.plupload_done {color:#AAA}
+
+li.plupload_delete a {
+	background: url('../images/delete.gif');
+}
+
+li.plupload_failed a {
+	background: url('../images/error.gif');
+	cursor: default;
+}
+
+li.plupload_done a {
+	background: url('../images/done.gif');
+	cursor: default;
+}
+
+.plupload_progress, .plupload_upload_status {
+	display: none;
+}
+
+.plupload_progress_container {
+	margin-top: 3px;
+	border: 1px solid #CCC;
+	background: #FFF;
+	padding: 1px;
+}
+.plupload_progress_bar {
+	width: 0px;
+	height: 7px;
+	background: #CDEB8B;
+}
+
+.plupload_scroll .plupload_filelist_header .plupload_file_action, .plupload_scroll .plupload_filelist_footer .plupload_file_action {
+	margin-right: 17px;
+}
+
+/* Floats */
+
+.plupload_clear,.plupload_clearer {clear: both;}
+.plupload_clearer, .plupload_progress_bar {
+	display: block;
+	font-size: 0;
+	line-height: 0;	
+}
+
+li.plupload_droptext {
+	background: transparent;
+	text-align: center;
+	vertical-align: middle;
+	border: 0;
+  font-size:30px;
+	line-height: 165px;
+}

@@ -2,53 +2,17 @@
 	Upload <!-- function bar for e.g. sharing function -->
 </div>
 
-<div id="uploader-frame" crumb="<?php echo $crumb; ?>">
-  <p class="step one">1.</p>
-  <p class="step two">2.</p>
-  <div class="options">
-    <div>
-      <p>*Changes to these options will not affect files already dropped.</p>
+<div class="upload-complete"><img src="<?php getTheme()->asset('image', 'checkmark-big.gif'); ?>" align="absmiddle">All done! Go have a <a href="<?php Url::photosView(); ?>">look at your photos</a>.</div>
+<form class="upload">
+  <input type="hidden" name="crumb" value="<?php Utility::safe($crumb); ?>" class="crumb">
+  <div id="uploader">
+    <div class="insufficient">
+      <img src="<?php echo getTheme()->asset('image', 'error.png'); ?>">
+      <h1>Unfortunately, it doesn't look like we support your browser. :(</h1>
+      <p>
+        Try using <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a>.
+      </p>
     </div>
-    <div>
-      <label for="license">License</label>
-      <select name="license" class="license">
-        <?php foreach($licenses as $code => $license) { ?>
-          <option value="<?php Utility::safe($code); ?>" <?php if($license['selected']) { ?> selected="selected" <?php } ?>><?php Utility::licenseLong($code); ?></option>
-        <?php } ?>
-        <option value="_custom_">*Custom*</option>
-      </select>
-      <span class="custom">&nbsp; -> <input type="text" placeholder="Your custom license goes here"></span>
-    </div>
-    <div>
-      <label for="tags">Tags</label><input type="text" name="tags" class="tags" placeholder="Optional comma separated list">
-    </div>
-    <div>
-      <label for="tags">Permission</label>
-      <input type="radio" name="permission" value="1" checked="checked"> Public
-      <input type="radio" name="permission" value="0"> Private
-    </div>
-  </div><!-- .options -->
-  <div id="drop-zone" class="waiting">
-    <p class="instructions">Drop photos here to apply settings and upload</p>
   </div>
-</div>
-
-
-<div id="fallback">
-  <h1>Upload your photos</h1>
-  <p>
-    Select as many photos as you'd like by clicking the button below.
-  </p>
-  <div id="upload">
-    <form enctype="multipart/form-data" action="/photo/upload" method="POST" id="upload-form">
-      <input type="hidden" name="returnSizes" value="200x200xCR,100x100">
-      <input type="file" name="photo" multiple>
-      <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
-    </form>
-
-    <div id="upload-progress"></div>
-    <ul id="upload-queue">
-    </ul>
-    <br clear="all">
-  </div>
-</div>
+</form>
+<em class="poweredby">Powered by <a href="http://www.plupload.com">Plupload</a>.</em>
