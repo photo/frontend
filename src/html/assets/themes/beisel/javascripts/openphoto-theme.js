@@ -14,7 +14,7 @@ var opTheme = (function() {
         ev.preventDefault();
       
         var el = $(ev.target),
-          	url = el.attr('href')+'.json'
+          	url = el.attr('href')+'.json',
             id = el.attr('data-id');
       
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
@@ -46,6 +46,14 @@ var opTheme = (function() {
           }
         });
         return false;
+      },
+      groupCheckbox: function(ev) {
+        var el = $(ev.target);
+        if(el.hasClass("none") && el.is(":checked")) {
+          $("input.group-checkbox:not(.none)").removeAttr("checked");
+        } else if(el.is(":checked")) {
+          $("input.group-checkbox.none").removeAttr("checked");
+        }
       },
       groupPost: function(ev) {
         ev.preventDefault();
@@ -124,7 +132,7 @@ var opTheme = (function() {
       },
       settings: function(ev) {
         $("ul#settingsbar").slideToggle('medium');
-		$("li#nav-signin").toggleClass('active');
+        $("li#nav-signin").toggleClass('active');
         return false;
       },
       keyBrowseNext: function(ev) {
@@ -155,7 +163,7 @@ var opTheme = (function() {
           }
         });
         return false;
-      },
+      }
     },
     formHandlers: {
 			hasErrors: function(form, attribute) {
@@ -314,137 +322,34 @@ var opTheme = (function() {
       }
     },
     
-    upload: {
-      init: function() {
-        var that = this; // that references upload
-        if ($("body.upload").length) {
-          that.options.$dropZone = $("#drop-zone");
-          that.options.crumb = $("#uploader-frame").attr("crumb");
-          that.options.dragEnterCallback = that.dragEnter;
-          that.options.dragLeaveCallback = that.dragLeave;
-          that.options.dragDropCallback = that.dragDrop;
-          that.options.duplicateCallback = that.duplicate;
-          that.options.notImageCallback = that.notImage;
-          that.options.pushToUICallback = that.pushToUI;
-          that.options.uploadStartCallback = that.uploadStart;
-          that.options.uploadProgressCallback = that.uploadProgress;
-          that.options.uploadFinishedCallback = that.uploadFinished;
-          that.options.permission = that.permission;
-          that.options.photoTags = that.photoTags;
-          that.options.photoLicense = that.photoLicense;
-          OP.Util.upload.init(that.options);
-          that.licenseChange();
-        }
-      },
-      
-      options : {
-        simultaneousUploadLimit : 3,
-        frameId : "uploader-frame",
-        dropZoneId : "drop-zone",
-        uploadPath : '/photo/upload.json',
-        returnSizes : "50x50xCR",
-        allowDuplicates : false
-      },
-      
-      licenseChange : function() {
-        $("#uploader-frame .license").bind("change", function() {
-          if ($(this).val() == "_custom_") {
-            $("#uploader-frame .custom").fadeIn();
-          } else {
-            if ($(this).is(":visible")) {
-              $("#uploader-frame .custom").fadeOut();
-            }
-          }
-        });
-      },
-      
-      /**
-      * !! REMINDER !!
-      * These functions are going to be called from within the 
-      * opTheme.upload.options object so 'this' points back to 
-      * the options object
-      **/
-      dragEnter : function() {
-        this.$dropZone.removeClass("waiting active").addClass("hover");
-      },
-      
-      dragLeave : function() {
-        this.$dropZone.removeClass("hover").addClass("active");
-      },
-      
-      dragDrop : function() {
-        this.$dropZone.removeClass("hover").addClass("active");
-      },
-      
-      duplicate : function() {
-        opTheme.message.error("duplicate image");
-      },
-      
-      notImage : function() {
-        opTheme.message.error("not an image file");
-      },
-      
-      pushToUI : function(files) {
-        // get current tags and license data to apply to each photo
-        var tags = $("#uploader-frame .tags").val();
-        var permission = $("#uploader-frame input[name=permission]:checked").val();
-        var license = $("#uploader-frame .license").val();
-        if (license == "_custom_") {
-          license = $("#uploader-frame .custom input").val();
-        }
-        var html = [];
-        for (var i=0; i < files.length; i++) {
-          var size = (parseInt(files[i].size) / 1048576).toFixed(2) + "MB";
-          html.push("<div id='file-",files[i]["queueIndex"],"' class='photo waiting' tags='",tags,"' license='",license,"' permission='",permission,"'><span class='name'>",files[i].name,"</span><span class='size'>",size,"</span><span class='progress'></span></div>");
-        }
-        this.$dropZone.append(html.join(""));
-        OP.Util.upload.kickOffUploads();
-      },
-      
-      uploadStart : function(queueIndex) {
-        $("#file-"+queueIndex).removeClass("waiting").addClass("uploading");
-      },
-      
-      uploadProgress : function(queueIndex, percent) {
-        $("#file-"+queueIndex+" .progress").animate({
-          "width":percent+"%"
-        }, 500);
-      },
-      
-      uploadFinished : function(queueIndex, status, response) {
-        var thisClass = response.code == 202 ? 'finished' : 'error';
-        $("#file-"+queueIndex+" .progress").addClass(thisClass);
-        $("#file-"+queueIndex).removeClass("uploading").addClass("finished");
-        if(response.code == 202)
-          $("#file-"+queueIndex).append("<img class='thumb' src='"+response.result.path50x50xCR+"'/>");
-      },
-      
-      permission : function(queueIndex) {
-        return $("#file-"+queueIndex).attr("permission");
-      },
-      
-      photoLicense : function(queueIndex) {
-        return $("#file-"+queueIndex).attr("license");
-      },
-      
-      photoTags : function(queueIndex) {
-        return $("#file-"+queueIndex).attr("tags");
-      }
-
-    }, // upload
-
     init: {
+      load: function() {
+        if($("section#slideshow").length > 0) {
+          $(window).load(function() {
+            $('.flexslider').flexslider({
+              animation: "slide",
+              controlsContainer: ".flex-container",
+              controlNav: true,
+              pausePlay: false,
+              directionNav: true,
+              nextText: "<span title='Next'>Next</span>",
+              prevText: "<span title='Previous'>Previous</span>"
+            });
+          });
+        }
+      },
       attach: function() {
+        OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
+        OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
+        OP.Util.on('click:group-checkbox', opTheme.callback.groupCheckbox);
+        OP.Util.on('click:group-update', opTheme.callback.groupPost);
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:photo-edit', opTheme.callback.photoEdit);
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:search', opTheme.callback.searchByTags);
-        OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:settings', opTheme.callback.settings);
-        OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
-        OP.Util.on('click:group-update', opTheme.callback.groupPost);
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
@@ -535,6 +440,66 @@ var opTheme = (function() {
 				}
 			}
 		},
+    upload: {
+      init: function() {
+        var uploaderEl = $("#uploader");
+        if(uploaderEl.length == 0)
+          return;
+
+        uploaderEl.pluploadQueue({
+            // General settings
+            runtimes : 'html5',
+            url : '/photo/upload.json',
+            max_file_size : '20mb',
+            //chunk_size : '1mb',
+            unique_names : true,
+     
+            // Specify what files to browse for
+            filters : [
+                {title : "Photos", extensions : "jpg,jpeg,gif,png"}
+            ],
+     
+            // Flash settings
+            flash_swf_url : 'plupload.flash.swf',
+            multipart_params:{
+              crumb: $("form.upload input.crumb").val()
+            },
+            preinit: {
+              UploadComplete: function() {
+                $(".upload-complete").fadeIn();
+              }
+            }
+        });
+     
+        // Client side form validation
+        var uploadForm = $("form.upload");
+
+        uploadForm.submit(function(e) {
+          var uploader = $('#uploader').pluploadQueue({});
+          // Files in queue upload them first
+          if (uploader.files.length > 0) {
+            // When all files are uploaded submit form
+            uploader.bind('StateChanged', function() {
+              if (uploader.files.length === (uploader.total.uploaded + uploader.total.failed)) {
+                $("form.upload")[0].submit();
+              }
+            }); 
+            uploader.start();
+          } else {
+            // TODO something that doesn't suck
+            alert('Please select at least one photo to upload.');
+          }
+   
+          return false;
+        });
+
+        var insufficient = $("#uploader .insufficient");
+        if(insufficient.length == 1) {
+          insufficient.show();
+          return;
+        }
+      }
+    },
     user: {
       loginFailure: function(assertion) {
         log('login failed');
@@ -554,6 +519,6 @@ var opTheme = (function() {
         var params = {assertion: assertion};
         OP.Util.makeRequest('/user/login.json', params, opTheme.user.loginProcessed);
       }
-    },
+    }
   };
 }());

@@ -1,9 +1,9 @@
 <!doctype html>
 <html class="no-js" lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="language" content="english,en" />
-	<meta name="distribution" content="global" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="language" content="english,en" />
+  <meta name="distribution" content="global" />
     <title><?php getTheme()->meta('titles', $page); ?></title>
     <meta name="description" content="<?php getTheme()->meta('descriptions', $page); ?>">
     <meta name="keywords" content="<?php getTheme()->meta('keywords', $page); ?>">
@@ -17,53 +17,53 @@
 
 <body class="<?php echo $page; ?>">
 
-	<div id="wrapper">
+  <div id="wrapper">
 
-		<header>
-		  <?php getTheme()->display('partials/header.php'); ?>
-		</header>
+    <header>
+      <?php getTheme()->display('partials/header.php'); ?>
+    </header>
 
-		<article id="main" role="main">
-		  <!-- body -->
-		  <?php echo $body; ?>
-		</article>
+    <article id="main" role="main">
+      <!-- body -->
+      <?php echo $body; ?>
+    </article>
 
-		<footer>
+    <footer>
       <a href="http://theopenphotoproject.org" title="Learn more about the OpenPhoto project">The OpenPhoto Project</a> &copy; 2011
-		</footer>
+    </footer>
 
-	</div>
-	<script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
-	<script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
-	<script>
-	  OP.Util.init(jQuery, {
-	    js: {
-	      assets: [
-	        '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
-	        '<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>', 
-	        '<?php getTheme()->asset('javascript', 'jquery.cycle.min.js '); ?>', 
-	        '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>',
-	        '<?php getTheme()->asset('javascript', 'jquery.flexslider-min.js'); ?>'
-	      ],
+  </div>
+  <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
+  <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
+  <script>
+    OP.Util.init(jQuery, {
+      js: {
+        assets: [
+          <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
+            <?php if(isset($_GET['debug'])) { ?>
+              '<?php getTheme()->asset('javascript', 'plupload.js'); ?>',
+              '<?php getTheme()->asset('javascript', 'plupload.html5.js'); ?>',
+              '<?php getTheme()->asset('javascript', 'jquery.plupload.queue.js'); ?>',
+            <?php } else { ?>
+              '<?php getTheme()->asset('javascript', 'plupload-full-min.js'); ?>',
+            <?php } ?>
+          <?php } ?>
+
+          <?php if(isset($_GET['debug'])) { ?>
+            '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
+            '<?php getTheme()->asset('javascript', 'jquery.flexslider-min.js'); ?>',
+            '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'
+          <?php } else { ?>
+            '<?php getTheme()->asset('javascript', 'openphoto-theme-full-min.js'); ?>'
+          <?php } ?>
+        ],
         onComplete: function(){ 
+          opTheme.init.load(); 
           opTheme.init.attach(); 
-          if($("section#slideshow").length > 0) {
-            $(window).load(function() {
-              $('.flexslider').flexslider({
-                animation: "slide",
-                controlsContainer: ".flex-container",
-                controlNav: true,
-                pausePlay: false,
-                directionNav: true,
-                nextText: "<span title='Next'>Next</span>",
-                prevText: "<span title='Previous'>Previous</span>"
-              });
-            });
-          }
         }
-	    }
-	  });
-	</script>
+      }
+    });
+  </script>
   <?php getPlugin()->invoke('onBody', array('page' => $page)); ?>
 </body>
 </html>
