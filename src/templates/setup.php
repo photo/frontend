@@ -93,7 +93,7 @@
         <input type="text" name="mySqlUser" id="mySqlUser" placeholder="Your MySql username" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlUser; ?>">
         <label for="mySqlPassword">MySQL Password</label>
         <input type="password" name="mySqlPassword" id="mySqlPassword" placeholder="Your MySql password" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlPassword; ?>">
-        <label for="mySqlDb">MySQL Database <em>(this needs to already exist)</em></label>
+        <label for="mySqlDb">MySQL Database <em>(we'll try to create this if it doesn't exist)</em></label>
         <input type="text" name="mySqlDb" placeholder="Name of your MySql database" id="mySqlDb" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlDb; ?>">
         <label for="mySqlTablePrefix">Table prefix <em>(optional)</em></label>
         <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
