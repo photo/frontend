@@ -129,7 +129,10 @@ class EpiDatabase
 
     try
     {
-      $this->dbh = new PDO($this->_type . ':host=' . $this->_host . ';dbname=' . $this->_name, $this->_user, $this->_pass);
+      $dsn = sprintf('%s:host=%s', $this->_type, $this->_host);
+      if($this->_name != '')
+        $dsn .= sprintf(';dbname=%s', $this->_name);
+      $this->dbh = new PDO($dsn, $this->_user, $this->_pass);
       $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     catch(Exception $e)

@@ -144,7 +144,7 @@ class DatabaseMySql implements DatabaseInterface
     if($database != 'mysql')
       return;
 
-    include $file;
+    return include $file;
   }
 
   /**
@@ -578,11 +578,11 @@ class DatabaseMySql implements DatabaseInterface
     {
       try
       {
-        $this->executeScript(sprintf('%s/upgrade/db/mysql/mysql-base.php', getConfig()->get('paths')->configs), 'mysql');
-        return true;
+        return $this->executeScript(sprintf('%s/upgrade/db/mysql/mysql-base.php', getConfig()->get('paths')->configs), 'mysql');
       }
       catch(EpiDatabaseException $e)
       {
+        getLogger()->crit($e->getMessage());
         return false;
       }
     }
