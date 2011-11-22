@@ -250,7 +250,7 @@ var opTheme = (function() {
 			},
 
 			passesEmail: function(obj) {
-				var regex = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+				var regex = /^([\w-\.+]+@([\w-]+\.)+[\w-]{2,4})?$/;
 				return regex.test(obj.val());
 			},
 
