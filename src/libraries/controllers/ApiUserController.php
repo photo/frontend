@@ -11,9 +11,9 @@ class ApiUserController extends BaseController
     *
     * @return string Standard JSON envelope
     */
-  public static function login()
+  public static function login($provider = null)
   {
-    $wasUserLoggedIn = User::login($_POST['assertion'], $_SERVER['HTTP_HOST']);
+    $wasUserLoggedIn = User::login($provider, $_POST);
     if($wasUserLoggedIn)
       return self::success('User was logged in successfully', array('email' => getSession()->get('email')));
     else

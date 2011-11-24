@@ -74,13 +74,25 @@ var opTheme = (function() {
         return false;
       },
       login: function(ev) {
-        navigator.id.getVerifiedEmail(function(assertion) {
-            if (assertion) {
-              opTheme.user.loginSuccess(assertion);
+        var el = $(ev.target);
+        if(el.hasClass('browserid')) {
+          navigator.id.getVerifiedEmail(function(assertion) {
+              if (assertion) {
+                opTheme.user.browserid.loginSuccess(assertion);
+              } else {
+                opTheme.user.browserid.loginFailure(assertion);
+              }
+          });
+        } else if(el.hasClass('facebook')) {
+          FB.login(function(response) {
+            if (response.authResponse) {
+              console.log('User logged in, posting to openphoto host.');
+              OP.Util.makeRequest('/user/facebook/login.json', opTheme.user.base.loginProcessed);
             } else {
-              opTheme.user.loginFailure(assertion);
+              console.log('User cancelled login or did not fully authorize.');
             }
-        });
+          }, {scope: 'email'});
+        }
       },
       photoDelete: function(ev) {
       
@@ -516,23 +528,27 @@ var opTheme = (function() {
       }
     },
     user: {
-      loginFailure: function(assertion) {
-        log('login failed');
-        // TODO something here to handle failed login
-      },
-      loginProcessed: function(response) {
-        if(response.code != 200) {
-          log('processing of login failed');
-          // TODO do something here to handle failed login
-          return;
-        }
+      base: {
+        loginProcessed: function(response) {
+          if(response.code != 200) {
+            log('processing of login failed');
+            // TODO do something here to handle failed login
+            return;
+          }
 
-        log('login processing succeeded');
-        window.location.reload();
+          log('login processing succeeded');
+          window.location.reload();
+        }
       },
-      loginSuccess: function(assertion) {
-        var params = {assertion: assertion};
-        OP.Util.makeRequest('/user/login.json', params, opTheme.user.loginProcessed);
+      browserid: {
+        loginFailure: function(assertion) {
+          log('login failed');
+          // TODO something here to handle failed login
+        },
+        loginSuccess: function(assertion) {
+          var params = {assertion: assertion};
+          OP.Util.makeRequest('/user/browserid/login.json', params, opTheme.user.base.loginProcessed);
+        }
       }
     }
   };

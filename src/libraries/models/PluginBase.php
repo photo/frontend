@@ -16,9 +16,14 @@ class PluginBase
     getLogger()->info('Plugin onAction called');
   }
 
-  public function onBody()
+  public function onBodyBegin()
   {
-    getLogger()->info('Plugin onBody called');
+    getLogger()->info('Plugin onBodyBegin called');
+  }
+
+  public function onBodyBeginEnd()
+  {
+    getLogger()->info('Plugin onBodyEnd called');
   }
 
   public function onHead()
