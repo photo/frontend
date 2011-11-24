@@ -525,9 +525,9 @@ nav ul li#nav-search form button:active {
 
 nav ul li#nav-signin,
 nav ul li#nav-browserid {
+  cursor:inherit;
   border-left:1px solid #eee;
   color:#666;
-  cursor:pointer;
   display:inline-block;
   float:right;
   margin:0;
@@ -537,16 +537,20 @@ nav ul li#nav-browserid {
 
 nav ul li#nav-browserid {
   height:40px;
-  width:100px;
+  width:150px;
 }
 
 nav ul li#nav-browserid a {
   border:none;
   display:block;
   margin:9px 0 3px 0;
-  padding:0 10px 0 10px;
+  padding:0 15px;
   position:relative;
   width:auto;
+}
+nav ul li#nav-browserid a img{
+  margin-left:10px;
+  cursor:pointer;
 }
 
 nav ul li#nav-signin:hover,
@@ -2039,7 +2043,12 @@ a.message-close {text-decoration:underline; cursor:pointer; color:#43c2fd; posit
 /* 
    Plupload
 ------------------------------------------------------------------- */
-
+.plupload{
+  -moz-border-radius: 10px;
+  -khtml-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
 .plupload_button {
 	display: -moz-inline-box; /* FF < 3*/
 	display: inline-block;

@@ -18,10 +18,14 @@ class Plugin
 
   public function invoke($action, $params = null)
   {
+    $output = '';
     foreach($this->pluginInstances as $instance)
     {
-      $instance->$action($params);
+      $output .= (string)$instance->$action($params);
     }
+
+    if($output != '')
+      echo $output;
   }
 
   private function getActive()
