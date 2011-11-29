@@ -17,7 +17,7 @@ class FileSystemDropboxBase
       'token' => Utility::decrypt(getConfig()->get('credentials')->dropboxToken),
       'token_secret' => Utility::decrypt(getConfig()->get('credentials')->dropboxTokenSecret)
     ));
-    $this->dropbox = new Dropbox_API($oauth);
+    $this->dropbox = new Dropbox_API($oauth, Dropbox_API::ROOT_SANDBOX);
     $this->dropboxFolder = getConfig()->get('dropbox')->dropboxFolder;
     $this->parent = $parent;
   }
