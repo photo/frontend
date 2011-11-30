@@ -1,4 +1,4 @@
-Open Photo API / Get Photos
+Open Photo API / Create Action
 =======================
 #### OpenPhoto, a photo service for the masses
 
@@ -85,6 +85,7 @@ The response is in a standard [response envelope][Envelope].
         datePosted: "1318281477",
         status: 1
       }
+    }
 
 [Envelope]: Envelope.markdown
 [Action]: ../schemas/Action.markdown
