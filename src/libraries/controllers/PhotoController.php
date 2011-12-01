@@ -130,7 +130,8 @@ class PhotoController extends BaseController
       return;
     }
     $crumb = getSession()->get('crumb');
-    $body = getTheme()->get('upload.php', array('crumb' => $crumb, 'licenses' => Utility::getLicenses()));
+    $template = sprintf('%s/upload.php', getConfig()->get('paths')->templates);
+    $body = getTemplate()->get($template, array('crumb' => $crumb, 'licenses' => Utility::getLicenses()));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'upload'));
   }
 

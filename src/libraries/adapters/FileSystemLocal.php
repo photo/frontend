@@ -121,9 +121,17 @@ class FileSystemLocal implements FileSystemInterface
   public function initialize()
   {
     if(!file_exists($this->root)) {
-      mkdir($this->root, 0775, true);
+      @mkdir($this->root, 0775, true);
     }
-    return file_exists($this->root);
+    if(file_exists($this->root))
+    {
+      return true;
+    }
+    else
+    {
+      getLogger()->crit("Could not create {$this->root}");
+      return false;
+    }
   }
 
   /**
@@ -139,5 +147,10 @@ class FileSystemLocal implements FileSystemInterface
   public function normalizePath($path)
   {
     return $this->root . $path;
+  }
+
+  public function getRoot()
+  {
+    return $this->root;
   }
 }

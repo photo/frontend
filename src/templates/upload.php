@@ -2,8 +2,8 @@
 	Upload <!-- function bar for e.g. sharing function -->
 </div>
 
-<div class="message upload-complete"><img src="<?php getTheme()->asset('image', 'checkmark-big.gif'); ?>" align="absmiddle">All done! Go have a <a href="<?php Url::photosView(); ?>">look at your photos</a>.</div>
-<div class="message upload-progress"><img src="<?php getTheme()->asset('image', 'upload-big.gif'); ?>" align="absmiddle">Currently uploading <span class="completed">0</span> of <span class="total">0</span> photos.</div>
+<div class="message upload-complete"><img src="/assets/images/checkmark-big.gif" align="absmiddle">All done! Go have a <a href="<?php Url::photosView(); ?>">look at your photos</a>.</div>
+<div class="message upload-progress"><img src="/assets/images/upload-big.gif" align="absmiddle">Currently uploading <span class="completed">0</span> of <span class="total">0</span> photos.</div>
 <form class="upload">
   <div class="options">
     <h2>Apply these settings to my photos.</h2>
