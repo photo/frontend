@@ -30,10 +30,7 @@ class Plugin
 
   public function isActive($plugin)
   {
-    if(!empty($this->activePlugins))
-      return false;
-
-    foreach($this->activePlugins as $p)
+    foreach($this->getActive() as $p)
     {
       if($plugin == $p)
         return true;
