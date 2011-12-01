@@ -1950,35 +1950,6 @@ div#setup h3 {
   margin:10px 0 0 164px;
 }
 
-/*  Upload ************************************************ */
-body.upload .options {
-  margin:10px;
-}
-body.upload .options div {
-  margin:6px 0;
-}
-body.upload .options label {
-  float:left;
-  width:100px;
-}
-body.upload .poweredby {
-  font-style:italic;
-  font-size:12px;
-  display:block;
-  text-align:right;
-}
-body.upload .message {
-  font-size:30px;
-  margin:10px 0 30px;
-  text-align:center;
-  display:none;
-}
-body.upload .message img {
-  position:relative;
-  left:-5px;
-  top:5px;
-}
-
 /* 04.09 Settings ************************************************ */
 
 .settings form label {
