@@ -28,6 +28,20 @@ class Plugin
       echo $output;
   }
 
+  public function isActive($plugin)
+  {
+    if(!empty($this->activePlugins))
+      return false;
+
+    foreach($this->activePlugins as $p)
+    {
+      if($plugin == $p)
+        return true;
+    }
+
+    return false;
+  }
+
   private function getActive()
   {
     $active = array();
@@ -51,7 +65,6 @@ class Plugin
   {
     if(empty($this->pluginDir) || !is_dir($this->pluginDir))
       return array();
-
     $dir = dir($this->pluginDir);
     $plugins = array();
     while (($name = $dir->read()) !== false)

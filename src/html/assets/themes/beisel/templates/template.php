@@ -12,6 +12,7 @@
     <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.ico'); ?>">
     <link rel="apple-touch-icon" href="<?php getTheme()->asset('image', 'apple-touch-icon.png'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'main.css'); ?>">
+    <link rel="stylesheet" href="/assets/stylesheets/upload.css">
     <?php getPlugin()->invoke('onHead', array('page' => $page)); ?>
 </head>
 
@@ -45,8 +46,9 @@
               '<?php getTheme()->asset('javascript', 'plupload.js'); ?>',
               '<?php getTheme()->asset('javascript', 'plupload.html5.js'); ?>',
               '<?php getTheme()->asset('javascript', 'jquery.plupload.queue.js'); ?>',
+              '/assets/javascripts/openphoto-upload.js',
             <?php } else { ?>
-              '<?php getTheme()->asset('javascript', 'plupload-full-min.js'); ?>',
+              '/assets/javascripts/openphoto-upload.min.js',
             <?php } ?>
           <?php } ?>
 
