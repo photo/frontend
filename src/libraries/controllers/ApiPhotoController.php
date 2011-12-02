@@ -59,35 +59,6 @@ class ApiPhotoController extends BaseController
   }
 
   /**
-   * Remove all the size keys from the photo but the one in list in $sizes
-   *
-   * @param $photo the photo object to prune.
-   * @param array $sizes the sizes to keep.
-   * @return the photo
-   */
-  private static function pruneSizes($photo, $sizes)
-  {
-    if(isset($sizes) && !empty($sizes))
-    {
-      foreach($sizes as $size)
-      {
-        $sizekeys["path{$size}"] = 1;
-      }
-    }
-
-    foreach($photo as $photoKey => $photoValue)
-    {
-      if(preg_match('/path(\d+x\d+)/', $photoKey))
-      {
-        if(isset($sizekeys) && isset($sizekeys[$photoKey]))
-          continue;
-        unset($photo[$photoKey]);
-      }
-    }
-    return $photo;
-  }
-
-  /**
     * Retrieve the next and previous photo given photo $id
     *
     * @param string $id ID of the photo to be deleted.
@@ -101,14 +72,14 @@ class ApiPhotoController extends BaseController
       return self::error('Could not get next/previous photo', false);
 
     if(isset($_GET['returnSizes']))
-    {
       $sizes = (array)explode(',', $_GET['returnSizes']);
-    }
-    // if specific sizes are requested then make sure we return them
+
     foreach($nextPrevious as $key => $photo)
-    {
       $nextPrevious[$key] = self::pruneSizes($photo, $sizes);
-    }
+
+    $generate = $requery = false;
+    if(isset($_GET['generate']) && $_GET['generate'] == 'true')
+      $generate = true;
 
     // if specific sizes are requested then make sure we return them
     if(isset($sizes))
@@ -122,7 +93,31 @@ class ApiPhotoController extends BaseController
         foreach($nextPrevious as $key => $photo)
         {
           $options = Photo::generateFragmentReverse($size);
-          $nextPrevious[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+          if($generate && !isset($nextPrevious[$key]["path{$size}"]))
+          {
+            $hash = Photo::generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
+            Photo::generate($photo['id'], $hash, $options['width'], $options['width'], $options['options']);
+            $requery = true;
+          }
+          else
+          {
+            $nextPrevious[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+          }
+        }
+      }
+
+      // requery to get generated paths
+      if($requery)
+      {
+        $nextPrevious = getDb()->getPhotoNextPrevious($id, $filters);
+        foreach($nextPrevious as $key => $photo)
+        {
+          $nextPrevious[$key] = self::pruneSizes($photo, $sizes);
+          foreach($sizes as $size)
+          {
+            $options = Photo::generateFragmentReverse($size);
+            $nextPrevious[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+          }
         }
       }
     }
@@ -146,7 +141,7 @@ class ApiPhotoController extends BaseController
 
   /*public static function dynamic($id, $hash, $width, $height, $options = null)
   {
-    $photo = Photo::generateImage($id, $hash, $width, $height, $options);
+    $photo = Photo::generate($id, $hash, $width, $height, $options);
     return self::success('', $photo);
   }*/
 
@@ -200,20 +195,20 @@ class ApiPhotoController extends BaseController
             $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
           }
         }
-      }
-    }
 
-    // requery to get generated paths
-    if($requery)
-    {
-      $photos = $db->getPhotos($filters, $pageSize);
-      foreach($photos as $key => $photo)
-      {
-        $photos[$key] = self::pruneSizes($photo, $sizes);
-        foreach($sizes as $size)
+        // requery to get generated paths
+        if($requery)
         {
-          $options = Photo::generateFragmentReverse($size);
-          $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+          $photos = $db->getPhotos($filters, $pageSize);
+          foreach($photos as $key => $photo)
+          {
+            $photos[$key] = self::pruneSizes($photo, $sizes);
+            foreach($sizes as $size)
+            {
+              $options = Photo::generateFragmentReverse($size);
+              $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+            }
+          }
         }
       }
     }
@@ -275,7 +270,7 @@ class ApiPhotoController extends BaseController
         {
           $options = Photo::generateFragmentReverse($size);
           $hash = Photo::generateHash($photoId, $options['width'], $options['height'], $options['options']);
-          Photo::generateImage($photoId, $hash, $options['width'], $options['height'], $options['options']);
+          Photo::generate($photoId, $hash, $options['width'], $options['height'], $options['options']);
         }
       }
 
@@ -510,5 +505,34 @@ class ApiPhotoController extends BaseController
       $filters['groups'] = $groupIds;
 
     return array('filters' => $filters, 'pageSize' => $pageSize, 'protocol' => $protocol, 'page' => $page);
+  }
+
+  /**
+   * Remove all the size keys from the photo but the one in list in $sizes
+   *
+   * @param $photo the photo object to prune.
+   * @param array $sizes the sizes to keep.
+   * @return the photo
+   */
+  private static function pruneSizes($photo, $sizes)
+  {
+    if(isset($sizes) && !empty($sizes))
+    {
+      foreach($sizes as $size)
+      {
+        $sizekeys["path{$size}"] = 1;
+      }
+    }
+
+    foreach($photo as $photoKey => $photoValue)
+    {
+      if(preg_match('/path(\d+x\d+)/', $photoKey))
+      {
+        if(isset($sizekeys) && isset($sizekeys[$photoKey]))
+          continue;
+        unset($photo[$photoKey]);
+      }
+    }
+    return $photo;
   }
 }
