@@ -58,6 +58,58 @@ class Photo
   }
 
   /**
+    * Generate a version of the photo as specified by the width, height and options.
+    * This method requres the $hash ve validated to keep random versions of images to be created.
+    * The photo is generated, uploaded to the remote file system and added to the database.
+    * Operations are done in place on a downloaded version of the base photo and this file name is returned.
+    *
+    * @param string $id The id of the photo.
+    * @param int $width The width of the requested photo.
+    * @param int $height The height of the requested photo.
+    * @param string $options Optional options to be applied on the photo
+    * @return mixed string on success, false on failure
+    */
+  public static function generate($id, $hash, $width, $height, $options = null)
+  {
+    if(!self::isValidateHash($hash, $id, $width, $height, $options))
+      return false;
+
+    $photo = getDb()->getPhoto($id);
+    $filename = getFs()->getPhoto($photo['pathBase']);
+    $image = getImage($filename);
+    $maintainAspectRatio = true;
+    if(!empty($options))
+    {
+      $optionsArray = (array)explode('x', $options);
+      foreach($optionsArray as $option)
+      {
+        switch($option)
+        {
+          case 'BW':
+            $image->greyscale();
+            break;
+          case 'CR':
+            $maintainAspectRatio = false;
+            break;
+        }
+      }
+    }
+
+    $image->scale($width, $height, $maintainAspectRatio);
+
+    $image->write($filename);
+    $customPath = self::generateCustomUrl($photo['pathBase'], $width, $height, $options);
+    $key = self::generateCustomKey($width, $height, $options);
+    $resFs = getFs()->putPhoto($filename, $customPath);
+    $resDb = getDb()->postPhoto($id, array($key => $customPath));
+    // TODO unlink $filename
+    if($resFs && $resDb)
+      return $filename;
+
+    return false;
+  }
+
+  /**
     * Does the opposite of self::generateFragment.
     * Given a string fragment this will return it's parts as an array.
     * The $options must start with a width and height (i.e. 800x600)
@@ -150,59 +202,6 @@ class Photo
     $fragment = self::generateFragment($width, $height, $options);
     $hash = self::generateHash($id, $width, $height, $options);
     return sprintf('/photo/%s/create/%s/%s.jpg', $id, $hash, $fragment);
-  }
-
-  /**
-    * Generate a version of the photo as specified by the width, height and options.
-    * This method requres the $hash ve validated to keep random versions of images to be created.
-    * The photo is generated, uploaded to the remote file system and added to the database.
-    * Operations are done in place on a downloaded version of the base photo and this file name is returned.
-    *
-    * @param string $id The id of the photo.
-    * @param int $width The width of the requested photo.
-    * @param int $height The height of the requested photo.
-    * @param string $options Optional options to be applied on the photo
-    * @return mixed string on success, false on failure
-    */
-  // TODO change name to generate()
-  public static function generateImage($id, $hash, $width, $height, $options = null)
-  {
-    if(!self::isValidateHash($hash, $id, $width, $height, $options))
-      return false;
-
-    $photo = getDb()->getPhoto($id);
-    $filename = getFs()->getPhoto($photo['pathBase']);
-    $image = getImage($filename);
-    $maintainAspectRatio = true;
-    if(!empty($options))
-    {
-      $optionsArray = (array)explode('x', $options);
-      foreach($optionsArray as $option)
-      {
-        switch($option)
-        {
-          case 'BW':
-            $image->greyscale();
-            break;
-          case 'CR':
-            $maintainAspectRatio = false;
-            break;
-        }
-      }
-    }
-
-    $image->scale($width, $height, $maintainAspectRatio);
-
-    $image->write($filename);
-    $customPath = self::generateCustomUrl($photo['pathBase'], $width, $height, $options);
-    $key = self::generateCustomKey($width, $height, $options);
-    $resFs = getFs()->putPhoto($filename, $customPath);
-    $resDb = getDb()->postPhoto($id, array($key => $customPath));
-    // TODO unlink $filename
-    if($resFs && $resDb)
-      return $filename;
-
-    return false;
   }
 
   /**

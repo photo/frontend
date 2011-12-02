@@ -79,16 +79,9 @@ class ApiPhotoController extends BaseController
     {
       if(preg_match('/path(\d+x\d+)/', $photoKey))
       {
-        $prune = true;
         if(isset($sizekeys) && isset($sizekeys[$photoKey]))
-        {
-          $prune = false;
-          break;
-        }
-        if($prune)
-        {
-          unset($photo[$photoKey]);
-        }
+          continue;
+        unset($photo[$photoKey]);
       }
     }
     return $photo;
@@ -331,7 +324,8 @@ class ApiPhotoController extends BaseController
     */
   public static function view($id)
   {
-    if(isset($_GET['actions']) && $_GET['actions'] == 'true')
+    $getActions = isset($_GET['actions']) && $_GET['actions'] == 'true';
+    if($getActions)
       $photo = getDb()->getPhotoWithActions($id);
     else
       $photo = getDb()->getPhoto($id);
@@ -380,11 +374,41 @@ class ApiPhotoController extends BaseController
       if(isset($_GET['protocol']))
         $protocol = $_GET['protocol'];
 
+      $generate = $requery = false;
+      if(isset($_GET['generate']) && $_GET['generate'] == 'true')
+        $generate = true;
+
       foreach($sizes as $size)
       {
         $options = Photo::generateFragmentReverse($size);
-        $photo["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+        if($generate && !isset($photo["path{$size}"]))
+        {
+          $hash = Photo::generateHash($id, $options['width'], $options['height'], $options['options']);
+          Photo::generate($id, $hash, $options['width'], $options['width'], $options['options']);
+          $requery = true;
+        }
+        else
+        {
+          $photo["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+        }
       }
+
+      // requery to get generated paths
+      if($requery)
+      {
+        if($getActions)
+          $photo = getDb()->getPhotoWithActions($id);
+        else
+          $photo = getDb()->getPhoto($id);
+
+        $photo = self::pruneSizes($photo, $sizes);
+        foreach($sizes as $size)
+        {
+          $options = Photo::generateFragmentReverse($size);
+          $photo["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+        }
+      }
+
     }
 
     return self::success("Photo {$id}", $photo);
