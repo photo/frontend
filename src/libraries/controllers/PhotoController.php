@@ -20,7 +20,7 @@ class PhotoController extends BaseController
   {
     $args = func_get_args();
     // TODO, this should call a method in the API
-    $photo = Photo::generateImage($id, $hash, $width, $height, $options);
+    $photo = Photo::generate($id, $hash, $width, $height, $options);
     // TODO return 404 graphic
     if($photo)
     {
