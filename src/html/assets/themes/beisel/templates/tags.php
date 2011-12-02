@@ -8,7 +8,7 @@
   <ol class="tag-cloud">
     <?php foreach($tags as $tag) { ?>
     <li class="size-<?php Utility::safe($tag['weight']); ?>">
-      <a href="<?php Url::photosView("tags-{$tag['id']}"); ?>" title="<?php Utility::safe($tag[$tagField]); ?> photos"><?php Utility::safe($tag['id']); ?></a>
+      <a href="<?php Url::photosView("tags-{$tag['id']}"); ?>" title="<?php Utility::safe($tag['count']); ?> photos"><?php Utility::safe($tag['id']); ?></a>
     </li>
     <?php } ?>
   </ol>
