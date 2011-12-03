@@ -5,14 +5,14 @@
     <?php foreach($photos as $photo) { ?>
       <li class="grid-item id-<?php Utility::safe($photo['id']); ?>">
         <a href="<?php Url::photoView($photo['id'], $options); ?>">
-			<img src="<?php Url::photoUrl($photo, $thumbnailSize); ?>" alt="<?php Utility::safe($photo['title']); ?>" />
-	        <ul class="meta">
-	          <li class="age"><?php Utility::timeAsText($photo['dateTaken'], 'Taken'); ?></li>
-	          <li class="permission"><span class="<?php Utility::permissionAsText($photo['permission']); ?>" title="Photo is <?php Utility::permissionAsText($photo['permission']); ?>"></li>
-			  <?php if(isset($photo['tags']) && !empty($photo['tags'])) { ?><li class="tags"><span title="Photo has tags"></span></li><?php } ?>
-			  <?php if(isset($photo['latitude']) && !empty($photo['latitude'])) { ?><li class="geo"><span title="Photo has geo informations"></span></li><?php } ?>
-	        </ul>
-		</a>
+          <img src="<?php Url::photoUrl($photo, $thumbnailSize); ?>" alt="<?php Utility::safe($photo['title']); ?>" />
+          <ul class="meta">
+            <li class="age"><?php Utility::timeAsText($photo['dateTaken'], 'Taken'); ?></li>
+            <li class="permission"><span class="<?php Utility::permissionAsText($photo['permission']); ?>" title="Photo is <?php Utility::permissionAsText($photo['permission']); ?>"></li>
+            <?php if(isset($photo['tags']) && !empty($photo['tags'])) { ?><li class="tags"><span title="Photo has tags"></span></li><?php } ?>
+            <?php if(isset($photo['latitude']) && !empty($photo['latitude'])) { ?><li class="geo"><span title="Photo has geo informations"></span></li><?php } ?>
+          </ul>
+        </a>
       </li>
     <?php } ?>
   </ul>
