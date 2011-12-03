@@ -101,7 +101,7 @@ class ApiPhotoController extends BaseController
           }
           else
           {
-            $nextPrevious[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+            $nextPrevious[$key] = Photo::addApiUrls($photo, $options, $protocol);
           }
         }
       }
@@ -116,7 +116,7 @@ class ApiPhotoController extends BaseController
           foreach($sizes as $size)
           {
             $options = Photo::generateFragmentReverse($size);
-            $nextPrevious[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+            $nextPrevious[$key] = Photo::addApiUrls($photo, $options, $protocol);
           }
         }
       }
@@ -192,7 +192,7 @@ class ApiPhotoController extends BaseController
           }
           else
           {
-            $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+            $photos[$key] = Photo::addApiUrls($photo, $options, $protocol);
           }
         }
 
@@ -206,7 +206,7 @@ class ApiPhotoController extends BaseController
             foreach($sizes as $size)
             {
               $options = Photo::generateFragmentReverse($size);
-              $photos[$key]["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+              $photos[$key] = Photo::addApiUrls($photo, $options, $protocol);
             }
           }
         }
@@ -412,7 +412,7 @@ class ApiPhotoController extends BaseController
         }
         else
         {
-          $photo["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+          $photo = Photo::addApiUrls($photo, $options, $protocol);
         }
       }
 
@@ -428,7 +428,7 @@ class ApiPhotoController extends BaseController
         foreach($sizes as $size)
         {
           $options = Photo::generateFragmentReverse($size);
-          $photo["path{$size}"] = Photo::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+          $photo = Photo::addApiUrls($photo, $options, $protocol);
         }
       }
     }
