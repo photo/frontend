@@ -9,6 +9,33 @@
 class Photo
 {
   /**
+    * Adds the urls for the photo.
+    * pathWxH is a static resource.
+    * photoWxH is an enumerated array [path, width, height]
+    *
+    * @param array $photo the photo object
+    * @param array $options Options for the photo such as crop (CR) and greyscale (BW)
+    * @param string $protocol http or https
+    * @return array
+    */
+  public static function addApiUrls($photo, $options, $protocol)
+  {
+    $size = self::generateFragment($options['width'], $options['height'], $options['options']);
+    $path = self::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+    $photo["path{$size}"] = $path;
+    if(strstr($size, 'xCR') === false)
+    {
+      $dimensions = self::getRealDimensions($photo['width'], $photo['height'], $options['width'], $options['height']);
+      $photo["photo{$size}"] = array($path, $dimensions['width'], $dimensions['height']);
+    }
+    else
+    {
+      $photo["photo{$size}"] = array($path, $options['width'], $options['height']);
+    }
+    return $photo;
+  }
+
+  /**
     * Delete a photo from the remote database and remote filesystem.
     * This deletes the original photo and all versions.
     *
@@ -202,6 +229,30 @@ class Photo
     $fragment = self::generateFragment($width, $height, $options);
     $hash = self::generateHash($id, $width, $height, $options);
     return sprintf('/photo/%s/create/%s/%s.jpg', $id, $hash, $fragment);
+  }
+
+  /**
+    * Calculate the width and height of a scaled photo
+    *
+    * @param int $originalWidth The width of the original photo.
+    * @param int $originalHeight The height of the original photo.
+    * @param int $newWidth The width of the new photo.
+    * @param int $newHeight The height of the new photo.
+    * @return array
+    */
+  public static function getRealDimensions($originalWidth, $originalHeight, $newWidth, $newHeight)
+  {
+    if(($originalWidth/$originalHeight) < ($newWidth/$newHeight))
+    {
+      $width = (string)intval($newWidth * $originalHeight / $originalWidth);
+      $height = $newHeight;
+    }
+    else
+    {
+      $width = $newWidth;
+      $height = (string)intval($newHeight * $originalWidth / $originalHeight);
+    }
+    return array('width' => $width, 'height' => $height);
   }
 
   /**
