@@ -251,7 +251,7 @@ class Photo
     if($originalRatio <= $newRatio)
     {
       $height = $newHeight;
-      $width = $newHeight / $originalRatio;
+      $width = $newHeight / (1 / $originalRatio);
     }
     else
     {
