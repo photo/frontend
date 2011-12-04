@@ -1,4 +1,4 @@
-Open Photo API / Update Tag
+Update Tag
 =======================
 #### OpenPhoto, a photo service for the masses
 

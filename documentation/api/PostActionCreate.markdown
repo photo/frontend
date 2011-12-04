@@ -1,4 +1,4 @@
-Open Photo API / Create Action
+Create Action
 =======================
 #### OpenPhoto, a photo service for the masses
 

@@ -1,4 +1,4 @@
-Open Photo API / Update Group
+Update Group
 =======================
 #### OpenPhoto, a photo service for the masses
 

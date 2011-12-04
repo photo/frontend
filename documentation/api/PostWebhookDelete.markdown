@@ -1,4 +1,4 @@
-Open Photo API / Delete Webhook
+Delete Webhook
 =======================
 #### OpenPhoto, a photo service for the masses
 

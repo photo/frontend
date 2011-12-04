@@ -1,4 +1,4 @@
-Open Photo API / Response Envelope
+Response Envelope
 =======================
 #### OpenPhoto, a photo service for the masses
 

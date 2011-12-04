@@ -1,4 +1,4 @@
-Open Photo API / Upload Photo
+Upload Photo
 =======================
 #### OpenPhoto, a photo service for the masses
 

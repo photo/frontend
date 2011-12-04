@@ -1,4 +1,4 @@
-Open Photo API / Get Next/Previous Photo
+Get Next/Previous Photo
 =======================
 #### OpenPhoto, a photo service for the masses
 

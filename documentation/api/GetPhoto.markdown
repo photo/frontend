@@ -1,4 +1,4 @@
-Open Photo API / Get Photo
+Get Photo
 =======================
 #### OpenPhoto, a photo service for the masses
 
