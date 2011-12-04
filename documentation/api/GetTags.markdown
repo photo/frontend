@@ -1,6 +1,6 @@
 Get Tags
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 

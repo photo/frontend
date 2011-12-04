@@ -1,6 +1,6 @@
 Creae Tag
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 

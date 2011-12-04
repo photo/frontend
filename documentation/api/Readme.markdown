@@ -1,6 +1,6 @@
 Open Photo API
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 

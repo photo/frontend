@@ -1,6 +1,6 @@
 Update Group
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 

@@ -1,6 +1,6 @@
 Upload Photo
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 

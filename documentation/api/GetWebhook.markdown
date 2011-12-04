@@ -1,6 +1,6 @@
 Get Webhook
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 

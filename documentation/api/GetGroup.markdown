@@ -1,6 +1,6 @@
 Get Group
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 
