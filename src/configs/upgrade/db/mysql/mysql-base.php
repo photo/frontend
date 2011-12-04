@@ -193,7 +193,7 @@ SQL;
     INSERT INTO `{$this->mySqlTablePrefix}admin` (`key`,`value`) 
     VALUES (:key, :value)
 SQL;
-  mysql_base($sql, array(':key' => 'version', ':value' => '1.2.1'));
+  mysql_base($sql, array(':key' => 'version', ':value' => '1.3.1'));
 
   return true;
 }

@@ -15,7 +15,7 @@
     <meta name="author" content="">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.ico'); ?>">
+    <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.png'); ?>">
     <link rel="apple-touch-icon" href="<?php getTheme()->asset('image', 'apple-touch-icon.png'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'html5_boilerplate_style.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'basics.css'); ?>">
@@ -30,6 +30,7 @@
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'settings.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'setup.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'message-box.css'); ?>">
+    <link rel="stylesheet" href="/assets/stylesheets/upload.css">
     <?php getPlugin()->invoke('onHead', array('page' => $page)); ?>
 </head>
 
@@ -58,6 +59,7 @@
           '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
           '<?php getTheme()->asset('javascript', 'jquery.fileupload.min.js'); ?>',
           '<?php getTheme()->asset('javascript', 'jquery.cycle.min.js '); ?>',
+          '/assets/javascripts/openphoto-upload.min.js',
           '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'
         ],
         onComplete: function(){ opTheme.init.attach(); }

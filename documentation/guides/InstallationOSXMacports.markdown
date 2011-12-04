@@ -43,24 +43,6 @@ Download and install the source code. We recommend `~/Sites/yourdomain.com` but 
 
 #### Using git clone
 
-    apt-get install git-core
-    git clone git@github.com:openphoto/frontend.git /var/www/yourdomain.com
-    chown -R www-data:www-data /var/www/yourdomain.com
-
-#### Using tar
-
-    cd /var/www
-    wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
-    tar -zxvf openphoto.tar.gz
-    mv openphoto-frontend-* yourdomain.com
-    chown -R www-data:www-data yourdomain.com
-
-Assuming that this is a development machine you can make the config writable by the user Apache runs as. Most likely `www-data`.
-
-    mkdir /var/www/yourdomain.com/src/userdata
-    chown www-data:www-data /var/www/yourdomain.com/src/configs/generated
-#### Using git clone
-
     # install git if you don't have it already
     port install git-core
     git clone git@github.com:openphoto/frontend.git ~/Sites/yourdomain.com

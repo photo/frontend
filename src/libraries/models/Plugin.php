@@ -18,10 +18,25 @@ class Plugin
 
   public function invoke($action, $params = null)
   {
+    $output = '';
     foreach($this->pluginInstances as $instance)
     {
-      $instance->$action($params);
+      $output .= (string)$instance->$action($params);
     }
+
+    if($output != '')
+      echo $output;
+  }
+
+  public function isActive($plugin)
+  {
+    foreach($this->getActive() as $p)
+    {
+      if($plugin == $p)
+        return true;
+    }
+
+    return false;
   }
 
   private function getActive()
@@ -47,7 +62,6 @@ class Plugin
   {
     if(empty($this->pluginDir) || !is_dir($this->pluginDir))
       return array();
-
     $dir = dir($this->pluginDir);
     $plugins = array();
     while (($name = $dir->read()) !== false)

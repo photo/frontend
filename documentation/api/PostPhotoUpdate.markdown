@@ -1,6 +1,6 @@
-Open Photo API / Photo Upload
+Update Photo
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 
@@ -64,7 +64,7 @@ _Authentication: required_
 <a name="response"></a>
 ### Response
 
-The response is in a standard [response envelope][Envelope].
+The response is in a standard [response envelope](http://theopenphotoproject.org/documentation/api/Envelope).
 
 * _message_, A string describing the result. Don't use this for anything but reading.
 * _code_, _202_ on success
@@ -110,7 +110,7 @@ The response is in a standard [response envelope][Envelope].
       }
     }
 
-[Envelope]: Envelope.markdown
+
 [Photo]: ../schemas/Photo.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint

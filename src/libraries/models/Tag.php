@@ -105,7 +105,6 @@ class Tag
     */
   public static function groupByWeight($tags = null)
   {
-    $tagField = User::isOwner() ? 'countPrivate' : 'countPublic';
     if($tags === null)
     {
       $tags = getApi()->invoke("/tags/list.json");
@@ -118,10 +117,10 @@ class Tag
     {
       foreach($tags as $tag)
       {
-        if($tag[$tagField] < $minTags)
-          $minTags = $tag[$tagField];
-        if($tag[$tagField] > $maxTags)
-          $maxTags = $tag[$tagField];
+        if($tag['count'] < $minTags)
+          $minTags = $tag['count'];
+        if($tag['count'] > $maxTags)
+          $maxTags = $tag['count'];
       }
 
       // we create 10 groups based on count using %s
@@ -129,7 +128,7 @@ class Tag
       // step needs to be float so we don't divide by zero
       $step = floatval($range / 9);
       foreach($tags as $key => $tag)
-        $tags[$key]['weight'] = intval(($tag[$tagField]-$minTags) / $step)+1;
+        $tags[$key]['weight'] = intval(($tag['count']-$minTags) / $step)+1;
     }
     return $tags;
   }

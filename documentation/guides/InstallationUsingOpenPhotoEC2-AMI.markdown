@@ -1,4 +1,4 @@
-OpenPhoto / Installation for Ubuntu
+OpenPhoto / Installation for AWS EC2 using an AMI
 =======================
 #### OpenPhoto, a photo service for the masses
 

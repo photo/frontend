@@ -1,6 +1,6 @@
 OpenPhoto / Glossary
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 The OpenPhoto stack consists of various components. Below is a glossary of all the terms you need to know so you can understand the overall system.
 

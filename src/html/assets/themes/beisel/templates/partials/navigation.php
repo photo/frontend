@@ -23,7 +23,10 @@
 	</li>
 <?php } else { ?>
 	<li id="nav-browserid">
-		<a class="login-click" title="Signin to OpenPhoto"><img src="https://browserid.org/i/sign_in_blue.png" class="login-click" /></a>
+    <?php if(getPlugin()->isActive('FacebookConnect')) { ?>
+      <a class="login-click facebook" title="Signin using Facebook"><img src="<?php getTheme()->asset('image', 'facebook-icon.gif'); ?>" class="login-click facebook" hspace="5" /></a>
+    <?php } ?>
+    <a class="login-click browserid" title="Signin using BrowserID"><img src="<?php getTheme()->asset('image', 'browserid.png'); ?>" class="login-click browserid" /></a>
 	</li>
 <?php } ?>
 	</li>

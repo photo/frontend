@@ -1,6 +1,6 @@
-Open Photo API / Get Photos
+Delete Group
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 
@@ -55,7 +55,7 @@ _None_
 <a name="response"></a>
 ### Response
 
-The response is in a standard [response envelope][Envelope].
+The response is in a standard [response envelope](http://theopenphotoproject.org/documentation/api/Envelope).
 
 * _message_, A string describing the result. Don't use this for anything but reading.
 * _code_, _200_ on success
@@ -70,7 +70,7 @@ The response is in a standard [response envelope][Envelope].
       "result": true
     }
 
-[Envelope]: Envelope.markdown
+
 [Group]: ../schemas/Group.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint

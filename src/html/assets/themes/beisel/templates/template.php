@@ -9,13 +9,15 @@
     <meta name="keywords" content="<?php getTheme()->meta('keywords', $page); ?>">
     <meta name="author" content="openphoto.me">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.ico'); ?>">
+    <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.png'); ?>">
     <link rel="apple-touch-icon" href="<?php getTheme()->asset('image', 'apple-touch-icon.png'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'main.css'); ?>">
+    <link rel="stylesheet" href="/assets/stylesheets/upload.css">
     <?php getPlugin()->invoke('onHead', array('page' => $page)); ?>
 </head>
 
 <body class="<?php echo $page; ?>">
+  <?php getPlugin()->invoke('onBodyBegin', array('page' => $page)); ?>
 
   <div id="wrapper">
 
@@ -44,8 +46,9 @@
               '<?php getTheme()->asset('javascript', 'plupload.js'); ?>',
               '<?php getTheme()->asset('javascript', 'plupload.html5.js'); ?>',
               '<?php getTheme()->asset('javascript', 'jquery.plupload.queue.js'); ?>',
+              '/assets/javascripts/openphoto-upload.js',
             <?php } else { ?>
-              '<?php getTheme()->asset('javascript', 'plupload-full-min.js'); ?>',
+              '/assets/javascripts/openphoto-upload.min.js',
             <?php } ?>
           <?php } ?>
 
@@ -64,6 +67,6 @@
       }
     });
   </script>
-  <?php getPlugin()->invoke('onBody', array('page' => $page)); ?>
+  <?php getPlugin()->invoke('onBodyEnd', array('page' => $page)); ?>
 </body>
 </html>

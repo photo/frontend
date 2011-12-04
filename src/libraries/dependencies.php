@@ -26,6 +26,9 @@ require getConfig()->get('paths')->controllers . '/WebhookController.php';
 require getConfig()->get('paths')->external . '/aws/sdk.class.php';
 require getConfig()->get('paths')->external . '/Dropbox/autoload.php';
 require getConfig()->get('paths')->external . '/Mobile_Detect/Mobile_Detect.php';
+require getConfig()->get('paths')->libraries . '/functions.php';
+
+// adapters
 require getConfig()->get('paths')->adapters . '/Database.php';
 require getConfig()->get('paths')->adapters . '/DatabaseSimpleDb.php';
 require getConfig()->get('paths')->adapters . '/DatabaseMySql.php';
@@ -35,7 +38,9 @@ require getConfig()->get('paths')->adapters . '/FileSystemS3Dropbox.php';
 require getConfig()->get('paths')->adapters . '/FileSystemLocal.php';
 require getConfig()->get('paths')->adapters . '/FileSystemLocalDropbox.php';
 require getConfig()->get('paths')->adapters . '/FileSystemDropboxBase.php';
-require getConfig()->get('paths')->libraries . '/functions.php';
+require getConfig()->get('paths')->adapters . '/Login.php';
+require getConfig()->get('paths')->adapters . '/LoginBrowserId.php';
+require getConfig()->get('paths')->adapters . '/LoginFacebook.php';
 
 // models
 require getConfig()->get('paths')->models . '/Utility.php';

@@ -20,7 +20,7 @@ class PhotoController extends BaseController
   {
     $args = func_get_args();
     // TODO, this should call a method in the API
-    $photo = Photo::generateImage($id, $hash, $width, $height, $options);
+    $photo = Photo::generate($id, $hash, $width, $height, $options);
     // TODO return 404 graphic
     if($photo)
     {
@@ -130,7 +130,8 @@ class PhotoController extends BaseController
       return;
     }
     $crumb = getSession()->get('crumb');
-    $body = getTheme()->get('upload.php', array('crumb' => $crumb, 'licenses' => Utility::getLicenses()));
+    $template = sprintf('%s/upload.php', getConfig()->get('paths')->templates);
+    $body = getTemplate()->get($template, array('crumb' => $crumb, 'licenses' => Utility::getLicenses()));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'upload'));
   }
 
@@ -153,16 +154,6 @@ class PhotoController extends BaseController
       else
         $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
       $photo = $apiResp['result'];
-      if($photo['width'] <= $detailDimensions[0])
-      {
-        $photo['thisWidth'] = $photo['width'];
-        $photo['thisHeight'] = $photo['height'];
-      }
-      else
-      {
-        $photo['thisWidth'] = $detailDimensions[0];
-        $photo['thisHeight'] = intval($photo['height']/$photo['width']*$detailDimensions[0]);
-      }
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
       $crumb = getSession()->get('crumb');

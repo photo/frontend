@@ -1086,9 +1086,19 @@ class DatabaseMySql implements DatabaseInterface
         $stmt['vals'] .= ",";
       $stmt['cols'] .= $key;
       if(!empty($bindings) && array_key_exists($value, $bindings))
-        $stmt['vals'] .= "{$value}";
+      {
+        if(is_null($value))
+          $stmt['vals'] .= 'NULL';
+        else
+          $stmt['vals'] .= $value;
+      }
       else
-        $stmt['vals'] .= sprintf("'%s'", $this->_($value));
+      {
+        if(is_null($value))
+          $stmt['vals'] .= 'NULL';
+        else
+          $stmt['vals'] .= sprintf("'%s'", $this->_($value));
+      }
     }
     return $stmt;
   }
@@ -1235,6 +1245,9 @@ class DatabaseMySql implements DatabaseInterface
         case 'extra':
           break;
         default:
+          // skip empty lat/long Gh-313
+          if(($key == 'latitude' || $key == 'longitude') && empty($value))
+            $value = null;
           $bindings[":{$key}"] = $value;
           $paramsOut[$key] = ":{$key}";
           break;
