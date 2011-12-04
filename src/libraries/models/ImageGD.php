@@ -39,7 +39,7 @@ class ImageGD implements ImageInterface
     elseif(preg_match('/\.gif^/', $filename))
       $this->image = @imagecreatefromgif($filename);
     else
-      $this->image = @imagecreatefromgif($filename);
+      $this->image = @imagecreatefromjpeg($filename);
 
     if(!$this->image)
       OPException::raise(new OPInvalidImageException('Could not create jpeg with GD library'));
@@ -140,9 +140,9 @@ class ImageGD implements ImageInterface
     */
   public function write($outputFile)
   {
-    if(preg_match('/\.png^/', $filename))
+    if(preg_match('/\.png^/', $outputFile))
       imagepng($this->image, $outputFile, 90);
-    elseif(preg_match('/\.gif^/', $filename))
+    elseif(preg_match('/\.gif^/', $outputFile))
       imagegif($this->image, $outputFile, 90);
     else
       imagejpeg($this->image, $outputFile, 90);
