@@ -367,7 +367,8 @@ var opTheme = (function() {
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
 
         opTheme.front.init($('div.front-slideshow'));
-        OPU.init();
+        if(typeof OPU === 'object')
+          OPU.init();
         // TODO standardize this somehow
         $('form.validate').each(opTheme.formHandlers.init);
       }
