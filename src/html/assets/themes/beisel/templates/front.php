@@ -4,7 +4,7 @@
     <h1>Oh no, you haven't uploaded any photos yet. <a href="<?php Url::photoUpload(); ?>" class="link">Start Now</h1>
   <?php } else { ?>
     <img src="<?php getTheme()->asset('image', 'front-general.png'); ?>" class="front" />
-    <h1>Sorry, no photos. <a class="login-click link">Login</a> to upload some.</h1>
+    <h1>Sorry, no photos. <a class="login-click browserid link">Login</a> to upload some.</h1>
   <?php } ?>
 <?php } else { ?>
 	<section id="slideshow">
