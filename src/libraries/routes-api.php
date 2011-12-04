@@ -46,9 +46,9 @@ getApi()->get('/tags/list.json', array('ApiTagController', 'list_'), EpiApi::ext
  * User endpoints
  * All user endpoints follow the same convention.
  * Everything in []'s are optional
- * /user/{action}.json
+ * /user[/{provider}]/{action}.json
  */
-getApi()->post('/user/login.json', array('ApiUserController', 'login'), EpiApi::external);
+getApi()->post('/user/([a-z0-9]+)/login.json', array('ApiUserController', 'login'), EpiApi::external);
 getApi()->post('/user/login/mobile.json', array('ApiUserController', 'loginMobile'), EpiApi::external);
 getApi()->get('/user/logout.json', array('ApiUserController', 'logout'), EpiApi::external);
 

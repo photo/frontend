@@ -542,7 +542,7 @@ class SetupController
         if($usesAws)
           $fsErrors[] = 'We were unable to initialize your S3 bucket.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/s3/">signed up for AWS S3</a>.</li><li>Double check your AWS credentials.</li><li>S3 bucket names are globally unique, make sure yours isn\'t already in use by someone else.</li><li>S3 bucket names can\'t have certain special characters. Try using just alpha-numeric characters and periods.</li></ul>';
         else if($usesLocalFs)
-          $fsErrors[] = "We were unable to set up your local file system using <em>{$fsObj->fsRoot}</em>. Make sure that the following user has proper permissions ({$serverUser}).";
+          $fsErrors[] = "We were unable to set up your local file system using <em>{$fsObj->getRoot()}</em>. Make sure that the following user has proper permissions ({$serverUser}).";
         else
           $fsErrors[] = 'An unknown error occurred while setting up your file system. Check your error logs to see if there\'s more information about the error.';
       }

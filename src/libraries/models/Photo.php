@@ -9,6 +9,33 @@
 class Photo
 {
   /**
+    * Adds the urls for the photo.
+    * pathWxH is a static resource.
+    * photoWxH is an enumerated array [path, width, height]
+    *
+    * @param array $photo the photo object
+    * @param array $options Options for the photo such as crop (CR) and greyscale (BW)
+    * @param string $protocol http or https
+    * @return array
+    */
+  public static function addApiUrls($photo, $options, $protocol)
+  {
+    $size = self::generateFragment($options['width'], $options['height'], $options['options']);
+    $path = self::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+    $photo["path{$size}"] = $path;
+    if(strstr($size, 'xCR') === false)
+    {
+      $dimensions = self::getRealDimensions($photo['width'], $photo['height'], $options['width'], $options['height']);
+      $photo["photo{$size}"] = array($path, $dimensions['width'], $dimensions['height']);
+    }
+    else
+    {
+      $photo["photo{$size}"] = array($path, $options['width'], $options['height']);
+    }
+    return $photo;
+  }
+
+  /**
     * Delete a photo from the remote database and remote filesystem.
     * This deletes the original photo and all versions.
     *
@@ -55,6 +82,58 @@ class Photo
     if(!empty($options))
       $fragment .= "x{$options}";
     return $fragment;
+  }
+
+  /**
+    * Generate a version of the photo as specified by the width, height and options.
+    * This method requres the $hash ve validated to keep random versions of images to be created.
+    * The photo is generated, uploaded to the remote file system and added to the database.
+    * Operations are done in place on a downloaded version of the base photo and this file name is returned.
+    *
+    * @param string $id The id of the photo.
+    * @param int $width The width of the requested photo.
+    * @param int $height The height of the requested photo.
+    * @param string $options Optional options to be applied on the photo
+    * @return mixed string on success, false on failure
+    */
+  public static function generate($id, $hash, $width, $height, $options = null)
+  {
+    if(!self::isValidateHash($hash, $id, $width, $height, $options))
+      return false;
+
+    $photo = getDb()->getPhoto($id);
+    $filename = getFs()->getPhoto($photo['pathBase']);
+    $image = getImage($filename);
+    $maintainAspectRatio = true;
+    if(!empty($options))
+    {
+      $optionsArray = (array)explode('x', $options);
+      foreach($optionsArray as $option)
+      {
+        switch($option)
+        {
+          case 'BW':
+            $image->greyscale();
+            break;
+          case 'CR':
+            $maintainAspectRatio = false;
+            break;
+        }
+      }
+    }
+
+    $image->scale($width, $height, $maintainAspectRatio);
+
+    $image->write($filename);
+    $customPath = self::generateCustomUrl($photo['pathBase'], $width, $height, $options);
+    $key = self::generateCustomKey($width, $height, $options);
+    $resFs = getFs()->putPhoto($filename, $customPath);
+    $resDb = getDb()->postPhoto($id, array($key => $customPath));
+    // TODO unlink $filename
+    if($resFs && $resDb)
+      return $filename;
+
+    return false;
   }
 
   /**
@@ -153,56 +232,33 @@ class Photo
   }
 
   /**
-    * Generate a version of the photo as specified by the width, height and options.
-    * This method requres the $hash ve validated to keep random versions of images to be created.
-    * The photo is generated, uploaded to the remote file system and added to the database.
-    * Operations are done in place on a downloaded version of the base photo and this file name is returned.
+    * Calculate the width and height of a scaled photo
     *
-    * @param string $id The id of the photo.
-    * @param int $width The width of the requested photo.
-    * @param int $height The height of the requested photo.
-    * @param string $options Optional options to be applied on the photo
-    * @return mixed string on success, false on failure
+    * @param int $originalWidth The width of the original photo.
+    * @param int $originalHeight The height of the original photo.
+    * @param int $newWidth The width of the new photo.
+    * @param int $newHeight The height of the new photo.
+    * @return array
     */
-  // TODO change name to generate()
-  public static function generateImage($id, $hash, $width, $height, $options = null)
+  public static function getRealDimensions($originalWidth, $originalHeight, $newWidth, $newHeight)
   {
-    if(!self::isValidateHash($hash, $id, $width, $height, $options))
-      return false;
+    if(empty($originalWidth) || empty($originalHeight))
+      return array('width' => $newWidth, 'height' => $newHeight);
 
-    $photo = getDb()->getPhoto($id);
-    $filename = getFs()->getPhoto($photo['pathBase']);
-    $image = getImage($filename);
-    $maintainAspectRatio = true;
-    if(!empty($options))
+    $originalRatio = $originalWidth / $originalHeight;
+    $newRatio = $newWidth / $newHeight;
+
+    if($originalRatio <= $newRatio)
     {
-      $optionsArray = (array)explode('x', $options);
-      foreach($optionsArray as $option)
-      {
-        switch($option)
-        {
-          case 'BW':
-            $image->greyscale();
-            break;
-          case 'CR':
-            $maintainAspectRatio = false;
-            break;
-        }
-      }
+      $height = $newHeight;
+      $width = $newHeight / (1 / $originalRatio);
     }
-
-    $image->scale($width, $height, $maintainAspectRatio);
-
-    $image->write($filename);
-    $customPath = self::generateCustomUrl($photo['pathBase'], $width, $height, $options);
-    $key = self::generateCustomKey($width, $height, $options);
-    $resFs = getFs()->putPhoto($filename, $customPath);
-    $resDb = getDb()->postPhoto($id, array($key => $customPath));
-    // TODO unlink $filename
-    if($resFs && $resDb)
-      return $filename;
-
-    return false;
+    else
+    {
+      $width = $newWidth;
+      $height = $newWidth / $originalRatio;
+    }
+    return array('width' => $width, 'height' => $height);
   }
 
   /** 
@@ -233,7 +289,8 @@ class Photo
   {
     $exif = @exif_read_data($photo);
     if(!$exif)
-      return null;
+      $exif = array();
+
     $size = getimagesize($photo);
     // DateTimeOriginal is the right thing. If it is not there
     // use DateTime which might be the date the photo was modified
@@ -242,7 +299,12 @@ class Photo
     {
         $parsedDate = self::parseExifDate($exif, 'DateTime');    
 	if($parsedDate === false)
-	    $parsedDate = $exif['FileDateTime'];
+	{
+	    if(array_key_exists('FileDateTime', $exif))
+	        $parsedDate = $exif['FileDateTime'];
+            else
+                $parsedDate = time();
+        }
     }
     $dateTaken = $parsedDate;    
 

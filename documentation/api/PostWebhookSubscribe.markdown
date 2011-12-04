@@ -1,6 +1,6 @@
-Open Photo API / Get Photo
+Create/Subscribe to Webhook
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 
@@ -15,7 +15,7 @@ Open Photo API / Get Photo
 
 Use this API to create a new webhook for a user.
 
-This API differs from our others in that it's both interactive and does not return a [Standard Envelope][Envelope]. These are the steps required to complete a webhook subscription.
+This API differs from our others in that it's both interactive and does not return a [Standard Envelope](http://theopenphotoproject.org/documentation/api/Envelope). These are the steps required to complete a webhook subscription.
 
 <a name="verification"></a>
 
@@ -43,7 +43,7 @@ _Authentication: required_
 
 ----------------------------------------
 
-[Envelope]: Envelope.markdown
+
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters

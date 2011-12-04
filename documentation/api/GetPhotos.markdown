@@ -1,6 +1,6 @@
-Open Photo API / Get Photos
+Get Photos
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 
@@ -20,7 +20,7 @@ Open Photo API / Get Photos
 
 Use this API to get a set of photos for a user.
 
-_NOTE:_ Always pass in the `returnSizes` parameter for sizes you plan on using. It's the only way to guarantee that a URL for that size will be present in the response. See [Photo Generation][photogeneration] for details.
+_NOTE:_ Always pass in the `returnSizes` parameter for sizes you plan on using. It's the only way to guarantee that a URL for that size will be present in the response. See [Photo Generation](http://theopenphotoproject.org/documentation/faq/PhotoGeneration) for details.
 
 ----------------------------------------
 
@@ -34,7 +34,8 @@ _Authentication: optional_
 <a name="parameters"></a>
 ### Parameters
 
-1.  returnSizes (optional), The photo sizes you'd like in the response. Specify every size you plan on using. [Docs for this parameter][ReturnSizes]
+1.  returnSizes (optional), (i.e. 20x20 or 30x30xCR,40x40) The photo sizes you'd like in the response. Specify every size you plan on using. [Docs for this parameter](http://theopenphotoproject.org/documentation/faq/ReturnSizes)
+1.  generate (optional), (i.e. true or false) Tells the API to generate the sizes from `returnSizes` instead of returning a _create_ URL. [Docs for this parameter](http://theopenphotoproject.org/documentation/faq/ReturnSizes)
 1.  pageSize (optional), Number of photos to return per request.
 1.  page (optional), Page number when browsing through photos. Starts at 1.
 1.  tags (optional), _i.e. dog,cat_ - A comma delimited string of strings.
@@ -60,7 +61,7 @@ _Authentication: optional_
 <a name="response"></a>
 ### Response
 
-The response is in a standard [response envelope][Envelope].
+The response is in a standard [response envelope](http://theopenphotoproject.org/documentation/api/Envelope).
 
 * _message_, A string describing the result. Don't use this for anything but reading.
 * _code_, _200_ on success
@@ -133,7 +134,7 @@ The response is in a standard [response envelope][Envelope].
       ]
     }
 
-[Envelope]: Envelope.markdown
+
 [Photo]: ../schemas/Photo.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint

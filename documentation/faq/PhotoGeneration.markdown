@@ -1,14 +1,11 @@
-Open Photo API / Photo Upload
+How photos are generated
 =======================
-#### OpenPhoto, a photo service for the masses
-
-----------------------------------------
 
 ### Overview of how and when versions of photos are generated
 
 By default, when a photo is uploaded there are two versions of that photo which are stored. The original version (`pathOriginal`) and a slightly lower resolution version (`pathBase`).
 
-The API is capable of returning URLs for any size version of every photo. This is acheived by passing in a parameter named `returnSizes` to the [GET Photos][GetPhotos] and [GET Photo][GetPhoto] APIs. This ensures that the response for the photo(s) will include a URL for the size(s) you specify. Here is an example.
+The API is capable of returning URLs for any size version of every photo. This is acheived by passing in a parameter named `returnSizes` to the [GET Photos](http://theopenphotoproject.org/documentation/api/GetPhotos) and [GET Photo](http://theopenphotoproject.org/documentation/api/GetPhoto) APIs. This ensures that the response for the photo(s) will include a URL for the size(s) you specify. Here is an example.
 
     curl "http://current.openphoto.me/photo/63.json?returnSizes=123x123"
 
@@ -106,8 +103,4 @@ The `returnSizes` parameter takes values in the form of _WxH[[xA]xB]_ which mean
 
 Additional options include `CR` and `BW`. `CR` tells the API to crop the photo to be exactly _width_ by _height_. It does a center crop and minimizes the portion of the photo that is cropped. `BW` applies a greyscale filter to the photo. `100x100xCRxBW` means the photo will have a key of `path100x100xCRxBW` and will be exactly _100_ by _100_, cropped and greyscale.
 
-For more information on the `returnSizes` parameter see our [documentation on returnSizes][ReturnSizes].
-
-[GetPhotos]: ../api/GetPhotos.markdown
-[GetPhoto]: ../api/GetPhoto.markdown
-[ReturnSizes]: ../faq/ReturnSizes.markdown
+For more information on the `returnSizes` parameter see our [documentation on returnSizes](http://theopenphotoproject.org/documentation/faq/ReturnSizes).

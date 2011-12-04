@@ -1,14 +1,11 @@
-Open Photo API / Photo Upload
+Getting specific sizes of a photo
 =======================
-#### OpenPhoto, a photo service for the masses
-
-----------------------------------------
 
 ### Understanding the `returnSizes` parameter and how to use it
-For the [GET /photo/view.json][GetPhoto] and [GET /photos/list.json][GetPhotos] you can pass in an optional `returnSizes` parameter.
+For the [GET /photo/view.json](http://theopenphotoproject.org/documentation/api/GetPhoto) and [GET /photos/list.json](http://theopenphotoproject.org/documentation/api/GetPhotos) you can pass in an optional `returnSizes` parameter.
 If you need a path to a photo then you'll want to make sure you pass this parameter in else your response won't contain any URLs.
 
-We also have a more detailed look at how [photos are generated][photogeneration].
+We also have a more detailed look at how [photos are generated](http://theopenphotoproject.org/documentation/faq/PhotoGeneration).
 
 ### Specifying the width and height of photos you want
 The first decision you need to make is the size or sizes of photos you want in the response.
@@ -35,7 +32,3 @@ Adding `xCR` means that the photo will be exactly _200px_ by _200px_ and cropped
 
 ### Accessing the paths in the response
 The name of the URL attribute in the response is, by convention, `pathWxH` where `WxH` is the value passed in to returnSizes.
-
-[GetPhoto]: ../api/GetPhoto.markdown
-[GetPhotos]: ../api/GetPhotos.markdown
-[photogeneration]: ../faq/PhotoGeneration.markdown

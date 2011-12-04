@@ -74,13 +74,25 @@ var opTheme = (function() {
         return false;
       },
       login: function(ev) {
-        navigator.id.getVerifiedEmail(function(assertion) {
-            if (assertion) {
-              opTheme.user.loginSuccess(assertion);
+        var el = $(ev.target);
+        if(el.hasClass('browserid')) {
+          navigator.id.getVerifiedEmail(function(assertion) {
+              if (assertion) {
+                opTheme.user.browserid.loginSuccess(assertion);
+              } else {
+                opTheme.user.browserid.loginFailure(assertion);
+              }
+          });
+        } else if(el.hasClass('facebook')) {
+          FB.login(function(response) {
+            if (response.authResponse) {
+              console.log('User logged in, posting to openphoto host.');
+              OP.Util.makeRequest('/user/facebook/login.json', opTheme.user.base.loginProcessed);
             } else {
-              opTheme.user.loginFailure(assertion);
+              console.log('User cancelled login or did not fully authorize.');
             }
-        });
+          }, {scope: 'email'});
+        }
       },
       photoDelete: function(ev) {
       
@@ -355,7 +367,8 @@ var opTheme = (function() {
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
 
         opTheme.front.init($('div.front-slideshow'));
-        opTheme.upload.init();
+        if(typeof OPU === 'object')
+          OPU.init();
         // TODO standardize this somehow
         $('form.validate').each(opTheme.formHandlers.init);
       }
@@ -439,100 +452,29 @@ var opTheme = (function() {
 					opTheme.message.error(messageHtml);
 				}
 			}
-		},
-    upload: {
-      init: function() {
-        var uploaderEl = $("#uploader");
-        if(uploaderEl.length == 0)
-          return;
-
-        uploaderEl.pluploadQueue({
-            // General settings
-            runtimes : 'html5',
-            url : '/photo/upload.json',
-            max_file_size : '20mb',
-            //chunk_size : '1mb',
-            unique_names : true,
-     
-            // Specify what files to browse for
-            filters : [
-                {title : "Photos", extensions : "jpg,jpeg,gif,png"}
-            ],
-     
-            // Flash settings
-            flash_swf_url : 'plupload.flash.swf',
-            multipart_params:{
-              crumb: $("form.upload input.crumb").val()
-            },
-            preinit: {
-              BeforeUpload: function() {
-                var uploader = $("#uploader").pluploadQueue();
-                $(".upload-progress .total").html(uploader.files.length);
-                $(".upload-progress .completed").html(uploader.total.uploaded+1);
-                $(".upload-progress").slideDown('fast');
-              },
-              UploadComplete: function() {
-                $(".upload-progress").fadeOut('fast', function() { $(".upload-complete").fadeIn('fast'); });
-              },
-              UploadFile: function() {
-                var uploader = $("#uploader").pluploadQueue(), license, permission, tags;
-                license = $("form.upload select[name='license'] :selected").val();
-                if(license.length == 0)
-                  license = $("form.upload input[name='custom']").val();
-                tags = $("form.upload input[name='tags']").val();
-                permission = $("form.upload input[name='permission']:checked").val();
-                
-                uploader.settings.multipart_params.license = license;
-                uploader.settings.multipart_params.tags = tags;
-                uploader.settings.multipart_params.permission = permission;
-              }
-            }
-        });
-     
-        // Client side form validation
-        var uploadForm = $("form.upload");
-        uploadForm.submit(function(e) {
-          var uploader = $('#uploader').pluploadQueue({});
-          // Files in queue upload them first
-          if (uploader.files.length > 0) {
-            // When all files are uploaded submit form
-            uploader.bind('StateChanged', function() {
-              if (uploader.files.length === (uploader.total.uploaded + uploader.total.failed)) {
-                $("form.upload")[0].submit();
-              }
-            }); 
-            uploader.start();
-          } else {
-            // TODO something that doesn't suck
-            alert('Please select at least one photo to upload.');
-          }
-   
-          return false;
-        });
-
-        var insufficient = $("#uploader .insufficient");
-        if(insufficient.length == 1)
-          insufficient.show();
-      }
-    },
+		}, 
     user: {
-      loginFailure: function(assertion) {
-        log('login failed');
-        // TODO something here to handle failed login
-      },
-      loginProcessed: function(response) {
-        if(response.code != 200) {
-          log('processing of login failed');
-          // TODO do something here to handle failed login
-          return;
-        }
+      base: {
+        loginProcessed: function(response) {
+          if(response.code != 200) {
+            log('processing of login failed');
+            // TODO do something here to handle failed login
+            return;
+          }
 
-        log('login processing succeeded');
-        window.location.reload();
+          log('login processing succeeded');
+          window.location.reload();
+        }
       },
-      loginSuccess: function(assertion) {
-        var params = {assertion: assertion};
-        OP.Util.makeRequest('/user/login.json', params, opTheme.user.loginProcessed);
+      browserid: {
+        loginFailure: function(assertion) {
+          log('login failed');
+          // TODO something here to handle failed login
+        },
+        loginSuccess: function(assertion) {
+          var params = {assertion: assertion};
+          OP.Util.makeRequest('/user/browserid/login.json', params, opTheme.user.base.loginProcessed);
+        }
       }
     }
   };

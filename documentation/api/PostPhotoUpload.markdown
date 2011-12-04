@@ -1,6 +1,6 @@
-Open Photo API / Photo Upload
+Upload Photo
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 
@@ -31,6 +31,8 @@ _Authentication: required_
 
 <a name="parameters"></a>
 ### Parameters
+
+(Due to a [bug in PHP's PECL OAuth extension](https://github.com/openphoto/frontend/issues/289) all parameters except for the photo must be passed urlencoded in the query string. This only applies for multipart and not application/x-www-form-urlencoded requests).
 
 1.  photo (required), The photo to be uploaded.
     * This can be the binary photo in multipart/formdata
@@ -78,7 +80,7 @@ _Authentication: required_
 <a name="response"></a>
 ### Response
 
-The response is in a standard [response envelope][Envelope].
+The response is in a standard [response envelope](http://theopenphotoproject.org/documentation/api/Envelope).
 
 * _message_, A string describing the result. Don't use this for anything but reading.
 * _code_, _202_ on success
@@ -124,7 +126,7 @@ The response is in a standard [response envelope][Envelope].
       }
     }
 
-[Envelope]: Envelope.markdown
+
 [Photo]: ../schemas/Photo.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
