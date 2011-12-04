@@ -443,7 +443,7 @@ var opTheme = (function() {
       },
       loginSuccess: function(assertion) {
         var params = {assertion: assertion};
-        OP.Util.makeRequest('/user/login.json', params, opTheme.user.loginProcessed, 'json');
+        OP.Util.makeRequest('/user/browserid/login.json', params, opTheme.user.loginProcessed, 'json');
       }
     },
   };
