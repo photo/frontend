@@ -18,10 +18,11 @@ class ImageGD implements ImageInterface
   private $image;
 
 	/**
-    * Private instance variable that holds width and height of the image
+    * Private instance variable that holds mime type, width and height of the image
     * @access private
-    * @var object
+    * @var string
     */
+  private $type;
 	private $width;
 	private $height;
 
@@ -34,9 +35,10 @@ class ImageGD implements ImageInterface
     */
   public function __construct($filename)
   {
-    if(preg_match('/\.png^/', $filename))
-      $this->image = @imagecreatefrompng($filename);
-    elseif(preg_match('/\.gif^/', $filename))
+    $this->type = mime_content_type($filename);
+    if(preg_match('/png$/', $this->type))
+      $this->image = imagecreatefrompng($filename);
+    elseif(preg_match('/gif$/', $this->type))
       $this->image = @imagecreatefromgif($filename);
     else
       $this->image = @imagecreatefromjpeg($filename);
@@ -140,9 +142,9 @@ class ImageGD implements ImageInterface
     */
   public function write($outputFile)
   {
-    if(preg_match('/\.png^/', $outputFile))
-      imagepng($this->image, $outputFile, 90);
-    elseif(preg_match('/\.gif^/', $outputFile))
+    if(preg_match('/png$/', $this->type))
+      imagepng($this->image, $outputFile, 9);
+    elseif(preg_match('/gif$/', $this->type))
       imagegif($this->image, $outputFile, 90);
     else
       imagejpeg($this->image, $outputFile, 90);
