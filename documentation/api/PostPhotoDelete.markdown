@@ -1,6 +1,6 @@
 Delete Photo
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 

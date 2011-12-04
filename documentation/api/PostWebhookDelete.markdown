@@ -1,6 +1,6 @@
 Delete Webhook
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 

@@ -1,6 +1,6 @@
 Delete Action
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 

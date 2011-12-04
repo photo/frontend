@@ -1,6 +1,6 @@
 Get Next/Previous Photo
 =======================
-#### OpenPhoto, a photo service for the masses
+
 
 ----------------------------------------
 
