@@ -1,6 +1,6 @@
-Documentation
+Frequently asked questions
+
 =======================
-#### OpenPhoto, a photo service for the masses
 
 This is a list of common questions that people have about OpenPhoto.
 If you have one which is not on this list send us a message via <a href="http://twitter.com/openphoto">Twitter</a> or <a href="mailto:hello@openphoto.me">email</a>.
@@ -55,13 +55,10 @@ It depends on who you use but here are some guidelines.
 
 ### When will the OpenPhoto software be completed?
 
-You can set up the OpenPhoto software using [any of the guides][guides].
+You can set up the OpenPhoto software using guides.
 
 ----------------------------------------
 
 ### When will the hosted version of OpenPhoto be available?
 
 We are aiming to have it ready by the end of November (2011).
-
-[guides]: ../guides/Guides.markdown
-
