@@ -34,7 +34,13 @@ class ImageGD implements ImageInterface
     */
   public function __construct($filename)
   {
-    $this->image = @imagecreatefromjpeg($filename);
+    if(preg_match($filename, '/\.png^/'))
+      $this->image = @imagecreatefrompng($filename);
+    elseif(preg_match($filename, '/\.gif^/'))
+      $this->image = @imagecreatefromgif($filename);
+    else
+      $this->image = @imagecreatefromgif($filename);
+
     if(!$this->image)
       OPException::raise(new OPInvalidImageException('Could not create jpeg with GD library'));
 		$this->width = imagesx($this->image);
@@ -134,6 +140,11 @@ class ImageGD implements ImageInterface
     */
   public function write($outputFile)
   {
-    imagejpeg($this->image, $outputFile, 90);
+    if(preg_match($filename, '/\.png^/'))
+      imagepng($this->image, $outputFile, 90);
+    elseif(preg_match($filename, '/\.gif^/'))
+      imagegif($this->image, $outputFile, 90);
+    else
+      imagejpeg($this->image, $outputFile, 90);
   }
 }

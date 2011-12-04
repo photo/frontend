@@ -3,7 +3,7 @@
 </div>
 
 <section class="photo-column">
-  <img class="photo" width="<?php Utility::safe($photo["photo{getConfig()->get('photoSizes')->detail}"][1]); ?>" height="<?php Utility::safe($photo["photo{getConfig()->get('photoSizes')->detail}"][2]); ?>" src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" alt="<?php Utility::safe($photo['title']); ?>">
+  <img class="photo" width="<?php Utility::safe($photo['photo'.getConfig()->get('photoSizes')->detail][1]); ?>" height="<?php Utility::safe($photo['photo'.getConfig()->get('photoSizes')->detail][2]); ?>" src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" alt="<?php Utility::safe($photo['title']); ?>">
   <h1><?php Utility::safe($photo['title']); ?></h1>
   <p class="description"><?php Utility::safe($photo['description']); ?></p>
   <?php if(count($photo['actions']) > 0) { ?>

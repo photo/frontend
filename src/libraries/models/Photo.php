@@ -242,15 +242,21 @@ class Photo
     */
   public static function getRealDimensions($originalWidth, $originalHeight, $newWidth, $newHeight)
   {
-    if(($originalWidth/$originalHeight) < ($newWidth/$newHeight))
+    if(empty($originalWidth) || empty($originalHeight))
+      return array('width' => $newWidth, 'height' => $newHeight);
+
+    $originalRatio = $originalWidth / $originalHeight;
+    $newRatio = $newWidth / $newHeight;
+
+    if($originalRatio <= $newRatio)
     {
-      $width = (string)intval($newWidth * $originalHeight / $originalWidth);
       $height = $newHeight;
+      $width = $newHeight / $originalRatio;
     }
     else
     {
       $width = $newWidth;
-      $height = (string)intval($newHeight * $originalWidth / $originalHeight);
+      $height = $newWidth / $originalRatio;
     }
     return array('width' => $width, 'height' => $height);
   }
@@ -265,10 +271,15 @@ class Photo
   {
     $exif = @exif_read_data($photo);
     if(!$exif)
-      return null;
+      $exif = array();
+
     $size = getimagesize($photo);
-    $dateTaken = $exif['FileDateTime'];
-    if(array_key_exists('DateTime', $exif))
+    $dateTaken = time();
+    if(array_key_exists('FileDateTime', $exif))
+    {
+      $dateTaken = $exif['FileDateTime'];
+    }
+    elseif(array_key_exists('DateTime', $exif))
     {
       $dateTime = explode(' ', $exif['DateTime']);
       $date = explode(':', $dateTime[0]);
