@@ -261,6 +261,24 @@ class Photo
     return array('width' => $width, 'height' => $height);
   }
 
+  /** 
+   * Parse the exif date
+   *
+   * @param $exif the exif block
+   * @param $key the exif key to get the date from
+   * @return the parsed date or false if not found
+   */
+  private static function parseExifDate($exif, $key)
+  {
+    if(array_key_exists($key, $exif))
+    {
+      $dateTime = explode(' ', $exif[$key]);
+      $date = explode(':', $dateTime[0]);
+      $time = explode(':', $dateTime[1]);
+      return @mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]);
+    }
+    return false;
+  }
   /**
     * Reads exif data from a photo.
     *
@@ -274,18 +292,21 @@ class Photo
       $exif = array();
 
     $size = getimagesize($photo);
-    $dateTaken = time();
-    if(array_key_exists('FileDateTime', $exif))
+    // DateTimeOriginal is the right thing. If it is not there
+    // use DateTime which might be the date the photo was modified
+    $parsedDate = self::parseExifDate($exif, 'DateTimeOriginal');
+    if($parsedDate === false) 
     {
-      $dateTaken = $exif['FileDateTime'];
+        $parsedDate = self::parseExifDate($exif, 'DateTime');    
+	if($parsedDate === false)
+	{
+	    if(array_key_exists('FileDateTime', $exif))
+	        $parsedDate = $exif['FileDateTime'];
+            else
+                $parsedDate = time();
+        }
     }
-    elseif(array_key_exists('DateTime', $exif))
-    {
-      $dateTime = explode(' ', $exif['DateTime']);
-      $date = explode(':', $dateTime[0]);
-      $time = explode(':', $dateTime[1]);
-      $dateTaken = @mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]);
-    }
+    $dateTaken = $parsedDate;    
 
     $exif_array = array('dateTaken' => $dateTaken, 'width' => $size[0],
       'height' => $size[1], 'cameraModel' => @$exif['Model'],
