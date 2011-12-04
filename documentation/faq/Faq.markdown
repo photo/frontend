@@ -1,5 +1,4 @@
 Frequently asked questions
-
 =======================
 
 This is a list of common questions that people have about OpenPhoto.

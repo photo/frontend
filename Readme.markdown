@@ -3,10 +3,16 @@
 
 ### What is OpenPhoto?
 
-1.  [FAQ][faq], Answers to the most common questions.
-1.  [API][api], Documentation to get started building applications on OpenPhoto.
-1.  [Schemas][schemas], Description of what the different objects in OpenPhoto look like (i.e. a photo or a comment).
-1.  [Guides][guides], Detailed guides to help you get the OpenPhoto software installed on various systems.
+1.  [FAQ](http://theopenphotoproject.org/documentation/faq/Faq), Answers to the most common questions.
+1.  [API &amp; Guides](http://theopenphotoproject.org/documentation), Documentation to get started building applications on OpenPhoto.
+
+### Install OpenPhoto in under 3 minutes
+
+    # Installing OpenPhoto on Ubuntu and Apache
+    # Run this from the command line as root.
+    # As always, view any script before running it ;).
+
+    curl https://raw.github.com/openphoto/frontend/master/documentation/guides/InstallationUbuntuApache.sh | /bin/bash
 
 ----------------------------------------
 
@@ -47,7 +53,3 @@ There are importing tools available to make the switch easy.
 [aws]: http://aws.amazon.com/
 [s3]: http://aws.amazon.com/s3/
 [simpledb]: http://aws.amazon.com/simpledb/
-[api]: https://github.com/openphoto/frontend/blob/master/documentation/api/Api.markdown
-[faq]: https://github.com/openphoto/frontend/blob/master/documentation/faq/Faq.markdown
-[schemas]: https://github.com/openphoto/frontend/blob/master/documentation/schemas/Schemas.markdown
-[guides]: https://github.com/openphoto/frontend/blob/master/documentation/guides/Guides.markdown
