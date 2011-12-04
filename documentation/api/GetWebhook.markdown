@@ -1,4 +1,4 @@
-Open Photo API / Get Webhook
+Get Webhook
 =======================
 #### OpenPhoto, a photo service for the masses
 

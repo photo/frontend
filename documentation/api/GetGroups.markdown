@@ -1,4 +1,4 @@
-Open Photo API / Get Groups
+Get Groups
 =======================
 #### OpenPhoto, a photo service for the masses
 

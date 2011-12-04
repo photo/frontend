@@ -1,4 +1,4 @@
-Open Photo API / Hello World
+Hello World
 =======================
 #### OpenPhoto, a photo service for the masses
 

@@ -1,4 +1,4 @@
-Open Photo API / Delete Action
+Delete Action
 =======================
 #### OpenPhoto, a photo service for the masses
 

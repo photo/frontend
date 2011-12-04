@@ -1,4 +1,4 @@
-Open Photo API / Create Group
+Create Group
 =======================
 #### OpenPhoto, a photo service for the masses
 
