@@ -34,9 +34,9 @@ class ImageGD implements ImageInterface
     */
   public function __construct($filename)
   {
-    if(preg_match($filename, '/\.png^/'))
+    if(preg_match('/\.png^/', $filename))
       $this->image = @imagecreatefrompng($filename);
-    elseif(preg_match($filename, '/\.gif^/'))
+    elseif(preg_match('/\.gif^/', $filename))
       $this->image = @imagecreatefromgif($filename);
     else
       $this->image = @imagecreatefromgif($filename);
@@ -140,9 +140,9 @@ class ImageGD implements ImageInterface
     */
   public function write($outputFile)
   {
-    if(preg_match($filename, '/\.png^/'))
+    if(preg_match('/\.png^/', $filename))
       imagepng($this->image, $outputFile, 90);
-    elseif(preg_match($filename, '/\.gif^/'))
+    elseif(preg_match('/\.gif^/', $filename))
       imagegif($this->image, $outputFile, 90);
     else
       imagejpeg($this->image, $outputFile, 90);
