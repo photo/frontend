@@ -226,7 +226,7 @@ class User
     */
   private static function create()
   {
-    return getDb()->putUser(getConfig()->get('user')->email, self::getDefaultAttributes());
+    return getDb()->putUser(self::getDefaultAttributes());
   }
 
   /**
