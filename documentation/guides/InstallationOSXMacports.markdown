@@ -26,14 +26,18 @@ Once you've confirmed that your cloud account is setup you can get started on yo
 
 This guide assumes you have [get it here][Macports installed]. If not you can . The easiest option is to use `.pkg` installer.
 
-    port install apache2
-    port install php5 +apache2
-    port install php5-exif
-    port install php5-curl
-    port install php5-imagick
-    port install php5-oauth
-    port install php5-mcrypt
-    port load apache2
+    sudo port install apache2
+    sudo port install php5 +apache2
+    
+    cd /opt/local/apache2/modules
+    sudo /opt/local/apache2/bin/apxs -a -e -n "php5" libphp5.so
+    
+    sudo port install php5-exif
+    sudo port install php5-curl
+    sudo port install php5-imagick
+    sudo port install php5-oauth
+    sudo port install php5-mcrypt
+    sudo port load apache2
 
 ----------------------------------------
 
@@ -43,8 +47,8 @@ Download and install the source code. We recommend `~/Sites/yourdomain.com` but 
 
 #### Using git clone
 
-    # install git if you don't have it already
-    port install git-core
+    # OSX should have git already installed. If not:
+    sudo port install git-core
     git clone git@github.com:openphoto/frontend.git ~/Sites/yourdomain.com
 
 #### Using tar
@@ -53,12 +57,12 @@ Download and install the source code. We recommend `~/Sites/yourdomain.com` but 
     wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
     tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
-    chown -R www-data:www-data yourdomain.com
 
 Assuming that this is a development machine you can make the config writable by the user Apache runs as. Most likely `_www`.
 
-    mkdir ~/Sites/yourdomain.com/src/userdata
-    chown _www ~/Sites/yourdomain.com/src/userdata
+    cd ~/Sites/yourdomain.com
+    mkdir src/userdata
+    chown _www src/userdata
 
 ----------------------------------------
 
@@ -66,9 +70,32 @@ Assuming that this is a development machine you can make the config writable by 
 
 #### Apache
 
-You'll need to make sure that you have named virtual hosts enabled in your Apache confs. First, copy the contents of `~/Sites/yourdomain.com/configs/openphoto-vhost.conf` onto your clipboard. Then open your `virtualhosts.conf` file.
+You'll need to make sure that you have named virtual hosts enabled in your Apache confs. 
 
-    vi /opt/local/apache2/conf/extra/virtualhosts.conf
+    sudo nano /opt/local/apache2/conf/httpd.conf
+    
+Enable virtual hosts:
+
+    # Virtual hosts                                                                     
+    Include conf/extra/httpd-vhosts.conf  
+
+Ensure the PHP module is loaded (various places in `httpd.conf`):
+
+    LoadModule php5_module        modules/libphp5.so
+    
+    DirectoryIndex index.html index.php
+    
+    Include conf/extra/mod_php.conf
+
+Copy the contents of `~/Sites/yourdomain.com/src/configs/openphoto-vhost.conf` onto your clipboard. Then open your `httpd-vhosts.conf` file.
+
+    sudo nano /opt/local/apache2/conf/extra/httpd-vhosts.conf
+
+You can put the `NameVirtualHost` directive at the top of the file.
+
+    NameVirtualHost *
+
+Paste the contents of your clipboard into the bottom of the file and replace instances of `/path/to/openphoto/html/directory` with `/Users/yourusername/Sites/yourdomain.com/src/html` or wherever you placed the code. In the virtualhost conf make sure to specify the full path to your `Sites` directory.
 
 By default, any access to ini files is denied with a "Not Found" 404 HTTP code.  To enable a 404, or Forbidden return code, change the following lines in the virtual host file.
 
@@ -79,31 +106,35 @@ Uncomment:
 
 Comment:
 
-  # 404 Not Found for ini files
-  AliasMatch \.ini$	/404
+    # 404 Not Found for ini files
+    AliasMatch \.ini$	/404
 
-
-You can put the `NameVirtualHost` directive at the top of the file.
-
-    NameVirtualHost *
-
-Paste the contents of your clipboard into the bottom of the file and replace instances of `/path/to/openphoto/html/directory` with `/Users/yourusername/Sites/yourdomain.com/src/html` or wherever you placed the code. In the virtualhost conf make sure to specify the full path to your `Sites` directory.
 
 ### PHP
 
 You should also verify that your `php.ini` file has a few important values set correctly.
 
-    vi /opt/local/etc/php5/php.ini
+    sudo nano /opt/local/etc/php5/php.ini
+    
+If the file is empty, copy the development template file
+
+    sudo cp /opt/local/etc/php5/php.ini-development /opt/local/etc/php5/php.ini
 
 Search for the following values and make sure they're correct.
 
+    post_max_size = 16M
     file_uploads = On
     upload_max_filesize = 16M
-    post_max_size = 16M
 
 Now you're ready to restart apache and visit the site in your browser.
 
-    /opt/local/apache2/bin/apachectl restart
+    sudo /opt/local/apache2/bin/apachectl restart
+
+### Fake domain
+
+If you happen to not have `yourdomain.com` registered, you can fake it by editing your `/etc/hosts` file and adding the following line
+
+    127.0.0.1  yourdomain.com
 
 ### Launching your OpenPhoto site
 
@@ -111,7 +142,7 @@ Now you're ready to launch your OpenPhoto site. Point your browser to your host 
 
 Once you complete the 3 steps your site will be up and running and you'll be redirected there. The _setup_ screen won't show up anymore. If for any reason you want to go through the setup again you will need to delete the generated config file and refresh your browser.
 
-    rm /var/www/yourdomain.com/src/configs/generated/settings.ini
+    rm ~/Sites/yourdomain.com/src/userdata/configs/settings.ini
 
 **ENJOY!**
 
