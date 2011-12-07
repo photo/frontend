@@ -44,7 +44,7 @@ While OpenPhoto functions like many existing services it's drastically different
 ### What if I use Flickr or Smugmug?
 
 If you're using Flickr or Smugmug you should consider switching to OpenPhoto.
-The more photos and time you invest on a propietary photo sharing service the more devastated you're going to be once they shut down or no longer appeal to you.
+The more photos and time you invest on a proprietary photo sharing service the more devastated you're going to be once they shut down or no longer appeal to you.
 
 There are importing tools available to make the switch easy.
 
