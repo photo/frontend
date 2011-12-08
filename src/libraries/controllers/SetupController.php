@@ -336,6 +336,11 @@ class SetupController
       $fsRoot = getConfig()->get('localfs')->fsRoot;
       $fsHost = getConfig()->get('localfs')->fsHost;
     }
+    else
+    {
+      $fsHost = sprintf('%s/photos', getenv('HTTP_HOST'));
+      $fsRoot = sprintf('%s/html/photos', dirname(dirname(dirname(__FILE__))));
+    }
 
     if(!isset($dropboxFolder) && getConfig()->get('dropbox') != null)
     {
