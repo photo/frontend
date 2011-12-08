@@ -35,8 +35,10 @@ class ImageGD implements ImageInterface
     */
   public function __construct($filename)
   {
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $this->type = finfo_file($finfo, $filename);
+    $this->type = mime_content_type($filename);
+    // not supported everywhere https://github.com/openphoto/frontend/issues/368
+    // $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    // $this->type = finfo_file($finfo, $filename);*/
     if(preg_match('/png$/', $this->type))
       $this->image = imagecreatefrompng($filename);
     elseif(preg_match('/gif$/', $this->type))
