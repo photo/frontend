@@ -13,7 +13,7 @@ OPU = (function() {
             // General settings
             runtimes : 'html5',
             url : '/photo/upload.json',
-            max_file_size : '20mb',
+            max_file_size : '32mb',
             //chunk_size : '1mb',
             unique_names : true,
      
