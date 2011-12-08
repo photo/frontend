@@ -30,6 +30,7 @@
       </select>
 
       <input type="hidden" name="appId" id="appId" <?php if(isset($appId)) { ?>value="<?php Utility::safe($appId); ?>"<?php } ?>>
+      <?php if(isset($_GET['edit'])) { ?><button type="button" onclick="window.location = '/'">Cancel</button><?php } ?>
       <button type="submit">Continue to Step 2</button>
     </form>
   </div>
@@ -56,6 +57,7 @@
         <option value="Local"<?php echo ($filesystem == 'Local') ? ' selected="selected"' : '' ?>>Local filesystem</option>
         <option value="LocalDropbox"<?php echo ($filesystem == 'LocalDropbox') ? ' selected="selected"' : '' ?>>Local filesystem + Dropbox</option>
       </select>
+      <?php if(isset($_GET['edit'])) { ?><button type="button" onclick="window.location = '/'">Cancel</button><?php } ?>
       <button type="submit">Continue to Step 3</button>
     </form>
   </div>
@@ -112,6 +114,7 @@
         <input type="hidden" name="dropboxTokenSecret" value="<?php Utility::safe($dropboxTokenSecret); ?>">
         <input type="hidden" name="dropboxFolder" value="<?php Utility::safe($dropboxFolder); ?>">
       <?php } ?>
+      <?php if(isset($_GET['edit'])) { ?><button type="button" onclick="window.location = '/'">Cancel</button><?php } ?>
       <button type="submit">Complete setup</button>
     </form>
   </div>
