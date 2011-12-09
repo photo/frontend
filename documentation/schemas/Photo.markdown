@@ -15,6 +15,8 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
 
     {
       id: (string),
+      appId: (string),
+      url: (string),
       host: (string),
       title: (string),
       description: (string),
@@ -64,6 +66,7 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
 
   * id, Base 36 value of a base 10 auto-incremented value
   * appId, A string identifing the application creating this entry
+  * url, Url to view this photo on the user's OpenPhoto site
   * host, Host on which this photo resides
   * title, A title for the photo up to 100 chars
   * description, A description for the photo up to 255 chars
