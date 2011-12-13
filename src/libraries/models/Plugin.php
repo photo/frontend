@@ -79,15 +79,16 @@ class Plugin
     if(!$inst)
       return null;
 
+    $conf = $inst->defineConf();
     if(file_exists($confPath = sprintf('%s/plugins/%s.%s.ini', getConfig()->get('paths')->userdata, $_SERVER['HTTP_HOST'], $plugin)))
     {
-      $conf = $inst->defineConf();
       $parsedConf = parse_ini_file($confPath);
       foreach($conf as $name => $tmp)
       {
         if(isset($parsedConf[$name]))
           $conf[$name] = $parsedConf[$name];
       }
+      return $conf;
     }
     return $conf;
   }
