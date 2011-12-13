@@ -13,6 +13,11 @@ class FacebookConnectPlugin extends PluginBase
     $this->appId = '232147993517254'; // test account, no one cares
   }
 
+  public function defineConf()
+  {
+    return array('id' => null, 'secret' => null);
+  }
+
   public function onBodyEnd($params)
   {
     parent::onAction($params);

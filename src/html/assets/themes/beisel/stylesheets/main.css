@@ -1965,7 +1965,7 @@ div#setup h3 {
   list-style-type:none;
   margin:0 0 20px 0;
 }
-.settings ul.credentials, .settings ul.webhooks {
+.settings ul.credentials, .settings ul.webhooks, ul.plugins {
   margin: 0 0 0 25px;
 }
 .settings ul.credentials ul, .settings ul.webhooks ul {

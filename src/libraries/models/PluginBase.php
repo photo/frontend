@@ -8,7 +8,11 @@ class PluginBase
 {
   public function __construct()
   {
+  }
 
+  public function defineConf()
+  {
+    return null;
   }
 
   public function onAction($params)

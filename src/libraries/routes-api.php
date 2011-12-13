@@ -73,6 +73,15 @@ getApi()->get('/group/([a-zA-Z0-9]+)/view.json', array('ApiGroupController', 'vi
 getApi()->get('/groups/list.json', array('ApiGroupController', 'list_'), EpiApi::external);
 
 /*
+ * Plugin endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /plugin[s]/{action}.json
+ */
+getApi()->post('/plugin/([a-zA-Z0-9]+)/update.json', array('ApiPluginController', 'update'), EpiApi::external);
+//getApi()->get('/plugin/([a-zA-Z0-9]+)/view.json', array('ApiPluginController', 'view'), EpiApi::external);
+getApi()->get('/plugins/list.json', array('ApiPluginController', 'list_'), EpiApi::external);
+
+/*
  * Webhook endpoints follow the same convention.
  * Everything in []'s are optional
  * /webhook[s][/{id}]/{action}.json
