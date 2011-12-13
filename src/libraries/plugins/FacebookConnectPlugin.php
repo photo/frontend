@@ -6,11 +6,10 @@
  */
 class FacebookConnectPlugin extends PluginBase
 {
-  private $appId;
+  private $id, $secret;
   public function __construct()
   {
     parent::__construct();
-    $this->appId = '232147993517254'; // test account, no one cares
   }
 
   public function defineConf()
@@ -18,15 +17,16 @@ class FacebookConnectPlugin extends PluginBase
     return array('id' => null, 'secret' => null);
   }
 
-  public function onBodyEnd($params)
+  public function onBodyEnd()
   {
-    parent::onAction($params);
+    parent::onBodyEnd();
+    $conf = $this->getConf();
     return <<<MKP
   <div id="fb-root"></div>
   <script>
     window.fbAsyncInit = function() {
       FB.init({
-        appId      : '{$this->appId}', // App ID
+        appId      : '{$conf->id}', // App ID
         status     : true, // check login status
         cookie     : true, // enable cookies to allow the server to access the session
         oauth      : true, // enable OAuth 2.0
