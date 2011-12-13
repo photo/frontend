@@ -12,6 +12,8 @@ require getConfig()->get('paths')->controllers . '/ApiGroupController.php';
 require getConfig()->get('paths')->controllers . '/GroupController.php';
 require getConfig()->get('paths')->controllers . '/ApiPhotoController.php';
 require getConfig()->get('paths')->controllers . '/PhotoController.php';
+require getConfig()->get('paths')->controllers . '/ApiPluginController.php';
+//require getConfig()->get('paths')->controllers . '/PluginController.php';
 require getConfig()->get('paths')->controllers . '/ApiTagController.php';
 require getConfig()->get('paths')->controllers . '/TagController.php';
 require getConfig()->get('paths')->controllers . '/ApiUserController.php';

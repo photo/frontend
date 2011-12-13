@@ -29,7 +29,7 @@ $loginEndpoint = false;
 if(isset($_GET['__route__']) && preg_match('#/user/(login|logout)#', $_GET['__route__']))
   $loginEndpoint = true;
 $runSetup = false;
-if(file_exists($configFile) && strpos($_SERVER['REQUEST_URI'], '/setup') !== false && isset($_GET['edit']))
+if(file_exists($configFile) && isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/setup') !== false && isset($_GET['edit']))
   $runSetup = true;
 
 // if the config file exists and we're not running the setup, proceed as normal
