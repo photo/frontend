@@ -98,6 +98,7 @@ class Utility
     return self::returnValue(date('l, F jS, Y \a\t g:ia', $ts), $write);
   }
 
+  // http://stackoverflow.com/a/1268642
   public static function generateIniString($array, $hasSections = false)
   {
     $retval = ''; 
@@ -105,19 +106,22 @@ class Utility
     { 
       foreach ($array as $key=>$elem)
       { 
-        $retval .= "[".$key."]\n"; 
-        foreach ($elem as $key2=>$elem2)
-        { 
-          if(is_array($elem2)) 
+        $retval .= "\n[{$key}]\n"; 
+        if(is_array($elem))
+        {
+          foreach ($elem as $key2=>$elem2)
           { 
-            for($i=0;$i<count($elem2);$i++) 
+            if(is_array($elem2)) 
             { 
-              $retval .= $key2."[] = \"".$elem2[$i]."\"\n"; 
+              for($i=0;$i<count($elem2);$i++) 
+              { 
+                $retval .= $key2."[] = \"".$elem2[$i]."\"\n"; 
+              } 
             } 
+            else if($elem2=="") $retval .= $key2." = \n"; 
+            else $retval .= $key2." = \"".$elem2."\"\n"; 
           } 
-          else if($elem2=="") $retval .= $key2." = \n"; 
-          else $retval .= $key2." = \"".$elem2."\"\n"; 
-        } 
+        }
       } 
     } 
     else
