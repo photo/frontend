@@ -37,7 +37,7 @@ class Url
     if(empty($options))
       return Utility::returnValue(sprintf('/photo/%s/view', Utility::safe($id, false)), $write);
     else
-      return Utility::returnValue(sprintf('/photo/%s/view/%s', Utility::safe($id, false), $options), $write);
+      return Utility::returnValue(sprintf('/photo/%s/%s/view', Utility::safe($id, false), $options), $write);
   }
 
   public static function photosView($options = null, $write = true)
