@@ -95,8 +95,12 @@ class Plugin
 
   public function writeConf($plugin, $string)
   {
+    $pluginDir = sprintf('%s/plugins', getConfig()->get('paths')->userdata);
+    if(!is_dir($pluginDir))
+      mkdir($pluginDir);
+
     if($string !== false)
-      return file_put_contents(sprintf('%s/plugins/%s.%s.ini', getConfig()->get('paths')->userdata, $_SERVER['HTTP_HOST'], $plugin), $string);
+      return file_put_contents(sprintf('%s/%s.%s.ini', $pluginDir, $_SERVER['HTTP_HOST'], $plugin), $string);
     return false;
   }
 
