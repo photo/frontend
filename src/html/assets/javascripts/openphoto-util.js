@@ -68,6 +68,8 @@
                 'photo-tag-click':'click:tag',
                 'photo-thumbnail-click':'click:photo-thumbnail',
                 'photo-update-click':'click:photo-update',
+                'plugin-status-click':'click:plugin-status',
+                'plugin-update-click':'click:plugin-update',
                 'search-click':'click:search',
                 'settings-click':'click:settings',
                 'webhook-delete-click':'click:webhook-delete'

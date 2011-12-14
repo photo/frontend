@@ -24,13 +24,11 @@ class ApiPluginController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     $params = $_POST;
-    if(isset($params['status']))
-    {
-      // this is where we activate and deactivate
-    }
-
     $pluginObj = getPlugin();
     $conf = $pluginObj->loadConf($plugin);
+    if(!$conf)
+      return self::error('Cannot update settings for a deactivated plugin, try activating first.', false);
+
     foreach($conf as $name => $value)
     {
       if(isset($_POST[$name]))
@@ -38,10 +36,39 @@ class ApiPluginController extends BaseController
     }
 
     $status = $pluginObj->writeConf($plugin, Utility::generateIniString($conf));
-    
+  
     if($status)
       return self::success('Plugin updated successfully', $conf);
     else
       return self::error('Could not update plugin', false);
+  }
+
+  public static function updateStatus($plugin, $status)
+  {
+    $siteConfig = getUserConfig()->getSiteSettings();
+    $plugins = (array)explode(',', $siteConfig['plugins']['activePlugins']);
+    switch($status)
+    {
+      case 'activate':
+        if(!in_array($plugin, $plugins))
+          $plugins[] = $plugin;
+        break;
+      case 'deactivate';
+        if(in_array($plugin, $plugins))
+        {
+          foreach($plugins as $key => $thisPlugin)
+          {
+            if($plugin == $thisPlugin)
+              unset($plugins[$key]);
+          }
+        }
+        break;
+    }
+    $siteConfig['plugins']['activePlugins'] = implode(',', $plugins);
+    $siteConfigStatus = getUserConfig()->writeSiteSettings($siteConfig);
+    if(!$siteConfigStatus)
+      return self::error('Could not change status of plugin', false);
+    else
+      return self::success('Plugin status changed', true);
   }
 }

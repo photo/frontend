@@ -78,6 +78,7 @@ getApi()->get('/groups/list.json', array('ApiGroupController', 'list_'), EpiApi:
  * /plugin[s]/{action}.json
  */
 getApi()->post('/plugin/([a-zA-Z0-9]+)/update.json', array('ApiPluginController', 'update'), EpiApi::external);
+getApi()->post('/plugin/([a-zA-Z0-9]+)/(activate|deactivate).json', array('ApiPluginController', 'updateStatus'), EpiApi::external);
 //getApi()->get('/plugin/([a-zA-Z0-9]+)/view.json', array('ApiPluginController', 'view'), EpiApi::external);
 getApi()->get('/plugins/list.json', array('ApiPluginController', 'list_'), EpiApi::external);
 
