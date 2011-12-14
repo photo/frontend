@@ -24,6 +24,7 @@
     <?php getPlugin()->invoke('onHead', array('page' => $page)); ?>
 </head>
 <body class="<?php echo $page; ?>">
+    <?php getPlugin()->invoke('onBodyBegin', array('page' => $page)); ?>
     <?php echo $body; ?>
     <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
     <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
@@ -37,6 +38,6 @@
             }
         });
     </script>
-    <?php getPlugin()->invoke('onBody', array('page' => $page)); ?>
+    <?php getPlugin()->invoke('onBodyEnd', array('page' => $page)); ?>
 </body>
 </html>
