@@ -62,6 +62,7 @@ else
   $paths->templates = "{$baseDir}/templates";
   $paths->themes = "{$baseDir}/html/assets/themes";
   getConfig()->set('paths', $paths);
+  require getConfig()->get('paths')->libraries . '/dependencies.php';
   require getConfig()->get('paths')->libraries . '/routes-setup.php';
   require getConfig()->get('paths')->libraries . '/routes-error.php';
   require getConfig()->get('paths')->controllers . '/SetupController.php';
