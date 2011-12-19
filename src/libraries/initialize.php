@@ -15,6 +15,7 @@ Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
 Epi::setPath('view', '');
 Epi::init('api','cache','config','curl','form','logger','route','session-php','template','database');
+EpiCache::employ(EpiCache::FILE);
 EpiSession::employ(EpiSession::PHP);
 getSession();
 
