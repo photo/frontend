@@ -5,6 +5,7 @@
 *.graffle
 
 # Useful files which should never be committed
+src/configs/override.ini
 src/configs/generated/*
 src/html/photos/**/*
 src/html/assets/themes/*
