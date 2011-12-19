@@ -39,9 +39,13 @@ class EpiSession_Apc implements EpiSessionInterface
       $key = array_shift($params);
 
     if(empty($key) && empty($_COOKIE[EpiSession::COOKIE]))
+    {
        setcookie(EpiSession::COOKIE, md5(uniqid(rand(), true)), time()+1209600, '/');
-
-    $this->key = empty($key) ? $_COOKIE[EpiSession::COOKIE] : $key;
-    $this->store = $this->getAll();
+    }
+    else
+    {
+      $this->key = empty($key) ? $_COOKIE[EpiSession::COOKIE] : $key;
+      $this->store = $this->getAll();
+    }
   }
 }

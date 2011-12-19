@@ -14,13 +14,14 @@ Epi::setSetting('exceptions', true);
 Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
 Epi::setPath('view', '');
-Epi::init('api','cache','config','curl','form','logger','route','session-php','template','database');
-EpiCache::employ(EpiCache::FILE);
-EpiSession::employ(EpiSession::PHP);
-getSession();
+Epi::init('api','cache','config','curl','form','logger','route','session','template','database');
 
 // loads configs and dependencies
 $hasConfig = getUserConfig()->load();
+
+EpiCache::employ(getConfig()->get('epi')->cache);
+EpiSession::employ(getConfig()->get('epi')->session);
+getSession();
 
 // determine if this is a login endpoint
 $loginEndpoint = false;

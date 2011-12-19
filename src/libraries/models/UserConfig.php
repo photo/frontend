@@ -41,6 +41,8 @@ class UserConfig
     if($configFile)
     {
       getConfig()->load($configFile);
+      if(file_exists(sprintf('%s/override.ini', getConfig()->get('paths')->configs)))
+        getConfig()->load('override.ini');
 
       // we need to load the deps to get the theme modules
       require getConfig()->get('paths')->libraries . '/dependencies.php';

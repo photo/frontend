@@ -51,7 +51,10 @@ class EpiConfig
 
   public function set($key, $val)
   {
-    $this->config->$key = $val;
+    if(isset($this->config->$key) && is_object($this->config->$key))
+      $this->config->$key = (object)array_merge((array)$this->config->$key, (array)$val);
+    else
+      $this->config->$key = $val;
   }
 
   /*
