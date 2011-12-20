@@ -419,7 +419,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     // TODO: support logic for multiple conditions
     $from = "FROM `{$this->mySqlTablePrefix}photo` ";
-    $where = "WHERE `{$this->mySqlTablePrefix}photo`.owner='{$this->owner}'";
+    $where = "WHERE `{$this->mySqlTablePrefix}photo`.`owner`='{$this->owner}'";
     $groupBy = '';
     $sortBy = 'ORDER BY dateTaken DESC';
     if(!empty($filters) && is_array($filters))
@@ -453,16 +453,33 @@ class DatabaseMySql implements DatabaseInterface
             $where = $this->buildWhere($where, "{$field} is not null");
             break;
           case 'tags':
-            // http://stackoverflow.com/a/3267635
-            $from .= " JOIN `{$this->mySqlTablePrefix}elementTag` ON `{$this->mySqlTablePrefix}photo`.id = `{$this->mySqlTablePrefix}elementTag`.element "
-                  .  " JOIN `{$this->mySqlTablePrefix}tag` ON `{$this->mySqlTablePrefix}tag`.id = `{$this->mySqlTablePrefix}elementTag`.tag ";
             if(!is_array($value))
               $value = (array)explode(',', $value);
-            foreach($value as $k => $v)
-              $value[$k] = $this->_($v);
             $tagCount = count($value);
-            $where = $this->buildWhere($where, "`{$this->mySqlTablePrefix}tag`.id IN ('".implode("','", $value)."')");
-            $groupBy = " GROUP BY `{$this->mySqlTablePrefix}photo`.id HAVING COUNT(DISTINCT `{$this->mySqlTablePrefix}tag`.id) = {$tagCount}";
+            if($tagCount == 0)
+              break;
+
+            $ids = array();
+            foreach($value as $k => $v)
+            {
+              $v = $value[$k] = $this->_($v);
+              $thisRes = getDatabase()->all(sprintf("SELECT `element`, `tag` FROM `%selementTag` WHERE `owner`='%s' AND `type`='photo' AND `tag`='%s'", $this->mySqlTablePrefix, $this->owner, $v));
+              foreach($thisRes as $t)
+              {
+                if(isset($ids[$t['element']]))
+                  $ids[$t['element']]++;
+                else
+                  $ids[$t['element']] = 1;
+              }
+            }
+            
+            foreach($ids as $k => $cnt)
+            {
+              if($cnt < $tagCount)
+                unset($ids[$k]);
+            }
+
+            $where = $this->buildWhere($where, sprintf("`%sphoto`.`id` IN('%s')", $this->mySqlTablePrefix, implode("','", array_keys($ids))));
             break;
         }
       }
