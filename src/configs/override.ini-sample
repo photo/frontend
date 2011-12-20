@@ -1,0 +1,3 @@
+[epi]
+cache=EpiCache_Apc
+session=EpiSession_Apc
