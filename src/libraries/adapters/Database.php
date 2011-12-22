@@ -41,7 +41,6 @@ interface DatabaseInterface
   public function postCredential($id, $params);
   public function postGroup($id, $params);
   public function postPhoto($id, $params);
-  public function postPhotos($ids, $params);
   public function postUser($params);
   public function postTag($id, $params);
   public function postTags($params);

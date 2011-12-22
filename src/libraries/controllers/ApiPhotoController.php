@@ -311,10 +311,10 @@ class ApiPhotoController extends BaseController
         Tag::updateTagCounts($existingTags, $updatedTags, $permission, $photoBefore['permission']);
       }
     }
+
     if(isset($params['crumb']))
-    {
       unset($params['crumb']);
-    }
+
     $photoUpdatedId = Photo::update($id, $params);
 
     if($photoUpdatedId)
@@ -324,6 +324,38 @@ class ApiPhotoController extends BaseController
     }
 
     return self::error("photo {$id} could not be updated", false);
+  }
+
+  /**
+    * Update the data associated with the photo in the remote data store.
+    * Parameters to be updated are in _POST
+    * This method also manages updating tag counts
+    *
+    * @param string $id ID of the photo to be updated.
+    * @return string Standard JSON envelope
+    */
+  public static function updateBatch()
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    if(!isset($_POST['ids']) || empty($_POST['ids']))
+      return self::error('This API requires an ids parameter.', false);
+
+    $ids = (array)explode(',', $_POST['ids']);
+    $params = $_POST;
+    unset($params['ids']);
+
+    $retval = true;
+    foreach($ids as $id)
+    {
+      $response = getApi()->invoke("/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $params));
+      $retval = $retval && $response['result'] !== false;
+    }
+
+    if($retval)
+      return self::success(sprintf('%d photos updated', count($ids)), true);
+    else
+      return self::error('Error updating one or more photos', false);
   }
 
   /**
