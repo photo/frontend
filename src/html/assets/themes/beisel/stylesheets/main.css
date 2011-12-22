@@ -1245,6 +1245,21 @@ ol.sizechoose li.on a {
 
 /* 04.04 Photos ************************************************** */
 
+.photo-grid.size200x132xCR img.thumbnail {
+  width:200px;
+  height:132px;
+}
+
+.photo-grid.size280x186xCR img.thumbnail {
+  width:280px;
+  height:186px;
+}
+
+.photo-grid.size440x292xCR img.thumbnail {
+  width:440px;
+  height:292px;
+}
+
 .grid-item {
   background-color:#f8f8f8;
   -webkit-border-radius: 5px;

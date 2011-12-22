@@ -1,11 +1,11 @@
 <?php $thumbnailSize = isset($_GET['size']) ? $_GET['size'] : '280x186xCR'; ?>
 <?php if(!empty($photos)) { ?>
   <?php getTheme()->display('partials/pagination.php', $pages); ?>
-  <ul class="photo-grid">
+<ul class="photo-grid <?php Utility::safe("size{$thumbnailSize}"); ?>">
     <?php foreach($photos as $photo) { ?>
       <li class="grid-item id-<?php Utility::safe($photo['id']); ?>">
         <a href="<?php Url::photoView($photo['id'], $options); ?>">
-          <img src="<?php Url::photoUrl($photo, $thumbnailSize); ?>" alt="<?php Utility::safe($photo['title']); ?>" />
+          <img src="<?php Url::photoUrl($photo, $thumbnailSize); ?>" alt="<?php Utility::safe($photo['title']); ?>" class="thumbnail" />
           <ul class="meta">
             <li class="age"><?php Utility::timeAsText($photo['dateTaken'], 'Taken'); ?></li>
             <li class="permission"><span class="<?php Utility::permissionAsText($photo['permission']); ?>" title="Photo is <?php Utility::permissionAsText($photo['permission']); ?>"></li>
