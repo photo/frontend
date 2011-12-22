@@ -919,7 +919,8 @@ html[xmlns] .slides {
   width:40px;
 }
 
-.flex-direction-nav li a.next:hover {
+.flex-direction-nav li a.next:hover,
+.flex-direction-nav li a.next:focus {
   background: #bebebe;
   background: -moz-linear-gradient(left, #bebebe 93%, #bebebe 95%, #999999 100%);
   background: -webkit-gradient(linear, left top, right top, color-stop(93%,#bebebe), color-stop(95%,#bebebe), color-stop(100%,#999999));
