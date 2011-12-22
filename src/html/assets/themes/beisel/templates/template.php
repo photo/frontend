@@ -37,6 +37,7 @@
   </div>
   <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
   <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
+  <script type="text/javascript" src="/assets/javascripts/openphoto-batch.js"></script>
   <script>
     OP.Util.init(jQuery, {
       js: {

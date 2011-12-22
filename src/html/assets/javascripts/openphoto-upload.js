@@ -1,6 +1,6 @@
 /**
-* Utility methods for OpenPhoto - this will include the entire framework
-* And ability to swap frameworks (YUI or jQuery) in and out.
+* Upload utility for OpenPhoto.
+* Supports drag/drop with plupload
 */
 OPU = (function() {
   return {
