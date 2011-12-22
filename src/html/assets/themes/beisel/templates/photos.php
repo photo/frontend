@@ -1,11 +1,12 @@
 <?php $thumbnailSize = isset($_GET['size']) ? $_GET['size'] : '280x186xCR'; ?>
 <?php if(!empty($photos)) { ?>
   <?php getTheme()->display('partials/pagination.php', $pages); ?>
-<ul class="photo-grid <?php Utility::safe("size{$thumbnailSize}"); ?>">
+  <ul class="photo-grid <?php Utility::safe("size{$thumbnailSize}"); ?>">
     <?php foreach($photos as $photo) { ?>
-      <li class="grid-item id-<?php Utility::safe($photo['id']); ?>">
+      <li class="grid-item id-<?php Utility::safe($photo['id']); ?> pin-out">
+        <a href"#" class="pin pin-click" data-id="<?php Utility::safe($photo['id']); ?>"></a>
         <a href="<?php Url::photoView($photo['id'], $options); ?>">
-          <img src="<?php Url::photoUrl($photo, $thumbnailSize); ?>" alt="<?php Utility::safe($photo['title']); ?>" class="thumbnail" />
+          <img src="<?php Url::photoUrl($photo, $thumbnailSize); ?>" alt="<?php Utility::safe($photo['title']); ?>" class="thumbnail pin-over" />
           <ul class="meta">
             <li class="age"><?php Utility::timeAsText($photo['dateTaken'], 'Taken'); ?></li>
             <li class="permission"><span class="<?php Utility::permissionAsText($photo['permission']); ?>" title="Photo is <?php Utility::permissionAsText($photo['permission']); ?>"></li>

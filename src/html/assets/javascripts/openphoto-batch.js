@@ -13,7 +13,7 @@
     var that = this;
     this._callbackAdd = function(response) {
       var r = response.result;
-      OP.Util.fire('openphoto-batch-add', r);
+      OP.Util.fire('callback:batch-add', r);
       that.collection.add(r.id, r);
     };
 
