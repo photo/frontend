@@ -1354,6 +1354,8 @@ ol.sizechoose li.on a {
 
 section.photo-column {
   float:left;
+  margin-left:15px;
+  max-width: 600px;
 }
 
 section.photo-column img {
