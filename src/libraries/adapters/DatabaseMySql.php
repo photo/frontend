@@ -726,22 +726,6 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Batch update the information for an existing photo.
-    * This method overwrites existing values present in $params.
-    *
-    * @param array $ids IDs of the photo to update.
-    * @param array $params Attributes to update.
-    * @return boolean
-    */
-  public function postPhotos($ids, $params)
-  {
-    $return = true;
-    foreach($ids as $id)
-      $return = $this->postPhoto($id, $params) && $return;
-    return $return;
-  }
-
-  /**
     * Update a single tag.
     * The $params should include the tag in the `id` field.
     * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
