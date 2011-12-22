@@ -772,9 +772,9 @@ article h1 a.link:hover {
  * 
  */
  
-.flex-container a:active,
-.flexslider a:active {
-  outline:none;
+.flex-container a,
+.flexslider a {
+  outline: none;
 }
 
 .slides,
