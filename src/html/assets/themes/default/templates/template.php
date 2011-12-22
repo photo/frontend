@@ -54,6 +54,36 @@
   <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
   <script>
     OP.Util.init(jQuery, {
+      eventMap: {
+        'click': {
+            'action-box-click':'click:action-box',
+            'action-delete-click':'click:action-delete',
+            'action-jump-click':'click:action-jump',
+            'action-post-click':'click:action-post',
+            'credential-delete-click':'click:credential-delete',
+            'group-checkbox-click':'click:group-checkbox',
+            'group-update-click':'click:group-update',
+            'login-click':'click:login',
+            'map-jump-click':'click:map-jump',
+            'nav-item-click':'click:nav-item',
+            'pagination-click':'click:pagination',
+            'photo-delete-click':'click:photo-delete',
+            'photo-edit-click':'click:photo-edit',
+            'photo-tag-click':'click:tag',
+            'photo-thumbnail-click':'click:photo-thumbnail',
+            'photo-update-click':'click:photo-update',
+            'plugin-status-click':'click:plugin-status',
+            'plugin-update-click':'click:plugin-update',
+            'search-click':'click:search',
+            'settings-click':'click:settings',
+            'webhook-delete-click':'click:webhook-delete'
+        },
+
+        'keydown': {
+            37: 'keydown:browse-previous',
+            39: 'keydown:browse-next'
+        }
+      },
       js: {
         assets: [
           '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',

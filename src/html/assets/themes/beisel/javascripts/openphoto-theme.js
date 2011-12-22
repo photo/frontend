@@ -27,6 +27,9 @@ var opTheme = (function() {
         return false;
         
       },
+      batchAdd: function(photo) {
+        console.log(photo);
+      },
       commentJump: function(ev) {
         ev.preventDefault();
         $.scrollTo($('div.comment-form'), 200);
@@ -129,6 +132,20 @@ var opTheme = (function() {
           
         }
         return false;
+      },
+      pinClick: function(ev) {
+        var el = $(ev.target),
+            id = el.attr('data-id');
+        OP.Batch.add(id);
+      },
+      pinOver: function(ev) {
+        var el = $(ev.target).parent().prev();
+        el.fadeIn('fast');
+      },
+      pinOut: function(ev) {
+        var el = $(ev.target).children().filter('.pin').filter(':visible');
+        console.log(el);
+        el.fadeOut('fast');
       },
       pluginStatus: function(ev) {
         ev.preventDefault();
@@ -390,8 +407,13 @@ var opTheme = (function() {
         OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
+        OP.Util.on('click:pin', opTheme.callback.pinClick);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
+        OP.Util.on('mouseover:pin', opTheme.callback.pinOver);
+        OP.Util.on('mouseout:pin', opTheme.callback.pinOut);
+
+        OP.Util.on('callback:batch-add', opTheme.callback.batchAdd);
 
         opTheme.front.init($('div.front-slideshow'));
         if(typeof OPU === 'object')

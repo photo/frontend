@@ -49,38 +49,7 @@
         * @type {object}
         * @property eventMap
         */
-        this.eventMap = {
-
-            'click': {
-                'action-box-click':'click:action-box',
-                'action-delete-click':'click:action-delete',
-                'action-jump-click':'click:action-jump',
-                'action-post-click':'click:action-post',
-                'credential-delete-click':'click:credential-delete',
-                'group-checkbox-click':'click:group-checkbox',
-                'group-update-click':'click:group-update',
-                'login-click':'click:login',
-                'map-jump-click':'click:map-jump',
-                'nav-item-click':'click:nav-item',
-                'pagination-click':'click:pagination',
-                'photo-delete-click':'click:photo-delete',
-                'photo-edit-click':'click:photo-edit',
-                'photo-tag-click':'click:tag',
-                'photo-thumbnail-click':'click:photo-thumbnail',
-                'photo-update-click':'click:photo-update',
-                'plugin-status-click':'click:plugin-status',
-                'plugin-update-click':'click:plugin-update',
-                'search-click':'click:search',
-                'settings-click':'click:settings',
-                'webhook-delete-click':'click:webhook-delete'
-            },
-
-            'keydown': {
-                37: 'keydown:browse-previous',
-                39: 'keydown:browse-next'
-            }
-
-        };
+        this.eventMap = {};
 
         /**
         * A hash of custom events
@@ -156,6 +125,8 @@
 
             //attach events
             this.attachEvent( 'body', 'click', this.onviewevent, this);
+            this.attachEvent( 'body', 'mouseover', this.onmouseevent, this);
+            this.attachEvent( 'body', 'mouseout', this.onmouseevent, this);
             this.attachEvent( 'html', 'keydown', this.onkeydownevent, this);
             
             //load additional js in order specified
@@ -188,7 +159,7 @@
 
             while (length--) {
                 cls = classes[length];
-                if (map[cls]) {
+                if (map !== undefined && map[cls]) {
                     //do not prevent the default action, let the callback
                     //function do it if it wants
                     this.fire( map[cls], e);
@@ -234,7 +205,7 @@
                 //both className and keycode
                 while (length--) {
                     cls = classes[length];
-                    if (map[cls] && map[cls][keyCode]) {
+                    if (map !== undefined && map[cls] && map[cls][keyCode]) {
                         //do not prevent the default action, let the callback
                         //function do it if it wants
                         this.fire( map[cls][keyCode], e);
@@ -244,6 +215,34 @@
             }
 
         };
+
+        /**
+        * handles mouseover/mouseout events
+        * @param {Event} e
+        * @return {void}
+        * @method onkeydownevent
+        */
+        this.onmouseevent = function(e) {
+            
+            log('[Util] mouseevent: ' + e.type + ' - ' + e.target);
+
+            var targ = e.target || e.srcElement,
+                classes = targ.className.split(" "),
+                length = classes.length,
+                map = this.eventMap[e.type],
+                cls;
+
+            while (length--) {
+                cls = classes[length];
+                if (map !== undefined && map[cls]) {
+                    //do not prevent the default action, let the callback
+                    //function do it if it wants
+                    this.fire( map[cls], e);
+                }
+            }
+        };
+
+
 
         /* -------------------------------------------------
         *         Utilities
