@@ -27,7 +27,7 @@ Use this API to create an action on a photo. This includes comments and favorite
 
 _Authentication: required_
 
-    POST /action/photo/:targetId/create.json
+    POST /action/:targetId/photo/create.json
 
 <a name="parameters"></a>
 ### Parameters
