@@ -35,7 +35,7 @@
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
           <li class="location">
             <?php Utility::safe($photo['latitude']); ?>, <?php Utility::safe($photo['longitude']); ?>
-            <img src="<?php Utility::staticMapUrl($photo['latitude'], $photo['longitude'], 14, '225x150'); ?>" class="map">
+            <img src="<?php Utility::staticMapUrl($photo['latitude'], $photo['longitude'], 5, '225x150'); ?>" class="map">
           </li>
         <?php } ?>
         <li class="exif">
