@@ -351,7 +351,6 @@ class Photo
     $attributes = self::whitelistParams($attributes);
     if(isset($attributes['tags']) && !empty($attributes['tags']))
     {
-      $attributes['tags'] = Tag::removeDuplicatesFromString($attributes['tags']);
       $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
     }
     $status = getDb()->postPhoto($id, $attributes);
@@ -449,7 +448,6 @@ class Photo
         $attributes['longitude'] = floatval($exif['longitude']);
       if(isset($attributes['tags']) && !empty($attributes['tags']))
       {
-        $attributes['tags'] = Tag::removeDuplicatesFromString($attributes['tags']);
         $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
       }
 
