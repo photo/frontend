@@ -92,13 +92,23 @@
 
 <h1>Groups</h1>
 <form method="post" action="/group/create" method="post">
-  <label>Name</label>
-  <input type="text" placeholder="Name of new group" value="" name="name">
+  <div class="clearfix">
+    <label>Name</label>
+    <div class="input">
+      <input type="text" placeholder="Name of new group" value="" name="name">
+    </div>
+  </div>
 
-  <label>Members</label>
-  <input type="text" placeholder="Email addresses of members (separate with commas)" value="" name="members">
+  <div class="clearfix">
+    <label>Members</label>
+    <div class="input">
+      <input type="text" placeholder="Email addresses of members (separate with commas)" value="" name="members">
+    </div>
+  </div>
 
-  <button type="submit" class="group-update-click">Create a new group</button>
+  <div class="actions">
+    <button type="submit" class="group-update-click">Create a new group</button>
+  </div>
 </form>
 
 <hr>
@@ -108,13 +118,24 @@
     <?php foreach($groups as $group) { ?>
       <li>
         <form method="post" action="/group/<?php Utility::safe($group['id']); ?>/update" method="post">
-          <label>Name</label>
-          <input type="text" value="<?php Utility::safe($group['name']); ?>" name="name">
+          <input type="hidden" name="crumb" value="<?php Utility::safe($crumb); ?>">
+          <div class="clearfix">
+            <label>Name</label>
+            <div class="input">
+              <input type="text" value="<?php Utility::safe($group['name']); ?>" name="name">
+            </div>
+          </div>
 
-          <label>Members</label>
-          <input type="text" value="<?php Utility::safe(implode(',', $group['members'])); ?>" name="members">
+          <div class="clearfix">
+            <label>Members</label>
+            <div class="input">
+              <input type="text" value="<?php Utility::safe(implode(',', $group['members'])); ?>" name="members">
+            </div>
+          </div>
 
-          <button type="submit" class="group-update-click">Update</button>
+          <div class="actions">
+            <button type="submit" class="group-update-click">Update</button>
+          </div>
         </form><!--(<a href="/group/<?php echo $group['id']; ?>/delete" class="group-delete-click">delete</a>)-->
       </li>
     <?php } ?>

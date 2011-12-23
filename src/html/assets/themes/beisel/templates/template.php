@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.png'); ?>">
     <link rel="apple-touch-icon" href="<?php getTheme()->asset('image', 'apple-touch-icon.png'); ?>">
+    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'bootstrap.min.css'); ?>">
     <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'main.css'); ?>">
     <link rel="stylesheet" href="/assets/stylesheets/upload.css">
     <?php getPlugin()->invoke('onHead', array('page' => $page)); ?>
@@ -19,21 +20,28 @@
 <body class="<?php echo $page; ?>">
   <?php getPlugin()->invoke('onBodyBegin', array('page' => $page)); ?>
 
-  <div id="wrapper">
+  <div id="wrapper" class="container">
 
-    <header>
-      <?php getTheme()->display('partials/header.php'); ?>
-    </header>
+    <div class="row">
+      <header>
+        <?php getTheme()->display('partials/header.php'); ?>
+      </header>
+    </div>
 
-    <article id="main" role="main">
-      <!-- body -->
-      <?php echo $body; ?>
-      <div id="message" class="confirm"><span class="text">hello</span><div class="close">x</div></div>
-    </article>
+    <div class="row">
+      <article id="main" role="main">
+        <!-- body -->
+        <?php echo $body; ?>
+      </article>
+    </div>
 
-    <footer>
-      <a href="http://theopenphotoproject.org" title="Learn more about the OpenPhoto project">The OpenPhoto Project</a> &copy; 2011
-    </footer>
+    <div class="row">
+      <div class="span16">
+        <footer>
+          <a href="http://theopenphotoproject.org" title="Learn more about the OpenPhoto project">The OpenPhoto Project</a> &copy; 2011
+        </footer>
+      </div>
+    </div>
     
   </div>
   <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>

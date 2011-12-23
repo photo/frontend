@@ -202,7 +202,7 @@ ul.comments li form {
 .owner-edit{
   min-height:600px;
 }
-.owner-edit h1 {
+.owner-edit h2 {
   border-top:solid 1px #aaa;
   border-bottom:solid 1px #aaa;
   background-color: #ddd;
@@ -218,6 +218,9 @@ ul.comments li form {
 .owner-edit form label {
   display:block;
   font-weight:bold;
+}
+.owner-edit form>div {
+  margin-bottom:10px;
 }
 .owner-edit form label + input, .owner-edit form label + textarea {
   display:block;

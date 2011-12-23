@@ -8,17 +8,27 @@
   <div id="setup-dropbox">
     <form action="/setup/dropbox<?php Utility::safe($qs); ?>" method="post" class="validate">
       <h2>Enter your Dropbox App credentials</h2>
-
-      <label for="dropboxKey">Dropbox Key <em>(<a href="https://www.dropbox.com/developers/apps" target="_blank">found under options</a>)</em></label>
-      <input type="password" name="dropboxKey" id="dropboxKey" size="50" autocomplete="off" data-validation="required" placeholder="Dropbox consumer key or app key" value="<?php echo $dropboxKey; ?>">
-
-      <label for="dropboxSecret">Dropbox Secret</label>
-      <input type="password" name="dropboxSecret" id="dropboxSecret" size="50" autocomplete="off" data-validation="required" placeholder="Dropbox consumer secret or app secret" value="<?php echo $dropboxSecret; ?>">
-
-      <label for="dropboxFolder">Dropbox Folder Name <em>(a name for the folder we save photos to)</em></label>
-      <input type="text" name="dropboxFolder" id="dropboxFolder" size="50" autocomplete="off" data-validation="required alphanumeric" placeholder="An alpha numeric folder name" value="<?php echo $dropboxFolder; ?>">
-
-      <button type="submit">Continue to Dropbox</button>
+      <div class="clearfix">
+        <label for="dropboxKey">Dropbox Key <em>(<a href="https://www.dropbox.com/developers/apps" target="_blank">found under options</a>)</em></label>
+        <div class="input">
+          <input type="password" name="dropboxKey" id="dropboxKey" size="50" autocomplete="off" data-validation="required" placeholder="Dropbox consumer key or app key" value="<?php echo $dropboxKey; ?>">
+        </div>
+      </div>
+      <div class="clearfix">
+        <label for="dropboxSecret">Dropbox Secret</label>
+        <div class="input">
+          <input type="password" name="dropboxSecret" id="dropboxSecret" size="50" autocomplete="off" data-validation="required" placeholder="Dropbox consumer secret or app secret" value="<?php echo $dropboxSecret; ?>">
+        </div>
+      </div>
+      <div class="clearfix">
+        <label for="dropboxFolder">Dropbox Folder Name <em>(a name for the folder we save photos to)</em></label>
+        <div class="input">
+          <input type="text" name="dropboxFolder" id="dropboxFolder" size="50" autocomplete="off" data-validation="required alphanumeric" placeholder="An alpha numeric folder name" value="<?php echo $dropboxFolder; ?>">
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit">Continue to Dropbox</button>
+      </div>
     </form>
   </div>
 </div>
