@@ -28,7 +28,14 @@ var opTheme = (function() {
         
       },
       batchAdd: function(photo) {
-        console.log(photo);
+        var el = $(".id-"+photo.id);
+        el.removeClass("unpinned");
+        log("Adding photo " + photo.id);
+      },
+      batchRemove: function(id) {
+        var el = $(".id-"+id);
+        el.addClass("unpinned");
+        log("Removing photo " + photo.id);
       },
       commentJump: function(ev) {
         ev.preventDefault();
@@ -135,17 +142,24 @@ var opTheme = (function() {
       },
       pinClick: function(ev) {
         var el = $(ev.target),
-            id = el.attr('data-id');
-        OP.Batch.add(id);
+            id = el.attr('data-id'),
+            container = el.parent();;
+        // if the parent has class="unpinned" then add, else remove
+        if(container.hasClass("unpinned")) {
+          OP.Batch.add(id);
+        } else {
+          OP.Batch.remove(id);
+        }
       },
       pinOver: function(ev) {
-        var el = $(ev.target).parent().prev();
-        el.fadeIn('fast');
+        var el = $(ev.target),
+            a = el.parent().prev();
+        a.fadeIn('fast');
       },
       pinOut: function(ev) {
-        var el = $(ev.target).children().filter('.pin').filter(':visible');
-        console.log(el);
-        el.fadeOut('fast');
+        var el = $(ev.target),
+            a = el.filter('[class~="unpinned"]').children().filter('.pin').filter(':visible');
+        a.fadeOut('fast');
       },
       pluginStatus: function(ev) {
         ev.preventDefault();
@@ -414,12 +428,30 @@ var opTheme = (function() {
         OP.Util.on('mouseout:pin', opTheme.callback.pinOut);
 
         OP.Util.on('callback:batch-add', opTheme.callback.batchAdd);
+        OP.Util.on('callback:batch-remove', opTheme.callback.batchRemove);
 
-        opTheme.front.init($('div.front-slideshow'));
         if(typeof OPU === 'object')
           OPU.init();
         // TODO standardize this somehow
         $('form.validate').each(opTheme.formHandlers.init);
+      },
+      photos: function() {
+        var ids = OP.Batch.collection.getAll(),
+            els = $(".unpinned"),
+            cls,
+            el,
+            parts;
+
+        els.each(function(i, el) {
+          el = $(el);
+          cls = el.attr('class');
+          parts = cls.match(/ id-([a-z0-9]+)/);
+          if(parts.length == 2) {
+            if(ids[parts[1]] !== undefined)
+              el.removeClass("unpinned");
+          }
+        });
+
       }
     },
     
