@@ -103,7 +103,7 @@
       <li class="location">
         <span></span>
         <?php Utility::safe($photo['latitude']); ?>, <?php Utility::safe($photo['longitude']); ?>
-        <img src="<?php Utility::staticMapUrl($photo['latitude'], $photo['longitude'], 14, '255x150'); ?>" class="map">
+        <img src="<?php Utility::staticMapUrl($photo['latitude'], $photo['longitude'], 5, '255x150'); ?>" class="map">
       </li>
     <?php } ?>
     <?php if(!empty($photo['exifCameraMake']) && !empty($photo['exifCameraMake'])) { ?>
