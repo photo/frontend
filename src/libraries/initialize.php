@@ -25,7 +25,7 @@ getSession();
 
 // determine if this is a login endpoint
 $loginEndpoint = false;
-if(isset($_GET['__route__']) && preg_match('#/user/(login|logout)#', $_GET['__route__']))
+if(isset($_GET['__route__']) && preg_match('#/user/(.*)(login|logout)#', $_GET['__route__']))
   $loginEndpoint = true;
 
 // determine if this is a setup endpoint
