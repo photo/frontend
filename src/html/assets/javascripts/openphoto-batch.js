@@ -3,6 +3,14 @@
 * Depends on openphoto-lib-{library}.js
 */
 (function() {
+  Storage.prototype.setObject = function(key, value) {
+      this.setItem(key, JSON.stringify(value));
+  }
+
+  Storage.prototype.getObject = function(key) {
+      var value = this.getItem(key);
+      return value && JSON.parse(value);
+  }
   //OP and OP.Util are already defined at this point, so just modify directly
   var OU = OP.Util.constructor.prototype,
       lib = OP.Util.lib,
@@ -13,8 +21,8 @@
     var that = this;
     this._callbackAdd = function(response) {
       var r = response.result;
-      OP.Util.fire('callback:batch-add', r);
       that.collection.add(r.id, r);
+      OP.Util.fire('callback:batch-add', r);
     };
 
     this.add = function(id) {
@@ -25,17 +33,24 @@
       OU.makeRequest('/photo/'+id+'/view.json', args, this._callbackAdd, 'json', 'get');
     };
 
+    this.remove = function(id) {
+      log("[Util][Batch] removing " + id);
+      that.collection.remove(id);
+      OP.Util.fire('callback:batch-remove', id);
+    };
+
+
     this.collection = (function() {
       var length = 0,
           items,
           namespace = 'items';
 
-      items = localStorage.getItem(namespace) || {};
+      items = localStorage.getObject(namespace) || {};
 
       return {
         add: function(key, value) {
           items[key] = value;
-          localStorage.setItem(namespace, items);
+          localStorage.setObject(namespace, items);
           length++;
         },
         getAll: function() {
@@ -50,7 +65,7 @@
         },
         remove: function(key) {
           delete items[key];
-          localStorage.setItem(namespace, items);
+          localStorage.setObject(namespace, items);
           length--;
         }
       };

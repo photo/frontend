@@ -3,7 +3,7 @@
   <?php getTheme()->display('partials/pagination.php', $pages); ?>
   <ul class="photo-grid <?php Utility::safe("size{$thumbnailSize}"); ?>">
     <?php foreach($photos as $photo) { ?>
-      <li class="grid-item id-<?php Utility::safe($photo['id']); ?> pin-out">
+      <li class="grid-item unpinned id-<?php Utility::safe($photo['id']); ?> pin-out">
         <a href"#" class="pin pin-click" data-id="<?php Utility::safe($photo['id']); ?>"></a>
         <a href="<?php Url::photoView($photo['id'], $options); ?>">
           <img src="<?php Url::photoUrl($photo, $thumbnailSize); ?>" alt="<?php Utility::safe($photo['title']); ?>" class="thumbnail pin-over" />
