@@ -56,18 +56,18 @@ table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, figcaption, figure, 
 footer, header, hgroup, menu, nav, section, summary,
 time, mark, audio, video {
-    margin:0;
+    /*margin:0;
     padding:0;
     border:0;
     outline:0;
     font-size:100%;
-    vertical-align:baseline;
+    vertical-align:baseline;*/
     background:transparent;
 }
 
-body {
+/*body {
     line-height:1;
-}
+}*/
 
 article,aside,details,figcaption,figure,
 footer,header,hgroup,menu,nav,section { 
@@ -158,7 +158,7 @@ body {
   margin:0 auto;
   min-height:100%;
   position:relative;
-  width:990px;
+  /*width:990px;*/
   _zoom:1;
 }
 
@@ -324,7 +324,6 @@ header {
   box-shadow:0px 0px 5px 0px #999;
   height:40px;
   margin-top:-4px;
-  width:990px;
 }
 
 header h1 {
@@ -350,7 +349,7 @@ header a:hover#logo {
 nav ul {
   float:left;
   margin:0 0 0 35px;
-  width:800px;
+  width:770px;
 }
 
 nav ul li {
@@ -453,6 +452,7 @@ nav ul li#nav-search form input {
   border:1px solid #666;
   margin:-3px 0 0 0;
   padding:3px;
+  width:150px;
 }
 
 nav ul li#nav-search form input:hover {
@@ -712,10 +712,12 @@ article {
   -webkit-box-shadow:inset 0px 0px 5px 0px #999;
   -moz-box-shadow:inset 0px 0px 5px 0px #999;
   box-shadow:inset 0px 0px 5px 0px #999;
-  margin:20px 0 0 0;
   min-height:350px;
-  padding:20px;
+  padding:20px 5px;
   text-align:left;
+}
+article>div {
+  padding:0 5px;
 }
 
 .tags #wrapper article,
@@ -1053,13 +1055,14 @@ html[xmlns] .slides {
   box-shadow: inset 0px 0px 5px 0px #999;
   color:#666;
   height:25px;
-  margin:-20px 0 20px -20px;
+  margin:-20px 0 20px;
   padding:7px 5px 3px 10px;
   position:relative;
   text-align:left;
   text-shadow: 0px 1px 0px #f1f1f1;
+  left:-5px;
+  width:945px;
   filter: dropshadow(color=#f1f1f1, offx=0, offy=1);
-  width:975px;
 }
 
 .paginationbottom .pagination {
@@ -1069,7 +1072,7 @@ html[xmlns] .slides {
   -moz-border-radius-bottomleft: 5px;
   -webkit-border-radius: 0 0 5px 5px;
   border-radius: 0 0 5px 5px;
-  margin:0 0 -20px -20px;
+  margin:0 0 -20px 0;
 }
 
 .label {
@@ -1085,6 +1088,7 @@ html[xmlns] .slides {
 .pagination ul {
   top:7px;
   right:5px;
+  border:0;
   position:absolute;
 }
 
@@ -1102,7 +1106,7 @@ html[xmlns] .slides {
   display:inline-block;
   height:20px;
   top:7px;
-  left:40%;
+  left:355px;
   position:absolute;
   width:200px;
 }
@@ -1244,7 +1248,14 @@ ol.sizechoose li.on a {
 }
 
 /* 04.04 Photos ************************************************** */
+ul.photo-grid {
+  margin-left:12px;
+  margin-right:0;
+}
 
+.photo-grid.size200x132xCR {
+  font-size:10px;
+}
 .photo-grid.size200x132xCR img.thumbnail {
   width:200px;
   height:132px;
@@ -1255,6 +1266,9 @@ ol.sizechoose li.on a {
   height:186px;
 }
 
+.photo-grid.size440x292xCR {
+  font-size:16px;
+}
 .photo-grid.size440x292xCR img.thumbnail {
   width:440px;
   height:292px;
@@ -1269,13 +1283,27 @@ ol.sizechoose li.on a {
   -moz-box-shadow:inset 0px 0px 5px 0px #999;
   box-shadow:inset 0px 0px 5px 0px #999;
   float:left;
-  margin:0 20px 20px 0;
   padding:11px;
   text-align:left;
 }
 
 .grid-item:hover {
   background-color:#f1f1f1;
+}
+
+.photo-grid.size440x292xCR .grid-item {
+  margin-right:5px;
+  margin-bottom:10px;
+}
+
+.photo-grid.size280x186xCR .grid-item {
+  margin-right:11px;
+  margin-bottom:10px;
+}
+
+.photo-grid.size200x132xCR .grid-item {
+  margin-right:13px;
+  margin-bottom:10px;
 }
 
 .grid-item a {
@@ -1294,6 +1322,7 @@ ol.sizechoose li.on a {
 }
 
 .grid-item a ul.meta {
+  margin-left:0;
   margin-right:-5px;
 }
 
@@ -1364,10 +1393,14 @@ section.photo-column img {
   border-radius: 2px;  
 }
 
+section.photo-column h1 {
+  line-height:130%;
+}
+
 aside.sidebar {
   display:block;
   float:right;
-  margin:0;
+  margin:0 15px 0 0;
   width:300px;
 }
 
@@ -1719,65 +1752,6 @@ aside.sidebar .meta li.edit span {
   margin:15px 0;
 }
 
-.detail-form form ul li {
-  list-style-type:none;
-  margin:0 0 10px 0;
-}
-
-.detail-form form ul li.groups {
-  border-top:1px solid #ccc;
-  border-bottom:1px solid #ccc;
-  padding:10px 0;
-}
-
-.detail-form form ul li button {
-  margin-left:120px;
-}
-
-.detail-form form ul li label,
-.detail-form form ul li ul li label {
-  cursor:pointer;
-  display:inline-block;
-  vertical-align:top;
-  width:120px;
-}
-
-.detail-form form ul li ul li label {
-  margin-top:2px;
-  width:auto;
-}
-
-.detail-form form ul li input[type=text],
-.detail-form form ul li textarea {
-  display:inline-block;
-  width:400px;
-}
-
-.detail-form form ul li ul li input[type=checkbox],
-.detail-form form ul li ol li input[type=radio] {
-  display:inline-block;
-}
-
-.detail-form form ul li textarea {
-  height:100px;
-}
-
-.detail-form form ul li ul,
-.detail-form form ul li ol {
-  display:inline-block;
-}
-
-.detail-form form ul li ul li {
-  float:left;
-  margin:0;
-  width:100px;
-}
-
-.detail-form form ul li ol li {
-  float:none;
-  margin:0;
-}
-
 .delete {
   position:relative;
 }
@@ -1836,6 +1810,15 @@ aside.sidebar .meta li.edit span {
     font-size:21px;
 }
 
+
+/* UPLOAD ********/
+body.upload form.upload {
+  margin:0 10px;
+}
+body.upload .poweredby a {
+  font-style:italic;
+}
+
 /* 04.08 Setup *************************************************** */
 
 div#setup h1 {
@@ -1863,15 +1846,15 @@ ol#setup-steps:after {
   box-shadow: inset 0px 0px 5px 0px #999;
   color:#666;
   height:25px;
-  margin:0;
+  margin:-20px 0 20px;
   padding:7px 5px 3px 10px;
   position:absolute;
-  top:65px;
-  left:0;
+  left:-20px;
+  top:80px;
   text-align:left;
   text-shadow: 0px 1px 0px #f1f1f1;
   filter: dropshadow(color=#f1f1f1, offx=0, offy=1);
-  width:975px;
+  width:945px;
 }
 
 ol#setup-steps li.current {
@@ -1947,48 +1930,6 @@ div#setup h3 {
   margin:0 0 10px 0;
 }
 
-.validate label,
-#setup-dropbox form label,
-#setup-step-2 form label,
-#setup-step-3 form label {
-  display:inline-block;
-  vertical-align:top;
-  width:160px;
-}
-
-.validate input[type=text],
-.validate select,
-#setup-dropbox form input,
-#setup-step-2 form select,
-#setup-step-3 form input[type=password] {
-  display:inline-block;
-  width:350px;
-}
-
-.validate input#email,
-#setup-step-2 form select,
-#setup-step-3 form input#awsKey,
-#setup-step-3 form input#awsSecret,
-#setup-step-3 form input#s3Bucket,
-#setup-step-3 form input#mySqlHost,
-#setup-step-3 form input#mySqlUser,
-#setup-step-3 form input#mySqlPassword,
-#setup-step-3 form input#mySqlDb,
-#setup-step-3 form input#mySqlTablePrefix,
-#setup-step-3 form input#fsRoot,
-#setup-step-3 form input#fsHost,
-#setup-dropbox form input {
-  margin:0 400px 10px 0;
-}
-
-.validate button,
-#setup-dropbox form button,
-#setup-step-2 form button,
-#setup-step-3 form button {
-  display:block;
-  margin:10px 0 0 164px;
-}
-
 /* 04.09 Settings ************************************************ */
 
 .settings form label {
@@ -2000,9 +1941,12 @@ div#setup h3 {
   margin:0 0 10px 0;
   width:350px;
 }
+.settings ul.groups {
+  margin:0;
+}
 .settings ul.groups li {
   list-style-type:none;
-  margin:0 0 20px 0;
+  margin:0;
 }
 .settings ul.credentials, .settings ul.webhooks, .settings ul.plugins {
   margin: 0 0 0 25px;
@@ -2025,6 +1969,7 @@ footer {
   text-shadow:0px 1px 1px rgba(255, 255, 255, 0.75);
   filter:dropshadow(color=#ffffff, offx=0, offy=1);
   width:100%;
+  border:0;
 }
 
 footer a {
@@ -2038,7 +1983,7 @@ footer a:hover {
 
 /* unsorted */
 
-.owner-edit h1 {
+.owner-edit h2 {
   border-top:solid 1px #aaa;
   border-bottom:solid 1px #aaa;
   background-color: #ddd;
@@ -2052,3 +1997,14 @@ footer a:hover {
 a.message-close {text-decoration:underline; cursor:pointer; color:#43c2fd; position:absolute; top:5px; right:45px;}
 #message-box.error {color:#ca1616;}
 #message-box.confirm {color:#6c9e6d;}
+
+/* bootstrap override */
+.actions {
+  background-color:inherit;
+  border:0;
+  padding: 5px 20px 18px 150px;
+  margin:0;
+}
+form {
+  margin:0;
+}
