@@ -311,8 +311,8 @@ class DatabaseMySql implements DatabaseInterface
       return false;
 
     // owner is in buildQuery
-    $photo_prev = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND dateTaken> :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken ASC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
-    $photo_next = getDatabase()->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND dateTaken< :dateTaken AND dateTaken IS NOT NULL ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
+    $photo_prev = getDatabase()->one("SELECT `{$this->mySqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND dateTaken> :dateTaken AND dateTaken IS NOT NULL {$buildQuery['groupBy']} ORDER BY dateTaken ASC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
+    $photo_next = getDatabase()->one("SELECT `{$this->mySqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND dateTaken< :dateTaken AND dateTaken IS NOT NULL {$buildQuery['groupBy']} ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
 
     $ret = array();
     if($photo_prev)
@@ -358,7 +358,7 @@ class DatabaseMySql implements DatabaseInterface
     $query = $this->buildQuery($filters, $limit, $offset);
 
     // buildQuery includes owner
-    $photos = getDatabase()->all($sql = "SELECT * FROM `{$this->mySqlTablePrefix}photo` {$query['where']} {$query['sortBy']} {$query['limit']} {$query['offset']}");
+    $photos = getDatabase()->all($sql = "SELECT {$this->mySqlTablePrefix}photo.* {$query['from']} {$query['where']} {$query['groupBy']} {$query['sortBy']} {$query['limit']} {$query['offset']}");
     if(empty($photos))
       return false;
     for($i = 0; $i < count($photos); $i++)
@@ -368,7 +368,7 @@ class DatabaseMySql implements DatabaseInterface
 
     // TODO evaluate SQL_CALC_FOUND_ROWS (indexes with the query builder might be hard to optimize)
     // http://www.mysqlperformanceblog.com/2007/08/28/to-sql_calc_found_rows-or-not-to-sql_calc_found_rows/
-    $result = getDatabase()->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}photo` {$query['where']}");
+    $result = getDatabase()->one("SELECT COUNT(*) {$query['from']} {$query['where']} {$query['groupBy']}");
     if(!empty($result))
     {
       $photos[0]['totalRows'] = $result['COUNT(*)'];
@@ -418,7 +418,9 @@ class DatabaseMySql implements DatabaseInterface
   private function buildQuery($filters, $limit, $offset)
   {
     // TODO: support logic for multiple conditions
-    $where = "WHERE owner='{$this->owner}'";
+    $from = "FROM `{$this->mySqlTablePrefix}photo` ";
+    $where = "WHERE `{$this->mySqlTablePrefix}photo`.`owner`='{$this->owner}'";
+    $groupBy = '';
     $sortBy = 'ORDER BY dateTaken DESC';
     if(!empty($filters) && is_array($filters))
     {
@@ -431,7 +433,7 @@ class DatabaseMySql implements DatabaseInterface
               $value = (array)explode(',', $value);
             foreach($value as $k => $v)
               $value[$k] = $this->_($v);
-            $subquery = sprintf("(id IN (SELECT element FROM `{$this->mySqlTablePrefix}elementGroup` WHERE `owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
+            $subquery = sprintf("(id IN (SELECT element FROM `{$this->mySqlTablePrefix}elementGroup` WHERE `{$this->mySqlTablePrefix}elementGroup`.`owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
               $this->_($this->owner), 'photo', implode("','", $value));
             $where = $this->buildWhere($where, $subquery);
             break;
@@ -451,16 +453,33 @@ class DatabaseMySql implements DatabaseInterface
             $where = $this->buildWhere($where, "{$field} is not null");
             break;
           case 'tags':
-            // TODO there are a few issues here
-            // 1) It's inefficient (uses file sort)
-            // 2) It's using OR logic instead of AND
             if(!is_array($value))
               $value = (array)explode(',', $value);
+            $tagCount = count($value);
+            if($tagCount == 0)
+              break;
+
+            $ids = array();
             foreach($value as $k => $v)
-              $value[$k] = $this->_($v);
-            $subquery = sprintf("id IN (SELECT element FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`='%s' AND `type`='%s' AND `tag` IN ('%s'))",
-              $this->_($this->owner), 'photo', implode("','", $value));
-            $where = $this->buildWhere($where, $subquery);
+            {
+              $v = $value[$k] = $this->_($v);
+              $thisRes = getDatabase()->all(sprintf("SELECT `element`, `tag` FROM `%selementTag` WHERE `owner`='%s' AND `type`='photo' AND `tag`='%s'", $this->mySqlTablePrefix, $this->owner, $v));
+              foreach($thisRes as $t)
+              {
+                if(isset($ids[$t['element']]))
+                  $ids[$t['element']]++;
+                else
+                  $ids[$t['element']] = 1;
+              }
+            }
+            
+            foreach($ids as $k => $cnt)
+            {
+              if($cnt < $tagCount)
+                unset($ids[$k]);
+            }
+
+            $where = $this->buildWhere($where, sprintf("`%sphoto`.`id` IN('%s')", $this->mySqlTablePrefix, implode("','", array_keys($ids))));
             break;
         }
       }
@@ -474,7 +493,7 @@ class DatabaseMySql implements DatabaseInterface
     if($offset)
       $offset_sql = "OFFSET {$offset}";
 
-    $ret = array('where' => $where, 'sortBy' => $sortBy, 'limit' => $limit_sql, 'offset' => $offset_sql);
+    $ret = array('from' => $from, 'where' => $where, 'groupBy' => $groupBy, 'sortBy' => $sortBy, 'limit' => $limit_sql, 'offset' => $offset_sql);
     return $ret;
   }
 

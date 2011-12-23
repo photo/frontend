@@ -19,6 +19,38 @@
 
 <hr>
 
+<h1>Plugins</h1>
+
+<?php if(!empty($plugins)) { ?>
+  <ul class="plugins">
+    <?php foreach($plugins as $plugin) { ?>
+    <li class="<?php Utility::safe($plugin['status']); ?>">
+        <?php Utility::safe($plugin['name']); ?> 
+        (
+          <?php if($plugin['status'] == 'active') { ?>
+            <a href="/plugin/<?php Utility::safe($plugin['name']); ?>/deactivate" class="plugin-status-click">deactivate</a>
+          <?php } else { ?>
+            <a href="/plugin/<?php Utility::safe($plugin['name']); ?>/activate" class="plugin-status-click">activate</a>
+          <?php } ?>
+        )
+        <?php if(!empty($plugin['conf']) && $plugin['status'] == 'active') { ?>
+          <form method="post" action="/plugin/<?php Utility::safe($plugin['name']); ?>/update" method="post">
+            <?php foreach($plugin['conf'] as $confName => $confVal) { ?>
+              <label><?php Utility::safe($confName); ?></label>
+              <input type="text" value="<?php Utility::safe($confVal); ?>" name="<?php Utility::safe($confName); ?>">
+            <?php } ?>
+            <button type="submit" class="plugin-update-click">Update</button>
+          </form>
+        <?php } ?>
+      </li>
+    <?php } ?>
+  </ul>
+<?php } else { ?>
+  <p>You have no Plugins</p>
+<?php } ?>
+
+<hr>
+
 <h1>OAuth Credentials</h1>
 <?php if(is_array($credentials) && count($credentials) > 0) { ?>
   <ul class="credentials">

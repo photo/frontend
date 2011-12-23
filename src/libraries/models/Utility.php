@@ -98,6 +98,51 @@ class Utility
     return self::returnValue(date('l, F jS, Y \a\t g:ia', $ts), $write);
   }
 
+  // http://stackoverflow.com/a/1268642
+  public static function generateIniString($array, $hasSections = false)
+  {
+    $retval = ''; 
+    if($hasSections)
+    { 
+      foreach ($array as $key=>$elem)
+      { 
+        $retval .= "\n[{$key}]\n"; 
+        if(is_array($elem))
+        {
+          foreach ($elem as $key2=>$elem2)
+          { 
+            if(is_array($elem2)) 
+            { 
+              for($i=0;$i<count($elem2);$i++) 
+              { 
+                $retval .= $key2."[] = \"".$elem2[$i]."\"\n"; 
+              } 
+            } 
+            else if($elem2=="") $retval .= $key2." = \n"; 
+            else $retval .= $key2." = \"".$elem2."\"\n"; 
+          } 
+        }
+      } 
+    } 
+    else
+    { 
+      foreach ($array as $key=>$elem)
+      { 
+        if(is_array($elem)) 
+        { 
+          for($i=0;$i<count($elem);$i++) 
+          { 
+            $retval .= $key."[] = \"".$elem[$i]."\"\n"; 
+          } 
+        } 
+        else if($elem=="") $retval .= $key." = \n";
+        else $retval .= $key." = \"".$elem."\"\n"; 
+      } 
+    } 
+
+    return $retval;
+  }
+
   public static function getEmailHandle($email, $write = true)
   {
     return self::returnValue(substr($email, 0, strpos($email, '@')), $write);

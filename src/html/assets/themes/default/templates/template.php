@@ -35,7 +35,7 @@
 </head>
 
 <body class="<?php echo $page; ?>">
-
+  <?php getPlugin()->invoke('onBodyBegin', array('page' => $page)); ?>
   <div id="container">
     <header>
       <?php getTheme()->display('partials/header.php'); ?>
@@ -66,6 +66,6 @@
       }
     });
   </script>
-  <?php getPlugin()->invoke('onBody', array('page' => $page)); ?>
+  <?php getPlugin()->invoke('onBodyEnd', array('page' => $page)); ?>
 </body>
 </html>

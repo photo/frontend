@@ -16,6 +16,40 @@ class Plugin
     $this->registerAll();
   }
 
+  public function getActive()
+  {
+    $active = array();
+    $confPlugins = getConfig()->get('plugins');
+    if($confPlugins !== null)
+      $pluginsFromConf = (array)explode(',', $confPlugins->activePlugins);
+    else
+      $pluginsFromConf = array();
+
+    $plugins = $this->getAll();
+    foreach($plugins as $plugin)
+    {
+      if(in_array($plugin, $pluginsFromConf))
+        $active[] = $plugin;
+    }
+    return $active;
+  }
+
+  public function getAll()
+  {
+    if(empty($this->pluginDir) || !is_dir($this->pluginDir))
+      return array();
+    $dir = dir($this->pluginDir);
+    $plugins = array();
+    while (($name = $dir->read()) !== false)
+    {
+      if(is_dir(sprintf('%s/%s', getConfig()->get('paths')->plugins, $name)) || substr($name, 0, 1) == '.')
+        continue;
+
+      $plugins[] = preg_replace('/Plugin$/', '', basename($name, '.php'));
+    }
+    return $plugins;
+  }
+
   public function invoke($action, $params = null)
   {
     $output = '';
@@ -39,39 +73,45 @@ class Plugin
     return false;
   }
 
-  private function getActive()
+  public function loadConf($plugin)
   {
-    $active = array();
-    $confPlugins = getConfig()->get('plugins');
-    if($confPlugins !== null)
-      $pluginsFromConf = (array)explode(',', $confPlugins->activePlugins);
-    else
-      $pluginsFromConf = array();
+    $inst = $this->getInstance($plugin);
+    if(!$inst)
+      return null;
 
-    $plugins = $this->getAll();
-
-    foreach($plugins as $plugin)
+    $conf = $inst->defineConf();
+    if(file_exists($confPath = sprintf('%s/plugins/%s.%s.ini', getConfig()->get('paths')->userdata, $_SERVER['HTTP_HOST'], $plugin)))
     {
-      if(in_array($plugin, $pluginsFromConf))
-        $active[] = $plugin;
+      $parsedConf = parse_ini_file($confPath);
+      foreach($conf as $name => $tmp)
+      {
+        if(isset($parsedConf[$name]))
+          $conf[$name] = $parsedConf[$name];
+      }
+      return $conf;
     }
-    return $active;
+    return $conf;
   }
 
-  private function getAll()
+  public function writeConf($plugin, $string)
   {
-    if(empty($this->pluginDir) || !is_dir($this->pluginDir))
-      return array();
-    $dir = dir($this->pluginDir);
-    $plugins = array();
-    while (($name = $dir->read()) !== false)
-    {
-      if(is_dir(sprintf('%s/%s', getConfig()->get('paths')->plugins, $name)) || substr($name, 0, 1) == '.')
-        continue;
+    $pluginDir = sprintf('%s/plugins', getConfig()->get('paths')->userdata);
+    if(!is_dir($pluginDir))
+      mkdir($pluginDir);
 
-      $plugins[] = preg_replace('/Plugin$/', '', basename($name, '.php'));
+    if($string !== false)
+      return file_put_contents(sprintf('%s/%s.%s.ini', $pluginDir, $_SERVER['HTTP_HOST'], $plugin), $string);
+    return false;
+  }
+
+  private function getInstance($plugin)
+  {
+    foreach($this->pluginInstances as $inst)
+    {
+      if(get_class($inst) == sprintf('%sPlugin', $plugin))
+        return $inst;
     }
-    return $plugins;
+    return false;
   }
 
   private function registerAll()

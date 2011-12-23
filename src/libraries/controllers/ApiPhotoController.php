@@ -71,6 +71,7 @@ class ApiPhotoController extends BaseController
     if(!$nextPrevious)
       return self::error('Could not get next/previous photo', false);
 
+    $sizes = array();
     if(isset($_GET['returnSizes']))
       $sizes = (array)explode(',', $_GET['returnSizes']);
 
@@ -82,7 +83,7 @@ class ApiPhotoController extends BaseController
       $generate = true;
 
     // if specific sizes are requested then make sure we return them
-    if(isset($sizes))
+    if(!empty($sizes))
     {
       $protocol = Utility::getProtocol(false);
       if(isset($_GET['protocol']))
@@ -99,12 +100,6 @@ class ApiPhotoController extends BaseController
             Photo::generate($photo['id'], $hash, $options['width'], $options['width'], $options['options']);
             $requery = true;
           }
-          else
-          {
-            // we have to merge to retain multiple sizes else the last one overwrites the rest
-            // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
-            $nextPrevious[$key] = Photo::addApiUrls($nextPrevious[$key], $options, $protocol);
-          }
         }
       }
 
@@ -113,18 +108,12 @@ class ApiPhotoController extends BaseController
       {
         $nextPrevious = getDb()->getPhotoNextPrevious($id, $filters);
         foreach($nextPrevious as $key => $photo)
-        {
           $nextPrevious[$key] = self::pruneSizes($photo, $sizes);
-          foreach($sizes as $size)
-          {
-            // we have to merge to retain multiple sizes else the last one overwrites the rest
-            // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
-            $options = Photo::generateFragmentReverse($size);
-            $nextPrevious[$key] = Photo::addApiUrls($nextPrevious[$key], $options, $protocol);
-          }
-        }
       }
     }
+
+    foreach($nextPrevious as $key => $photo)
+      $nextPrevious[$key] = Photo::addApiUrls($photo, $sizes);
 
     return self::success("Next/previous for photo {$id}", $nextPrevious);
   }
@@ -181,7 +170,7 @@ class ApiPhotoController extends BaseController
       // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
       $photos[$key] = self::pruneSizes($photo, $sizes);
 
-      if(isset($sizes))
+      if(!empty($sizes))
       {
         foreach($sizes as $size)
         {
@@ -194,12 +183,6 @@ class ApiPhotoController extends BaseController
             Photo::generate($photo['id'], $hash, $options['width'], $options['width'], $options['options']);
             $requery = true;
           }
-          else
-          {
-            // we have to merge to retain multiple sizes else the last one overwrites the rest
-            // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
-            $photos[$key] = Photo::addApiUrls($photos[$key], $options, $protocol);
-          }
         }
       }
     }
@@ -209,17 +192,13 @@ class ApiPhotoController extends BaseController
     {
       $photos = $db->getPhotos($filters, $pageSize);
       foreach($photos as $key => $photo)
-      {
         $photos[$key] = self::pruneSizes($photo, $sizes);
-        foreach($sizes as $size)
-        {
-          // we have to merge to retain multiple sizes else the last one overwrites the rest
-          // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
-          $options = Photo::generateFragmentReverse($size);
-          $photos[$key] = Photo::addApiUrls($photos[$key], $options, $protocol);
-        }
-      }
     }
+
+    // we have to merge to retain multiple sizes else the last one overwrites the rest
+    // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
+    foreach($photos as $key => $photo)
+      $photos[$key] = Photo::addApiUrls($photos[$key], $sizes);
 
     $photos[0]['pageSize'] = $pageSize;
     $photos[0]['currentPage'] = $page;
@@ -399,7 +378,7 @@ class ApiPhotoController extends BaseController
 
     $photo = self::pruneSizes($photo, $sizes);
 
-    if(isset($sizes))
+    if(!empty($sizes))
     {
       $protocol = Utility::getProtocol(false);
       if(isset($_GET['protocol']))
@@ -418,10 +397,6 @@ class ApiPhotoController extends BaseController
           Photo::generate($id, $hash, $options['width'], $options['width'], $options['options']);
           $requery = true;
         }
-        else
-        {
-          $photo = Photo::addApiUrls($photo, $options, $protocol);
-        }
       }
 
       // requery to get generated paths
@@ -433,14 +408,10 @@ class ApiPhotoController extends BaseController
           $photo = getDb()->getPhoto($id);
 
         $photo = self::pruneSizes($photo, $sizes);
-        foreach($sizes as $size)
-        {
-          $options = Photo::generateFragmentReverse($size);
-          $photo = Photo::addApiUrls($photo, $options, $protocol);
-        }
       }
     }
 
+    $photo = Photo::addApiUrls($photo, $sizes);
     return self::success("Photo {$id}", $photo);
   }
 

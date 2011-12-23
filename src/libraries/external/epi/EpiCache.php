@@ -3,6 +3,7 @@ class EpiCache
 {
   const MEMCACHED = 'EpiCache_Memcached';
   const APC = 'EpiCache_Apc';
+  const FILE = 'EpiCache_File';
   private static $instances, $employ;
   private $cached, $hash;
   private function __construct(){}

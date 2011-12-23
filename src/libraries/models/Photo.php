@@ -18,20 +18,28 @@ class Photo
     * @param string $protocol http or https
     * @return array
     */
-  public static function addApiUrls($photo, $options, $protocol)
+  public static function addApiUrls($photo, $sizes, $protocol=null)
   {
-    $size = self::generateFragment($options['width'], $options['height'], $options['options']);
-    $path = self::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
-    $photo["path{$size}"] = $path;
-    if(strstr($size, 'xCR') === false)
+    if($protocol === null)
+      $protocol = Utility::getProtocol(false);
+
+    foreach($sizes as $size)
     {
-      $dimensions = self::getRealDimensions($photo['width'], $photo['height'], $options['width'], $options['height']);
-      $photo["photo{$size}"] = array($path, $dimensions['width'], $dimensions['height']);
+      $options = Photo::generateFragmentReverse($size);
+      $fragment = self::generateFragment($options['width'], $options['height'], $options['options']);
+      $path = self::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+      $photo["path{$size}"] = $path;
+      if(strstr($fragment, 'xCR') === false)
+      {
+        $dimensions = self::getRealDimensions($photo['width'], $photo['height'], $options['width'], $options['height']);
+        $photo["photo{$fragment}"] = array($path, $dimensions['width'], $dimensions['height']);
+      }
+      else
+      {
+        $photo["photo{$fragment}"] = array($path, $options['width'], $options['height']);
+      }
     }
-    else
-    {
-      $photo["photo{$size}"] = array($path, $options['width'], $options['height']);
-    }
+    $photo['url'] = self::getPhotoViewUrl($photo);
     return $photo;
   }
 
@@ -526,6 +534,16 @@ class Photo
       'permission' => 0, // TODO
       'license' => ''
     );
+  }
+
+  /**
+    * Generate photo view url for the API
+    *
+    * @return array Default values for a new photo
+    */
+  private static function getPhotoViewUrl($photo)
+  {
+    return sprintf('%s://%s%s', Utility::getProtocol(false), $_SERVER['HTTP_HOST'], Url::photoView($photo['id'], null, false));
   }
 
   /**

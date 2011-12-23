@@ -8,45 +8,40 @@ if(isset($_GET['__route__']) && strstr($_GET['__route__'], '.json'))
 $basePath = dirname(dirname(__FILE__));
 $epiPath = "{$basePath}/libraries/external/epi";
 require "{$epiPath}/Epi.php";
+require "{$basePath}/libraries/models/UserConfig.php";
 
 Epi::setSetting('exceptions', true);
 Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
 Epi::setPath('view', '');
-Epi::init('api','cache','config','curl','form','logger','route','session-php','template','database');
-EpiSession::employ(EpiSession::PHP);
+Epi::init('api','cache','config','curl','form','logger','route','session','template','database');
+
+// loads configs and dependencies
+$hasConfig = getUserConfig()->load();
+
+EpiCache::employ(getConfig()->get('epi')->cache);
+EpiSession::employ(getConfig()->get('epi')->session);
 getSession();
 
-getConfig()->load('defaults.ini');
-
-// backwards compatibility for 1.2.1 -> 1.2.2 upgrade
-// TODO remove in 2.0.0
-$configFile = sprintf('%s/userdata/configs/%s.ini', $basePath, getenv('HTTP_HOST'));
-if(!file_exists($configFile))
-  $configFile = sprintf('%s/generated/%s.ini', Epi::getPath('config'), getenv('HTTP_HOST'));
-
+// determine if this is a login endpoint
 $loginEndpoint = false;
 if(isset($_GET['__route__']) && preg_match('#/user/(login|logout)#', $_GET['__route__']))
   $loginEndpoint = true;
+
+// determine if this is a setup endpoint
 $runSetup = false;
-if(file_exists($configFile) && strpos($_SERVER['REQUEST_URI'], '/setup') !== false && isset($_GET['edit']))
+if($hasConfig && isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '/setup') !== false && isset($_GET['edit']))
   $runSetup = true;
 
-// if the config file exists and we're not running the setup, proceed as normal
-if(file_exists($configFile) && !$runSetup)
-{
-  getConfig()->load($configFile);
-  require getConfig()->get('paths')->libraries . '/dependencies.php';
 
+// if the config file exists and we're not running the setup, proceed as normal
+if($hasConfig && !$runSetup)
+{
   // check if the system needs to upgraded for new code
   $runUpgrade = false;
   if(!getUpgrade()->isCurrent())
     $runUpgrade = true;
   require getConfig()->get('paths')->libraries . '/routes.php';
-
-  getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName()));
-  if(Utility::isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(__FILE__)), getTheme(false)->getThemeName())))
-    getConfig()->load($mobileSettings);
 
   // initializes plugins
   getPlugin();
@@ -56,9 +51,6 @@ else
 {
   $runUpgrade = false;
   $runSetup = true;
-  // if we're running setup and the config file exists, load it to prepopulate the form
-  if(file_exists($configFile))
-    getConfig()->load($configFile);
 
   // setup and enable routes for setup
   $baseDir = dirname(dirname(__FILE__));
@@ -72,9 +64,12 @@ else
   $paths->templates = "{$baseDir}/templates";
   $paths->themes = "{$baseDir}/html/assets/themes";
   getConfig()->set('paths', $paths);
+
+  if(!$hasConfig)
+    require getConfig()->get('paths')->libraries . '/dependencies.php';
+
   require getConfig()->get('paths')->libraries . '/routes-setup.php';
   require getConfig()->get('paths')->libraries . '/routes-error.php';
-  require getConfig()->get('paths')->libraries . '/dependencies.php';
   require getConfig()->get('paths')->controllers . '/SetupController.php';
   getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName()));
 

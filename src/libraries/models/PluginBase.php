@@ -6,9 +6,28 @@
  */
 class PluginBase
 {
+  private $pluginName, $pluginConf = null;
   public function __construct()
   {
+    $this->pluginName = preg_replace('/Plugin$/', '', get_class($this));
+  }
 
+  public function defineConf()
+  {
+    return null;
+  }
+
+  public function getConf()
+  {
+    if($this->pluginConf !== null)
+      return $this->pluginConf;
+
+    $this->pluginConf = new stdClass;
+    $conf = getPlugin()->loadConf($this->pluginName);
+    foreach($conf as $name => $value)
+      $this->pluginConf->$name = $value;
+
+    return $this->pluginConf;
   }
 
   public function onAction($params)
@@ -21,7 +40,7 @@ class PluginBase
     getLogger()->info('Plugin onBodyBegin called');
   }
 
-  public function onBodyBeginEnd()
+  public function onBodyEnd()
   {
     getLogger()->info('Plugin onBodyEnd called');
   }

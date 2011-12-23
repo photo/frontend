@@ -130,6 +130,31 @@ var opTheme = (function() {
         }
         return false;
       },
+      pluginStatus: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href')+'.json';
+        OP.Util.makeRequest(url, {}, function(response){
+          if(response.code === 200)
+            window.location.reload();
+          else
+            opTheme.message.error('Could not update the status of this plugin.');
+        }, 'json', 'post');
+        return false;
+      },
+      pluginUpdate: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            form = el.parent(),
+            url = form.attr('action')+'.json';
+        OP.Util.makeRequest(url, form.serializeArray(), function(response){
+          if(response.code === 200)
+            opTheme.message.confirm('Your plugin was successfully updated.');
+          else
+            opTheme.message.error('Could not update the status of this plugin.');
+        }, 'json', 'post');
+        return false;
+      },
       searchByTags: function(ev) {
         ev.preventDefault();
         var form = $(ev.target).parent(),
@@ -359,6 +384,8 @@ var opTheme = (function() {
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:photo-edit', opTheme.callback.photoEdit);
+        OP.Util.on('click:plugin-status', opTheme.callback.pluginStatus);
+        OP.Util.on('click:plugin-update', opTheme.callback.pluginUpdate);
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:settings', opTheme.callback.settings);
