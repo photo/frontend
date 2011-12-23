@@ -133,23 +133,19 @@ class Tag
     return $tags;
   }
 
-  public static function removeDuplicatesFromString($tags)
-  {
-    return implode(',', array_unique((array)explode(',', $tags)));
-  }
-
   public static function sanitize($tag)
   {
-    return preg_replace('/,/', '', $tag);
+    return trim(preg_replace('/,/', '', $tag));
   }
 
   public static function sanitizeTagsAsString($tags)
   {
-    $tagsArray = (array)explode(',', $tags);
-    natcasesort($tagsArray);
+    $tagsArray = preg_split('/\s*,\s*/', trim($tags), -1, PREG_SPLIT_NO_EMPTY);
+    $tagsArray = array_unique($tagsArray);
     foreach($tagsArray as $key => $val)
       $tagsArray[$key] = self::sanitize($val);
 
+    natcasesort($tagsArray);
     return implode(',', $tagsArray);
   }
 
