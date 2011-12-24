@@ -32,7 +32,7 @@
         </li>
         <li>
           <label>
-            <input type="radio" name="permission" value="0"> Private
+            <input type="radio" name="permission" value="0">
             <span>Private</span>
           </label>
         </li>

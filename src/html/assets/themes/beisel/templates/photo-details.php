@@ -65,9 +65,10 @@
   <p><strong>Discover more photos</strong></p>
   <ul class="image-pagination">
     <?php if(!empty($photo['previous'])) { ?>
-    <li class="previous">
-      <a href="<?php Url::photoView($photo['previous']['id'], $options); ?>" title="Go to previous photo">
-        <img src="<?php Url::photoUrl($photo['previous'], getConfig()->get('photoSizes')->nextPrevious); ?>" alt="Go to previous photo" />
+    <li class="previous unpinned id-<?php Utility::safe($photo['previous']['id']); ?> pin-out">
+      <a href="#" class="pin pin-click" data-id="<?php Utility::safe($photo['previous']['id']); ?>"></a>
+      <a href="<?php Url::photoView($photo['previous']['id'], $options); ?>" title="Go to previous photo" class="thumb">
+        <img src="<?php Url::photoUrl($photo['previous'], getConfig()->get('photoSizes')->nextPrevious); ?>" alt="Go to previous photo" class="pin-over" />
         <span class="prev"><span></span></span>
         <span class="audible">Go to previous photo</span>
       </a>
@@ -78,9 +79,10 @@
       </li>
     <?php } ?>
     <?php if(!empty($photo['next'])) { ?>
-    <li class="next">
-      <a href="<?php Url::photoView($photo['next']['id'], $options); ?>" title="Go to next photo">
-        <img src="<?php Url::photoUrl($photo['next'], getConfig()->get('photoSizes')->nextPrevious); ?>" alt="Go to next photo" />
+    <li class="next unpinned id-<?php Utility::safe($photo['next']['id']); ?> pin-out">
+      <a href="#" class="pin pin-click" data-id="<?php Utility::safe($photo['next']['id']); ?>"></a>
+      <a href="<?php Url::photoView($photo['next']['id'], $options); ?>" title="Go to next photo" class="thumb">
+        <img src="<?php Url::photoUrl($photo['next'], getConfig()->get('photoSizes')->nextPrevious); ?>" alt="Go to next photo" class="pin-over" />
         <span class="next"><span></span></span>
         <span class="audible">Go to next photo</span>
       </a>
