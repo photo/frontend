@@ -36,12 +36,16 @@
     this.remove = function(id) {
       log("[Util][Batch] removing " + id);
       that.collection.remove(id);
-      OP.Util.fire('callback:batch-remove', id);
+    };
+
+    this.clear = function() {
+      log("[Util][Batch] clearing");
+      this.collection.clear();
     };
 
 
     this.collection = (function() {
-      var length = 0,
+      var length,
           items,
           namespace = 'items';
 
@@ -53,6 +57,12 @@
           localStorage.setObject(namespace, items);
           length++;
         },
+        clear: function() {
+          items = {};
+          localStorage.setObject(namespace, {});
+          length = 0;
+          OP.Util.fire('callback:batch-clear');
+        },
         getAll: function() {
           return items;
         },
@@ -63,10 +73,18 @@
           }
           return retval;
         },
+        getLength: function() {
+          var size = 0, key;
+          for (key in items) {
+              if (items.hasOwnProperty(key)) size++;
+          }
+          return size;
+        },
         remove: function(key) {
           delete items[key];
           localStorage.setObject(namespace, items);
           length--;
+          OP.Util.fire('callback:batch-remove', key);
         }
       };
     })();

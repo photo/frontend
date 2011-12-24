@@ -27,6 +27,8 @@
         <?php getTheme()->display('partials/header.php'); ?>
       </header>
     </div>
+    
+    <div id="message" class="row"></div>
 
     <div class="row">
       <article id="main" role="main">
@@ -44,6 +46,7 @@
     </div>
     
   </div>
+  <div id="modal" class="modal hide fade"></div>
   <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
   <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
   <script type="text/javascript" src="/assets/javascripts/openphoto-batch.js"></script>
@@ -55,11 +58,13 @@
             'action-delete-click':'click:action-delete',
             'action-jump-click':'click:action-jump',
             'action-post-click':'click:action-post',
+            'batch-modal-click':'click:batch-modal',
             'credential-delete-click':'click:credential-delete',
             'group-checkbox-click':'click:group-checkbox',
             'group-update-click':'click:group-update',
             'login-click':'click:login',
             'map-jump-click':'click:map-jump',
+            'modal-close-click':'click:modal-close',
             'nav-item-click':'click:nav-item',
             'pagination-click':'click:pagination',
             'photo-delete-click':'click:photo-delete',
@@ -67,12 +72,14 @@
             'photo-tag-click':'click:tag',
             'photo-thumbnail-click':'click:photo-thumbnail',
             'photo-update-click':'click:photo-update',
+            'photo-update-batch-click':'click:photo-update-batch',
             'plugin-status-click':'click:plugin-status',
             'plugin-update-click':'click:plugin-update',
             'search-click':'click:search',
             'settings-click':'click:settings',
             'webhook-delete-click':'click:webhook-delete',
-            'pin-click':'click:pin'
+            'pin-click':'click:pin',
+            'pin-clear-click':'click:pin-clear'
         },
         'keydown': {
             37: 'keydown:browse-previous',
@@ -99,6 +106,8 @@
           <?php if(isset($_GET['debug'])) { ?>
             '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
             '<?php getTheme()->asset('javascript', 'jquery.flexslider-min.js'); ?>',
+            '<?php getTheme()->asset('javascript', 'bootstrap-modal.js'); ?>',
+            '<?php getTheme()->asset('javascript', 'bootstrap-alert.js'); ?>',
             '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'
           <?php } else { ?>
             '<?php getTheme()->asset('javascript', 'openphoto-theme-full-min.js'); ?>'
