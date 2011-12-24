@@ -118,7 +118,7 @@
         onComplete: function(){ 
           opTheme.init.load(); 
           opTheme.init.attach(); 
-          <?php if(strstr($_GET['__route__'], 'photo') !== false) { ?>
+          <?php if(isset($_GET['__route__']) && strstr($_GET['__route__'], 'photo') !== false) { ?>
             opTheme.init.photos(); 
           <?php } ?>
         }
