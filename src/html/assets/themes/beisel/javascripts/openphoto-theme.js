@@ -1,4 +1,11 @@
 var opTheme = (function() {
+  var crumb = null;
+  var setCrumb = function(_crumb) {
+    crumb = _crumb;
+  }
+  var getCrumb = function() {
+    return crumb;
+  };
   var log = function(msg) {
     if(console !== undefined && console.log !== undefined)
       console.log(msg);
@@ -211,11 +218,11 @@ var opTheme = (function() {
         var el = $(ev.target),
             key = $("#batch-key").val(),
             value = $("form#batch-edit").find("input[name~='permission']:checked").val();
-        params = {};
+        params = {'crumb':crumb};
         params[key] = value;
         params['ids'] = OP.Batch.collection.getIds().join(',');
         console.log(params);
-        $.post('/photos/update.json', params, opTheme.callback.photoUpdateBatchCb, 'json');
+        OP.Util.makeRequest('/photos/update.json', params, opTheme.callback.photoUpdateBatchCb, 'json', 'post');
       },
       photoUpdateBatchCb: function(response) {
         if(response.code == 200) {
@@ -480,7 +487,8 @@ var opTheme = (function() {
     },
     
     init: {
-      load: function() {
+      load: function(_crumb) {
+        setCrumb(_crumb);
         if($("section#slideshow").length > 0) {
           $(window).load(function() {
             $('.flexslider').flexslider({
@@ -494,7 +502,7 @@ var opTheme = (function() {
             });
           });
         }
-        $("#modal").modal({keyboard:true,backdrop:'static'});
+        $("#modal").modal({keyboard:true});
       },
       attach: function() {
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
