@@ -548,7 +548,6 @@ var opTheme = (function() {
           if(parts.length == 2) {
             if(ids[parts[1]] !== undefined)
               el.removeClass("unpinned").addClass("pinned");
-            
           }
         });
 
