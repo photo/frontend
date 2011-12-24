@@ -81,13 +81,15 @@
             'pin-click':'click:pin',
             'pin-clear-click':'click:pin-clear'
         },
+        <?php if(User::isOwner()) { ?>
+          'mouseover': {
+              'pin-over':'mouseover:pin',
+              'pin-out':'mouseout:pin',
+          },
+        <?php } ?>
         'keydown': {
             37: 'keydown:browse-previous',
             39: 'keydown:browse-next'
-        },
-        'mouseover': {
-            'pin-over':'mouseover:pin',
-            'pin-out':'mouseout:pin',
         },
       },
       js: {
