@@ -109,14 +109,13 @@
             '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
             '<?php getTheme()->asset('javascript', 'jquery.flexslider-min.js'); ?>',
             '<?php getTheme()->asset('javascript', 'bootstrap-modal.js'); ?>',
-            '<?php getTheme()->asset('javascript', 'bootstrap-alert.js'); ?>',
             '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'
           <?php } else { ?>
             '<?php getTheme()->asset('javascript', 'openphoto-theme-full-min.js'); ?>'
           <?php } ?>
         ],
         onComplete: function(){ 
-          opTheme.init.load(); 
+          opTheme.init.load('<?php Utility::safe(getSession()->get('crumb')); ?>'); 
           opTheme.init.attach(); 
           <?php if(isset($_GET['__route__']) && strstr($_GET['__route__'], 'photo') !== false) { ?>
             opTheme.init.photos(); 
