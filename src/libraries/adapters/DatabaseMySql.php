@@ -524,9 +524,22 @@ class DatabaseMySql implements DatabaseInterface
   public function getTags($filter = array())
   {
     $countField = 'countPublic';
+    $params = array(':owner' => $this->owner);
+
     if(isset($filter['permission']) && $filter['permission'] == 0)
       $countField = 'countPrivate';
-    $tags = getDatabase()->all("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY `id`", array(':owner' => $this->owner));
+
+    if(isset($filter['search']) && $filter['search'] != '')
+    {
+      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND `id` LIKE :search ORDER BY `id`";
+      $params[':search'] = "{$filter['search']}%";
+    }
+    else
+    {
+      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY `id`";
+    }
+
+    $tags = getDatabase()->all($query, $params);
     foreach($tags as $key => $tag)
     {
       // TODO this should be in the normalize method

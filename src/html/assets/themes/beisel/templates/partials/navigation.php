@@ -31,7 +31,7 @@
 <?php } ?>
 	<li id="nav-search" <?php if(Utility::isActiveTab('search')) { ?> class="active" <?php } ?>>
 		<form action="<?php Url::photosView(); ?>" method="get" id="form-tag-search">
-			<input type="text" name="tags" placeholder="Enter a tag" class="select" /><button type="submit" class="search-click" title="Search now">Go</button>
+			<input type="text" name="tags" placeholder="Enter a tag" class="select tags-autocomplete" /><button type="submit" class="search-click" title="Search now">Go</button>
 		</form>
 	</li>
 </ul>

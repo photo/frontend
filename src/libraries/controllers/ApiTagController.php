@@ -64,17 +64,22 @@ class ApiTagController extends BaseController
     */
   public static function list_()
   {
-    $filters = array();
+    $filters = $_GET;
+    unset($filters['__route__']);
+
     if(User::isOwner())
       $filters['permission'] = 0;
 
     $tagField = User::isOwner() ? 'countPrivate' : 'countPublic';
 
     $tags = getDb()->getTags($filters);
-    foreach($tags as $key => $tag)
+    if(is_array($tags))
     {
-      $tags[$key]['count'] = $tag[$tagField];
-      unset($tags[$key]['countPublic'], $tags[$key]['countPrivate'], $tags[$key]['owner']);
+      foreach($tags as $key => $tag)
+      {
+        $tags[$key]['count'] = $tag[$tagField];
+        unset($tags[$key]['countPublic'], $tags[$key]['countPrivate'], $tags[$key]['owner']);
+      }
     }
     return self::success('Tags for the user', $tags);
   }

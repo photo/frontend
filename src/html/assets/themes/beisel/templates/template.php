@@ -49,7 +49,6 @@
   <div id="modal" class="modal hide fade"></div>
   <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
   <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
-  <script type="text/javascript" src="/assets/javascripts/openphoto-batch.js"></script>
   <script>
     OP.Util.init(jQuery, {
       eventMap: {
@@ -106,11 +105,14 @@
           <?php } ?>
 
           <?php if(isset($_GET['debug'])) { ?>
+            '/assets/javascripts/openphoto-batch.js',
             '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
             '<?php getTheme()->asset('javascript', 'jquery.flexslider-min.js'); ?>',
+            '<?php getTheme()->asset('javascript', 'jquery.tokeninput.js'); ?>',
             '<?php getTheme()->asset('javascript', 'bootstrap-modal.js'); ?>',
             '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'
           <?php } else { ?>
+            '/assets/javascripts/openphoto-batch.min.js',
             '<?php getTheme()->asset('javascript', 'openphoto-theme-full-min.js'); ?>'
           <?php } ?>
         ],

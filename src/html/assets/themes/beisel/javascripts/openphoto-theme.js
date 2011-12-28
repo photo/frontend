@@ -30,6 +30,19 @@ var opTheme = (function() {
     }
     return '<div class="alert-message block-message '+cls+'"><a class="modal-close-click close" href="#">x</a>' + message + '</div>'
   };
+  var tokenPreProcess = function(results) {
+    var term = $("#token-input-").val(), result = results.result, retval = [];
+    for(i in result){ 
+      if(result.hasOwnProperty(i))
+        retval.push({id:result[i].id, name:result[i].id + ' ('+result[i].count+')'}); 
+    } 
+    // we need to append the current term into the list to allow users to use "new" tags
+    retval.push({id: term, name: term});
+    return retval;
+  };
+  var tokenFormatter = function(item) {
+    return '<li>'+item.name+'</li>';
+  };
   var timeoutId = undefined;
   return {
     callback: {
@@ -205,6 +218,7 @@ var opTheme = (function() {
             if(response.code === 200) {
               $("#main").append(response.result.markup);
               $.scrollTo($('div.owner-edit'), 200);
+              OP.Util.fire('callback:tags-autocomplete');
             } else {
               opTheme.message.error('Could not load the form to edit this photo.');
             }
@@ -529,9 +543,12 @@ var opTheme = (function() {
         OP.Util.on('mouseover:pin', opTheme.callback.pinOver);
         OP.Util.on('mouseout:pin', opTheme.callback.pinOut);
 
+        OP.Util.on('callback:tags-autocomplete', opTheme.init.tags.autocomplete);
         OP.Util.on('callback:batch-add', opTheme.callback.batchAdd);
         OP.Util.on('callback:batch-remove', opTheme.callback.batchRemove);
         OP.Util.on('callback:batch-clear', opTheme.callback.batchClear);
+
+        OP.Util.fire('callback:tags-autocomplete');
 
         if(typeof OPU === 'object')
           OPU.init();
@@ -558,7 +575,31 @@ var opTheme = (function() {
               el.removeClass("unpinned").addClass("pinned");
           }
         });
+      },
+      tags: {
+        autocomplete: function() {
+          var config = {};
+          config.queryParam = 'search';
+          config.propertyToSearch = 'id';
+          config.preventDuplicates = true;
+          config.onResult = tokenPreProcess;
+          config.resultsFormatter = tokenFormatter;
+          $("input[class~='tags-autocomplete']").each(function(i, el) {
+            var cfg = config, el = $(el), val = el.attr('value');
+            // check if this input has been tokenized already
+            if(el.css('display') == 'none')
+              return;
 
+            if(val != '') {
+              var tags = val.split(','), prePopulate = [];
+              for(i=0; i<tags.length; i++) {
+                prePopulate.push({id: tags[i], name: tags[i]});
+              }
+              config.prePopulate = prePopulate;
+            }
+            $(el).tokenInput("/tags/list.json", config);
+          });
+        }
       }
     },
     

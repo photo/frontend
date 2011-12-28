@@ -24,7 +24,7 @@
       <div class="clearfix">
         <label for="tags">Tags</label>
         <div class="input">
-          <input type="text" name="tags" id="tags" placeholder="A comma separated list of tags" value="<?php Utility::safe(implode(',', $photo['tags'])); ?>">
+          <input type="text" name="tags" id="tags" class="tags-autocomplete" placeholder="A comma separated list of tags" value="<?php Utility::safe(implode(',', $photo['tags'])); ?>">
         </div>
       </div>
       <div class="clearfix">
