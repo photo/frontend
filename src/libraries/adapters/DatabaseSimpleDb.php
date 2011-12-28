@@ -421,7 +421,18 @@ class DatabaseSimpleDb implements DatabaseInterface
     $countField = 'countPublic';
     if(isset($filter['permission']) && $filter['permission'] == 0)
       $countField = 'countPrivate';
-    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL ORDER BY itemName()", array('ConsistentRead' => 'false'));
+
+    if(isset($filter['search']) && $filter['search'] != '')
+    {
+      $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL AND itemName() LIKE '{$filter['search']}%' ORDER BY itemName()";
+      $params[':search'] = "{$filter['search']}%";
+    }
+    else
+    {
+      $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL ORDER BY itemName()";
+    }
+
+    $res = $this->db->select($query, array('ConsistentRead' => 'false'));
     $this->logErrors($res);
     $tags = array();
     if(isset($res->body->SelectResult))

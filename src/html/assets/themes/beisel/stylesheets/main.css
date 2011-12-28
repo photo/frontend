@@ -350,18 +350,19 @@ header a:hover#logo {
 
 /* 03.02. Vertical navigtaion ************************************ */
 
-nav ul {
+nav>ul {
   float:left;
   margin:0 0 0 35px;
   width:770px;
+  position:relative;
 }
 
-nav ul li {
+nav>ul>li {
   float:left;
   padding:14px 0 6px 0;
 }
 
-nav ul li a {
+nav>ul>li a {
   color:#666;
   display:block;
   text-decoration:none;
@@ -370,105 +371,97 @@ nav ul li a {
   padding:0 10px 0 34px;
 }
 
-nav ul li#nav-photos a {
+nav>ul>li#nav-photos a {
   background:transparent url("../images/icons.png") 10px 2px no-repeat;
 }
 
-nav ul li#nav-photos a:hover {
+nav>ul>li#nav-photos a:hover {
   background:transparent url("../images/icons.png") 10px -163px no-repeat;
 }
 
-nav ul li#nav-photos.active a,
-nav ul li#nav-photos.active:hover a {
+nav>ul>li#nav-photos.active a,
+nav>ul>li#nav-photos.active:hover a {
   background:transparent url("../images/icons.png") 10px -344px no-repeat;
   color:#4ac4fd;
 }
 
-nav ul li#nav-tags a {
+nav>ul>li#nav-tags a {
   background:transparent url("../images/icons.png") 10px -23px no-repeat;
 }
 
-nav ul li#nav-tags a:hover {
+nav>ul>li#nav-tags a:hover {
   background:transparent url("../images/icons.png") 10px -188px no-repeat;
 }
 
-nav ul li#nav-tags.active a,
-nav ul li#nav-tags.active:hover a {
+nav>ul>li#nav-tags.active a,
+nav>ul>li#nav-tags.active:hover a {
   background:transparent url("../images/icons.png") 10px -369px no-repeat;
   color:#4ac4fd;
 }
 
-nav ul li#nav-upload a {
+nav>ul>li#nav-upload a {
   background:transparent url("../images/icons.png") 10px -48px no-repeat;
 }
 
-nav ul li#nav-upload a:hover {
+nav>ul>li#nav-upload a:hover {
   background:transparent url("../images/icons.png") 10px -213px no-repeat;
 }
 
-nav ul li#nav-upload.active a,
-nav ul li#nav-upload.active:hover a {
+nav>ul>li#nav-upload.active a,
+nav>ul>li#nav-upload.active:hover a {
   background:transparent url("../images/icons.png") 10px -394px no-repeat;
   color:#4ac4fd;
 }
 
-nav ul li:hover,
-nav ul li.active {
+nav>ul>li:hover,
+nav>ul>li.active {
   background-color:#eee;
   cursor:pointer;
 }
 
-nav ul li:hover a {
+nav>ul>li:hover a {
   color:#999;
 }
 
 /* 03.01.01 Search area ****************************************** */
 
-nav ul li#nav-search {
+nav>ul>li#nav-search {
   cursor:auto;
-  float:right;
   padding:12px 10px 5px 0;
 }
 
-nav ul li#nav-search form {
+nav>ul>li#nav-search form {
   background:transparent url("../images/icons.png") 10px -71px no-repeat;
   margin:0;
   padding:0 0 0 34px;
 }
 
-nav ul li#nav-search:hover form {
+nav>ul>li#nav-search:hover form {
   background:transparent url("../images/icons.png") 10px -236px no-repeat;
 }
 
-nav ul li#nav-search form input,
-nav ul li#nav-search form button {
+nav>ul>li#nav-search form input,
+nav>ul>li#nav-search form button {
   margin:0;
   padding:0;
 }
 
-nav ul li#nav-search form input {
-  -moz-border-radius-topleft:5px;
-  -moz-border-radius-topright:5px;
-  -moz-border-radius-bottomright:5px;
-  -moz-border-radius-bottomleft:5px;
-  -webkit-border-radius:5px 5px 5px 5px;
-  border-radius:5px 5px 5px 5px;
-  border:1px solid #666;
+nav>ul>li#nav-search form input {
   margin:-3px 0 0 0;
   padding:3px;
   width:150px;
+  border:0;
+  box-shadow:none;
 }
 
-nav ul li#nav-search form input:hover {
-  border:1px solid #999;
+nav>ul>li#nav-search form input:hover {
 }
 
-nav ul li#nav-search form input:focus,
-nav ul li#nav-search form input:active {
-  border:1px solid #4ac4fd;
+nav>ul>li#nav-search form input:focus,
+nav>ul>li#nav-search form input:active {
 }
 
-nav ul li#nav-search form button {
+nav>ul>li#nav-search form button {
   background:#999;
   background:-moz-linear-gradient(top, #999 0%, #666 100%);
   background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#999), color-stop(100%,#666));
@@ -498,7 +491,7 @@ nav ul li#nav-search form button {
   width:25px;
 }
 
-nav ul li#nav-search form button:hover {
+nav>ul>li#nav-search form button:hover {
   background:#666;
   background:-moz-linear-gradient(top, #666 0%, #999 100%);
   background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#666), color-stop(100%,#999));
@@ -511,7 +504,7 @@ nav ul li#nav-search form button:hover {
   filter:dropshadow(color=#333, offx=0, offy=1);
 }
 
-nav ul li#nav-search form button:active {
+nav>ul>li#nav-search form button:active {
   background:#4ac4fd;
   background:-moz-linear-gradient(top, #4ac4fd 0%, #9cdefc 98%);
   background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,#4ac4fd), color-stop(98%,#9cdefc));
@@ -527,8 +520,8 @@ nav ul li#nav-search form button:active {
 
 /* 03.01.02 Login area ******************************************* */
 
-nav ul li#nav-signin,
-nav ul li#nav-browserid {
+nav>ul>li#nav-signin,
+nav>ul>li#nav-browserid {
   cursor:inherit;
   border-left:1px solid #eee;
   color:#666;
@@ -539,12 +532,12 @@ nav ul li#nav-browserid {
   width:auto;
 }
 
-nav ul li#nav-browserid {
+nav>ul>li#nav-browserid {
   height:40px;
   width:150px;
 }
 
-nav ul li#nav-browserid a {
+nav>ul>li#nav-browserid a {
   border:none;
   display:block;
   margin:9px 0 3px 0;
@@ -552,14 +545,14 @@ nav ul li#nav-browserid a {
   position:relative;
   width:auto;
 }
-nav ul li#nav-browserid a img{
+nav>ul>li#nav-browserid a img{
   margin-left:10px;
   cursor:pointer;
 }
 
-nav ul li#nav-signin:hover,
-nav ul li#nav-browserid:hover,
-nav ul li#nav-signin.active {
+nav>ul>li#nav-signin:hover,
+nav>ul>li#nav-browserid:hover,
+nav>ul>li#nav-signin.active {
   background:#f1f1f1;
   background:-moz-linear-gradient(top, #f1f1f1 49%, #ffffff 100%);
   background:-webkit-gradient(linear, left top, left bottom, color-stop(49%,#f1f1f1), color-stop(100%,#ffffff));
@@ -577,13 +570,13 @@ nav ul li#nav-signin.active {
   border-left:1px solid #eee;
 }
 
-nav ul li#nav-signin img,
-nav ul li#nav-signin div {
+nav>ul>li#nav-signin img,
+nav>ul>li#nav-signin div {
   float:left;
 }
 
-nav ul li#nav-signin img,
-nav ul li#nav-browserid img {
+nav>ul>li#nav-signin img,
+nav>ul>li#nav-browserid img {
   -webkit-animation-name:reset, animation;
     -webkit-animation-duration:0.5s;
   -webkit-animation-delay:0, 0.5s;
@@ -599,12 +592,12 @@ nav ul li#nav-browserid img {
   border-radius:0px 0px 5px 0px;
 }
 
-nav ul li#nav-signin img {
+nav>ul>li#nav-signin img {
   height:40px;
   width:40px;
 }
 
-nav ul li#nav-signin div {
+nav>ul>li#nav-signin div {
   background:transparent url("../images/icons.png") 12px -94px no-repeat;
   border:none;
   display:block;
@@ -616,24 +609,24 @@ nav ul li#nav-signin div {
   width:auto;
 }
 
-nav ul li#nav-signin:hover div {
+nav>ul>li#nav-signin:hover div {
   background:transparent url("../images/icons.png") 12px -322px no-repeat;
   color:#999;  
 }
 
-nav ul li#nav-signin.active div {
+nav>ul>li#nav-signin.active div {
   background:transparent url("../images/icons.png") 12px -487px no-repeat;
   color:#4ac4fd;
   text-shadow:0px 1px 1px #ffffff;
   filter:dropshadow(color=#ffffff, offx=0, offy=1);
 }
 
-nav ul li#nav-signin:hover img,
-nav ul li#nav-signin.active img {
+nav>ul>li#nav-signin:hover img,
+nav>ul>li#nav-signin.active img {
   opacity:0.5;
 }
 
-nav ul li#nav-signin div #settingsbar {
+nav>ul>li#nav-signin div #settingsbar {
   background-color:white;
   -moz-border-radius-topleft:0px;
   -moz-border-radius-topright:0px;
@@ -2010,6 +2003,161 @@ footer a:hover {
 a.message-close {text-decoration:underline; cursor:pointer; color:#43c2fd; position:absolute; top:5px; right:45px;}
 #message-box.error {color:#ca1616;}
 #message-box.confirm {color:#6c9e6d;}
+
+/* tokeninput */
+/* Example tokeninput style #1: Token vertical list*/
+nav ul li#nav-search {
+  padding:0;
+  margin:10px 5px 0 0;
+  position:absolute;
+  left:295px;
+  z-index:9999;
+}
+nav>ul>li#nav-search:hover {
+  background-color:inherit;
+}
+ul.token-input-list {
+    overflow: hidden; 
+    height: auto !important; 
+    height: 1%;
+    width: 175px;
+    border: 1px solid #999;
+    border-radius:5px;
+    cursor: text;
+    font-size: 12px;
+    font-family: Verdana, sans-serif;
+    z-index: 999;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+    list-style-type: none;
+    float: left;
+}
+ul.token-input-list:focus {
+  border-bottom:0;
+  border-bottom-left-radius:0;
+  border-bottom-right-radius:0;
+}
+
+ul.token-input-list li {
+    list-style-type: none;
+}
+
+ul.token-input-list li input {
+    border: 0;
+    width: 350px;
+    padding: 3px 8px;
+    background-color: white;
+    -webkit-appearance: caret;
+}
+
+ul.token-input-disabled,
+ul.token-input-disabled li input {
+  background-color: #E8E8E8;
+}
+
+ul.token-input-disabled li.token-input-token {
+  background-color: #D9E3CA;
+  color: #7D7D7D
+}
+
+ul.token-input-disabled li.token-input-token span {
+  color: #CFCFCF;
+  cursor: default;
+}
+
+li.token-input-token {
+    overflow: hidden; 
+    height: auto !important; 
+    height: 1%;
+    margin: 3px;
+    padding: 5px;
+    background-color: #eee;
+    border-radius:5px;
+    color: #000;
+    font-weight: bold;
+    cursor: default;
+    display: block;
+}
+
+li.token-input-token p {
+    float: left;
+    display:inline;
+    padding: 0;
+    margin: 0;
+}
+
+li.token-input-token span {
+    float: right;
+    color: #777;
+    cursor: pointer;
+}
+
+li.token-input-selected-token {
+    background-color: #ccc;
+    color: #fff;
+}
+
+li.token-input-selected-token span {
+    color: #bbb;
+}
+
+div.token-input-dropdown {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: 300px;
+    background-color: #fff;
+    overflow: hidden;
+    border-left: 1px solid #999;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+    border-bottom-left-radius:5px;
+    border-bottom-right-radius:5px;
+    cursor: default;
+    font-size: 12px;
+    font-family: Verdana, sans-serif;
+    z-index: 1;
+}
+
+div.token-input-dropdown p {
+    margin: 0;
+    padding: 5px;
+    font-weight: bold;
+    color: #777;
+}
+
+div.token-input-dropdown ul {
+    margin: 0;
+    padding: 0;
+}
+
+div.token-input-dropdown ul li {
+    background-color: #fff;
+    padding: 3px;
+    list-style-type: none;
+}
+
+div.token-input-dropdown ul li.token-input-dropdown-item {
+    background-color: #fafafa;
+}
+
+div.token-input-dropdown ul li.token-input-dropdown-item2 {
+    background-color: #fff;
+}
+
+div.token-input-dropdown ul li em {
+    font-weight: bold;
+    font-style: normal;
+}
+
+div.token-input-dropdown ul li.token-input-selected-dropdown-item {
+    background-color: #eee;
+    padding:5px;
+    margin-top:3px;
+    border-bottom-left-radius:5px;
+    border-bottom-right-radius:5px;
+}
 
 /* bootstrap override */
 .actions {
