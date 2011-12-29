@@ -29,6 +29,8 @@ class DatabaseMySql implements DatabaseInterface
       $this->{$key} = $value;
     }
 
+    getDatabase()->execute("SET NAMES 'utf8'");
+
     $user = getConfig()->get('user');
     if($user !== null)
       $this->owner = $user->email;
