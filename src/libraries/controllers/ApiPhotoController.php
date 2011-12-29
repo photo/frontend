@@ -297,14 +297,34 @@ class ApiPhotoController extends BaseController
     getAuthentication()->requireCrumb();
     // diff/manage tag counts - not critical
     $params = $_POST;
-    if(isset($params['tags']) && !empty($params['tags']))
+    if(isset($params['tags']) || isset($params['tagsAdd']) || isset($params['tagsRemove']))
     {
       $photoBefore = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
       $photoBefore = $photoBefore['result'];
       if($photoBefore)
       {
         $existingTags = $photoBefore['tags'];
-        $updatedTags = (array)explode(',', $params['tags']);
+        $updatedTags = array();
+        if(isset($params['tags']))
+        {
+          $updatedTags = array_merge($updatedTags, (array)explode(',', $params['tags']));
+        }
+        else
+        {
+          $updatedTags = $existingTags;
+          if(isset($params['tagsAdd']))
+          {
+            $updatedTags = array_merge($updatedTags, (array)explode(',', $params['tagsAdd']));
+            unset($params['tagsAdd']);
+          }
+          if(isset($params['tagsRemove']))
+          {
+            $updatedTags = array_diff($updatedTags, (array)explode(',', $params['tagsRemove']));
+            unset($params['tagsRemove']);
+          }
+          $params['tags'] = implode(',', $updatedTags);
+        }
+
         $permission = $photoBefore['permission'];
         if(isset($params['permission']))
           $permission = $params['permission'];
