@@ -49,8 +49,13 @@
     
   </div>
   <div id="modal" class="modal hide fade"></div>
-  <script type="text/javascript" src="<?php echo getAssetPipeline(true)->addJs(getTheme()->asset(getConfig()->get('dependencies')->javascript, null, false))->
-                                                                    addJs(getTheme()->asset('util', null, false))->getUrl(AssetPipeline::js, 'a'); ?>"></script>
+  <?php if(getConfig()->get('site')->mode === 'dev') { ?>
+    <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
+    <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
+  <?php } else { ?>
+    <script type="text/javascript" src="<?php echo getAssetPipeline(true)->addJs(getTheme()->asset(getConfig()->get('dependencies')->javascript, null, false))->
+                                                                      addJs(getTheme()->asset('util', null, false))->getUrl(AssetPipeline::js, 'a'); ?>"></script>
+  <?php } ?>
   <script>
     OP.Util.init(jQuery, {
       eventMap: {
@@ -106,7 +111,7 @@
             <?php } ?>
           <?php } ?>
 
-            <?php if(getConfig()->get('site')->mode === 'dev') { ?>
+          <?php if(getConfig()->get('site')->mode === 'dev') { ?>
             '/assets/javascripts/openphoto-batch.js',
             '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
             '<?php getTheme()->asset('javascript', 'jquery.flexslider-min.js'); ?>',
