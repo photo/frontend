@@ -30,29 +30,29 @@ class Theme
     $this->themeDirWeb = str_replace(sprintf('%s/html', dirname(dirname(dirname(__FILE__)))), '', $this->themeDir);
   }
 
-  public function asset($type, $filename = '')
+  public function asset($type, $filename = '', $write = true)
   {
     $filename = "/{$filename}";
     switch($type)
     {
       case 'base':
-        echo "{$this->themeDirWeb}{$filename}";
+        return Utility::returnValue("{$this->themeDirWeb}{$filename}", $write);
         break;
       case 'image':
-        echo "{$this->themeDirWeb}/images{$filename}";
+        return Utility::returnValue("{$this->themeDirWeb}/images{$filename}", $write);
         break;
       case 'javascript':
-        echo "{$this->themeDirWeb}/javascripts{$filename}";
+        return Utility::returnValue("{$this->themeDirWeb}/javascripts{$filename}", $write);
         break;
       case 'stylesheet':
-        echo "{$this->themeDirWeb}/stylesheets{$filename}";
+        return Utility::returnValue("{$this->themeDirWeb}/stylesheets{$filename}", $write);
         break;
       //
       case 'jquery':
-        echo '/assets/javascripts/jquery-1.6.2.min.js';
+        return Utility::returnValue('/assets/javascripts/jquery-1.6.2.min.js', $write);
         break;
       case 'util':
-        echo '/assets/javascripts/openphoto-util.js';
+        return Utility::returnValue('/assets/javascripts/openphoto-util.js', $write);
         break;
     }
   }

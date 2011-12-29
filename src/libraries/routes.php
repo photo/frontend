@@ -6,15 +6,13 @@ require getConfig()->get('paths')->libraries . '/routes-api.php';
  */
 getRoute()->get('/', array('GeneralController', 'home'));
 
-
-
 /*
- * Action endpoints
- * All action endpoints follow the same convention.
+ * Asset endpoints
+ * All asset endpoints follow the same convention.
  * Everything in []'s are optional
- * /action/{id}[/{additional}]
+ * /assets/cache/:version/:type/:file[,:file]
  */
-getRoute()->post('/action/([a-zA-Z0-9]+)/(photo)/create', array('ActionController', 'create'), EpiApi::external); // post an action
+getRoute()->get('/assets/cache/[^/]+/(js|css)/(c|m)(/.+)', array('AssetsController', 'get'));
 
 
 /*
