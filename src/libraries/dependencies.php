@@ -6,6 +6,7 @@ require getConfig()->get('paths')->libraries . '/exceptions.php';
 require getConfig()->get('paths')->controllers . '/BaseController.php';
 require getConfig()->get('paths')->controllers . '/ApiController.php';
 require getConfig()->get('paths')->controllers . '/GeneralController.php';
+require getConfig()->get('paths')->controllers . '/AssetsController.php';
 require getConfig()->get('paths')->controllers . '/ApiActionController.php';
 require getConfig()->get('paths')->controllers . '/ActionController.php';
 require getConfig()->get('paths')->controllers . '/ApiGroupController.php';
@@ -28,6 +29,8 @@ require getConfig()->get('paths')->controllers . '/WebhookController.php';
 require getConfig()->get('paths')->external . '/aws/sdk.class.php';
 require getConfig()->get('paths')->external . '/Dropbox/autoload.php';
 require getConfig()->get('paths')->external . '/Mobile_Detect/Mobile_Detect.php';
+require getConfig()->get('paths')->external . '/JSMin/JSMin.php';
+require getConfig()->get('paths')->external . '/CssMin/CssMin.php';
 require getConfig()->get('paths')->libraries . '/functions.php';
 
 // adapters
@@ -45,6 +48,7 @@ require getConfig()->get('paths')->adapters . '/LoginBrowserId.php';
 require getConfig()->get('paths')->adapters . '/LoginFacebook.php';
 
 // models
+require getConfig()->get('paths')->models . '/AssetPipeline.php';
 require getConfig()->get('paths')->models . '/Utility.php';
 require getConfig()->get('paths')->models . '/Url.php';
 require getConfig()->get('paths')->models . '/Authentication.php';
