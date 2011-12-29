@@ -11,9 +11,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.png'); ?>">
     <link rel="apple-touch-icon" href="<?php getTheme()->asset('image', 'apple-touch-icon.png'); ?>">
-    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'bootstrap.min.css'); ?>">
-    <link rel="stylesheet" href="<?php getTheme()->asset('stylesheet', 'main.css'); ?>">
-    <link rel="stylesheet" href="/assets/stylesheets/upload.css">
+    <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss(getTheme()->asset('stylesheet', 'bootstrap.min.css', false))->
+                                                               addCss(getTheme()->asset('stylesheet', 'main.css', false))->
+                                                               addCss("/assets/stylesheets/upload.css")->
+                                                               getUrl(AssetPipeline::css, 'a'); ?>">
+
     <?php getPlugin()->invoke('onHead', array('page' => $page)); ?>
 </head>
 
@@ -47,8 +49,8 @@
     
   </div>
   <div id="modal" class="modal hide fade"></div>
-  <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
-  <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
+  <script type="text/javascript" src="<?php echo getAssetPipeline(true)->addJs(getTheme()->asset(getConfig()->get('dependencies')->javascript, null, false))->
+                                                                    addJs(getTheme()->asset('util', null, false))->getUrl(AssetPipeline::js, 'a'); ?>"></script>
   <script>
     OP.Util.init(jQuery, {
       eventMap: {
@@ -94,17 +96,17 @@
       js: {
         assets: [
           <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
-            <?php if(isset($_GET['debug'])) { ?>
+            <?php if(getConfig()->get('site')->mode === 'dev') { ?>
               '<?php getTheme()->asset('javascript', 'plupload.js'); ?>',
               '<?php getTheme()->asset('javascript', 'plupload.html5.js'); ?>',
               '<?php getTheme()->asset('javascript', 'jquery.plupload.queue.js'); ?>',
               '/assets/javascripts/openphoto-upload.js',
             <?php } else { ?>
-              '/assets/javascripts/openphoto-upload.min.js',
+              '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'a'); ?>',
             <?php } ?>
           <?php } ?>
 
-          <?php if(isset($_GET['debug'])) { ?>
+            <?php if(getConfig()->get('site')->mode === 'dev') { ?>
             '/assets/javascripts/openphoto-batch.js',
             '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
             '<?php getTheme()->asset('javascript', 'jquery.flexslider-min.js'); ?>',
@@ -112,8 +114,9 @@
             '<?php getTheme()->asset('javascript', 'bootstrap-modal.js'); ?>',
             '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'
           <?php } else { ?>
-            '/assets/javascripts/openphoto-batch.min.js',
-            '<?php getTheme()->asset('javascript', 'openphoto-theme-full-min.js'); ?>'
+            '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-batch.min.js')->
+                                                addJs(getTheme()->asset('javascript', 'openphoto-theme-full-min.js', false))->
+                                                getUrl(AssetPipeline::js, 'a'); ?>'
           <?php } ?>
         ],
         onComplete: function(){ 
