@@ -17,7 +17,7 @@
   <div class="clearfix">
     <label for="tags">Tags</label>
     <div class="input">
-      <input type="text" name="tags" class="tags" placeholder="Optional comma separated list">
+      <input type="text" name="tags" class="tags tags-autocomplete" placeholder="Optional comma separated list">
     </div>
   </div>
   <div class="clearfix">
