@@ -31,7 +31,7 @@ var opTheme = (function() {
     return '<div class="alert-message block-message '+cls+'"><a class="modal-close-click close" href="#">x</a>' + message + '</div>'
   };
   var tokenPreProcess = function(results) {
-    var term = $("#token-input-").val(), result = results.result, retval = [];
+    var term = $(document.activeElement).val(), result = results.result, retval = [];
     for(i in result){ 
       if(result.hasOwnProperty(i))
         retval.push({id:result[i].id, name:result[i].id + ' ('+result[i].count+')'}); 
@@ -78,39 +78,43 @@ var opTheme = (function() {
         $(".pinned").removeClass("pinned").addClass("unpinned").children().filter(".pin").fadeOut();
         el.slideUp('fast', function(){ $(this).remove(); });
       },
+      batchField: function(ev) {
+        var el = $(ev.target),
+            val = el.val(),
+            tgt = $("form#batch-edit .form-fields");
+        switch(val) {
+          case 'permission':
+            tgt.html(opTheme.ui.batchFormFields.permission());
+            break;
+          case 'tagsAdd':
+          case 'tagsRemove':
+            tgt.html(opTheme.ui.batchFormFields.tags());
+            OP.Util.fire('callback:tags-autocomplete');
+            break;
+        }
+      },
       batchModal: function() {
         var el = $("#modal"),
+            fieldMarkup = {},
             html = modalMarkup(
               'Batch edit your pinned photos',
               '<form id="batch-edit">' +
               '  <div class="clearfix">' +
               '    <label>Property</label>' +
               '    <div class="input">' +
-              '      <select id="batch-key" name="property"><option value="permission">Permission</option></select>' +
+              '      <select id="batch-key" class="batch-field-change" name="property">' +
+              '        <option value="tagsAdd">Add Tags</option>' +
+              '        <option value="tagsRemove">Remove Tags</option>' +
+              '        <option value="permission">Permission</option>' +
+              '      </select>' +
               '    </div>' +
               '  </div>' +
-              '  <div class="clearfix">' +
-              '    <label>Value</label>' +
-              '    <div class="input">' +
-              '      <ul class="inputs-list">' +
-              '        <li>' +
-              '          <label>' +
-              '            <input type="radio" name="permission" value="1" checked="checked">' +
-              '            <span>Public</span>' +
-              '          </label>' +
-              '        </li>' +
-              '        <li>' +
-              '          <label>' +
-              '            <input type="radio" name="permission" value="0"> ' +
-              '            <span>Private</span>' +
-              '          </label>' +
-              '        </li>' +
-              '    </div>' +
-              '  </div>' +
+              '  <div class="form-fields">'+opTheme.ui.batchFormFields.tags()+'</div>' +
               '</form>',
               '<a href="#" class="btn photo-update-batch-click">Update</a>'
             );
         el.html(html);
+        OP.Util.fire('callback:tags-autocomplete');
       },
       batchRemove: function(id) {
         var el = $(".id-"+id);
@@ -177,10 +181,10 @@ var opTheme = (function() {
         } else if(el.hasClass('facebook')) {
           FB.login(function(response) {
             if (response.authResponse) {
-              console.log('User logged in, posting to openphoto host.');
+              log('User logged in, posting to openphoto host.');
               OP.Util.makeRequest('/user/facebook/login.json', opTheme.user.base.loginProcessed);
             } else {
-              console.log('User cancelled login or did not fully authorize.');
+              log('User cancelled login or did not fully authorize.');
             }
           }, {scope: 'email'});
         }
@@ -231,11 +235,11 @@ var opTheme = (function() {
         ev.preventDefault();
         var el = $(ev.target),
             key = $("#batch-key").val(),
-            value = $("form#batch-edit").find("input[name~='permission']:checked").val();
+            value = $("form#batch-edit").find("*[name='value']").val();
         params = {'crumb':crumb};
         params[key] = value;
         params['ids'] = OP.Batch.collection.getIds().join(',');
-        console.log(params);
+        log(params);
         OP.Util.makeRequest('/photos/update.json', params, opTheme.callback.photoUpdateBatchCb, 'json', 'post');
       },
       photoUpdateBatchCb: function(response) {
@@ -542,6 +546,7 @@ var opTheme = (function() {
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
         OP.Util.on('mouseover:pin', opTheme.callback.pinOver);
         OP.Util.on('mouseout:pin', opTheme.callback.pinOut);
+        OP.Util.on('change:batch-field', opTheme.callback.batchField);
 
         OP.Util.on('callback:tags-autocomplete', opTheme.init.tags.autocomplete);
         OP.Util.on('callback:batch-add', opTheme.callback.batchAdd);
@@ -686,6 +691,36 @@ var opTheme = (function() {
 			}
 		}, 
     ui: {
+      batchFormFields: {
+        permission: function() {
+          return '  <div class="clearfix">' +
+                 '    <label>Value</label>' +
+                 '    <div class="input">' +
+                 '      <ul class="inputs-list">' +
+                 '        <li>' +
+                 '          <label>' +
+                 '            <input type="radio" name="value" value="1" checked="checked">' +
+                 '            <span>Public</span>' +
+                 '          </label>' +
+                 '        </li>' +
+                 '        <li>' +
+                 '          <label>' +
+                 '            <input type="radio" name="value" value="0"> ' +
+                 '            <span>Private</span>' +
+                 '          </label>' +
+                 '        </li>' +
+                 '    </div>' +
+                 '  </div>';
+        },
+        tags: function() {
+          return '  <div class="clearfix">' +
+                 '    <label>Tags</label>' +
+                 '    <div class="input">' +
+                 '      <input type="text" name="value" class="tags-autocomplete" placeholder="A comma separated list of tags" value="">' +
+                 '    </div>' +
+                 '  </div>';
+        }
+      },
       batchMessage: function() {
         var idsLength = OP.Batch.collection.getLength();
         if($("#batch-message").length > 0 && idsLength > 0) {

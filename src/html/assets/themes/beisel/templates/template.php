@@ -88,6 +88,9 @@
             'pin-clear-click':'click:pin-clear'
         },
         <?php if(User::isOwner()) { ?>
+          'change': {
+              'batch-field-change':'change:batch-field'
+          },
           'mouseover': {
               'pin-over':'mouseover:pin',
               'pin-out':'mouseout:pin',

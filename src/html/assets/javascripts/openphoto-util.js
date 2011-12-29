@@ -125,6 +125,7 @@
 
             //attach events
             this.attachEvent( 'body', 'click', this.onviewevent, this);
+            this.attachEvent( 'body', 'change', this.onviewevent, this);
             this.attachEvent( 'body', 'mouseover', this.onmouseevent, this);
             this.attachEvent( 'body', 'mouseout', this.onmouseevent, this);
             this.attachEvent( 'html', 'keydown', this.onkeydownevent, this);
