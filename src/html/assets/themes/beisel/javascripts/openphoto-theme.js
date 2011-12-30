@@ -153,7 +153,7 @@ var opTheme = (function() {
       groupPost: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
-            form = el.parent(),
+            form = el.parent().parent(),
             url = form.attr('action')+'.json',
             isCreate = (url.search('create') > -1);
         OP.Util.makeRequest(url, form.serializeArray(), function(response) {
