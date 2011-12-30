@@ -52,7 +52,7 @@ class PhotoController extends BaseController
   public function delete($id)
   {
     getAuthentication()->requireAuthentication();
-    $delete = getApi()->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost);
+    $delete = $this->api->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost);
     if($delete['code'] !== 200)
       getRoute()->redirect('/photos?deleteSuccess');
     else
@@ -68,7 +68,7 @@ class PhotoController extends BaseController
   public function edit($id)
   {
     getAuthentication()->requireAuthentication();
-    $resp = getApi()->invoke("/photo/{$id}/edit.json", EpiRoute::httpGet);
+    $resp = $this->api->invoke("/photo/{$id}/edit.json", EpiRoute::httpGet);
     if($resp['code'] === 200)
     {
       getTheme()->display('template.php', array('body' => $resp['result']['markup'], 'page' => 'photo-edit'));
@@ -94,9 +94,9 @@ class PhotoController extends BaseController
       parse_str($_SERVER['QUERY_STRING'], $getParams);
     $params = array('_GET' => array_merge($getParams, array('returnSizes' => $returnSizes)));
     if($filterOpts)
-      $photos = getApi()->invoke("/photos/{$filterOpts}/list.json", EpiRoute::httpGet, $params);
+      $photos = $this->api->invoke("/photos/{$filterOpts}/list.json", EpiRoute::httpGet, $params);
     else
-      $photos = getApi()->invoke("/photos/list.json", EpiRoute::httpGet, $params);
+      $photos = $this->api->invoke("/photos/list.json", EpiRoute::httpGet, $params);
 
     $photos = $photos['result'];
 
@@ -123,7 +123,7 @@ class PhotoController extends BaseController
   public function update($id)
   {
     getAuthentication()->requireAuthentication();
-    $status = getApi()->invoke("/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $_POST));
+    $status = $this->api->invoke("/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $_POST));
     // TODO include success/error paramter
     getRoute()->redirect(Url::photoView($id, null, false));
   }
@@ -156,14 +156,14 @@ class PhotoController extends BaseController
     */
   public function view($id, $options = null)
   {
-    $apiResp = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
+    $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
     if($apiResp['code'] === 200)
     {
       $detailDimensions = explode('x', $this->config->photoSizes->detail);
       if(empty($options))
-        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
       else
-        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
       $photo = $apiResp['result'];
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
@@ -187,7 +187,7 @@ class PhotoController extends BaseController
   public function uploadPost()
   {
     getAuthentication()->requireAuthentication();
-    $upload = getApi()->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
+    $upload = $this->api->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
     if($upload['result'])
       getRoute()->redirect('/photos?uploadSuccess');
     else

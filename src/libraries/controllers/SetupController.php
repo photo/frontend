@@ -7,14 +7,24 @@
   * @author Jaisen Mathai <jaisen@jmathai.com>
   * @author Kevin Hornschemeier <khornschemeier@gmail.com>
   */
-class SetupController
+class SetupController extends BaseController
 {
+  /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+  
   /**
     * Returns the setup step 1 screen markup.
     *
     * @return string HTML
     */
-  public static function setup()
+  public function setup()
   {
     $step = 1;
     $appId = 'openphoto-frontend';

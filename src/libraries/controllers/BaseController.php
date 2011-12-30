@@ -19,6 +19,7 @@ class BaseController
 
   public function __construct()
   {
+    $this->api = getApi();
     $this->config = getConfig()->get();
   }
 

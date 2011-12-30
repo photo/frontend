@@ -48,7 +48,7 @@ class WebhookController extends BaseController
         // verify a 2xx response and that the body is equal to the challenge
         if($handle->code >= 200 && $handle->code < 300 && $handle->data == $challenge)
         {
-          $apiWebhook = getApi()->invoke('/webhook/create.json', EpiRoute::httpPost, array('_POST' => $params));
+          $apiWebhook = $this->api->invoke('/webhook/create.json', EpiRoute::httpPost, array('_POST' => $params));
           if($apiWebhook['code'] === 200)
           {
             header('HTTP/1.1 204 No Content');
