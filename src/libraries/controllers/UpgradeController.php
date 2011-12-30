@@ -27,13 +27,13 @@ class UpgradeController extends BaseController
       {
         foreach($files as $version => $file)
         {
-          $readmes[$version] = getTemplate()->get($file);
+          $readmes[$version] = $this->template->get($file);
         }
       }
     }
     $template = sprintf('%s/upgrade.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('readmes' => $readmes, 'currentVersion' => getUpgrade()->getCurrentVersion(), 'lastVersion' => getUpgrade()->getLastVersion()));
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
+    $body = $this->template->get($template, array('readmes' => $readmes, 'currentVersion' => getUpgrade()->getCurrentVersion(), 'lastVersion' => getUpgrade()->getLastVersion()));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
   public function upgradePost()

@@ -71,7 +71,7 @@ class PhotoController extends BaseController
     $resp = $this->api->invoke("/photo/{$id}/edit.json", EpiRoute::httpGet);
     if($resp['code'] === 200)
     {
-      getTheme()->display('template.php', array('body' => $resp['result']['markup'], 'page' => 'photo-edit'));
+      $this->theme->display('template.php', array('body' => $resp['result']['markup'], 'page' => 'photo-edit'));
     }
     else
     {
@@ -109,8 +109,8 @@ class PhotoController extends BaseController
       $pages['requestUri'] = $_SERVER['REQUEST_URI'];
     }
 
-    $body = getTheme()->get(Utility::getTemplate('photos.php'), array('photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
-    getTheme()->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'photos'));
+    $body = $this->theme->get(Utility::getTemplate('photos.php'), array('photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
+    $this->theme->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'photos'));
   }
 
   /**
@@ -142,8 +142,8 @@ class PhotoController extends BaseController
     }
     $crumb = getSession()->get('crumb');
     $template = sprintf('%s/upload.php', $this->config->paths->templates);
-    $body = getTemplate()->get($template, array('crumb' => $crumb, 'licenses' => Utility::getLicenses()));
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'upload'));
+    $body = $this->template->get($template, array('crumb' => $crumb, 'licenses' => Utility::getLicenses()));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'upload'));
   }
 
   /**
@@ -168,8 +168,8 @@ class PhotoController extends BaseController
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
       $crumb = getSession()->get('crumb');
-      $body = getTheme()->get(Utility::getTemplate('photo-details.php'), array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
-      getTheme()->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'photo-details'));
+      $body = $this->theme->get(Utility::getTemplate('photo-details.php'), array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
+      $this->theme->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'photo-details'));
     }
     else
     {

@@ -42,17 +42,17 @@ class OAuthController extends BaseController
       {
         $bodyTemplate = sprintf('%s/oauthApprove.php', $this->config->paths->templates);
         $params = array('consumer' => $consumer);
-        $body = getTemplate()->get($bodyTemplate, $params);
+        $body = $this->template->get($bodyTemplate, $params);
 
         $params = array('body' => $body, 'page' => 'oauth-approve');
         if(Utility::isMobile())
         {
           $template = sprintf('%s/template.php', $this->config->paths->templates);
-          getTemplate()->display($template, $params);
+          $this->template->display($template, $params);
         }
         else
         {
-          getTheme()->display('template.php', $params);
+          $this->theme->display('template.php', $params);
         }
       }
     }
@@ -62,17 +62,17 @@ class OAuthController extends BaseController
       $params = array('callback' => $callback, 'redirect' => $_SERVER['REQUEST_URI']);
       $params['error'] = isset($_GET['error']) && $_GET['error'] == 1;
       $params['name'] = isset($_GET['name']) ? $_GET['name'] : '';
-      $body = getTemplate()->get($bodyTemplate, $params);
+      $body = $this->template->get($bodyTemplate, $params);
 
       $params = array('body' => $body, 'page' => 'oauth-create');
       if(Utility::isMobile())
       {
         $template = sprintf('%s/template.php', $this->config->paths->templates);
-        getTemplate()->display($template, $params);
+        $this->template->display($template, $params);
       }
       else
       {
-        getTheme()->display('template.php', $params);
+        $this->theme->display('template.php', $params);
       }
     }
   }

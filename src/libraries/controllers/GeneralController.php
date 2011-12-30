@@ -14,8 +14,8 @@ class GeneralController extends BaseController
   public function error403()
   {
     header('HTTP/1.0 403 Forbidden');
-    $body = getTheme()->get('error403.php');
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'error'));
+    $body = $this->theme->get('error403.php');
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'error'));
   }
 
   /**
@@ -26,8 +26,8 @@ class GeneralController extends BaseController
   public function error404()
   {
     header('HTTP/1.0 404 Not Found');
-    $body = getTheme()->get('error404.php');
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'error'));
+    $body = $this->theme->get('error404.php');
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'error'));
   }
 
   /**
@@ -38,8 +38,8 @@ class GeneralController extends BaseController
   public function error500()
   {
     header('HTTP/1.0 500 Internal Server Error');
-    $body = getTheme()->get('error500.php');
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'error'));
+    $body = $this->theme->get('error500.php');
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'error'));
   }
 
   /**
@@ -50,12 +50,12 @@ class GeneralController extends BaseController
   public function home()
   {
     $template = Utility::getTemplate('front.php');
-    if(!getTheme()->fileExists($template))
+    if(!$this->theme->fileExists($template))
       $this->route->redirect(Url::photosView(null, false));
 
     $apisToCall = getConfig()->get('frontApis');
     $params = Utility::callApis($apisToCall);
-    $body = getTheme()->get($template, $params);
-    getTheme()->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'front'));
+    $body = $this->theme->get($template, $params);
+    $this->theme->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'front'));
   }
 }

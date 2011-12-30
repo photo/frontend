@@ -61,7 +61,7 @@ class ApiPhotoController extends BaseController
       $license = null;
       if(isset($photo['license']))
         $license = $photo['license'];
-      $markup = getTemplate()->get($template, array('photo' => $photo, 'groups' => $groups, 'licenses' => Utility::getLicenses($license), 'crumb' => getSession()->get('crumb')));
+      $markup = $this->template->get($template, array('photo' => $photo, 'groups' => $groups, 'licenses' => Utility::getLicenses($license), 'crumb' => getSession()->get('crumb')));
       return $this->success('Photo edit markup', array('markup' => $markup));
     }
 

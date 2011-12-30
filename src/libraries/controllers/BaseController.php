@@ -22,6 +22,8 @@ class BaseController
     $this->api = getApi();
     $this->config = getConfig()->get();
     $this->route = getRoute();
+    $this->template = getTemplate();
+    $this->theme = getTheme();
   }
 
   /**

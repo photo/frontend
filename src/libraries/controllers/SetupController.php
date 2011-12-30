@@ -49,8 +49,8 @@ class SetupController extends BaseController
       $database = getConfig()->get('systems')->database;
       $filesystem = getConfig()->get('systems')->fileSystem;
     }
-    $theme = getTheme()->getThemeName();
-    $themes = getTheme()->getThemes();
+    $theme = $this->theme->getThemeName();
+    $themes = $this->theme->getThemes();
 
     $errors = $this->verifyRequirements($imageLibs);
 
@@ -70,9 +70,9 @@ class SetupController extends BaseController
       $qs = '?edit';
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('filesystem' => $filesystem, 'database' => $database, 'themes' => $themes, 'theme' => $theme,
+    $body = $this->template->get($template, array('filesystem' => $filesystem, 'database' => $database, 'themes' => $themes, 'theme' => $theme,
       'imageLibs' => $imageLibs, 'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'qs' => $qs, 'errors' => $errors));
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
   /**
@@ -101,8 +101,8 @@ class SetupController extends BaseController
       $qs = '?edit';
 
     $template = sprintf('%s/setupDropbox.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs));
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
+    $body = $this->template->get($template, array('dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
   /**
@@ -201,8 +201,8 @@ class SetupController extends BaseController
     }
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('email' => $email, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
+    $body = $this->template->get($template, array('email' => $email, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
   /**
@@ -242,8 +242,8 @@ class SetupController extends BaseController
       $qs = '?edit';
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('themes' => array(), 'imageLibs' => $imageLibs, 'appId' => 'openphoto-frontend', 'imageLibrary' => $imageLibrary, 'database' => $database, 'filesystem' => $filesystem, 'qs' => $qs, 'step' => $step));
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
+    $body = $this->template->get($template, array('themes' => array(), 'imageLibs' => $imageLibs, 'appId' => 'openphoto-frontend', 'imageLibrary' => $imageLibrary, 'database' => $database, 'filesystem' => $filesystem, 'qs' => $qs, 'step' => $step));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
   /**
@@ -363,7 +363,7 @@ class SetupController extends BaseController
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
     // copied to/from setup3Post()
-    $body = getTemplate()->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
+    $body = $this->template->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3,
       'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
       'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
@@ -371,7 +371,7 @@ class SetupController extends BaseController
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
 
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
   /**
@@ -617,14 +617,14 @@ class SetupController extends BaseController
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
     // copied to/from setup3()
-    $body = getTemplate()->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
+    $body = $this->template->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3,
       'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
       'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
       'mySqlPassword' => $mySqlPassword, 'mySqlTablePrefix' => $mySqlTablePrefix, 'fsRoot' => $fsRoot, 'fsHost' => $fsHost,
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
-    getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
   /**

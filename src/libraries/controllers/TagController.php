@@ -25,7 +25,7 @@ class TagController extends BaseController
   {
     $tags = $this->api->invoke("/tags/list.json");
     $groupedTags = Tag::groupByWeight($tags['result']);
-    $body = getTheme()->get(Utility::getTemplate('tags.php'), array('tags' => $groupedTags));
-    getTheme()->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'tags'));
+    $body = $this->theme->get(Utility::getTemplate('tags.php'), array('tags' => $groupedTags));
+    $this->theme->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'tags'));
   }
 }
