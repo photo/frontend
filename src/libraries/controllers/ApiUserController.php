@@ -46,7 +46,7 @@ class ApiUserController extends BaseController
     User::setEmail($email);
     User::setMobilePassphrase(true); // unset
     if(isset($_POST['redirect']))
-      getRoute()->redirect($_POST['redirect'], null, true);
+      $this->route->redirect($_POST['redirect'], null, true);
     else
       return $this->success('User was logged in successfully', array('email' => getSession()->get('email')));
   }

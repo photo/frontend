@@ -40,7 +40,7 @@ class PhotoController extends BaseController
       unlink($photo);
       return;
     }
-    getRoute()->run('/error/500');
+    $this->route->run('/error/500');
   }
 
   /**
@@ -54,9 +54,9 @@ class PhotoController extends BaseController
     getAuthentication()->requireAuthentication();
     $delete = $this->api->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost);
     if($delete['code'] !== 200)
-      getRoute()->redirect('/photos?deleteSuccess');
+      $this->route->redirect('/photos?deleteSuccess');
     else
-      getRoute()->redirect('/photos?deleteFailure');
+      $this->route->redirect('/photos?deleteFailure');
   }
 
   /**
@@ -75,7 +75,7 @@ class PhotoController extends BaseController
     }
     else
     {
-      getRoute()->run('/error/404');
+      $this->route->run('/error/404');
     }
   }
 
@@ -125,7 +125,7 @@ class PhotoController extends BaseController
     getAuthentication()->requireAuthentication();
     $status = $this->api->invoke("/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $_POST));
     // TODO include success/error paramter
-    getRoute()->redirect(Url::photoView($id, null, false));
+    $this->route->redirect(Url::photoView($id, null, false));
   }
 
   /**
@@ -137,7 +137,7 @@ class PhotoController extends BaseController
   {
     if(!User::isOwner())
     {
-      getRoute()->run('/error/403');
+      $this->route->run('/error/403');
       return;
     }
     $crumb = getSession()->get('crumb');
@@ -173,7 +173,7 @@ class PhotoController extends BaseController
     }
     else
     {
-      getRoute()->run('/error/404');
+      $this->route->run('/error/404');
     }
   }
 
@@ -189,8 +189,8 @@ class PhotoController extends BaseController
     getAuthentication()->requireAuthentication();
     $upload = $this->api->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
     if($upload['result'])
-      getRoute()->redirect('/photos?uploadSuccess');
+      $this->route->redirect('/photos?uploadSuccess');
     else
-      getRoute()->redirect('/photos?uploadFailure');
+      $this->route->redirect('/photos?uploadFailure');
   }
 }
