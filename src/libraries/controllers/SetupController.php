@@ -558,7 +558,7 @@ class SetupController
         else if($usesMySql)
           $dbErrors[] = 'We were unable to initialize your account in MySql. <ul><li>Please verify that the host, username and password are correct and have proper permissions to create a database.</li><li>Make sure your email address is not already in use.</li></ul>';
         else
-          $dbErrors[] = 'An unknown error occurred while setting up your file system. Check your error logsto see if there\'s more information about the error.';
+          $dbErrors[] = 'An unknown error occurred while setting up your database. Check your error logsto see if there\'s more information about the error.';
 
         $dbErrors = array_merge($dbErrors, $dbObj->errors());
       }
