@@ -107,7 +107,9 @@ class EpiRoute
     if(!$routeDef)
       return;
 
-    $response = call_user_func_array($routeDef['callback'], $routeDef['args']);
+    $class = new $routeDef['callback'][0];
+    $method = $routeDef['callback'][1];
+    $response = call_user_func_array(array($class, $method), $routeDef['args']);
     if(!$routeDef['postprocess'])
     {
       return $response;

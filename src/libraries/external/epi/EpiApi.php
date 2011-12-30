@@ -41,7 +41,9 @@ class EpiApi
       $GLOBALS[$type] = $value;
     }
 
-    $retval = call_user_func_array($routeDef['callback'], $routeDef['args']);
+    $class = new $routeDef['callback'][0];
+    $method = $routeDef['callback'][1];
+    $retval = call_user_func_array(array($class, $method), $routeDef['args']);
 
     // restore sanity
     foreach($tmps as $type => $value)
