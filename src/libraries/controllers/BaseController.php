@@ -85,7 +85,8 @@ class BaseController
   private static function json($message, $code, $result = null)
   {
     $response = array('message' => $message, 'code' => $code, 'result' => $result);
+    if(isset($_REQUEST['callback']))
+      $response['__callback__'] = $_REQUEST['callback'];
     return $response;
   }
 }
-?>

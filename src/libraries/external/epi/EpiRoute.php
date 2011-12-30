@@ -109,9 +109,22 @@ class EpiRoute
 
     $response = call_user_func_array($routeDef['callback'], $routeDef['args']);
     if(!$routeDef['postprocess'])
+    {
       return $response;
+    }
     else
-      echo json_encode($response);
+    {
+      if(isset($response['__callback__']) && !empty($response['__callback__']))
+      {
+        $cb = $response['__callback__'];
+        unset($response['__callback__']);
+        echo sprintf('%s(%s)', $cb, json_encode($response));
+      }
+      else
+      {
+        echo json_encode($response);
+      }
+    }
   }
 
 
