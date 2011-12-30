@@ -23,7 +23,7 @@ class UserController extends BaseController
     */
   public function loginMobile()
   {
-    $response = getApi()->invoke('/user/login/mobile.json', EpiRoute::httpPost);
+    $response = $this->api->invoke('/user/login/mobile.json', EpiRoute::httpPost);
     $redirect = '/';
     if(isset($_POST['redirect']))
       $redirect = $_POST['redirect'];
@@ -41,7 +41,7 @@ class UserController extends BaseController
     */
   public function logout()
   {
-    $res = getApi()->invoke('/user/logout.json', EpiRoute::httpGet);
+    $res = $this->api->invoke('/user/logout.json', EpiRoute::httpGet);
     getRoute()->redirect('/');
   }
 
@@ -65,10 +65,10 @@ class UserController extends BaseController
   public function settings()
   {
     getAuthentication()->requireAuthentication();
-    $credentials = getApi()->invoke('/oauth/list.json', EpiRoute::httpGet);
-    $groups = getApi()->invoke('/groups/list.json', EpiRoute::httpGet);
-    $webhooks = getApi()->invoke('/webhooks/list.json', EpiRoute::httpGet);
-    $plugins = getApi()->invoke('/plugins/list.json', EpiRoute::httpGet);
+    $credentials = $this->api->invoke('/oauth/list.json', EpiRoute::httpGet);
+    $groups = $this->api->invoke('/groups/list.json', EpiRoute::httpGet);
+    $webhooks = $this->api->invoke('/webhooks/list.json', EpiRoute::httpGet);
+    $plugins = $this->api->invoke('/plugins/list.json', EpiRoute::httpGet);
     $mobilePassphrase = User::getMobilePassphrase();
     if(!empty($mobilePassphrase))
       $mobilePassphrase['minutes'] = ceil(($mobilePassphrase['expiresAt']-time())/60);

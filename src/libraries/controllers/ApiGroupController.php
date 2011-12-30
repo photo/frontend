@@ -30,7 +30,7 @@ class ApiGroupController extends BaseController
 
     if($groupId !== false)
     {
-      $res = getApi()->invoke(sprintf('/group/%s/view.json', $groupId), EpiRoute::httpGet);
+      $res = $this->api->invoke(sprintf('/group/%s/view.json', $groupId), EpiRoute::httpGet);
       if($res['code'] === 200)
         return $this->success('Groups for this user', $res['result']);
     }
@@ -68,7 +68,7 @@ class ApiGroupController extends BaseController
 
     if($res)
     {
-      $group = getApi()->invoke("/group/{$id}/view.json", EpiRoute::httpGet);
+      $group = $this->api->invoke("/group/{$id}/view.json", EpiRoute::httpGet);
       return $this->success("Updated group {$id}.", $group['result']);
     }
     else

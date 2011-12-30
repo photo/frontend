@@ -27,7 +27,7 @@ class ApiPhotoController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-    $res = getApi()->invoke("/photo/{$id}/view.json");
+    $res = $this->api->invoke("/photo/{$id}/view.json");
     $status = Photo::delete($id);
     if($status)
     {
@@ -49,8 +49,8 @@ class ApiPhotoController extends BaseController
   public function edit($id)
   {
     getAuthentication()->requireAuthentication();
-    $photoResp = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
-    $groupsResp = getApi()->invoke('/groups/list.json', EpiRoute::httpGet);
+    $photoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+    $groupsResp = $this->api->invoke('/groups/list.json', EpiRoute::httpGet);
     $photo = $photoResp['result'];
     $groups = $groupsResp['result'];
     if(!$groups)
@@ -274,9 +274,9 @@ class ApiPhotoController extends BaseController
       $params = array();
       if(isset($returnSizes))
         $params = array('returnSizes' => $returnSizes);
-      $photo = getApi()->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => $params));
+      $photo = $this->api->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => $params));
 
-      $webhookApi = getApi()->invoke('/webhooks/photo.upload/list.json', EpiRoute::httpGet);
+      $webhookApi = $this->api->invoke('/webhooks/photo.upload/list.json', EpiRoute::httpGet);
       if(!empty($webhookApi['result']) && is_array($webhookApi['result']))
       {
         $photoAsArgs = $photo['result'];
@@ -309,7 +309,7 @@ class ApiPhotoController extends BaseController
     $params = $_POST;
     if(isset($params['tags']) || isset($params['tagsAdd']) || isset($params['tagsRemove']))
     {
-      $photoBefore = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+      $photoBefore = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
       $photoBefore = $photoBefore['result'];
       if($photoBefore)
       {
@@ -349,7 +349,7 @@ class ApiPhotoController extends BaseController
 
     if($photoUpdatedId)
     {
-      $photo = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+      $photo = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
       return $this->success("photo {$id} updated", $photo['result']);
     }
 
@@ -378,7 +378,7 @@ class ApiPhotoController extends BaseController
     $retval = true;
     foreach($ids as $id)
     {
-      $response = getApi()->invoke("/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $params));
+      $response = $this->api->invoke("/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $params));
       $retval = $retval && $response['result'] !== false;
     }
 

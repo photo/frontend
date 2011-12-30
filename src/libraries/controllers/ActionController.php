@@ -28,7 +28,7 @@ class ActionController extends BaseController
   {
     getAuthentication()->requireAuthentication(false);
     getAuthentication()->requireCrumb($_POST['crumb']);
-    $res = getApi()->invoke(sprintf('%s.json', Url::actionCreate($targetId, $targetType, false)), EpiRoute::httpPost);
+    $res = $this->api->invoke(sprintf('%s.json', Url::actionCreate($targetId, $targetType, false)), EpiRoute::httpPost);
     $result = $res ? '1' : '0';
     // TODO: standardize messaging parameter
     if($targetType == 'photo')

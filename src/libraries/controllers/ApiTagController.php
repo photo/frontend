@@ -58,7 +58,7 @@ class ApiTagController extends BaseController
     $res = getDb()->postTag($tag, $params);
     if($res)
     {
-      $tag = getApi()->invoke("/tag/{$tag}/view.json", EpiRoute::httpGet);
+      $tag = $this->api->invoke("/tag/{$tag}/view.json", EpiRoute::httpGet);
       return $this->success('Tag created/updated successfully', $tag['result']);
     }
     else
