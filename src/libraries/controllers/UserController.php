@@ -63,7 +63,7 @@ class UserController extends BaseController
     if(!empty($mobilePassphrase))
       $mobilePassphrase['minutes'] = ceil(($mobilePassphrase['expiresAt']-time())/60);
     $template = sprintf('%s/settings.php', getConfig()->get('paths')->templates);
-    $body = getTemplate()->get($template, array('plugins' => $plugins['result'], 'credentials' => $credentials['result'], 'webhooks' => $webhooks['result'], 'groups' => $groups['result'], 'mobilePassphrase' => $mobilePassphrase));
+    $body = getTemplate()->get($template, array('crumb' => getSession()->get('crumb'), 'plugins' => $plugins['result'], 'credentials' => $credentials['result'], 'webhooks' => $webhooks['result'], 'groups' => $groups['result'], 'mobilePassphrase' => $mobilePassphrase));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'settings'));
   }
 }
