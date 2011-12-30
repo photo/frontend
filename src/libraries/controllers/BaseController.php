@@ -15,6 +15,13 @@ class BaseController
   const statusForbidden = 403;
   const statusNotFound = 404;
 
+  protected $config;
+
+  public function __construct()
+  {
+    $this->config = getConfig()->get();
+  }
+
   /**
     * Created, HTTP 202
     *
@@ -22,9 +29,9 @@ class BaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  public static function created($message, $result = null)
+  public function created($message, $result = null)
   {
-    return self::json($message, self::statusCreated, $result);
+    return $this->json($message, self::statusCreated, $result);
   }
 
   /**
@@ -34,9 +41,9 @@ class BaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  public static function error($message, $result = null)
+  public function error($message, $result = null)
   {
-    return self::json($message, self::statusError, $result);
+    return $this->json($message, self::statusError, $result);
   }
 
   /**
@@ -46,9 +53,9 @@ class BaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  public static function success($message, $result = null)
+  public function success($message, $result = null)
   {
-    return self::json($message, self::statusSuccess, $result);
+    return $this->json($message, self::statusSuccess, $result);
   }
 
   /**
@@ -58,9 +65,9 @@ class BaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  public static function forbidden($message, $result = null)
+  public function forbidden($message, $result = null)
   {
-    return self::json($message, self::statusForbidden, $result);
+    return $this->json($message, self::statusForbidden, $result);
   }
 
   /**
@@ -70,9 +77,9 @@ class BaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  public static function notFound($message, $result = null)
+  public function notFound($message, $result = null)
   {
-    return self::json($message, self::statusNotFound, $result);
+    return $this->json($message, self::statusNotFound, $result);
   }
 
   /**
@@ -82,7 +89,7 @@ class BaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  private static function json($message, $code, $result = null)
+  private function json($message, $code, $result = null)
   {
     $response = array('message' => $message, 'code' => $code, 'result' => $result);
     if(isset($_REQUEST['callback']))

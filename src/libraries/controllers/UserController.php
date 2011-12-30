@@ -7,11 +7,21 @@
 class UserController extends BaseController
 {
   /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  /**
     * Log a user in via mobile.
     *
     * @return void
     */
-  public static function loginMobile()
+  public function loginMobile()
   {
     $response = getApi()->invoke('/user/login/mobile.json', EpiRoute::httpPost);
     $redirect = '/';
@@ -29,7 +39,7 @@ class UserController extends BaseController
     *
     * @return void
     */
-  public static function logout()
+  public function logout()
   {
     $res = getApi()->invoke('/user/logout.json', EpiRoute::httpGet);
     getRoute()->redirect('/');
@@ -40,7 +50,7 @@ class UserController extends BaseController
     *
     * @return void
     */
-  public static function mobilePassphrase()
+  public function mobilePassphrase()
   {
     getAuthentication()->requireAuthentication();
     User::setMobilePassphrase();
@@ -52,7 +62,7 @@ class UserController extends BaseController
     *
     * @return void
     */
-  public static function settings()
+  public function settings()
   {
     getAuthentication()->requireAuthentication();
     $credentials = getApi()->invoke('/oauth/list.json', EpiRoute::httpGet);
@@ -62,7 +72,7 @@ class UserController extends BaseController
     $mobilePassphrase = User::getMobilePassphrase();
     if(!empty($mobilePassphrase))
       $mobilePassphrase['minutes'] = ceil(($mobilePassphrase['expiresAt']-time())/60);
-    $template = sprintf('%s/settings.php', getConfig()->get('paths')->templates);
+    $template = sprintf('%s/settings.php', $this->config->paths->templates);
     $body = getTemplate()->get($template, array('crumb' => getSession()->get('crumb'), 'plugins' => $plugins['result'], 'credentials' => $credentials['result'], 'webhooks' => $webhooks['result'], 'groups' => $groups['result'], 'mobilePassphrase' => $mobilePassphrase));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'settings'));
   }

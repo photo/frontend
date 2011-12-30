@@ -7,7 +7,17 @@
   */
 class AssetsController extends BaseController
 {
-  public static function get($type, $compression, $files)
+  /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  public function get($type, $compression, $files)
   {
     $files = (array)explode(',', $files);
     $pipeline = getAssetPipeline();

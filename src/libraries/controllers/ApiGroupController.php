@@ -7,12 +7,22 @@
 class ApiGroupController extends BaseController
 {
   /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  /**
     * Create a new group
     * Returns the newly created group or false as the response data
     *
     * @return string Standard JSON envelope
     */
-  public static function create()
+  public function create()
   {
     getAuthentication()->requireAuthentication();
     // TODO add crumb check
@@ -22,10 +32,10 @@ class ApiGroupController extends BaseController
     {
       $res = getApi()->invoke(sprintf('/group/%s/view.json', $groupId), EpiRoute::httpGet);
       if($res['code'] === 200)
-        return self::success('Groups for this user', $res['result']);
+        return $this->success('Groups for this user', $res['result']);
     }
 
-    return self::error('Could not create a group', false);
+    return $this->error('Could not create a group', false);
   }
 
   /**
@@ -33,15 +43,15 @@ class ApiGroupController extends BaseController
     *
     * @return string Standard JSON envelope
     */
-  public static function delete($id)
+  public function delete($id)
   {
     getAuthentication()->requireAuthentication();
     $res = Group::delete($id);
 
     if($res === false)
-      return self::error('Could not delete group', false);
+      return $this->error('Could not delete group', false);
 
-    return self::error('Successfully deleted group', true);
+    return $this->error('Successfully deleted group', true);
   }
 
   /**
@@ -50,7 +60,7 @@ class ApiGroupController extends BaseController
     *
     * @return string Standard JSON envelope
     */
-  public static function update($id)
+  public function update($id)
   {
     getAuthentication()->requireAuthentication();
     // TODO add crumb check
@@ -59,11 +69,11 @@ class ApiGroupController extends BaseController
     if($res)
     {
       $group = getApi()->invoke("/group/{$id}/view.json", EpiRoute::httpGet);
-      return self::success("Updated group {$id}.", $group['result']);
+      return $this->success("Updated group {$id}.", $group['result']);
     }
     else
     {
-      return self::error('Could not update this group.', false);
+      return $this->error('Could not update this group.', false);
     }
   }
 
@@ -72,18 +82,18 @@ class ApiGroupController extends BaseController
     *
     * @return string Standard JSON envelope
     */
-  public static function list_()
+  public function list_()
   {
     getAuthentication()->requireAuthentication();
 
     if(!User::isOwner())
-      return self::forbidden('You do not have permission to access this API.', false);
+      return $this->forbidden('You do not have permission to access this API.', false);
 
     $groups = Group::getGroups();
     if($groups === false)
-      return self::error('An error occurred trying to get your groups', false);
+      return $this->error('An error occurred trying to get your groups', false);
 
-    return self::success('A list of your groups', (array)$groups);
+    return $this->success('A list of your groups', (array)$groups);
   }
 
   /**
@@ -92,14 +102,14 @@ class ApiGroupController extends BaseController
     * @param string $id The id of the group
     * @return string Standard JSON envelope
     */
-  public static function view($id)
+  public function view($id)
   {
     getAuthentication()->requireAuthentication();
 
     $group = Group::getGroup($id);
     if($group === false)
-      return self::error('An error occurred trying to get your group', false);
+      return $this->error('An error occurred trying to get your group', false);
 
-    return self::success('Your group', (array)$group);
+    return $this->success('Your group', (array)$group);
   }
 }

@@ -1,7 +1,18 @@
 <?php
 class OAuthController extends BaseController
 {
-  public static function authorize()
+  /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  
+  public function authorize()
   {
     $callback = null;
     $separator = '?';
@@ -29,14 +40,14 @@ class OAuthController extends BaseController
       }
       else
       {
-        $bodyTemplate = sprintf('%s/oauthApprove.php', getConfig()->get('paths')->templates);
+        $bodyTemplate = sprintf('%s/oauthApprove.php', $this->config->paths->templates);
         $params = array('consumer' => $consumer);
         $body = getTemplate()->get($bodyTemplate, $params);
 
         $params = array('body' => $body, 'page' => 'oauth-approve');
         if(Utility::isMobile())
         {
-          $template = sprintf('%s/template.php', getConfig()->get('paths')->templates);
+          $template = sprintf('%s/template.php', $this->config->paths->templates);
           getTemplate()->display($template, $params);
         }
         else
@@ -47,7 +58,7 @@ class OAuthController extends BaseController
     }
     else
     {
-      $bodyTemplate = sprintf('%s/oauthCreate.php', getConfig()->get('paths')->templates);
+      $bodyTemplate = sprintf('%s/oauthCreate.php', $this->config->paths->templates);
       $params = array('callback' => $callback, 'redirect' => $_SERVER['REQUEST_URI']);
       $params['error'] = isset($_GET['error']) && $_GET['error'] == 1;
       $params['name'] = isset($_GET['name']) ? $_GET['name'] : '';
@@ -56,7 +67,7 @@ class OAuthController extends BaseController
       $params = array('body' => $body, 'page' => 'oauth-create');
       if(Utility::isMobile())
       {
-        $template = sprintf('%s/template.php', getConfig()->get('paths')->templates);
+        $template = sprintf('%s/template.php', $this->config->paths->templates);
         getTemplate()->display($template, $params);
       }
       else
@@ -66,7 +77,7 @@ class OAuthController extends BaseController
     }
   }
 
-  public static function authorizePost()
+  public function authorizePost()
   {
     if(!User::isOwner())
     {
@@ -127,7 +138,7 @@ class OAuthController extends BaseController
     }
   }
 
-  public static function flow()
+  public function flow()
   {
     if(isset($_GET['oauth_token']))
     {
@@ -184,7 +195,7 @@ class OAuthController extends BaseController
     }
   }
 
-  public static function test()
+  public function test()
   {
     if(getCredential()->checkRequest())
     {
@@ -196,7 +207,7 @@ class OAuthController extends BaseController
     }
   }
 
-  public static function tokenAccess()
+  public function tokenAccess()
   {
     $oauthParameters = getCredential()->getOAuthParameters();
     $token = $oauthParameters['oauth_token'];
@@ -222,7 +233,7 @@ class OAuthController extends BaseController
     }
   }
 
-  public static function tokenRequest()
+  public function tokenRequest()
   {
     // Not yet implemented
     $type = 'unauthorized';

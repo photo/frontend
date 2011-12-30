@@ -7,13 +7,23 @@
 class ApiActionController extends BaseController
 {
   /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  /**
     * Create a new action by calling the model.
     *
     * @param string $targetId The ID of the target on which the action will be applied.
     * @param string $targetType The type of object this action is being added to - typically a photo.
     * @return string Standard JSON envelope
     */
-  public static function create($targetId, $targetType)
+  public function create($targetId, $targetType)
   {
     getAuthentication()->requireAuthentication(false);
     getAuthentication()->requireCrumb();
@@ -29,10 +39,10 @@ class ApiActionController extends BaseController
     {
       $action = Action::view($id);
       getPlugin()->invoke('onAction', $action);
-      return self::success("Action {$id} created on {$targetType} {$targetId}", $action);
+      return $this->success("Action {$id} created on {$targetType} {$targetId}", $action);
     }
 
-    return self::error("Error creating action {$id} on {$targetType} {$targetId}", false);
+    return $this->error("Error creating action {$id} on {$targetType} {$targetId}", false);
   }
 
   /**
@@ -41,15 +51,15 @@ class ApiActionController extends BaseController
     * @param string $id The ID of the action to be deleted.
     * @return string Standard JSON envelope
     */
-  public static function delete($id)
+  public function delete($id)
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
     $status = Action::delete($id);
     if($status)
-      return self::success('Action deleted successfully', true);
+      return $this->success('Action deleted successfully', true);
     else
-      return self::error('Action deletion failure', false);
+      return $this->error('Action deletion failure', false);
   }
 
   /**
@@ -58,13 +68,13 @@ class ApiActionController extends BaseController
     * @param string $id The ID of the action to be retrieved.
     * @return string Standard JSON envelope
     */
-  public static function view($id)
+  public function view($id)
   {
     getAuthentication()->requireAuthentication(false);
     $action = Action::view($id);
     if($action)
-      return self::success("Action {$id}", $action);
+      return $this->success("Action {$id}", $action);
 
-    return self::error("Could not retrieve action {$id}", false);
+    return $this->error("Could not retrieve action {$id}", false);
   }
 }

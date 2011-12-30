@@ -7,17 +7,27 @@
 class ApiUserController extends BaseController
 {
   /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  /**
     * Log a user in via BrowserID
     *
     * @return string Standard JSON envelope
     */
-  public static function login($provider = null)
+  public function login($provider = null)
   {
     $wasUserLoggedIn = User::login($provider, $_POST);
     if($wasUserLoggedIn)
-      return self::success('User was logged in successfully', array('email' => getSession()->get('email')));
+      return $this->success('User was logged in successfully', array('email' => getSession()->get('email')));
     else
-      return self::error('User was not able to be logged in', false);
+      return $this->error('User was not able to be logged in', false);
   }
 
   /**
@@ -25,20 +35,20 @@ class ApiUserController extends BaseController
     *
     * @return string Standard JSON envelope
     */
-  public static function loginMobile()
+  public function loginMobile()
   {
     $mobilePassphrase = User::getMobilePassphrase();
 
     if(empty($mobilePassphrase) || !isset($_POST['passphrase']) || $mobilePassphrase['phrase'] != $_POST['passphrase'])
-      return self::forbidden('Unable to authenticate', false);
+      return $this->forbidden('Unable to authenticate', false);
 
-    $email = getConfig()->get('user')->email;
+    $email = $this->config->user->email;
     User::setEmail($email);
     User::setMobilePassphrase(true); // unset
     if(isset($_POST['redirect']))
       getRoute()->redirect($_POST['redirect'], null, true);
     else
-      return self::success('User was logged in successfully', array('email' => getSession()->get('email')));
+      return $this->success('User was logged in successfully', array('email' => getSession()->get('email')));
   }
 
   /**
@@ -46,10 +56,10 @@ class ApiUserController extends BaseController
     *
     * @return string Standard JSON envelope
     */
-  public static function logout()
+  public function logout()
   {
     User::logout();
-    return self::success('User was logged out successfully');
+    return $this->success('User was logged out successfully');
   }
 
   /**
@@ -58,7 +68,7 @@ class ApiUserController extends BaseController
     * @param string $id id of the group to update
     * @return string Standard JSON envelope
     */
-  public static function postGroup($id = null)
+  public function postGroup($id = null)
   {
     getAuthentication()->requireAuthentication();
 
@@ -68,8 +78,8 @@ class ApiUserController extends BaseController
     $res = getDb()->postGroup($id, $_POST);
 
     if($res)
-      return self::success("Group {$id} was updated", array_merge(array('id' => $id), $_POST));
+      return $this->success("Group {$id} was updated", array_merge(array('id' => $id), $_POST));
     else
-      return self::error("Could not updated group {$id}", false);
+      return $this->error("Could not updated group {$id}", false);
   }
 }

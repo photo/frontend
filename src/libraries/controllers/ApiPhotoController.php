@@ -8,12 +8,22 @@
 class ApiPhotoController extends BaseController
 {
   /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  /**
     * Delete a photo specified by the ID.
     *
     * @param string $id ID of the photo to be deleted.
     * @return string Standard JSON envelope
     */
-  public static function delete($id)
+  public function delete($id)
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
@@ -22,11 +32,11 @@ class ApiPhotoController extends BaseController
     if($status)
     {
       Tag::updateTagCounts($res['result']['tags'], array(), 1, 1);
-      return self::success('Photo deleted successfully', true);
+      return $this->success('Photo deleted successfully', true);
     }
     else
     {
-      return self::error('Photo deletion failure', false);
+      return $this->error('Photo deletion failure', false);
     }
   }
 
@@ -36,7 +46,7 @@ class ApiPhotoController extends BaseController
     * @param string $id ID of the photo to be edited.
     * @return string Standard JSON envelope
     */
-  public static function edit($id)
+  public function edit($id)
   {
     getAuthentication()->requireAuthentication();
     $photoResp = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
@@ -47,15 +57,15 @@ class ApiPhotoController extends BaseController
       $groups = array();
     if($photo)
     {
-      $template = sprintf('%s/photo-edit.php', getConfig()->get('paths')->templates);
+      $template = sprintf('%s/photo-edit.php', $this->config->paths->templates);
       $license = null;
       if(isset($photo['license']))
         $license = $photo['license'];
       $markup = getTemplate()->get($template, array('photo' => $photo, 'groups' => $groups, 'licenses' => Utility::getLicenses($license), 'crumb' => getSession()->get('crumb')));
-      return self::success('Photo edit markup', array('markup' => $markup));
+      return $this->success('Photo edit markup', array('markup' => $markup));
     }
 
-    return self::error('Photo edit markup failure', false);
+    return $this->error('Photo edit markup failure', false);
   }
 
   /**
@@ -64,19 +74,19 @@ class ApiPhotoController extends BaseController
     * @param string $id ID of the photo to be deleted.
     * @return string Standard JSON envelope
     */
-  public static function nextPrevious($id, $filterOpts = null)
+  public function nextPrevious($id, $filterOpts = null)
   {
-    extract(self::parseFilters($filterOpts));
+    extract($this->parseFilters($filterOpts));
     $nextPrevious = getDb()->getPhotoNextPrevious($id, $filters);
     if(!$nextPrevious)
-      return self::error('Could not get next/previous photo', false);
+      return $this->error('Could not get next/previous photo', false);
 
     $sizes = array();
     if(isset($_GET['returnSizes']))
       $sizes = (array)explode(',', $_GET['returnSizes']);
 
     foreach($nextPrevious as $key => $photo)
-      $nextPrevious[$key] = self::pruneSizes($photo, $sizes);
+      $nextPrevious[$key] = $this->pruneSizes($photo, $sizes);
 
     $generate = $requery = false;
     if(isset($_GET['generate']) && $_GET['generate'] == 'true')
@@ -108,14 +118,14 @@ class ApiPhotoController extends BaseController
       {
         $nextPrevious = getDb()->getPhotoNextPrevious($id, $filters);
         foreach($nextPrevious as $key => $photo)
-          $nextPrevious[$key] = self::pruneSizes($photo, $sizes);
+          $nextPrevious[$key] = $this->pruneSizes($photo, $sizes);
       }
     }
 
     foreach($nextPrevious as $key => $photo)
       $nextPrevious[$key] = Photo::addApiUrls($photo, $sizes);
 
-    return self::success("Next/previous for photo {$id}", $nextPrevious);
+    return $this->success("Next/previous for photo {$id}", $nextPrevious);
   }
 
   /**
@@ -127,15 +137,15 @@ class ApiPhotoController extends BaseController
     * @param int $options The options of the photo wo which this URL points.
     * @return string Standard JSON envelope
     */
-  public static function dynamicUrl($id, $width, $height, $options = null)
+  public function dynamicUrl($id, $width, $height, $options = null)
   {
-    return self::success('Url generated successfully', Photo::generateUrlInternal($id, $width, $height, $options));
+    return $this->success('Url generated successfully', Photo::generateUrlInternal($id, $width, $height, $options));
   }
 
-  /*public static function dynamic($id, $hash, $width, $height, $options = null)
+  /*public function dynamic($id, $hash, $width, $height, $options = null)
   {
     $photo = Photo::generate($id, $hash, $width, $height, $options);
-    return self::success('', $photo);
+    return $this->success('', $photo);
   }*/
 
   /**
@@ -146,15 +156,15 @@ class ApiPhotoController extends BaseController
     * @param string $filterOpts Options on how to filter the list of photos.
     * @return string Standard JSON envelope
     */
-  public static function list_($filterOpts = null)
+  public function list_($filterOpts = null)
   {
     // this extracts local variables $permission, $filter, $pageSize, etc
-    extract(self::parseFilters($filterOpts));
+    extract($this->parseFilters($filterOpts));
     $db = getDb();
     $photos = $db->getPhotos($filters, $pageSize);
 
     if(empty($photos))
-      return self::success('Your search did not return any photos', null);
+      return $this->success('Your search did not return any photos', null);
 
     $sizes = array();
     if(isset($filters['returnSizes']))
@@ -168,7 +178,7 @@ class ApiPhotoController extends BaseController
     {
       // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
       // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
-      $photos[$key] = self::pruneSizes($photo, $sizes);
+      $photos[$key] = $this->pruneSizes($photo, $sizes);
 
       if(!empty($sizes))
       {
@@ -192,7 +202,7 @@ class ApiPhotoController extends BaseController
     {
       $photos = $db->getPhotos($filters, $pageSize);
       foreach($photos as $key => $photo)
-        $photos[$key] = self::pruneSizes($photo, $sizes);
+        $photos[$key] = $this->pruneSizes($photo, $sizes);
     }
 
     // we have to merge to retain multiple sizes else the last one overwrites the rest
@@ -203,7 +213,7 @@ class ApiPhotoController extends BaseController
     $photos[0]['pageSize'] = $pageSize;
     $photos[0]['currentPage'] = $page;
     $photos[0]['totalPages'] = ceil($photos[0]['totalRows'] / $pageSize);
-    return self::success("Successfully retrieved user's photos", $photos);
+    return $this->success("Successfully retrieved user's photos", $photos);
   }
 
   /**
@@ -215,7 +225,7 @@ class ApiPhotoController extends BaseController
     *
     * @return string standard json envelope
     */
-  public static function upload()
+  public function upload()
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
@@ -242,7 +252,7 @@ class ApiPhotoController extends BaseController
     elseif(isset($_POST['photo']))
     {
       unset($attributes['photo']);
-      $localFile = tempnam(getConfig()->get('paths')->temp, 'opme');
+      $localFile = tempnam($this->config->paths->temp, 'opme');
       $name = basename($localFile).'.jpg';
       file_put_contents($localFile, base64_decode($_POST['photo']));
       $photoId = Photo::upload($localFile, $name, $attributes);
@@ -277,10 +287,10 @@ class ApiPhotoController extends BaseController
           getLogger()->info(sprintf('Webhook callback executing for photo.upload: %s', $hook['callback']));
         }
       }
-      return self::created("Photo {$photoId} uploaded successfully", $photo['result']);
+      return $this->created("Photo {$photoId} uploaded successfully", $photo['result']);
     }
 
-    return self::error('File upload failure', false);
+    return $this->error('File upload failure', false);
   }
 
   /**
@@ -291,7 +301,7 @@ class ApiPhotoController extends BaseController
     * @param string $id ID of the photo to be updated.
     * @return string Standard JSON envelope
     */
-  public static function update($id)
+  public function update($id)
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
@@ -340,10 +350,10 @@ class ApiPhotoController extends BaseController
     if($photoUpdatedId)
     {
       $photo = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
-      return self::success("photo {$id} updated", $photo['result']);
+      return $this->success("photo {$id} updated", $photo['result']);
     }
 
-    return self::error("photo {$id} could not be updated", false);
+    return $this->error("photo {$id} could not be updated", false);
   }
 
   /**
@@ -354,12 +364,12 @@ class ApiPhotoController extends BaseController
     * @param string $id ID of the photo to be updated.
     * @return string Standard JSON envelope
     */
-  public static function updateBatch()
+  public function updateBatch()
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
     if(!isset($_POST['ids']) || empty($_POST['ids']))
-      return self::error('This API requires an ids parameter.', false);
+      return $this->error('This API requires an ids parameter.', false);
 
     $ids = (array)explode(',', $_POST['ids']);
     $params = $_POST;
@@ -373,9 +383,9 @@ class ApiPhotoController extends BaseController
     }
 
     if($retval)
-      return self::success(sprintf('%d photos updated', count($ids)), true);
+      return $this->success(sprintf('%d photos updated', count($ids)), true);
     else
-      return self::error('Error updating one or more photos', false);
+      return $this->error('Error updating one or more photos', false);
   }
 
   /**
@@ -384,7 +394,7 @@ class ApiPhotoController extends BaseController
     * @param string $id ID of the photo to be viewed.
     * @return string Standard JSON envelope
     */
-  public static function view($id)
+  public function view($id)
   {
     $getActions = isset($_GET['actions']) && $_GET['actions'] == 'true';
     if($getActions)
@@ -395,14 +405,14 @@ class ApiPhotoController extends BaseController
     // check permissions
     if(!isset($photo['id']))
     {
-      return self::notFound("Photo {$id} not found", false);
+      return $this->notFound("Photo {$id} not found", false);
     }
     elseif(!User::isOwner())
     {
       if($photo['permission'] == 0)
       {
         if(!User::isLoggedIn() || (isset($photo['groups']) && empty($photo['groups'])))
-          return self::notFound("Photo {$id} not found", false);
+          return $this->notFound("Photo {$id} not found", false);
 
         // can't call API since we're not the owner
         $userGroups = getDb()->getGroups(User::getEmailAddress());
@@ -417,7 +427,7 @@ class ApiPhotoController extends BaseController
         }
 
         if(!$isInGroup)
-          return self::notFound("Photo {$id} not found", false);
+          return $this->notFound("Photo {$id} not found", false);
       }
     }
 
@@ -428,7 +438,7 @@ class ApiPhotoController extends BaseController
       $sizes = (array)explode(',', $_GET['returnSizes']);
     }
 
-    $photo = self::pruneSizes($photo, $sizes);
+    $photo = $this->pruneSizes($photo, $sizes);
 
     if(!empty($sizes))
     {
@@ -459,15 +469,15 @@ class ApiPhotoController extends BaseController
         else
           $photo = getDb()->getPhoto($id);
 
-        $photo = self::pruneSizes($photo, $sizes);
+        $photo = $this->pruneSizes($photo, $sizes);
       }
     }
 
     $photo = Photo::addApiUrls($photo, $sizes);
-    return self::success("Photo {$id}", $photo);
+    return $this->success("Photo {$id}", $photo);
   }
 
-  private static function parseFilters($filterOpts)
+  private function parseFilters($filterOpts)
   {
     // If the user is logged in then we can display photos based on group membership
     $permission = 0;
@@ -545,7 +555,7 @@ class ApiPhotoController extends BaseController
    * @param array $sizes the sizes to keep.
    * @return the photo
    */
-  private static function pruneSizes($photo, $sizes)
+  private function pruneSizes($photo, $sizes)
   {
     if(isset($sizes) && !empty($sizes))
     {

@@ -42,7 +42,7 @@ class SetupController
     $theme = getTheme()->getThemeName();
     $themes = getTheme()->getThemes();
 
-    $errors = self::verifyRequirements($imageLibs);
+    $errors = $this->verifyRequirements($imageLibs);
 
     if(count($errors) > 0)
       $step = 0;
@@ -70,10 +70,10 @@ class SetupController
     *
     * @return string HTML
     */
-  public static function setupDropbox()
+  public function setupDropbox()
   {
-    extract(self::getDefaultConfigParams());
-    $secret = self::getSecret();
+    extract($this->getDefaultConfigParams());
+    $secret = $this->getSecret();
     $credentials = getConfig()->get('credentials');
     $dropbox = getConfig()->get('dropbox');
     if($credentials !== null)
@@ -100,9 +100,9 @@ class SetupController
     *
     * @return void HTTP redirect (to dropbox.com)
     */
-  public static function setupDropboxCallback()
+  public function setupDropboxCallback()
   {
-    $secret = self::getSecret();
+    $secret = $this->getSecret();
     try
     {
       $dropboxToken = getSession()->get('dropboxToken');
@@ -135,12 +135,12 @@ class SetupController
     *
     * @return void HTTP redirect (to dropbox.com)
     */
-  public static function setupDropboxPost()
+  public function setupDropboxPost()
   {
     $qs = '';
     if(isset($_GET['edit']))
       $qs = '?edit';
-    $secret = self::getSecret();
+    $secret = $this->getSecret();
 
     try
     {
@@ -165,7 +165,7 @@ class SetupController
     *
     * @return void HTTP redirect (setup step 2)
     */
-  public static function setupPost()
+  public function setupPost()
   {
     $step = 1;
     $appId = isset($_POST['appId']) ? $_POST['appId'] : '';
@@ -200,7 +200,7 @@ class SetupController
     *
     * @return string HTML
     */
-  public static function setup2()
+  public function setup2()
   {
     // make sure the user should be on this step
     if(getSession()->get('step') != 2)
@@ -241,7 +241,7 @@ class SetupController
     *
     * @return void HTTP redirect (setup step 3)
     */
-  public static function setup2Post()
+  public function setup2Post()
   {
       getSession()->set('step', 3);
       getSession()->set('imageLibrary', $_POST['imageLibrary']);
@@ -262,7 +262,7 @@ class SetupController
     *
     * @return string HTML
     */
-  public static function setup3()
+  public function setup3()
   {
     // make sure the user should be on this step
     if(getSession()->get('step') != 3)
@@ -273,8 +273,8 @@ class SetupController
       getRoute()->redirect('/setup');
     }
 
-    extract(self::getDefaultConfigParams());
-    $secret = self::getSecret();
+    extract($this->getDefaultConfigParams());
+    $secret = $this->getSecret();
     $step = 3;
     $appId = getSession()->get('appId');
     $database = getSession()->get('database');
@@ -369,12 +369,12 @@ class SetupController
     *
     * @return void HTTP redirect (home)
     */
-  public static function setup3Post()
+  public function setup3Post()
   {
     getSession()->set('isEditMode', isset($_GET['edit']));
-    extract(self::getDefaultConfigParams());
+    extract($this->getDefaultConfigParams());
     $step = 3;
-    $secret = self::getSecret();
+    $secret = $this->getSecret();
     $database = getSession()->get('database');
     $filesystem = getSession()->get('filesystem');
     $appId = getSession()->get('appId');
@@ -519,7 +519,7 @@ class SetupController
       $systems->database = getSession()->get('database');
       $systems->fileSystem = getSession()->get('fileSystem');
       $secrets = new stdClass;
-      $secrets->secret = self::getSecret();
+      $secrets->secret = $this->getSecret();
 
       $user = new stdClass;
       $user->email = getSession()->get('ownerEmail');
@@ -565,7 +565,7 @@ class SetupController
 
       if($fsErrors === false && $dbErrors === false)
       {
-        $writeError = self::writeConfigFile();
+        $writeError = $this->writeConfigFile();
         if($writeErrors === false)
         {
           if(isset($_GET['edit']))
@@ -622,13 +622,13 @@ class SetupController
     *
     * @return void HTTP redirect (setup step 1)
     */
-  public static function setupRestart()
+  public function setupRestart()
   {
     getSession()->end();
     getRoute()->redirect('/setup');
   }
 
-  public static function getSecret()
+  public function getSecret()
   {
     if(getConfig()->get('secrets') !== null)
     {
@@ -647,7 +647,7 @@ class SetupController
     return $secret;
   }
 
-  private static function getDefaultConfigParams()
+  private function getDefaultConfigParams()
   {
     return array('themes' => array(), 'awsKey' => '', 'awsSecret' => '', 's3Bucket' => '', 'simpleDbDomain' => '', 'mySqlHost' => '',
       'mySqlUser' => '', 'mySqlPassword' => '', 'mySqlDb' => '', 'mySqlTablePrefix' => '',
@@ -660,7 +660,7 @@ class SetupController
     *
     * @return mixed  TRUE on success, array on error
     */
-  private static function verifyRequirements($imageLibs)
+  private function verifyRequirements($imageLibs)
   {
     $errors = array();
     $configDir = Utility::getBaseDir() . '/userdata';
@@ -699,10 +699,10 @@ class SetupController
     *
     * @return boolean  TRUE on success, FALSE on error
     */
-  private static function writeConfigFile()
+  private function writeConfigFile()
   {
     // continue if no errors
-    $secret = self::getSecret();
+    $secret = $this->getSecret();
     $baseDir = Utility::getBaseDir();
     $htmlDir = "{$baseDir}/html";
     $libDir = "{$baseDir}/libraries";
