@@ -105,9 +105,9 @@
         assets: [
           <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
             <?php if(getConfig()->get('site')->mode === 'dev') { ?>
-              '<?php getTheme()->asset('javascript', 'plupload.js'); ?>',
-              '<?php getTheme()->asset('javascript', 'plupload.html5.js'); ?>',
-              '<?php getTheme()->asset('javascript', 'jquery.plupload.queue.js'); ?>',
+              '/assets/javascripts/plupload.js',
+              '/assets/javascripts/plupload.html5.js',
+              '/assets/javascripts/jquery.plupload.queue.js',
               '/assets/javascripts/openphoto-upload.js',
             <?php } else { ?>
               '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'b'); ?>',
