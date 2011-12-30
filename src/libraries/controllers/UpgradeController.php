@@ -54,6 +54,6 @@ class UpgradeController extends BaseController
     else // Before the upgrade code the lastCodeVersion was not in the config template
       $config = sprintf("[site]\nlastCodeVersion=\"%s\"\n\n", getUpgrade()->getCurrentVersion()) . $config;
     file_put_contents($configFile, $config);
-    getRoute()->redirect('/');
+    $this->route->redirect('/');
   }
 }

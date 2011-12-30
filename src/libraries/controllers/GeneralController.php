@@ -51,7 +51,7 @@ class GeneralController extends BaseController
   {
     $template = Utility::getTemplate('front.php');
     if(!getTheme()->fileExists($template))
-      getRoute()->redirect(Url::photosView(null, false));
+      $this->route->redirect(Url::photosView(null, false));
 
     $apisToCall = getConfig()->get('frontApis');
     $params = Utility::callApis($apisToCall);

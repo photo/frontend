@@ -29,9 +29,9 @@ class UserController extends BaseController
       $redirect = $_POST['redirect'];
 
     if($response['code'] == 200)
-      getRoute()->redirect($redirect);
+      $this->route->redirect($redirect);
     else
-      getRoute()->redirect(sprintf('%s&%s', $redirect, 'error=1'));
+      $this->route->redirect(sprintf('%s&%s', $redirect, 'error=1'));
   }
 
   /**
@@ -42,7 +42,7 @@ class UserController extends BaseController
   public function logout()
   {
     $res = $this->api->invoke('/user/logout.json', EpiRoute::httpGet);
-    getRoute()->redirect('/');
+    $this->route->redirect('/');
   }
 
   /**
@@ -54,7 +54,7 @@ class UserController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     User::setMobilePassphrase();
-    getRoute()->redirect('/user/settings');
+    $this->route->redirect('/user/settings');
   }
 
   /**

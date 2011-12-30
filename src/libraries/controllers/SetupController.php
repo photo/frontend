@@ -131,12 +131,12 @@ class SetupController extends BaseController
       if(isset($_GET['edit']))
         $qs = '?edit';
 
-      getRoute()->redirect(sprintf('%s%s', '/setup/3', $qs));
+      $this->route->redirect(sprintf('%s%s', '/setup/3', $qs));
     }
     catch(Dropbox_Exception $e)
     {
       getLogger()->crit(sprintf('An error occured getting the Dropbox authorize url. Message: %s', $e->getMessage()));
-      getRoute()->run('/error/500');
+      $this->route->run('/error/500');
     }
   }
 
@@ -161,12 +161,12 @@ class SetupController extends BaseController
       $oauth = new Dropbox_OAuth_PHP($_POST['dropboxKey'], $_POST['dropboxSecret']);
       getSession()->set('dropboxToken', $oauth->getRequestToken());
       $url = $oauth->getAuthorizeUrl($callback);
-      getRoute()->redirect($url, null, true);
+      $this->route->redirect($url, null, true);
     }
     catch(Dropbox_Exception $e)
     {
       getLogger()->crit(sprintf('An error occured getting the Dropbox authorize url. Message: %s', $e->getMessage()));
-      getRoute()->run('/error/500', EpiRoute::httpGet);
+      $this->route->run('/error/500', EpiRoute::httpGet);
     }
   }
 
@@ -197,7 +197,7 @@ class SetupController extends BaseController
       if(isset($_GET['edit']))
         $qs = '?edit';
 
-      getRoute()->redirect('/setup/2' . $qs);
+      $this->route->redirect('/setup/2' . $qs);
     }
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
@@ -214,7 +214,7 @@ class SetupController extends BaseController
   {
     // make sure the user should be on this step
     if(getSession()->get('step') != 2)
-        getRoute()->redirect('/setup');
+        $this->route->redirect('/setup');
 
     $step = 2;
     $imageLibs = array();
@@ -262,9 +262,9 @@ class SetupController extends BaseController
       if(isset($_GET['edit']))
         $qs = '?edit';
       if(stristr($_POST['fileSystem'], 'Dropbox') !== false)
-        getRoute()->redirect('/setup/dropbox' . $qs);
+        $this->route->redirect('/setup/dropbox' . $qs);
       else
-        getRoute()->redirect('/setup/3' . $qs);
+        $this->route->redirect('/setup/3' . $qs);
   }
 
   /**
@@ -278,9 +278,9 @@ class SetupController extends BaseController
     if(getSession()->get('step') != 3)
     {
       if(getSession()->get('step') == 2)
-        getRoute()->redirect('/setup/2');
+        $this->route->redirect('/setup/2');
 
-      getRoute()->redirect('/setup');
+      $this->route->redirect('/setup');
     }
 
     extract($this->getDefaultConfigParams());
@@ -580,13 +580,13 @@ class SetupController extends BaseController
         {
           if(isset($_GET['edit']))
           {
-            getRoute()->redirect('/?m=welcome');
+            $this->route->redirect('/?m=welcome');
           }
           else
           {
             // setting up a new site, we should log them in and redirect them to the upload form (Gh-290)
             User::setEmail($user->email);
-            getRoute()->redirect('/photos/upload?m=welcome');
+            $this->route->redirect('/photos/upload?m=welcome');
           }
         }
         else
@@ -635,7 +635,7 @@ class SetupController extends BaseController
   public function setupRestart()
   {
     getSession()->end();
-    getRoute()->redirect('/setup');
+    $this->route->redirect('/setup');
   }
 
   public function getSecret()

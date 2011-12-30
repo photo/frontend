@@ -112,7 +112,7 @@ class OAuthController extends BaseController
           $separator = '&';
       }
       $callback .= "{$separator}oauth_consumer_key={$consumer['id']}&oauth_consumer_secret={$consumer['clientSecret']}&oauth_token={$consumer['userToken']}&oauth_token_secret={$consumer['userSecret']}&oauth_verifier={$consumer['verifier']}";
-      getRoute()->redirect($callback, null, true);
+      $this->route->redirect($callback, null, true);
     }
     elseif(isset($_POST['name']) && !empty($_POST['name']))
     {
@@ -128,7 +128,7 @@ class OAuthController extends BaseController
 
       $consumer = getDb()->getCredential($consumerKey);
       $callback = urlencode($_GET['oauth_callback']);
-      getRoute()->redirect("/v1/oauth/authorize?oauth_token={$consumer['userToken']}&oauth_callback={$callback}");
+      $this->route->redirect("/v1/oauth/authorize?oauth_token={$consumer['userToken']}&oauth_callback={$callback}");
     }
     else
     {

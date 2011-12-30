@@ -32,8 +32,8 @@ class ActionController extends BaseController
     $result = $res ? '1' : '0';
     // TODO: standardize messaging parameter
     if($targetType == 'photo')
-      getRoute()->redirect(sprintf('%s?message=%s', Url::photoView($targetId, null, false), $result));
+      $this->route->redirect(sprintf('%s?message=%s', Url::photoView($targetId, null, false), $result));
     else
-      getRoute()->run('/error/500');
+      $this->route->run('/error/500');
   }
 }
