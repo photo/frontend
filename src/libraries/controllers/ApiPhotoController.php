@@ -180,7 +180,7 @@ class ApiPhotoController extends BaseController
           if($generate && !isset($photo["path{$size}"]))
           {
             $hash = Photo::generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
-            Photo::generate($photo['id'], $hash, $options['width'], $options['width'], $options['options']);
+            Photo::generate($photo['id'], $hash, $options['width'], $options['height'], $options['options']);
             $requery = true;
           }
         }
