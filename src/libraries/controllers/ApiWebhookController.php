@@ -8,19 +8,29 @@
 class ApiWebhookController extends BaseController
 {
   /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  /**
     * Create a webhook.
     *
     * @return string Standard JSON envelope
     */
-  public static function create()
+  public function create()
   {
     //getAuthentication()->requireAuthentication();
     $params = $_POST;
     $id = Webhook::add($params);
     if($id)
-      return self::success("Webhook {$id} created", array_merge(array('id' => $id), $params));
+      return $this->success("Webhook {$id} created", array_merge(array('id' => $id), $params));
     else
-      return self::error("Error creating webhook {$id}", false);
+      return $this->error("Error creating webhook {$id}", false);
   }
 
   /**
@@ -29,14 +39,14 @@ class ApiWebhookController extends BaseController
     * @param string $id ID of the webhook to be deleted.
     * @return string Standard JSON envelope
     */
-  public static function delete($id)
+  public function delete($id)
   {
     //getAuthentication()->requireAuthentication();
     $status = Webhook::delete($id);
     if($status)
-      return self::success('Webhook deleted successfully', true);
+      return $this->success('Webhook deleted successfully', true);
     else
-      return self::error('Webhook deletion failure', false);
+      return $this->error('Webhook deletion failure', false);
   }
 
   /**
@@ -45,15 +55,15 @@ class ApiWebhookController extends BaseController
     * @param string $id ID of the webhook to be updated.
     * @return string Standard JSON envelope
     */
-  public static function update($id)
+  public function update($id)
   {
     //getAuthentication()->requireAuthentication();
     $params = $_POST;
     $id = Webhook::update($id, $params);
     if($id)
-      return self::success("Webhook {$id} updated", array_merge(array('id' => $id), $params));
+      return $this->success("Webhook {$id} updated", array_merge(array('id' => $id), $params));
     else
-      return self::error("Error updating webhook {$id}", false);
+      return $this->error("Error updating webhook {$id}", false);
   }
 
   /**
@@ -62,14 +72,14 @@ class ApiWebhookController extends BaseController
     * @param string $id ID of the webhook to be viewed.
     * @return string Standard JSON envelope
     */
-  public static function view($id)
+  public function view($id)
   {
     //getAuthentication()->requireAuthentication();
     $webhook = Webhook::getById($id);
     if($webhook)
-      return self::success("Successfully retrieved webhook ({$id})", $webhook);
+      return $this->success("Successfully retrieved webhook ({$id})", $webhook);
     else
-      return self::error("Error getting webhook ({$id})", false);
+      return $this->error("Error getting webhook ({$id})", false);
   }
 
   /**
@@ -77,13 +87,13 @@ class ApiWebhookController extends BaseController
     *
     * @return string Standard JSON envelope
     */
-  public static function list_($topic = null)
+  public function list_($topic = null)
   {
     //getAuthentication()->requireAuthentication();
     $webhooks = Webhook::getAll($topic);
     if($webhooks)
-      return self::success("Successfully retrieved webhooks", $webhooks);
+      return $this->success("Successfully retrieved webhooks", $webhooks);
     else
-      return self::error("Error getting webhooks", false);
+      return $this->error("Error getting webhooks", false);
   }
 }

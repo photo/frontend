@@ -11,7 +11,7 @@ class WebhookController extends BaseController
     *
     * @return void
     */
-  public static function subscribe()
+  public function subscribe()
   {
     getAuthentication()->requireAuthentication();
     $params = $_POST;

@@ -8,18 +8,28 @@
 class ApiTagController extends BaseController
 {
   /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  /**
     * Delete a tag in the tag database.
     *
     * @return string Standard JSON envelope
     */
-  public static function delete($tag)
+  public function delete($tag)
   {
     getAuthentication()->requireAuthentication();
     $res = Tag::delete($tag);
     if($res)
-      return self::success('Tag deleted successfully', true);
+      return $this->success('Tag deleted successfully', true);
     else
-      return self::error('Tag could not be deleted', false);
+      return $this->error('Tag could not be deleted', false);
   }
 
   /**
@@ -27,12 +37,12 @@ class ApiTagController extends BaseController
     *
     * @return string Standard JSON envelope
     */
-  public static function create()
+  public function create()
   {
     getAuthentication()->requireAuthentication();
     $tag = $_POST['tag'];
     unset($_POST['tag']);
-    return self::update($tag);
+    return $this->update($tag);
   }
 
   /**
@@ -40,7 +50,7 @@ class ApiTagController extends BaseController
     *
     * @return string Standard JSON envelope
     */
-  public static function update($tag)
+  public function update($tag)
   {
     getAuthentication()->requireAuthentication();
     $tag = Tag::sanitize($tag);
@@ -49,11 +59,11 @@ class ApiTagController extends BaseController
     if($res)
     {
       $tag = getApi()->invoke("/tag/{$tag}/view.json", EpiRoute::httpGet);
-      return self::success('Tag created/updated successfully', $tag['result']);
+      return $this->success('Tag created/updated successfully', $tag['result']);
     }
     else
     {
-      return self::error('Tag could not be created/updated', false);
+      return $this->error('Tag could not be created/updated', false);
     }
   }
 
@@ -62,7 +72,7 @@ class ApiTagController extends BaseController
     *
     * @return string Standard JSON envelope
     */
-  public static function list_()
+  public function list_()
   {
     $filters = $_GET;
     unset($filters['__route__']);
@@ -81,6 +91,6 @@ class ApiTagController extends BaseController
         unset($tags[$key]['countPublic'], $tags[$key]['countPrivate'], $tags[$key]['owner']);
       }
     }
-    return self::success('Tags for the user', $tags);
+    return $this->success('Tags for the user', $tags);
   }
 }

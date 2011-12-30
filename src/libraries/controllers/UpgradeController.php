@@ -6,7 +6,17 @@
  */
 class UpgradeController extends BaseController
 {
-  public static function upgrade()
+  /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  public function upgrade()
   {
     getAuthentication()->requireAuthentication();
     $readmeFiles = getUpgrade()->getUpgradeVersions(array('readme'));
@@ -26,7 +36,7 @@ class UpgradeController extends BaseController
     getTheme()->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
-  public static function upgradePost()
+  public function upgradePost()
   {
     getAuthentication()->requireAuthentication();
     getUpgrade()->performUpgrade();

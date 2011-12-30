@@ -7,6 +7,16 @@
 class ActionController extends BaseController
 {
   /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  /**
     * Create a new action by calling the corresponding API endpoint.
     * TODO define the redirect
     *
@@ -14,7 +24,7 @@ class ActionController extends BaseController
     * @param string $targetType The type of object this action is being added to - typically a photo.
     * @return void
     */
-  public static function create($targetId, $targetType)
+  public function create($targetId, $targetType)
   {
     getAuthentication()->requireAuthentication(false);
     getAuthentication()->requireCrumb($_POST['crumb']);

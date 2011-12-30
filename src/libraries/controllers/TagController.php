@@ -7,11 +7,21 @@
 class TagController extends BaseController
 {
   /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  /**
     * Display tags (via a tag cloud)
     *
     * @return string HTML
     */
-  public static function list_()
+  public function list_()
   {
     $tags = getApi()->invoke("/tags/list.json");
     $groupedTags = Tag::groupByWeight($tags['result']);

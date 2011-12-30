@@ -6,7 +6,17 @@
  */
 class ApiPluginController extends BaseController
 {
-  public static function list_()
+  /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  public function list_()
   {
     getAuthentication()->requireAuthentication();
     $pluginObj = getPlugin();
@@ -17,17 +27,17 @@ class ApiPluginController extends BaseController
     foreach($pluginsAll as $p)
       $plugins[] = array('name' => $p, 'conf' => $pluginObj->loadConf($p), 'status' => in_array($p, $pluginsActive) ? 'active' : 'inactive');
 
-    return self::success('Plugins', $plugins);
+    return $this->success('Plugins', $plugins);
   }
 
-  public static function update($plugin)
+  public function update($plugin)
   {
     getAuthentication()->requireAuthentication();
     $params = $_POST;
     $pluginObj = getPlugin();
     $conf = $pluginObj->loadConf($plugin);
     if(!$conf)
-      return self::error('Cannot update settings for a deactivated plugin, try activating first.', false);
+      return $this->error('Cannot update settings for a deactivated plugin, try activating first.', false);
 
     foreach($conf as $name => $value)
     {
@@ -38,12 +48,12 @@ class ApiPluginController extends BaseController
     $status = $pluginObj->writeConf($plugin, Utility::generateIniString($conf));
   
     if($status)
-      return self::success('Plugin updated successfully', $conf);
+      return $this->success('Plugin updated successfully', $conf);
     else
-      return self::error('Could not update plugin', false);
+      return $this->error('Could not update plugin', false);
   }
 
-  public static function updateStatus($plugin, $status)
+  public function updateStatus($plugin, $status)
   {
     $siteConfig = getUserConfig()->getSiteSettings();
     $plugins = (array)explode(',', $siteConfig['plugins']['activePlugins']);
@@ -67,8 +77,8 @@ class ApiPluginController extends BaseController
     $siteConfig['plugins']['activePlugins'] = implode(',', $plugins);
     $siteConfigStatus = getUserConfig()->writeSiteSettings($siteConfig);
     if(!$siteConfigStatus)
-      return self::error('Could not change status of plugin', false);
+      return $this->error('Could not change status of plugin', false);
     else
-      return self::success('Plugin status changed', true);
+      return $this->success('Plugin status changed', true);
   }
 }

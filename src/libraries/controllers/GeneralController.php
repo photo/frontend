@@ -11,7 +11,7 @@ class GeneralController extends BaseController
     *
     * @return string HTML
     */
-  public static function error403()
+  public function error403()
   {
     header('HTTP/1.0 403 Forbidden');
     $body = getTheme()->get('error403.php');
@@ -23,7 +23,7 @@ class GeneralController extends BaseController
     *
     * @return string HTML
     */
-  public static function error404()
+  public function error404()
   {
     header('HTTP/1.0 404 Not Found');
     $body = getTheme()->get('error404.php');
@@ -35,7 +35,7 @@ class GeneralController extends BaseController
     *
     * @return string HTML
     */
-  public static function error500()
+  public function error500()
   {
     header('HTTP/1.0 500 Internal Server Error');
     $body = getTheme()->get('error500.php');
@@ -47,7 +47,7 @@ class GeneralController extends BaseController
     *
     * @return string HTML
     */
-  public static function home()
+  public function home()
   {
     $template = Utility::getTemplate('front.php');
     if(!getTheme()->fileExists($template))
@@ -58,5 +58,4 @@ class GeneralController extends BaseController
     $body = getTheme()->get($template, $params);
     getTheme()->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'front'));
   }
-
 }

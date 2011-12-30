@@ -7,6 +7,17 @@
 class PhotoController extends BaseController
 {
   /**
+    * Call the parent constructor
+    *
+    * @return void
+    */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  
+  /**
     * Create a new version of the photo with ID $id as specified by $width, $height and $options.
     *
     * @param string $id ID of the photo to create a new version of.
@@ -16,7 +27,7 @@ class PhotoController extends BaseController
     * @param int $options The options of the photo wo which this URL points.
     * @return string HTML
     */
-  public static function create($id, $hash, $width, $height, $options = null)
+  public function create($id, $hash, $width, $height, $options = null)
   {
     $args = func_get_args();
     // TODO, this should call a method in the API
@@ -38,7 +49,7 @@ class PhotoController extends BaseController
     * @param string $id ID of the photo to be deleted.
     * @return void HTTP redirect
     */
-  public static function delete($id)
+  public function delete($id)
   {
     getAuthentication()->requireAuthentication();
     $delete = getApi()->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost);
@@ -54,7 +65,7 @@ class PhotoController extends BaseController
     * @param string $id ID of the photo to be edited.
     * @return string HTML
     */
-  public static function edit($id)
+  public function edit($id)
   {
     getAuthentication()->requireAuthentication();
     $resp = getApi()->invoke("/photo/{$id}/edit.json", EpiRoute::httpGet);
@@ -75,9 +86,9 @@ class PhotoController extends BaseController
     * @param string $filterOpts Optional options for filtering
     * @return string HTML
     */
-  public static function list_($filterOpts = null)
+  public function list_($filterOpts = null)
   {
-    $returnSizes = sprintf('%s,%s', getConfig()->get('photoSizes')->thumbnail, getConfig()->get('photoSizes')->detail);
+    $returnSizes = sprintf('%s,%s', $this->config->photoSizes->thumbnail, $this->config->photoSizes->detail);
     $getParams = array();
     if(!empty($_SERVER['QUERY_STRING']))
       parse_str($_SERVER['QUERY_STRING'], $getParams);
@@ -92,7 +103,7 @@ class PhotoController extends BaseController
     $pages = array('pages' => array());
     if(!empty($photos))
     {
-      $pages['pages'] = Utility::getPaginationParams($photos[0]['currentPage'], $photos[0]['totalPages'], getConfig()->get('pagination')->pagesToDisplay);
+      $pages['pages'] = Utility::getPaginationParams($photos[0]['currentPage'], $photos[0]['totalPages'], $this->config->pagination->pagesToDisplay);
       $pages['currentPage'] = $photos[0]['currentPage'];
       $pages['totalPages'] = $photos[0]['totalPages'];
       $pages['requestUri'] = $_SERVER['REQUEST_URI'];
@@ -109,7 +120,7 @@ class PhotoController extends BaseController
     * @param string $id ID of the photo to update.
     * @return void HTTP redirect
     */
-  public static function update($id)
+  public function update($id)
   {
     getAuthentication()->requireAuthentication();
     $status = getApi()->invoke("/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $_POST));
@@ -122,7 +133,7 @@ class PhotoController extends BaseController
     *
     * @return string HTML
     */
-  public static function upload()
+  public function upload()
   {
     if(!User::isOwner())
     {
@@ -130,7 +141,7 @@ class PhotoController extends BaseController
       return;
     }
     $crumb = getSession()->get('crumb');
-    $template = sprintf('%s/upload.php', getConfig()->get('paths')->templates);
+    $template = sprintf('%s/upload.php', $this->config->paths->templates);
     $body = getTemplate()->get($template, array('crumb' => $crumb, 'licenses' => Utility::getLicenses()));
     getTheme()->display('template.php', array('body' => $body, 'page' => 'upload'));
   }
@@ -143,16 +154,16 @@ class PhotoController extends BaseController
     * @param string $options Optional options for rendering this photo.
     * @return string HTML
     */
-  public static function view($id, $options = null)
+  public function view($id, $options = null)
   {
-    $apiResp = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => getConfig()->get('photoSizes')->detail)));
+    $apiResp = getApi()->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
     if($apiResp['code'] === 200)
     {
-      $detailDimensions = explode('x', getConfig()->get('photoSizes')->detail);
+      $detailDimensions = explode('x', $this->config->photoSizes->detail);
       if(empty($options))
-        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
+        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
       else
-        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => getConfig()->get('photoSizes')->nextPrevious)));
+        $apiNextPrevious = getApi()->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
       $photo = $apiResp['result'];
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
@@ -173,7 +184,7 @@ class PhotoController extends BaseController
     * @param string $id ID of the photo to update.
     * @return void HTTP redirect
     */
-  public static function uploadPost()
+  public function uploadPost()
   {
     getAuthentication()->requireAuthentication();
     $upload = getApi()->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
