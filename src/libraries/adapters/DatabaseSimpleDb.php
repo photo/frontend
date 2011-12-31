@@ -95,6 +95,9 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function deletePhoto($photo)
   {
+    if(!isset($photo['id']))
+      return false;
+
     $res = $this->db->delete_attributes($this->domainPhoto, $photo['id']);
     $this->logErrors($res);
     return $res->isOK();
@@ -985,7 +988,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   {
     $photo = array('tags' => array());
     $photo['id'] = strval($raw->Name);
-    $photo['appId'] = getConfig()->get('application')->appId;
+    $photo['appId'] = $this->config->application->appId;
     foreach($raw->Attribute as $item)
     {
       $name = (string)$item->Name;

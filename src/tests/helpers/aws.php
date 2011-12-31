@@ -26,6 +26,13 @@ class AWSSuccessResponse
 
 class AWSFailureResponse
 {
+  public $body;
+  public function __construct()
+  {
+    $this->body = new stdClass;
+    $this->body->Errors = array();
+  }
+
   public function isOK()
   {
     return false;
@@ -151,7 +158,7 @@ class AWSCredentialMockSdb extends AWSSuccessResponse
   }
 }
 
-class AWSGroupMockSdb
+class AWSGroupMockSdb extends AWSSuccessResponse
 {
   public $body;
   public function __construct($count = 1)
@@ -216,7 +223,7 @@ class AWSPhotoMockSdb extends AWSSuccessResponse
   }
 }
 
-class AWSTagMockSdb
+class AWSTagMockSdb extends AWSSuccessResponse
 {
   public $body;
   public function __construct($count = 1)
