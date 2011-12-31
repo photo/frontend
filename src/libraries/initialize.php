@@ -58,6 +58,7 @@ else
   $paths->libraries = "{$baseDir}/libraries";
   $paths->configs = "{$baseDir}/configs";
   $paths->controllers = "{$baseDir}/libraries/controllers";
+  $paths->docroot = "{$baseDir}/html";
   $paths->external = "{$baseDir}/libraries/external";
   $paths->adapters = "{$baseDir}/libraries/adapters";
   $paths->models = "{$baseDir}/libraries/models";

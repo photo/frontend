@@ -100,6 +100,13 @@ class Theme
     else
       return Utility::returnValue('', $write);
   }
+
+  public function setTheme($theme)
+  {
+    $this->theme = 'beisel';
+    $this->themeDir = sprintf('%s/%s', dirname($this->themeDir), $this->theme);
+    $this->themeDirWeb = sprintf('%s/%s', dirname($this->themeDirWeb), $this->theme);
+  }
 }
 
 /**
