@@ -138,7 +138,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   {
     $diagnostics = array();
     $domains = array('', 'Action', 'Credential', 'Group', 'User', 'Tag', 'Webhook');
-    $queue = new CFBatchRequest();
+    $queue = $this->getBatchRequest();
     foreach($domains as $domain)
       $this->db->batch($queue)->domain_metadata("{$this->domainPhoto}{$domain}");
     $responses = $this->db->batch($queue)->send();
@@ -323,7 +323,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     if(!$photo)
       return false;
 
-    $queue = new CFBatchRequest();
+    $queue = $this->getBatchRequest();
     $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$buildQuery['where']} AND dateTaken>'{$photo['dateTaken']}' ORDER BY dateTaken ASC LIMIT 1");
     $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$buildQuery['where']} AND dateTaken<'{$photo['dateTaken']}' ORDER BY dateTaken DESC LIMIT 1");
     $responses = $this->db->batch($queue)->send();
@@ -349,7 +349,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function getPhotoWithActions($id)
   {
-    $queue = new CFBatchRequest();
+    $queue = $this->getBatchRequest();
     $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
     $this->db->batch($queue)->select("SELECT * FROM `{$this->domainAction}` WHERE targetType='photo' AND targetId='{$id}'", array('ConsistentRead' => 'true'));
     $responses = $this->db->batch($queue)->send();
@@ -379,7 +379,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getPhotos($filters = array(), $limit, $offset = null)
   {
     $buildQuery = self::buildQuery($filters, $limit, $offset);
-    $queue = new CFBatchRequest();
+    $queue = $this->getBatchRequest();
     $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$buildQuery['where']} {$buildQuery['sortBy']} LIMIT {$buildQuery['limit']}", $buildQuery['params']);
     if(isset($buildQuery['params']['NextToken']))
       unset($buildQuery['params']['NextToken']);
@@ -638,7 +638,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function postTags($params)
   {
     // TODO use batch_put_attributes instead of a queue
-    $queue = new CFBatchRequest();
+    $queue = $this->getBatchRequest();
     foreach($params as $tagObj)
     {
       if(!isset($tagObj['id']) || empty($tagObj['id']))
@@ -909,6 +909,16 @@ class DatabaseSimpleDb implements DatabaseInterface
         }
       }
     }
+  }
+
+  /**
+    * Gets a CFBatchRequest object for the AWS library
+    *
+    * @return object
+   */
+  public function getBatchRequest()
+  {
+    return new CFBatchRequest();
   }
 
   /**

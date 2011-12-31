@@ -261,7 +261,7 @@ class AWSTagMockSdb extends AWSSuccessResponse
   }
 }
 
-class AWSUserMockSdb
+class AWSUserMockSdb extends AWSSuccessResponse
 {
   public $body;
   public function __construct()
@@ -272,7 +272,8 @@ class AWSUserMockSdb
     $this->body->SelectResult->Item->Name = 'foo';
     $this->body->SelectResult->Item->Attribute = array(
       $this->attr('lastPhotoId', 1),
-      $this->attr('lastActionId', 2)
+      $this->attr('lastActionId', 2),
+      $this->attr('version', '1.0.0')
     );
   }
 

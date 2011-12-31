@@ -6,6 +6,11 @@ require_once '../libraries/adapters/FileSystemS3.php';
 
 class FileSystemS3Override extends FileSystemS3
 {
+  public function __construct($config = null, $params = null)
+  {
+    parent::__construct($config, $params);
+  }
+
   public function getBatchRequest()
   {
     return null;

@@ -4,6 +4,20 @@ require_once './helpers/aws.php';
 require_once '../libraries/adapters/Database.php';
 require_once '../libraries/adapters/DatabaseSimpleDb.php';
 
+
+class DatabaseSimpleDbOverride extends DatabaseSimpleDb
+{
+  public function __construct($config = null, $params = null)
+  {
+    parent::__construct($config, $params);
+  }
+
+  public function getBatchRequest()
+  {
+    return null;
+  }
+}
+
 class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()
@@ -16,7 +30,7 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
     );
     $config = arrayToObject($config);
     $params = array('db' => true);
-    $this->db = new DatabaseSimpleDb($config, $params);
+    $this->db = new DatabaseSimpleDbOverride($config, $params);
   }
 
   public function testDeleteActionSuccess()
@@ -183,65 +197,59 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
     $this->assertEquals($res[1]['id'], 'foo1', 'The SimpleDb adapter did not return "foo1" as the second tag for getTags');
   }
 
-  /*public function testGetTagsFailure()
+  public function testGetTagsFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('select'));
+    $db->expects($this->any())
       ->method('select')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->getTags();
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getTags();
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for getTags');
   }
 
   public function testGetUserSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('select'));
+    $db->expects($this->any())
       ->method('select')
       ->will($this->returnValue(new AWSUserMockSdb));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->getUser();
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getUser();
     $this->assertEquals($res['id'], 'foo', 'The SimpleDb adapter did not return "foo" as the id for getUser');
   }
 
   public function testGetUserFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('select'));
+    $db->expects($this->any())
       ->method('select')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->getUser();
-    $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for getUser');
-  }
+    $this->db->inject('db', $db);
 
-  public function testInitializeSuccessNoop()
-  {
-    $this->sdbStub->expects($this->any())
-      ->method('get_domain_list')
-      ->will($this->returnValue(array(1,2,3,4,5,6)));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->initialize();
-    $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for initialize when seeded with existing domains');
+    $res = $this->db->getUser();
+    $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for getUser');
   }
 
   public function testInitializeSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('select', 'get_domain_list'));
+    $db->expects($this->any())
+      ->method('select')
+      ->will($this->returnValue(new AWSUserMockSdb));
+    $db->expects($this->any())
       ->method('get_domain_list')
-      ->will($this->returnValue(array()));
-    $this->sdbStub->expects($this->any())
-      ->method('batch')
-      ->will($this->returnValue(new AWSBatchSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->initialize();
-    $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for initialize');
+      ->will($this->returnValue(array(1,2,3,4,5,6)));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->initialize();
+    $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for initialize when seeded with existing domains');
   }
 
-  public function testInitializeFailure()
+  // TODO complete this test
+  /*public function testInitializeFailure()
   {
     $this->sdbStub->expects($this->any())
       ->method('get_domain_list')
@@ -253,294 +261,293 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
     $db->inject('db', $this->sdbStub);
     $res = $db->initialize();
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for initialize');
-  }
+  }*/
 
   public function testPostCredentialSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postCredential('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postCredential('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for postCredential');
   }
 
   public function testPostCredentialFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postCredential('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postCredential('foo', array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for postCredential');
   }
 
   public function testPostGroupSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postGroup('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postGroup('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for postGroup');
   }
 
   public function testPostGroupFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postGroup('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postGroup('foo', array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for postGroup');
   }
 
   public function testPostPhotoSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postPhoto('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postPhoto('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for postPhoto');
   }
 
   public function testPostPhotoFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postPhoto('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postPhoto('foo', array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for postPhoto');
   }
 
   public function testPostTagSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postTag('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postTag('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for postTag');
   }
 
   public function testPostTagFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postTag('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postTag('foo', array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for postTag');
   }
 
   public function testPostTagsSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('batch'));
+    $db->expects($this->any())
       ->method('batch')
       ->will($this->returnValue(new AWSBatchSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postTags(array(array('id' => 'foo')));
+    $this->db->inject('db', $db);
+    
+    $res = $this->db->postTags(array(array('id' => 'foo')));
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for postTags');
   }
 
   public function testPostTagsFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('batch'));
+    $db->expects($this->any())
       ->method('batch')
       ->will($this->returnValue(new AWSBatchFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postTags(array(array('id' => 'foo')));
-    $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for postTags');
-  }
+    $this->db->inject('db', $db);
 
-  public function testPostTagsCounterSuccess()
-  {
-    $this->sdbStub->expects($this->any())
-      ->method('select')
-      ->will($this->returnValue(new AWSTagMockSdb(2)));
-    $this->sdbStub->expects($this->any())
-      ->method('batch')
-      ->will($this->returnValue(new AWSBatchSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postTagsCounter(array('foo0' => 1, 'foo1' => 2));
-    $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for postTags');
-  }
-
-  public function testPostTagsCounterFailure()
-  {
-    $this->sdbStub->expects($this->any())
-      ->method('batch')
-      ->will($this->returnValue(new AWSBatchFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postTags(array('tag' => array('id' => 'foo')));
+    $res = $this->db->postTags(array(array('id' => 'foo')));
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for postTags');
   }
 
   public function testPostUserSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postUser('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postUser('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for postUser');
   }
 
   public function testPostUserFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->postUser('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postUser('foo', array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for postUser');
   }
 
   public function testPutActionSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putAction('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putAction('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for putAction');
   }
 
   public function testPutActionFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putAction('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putAction('foo', array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for putAction');
   }
 
   public function testPutCredentialSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putCredential('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putCredential('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for putCredential');
   }
 
   public function testPutCredentialFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putCredential('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putCredential('foo', array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for putCredential');
   }
 
   public function testPutGroupSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putGroup('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putGroup('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for putGroup');
   }
 
   public function testPutGroupFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putGroup('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putGroup('foo', array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for putGroup');
   }
 
   public function testPutPhotoSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putPhoto('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putPhoto('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for putPhoto');
   }
 
   public function testPutPhotoFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putPhoto('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putPhoto('foo', array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for putPhoto');
   }
 
   public function testPutTagSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putTag('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putTag('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for putTag');
   }
 
   public function testPutTagFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putTag('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putTag('foo', array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for putTag');
   }
 
   public function testPutUserSuccess()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSSuccessResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putUser('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putUser('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for putUser');
   }
 
   public function testPutUserFailure()
   {
-    $this->sdbStub->expects($this->any())
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
       ->method('put_attributes')
       ->will($this->returnValue(new AWSFailureResponse));
-    $db = getDb();
-    $db->inject('db', $this->sdbStub);
-    $res = $db->putUser('foo', array());
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putUser('foo', array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for putUser');
-  }*/
+  }
 }
