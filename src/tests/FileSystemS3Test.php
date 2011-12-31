@@ -21,18 +21,12 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       'aws' => array('s3BucketName' => 'foo', 's3Host' => 'bar')
     );
     $config = arrayToObject($config);
-    $params = array('fs' => true, 'db' => true);
+    $params = array('fs' => true);
     $this->fs = new FileSystemS3Override($config, $params);
   }
 
   public function testDeletePhotoSuccess()
   {
-    $db = $this->getMock('AmazonSDB', array('getPhoto'));
-    $db->expects($this->any())
-      ->method('getPhoto')
-      ->will($this->returnValue(array(array('id' => array()))));
-    $this->fs->inject('db', $db);
-
     $fs = $this->getMock('AmazonS3', array('batch'));
     $fs->expects($this->any())
       ->method('batch')
@@ -45,12 +39,6 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
 
   public function testDeletePhotoFailure()
   {
-    $db = $this->getMock('AmazonSDB', array('getPhoto'));
-    $db->expects($this->any())
-      ->method('getPhoto')
-      ->will($this->returnValue(new AWSPhotoMockSdb));
-    $this->fs->inject('db', $db);
-
     $fs = $this->getMock('AmazonS3', array('batch'));
     $fs->expects($this->any())
       ->method('batch')
