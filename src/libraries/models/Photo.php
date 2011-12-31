@@ -56,8 +56,9 @@ class Photo
     // TODO, do not delete record from db - mark as deleted
     $fs = getFs();
     $db = getDb();
-    $fileStatus = $fs->deletePhoto($id);
-    $dataStatus = $db->deletePhoto($id);
+    $photo = $db->getPhoto($id);
+    $fileStatus = $fs->deletePhoto($photo);
+    $dataStatus = $db->deletePhoto($photo);
     return $fileStatus && $dataStatus;
   }
 

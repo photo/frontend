@@ -75,9 +75,9 @@ class DatabaseMySql implements DatabaseInterface
     * @param string $id ID of the photo to delete
     * @return boolean
     */
-  public function deletePhoto($id)
+  public function deletePhoto($photo)
   {
-    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $res = getDatabase()->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
     // TODO delete all versions
     return ($res !== false);
   }

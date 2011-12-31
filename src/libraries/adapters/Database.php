@@ -15,7 +15,7 @@ interface DatabaseInterface
   public function deleteAction($id);
   public function deleteCredential($id);
   public function deleteGroup($id);
-  public function deletePhoto($id);
+  public function deletePhoto($photo);
   public function deleteTag($id);
   public function deleteWebhook($id);
   // get methods read

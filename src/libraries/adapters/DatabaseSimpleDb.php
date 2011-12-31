@@ -11,7 +11,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $db, $domainAction, $domainCredential, $domainPhoto, 
+  private $config, $db, $domainAction, $domainCredential, $domainPhoto, 
     $domainTag, $domainUser, $domainWebhook, $errors = array(), $owner;
 
   /**
@@ -19,20 +19,25 @@ class DatabaseSimpleDb implements DatabaseInterface
     *
     * @return void
     */
-  public function __construct()
+  public function __construct($config = null, $params = null)
   {
-    $this->db = new AmazonSDB(Utility::decrypt(getConfig()->get('credentials')->awsKey), Utility::decrypt(getConfig()->get('credentials')->awsSecret));
-    $this->domainPhoto = getConfig()->get('aws')->simpleDbDomain;
-    $this->domainAction = getConfig()->get('aws')->simpleDbDomain.'Action';
-    $this->domainCredential = getConfig()->get('aws')->simpleDbDomain.'Credential';
-    $this->domainGroup = getConfig()->get('aws')->simpleDbDomain.'Group';
-    $this->domainUser = getConfig()->get('aws')->simpleDbDomain.'User';
-    $this->domainTag = getConfig()->get('aws')->simpleDbDomain.'Tag';
-    $this->domainWebhook = getConfig()->get('aws')->simpleDbDomain.'Webhook';
+    $this->config = !is_null($config) ? $config : getConfig()->get();
 
-    $user = getConfig()->get('user');
-    if($user !== null)
-      $this->owner = $user->email;
+    if(!is_null($params) && isset($params['db']))
+      $this->db = $params['db'];
+    else
+      $this->db = new AmazonSDB(Utility::decrypt($this->config->credentials->awsKey), Utility::decrypt($this->config->credentials->awsSecret));
+
+    $this->domainPhoto = $this->config->aws->simpleDbDomain;
+    $this->domainAction = $this->config->aws->simpleDbDomain.'Action';
+    $this->domainCredential = $this->config->aws->simpleDbDomain.'Credential';
+    $this->domainGroup = $this->config->aws->simpleDbDomain.'Group';
+    $this->domainUser = $this->config->aws->simpleDbDomain.'User';
+    $this->domainTag = $this->config->aws->simpleDbDomain.'Tag';
+    $this->domainWebhook = $this->config->aws->simpleDbDomain.'Webhook';
+
+    if(isset($this->config->user))
+      $this->owner = $this->config->user->email;
   }
 
   /**
@@ -88,9 +93,9 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @param string $id ID of the photo to delete
     * @return boolean
     */
-  public function deletePhoto($id)
+  public function deletePhoto($photo)
   {
-    $res = $this->db->delete_attributes($this->domainPhoto, $id);
+    $res = $this->db->delete_attributes($this->domainPhoto, $photo['id']);
     $this->logErrors($res);
     return $res->isOK();
   }
@@ -169,7 +174,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     if($database != 'simpledb')
       return;
 
-    include $file;
+    $status = include $file;
     return $status;
   }
 

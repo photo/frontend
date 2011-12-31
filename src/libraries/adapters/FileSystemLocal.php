@@ -23,9 +23,8 @@ class FileSystemLocal implements FileSystemInterface
     $this->host = $config->localfs->fsHost;
   }
 
-  public function deletePhoto($id)
+  public function deletePhoto($photo)
   {
-    $photo = $this->db->getPhoto($id);
     foreach($photo as $key => $value)
     {
       if(strncmp($key, 'path', 4) === 0) {
@@ -73,7 +72,8 @@ class FileSystemLocal implements FileSystemInterface
     if($filesystem != 'local')
       return;
 
-    echo file_get_contents($file);
+    $status = include $file;
+    return $status;
   }
 
   /**

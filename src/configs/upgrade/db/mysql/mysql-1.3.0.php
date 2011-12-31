@@ -52,3 +52,5 @@ function mysql_1_3_0($sql, $params = array())
     getLogger()->crit($e->getMessage()); 
   }
 }
+
+return true;

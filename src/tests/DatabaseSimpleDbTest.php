@@ -7,7 +7,13 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()
   {
-    $this->sdbStub = $this->getMock('AmazonSDB', array(), array('foo', 'bar'));
+    $config = array(
+      'credentials' => array('awsKey' => 'foo', 'awsSecret' => 'bar'),
+      'aws' => array('s3BucketName' => 'foo', 's3Host' => 'bar')
+    );
+    $config = arrayToObject($config);
+    $params = array('fs' => true, 'db' => true);
+    $this->fs = new FileSystemS3Override($config, $params);
   }
 
   public function testDeleteActionSuccess()
@@ -42,7 +48,7 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
     $db = getDb();
     $db->inject('db', $this->sdbStub);
 
-    $res = $db->deletePhoto('foo');
+    $res = $db->deletePhoto(array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for deletePhoto');
   }
 
@@ -54,7 +60,7 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
     $db = getDb();
     $db->inject('db', $this->sdbStub);
 
-    $res = $db->deletePhoto('foo');
+    $res = $db->deletePhoto(array());
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for deletePhoto');
   }
 

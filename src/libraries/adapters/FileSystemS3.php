@@ -12,7 +12,7 @@ class FileSystemS3 implements FileSystemInterface
     * @access private
     * @var array
     */
-  private $bucket, $fs, $db;
+  private $bucket, $config, $fs;
 
   /**
     * Constructor
@@ -21,17 +21,12 @@ class FileSystemS3 implements FileSystemInterface
     */
   public function __construct($config = null, $params = null)
   {
-    $this->config = !is_null($config) ? $config : getConfig();
+    $this->config = !is_null($config) ? $config : getConfig()->get();
 
     if(!is_null($params) && isset($params['fs']))
       $this->fs = $params['fs'];
     else
       $this->fs = new AmazonS3(Utility::decrypt($this->config->credentials->awsKey), Utility::decrypt($this->config->credentials->awsSecret));
-
-    if(!is_null($params) && isset($params['db']))
-      $this->db = $params['db'];
-    else
-      $this->db = getDb();
 
     $this->bucket = $this->config->aws->s3BucketName;
   }
@@ -43,9 +38,8 @@ class FileSystemS3 implements FileSystemInterface
     * @param string $id ID of the photo to delete
     * @return boolean
     */
-  public function deletePhoto($id)
+  public function deletePhoto($photo)
   {
-    $photo = $this->db->getPhoto($id);
     $queue = $this->getBatchRequest();
     foreach($photo as $key => $value)
     {
@@ -88,7 +82,8 @@ class FileSystemS3 implements FileSystemInterface
     if($filesystem != 's3')
       return;
 
-    echo file_get_contents($file);
+    $status = include $file;
+    return $status;
   }
 
   /**

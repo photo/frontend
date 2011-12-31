@@ -16,8 +16,6 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
 {
   public function setUp()
   {
-    $this->s3Stub = $this->getMock('AmazonS3');
-    $this->db = $this->getMock('AmazonSDB');
     $config = array(
       'credentials' => array('awsKey' => 'foo', 'awsSecret' => 'bar'),
       'aws' => array('s3BucketName' => 'foo', 's3Host' => 'bar')
@@ -41,7 +39,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSBatchSuccessResponse));
     $this->fs->inject('fs', $fs);
 
-    $res = $this->fs->deletePhoto('foo');
+    $res = $this->fs->deletePhoto(array());
     $this->assertTrue($res, 'The S3 FileSystem adapter did not return TRUE for deletePhoto');
   }
 
@@ -60,7 +58,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
     
     $this->fs->inject('fs', $fs);
 
-    $res = $this->fs->deletePhoto('foo');
+    $res = $this->fs->deletePhoto(array());
     $this->assertFalse($res, 'The S3 FileSystem adapter did not return FALSE for deletePhoto');
   }
 

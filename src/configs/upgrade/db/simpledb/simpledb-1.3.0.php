@@ -39,3 +39,4 @@ $user = $this->getUser(1);
 $user['version'] = '1.3.0';
 $status = $this->postUser($user);
 $user = $this->getUser($this->owner);
+return $status;
