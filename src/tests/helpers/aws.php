@@ -1,4 +1,15 @@
 <?php
+class AmazonS3
+{
+  const ACL_PUBLIC = 1;
+  const REGION_US_E1 = 1;
+}
+
+class CFPolicy
+{
+
+}
+
 class AWSSuccessResponse
 {
   public function isOK()

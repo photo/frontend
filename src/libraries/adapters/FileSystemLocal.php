@@ -10,16 +10,22 @@ class FileSystemLocal implements FileSystemInterface
   private $root;
   private $urlBase;
 
-  public function __construct()
+  public function __construct($config = null, $params = null)
   {
-    $config = getConfig()->get('localfs');
-    $this->root = $config->fsRoot;
-    $this->host = $config->fsHost;
+    if(is_null($config))
+      $config = getConfig()->get();
+    if(!is_null($params) && isset($params['db']))
+      $this->db = $params['db'];
+    else
+      $this->db = getDb();
+
+    $this->root = $config->localfs->fsRoot;
+    $this->host = $config->localfs->fsHost;
   }
 
   public function deletePhoto($id)
   {
-    $photo = getDb()->getPhoto($id);
+    $photo = $this->db->getPhoto($id);
     foreach($photo as $key => $value)
     {
       if(strncmp($key, 'path', 4) === 0) {

@@ -12,17 +12,28 @@ class FileSystemS3 implements FileSystemInterface
     * @access private
     * @var array
     */
-  private $bucket, $fs;
+  private $bucket, $fs, $db;
 
   /**
     * Constructor
     *
     * @return void
     */
-  public function __construct()
+  public function __construct($config = null, $params = null)
   {
-    $this->fs = new AmazonS3(Utility::decrypt(getConfig()->get('credentials')->awsKey), Utility::decrypt(getConfig()->get('credentials')->awsSecret));
-    $this->bucket = getConfig()->get('aws')->s3BucketName;
+    $this->config = !is_null($config) ? $config : getConfig();
+
+    if(!is_null($params) && isset($params['fs']))
+      $this->fs = $params['fs'];
+    else
+      $this->fs = new AmazonS3(Utility::decrypt($this->config->credentials->awsKey), Utility::decrypt($this->config->credentials->awsSecret));
+
+    if(!is_null($params) && isset($params['db']))
+      $this->db = $params['db'];
+    else
+      $this->db = getDb();
+
+    $this->bucket = $this->config->aws->s3BucketName;
   }
 
   /**
@@ -34,12 +45,12 @@ class FileSystemS3 implements FileSystemInterface
     */
   public function deletePhoto($id)
   {
-    $photo = getDb()->getPhoto($id);
-    $queue = new CFBatchRequest();
+    $photo = $this->db->getPhoto($id);
+    $queue = $this->getBatchRequest();
     foreach($photo as $key => $value)
     {
       if(strncmp($key, 'path', 4) === 0)
-        $this->fs->batch($queue)->delete_object($this->bucket, self::normalizePath($value));
+        $this->fs->batch($queue)->delete_object($this->bucket, $this->normalizePath($value));
     }
     $responses = $this->fs->batch($queue)->send();
     return $responses->areOK();
@@ -89,7 +100,7 @@ class FileSystemS3 implements FileSystemInterface
     */
   public function getPhoto($filename)
   {
-    $filename = self::normalizePath($filename);
+    $filename = $this->normalizePath($filename);
     $tmpname = '/tmp/'.uniqid('opme', true);
     $fp = fopen($tmpname, 'w+');
     $res = $this->fs->get_object($this->bucket, $filename, array('fileDownload' => $fp));
@@ -120,11 +131,11 @@ class FileSystemS3 implements FileSystemInterface
     */
   public function putPhoto($localFile, $remoteFile, $acl = AmazonS3::ACL_PUBLIC)
   {
-    $remoteFile = self::normalizePath($remoteFile);
+    $remoteFile = $this->normalizePath($remoteFile);
     $opts = array('fileUpload' => $localFile, 'acl' => $acl, 'contentType' => 'image/jpeg');
     $res = $this->fs->create_object($this->bucket, $remoteFile, $opts);
     if(!$res->isOK())
-      getLogger()->crit('Could not put photo on the file system: ' . var_export($res));
+      getLogger()->crit('Could not put photo on the file system: ' . var_export($res, 1));
     return $res->isOK();
   }
 
@@ -139,12 +150,12 @@ class FileSystemS3 implements FileSystemInterface
     */
   public function putPhotos($files, $acl = AmazonS3::ACL_PUBLIC)
   {
-    $queue = new CFBatchRequest();
+    $queue = $this->getBatchRequest();
     foreach($files as $file)
     {
       list($localFile, $remoteFile) = each($file);
       $opts = array('fileUpload' => $localFile, 'acl' => $acl, 'contentType' => 'image/jpeg');
-      $remoteFile = self::normalizePath($remoteFile);
+      $remoteFile = $this->normalizePath($remoteFile);
       $this->fs->batch($queue)->create_object($this->bucket, $remoteFile, $opts);
     }
     $responses = $this->fs->batch($queue)->send();
@@ -157,12 +168,22 @@ class FileSystemS3 implements FileSystemInterface
   }
 
   /**
+    * Gets a CFBatchRequest object for the AWS library
+    *
+    * @return object
+   */
+  public function getBatchRequest()
+  {
+    return new CFBatchRequest();
+  }
+
+  /**
     * Get the hostname for the remote filesystem to be used in constructing public URLs.
     * @return string
     */
   public function getHost()
   {
-    return getConfig()->get('aws')->s3Host;
+    return $this->config->aws->s3Host;
   }
 
   /**
