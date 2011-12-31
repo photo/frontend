@@ -1,3 +1,19 @@
 <?php
 require_once 'PHPUnit/Framework.php';
-putenv('HTTP_HOST=unittest');
+
+function arrayToObject($array)
+{
+  return json_decode(json_encode($array));
+}
+
+class ___L
+{
+  public function info() {}
+  public function warn() {}
+  public function crit() {}
+}
+
+function getLogger()
+{
+  return new ___L;
+}
