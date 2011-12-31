@@ -304,3 +304,5 @@ function mysql_1_2_1($sql, $params = array())
     getLogger()->crit($e->getMessage()); 
   }
 }
+
+return true;

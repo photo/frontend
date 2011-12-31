@@ -20,3 +20,4 @@ $responses = $this->db->batch($queue)->send();
 getLogger()->info(sprintf('Attempting to create %d domains.', count($responses)));
 $this->logErrors($responses);
 $status = $responses->areOK();
+return $status;

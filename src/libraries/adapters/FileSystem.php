@@ -7,7 +7,7 @@
  */
 interface FileSystemInterface
 {
-  public function deletePhoto($id);
+  public function deletePhoto($photo);
   public function getPhoto($filename);
   public function putPhoto($localFile, $remoteFile);
   public function putPhotos($files);

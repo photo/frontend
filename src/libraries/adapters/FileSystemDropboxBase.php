@@ -22,9 +22,8 @@ class FileSystemDropboxBase
     $this->parent = $parent;
   }
 
-  public function deletePhoto($id)
+  public function deletePhoto($photo)
   {
-    $photo = getDb()->getPhoto($id);
     $directory = urlencode(date($this->directoryMask, $photo['dateTaken']));
     try
     {
