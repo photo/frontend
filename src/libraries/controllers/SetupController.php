@@ -17,6 +17,8 @@ class SetupController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->theme = getTheme(false);
+    $this->theme->setTheme('beisel');
   }
   
   /**
