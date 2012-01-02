@@ -1,8 +1,9 @@
 <?php
-require_once './helpers/init.php';
-require_once './helpers/aws.php';
-require_once '../libraries/adapters/FileSystem.php';
-require_once '../libraries/adapters/FileSystemS3.php';
+$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
+require_once sprintf('%s/tests/helpers/init.php', $baseDir);
+require_once sprintf('%s/tests/helpers/aws.php', $baseDir);
+require_once sprintf('%s/libraries/adapters/FileSystem.php', $baseDir);
+require_once sprintf('%s/libraries/adapters/FileSystemS3.php', $baseDir);
 
 class FileSystemS3Override extends FileSystemS3
 {

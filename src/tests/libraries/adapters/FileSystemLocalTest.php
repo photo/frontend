@@ -1,8 +1,12 @@
 <?php
-require_once './helpers/init.php';
 require_once 'vfsStream/vfsStream.php';
-require_once '../libraries/adapters/FileSystem.php';
-require_once '../libraries/adapters/FileSystemLocal.php';
+if(!class_exists('vfsStreamWrapper'))
+  return;
+
+$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
+require_once sprintf('%s/tests/helpers/init.php', $baseDir);
+require_once sprintf('%s/libraries/adapters/FileSystem.php', $baseDir);
+require_once sprintf('%s/libraries/adapters/FileSystemLocal.php', $baseDir);
 
 /*class FileSystemS3Override extends FileSystemS3
 {
