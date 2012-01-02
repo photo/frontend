@@ -384,6 +384,7 @@ class SetupController extends BaseController
   public function setup3Post()
   {
     getSession()->set('isEditMode', isset($_GET['edit']));
+    $isEditMode = getSession()->get('isEditMode');
     extract($this->getDefaultConfigParams());
     $step = 3;
     $secret = $this->getSecret();
@@ -554,7 +555,7 @@ class SetupController extends BaseController
       $dbObj = getDb();
 
       $serverUser = exec("whoami");
-      if(!$fsObj->initialize())
+      if(!$fsObj->initialize($isEditMode))
       {
         if($usesAws)
           $fsErrors[] = 'We were unable to initialize your S3 bucket.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/s3/">signed up for AWS S3</a>.</li><li>Double check your AWS credentials.</li><li>S3 bucket names are globally unique, make sure yours isn\'t already in use by someone else.</li><li>S3 bucket names can\'t have certain special characters. Try using just alpha-numeric characters and periods.</li></ul>';
@@ -563,7 +564,7 @@ class SetupController extends BaseController
         else
           $fsErrors[] = 'An unknown error occurred while setting up your file system. Check your error logs to see if there\'s more information about the error.';
       }
-      if(!$dbObj->initialize())
+      if(!$dbObj->initialize($isEditMode))
       {
         if($usesAws)
           $dbErrors[] = 'We were unable to initialize your SimpleDb domains.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/simpledb/">signed up for AWS SimpleDb</a>.</li><li>Double check your AWS credentials.</li><li>SimpleDb domains cannot contain special characters such as periods.</li><li>Sometimes the SimpleDb create domain API is unstable. Try again later or check the error log if you have access to it.</li></ul>';
