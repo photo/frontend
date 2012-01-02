@@ -131,7 +131,7 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSFailureResponse));
     $this->db->inject('db', $db);
 
-    $res = $this->db->getCredential('foo');
+    $res = $this->db->getGroups('foo');
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for getGroups');
   }
 
@@ -244,7 +244,7 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(array(1,2,3,4,5,6)));
     $this->db->inject('db', $db);
 
-    $res = $this->db->initialize();
+    $res = $this->db->initialize(false);
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for initialize when seeded with existing domains');
   }
 
@@ -259,7 +259,7 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSBatchFailureResponse));
     $db = getDb();
     $db->inject('db', $this->sdbStub);
-    $res = $db->initialize();
+    $res = $db->initialize(false);
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for initialize');
   }*/
 
@@ -319,6 +319,18 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSSuccessResponse));
     $this->db->inject('db', $db);
 
+    $res = $this->db->postPhoto('foo', array('foo'=>'bar'));
+    $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for postPhoto');
+  }
+
+  public function testPostPhotoSuccessNoParams()
+  {
+    $db = $this->getMock('AmazonSDB', array('put_attributes'));
+    $db->expects($this->any())
+      ->method('put_attributes')
+      ->will($this->returnValue(new AWSSuccessResponse));
+    $this->db->inject('db', $db);
+
     $res = $this->db->postPhoto('foo', array());
     $this->assertTrue($res, 'The SimpleDb adapter did not return TRUE for postPhoto');
   }
@@ -331,7 +343,7 @@ class DatabaseSimpleDbTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSFailureResponse));
     $this->db->inject('db', $db);
 
-    $res = $this->db->postPhoto('foo', array());
+    $res = $this->db->postPhoto('foo', array('foo'=>'bar'));
     $this->assertFalse($res, 'The SimpleDb adapter did not return FALSE for postPhoto');
   }
 
