@@ -1,8 +1,10 @@
 <?php
-require_once 'vfsStream/vfsStream.php';
-if(!class_exists('vfsStreamWrapper'))
-  return;
-
+$paths = (array)explode(PATH_SEPARATOR, ini_get('include_path'));
+foreach($paths as $path)
+{
+  if(file_exists("{$path}/vfsStream/vfsStream.php"))
+    require_once 'vfsStream/vfsStream.php';
+}
 $baseDir = dirname(dirname(dirname(dirname(__FILE__))));
 require_once sprintf('%s/tests/helpers/init.php', $baseDir);
 require_once sprintf('%s/libraries/adapters/FileSystem.php', $baseDir);
@@ -23,11 +25,20 @@ require_once sprintf('%s/libraries/adapters/FileSystemLocal.php', $baseDir);
 
 class FileSystemLocalTest extends PHPUnit_Framework_TestCase
 {
+  private $root = '';
   public function setUp()
   {
-    vfsStreamWrapper::register();
-    vfsStreamWrapper::setRoot(new vfsStreamDirectory('testDir'));
-    $this->root = vfsStream::url('testDir');
+    $this->file = 'file.jpg';
+    $this->photo = array('id' => 'foo', 'path10x10' => "/{$this->file}");
+
+    if(class_exists('vfsStream'))
+    {
+      vfsStreamWrapper::register();
+      vfsStreamWrapper::setRoot(new vfsStreamDirectory('testDir'));
+      $this->root = vfsStream::url('testDir');
+      $this->assertFalse(vfsStreamWrapper::getRoot()->hasChild($this->file), 'Init validation that vfs file does not exist failed');
+    }
+    $this->vfsPath = sprintf('%s%s', $this->root, $this->photo['path10x10']);
     $this->host = 'http://test';
     $config = array(
       'localfs' => array('fsRoot' => $this->root, 'fsHost' => $this->host),
@@ -36,21 +47,28 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
     $config = arrayToObject($config);
     $params = array('db' => true);
     $this->fs = new FileSystemLocal($config, $params);
-    $this->file = 'file.jpg';
-    $this->photo = array('id' => 'foo', 'path10x10' => "/{$this->file}");
-    $this->vfsPath = sprintf('%s%s', $this->root, $this->photo['path10x10']);
 
-    $this->assertFalse(vfsStreamWrapper::getRoot()->hasChild($this->file), 'Init validation that vfs file does not exist failed');
   }
 
-  public function testValidateVfsFunctionsSuccess()
+  public function testValidateVfsFunctionSuccess()
   {
+    if(!class_exists('vfsStream'))
+    {
+      $this->fail('The vfsStream package was not found. Skipping tests in FileSysemLocalTest. Install using `sudo pear channel-discover pear.php-tools.net && sudo pear install pat/vfsStream-beta`');
+      return false;
+    }
+
     file_put_contents($this->vfsPath, 'foo');
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild($this->file), 'Post init validation that vfs file exists failed');
     unlink($this->vfsPath);
     $this->assertFalse(vfsStreamWrapper::getRoot()->hasChild($this->file), 'Validating that unlink works on vfs failed');
+    return true;
   }
-  public function testDeletePhotoSuccess()
+
+  /**
+   * @depends testValidateVfsFunctionSuccess
+   */
+  public function testDeletePhotoSuccess($mockExists)
   {
     file_put_contents($this->vfsPath, 'foo');
     // now check if the virtual fs has the file
@@ -60,17 +78,26 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
     $this->assertTrue($res, 'Delete photo did not return TRUE');
   }
 
+  /**
+   * @depends testValidateVfsFunctionSuccess
+   */
   public function testDeletePhotoDoesNotExistSuccess()
   {
     $res = $this->fs->deletePhoto($this->photo);
     $this->assertTrue($res, 'Delete photo did not return TRUE even if photo does not exist');
   }
 
+  /**
+   * @depends testValidateVfsFunctionSuccess
+   */
   public function testDeletePhotoFailure()
   {
     // Not quite sure how to write this test
   }
 
+  /**
+   * @depends testValidateVfsFunctionSuccess
+   */
   public function testGetPhotoSuccess()
   {
     file_put_contents($this->vfsPath, 'foo');
@@ -79,12 +106,18 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
     @unlink($file);
   }
 
+  /**
+   * @depends testValidateVfsFunctionSuccess
+   */
   public function testGetPhotoFailure()
   {
     $file = $this->fs->getPhoto($this->photo['path10x10']);
     $this->assertFalse($file, 'getPhoto when file does not exist did not return FALSE');
   }
 
+  /**
+   * @depends testValidateVfsFunctionSuccess
+   */
   public function testPutPhotoSuccess()
   {
     file_put_contents($this->vfsPath, 'foo');
@@ -96,6 +129,9 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild($copiedFileName), 'The copied file does not actually exist');
   }
 
+  /**
+   * @depends testValidateVfsFunctionSuccess
+   */
   public function testPutPhotoDoesNotExistFailure()
   {
     $copiedFileName = str_replace('.jpg', '-copy.jpg', basename($this->vfsPath));
@@ -104,6 +140,9 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
     $this->assertFalse($res, 'The putPhoto call did not return FALSE');
   }
 
+  /**
+   * @depends testValidateVfsFunctionSuccess
+   */
   public function testPutPhotosSuccess()
   {
     file_put_contents($this->vfsPath, 'foo');
@@ -131,6 +170,9 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
     $this->assertFileExists($copiedSecondFileFullPath, 'Putting multiple photos (2 or 2) failed');
   }
 
+  /**
+   * @depends testValidateVfsFunctionSuccess
+   */
   public function testPutPhotosFailure()
   {
     $copiedFileName = str_replace('.jpg', '-copy.jpg', basename($this->vfsPath));
@@ -144,6 +186,9 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
     $this->assertFileNotExists($copiedFileFullPath, 'The putPhotos which returned FALSE magically put a photo on disk');
   }
 
+  /**
+   * @depends testValidateVfsFunctionSuccess
+   */
   public function testGetHost()
   {
     $host = $this->fs->getHost();
