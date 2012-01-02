@@ -7,13 +7,17 @@
  */
 class FileSystemLocal implements FileSystemInterface
 {
+  private $config;
   private $root;
   private $urlBase;
 
   public function __construct($config = null, $params = null)
   {
     if(is_null($config))
-      $config = getConfig()->get();
+      $this->config = getConfig()->get();
+    else
+      $this->config = $config;
+
     if(!is_null($params) && isset($params['db']))
       $this->db = $params['db'];
     else
@@ -29,7 +33,7 @@ class FileSystemLocal implements FileSystemInterface
     {
       if(strncmp($key, 'path', 4) === 0) {
         $path = self::normalizePath($value);
-        if(!@unlink($path))
+        if(file_exists($path) && !@unlink($path))
           return false;
       }
     }
@@ -84,7 +88,7 @@ class FileSystemLocal implements FileSystemInterface
   {
     $filename = self::normalizePath($filename);
     if(file_exists($filename)) {
-      $tmpname = tempnam(getConfig()->get('paths')->temp, 'opme');
+      $tmpname = tempnam($this->config->paths->temp, 'opme');
       copy($filename, $tmpname);
       return $tmpname;
     }
@@ -93,6 +97,12 @@ class FileSystemLocal implements FileSystemInterface
 
   public function putPhoto($localFile, $remoteFile)
   {
+    if(!file_exists($localFile))
+    {
+      getLogger()->warn("The photo {$localFile} does not exist so putPhoto failed");
+      return false;
+    }
+
     $remoteFile = self::normalizePath($remoteFile);
     // create all the directories to the file
     $dirname = dirname($remoteFile);
