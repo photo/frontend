@@ -281,6 +281,7 @@ class DatabaseSimpleDb implements DatabaseInterface
       $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE members in ('{$email}') AND `name` IS NOT NULL ORDER BY `name`", array('ConsistentRead' => 'true'));
 
     $this->logErrors($res);
+
     if(isset($res->body->SelectResult->Item))
     {
       $groups = array();
@@ -288,10 +289,8 @@ class DatabaseSimpleDb implements DatabaseInterface
         $groups[] = self::normalizeGroup($group);
       return $groups;
     }
-    elseif(!isset($res->body->SelectResult))
-    {
-      return null;
-    }
+
+    return false;
   }
 
   /**
@@ -376,7 +375,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @param offset $offset Starting point of results to return
     * @return mixed Array on success, FALSE on failure
     */
-  public function getPhotos($filters = array(), $limit, $offset = null)
+  public function getPhotos($filters = array(), $limit = 20, $offset = null)
   {
     $buildQuery = self::buildQuery($filters, $limit, $offset);
     $queue = $this->getBatchRequest();
@@ -442,6 +441,10 @@ class DatabaseSimpleDb implements DatabaseInterface
 
     $res = $this->db->select($query, array('ConsistentRead' => 'false'));
     $this->logErrors($res);
+
+    if(!$res->isOK())
+      return false;
+
     $tags = array();
     if(isset($res->body->SelectResult))
     {
@@ -449,13 +452,9 @@ class DatabaseSimpleDb implements DatabaseInterface
       {
         foreach($res->body->SelectResult->Item as $val)
           $tags[] = self::normalizeTag($val);
-
-        return $tags;
       }
-
-      return null;
     }
-    return false;
+    return $tags;
   }
 
   /**
@@ -465,9 +464,6 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function getUser($owner = null)
   {
-    if($owner === null)
-      $owner = $this->owner;
-
     $res = $this->db->select("SELECT * FROM `{$this->domainUser}` WHERE itemName()='{$owner}'", array('ConsistentRead' => 'true'));
     $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))
@@ -533,13 +529,13 @@ class DatabaseSimpleDb implements DatabaseInterface
     *
     * @return boolean
     */
-  public function initialize()
+  public function initialize($isEditMode)
   {
-    if($this->version() !== '0.0.0')
+    if($this->version() !== '0.0.0' && $isEditMode === false)
       return true;
 
     // simpledb-base.php sets $status
-    $status = $this->executeScript(sprintf('%s/upgrade/db/simpledb/simpledb-base.php', getConfig()->get('paths')->configs), 'simpledb');
+    $status = $this->executeScript(sprintf('%s/upgrade/db/simpledb/simpledb-base.php', $this->config->paths->configs), 'simpledb');
     return $status;
   }
 
@@ -606,6 +602,11 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function postPhoto($id, $params)
   {
+    if(empty($id))
+      return false;
+    elseif(empty($params))
+      return true;
+
     $params = self::preparePhoto($id, $params);
     $res = $this->db->put_attributes($this->domainPhoto, $id, $params, true);
     $this->logErrors($res);
@@ -931,7 +932,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   {
     $action = array();
     $action['id'] = strval($raw->Name);
-    $action['appId'] = getConfig()->get('application')->appId;
+    $action['appId'] = $this->config->application->appId;
     foreach($raw->Attribute as $item)
     {
       $name = (string)$item->Name;
