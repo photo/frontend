@@ -186,7 +186,7 @@ class FileSystemS3 implements FileSystemInterface
     * This is called from the Setup controller.
     * @return boolean
     */
-  public function initialize()
+  public function initialize($isEditMode)
   {
     getLogger()->info('Initializing file system');
     if(!$this->fs->validate_bucketname_create($this->bucket) || !$this->fs->validate_bucketname_support($this->bucket))

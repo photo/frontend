@@ -63,7 +63,7 @@ class FileSystemDropboxBase
     return $diagnostics;
   }
 
-  public function initialize()
+  public function initialize($isEditMode)
   {
     $dropboxStatus = false;
     $folderDoesNotExist = false;
