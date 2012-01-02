@@ -26,7 +26,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       'aws' => array('s3BucketName' => 'foo', 's3Host' => 'bar')
     );
     $config = arrayToObject($config);
-    $params = array('fs' => true);
+    $params = array('db' => true);
     $this->fs = new FileSystemS3Override($config, $params);
   }
 
@@ -40,6 +40,11 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
 
     $res = $this->fs->deletePhoto(array());
     $this->assertTrue($res, 'The S3 FileSystem adapter did not return TRUE for deletePhoto');
+  }
+
+  public function testDeletePhotoDoesNotExistSuccess()
+  {
+    // implement this See Gh-419
   }
 
   public function testDeletePhotoFailure()
