@@ -116,6 +116,7 @@ class FileSystemS3 implements FileSystemInterface
     $this->$name = $value;
   }
 
+  // TODO Gh-420 the $acl should be moved into a config and not exist in the signature 
   /**
     * Writes/uploads a new photo to the remote file system.
     *
@@ -126,6 +127,12 @@ class FileSystemS3 implements FileSystemInterface
     */
   public function putPhoto($localFile, $remoteFile, $acl = AmazonS3::ACL_PUBLIC)
   {
+    if(!file_exists($localFile))
+    {
+      getLogger()->warn("The photo {$localFile} does not exist so putPhoto failed");
+      return false;
+    }
+
     $remoteFile = $this->normalizePath($remoteFile);
     $opts = array('fileUpload' => $localFile, 'acl' => $acl, 'contentType' => 'image/jpeg');
     $res = $this->fs->create_object($this->bucket, $remoteFile, $opts);

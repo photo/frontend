@@ -92,7 +92,9 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSSuccessResponse));
 
     $this->fs->inject('fs', $fs);
-    $res = $this->fs->putPhoto('foo', 'bar');
+    $tempfile = sys_get_temp_dir() . '/' . rand(0,1000);
+    file_put_contents($tempfile, 'foo');
+    $res = $this->fs->putPhoto($tempfile, 'bar');
     $this->assertTrue($res, 'The S3 FileSystem adapter did not return TRUE for putPhoto');
   }
 
@@ -102,6 +104,18 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
     $fs->expects($this->any())
       ->method('create_object')
       ->will($this->returnValue(new AWSFailureResponse));
+
+    $this->fs->inject('fs', $fs);
+    $res = $this->fs->putPhoto('foo', 'bar');
+    $this->assertFalse($res, 'The S3 FileSystem adapter did not return FALSE for putPhoto');
+  }
+
+  public function testPutPhotoDoesNotExistFailure()
+  {
+    $fs = $this->getMock('AmazonS3', array('create_object'));
+    $fs->expects($this->any())
+      ->method('create_object')
+      ->will($this->returnValue(new AWSSuccessResponse));
 
     $this->fs->inject('fs', $fs);
     $res = $this->fs->putPhoto('foo', 'bar');
