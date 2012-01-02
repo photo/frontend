@@ -325,9 +325,16 @@ class DatabaseMySql implements DatabaseInterface
     if(!$photo)
       return false;
 
+    $sortKey = 'dateTaken';
+    if(isset($filterOpts['sortBy'])) {
+        $sortOptions = (array)explode(',', $filterOpts['sortBy']);
+        if(!empty($sortOptions)) {
+            $sortKey = $sortOptions[0];
+        }
+    }
     // owner is in buildQuery
-    $photo_prev = $this->db->one("SELECT `{$this->mySqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND dateTaken> :dateTaken AND dateTaken IS NOT NULL {$buildQuery['groupBy']} ORDER BY dateTaken ASC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
-    $photo_next = $this->db->one("SELECT `{$this->mySqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND dateTaken< :dateTaken AND dateTaken IS NOT NULL {$buildQuery['groupBy']} ORDER BY dateTaken DESC LIMIT 1", array(':dateTaken' => $photo['dateTaken']));
+    $photo_prev = $this->db->one("SELECT `{$this->mySqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND {$sortKey}> :{$sortKey} AND {$sortKey} IS NOT NULL {$buildQuery['groupBy']} ORDER BY {$sortKey} ASC LIMIT 1", array(":{$sortKey}" => $photo[$sortKey]));
+    $photo_next = $this->db->one("SELECT `{$this->mySqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND {$sortKey}< :{$sortKey} AND {$sortKey} IS NOT NULL {$buildQuery['groupBy']} ORDER BY {$sortKey} DESC LIMIT 1", array(":{$sortKey}" => $photo[$sortKey]));
 
     $ret = array();
     if($photo_prev)
