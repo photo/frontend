@@ -1,8 +1,8 @@
 <?php
-require_once './helpers/init.php';
-require_once './helpers/aws.php';
-require_once '../libraries/adapters/Database.php';
-require_once '../libraries/adapters/DatabaseSimpleDb.php';
+require_once 'helpers/init.php';
+require_once 'helpers/mysql.php';
+require_once './libraries/adapters/Database.php';
+require_once './libraries/adapters/DatabaseSimpleDb.php';
 
 
 class DatabaseSimpleDbOverride extends DatabaseSimpleDb
