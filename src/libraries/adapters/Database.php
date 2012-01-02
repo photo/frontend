@@ -28,7 +28,7 @@ interface DatabaseInterface
   public function getGroups($email = null);
   public function getPhoto($id);
   public function getPhotoWithActions($id);
-  public function getPhotos($filter = array(), $limit, $offset = null);
+  public function getPhotos($filter = array(), $limit = null, $offset = null);
   public function getUser($owner = null);
   public function getTag($tag);
   public function getTags($filter = array());
@@ -54,7 +54,7 @@ interface DatabaseInterface
   public function putTag($id, $params);
   public function putWebhook($id, $params);
   // general methods
-  public function initialize();
+  public function initialize($isEditMode);
 }
 
 /**
