@@ -21,9 +21,9 @@ class FileSystemLocalDropbox extends FileSystemLocal implements FileSystemInterf
     $this->dropbox = new FileSystemDropboxBase($this);
   }
 
-  public function deletePhoto($id)
+  public function deletePhoto($photo)
   {
-    return $this->dropbox->deletePhoto($id) && parent::deletePhoto($id);
+    return $this->dropbox->deletePhoto($photo) && parent::deletePhoto($photo);
   }
 
   /**

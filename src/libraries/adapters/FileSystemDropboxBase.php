@@ -98,6 +98,12 @@ class FileSystemDropboxBase
 
   public function putPhoto($localFile, $remoteFile)
   {
+    if(!file_exists($localFile))
+    {
+      getLogger()->warn("The photo {$localFile} does not exist so putPhoto failed");
+      return false;
+    }
+
     if(strpos($remoteFile, '/original/') !== false)
     {
       $exif = Photo::readExif($localFile);
@@ -113,7 +119,7 @@ class FileSystemDropboxBase
     foreach($files as $file)
     {
       list($localFile, $remoteFile) = each($file);
-      if(strpos($remoteFile, '/original/') !== false)
+      if(strpos($remoteFile, '/original/') !== false && file_exists($localFile))
       {
         $exif = Photo::readExif($localFile);
         $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
