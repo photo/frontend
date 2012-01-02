@@ -141,7 +141,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(false));
 
     $this->fs->inject('fs', $fs);
-    $res = $this->fs->initialize();
+    $res = $this->fs->initialize(true);
     $this->assertFalse($res, 'The S3 FileSystem adapter did not return FALSE for initializing an invalid bucket name');
   }
 
@@ -156,7 +156,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(false));
 
     $this->fs->inject('fs', $fs);
-    $res = $this->fs->initialize();
+    $res = $this->fs->initialize(true);
     $this->assertFalse($res, 'The S3 FileSystem adapter did not return FALSE for initializing an invalid bucket name');
   }
 
@@ -177,7 +177,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSFailureResponse));
 
     $this->fs->inject('fs', $fs);
-    $res = $this->fs->initialize();
+    $res = $this->fs->initialize(true);
     $this->assertFalse($res, 'The S3 FileSystem adapter did not return FALSE for initializing an bucket creation failure');
   }
 
@@ -201,7 +201,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSFailureResponse));
 
     $this->fs->inject('fs', $fs);
-    $res = $this->fs->initialize();
+    $res = $this->fs->initialize(true);
     $this->assertFalse($res, 'The S3 FileSystem adapter did not return FALSE for initializing an bucket and failure setting the policy');
   }
 
@@ -225,7 +225,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSSuccessResponse));
 
     $this->fs->inject('fs', $fs);
-    $res = $this->fs->initialize();
+    $res = $this->fs->initialize(true);
     $this->assertTrue($res, 'The S3 FileSystem adapter did not return TRUE for initializing an bucket and setting the policy');
   }
 }
