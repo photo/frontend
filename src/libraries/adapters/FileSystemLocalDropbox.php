@@ -77,9 +77,9 @@ class FileSystemLocalDropbox extends FileSystemLocal implements FileSystemInterf
     return $this->host;
   }
 
-  public function initialize()
+  public function initialize($isEditMode)
   {
-    return $this->dropbox->initialize() && parent::initialize();
+    return $this->dropbox->initialize($isEditMode) && parent::initialize($isEditMode);
   }
 
   /**

@@ -55,9 +55,9 @@ class FileSystemS3Dropbox extends FileSystemS3 implements FileSystemInterface
     return $this->host;
   }*/
 
-  public function initialize()
+  public function initialize($isEditMode)
   {
-    return $this->dropbox->initialize() && parent::initialize();
+    return $this->dropbox->initialize($isEditMode) && parent::initialize($isEditMode);
   }
 
   /**

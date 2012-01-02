@@ -124,7 +124,7 @@ class FileSystemLocal implements FileSystemInterface
     return $this->host;
   }
 
-  public function initialize()
+  public function initialize($isEditMode)
   {
     if(!file_exists($this->root)) {
       @mkdir($this->root, 0775, true);
