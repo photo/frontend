@@ -5,7 +5,7 @@
   * This controller does much of the dispatching to the Photo controller for all photo requests.
   * @author Jaisen Mathai <jaisen@jmathai.com>
   */
-class ApiPhotoController extends BaseController
+class ApiPhotoController extends ApiBaseController
 {
   /**
     * Call the parent constructor
@@ -15,6 +15,9 @@ class ApiPhotoController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->photo = new Photo;
+    $this->tag = new Tag;
+    $this->user = new User;
   }
 
   /**
@@ -28,10 +31,10 @@ class ApiPhotoController extends BaseController
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
     $res = $this->api->invoke("/photo/{$id}/view.json");
-    $status = Photo::delete($id);
+    $status = $this->photo->delete($id);
     if($status)
     {
-      Tag::updateTagCounts($res['result']['tags'], array(), 1, 1);
+      $this->tag->updateTagCounts($res['result']['tags'], array(), 1, 1);
       return $this->success('Photo deleted successfully', true);
     }
     else
@@ -61,7 +64,9 @@ class ApiPhotoController extends BaseController
       $license = null;
       if(isset($photo['license']))
         $license = $photo['license'];
-      $markup = $this->template->get($template, array('photo' => $photo, 'groups' => $groups, 'licenses' => Utility::getLicenses($license), 'crumb' => getSession()->get('crumb')));
+      $this->template->url = new Url;
+      $this->template->utility = new Utility;
+      $markup = $this->template->get($template, array('photo' => $photo, 'groups' => $groups, 'licenses' => $this->utility->getLicenses($license), 'crumb' => getSession()->get('crumb')));
       return $this->success('Photo edit markup', array('markup' => $markup));
     }
 
@@ -95,7 +100,7 @@ class ApiPhotoController extends BaseController
     // if specific sizes are requested then make sure we return them
     if(!empty($sizes))
     {
-      $protocol = Utility::getProtocol(false);
+      $protocol = $this->utility->getProtocol(false);
       if(isset($_GET['protocol']))
         $protocol = $_GET['protocol'];
 
@@ -103,11 +108,11 @@ class ApiPhotoController extends BaseController
       {
         foreach($nextPrevious as $key => $photo)
         {
-          $options = Photo::generateFragmentReverse($size);
+          $options = $this->photo->generateFragmentReverse($size);
           if($generate && !isset($nextPrevious[$key]["path{$size}"]))
           {
-            $hash = Photo::generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
-            Photo::generate($photo['id'], $hash, $options['width'], $options['width'], $options['options']);
+            $hash = $this->photo->generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
+            $this->photo->generate($photo['id'], $hash, $options['width'], $options['width'], $options['options']);
             $requery = true;
           }
         }
@@ -123,7 +128,7 @@ class ApiPhotoController extends BaseController
     }
 
     foreach($nextPrevious as $key => $photo)
-      $nextPrevious[$key] = Photo::addApiUrls($photo, $sizes);
+      $nextPrevious[$key] = $this->photo->addApiUrls($photo, $sizes);
 
     return $this->success("Next/previous for photo {$id}", $nextPrevious);
   }
@@ -139,12 +144,12 @@ class ApiPhotoController extends BaseController
     */
   public function dynamicUrl($id, $width, $height, $options = null)
   {
-    return $this->success('Url generated successfully', Photo::generateUrlInternal($id, $width, $height, $options));
+    return $this->success('Url generated successfully', $this->photo->generateUrlInternal($id, $width, $height, $options));
   }
 
   /*public function dynamic($id, $hash, $width, $height, $options = null)
   {
-    $photo = Photo::generate($id, $hash, $width, $height, $options);
+    $photo = $this->photo->generate($id, $hash, $width, $height, $options);
     return $this->success('', $photo);
   }*/
 
@@ -174,41 +179,44 @@ class ApiPhotoController extends BaseController
     if(isset($_GET['generate']) && $_GET['generate'] == 'true')
       $generate = true;
 
-    foreach($photos as $key => $photo)
+    if($photos[0]['totalRows'] > 0)
     {
-      // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
-      // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
-      $photos[$key] = $this->pruneSizes($photo, $sizes);
-
-      if(!empty($sizes))
+      foreach($photos as $key => $photo)
       {
-        foreach($sizes as $size)
+        // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
+        // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
+        $photos[$key] = $this->pruneSizes($photo, $sizes);
+
+        if(!empty($sizes))
         {
-          // TODO call API
-          // we do this to put a previously deleted key (pruneSizes) back in - ah, the things we do for consistency
-          $options = Photo::generateFragmentReverse($size);
-          if($generate && !isset($photo["path{$size}"]))
+          foreach($sizes as $size)
           {
-            $hash = Photo::generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
-            Photo::generate($photo['id'], $hash, $options['width'], $options['height'], $options['options']);
-            $requery = true;
+            // TODO call API
+            // we do this to put a previously deleted key (pruneSizes) back in - ah, the things we do for consistency
+            $options = $this->photo->generateFragmentReverse($size);
+            if($generate && !isset($photo["path{$size}"]))
+            {
+              $hash = $this->photo->generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
+              $this->photo->generate($photo['id'], $hash, $options['width'], $options['height'], $options['options']);
+              $requery = true;
+            }
           }
         }
       }
-    }
 
-    // requery to get generated paths
-    if($requery)
-    {
-      $photos = $db->getPhotos($filters, $pageSize);
+      // requery to get generated paths
+      if($requery)
+      {
+        $photos = $db->getPhotos($filters, $pageSize);
+        foreach($photos as $key => $photo)
+          $photos[$key] = $this->pruneSizes($photo, $sizes);
+      }
+
+      // we have to merge to retain multiple sizes else the last one overwrites the rest
+      // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
       foreach($photos as $key => $photo)
-        $photos[$key] = $this->pruneSizes($photo, $sizes);
+        $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
     }
-
-    // we have to merge to retain multiple sizes else the last one overwrites the rest
-    // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
-    foreach($photos as $key => $photo)
-      $photos[$key] = Photo::addApiUrls($photos[$key], $sizes);
 
     $photos[0]['pageSize'] = $pageSize;
     $photos[0]['currentPage'] = $page;
@@ -229,6 +237,7 @@ class ApiPhotoController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
+    $httpObj = new Http;
     $attributes = $_REQUEST;
     if(isset($attributes['__route__']))
       unset($attributes['__route__']);
@@ -247,7 +256,7 @@ class ApiPhotoController extends BaseController
     // TODO call API
     if(isset($_FILES) && isset($_FILES['photo']))
     {
-      $photoId = Photo::upload($_FILES['photo']['tmp_name'], $_FILES['photo']['name'], $attributes);
+      $photoId = $this->photo->upload($_FILES['photo']['tmp_name'], $_FILES['photo']['name'], $attributes);
     }
     elseif(isset($_POST['photo']))
     {
@@ -255,7 +264,7 @@ class ApiPhotoController extends BaseController
       $localFile = tempnam($this->config->paths->temp, 'opme');
       $name = basename($localFile).'.jpg';
       file_put_contents($localFile, base64_decode($_POST['photo']));
-      $photoId = Photo::upload($localFile, $name, $attributes);
+      $photoId = $this->photo->upload($localFile, $name, $attributes);
     }
 
     if($photoId)
@@ -265,9 +274,9 @@ class ApiPhotoController extends BaseController
         $sizes = (array)explode(',', $returnSizes);
         foreach($sizes as $size)
         {
-          $options = Photo::generateFragmentReverse($size);
-          $hash = Photo::generateHash($photoId, $options['width'], $options['height'], $options['options']);
-          Photo::generate($photoId, $hash, $options['width'], $options['height'], $options['options']);
+          $options = $this->photo->generateFragmentReverse($size);
+          $hash = $this->photo->generateHash($photoId, $options['width'], $options['height'], $options['options']);
+          $this->photo->generate($photoId, $hash, $options['width'], $options['height'], $options['options']);
         }
       }
 
@@ -283,8 +292,8 @@ class ApiPhotoController extends BaseController
         $photoAsArgs['tags'] = implode(',', $photoAsArgs['tags']);
         foreach($webhookApi['result'] as $key => $hook)
         {
-          Http::fireAndForget($hook['callback'], 'POST', $photoAsArgs);
-          getLogger()->info(sprintf('Webhook callback executing for photo.upload: %s', $hook['callback']));
+          $httpObj->fireAndForget($hook['callback'], 'POST', $photoAsArgs);
+          $this->logger->info(sprintf('Webhook callback executing for photo.upload: %s', $hook['callback']));
         }
       }
       return $this->created("Photo {$photoId} uploaded successfully", $photo['result']);
@@ -338,14 +347,14 @@ class ApiPhotoController extends BaseController
         $permission = $photoBefore['permission'];
         if(isset($params['permission']))
           $permission = $params['permission'];
-        Tag::updateTagCounts($existingTags, $updatedTags, $permission, $photoBefore['permission']);
+        $this->tag->updateTagCounts($existingTags, $updatedTags, $permission, $photoBefore['permission']);
       }
     }
 
     if(isset($params['crumb']))
       unset($params['crumb']);
 
-    $photoUpdatedId = Photo::update($id, $params);
+    $photoUpdatedId = $this->photo->update($id, $params);
 
     if($photoUpdatedId)
     {
@@ -407,15 +416,15 @@ class ApiPhotoController extends BaseController
     {
       return $this->notFound("Photo {$id} not found", false);
     }
-    elseif(!User::isOwner())
+    elseif(!$this->user->isOwner())
     {
       if($photo['permission'] == 0)
       {
-        if(!User::isLoggedIn() || (isset($photo['groups']) && empty($photo['groups'])))
+        if(!$this->user->isLoggedIn() || (isset($photo['groups']) && empty($photo['groups'])))
           return $this->notFound("Photo {$id} not found", false);
 
         // can't call API since we're not the owner
-        $userGroups = getDb()->getGroups(User::getEmailAddress());
+        $userGroups = getDb()->getGroups($this->user->getEmailAddress());
         $isInGroup = false;
         foreach($userGroups as $group)
         {
@@ -442,7 +451,7 @@ class ApiPhotoController extends BaseController
 
     if(!empty($sizes))
     {
-      $protocol = Utility::getProtocol(false);
+      $protocol = $this->utility->getProtocol(false);
       if(isset($_GET['protocol']))
         $protocol = $_GET['protocol'];
 
@@ -452,11 +461,11 @@ class ApiPhotoController extends BaseController
 
       foreach($sizes as $size)
       {
-        $options = Photo::generateFragmentReverse($size);
+        $options = $this->photo->generateFragmentReverse($size);
         if($generate && !isset($photo["path{$size}"]))
         {
-          $hash = Photo::generateHash($id, $options['width'], $options['height'], $options['options']);
-          Photo::generate($id, $hash, $options['width'], $options['width'], $options['options']);
+          $hash = $this->photo->generateHash($id, $options['width'], $options['height'], $options['options']);
+          $this->photo->generate($id, $hash, $options['width'], $options['width'], $options['options']);
           $requery = true;
         }
       }
@@ -473,7 +482,7 @@ class ApiPhotoController extends BaseController
       }
     }
 
-    $photo = Photo::addApiUrls($photo, $sizes);
+    $photo = $this->photo->addApiUrls($photo, $sizes);
     return $this->success("Photo {$id}", $photo);
   }
 
@@ -481,13 +490,13 @@ class ApiPhotoController extends BaseController
   {
     // If the user is logged in then we can display photos based on group membership
     $permission = 0;
-    if(User::isOwner())
+    if($this->user->isOwner())
     {
       $permission = 1;
     }
-    elseif(User::isLoggedIn())
+    elseif($this->user->isLoggedIn())
     {
-      $userGroups = Group::getGroups(User::getEmailAddress());
+      $userGroups = Group::getGroups($this->user->getEmailAddress());
       if(!empty($userGroups))
       {
         $permission = -1;
@@ -536,7 +545,7 @@ class ApiPhotoController extends BaseController
     $page = 1;
     if(isset($filters['page']))
       $page = $filters['page'];
-    $protocol = Utility::getProtocol(false);
+    $protocol = $this->utility->getProtocol(false);
     if(isset($filters['protocol']))
       $protocol = $filters['protocol'];
 

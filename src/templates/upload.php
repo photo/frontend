@@ -1,4 +1,4 @@
-<div class="message upload-complete"><img src="/assets/images/checkmark-big.gif" align="absmiddle">All done! Go have a <a href="<?php Url::photosView(); ?>">look at your photos</a>.</div>
+<div class="message upload-complete"><img src="/assets/images/checkmark-big.gif" align="absmiddle">All done! Go have a <a href="<?php $this->url->photosView(); ?>">look at your photos</a>.</div>
 <div class="message upload-progress"><img src="/assets/images/upload-big.gif" align="absmiddle">Currently uploading <span class="completed">0</span> of <span class="total">0</span> photos.</div>
 <form class="upload">
   <h2>Apply these settings to my photos.</h2>
@@ -7,7 +7,7 @@
     <div class="input">
       <select name="license" class="license">
         <?php foreach($licenses as $code => $license) { ?>
-          <option value="<?php Utility::safe($code); ?>" <?php if($license['selected']) { ?> selected="selected" <?php } ?>><?php Utility::licenseLong($code); ?></option>
+          <option value="<?php $this->utility->safe($code); ?>" <?php if($license['selected']) { ?> selected="selected" <?php } ?>><?php $this->utility->licenseLong($code); ?></option>
         <?php } ?>
         <option value="_custom_">*Custom*</option>
       </select>
@@ -38,7 +38,7 @@
         </li>
     </div>
   </div>
-  <input type="hidden" name="crumb" value="<?php Utility::safe($crumb); ?>" class="crumb">
+  <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>" class="crumb">
   <div id="uploader">
     <div class="insufficient">
       <img src="<?php echo getTheme()->asset('image', 'error.png'); ?>">

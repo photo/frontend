@@ -4,29 +4,29 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="language" content="english,en" />
   <meta name="distribution" content="global" />
-    <title><?php getTheme()->meta('titles', $page); ?></title>
-    <meta name="description" content="<?php getTheme()->meta('descriptions', $page); ?>">
-    <meta name="keywords" content="<?php getTheme()->meta('keywords', $page); ?>">
+    <title><?php $this->theme->meta('titles', $page); ?></title>
+    <meta name="description" content="<?php $this->theme->meta('descriptions', $page); ?>">
+    <meta name="keywords" content="<?php $this->theme->meta('keywords', $page); ?>">
     <meta name="author" content="openphoto.me">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="<?php getTheme()->asset('image', 'favicon.png'); ?>">
-    <link rel="apple-touch-icon" href="<?php getTheme()->asset('image', 'apple-touch-icon.png'); ?>">
-    <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss(getTheme()->asset('stylesheet', 'bootstrap.min.css', false))->
-                                                               addCss(getTheme()->asset('stylesheet', 'main.css', false))->
+    <link rel="shortcut icon" href="<?php $this->theme->asset('image', 'favicon.png'); ?>">
+    <link rel="apple-touch-icon" href="<?php $this->theme->asset('image', 'apple-touch-icon.png'); ?>">
+    <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
+                                                               addCss($this->theme->asset('stylesheet', 'main.css', false))->
                                                                addCss("/assets/stylesheets/upload.css")->
                                                                getUrl(AssetPipeline::css, 'b'); ?>">
 
-    <?php getPlugin()->invoke('onHead', array('page' => $page)); ?>
+    <?php $this->plugin->invoke('onHead', array('page' => $page)); ?>
 </head>
 
 <body class="<?php echo $page; ?>">
-  <?php getPlugin()->invoke('onBodyBegin', array('page' => $page)); ?>
+  <?php $this->plugin->invoke('onBodyBegin', array('page' => $page)); ?>
 
   <div id="wrapper" class="container">
 
     <div class="row">
       <header>
-        <?php getTheme()->display('partials/header.php'); ?>
+        <?php $this->theme->display('partials/header.php'); ?>
       </header>
     </div>
     
@@ -49,12 +49,12 @@
     
   </div>
   <div id="modal" class="modal hide fade"></div>
-  <?php if(getConfig()->get('site')->mode === 'dev') { ?>
-    <script type="text/javascript" src="<?php getTheme()->asset(getConfig()->get('dependencies')->javascript); ?>"></script>
-    <script type="text/javascript" src="<?php getTheme()->asset('util'); ?>"></script>
+  <?php if($this->config->site->mode === 'dev') { ?>
+    <script type="text/javascript" src="<?php $this->theme->asset($this->config->dependencies->javascript); ?>"></script>
+    <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
   <?php } else { ?>
-    <script type="text/javascript" src="<?php echo getAssetPipeline(true)->addJs(getTheme()->asset(getConfig()->get('dependencies')->javascript, null, false))->
-                                                                      addJs(getTheme()->asset('util', null, false))->getUrl(AssetPipeline::js, 'b'); ?>"></script>
+    <script type="text/javascript" src="<?php echo getAssetPipeline(true)->addJs($this->theme->asset($this->config->dependencies->javascript, null, false))->
+                                                                      addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'b'); ?>"></script>
   <?php } ?>
   <script>
     OP.Util.init(jQuery, {
@@ -87,7 +87,7 @@
             'pin-click':'click:pin',
             'pin-clear-click':'click:pin-clear'
         },
-        <?php if(User::isOwner()) { ?>
+        <?php if($this->user->isOwner()) { ?>
           'change': {
               'batch-field-change':'change:batch-field'
           },
@@ -104,7 +104,7 @@
       js: {
         assets: [
           <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
-            <?php if(getConfig()->get('site')->mode === 'dev') { ?>
+            <?php if($this->config->site->mode === 'dev') { ?>
               '/assets/javascripts/plupload.js',
               '/assets/javascripts/plupload.html5.js',
               '/assets/javascripts/jquery.plupload.queue.js',
@@ -114,21 +114,21 @@
             <?php } ?>
           <?php } ?>
 
-          <?php if(getConfig()->get('site')->mode === 'dev') { ?>
+          <?php if($this->config->site->mode === 'dev') { ?>
             '/assets/javascripts/openphoto-batch.js',
-            '<?php getTheme()->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
-            '<?php getTheme()->asset('javascript', 'jquery.flexslider-min.js'); ?>',
-            '<?php getTheme()->asset('javascript', 'jquery.tokeninput.js'); ?>',
-            '<?php getTheme()->asset('javascript', 'bootstrap-modal.js'); ?>',
-            '<?php getTheme()->asset('javascript', 'openphoto-theme.js'); ?>'
+            '<?php $this->theme->asset('javascript', 'jquery.scrollTo-1.4.2-min.js'); ?>',
+            '<?php $this->theme->asset('javascript', 'jquery.flexslider-min.js'); ?>',
+            '<?php $this->theme->asset('javascript', 'jquery.tokeninput.js'); ?>',
+            '<?php $this->theme->asset('javascript', 'bootstrap-modal.js'); ?>',
+            '<?php $this->theme->asset('javascript', 'openphoto-theme.js'); ?>'
           <?php } else { ?>
             '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-batch.min.js')->
-                                                addJs(getTheme()->asset('javascript', 'openphoto-theme-full-min.js', false))->
+                                                addJs($this->theme->asset('javascript', 'openphoto-theme-full-min.js', false))->
                                                 getUrl(AssetPipeline::js, 'b'); ?>'
           <?php } ?>
         ],
         onComplete: function(){ 
-          opTheme.init.load('<?php Utility::safe(getSession()->get('crumb')); ?>'); 
+          opTheme.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
           opTheme.init.attach(); 
           <?php if(isset($_GET['__route__']) && strstr($_GET['__route__'], 'photo') !== false) { ?>
             opTheme.init.photos(); 
@@ -137,6 +137,6 @@
       }
     });
   </script>
-  <?php getPlugin()->invoke('onBodyEnd', array('page' => $page)); ?>
+  <?php $this->plugin->invoke('onBodyEnd', array('page' => $page)); ?>
 </body>
 </html>

@@ -19,11 +19,12 @@ class UserConfig
 
   public function writeSiteSettings($settings)
   {
+    $utilityObj = new Utility;
     $configFile = $this->getConfigFile();
     if(!$configFile)
       return false;
 
-    $iniString = Utility::generateIniString($settings, true);
+    $iniString = $utilityObj->generateIniString($settings, true);
     if(!$iniString || empty($iniString))
       return false;
 
@@ -48,7 +49,8 @@ class UserConfig
       require getConfig()->get('paths')->libraries . '/dependencies.php';
 
       getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(dirname(__FILE__))), getTheme()->getThemeName()));
-      if(Utility::isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(dirname(__FILE__))), getTheme(false)->getThemeName())))
+      $utilityObj = new Utility;
+      if($utilityObj->isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(dirname(__FILE__))), getTheme(false)->getThemeName())))
         getConfig()->load($mobileSettings);
 
       return true;

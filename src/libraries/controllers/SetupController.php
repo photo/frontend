@@ -17,8 +17,7 @@ class SetupController extends BaseController
   public function __construct()
   {
     parent::__construct();
-    $this->theme = getTheme(false);
-    $this->theme->setTheme('beisel');
+    $this->user = new User;
   }
   
   /**
@@ -64,7 +63,7 @@ class SetupController extends BaseController
     $email = '';
     if(getConfig()->get('user') != null)
       $email = getConfig()->get('user')->email;
-    elseif(User::isLoggedIn())
+    elseif($this->user->isLoggedIn())
       $email = getSession()->get('email');
 
     $qs = '';
@@ -91,9 +90,9 @@ class SetupController extends BaseController
     if($credentials !== null)
     {
       if(isset($credentials->dropboxKey) && !empty($credentials->dropboxKey))
-        $dropboxKey = Utility::decrypt($credentials->dropboxKey, $secret);
+        $dropboxKey = $this->utility->decrypt($credentials->dropboxKey, $secret);
       if(isset($credentials->dropboxSecret) && !empty($credentials->dropboxSecret))
-        $dropboxSecret = Utility::decrypt($credentials->dropboxSecret, $secret);
+        $dropboxSecret = $this->utility->decrypt($credentials->dropboxSecret, $secret);
       if(isset($dropbox->dropboxFolder))
         $dropboxFolder = $dropbox->dropboxFolder;
     }
@@ -118,16 +117,16 @@ class SetupController extends BaseController
     try
     {
       $dropboxToken = getSession()->get('dropboxToken');
-      $dropboxKey = Utility::decrypt(getSession()->get('flowDropboxKey'), $secret);
-      $dropboxSecret = Utility::decrypt(getSession()->get('flowDropboxSecret'), $secret);
+      $dropboxKey = $this->utility->decrypt(getSession()->get('flowDropboxKey'), $secret);
+      $dropboxSecret = $this->utility->decrypt(getSession()->get('flowDropboxSecret'), $secret);
       $oauth = new Dropbox_OAuth_PHP($dropboxKey, $dropboxSecret);
       $oauth->setToken($dropboxToken);
       $accessToken = $oauth->getAccessToken();
       getSession()->set('dropboxFolder', getSession()->get('flowDropboxFolder'));
       getSession()->set('dropboxKey', getSession()->get('flowDropboxKey'));
       getSession()->set('dropboxSecret', getSession()->get('flowDropboxSecret'));
-      getSession()->set('dropboxToken', Utility::encrypt($accessToken['token'], $secret));
-      getSession()->set('dropboxTokenSecret', Utility::encrypt($accessToken['token_secret'], $secret));
+      getSession()->set('dropboxToken', $this->utility->encrypt($accessToken['token'], $secret));
+      getSession()->set('dropboxTokenSecret', $this->utility->encrypt($accessToken['token_secret'], $secret));
 
       $qs = '';
       if(isset($_GET['edit']))
@@ -156,10 +155,10 @@ class SetupController extends BaseController
 
     try
     {
-      getSession()->set('flowDropboxKey', Utility::encrypt($_POST['dropboxKey'], $secret));
-      getSession()->set('flowDropboxSecret', Utility::encrypt($_POST['dropboxSecret'], $secret));
+      getSession()->set('flowDropboxKey', $this->utility->encrypt($_POST['dropboxKey'], $secret));
+      getSession()->set('flowDropboxSecret', $this->utility->encrypt($_POST['dropboxSecret'], $secret));
       getSession()->set('flowDropboxFolder', $_POST['dropboxFolder']);
-      $callback = urlencode(sprintf('%s://%s%s%s', Utility::getProtocol(false), getenv('HTTP_HOST'), '/setup/dropbox/callback', $qs));
+      $callback = urlencode(sprintf('%s://%s%s%s', $this->utility->getProtocol(false), getenv('HTTP_HOST'), '/setup/dropbox/callback', $qs));
       $oauth = new Dropbox_OAuth_PHP($_POST['dropboxKey'], $_POST['dropboxSecret']);
       getSession()->set('dropboxToken', $oauth->getRequestToken());
       $url = $oauth->getAuthorizeUrl($callback);
@@ -302,28 +301,28 @@ class SetupController extends BaseController
     if(!empty($dropboxKey))
     {
       $dropboxFolder = getSession()->get('dropboxFolder');
-      $dropboxKey = Utility::decrypt(getSession()->get('dropboxKey'), $secret);
-      $dropboxSecret = Utility::decrypt(getSession()->get('dropboxSecret'), $secret);
-      $dropboxToken = Utility::decrypt(getSession()->get('dropboxToken'), $secret);
-      $dropboxTokenSecret = Utility::decrypt(getSession()->get('dropboxTokenSecret'), $secret);
+      $dropboxKey = $this->utility->decrypt(getSession()->get('dropboxKey'), $secret);
+      $dropboxSecret = $this->utility->decrypt(getSession()->get('dropboxSecret'), $secret);
+      $dropboxToken = $this->utility->decrypt(getSession()->get('dropboxToken'), $secret);
+      $dropboxTokenSecret = $this->utility->decrypt(getSession()->get('dropboxTokenSecret'), $secret);
     }
     if(getConfig()->get('credentials') != null)
     {
       $credentials = getConfig()->get('credentials');
       if(isset($credentials->awsKey))
-        $awsKey = Utility::decrypt($credentials->awsKey, $secret);
+        $awsKey = $this->utility->decrypt($credentials->awsKey, $secret);
       if(isset($credentials->awsSecret))
-        $awsSecret = Utility::decrypt($credentials->awsSecret, $secret);
+        $awsSecret = $this->utility->decrypt($credentials->awsSecret, $secret);
       if(empty($dropboxKey))
       {
         if(isset($credentials->dropboxKey))
-          $dropboxKey = Utility::decrypt($credentials->dropboxKey, $secret);
+          $dropboxKey = $this->utility->decrypt($credentials->dropboxKey, $secret);
         if(isset($credentials->dropboxSecret))
-          $dropboxSecret = Utility::decrypt($credentials->dropboxSecret, $secret);
+          $dropboxSecret = $this->utility->decrypt($credentials->dropboxSecret, $secret);
         if(isset($credentials->dropboxToken))
-          $dropboxToken = Utility::decrypt($credentials->dropboxToken, $secret);
+          $dropboxToken = $this->utility->decrypt($credentials->dropboxToken, $secret);
         if(isset($credentials->dropboxTokenSecret))
-          $dropboxTokenSecret = Utility::decrypt($credentials->dropboxTokenSecret, $secret);
+          $dropboxTokenSecret = $this->utility->decrypt($credentials->dropboxTokenSecret, $secret);
       }
     }
 
@@ -338,7 +337,7 @@ class SetupController extends BaseController
       $mysql = getConfig()->get('mysql');
       $mySqlHost = $mysql->mySqlHost;
       $mySqlUser = $mysql->mySqlUser;
-      $mySqlPassword = Utility::decrypt($mysql->mySqlPassword, $secret);
+      $mySqlPassword = $this->utility->decrypt($mysql->mySqlPassword, $secret);
       $mySqlDb = $mysql->mySqlDb;
       $mySqlTablePrefix = $mysql->mySqlTablePrefix;
     }
@@ -471,10 +470,10 @@ class SetupController extends BaseController
       $credentials = new stdClass;
       if($usesAws)
       {
-        getSession()->set('awsKey', Utility::encrypt($awsKey, $secret));
-        getSession()->set('awsSecret', Utility::encrypt($awsSecret, $secret));
-        $credentials->awsKey = Utility::encrypt($awsKey, $secret);
-        $credentials->awsSecret = Utility::encrypt($awsSecret, $secret);
+        getSession()->set('awsKey', $this->utility->encrypt($awsKey, $secret));
+        getSession()->set('awsSecret', $this->utility->encrypt($awsSecret, $secret));
+        $credentials->awsKey = $this->utility->encrypt($awsKey, $secret);
+        $credentials->awsSecret = $this->utility->encrypt($awsSecret, $secret);
 
         $aws = new stdClass;
         if($usesS3)
@@ -494,13 +493,13 @@ class SetupController extends BaseController
       {
         getSession()->set('mySqlHost', $mySqlHost);
         getSession()->set('mySqlUser', $mySqlUser);
-        getSession()->set('mySqlPassword', Utility::encrypt($mySqlPassword, $secret));
+        getSession()->set('mySqlPassword', $this->utility->encrypt($mySqlPassword, $secret));
         getSession()->set('mySqlDb', $mySqlDb);
         getSession()->set('mySqlTablePrefix', $mySqlTablePrefix);
         $mysql = new stdClass;
         $mysql->mySqlHost = $mySqlHost;
         $mysql->mySqlUser = $mySqlUser;
-        $mysql->mySqlPassword = Utility::encrypt($mySqlPassword, $secret);
+        $mysql->mySqlPassword = $this->utility->encrypt($mySqlPassword, $secret);
         $mysql->mySqlDb = $mySqlDb;
         $mysql->mySqlTablePrefix = $mySqlTablePrefix;
       }
@@ -515,15 +514,15 @@ class SetupController extends BaseController
 
       if($usesDropbox)
       {
-        getSession()->set('dropboxKey', Utility::encrypt($dropboxKey, $secret));
-        getSession()->set('dropboxSecret', Utility::encrypt($dropboxSecret, $secret));
-        getSession()->set('dropboxToken', Utility::encrypt($dropboxToken, $secret));
-        getSession()->set('dropboxTokenSecret', Utility::encrypt($dropboxTokenSecret, $secret));
+        getSession()->set('dropboxKey', $this->utility->encrypt($dropboxKey, $secret));
+        getSession()->set('dropboxSecret', $this->utility->encrypt($dropboxSecret, $secret));
+        getSession()->set('dropboxToken', $this->utility->encrypt($dropboxToken, $secret));
+        getSession()->set('dropboxTokenSecret', $this->utility->encrypt($dropboxTokenSecret, $secret));
         getSession()->set('dropboxFolder', $dropboxFolder);
-        $credentials->dropboxKey = Utility::encrypt($dropboxKey, $secret);
-        $credentials->dropboxSecret = Utility::encrypt($dropboxSecret, $secret);
-        $credentials->dropboxToken = Utility::encrypt($dropboxToken, $secret);
-        $credentials->dropboxTokenSecret = Utility::encrypt($dropboxTokenSecret, $secret);
+        $credentials->dropboxKey = $this->utility->encrypt($dropboxKey, $secret);
+        $credentials->dropboxSecret = $this->utility->encrypt($dropboxSecret, $secret);
+        $credentials->dropboxToken = $this->utility->encrypt($dropboxToken, $secret);
+        $credentials->dropboxTokenSecret = $this->utility->encrypt($dropboxTokenSecret, $secret);
         $dropbox = new stdClass;
         $dropbox->dropboxFolder = $dropboxFolder;
       }
@@ -588,7 +587,7 @@ class SetupController extends BaseController
           else
           {
             // setting up a new site, we should log them in and redirect them to the upload form (Gh-290)
-            User::setEmail($user->email);
+            $this->user->setEmail($user->email);
             $this->route->redirect('/photos/upload?m=welcome');
           }
         }
@@ -676,7 +675,7 @@ class SetupController extends BaseController
   private function verifyRequirements($imageLibs)
   {
     $errors = array();
-    $configDir = Utility::getBaseDir() . '/userdata';
+    $configDir = $this->utility->getBaseDir() . '/userdata';
     $generatedDir = "{$configDir}/configs";
 
     if(file_exists($generatedDir) && is_writable($generatedDir) && !empty($imageLibs))
@@ -716,7 +715,7 @@ class SetupController extends BaseController
   {
     // continue if no errors
     $secret = $this->getSecret();
-    $baseDir = Utility::getBaseDir();
+    $baseDir = $this->utility->getBaseDir();
     $htmlDir = "{$baseDir}/html";
     $libDir = "{$baseDir}/libraries";
     $configDir = "{$baseDir}/configs";

@@ -17,10 +17,11 @@ class AssetPipeline
 
   public function __construct()
   {
-    $this->docroot = getConfig()->get('paths')->docroot;
+    $config = getConfig()->get();
+    $this->docroot = $config->paths->docroot;
     $this->cacheDir = sprintf('%s/assets/cache', $this->docroot);;
     $this->assets = $this->assetsRel = array('js' => array(), 'css' => array());
-    $siteMode = getConfig()->get('site')->mode;
+    $siteMode = $config->site->mode;
     if($siteMode === 'prod')
       $this->mode = self::minified;
     else

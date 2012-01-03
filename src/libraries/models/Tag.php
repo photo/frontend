@@ -5,17 +5,25 @@
  * This handles adding, removing and modifying tags.
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class Tag
+class Tag extends BaseModel
 {
+  /*
+   * Constructor
+   */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
   /**
     * Delete a tag.
     *
     * @param array $tags An array of Tag objects optionally passed in else queried from the database.
     * @return array Tag object augmented with a "weight" property.
     */
-  public static function delete($id)
+  public function delete($id)
   {
-    return getDb()->deleteTag($id);
+    return $this->db->deleteTag($id);
   }
 
   /**
@@ -28,7 +36,7 @@ class Tag
     * @param int $permission Permission of the photo.
     * @return boolean
     */
-  public static function updateTagCounts($existingTags, $updatedTags, $permission, $priorPermission)
+  public function updateTagCounts($existingTags, $updatedTags, $permission, $priorPermission)
   {
     // we increment public photos by 1 only if they are public
     // if the privacy changes then we add or remove from the increment value
@@ -48,14 +56,14 @@ class Tag
     $tagsToMutateForPrivacy = array_intersect($existingTags, $updatedTags);
     $tagsToUpdate = array();
     foreach($tagsToDecrement as $tg)
-      $tagsToUpdate[self::sanitize($tg)] = -1;
+      $tagsToUpdate[$this->sanitize($tg)] = -1;
     foreach($tagsToIncrement as $tg)
-      $tagsToUpdate[self::sanitize($tg)] = 1;
+      $tagsToUpdate[$this->sanitize($tg)] = 1;
     foreach($tagsToMutateForPrivacy as $tg) // these already exist but we may need to update counts if the privacy changed
-      $tagsToUpdate[self::sanitize($tg)] = 0;
+      $tagsToUpdate[$this->sanitize($tg)] = 0;
 
     $tagsFromDb = array();
-    $allTags = getDb()->getTags(array('permission' => 0));
+    $allTags = $this->db->getTags(array('permission' => 0));
     if(!empty($allTags))
     {
       foreach($allTags as $k => $t)
@@ -89,11 +97,11 @@ class Tag
     foreach($tagsToUpdate as $tag => $count)
     {
       if($count == 0)
-        self::delete($tag);
+        $this->delete($tag);
       $updatedTags[] = array('id' => $tag, 'countPrivate' => $count, 'countPublic' => ($count*$publicIncrement));
     }
 
-    return getDb()->postTags($updatedTags);
+    return $this->db->postTags($updatedTags);
   }
 
   /**
@@ -103,11 +111,11 @@ class Tag
     * @param array $tags An array of Tag objects optionally passed in else queried from the database.
     * @return array Tag object augmented with a "weight" property.
     */
-  public static function groupByWeight($tags = null)
+  public function groupByWeight($tags = null)
   {
     if($tags === null)
     {
-      $tags = getApi()->invoke("/tags/list.json");
+      $tags = $this->api->invoke("/tags/list.json");
       $tags = $tags['result'];
     }
 
@@ -133,23 +141,23 @@ class Tag
     return $tags;
   }
 
-  public static function sanitize($tag)
+  public function sanitize($tag)
   {
     return trim(preg_replace('/,/', '', $tag));
   }
 
-  public static function sanitizeTagsAsString($tags)
+  public function sanitizeTagsAsString($tags)
   {
     $tagsArray = preg_split('/\s*,\s*/', trim($tags), -1, PREG_SPLIT_NO_EMPTY);
     $tagsArray = array_unique($tagsArray);
     foreach($tagsArray as $key => $val)
-      $tagsArray[$key] = self::sanitize($val);
+      $tagsArray[$key] = $this->sanitize($val);
 
     natcasesort($tagsArray);
     return implode(',', $tagsArray);
   }
 
-  public static function validateParams($params)
+  public function validateParams($params)
   {
     $fields = array('countPrivate' => 1, 'countPublic' => 1);
     $noSql = array('email' => 1, 'latitude' => 1, 'longitude' => 1);

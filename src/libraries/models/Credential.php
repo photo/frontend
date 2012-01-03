@@ -1,5 +1,5 @@
 <?php
-class Credential
+class Credential extends BaseModel
 {
   const typeUnauthorizedRequest = 'unauthorized_request';
   const typeRequest = 'request';
@@ -13,6 +13,7 @@ class Credential
 
   public function __construct()
   {
+    parent::__construct();
     if(class_exists('OAuthProvider'))
       $this->provider = new OAuthProvider($this->getOAuthParameters());
   }
@@ -21,7 +22,7 @@ class Credential
   {
     if(!class_exists('OAuthProvider'))
     {
-      getLogger()->warn('No OAuthProvider class found on this system');
+      $this->logger->warn('No OAuthProvider class found on this system');
       return false;
     }
 
@@ -38,7 +39,7 @@ class Credential
       'type' => self::typeUnauthorizedRequest,
       'status' => self::statusActive
     );
-    $res = getDb()->putCredential($id, $params);
+    $res = $this->db->putCredential($id, $params);
     if($res)
       return $id;
 
@@ -49,19 +50,19 @@ class Credential
   {
     if(!class_exists('OAuthProvider'))
     {
-      getLogger()->warn('No OAuthProvider class found on this system');
+      $this->logger->warn('No OAuthProvider class found on this system');
       return false;
     }
 
     $params = array('type' => $toTokenType);
-    return getDb()->postCredential($id, $params);
+    return $this->db->postCredential($id, $params);
   }
 
   public function checkRequest()
   {
     if(!class_exists('OAuthProvider'))
     {
-      getLogger()->warn('No OAuthProvider class found on this system');
+      $this->logger->warn('No OAuthProvider class found on this system');
       return false;
     }
 
@@ -78,7 +79,7 @@ class Credential
     catch(OAuthException $e)
     {
       $this->oauthException = $e;
-      getLogger()->crit(OAuthProvider::reportProblem($e));
+      $this->logger->crit(OAuthProvider::reportProblem($e));
       return false;
     }
   }
@@ -87,7 +88,7 @@ class Credential
   {
     if(!class_exists('OAuthProvider'))
     {
-      getLogger()->warn('No OAuthProvider class found on this system');
+      $this->logger->warn('No OAuthProvider class found on this system');
       // might need a better way to do this
       return false;
     }
@@ -95,12 +96,12 @@ class Credential
     $consumer = $this->getConsumer($provider->consumer_key);
     if(!$consumer)
     {
-      getLogger()->warn(sprintf('Could not find consumer for key %s', $provider->consumer_key));
+      $this->logger->warn(sprintf('Could not find consumer for key %s', $provider->consumer_key));
       return OAUTH_CONSUMER_KEY_UNKNOWN;
     }
     else if($consumer['status'] != self::statusActive)
     {
-      getLogger()->warn(sprintf('Consumer key %s refused', $provider->consumer_key));
+      $this->logger->warn(sprintf('Consumer key %s refused', $provider->consumer_key));
       return OAUTH_CONSUMER_KEY_REFUSED;
     }
 
@@ -112,7 +113,7 @@ class Credential
   {
     if(!class_exists('OAuthProvider'))
     {
-      getLogger()->warn('No OAuthProvider class found on this system');
+      $this->logger->warn('No OAuthProvider class found on this system');
       // might need a better way to do this
       return false;
     }
@@ -154,19 +155,19 @@ class Credential
   {
     if(!class_exists('OAuthProvider'))
     {
-      getLogger()->warn('No OAuthProvider class found on this system');
+      $this->logger->warn('No OAuthProvider class found on this system');
       // might need a better way to do this
       return false;
     }
     $consumer = $this->getConsumer($provider->consumer_key);
     if(!$consumer)
     {
-      getLogger()->warn(sprintf('Could not find consumer for key %s', $provider->consumer_key));
+      $this->logger->warn(sprintf('Could not find consumer for key %s', $provider->consumer_key));
       return OAUTH_CONSUMER_KEY_UNKNOWN;
     }
     elseif($consumer['type'] == self::typeRequest && $consumer['verifier'] != $provider->verifier)
     {
-      getLogger()->warn(sprintf('Invalid OAuth verifier: %s', $provider->verifier));
+      $this->logger->warn(sprintf('Invalid OAuth verifier: %s', $provider->verifier));
       return OAUTH_VERIFIER_INVALID;
     }
 
@@ -177,7 +178,7 @@ class Credential
   public function getConsumer($consumerKey)
   {
     if(!$this->consumer)
-      $this->consumer = getDb()->getCredential($consumerKey);
+      $this->consumer = $this->db->getCredential($consumerKey);
 
     return $this->consumer;
   }
@@ -192,8 +193,9 @@ class Credential
     if($this->oauthParams)
       return $this->oauthParams;
 
+    $utilityObj = new Utility;
     $this->oauthParams = array();
-    $headers = Utility::getAllHeaders();
+    $headers = $utilityObj->getAllHeaders();
     foreach($headers as $name => $header)
     {
       if(stripos($name, 'authorization') === 0)

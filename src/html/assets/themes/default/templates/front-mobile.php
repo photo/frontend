@@ -9,10 +9,10 @@
         </form>
     <ul data-role="listview" data-inset="true">
         <li><a href="/photos/list"><img
-        src="<?php getTheme()->asset('image', 'header-navigation-photos.png'); ?>" alt="my photos"
+        src="<?php $this->theme->asset('image', 'header-navigation-photos.png'); ?>" alt="my photos"
                         class="ui-li-icon">Photos</a></li>
         <li><a href="/tags/list"><img
-        src="<?php getTheme()->asset('image', 'header-navigation-tags.png'); ?>" alt="tags"
+        src="<?php $this->theme->asset('image', 'header-navigation-tags.png'); ?>" alt="tags"
                         class="ui-li-icon">Tags</a></li>
     </ul>
 	</div>

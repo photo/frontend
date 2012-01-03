@@ -2,30 +2,30 @@
   Photos <!-- function bar for e.g. sharing function -->
 </div>
 
-<section class="photo-column unpinned id-<?php Utility::safe($photo['id']); ?> pin-out">
-  <a href"#" class="pin pin-click" data-id="<?php Utility::safe($photo['id']); ?>"></a>
+<section class="photo-column unpinned id-<?php $this->utility->safe($photo['id']); ?> pin-out">
+  <a href"#" class="pin pin-click" data-id="<?php $this->utility->safe($photo['id']); ?>"></a>
   <div>
-    <img class="photo pin-over" width="<?php Utility::safe($photo['photo'.getConfig()->get('photoSizes')->detail][1]); ?>" height="<?php Utility::safe($photo['photo'.getConfig()->get('photoSizes')->detail][2]); ?>" src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->detail); ?>" alt="<?php Utility::safe($photo['title']); ?>">
+    <img class="photo pin-over" width="<?php $this->utility->safe($photo['photo'.$this->config->photoSizes->detail][1]); ?>" height="<?php $this->utility->safe($photo['photo'.$this->config->photoSizes->detail][2]); ?>" src="<?php $this->url->photoUrl($photo, $this->config->photoSizes->detail); ?>" alt="<?php $this->utility->safe($photo['title']); ?>">
   </div>
-  <h1><?php Utility::safe($photo['title']); ?></h1>
-  <p class="description"><?php Utility::safe($photo['description']); ?></p>
+  <h1><?php $this->utility->safe($photo['title']); ?></h1>
+  <p class="description"><?php $this->utility->safe($photo['description']); ?></p>
   <?php if(count($photo['actions']) > 0) { ?>
     <ul class="comments" id="comments">
       <?php foreach($photo['actions'] as $action) { ?>
-        <li class="action-container-<?php Utility::safe($action['id']); ?>">
-          <img src="<?php Utility::safe(User::getAvatarFromEmail(40, $action['email'])); ?>" class="avatar">
+        <li class="action-container-<?php $this->utility->safe($action['id']); ?>">
+          <img src="<?php $this->utility->safe($this->user->getAvatarFromEmail(40, $action['email'])); ?>" class="avatar">
           <div>
-            <strong><?php Utility::getEmailHandle($action['email']); ?> <small>(<?php Utility::safe(Utility::dateLong($action['datePosted'])); ?>)</small></strong>
+            <strong><?php $this->utility->getEmailHandle($action['email']); ?> <small>(<?php $this->utility->safe($this->utility->dateLong($action['datePosted'])); ?>)</small></strong>
             <?php if($action['type'] == 'comment') { ?>
-              <span><?php Utility::safe($action['value']); ?></span>
+              <span><?php $this->utility->safe($action['value']); ?></span>
             <?php } else { ?>
               <span>Marked this photo as a favorite.</span>
             <?php } ?>
             <span class="date">
-              <?php if(User::isOwner()) { ?>
-                <form method="post" action="<?php Url::actionDelete($action['id']); ?>">
+              <?php if($this->user->isOwner()) { ?>
+                <form method="post" action="<?php $this->url->actionDelete($action['id']); ?>">
                   <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
-                  <a href="<?php Url::actionDelete($action['id']); ?>" data-id="<?php Utility::safe($action['id']); ?>" class="action-delete-click"><span></span>Delete comment</a>
+                  <a href="<?php $this->url->actionDelete($action['id']); ?>" data-id="<?php $this->utility->safe($action['id']); ?>" class="action-delete-click"><span></span>Delete comment</a>
                 </form>
               <?php } ?>
             </span>
@@ -35,25 +35,25 @@
     </ul>
   <?php } ?>
   <div class="comment-form">
-    <form method="post" action="<?php Url::actionCreate($photo['id'], 'photo'); ?>">
-      <textarea rows="5" cols="50" name="value" class="comment" <?php if(!User::isLoggedIn()) { ?>disabled="true"<?php } ?> ></textarea>
+    <form method="post" action="<?php $this->url->actionCreate($photo['id'], 'photo'); ?>">
+      <textarea rows="5" cols="50" name="value" class="comment" <?php if(!$this->user->isLoggedIn()) { ?>disabled="true"<?php } ?> ></textarea>
       <input type="hidden" name="type" value="comment">
-      <input type="hidden" name="targetUrl" value="<?php Utility::safe(sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])); ?>">
-      <input type="hidden" name="crumb" value="<?php Utility::safe($crumb); ?>">
+      <input type="hidden" name="targetUrl" value="<?php $this->utility->safe(sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])); ?>">
+      <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
       <div class="buttons">
-      <?php if(User::isLoggedIn()) { ?>
+      <?php if($this->user->isLoggedIn()) { ?>
         <button type="submit">Leave a comment</button>
       <?php } else { ?>
         <button type="button" class="login-click browserid">Sign in to comment</button>
       <?php } ?>
       </div>
     </form>
-    <?php if(User::isLoggedIn()) { ?>
-      <form method="post" action="<?php Url::actionCreate($photo['id'], 'photo'); ?>">
+    <?php if($this->user->isLoggedIn()) { ?>
+      <form method="post" action="<?php $this->url->actionCreate($photo['id'], 'photo'); ?>">
         <input type="hidden" name="value" value="1">
         <input type="hidden" name="type" value="favorite">
-        <input type="hidden" name="targetUrl" value="<?php Utility::safe(sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])); ?>">
-        <input type="hidden" name="crumb" value="<?php Utility::safe($crumb); ?>">
+        <input type="hidden" name="targetUrl" value="<?php $this->utility->safe(sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])); ?>">
+        <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
         <button type="submit">Favorite</button>
       </form>
     <?php } ?>
@@ -65,50 +65,50 @@
   <p><strong>Discover more photos</strong></p>
   <ul class="image-pagination">
     <?php if(!empty($photo['previous'])) { ?>
-    <li class="previous unpinned id-<?php Utility::safe($photo['previous']['id']); ?> pin-out">
-      <a href="#" class="pin pin-click" data-id="<?php Utility::safe($photo['previous']['id']); ?>"></a>
-      <a href="<?php Url::photoView($photo['previous']['id'], $options); ?>" title="Go to previous photo" class="thumb">
-        <img src="<?php Url::photoUrl($photo['previous'], getConfig()->get('photoSizes')->nextPrevious); ?>" alt="Go to previous photo" class="pin-over" />
+    <li class="previous unpinned id-<?php $this->utility->safe($photo['previous']['id']); ?> pin-out">
+      <a href="#" class="pin pin-click" data-id="<?php $this->utility->safe($photo['previous']['id']); ?>"></a>
+      <a href="<?php $this->url->photoView($photo['previous']['id'], $options); ?>" title="Go to previous photo" class="thumb">
+        <img src="<?php $this->url->photoUrl($photo['previous'], $this->config->photoSizes->nextPrevious); ?>" alt="Go to previous photo" class="pin-over" />
         <span class="prev"><span></span></span>
         <span class="audible">Go to previous photo</span>
       </a>
     </li>
     <?php } else { ?>
       <li class="previous empty">
-        <img src="<?php getTheme()->asset('image', 'empty.png'); ?>" alt="No previous photo" />
+        <img src="<?php $this->theme->asset('image', 'empty.png'); ?>" alt="No previous photo" />
       </li>
     <?php } ?>
     <?php if(!empty($photo['next'])) { ?>
-    <li class="next unpinned id-<?php Utility::safe($photo['next']['id']); ?> pin-out">
-      <a href="#" class="pin pin-click" data-id="<?php Utility::safe($photo['next']['id']); ?>"></a>
-      <a href="<?php Url::photoView($photo['next']['id'], $options); ?>" title="Go to next photo" class="thumb">
-        <img src="<?php Url::photoUrl($photo['next'], getConfig()->get('photoSizes')->nextPrevious); ?>" alt="Go to next photo" class="pin-over" />
+    <li class="next unpinned id-<?php $this->utility->safe($photo['next']['id']); ?> pin-out">
+      <a href="#" class="pin pin-click" data-id="<?php $this->utility->safe($photo['next']['id']); ?>"></a>
+      <a href="<?php $this->url->photoView($photo['next']['id'], $options); ?>" title="Go to next photo" class="thumb">
+        <img src="<?php $this->url->photoUrl($photo['next'], $this->config->photoSizes->nextPrevious); ?>" alt="Go to next photo" class="pin-over" />
         <span class="next"><span></span></span>
         <span class="audible">Go to next photo</span>
       </a>
     </li>
     <?php } else { ?>
       <li class="next empty">
-        <img src="<?php getTheme()->asset('image', 'empty.png'); ?>" alt="No next photo" />
+        <img src="<?php $this->theme->asset('image', 'empty.png'); ?>" alt="No next photo" />
       </li>
     <?php } ?>
   </ul>
 
   <p><strong>Photo details</strong></p>
   <ul class="meta">
-    <li class="date"><span></span><?php Utility::dateLong($photo['dateTaken']); ?></li>
+    <li class="date"><span></span><?php $this->utility->dateLong($photo['dateTaken']); ?></li>
     <li class="heart"><span></span><strong><?php echo count($photo['actions']); ?></strong> <a href="#comments" class="action-jump-click" title="Jump to favorites &amp; comments">favorites &amp; comments</a></li>
     <?php if(isset($photo['tags']) && !empty($photo['tags'])) { ?>
-      <li class="tags"><span></span><?php Url::tagsAsLinks($photo['tags']); ?></li>
+      <li class="tags"><span></span><?php $this->url->tagsAsLinks($photo['tags']); ?></li>
     <?php } ?>
     <?php if(isset($photo['license']) && !empty($photo['license'])) { ?>
-      <li class="license"><span></span><?php Utility::licenseLong($photo['license']); ?></li>
+      <li class="license"><span></span><?php $this->utility->licenseLong($photo['license']); ?></li>
     <?php } ?>
     <?php if(isset($photo['latitude']) && !empty($photo['latitude'])) { ?>
       <li class="location">
         <span></span>
-        <?php Utility::safe($photo['latitude']); ?>, <?php Utility::safe($photo['longitude']); ?>
-        <img src="<?php Utility::staticMapUrl($photo['latitude'], $photo['longitude'], 5, '255x150'); ?>" class="map">
+        <?php $this->utility->safe($photo['latitude']); ?>, <?php $this->utility->safe($photo['longitude']); ?>
+        <img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 5, '255x150'); ?>" class="map">
       </li>
     <?php } ?>
     <?php if(!empty($photo['exifCameraMake']) && !empty($photo['exifCameraMake'])) { ?>
@@ -122,16 +122,16 @@
         'exifISOSpeed' => 'ISO: <em>%d</em>',
         'exifFocalLength' => 'Focal Length: %1.0fmm') as $key => $value) { ?>
           <?php if(!empty($photo[$key])) { ?>
-          <li><?php printf($value, Utility::safe($photo[$key], false)); ?></li>
+          <li><?php printf($value, $this->utility->safe($photo[$key], false)); ?></li>
           <?php } ?>
         <?php } ?>
       </ul>
     </li>
     <?php } ?>
-    <?php if(User::isOwner()) { ?>
+    <?php if($this->user->isOwner()) { ?>
     <li class="edit">
       <span></span>
-      <a href="<?php Url::photoEdit($photo['id']); ?>" class="button photo-edit-click">Edit this photo</a>
+      <a href="<?php $this->url->photoEdit($photo['id']); ?>" class="button photo-edit-click">Edit this photo</a>
     </li>
     <?php } ?>
   </ul>

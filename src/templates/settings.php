@@ -9,8 +9,8 @@
 <h1>Mobile Passphrase</h1>
 <form method="post" action="/user/mobile/passphrase">
   <?php if(!empty($mobilePassphrase)) { ?>
-    <div>Your mobile passphrase is: <strong><?php Utility::safe($mobilePassphrase['phrase']); ?></strong></div>
-    <div><em>Expires in <?php Utility::safe($mobilePassphrase['minutes']); ?> minutes.</em></div>
+    <div>Your mobile passphrase is: <strong><?php $this->utility->safe($mobilePassphrase['phrase']); ?></strong></div>
+    <div><em>Expires in <?php $this->utility->safe($mobilePassphrase['minutes']); ?> minutes.</em></div>
     <button type="submit">Reset Passphrase</button>
   <?php } else { ?>
     <button type="submit">Create Passphrase</button>
@@ -24,20 +24,20 @@
 <?php if(!empty($plugins)) { ?>
   <ul class="plugins">
     <?php foreach($plugins as $plugin) { ?>
-    <li class="<?php Utility::safe($plugin['status']); ?>">
-        <?php Utility::safe($plugin['name']); ?> 
+    <li class="<?php $this->utility->safe($plugin['status']); ?>">
+        <?php $this->utility->safe($plugin['name']); ?> 
         (
           <?php if($plugin['status'] == 'active') { ?>
-            <a href="/plugin/<?php Utility::safe($plugin['name']); ?>/deactivate" class="plugin-status-click">deactivate</a>
+            <a href="/plugin/<?php $this->utility->safe($plugin['name']); ?>/deactivate" class="plugin-status-click">deactivate</a>
           <?php } else { ?>
-            <a href="/plugin/<?php Utility::safe($plugin['name']); ?>/activate" class="plugin-status-click">activate</a>
+            <a href="/plugin/<?php $this->utility->safe($plugin['name']); ?>/activate" class="plugin-status-click">activate</a>
           <?php } ?>
         )
         <?php if(!empty($plugin['conf']) && $plugin['status'] == 'active') { ?>
-          <form method="post" action="/plugin/<?php Utility::safe($plugin['name']); ?>/update" method="post">
+          <form method="post" action="/plugin/<?php $this->utility->safe($plugin['name']); ?>/update" method="post">
             <?php foreach($plugin['conf'] as $confName => $confVal) { ?>
-              <label><?php Utility::safe($confName); ?></label>
-              <input type="text" value="<?php Utility::safe($confVal); ?>" name="<?php Utility::safe($confName); ?>">
+              <label><?php $this->utility->safe($confName); ?></label>
+              <input type="text" value="<?php $this->utility->safe($confVal); ?>" name="<?php $this->utility->safe($confName); ?>">
             <?php } ?>
             <button type="submit" class="plugin-update-click">Update</button>
           </form>
@@ -56,12 +56,12 @@
   <ul class="credentials">
     <?php foreach($credentials as $credential) { ?>
       <li>
-        <?php Utility::safe($credential['name']); ?> (<a href="/oauth/<?php echo $credential['id']; ?>/delete" class="credential-delete-click">delete</a>)
+        <?php $this->utility->safe($credential['name']); ?> (<a href="/oauth/<?php echo $credential['id']; ?>/delete" class="credential-delete-click">delete</a>)
         <ul>
-          <li>Consumer key: <?php Utility::safe($credential['id']); ?></li>
-          <li>Consumer secret: <?php Utility::safe($credential['clientSecret']); ?></li>
-          <li>OAuth token: <?php Utility::safe($credential['userToken']); ?></li>
-          <li>OAuth token secret: <?php Utility::safe($credential['userSecret']); ?></li>
+          <li>Consumer key: <?php $this->utility->safe($credential['id']); ?></li>
+          <li>Consumer secret: <?php $this->utility->safe($credential['clientSecret']); ?></li>
+          <li>OAuth token: <?php $this->utility->safe($credential['userToken']); ?></li>
+          <li>OAuth token secret: <?php $this->utility->safe($credential['userSecret']); ?></li>
         </ul>
       </li>
     <?php } ?>
@@ -77,9 +77,9 @@
   <ul class="webhooks">
     <?php foreach($webhooks as $webhook) { ?>
       <li>
-        <?php Utility::safe($webhook['callback']); ?> (<a href="/webhook/<?php Utility::safe($webhook['id']); ?>/delete" class="webhook-delete-click">delete</a>)
+        <?php $this->utility->safe($webhook['callback']); ?> (<a href="/webhook/<?php $this->utility->safe($webhook['id']); ?>/delete" class="webhook-delete-click">delete</a>)
         <ul>
-          <li>Topic: <?php Utility::safe($webhook['topic']); ?></li>
+          <li>Topic: <?php $this->utility->safe($webhook['topic']); ?></li>
         </ul>
       </li>
     <?php } ?>
@@ -117,19 +117,19 @@
   <ul class="groups">
     <?php foreach($groups as $group) { ?>
       <li>
-        <form method="post" action="/group/<?php Utility::safe($group['id']); ?>/update" method="post">
-          <input type="hidden" name="crumb" value="<?php Utility::safe($crumb); ?>">
+        <form method="post" action="/group/<?php $this->utility->safe($group['id']); ?>/update" method="post">
+          <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
           <div class="clearfix">
             <label>Name</label>
             <div class="input">
-              <input type="text" value="<?php Utility::safe($group['name']); ?>" name="name">
+              <input type="text" value="<?php $this->utility->safe($group['name']); ?>" name="name">
             </div>
           </div>
 
           <div class="clearfix">
             <label>Members</label>
             <div class="input">
-              <input type="text" value="<?php Utility::safe(implode(',', $group['members'])); ?>" name="members">
+              <input type="text" value="<?php $this->utility->safe(implode(',', $group['members'])); ?>" name="members">
             </div>
           </div>
 

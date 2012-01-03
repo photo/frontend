@@ -75,6 +75,7 @@ else
   getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName()));
 
   // Before we run the setup in edit mode, we need to validate ownership
-  if(isset($_GET['edit']) && !User::isOwner())
+  $userObj = new User;
+  if(isset($_GET['edit']) && !$userObj->isOwner())
     getRoute()->run('/error/403');
 }

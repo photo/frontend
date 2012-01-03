@@ -5,8 +5,16 @@
  * This handles adding comments, favorites as well as deleting them.
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class Action
+class Action extends BaseModel
 {
+  /*
+   * Constructor
+   */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
   /**
     * Add an action to a photo/video.
     * Accepts a set of params that must include a type and targetType
@@ -14,24 +22,24 @@ class Action
     * @param array $params Params describing the action to be added
     * @return mixed Action ID on success, false on failure
     */
-  public static function create($params)
+  public function create($params)
   {
     if(!isset($params['type']) || !isset($params['targetType']))
       return false;
 
-    $id = User::getNextId('action');
+    $userObj = new User;
+    $id = $userObj->getNextId('action');
     if($id === false)
     {
-      getLogger()->crit("Could not fetch next action ID for {$params['type']}");
+      $this->logger->crit("Could not fetch next action ID for {$params['type']}");
       return false;
     }
-    $params = array_merge(self::getDefaultAttributes(), $params);
+    $params = array_merge($this->getDefaultAttributes(), $params);
     $params['permalink'] = sprintf('%s#action-%s', $params['targetUrl'], $id);
-    $db = getDb();
-    $action = $db->putAction($id, $params);
+    $action = $this->db->putAction($id, $params);
     if(!$action)
     {
-      getLogger()->crit("Could not save action ID ({$id}) for {$params['type']}");
+      $this->logger->crit("Could not save action ID ({$id}) for {$params['type']}");
       return false;
     }
 
@@ -44,9 +52,9 @@ class Action
     * @param string $id ID of the action to be deleted.
     * @return boolean
     */
-  public static function delete($id)
+  public function delete($id)
   {
-    return getDb()->deleteAction($id);
+    return $this->db->deleteAction($id);
   }
 
   /**
@@ -55,9 +63,9 @@ class Action
     * @param string $id ID of the action to be retrieved.
     * @return boolean
     */
-  public static function view($id)
+  public function view($id)
   {
-    return getDb()->getAction($id);
+    return $this->db->getAction($id);
   }
 
   /**
@@ -66,7 +74,7 @@ class Action
     *
     * @return array
     */
-  private static function getDefaultAttributes()
+  private function getDefaultAttributes()
   {
     return array(
       'appId' => getConfig()->get('application')->appId,

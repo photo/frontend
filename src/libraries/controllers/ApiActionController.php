@@ -4,7 +4,7 @@
   *
   * @author Jaisen Mathai <jaisen@jmathai.com>
   */
-class ApiActionController extends BaseController
+class ApiActionController extends ApiBaseController
 {
   /**
     * Call the parent constructor
@@ -14,6 +14,7 @@ class ApiActionController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->action = new Action;
   }
 
   /**
@@ -33,11 +34,11 @@ class ApiActionController extends BaseController
     $params['email'] = getSession()->get('email');
     if(isset($_POST['crumb']))
       unset($params['crumb']);
-    $id = Action::create($params);
+    $id = $this->action->create($params);
 
     if($id)
     {
-      $action = Action::view($id);
+      $action = $this->action->view($id);
       getPlugin()->invoke('onAction', $action);
       return $this->success("Action {$id} created on {$targetType} {$targetId}", $action);
     }
@@ -55,7 +56,7 @@ class ApiActionController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-    $status = Action::delete($id);
+    $status = $this->action->delete($id);
     if($status)
       return $this->success('Action deleted successfully', true);
     else
@@ -71,7 +72,7 @@ class ApiActionController extends BaseController
   public function view($id)
   {
     getAuthentication()->requireAuthentication(false);
-    $action = Action::view($id);
+    $action = $this->action->view($id);
     if($action)
       return $this->success("Action {$id}", $action);
 

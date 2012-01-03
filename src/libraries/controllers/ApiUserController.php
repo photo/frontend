@@ -4,7 +4,7 @@
   *
   * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class ApiUserController extends BaseController
+class ApiUserController extends ApiBaseController
 {
   /**
     * Call the parent constructor
@@ -14,6 +14,7 @@ class ApiUserController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->user = new User;
   }
 
   /**
@@ -23,7 +24,7 @@ class ApiUserController extends BaseController
     */
   public function login($provider = null)
   {
-    $wasUserLoggedIn = User::login($provider, $_POST);
+    $wasUserLoggedIn = $this->user->login($provider, $_POST);
     if($wasUserLoggedIn)
       return $this->success('User was logged in successfully', array('email' => getSession()->get('email')));
     else
@@ -37,14 +38,14 @@ class ApiUserController extends BaseController
     */
   public function loginMobile()
   {
-    $mobilePassphrase = User::getMobilePassphrase();
+    $mobilePassphrase = $this->user->getMobilePassphrase();
 
     if(empty($mobilePassphrase) || !isset($_POST['passphrase']) || $mobilePassphrase['phrase'] != $_POST['passphrase'])
       return $this->forbidden('Unable to authenticate', false);
 
     $email = $this->config->user->email;
-    User::setEmail($email);
-    User::setMobilePassphrase(true); // unset
+    $this->user->setEmail($email);
+    $this->user->setMobilePassphrase(true); // unset
     if(isset($_POST['redirect']))
       $this->route->redirect($_POST['redirect'], null, true);
     else
@@ -58,7 +59,7 @@ class ApiUserController extends BaseController
     */
   public function logout()
   {
-    User::logout();
+    $this->user->logout();
     return $this->success('User was logged out successfully');
   }
 
@@ -73,7 +74,7 @@ class ApiUserController extends BaseController
     getAuthentication()->requireAuthentication();
 
     if(!$id)
-      $id = User::getNextId('group');
+      $id = $this->user->getNextId('group');
 
     $res = getDb()->postGroup($id, $_POST);
 

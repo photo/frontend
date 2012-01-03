@@ -5,7 +5,7 @@
   * This controller does much of the dispatching to the Tag controller for all tag requests.
   * @author Jaisen Mathai <jaisen@jmathai.com>
   */
-class ApiTagController extends BaseController
+class ApiTagController extends ApiBaseController
 {
   /**
     * Call the parent constructor
@@ -77,10 +77,11 @@ class ApiTagController extends BaseController
     $filters = $_GET;
     unset($filters['__route__']);
 
-    if(User::isOwner())
+    $userObj = new User;
+    if($userObj->isOwner())
       $filters['permission'] = 0;
 
-    $tagField = User::isOwner() ? 'countPrivate' : 'countPublic';
+    $tagField = $userObj->isOwner() ? 'countPrivate' : 'countPublic';
 
     $tags = getDb()->getTags($filters);
     if(is_array($tags))

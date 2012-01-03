@@ -1,42 +1,42 @@
 <div class="owner-edit">
 	<h2>This photo belongs to you. You can edit it.</h2>
 	<div class="delete">
-	  <form method="post" action="<?php Url::photoDelete($photo['id']); ?>">
+	  <form method="post" action="<?php $this->url->photoDelete($photo['id']); ?>">
 	    <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
 	    <button type="submit" class="delete photo-delete-click">Delete this photo</button>
 	  </form>
 	</div>
   <div class="detail-form">
-    <form method="post" action="<?php Url::photoUpdate($photo['id']); ?>">
-      <input type="hidden" name="crumb" value="<?php Utility::safe($crumb); ?>">
+    <form method="post" action="<?php $this->url->photoUpdate($photo['id']); ?>">
+      <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
       <div class="clearfix">
         <label for="title">Title</label>
         <div class="input">
-          <input type="text" name="title" id="title" placeholder="A title to describe your photo" value="<?php Utility::safe($photo['title']); ?>">
+          <input type="text" name="title" id="title" placeholder="A title to describe your photo" value="<?php $this->utility->safe($photo['title']); ?>">
         </div>
       </div>
       <div class="clearfix">
         <label for="description">Description</label>
         <div class="input">
-          <textarea name="description" id="description" placeholder="A description of the photo (typically longer than the title)"><?php Utility::safe($photo['description']); ?></textarea>
+          <textarea name="description" id="description" placeholder="A description of the photo (typically longer than the title)"><?php $this->utility->safe($photo['description']); ?></textarea>
         </div>
       </div>
       <div class="clearfix">
         <label for="tags">Tags</label>
         <div class="input">
-          <input type="text" name="tags" id="tags" class="tags-autocomplete" placeholder="A comma separated list of tags" value="<?php Utility::safe(implode(',', $photo['tags'])); ?>">
+          <input type="text" name="tags" id="tags" class="tags-autocomplete" placeholder="A comma separated list of tags" value="<?php $this->utility->safe(implode(',', $photo['tags'])); ?>">
         </div>
       </div>
       <div class="clearfix">
         <label for="latitude">Latitude</label>
         <div class="input">
-          <input type="text" name="latitude" id="latitude" placeholder="A latitude value for the location of this photo (i.e. 49.7364565)" value="<?php Utility::safe($photo['latitude']); ?>">
+          <input type="text" name="latitude" id="latitude" placeholder="A latitude value for the location of this photo (i.e. 49.7364565)" value="<?php $this->utility->safe($photo['latitude']); ?>">
         </div>
       </div>
       <div class="clearfix">
         <label for="longtitude">Longitude</label>
         <div class="input">
-          <input type="text" name="longitude" id="longtitude" placeholder="A longitude value for the location of this photo (i.e. 181.34523224)" value="<?php Utility::safe($photo['longitude']); ?>">
+          <input type="text" name="longitude" id="longtitude" placeholder="A longitude value for the location of this photo (i.e. 181.34523224)" value="<?php $this->utility->safe($photo['longitude']); ?>">
         </div>
       </div>
       <div class="clearfix">
@@ -71,8 +71,8 @@
               <?php foreach($groups as $group) { ?>
                 <li>
                   <label>
-                    <input type="checkbox" name="groups[]" value="<?php Utility::safe($group['id']); ?>" <?php if(isset($photo['groups']) && in_array($group['id'], $photo['groups'])) { ?> checked="checked" <?php } ?> class="group-checkbox-click group-checkbox">
-                    <?php Utility::licenseLong($group['name']); ?>
+                    <input type="checkbox" name="groups[]" value="<?php $this->utility->safe($group['id']); ?>" <?php if(isset($photo['groups']) && in_array($group['id'], $photo['groups'])) { ?> checked="checked" <?php } ?> class="group-checkbox-click group-checkbox">
+                    <?php $this->utility->licenseLong($group['name']); ?>
                   </label>
                 </li>
               <?php } ?>
@@ -87,8 +87,8 @@
             <?php foreach($licenses as $code => $license) { ?>
             <li>
               <label>
-                <input type="radio" name="license" value="<?php Utility::safe($code); ?>" <?php if($license['selected']) { ?> checked="checked" <?php } ?>>
-                <?php Utility::licenseLong($code); ?>
+                <input type="radio" name="license" value="<?php $this->utility->safe($code); ?>" <?php if($license['selected']) { ?> checked="checked" <?php } ?>>
+                <?php $this->utility->licenseLong($code); ?>
               </label>
             </li>
             <?php } ?>

@@ -4,7 +4,7 @@
   *
   * @author Jaisen Mathai <jaisen@jmathai.com>
   */
-class ApiController extends BaseController
+class ApiController extends ApiBaseController
 {
   /**
     * Call the parent constructor

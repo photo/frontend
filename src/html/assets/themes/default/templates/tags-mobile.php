@@ -8,9 +8,9 @@
     <?php } else { ?>
       <ul data-role="listview" data-inset="true">
         <?php foreach($tags as $tag) { ?>
-          <li class="size-<?php Utility::safe($tag['weight']); ?>">
-            <a href="<?php Url::photosView("tags-{$tag['id']}"); ?>" title="<?php Utility::safe($tag[$tagField]); ?> photos">
-              <?php Utility::safe($tag['id']); ?>
+          <li class="size-<?php $this->utility->safe($tag['weight']); ?>">
+            <a href="<?php $this->url->photosView("tags-{$tag['id']}"); ?>" title="<?php $this->utility->safe($tag[$tagField]); ?> photos">
+              <?php $this->utility->safe($tag['id']); ?>
             </a>
           </li>
         <?php } ?>

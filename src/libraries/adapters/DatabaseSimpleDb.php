@@ -464,6 +464,9 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function getUser($owner = null)
   {
+    if($owner === null)
+      $owner = $this->owner;
+
     $res = $this->db->select("SELECT * FROM `{$this->domainUser}` WHERE itemName()='{$owner}'", array('ConsistentRead' => 'true'));
     $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))

@@ -6,11 +6,16 @@
  * Upload, update, delete and generate, oh my!
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class Photo
+class Photo extends BaseModel
 {
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
   /**
     * Adds the urls for the photo.
-    * pathWxH is a static resource.
+    * pathWxH is a resource.
     * photoWxH is an enumerated array [path, width, height]
     *
     * @param array $photo the photo object
@@ -18,20 +23,21 @@ class Photo
     * @param string $protocol http or https
     * @return array
     */
-  public static function addApiUrls($photo, $sizes, $protocol=null)
+  public function addApiUrls($photo, $sizes, $protocol=null)
   {
+    $utilityObj = new Utility;
     if($protocol === null)
-      $protocol = Utility::getProtocol(false);
+      $protocol = $utilityObj->getProtocol(false);
 
     foreach($sizes as $size)
     {
-      $options = Photo::generateFragmentReverse($size);
-      $fragment = self::generateFragment($options['width'], $options['height'], $options['options']);
-      $path = self::generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
+      $options = $this->generateFragmentReverse($size);
+      $fragment = $this->generateFragment($options['width'], $options['height'], $options['options']);
+      $path = $this->generateUrlPublic($photo, $options['width'], $options['height'], $options['options'], $protocol);
       $photo["path{$size}"] = $path;
       if(strstr($fragment, 'xCR') === false)
       {
-        $dimensions = self::getRealDimensions($photo['width'], $photo['height'], $options['width'], $options['height']);
+        $dimensions = $this->getRealDimensions($photo['width'], $photo['height'], $options['width'], $options['height']);
         $photo["photo{$fragment}"] = array($path, $dimensions['width'], $dimensions['height']);
       }
       else
@@ -39,7 +45,7 @@ class Photo
         $photo["photo{$fragment}"] = array($path, $options['width'], $options['height']);
       }
     }
-    $photo['url'] = self::getPhotoViewUrl($photo);
+    $photo['url'] = $this->getPhotoViewUrl($photo);
     return $photo;
   }
 
@@ -50,15 +56,13 @@ class Photo
     * @param string $id ID of the photo
     * @return boolean
     */
-  public static function delete($id)
+  public function delete($id)
   {
     // TODO, validation
     // TODO, do not delete record from db - mark as deleted
-    $fs = getFs();
-    $db = getDb();
-    $photo = $db->getPhoto($id);
-    $fileStatus = $fs->deletePhoto($photo);
-    $dataStatus = $db->deletePhoto($photo);
+    $photo = $this->db->getPhoto($id);
+    $fileStatus = $this->fs->deletePhoto($photo);
+    $dataStatus = $this->db->deletePhoto($photo);
     return $fileStatus && $dataStatus;
   }
 
@@ -71,9 +75,9 @@ class Photo
     * @param string $options Options for the photo such as crop (CR) and greyscale (BW)
     * @return string
     */
-  public static function generateCustomKey($width, $height, $options = null)
+  public function generateCustomKey($width, $height, $options = null)
   {
-    return sprintf('path%s', self::generateFragment($width, $height, $options));
+    return sprintf('path%s', $this->generateFragment($width, $height, $options));
   }
 
   /**
@@ -85,7 +89,7 @@ class Photo
     * @param string $options Options for the photo such as crop (CR) and greyscale (BW)
     * @return string
     */
-  public static function generateFragment($width, $height, $options)
+  public function generateFragment($width, $height, $options)
   {
     $fragment = "{$width}x{$height}";
     if(!empty($options))
@@ -105,13 +109,13 @@ class Photo
     * @param string $options Optional options to be applied on the photo
     * @return mixed string on success, false on failure
     */
-  public static function generate($id, $hash, $width, $height, $options = null)
+  public function generate($id, $hash, $width, $height, $options = null)
   {
-    if(!self::isValidateHash($hash, $id, $width, $height, $options))
+    if(!$this->isValidateHash($hash, $id, $width, $height, $options))
       return false;
 
-    $photo = getDb()->getPhoto($id);
-    $filename = getFs()->getPhoto($photo['pathBase']);
+    $photo = $this->db->getPhoto($id);
+    $filename = $this->fs->getPhoto($photo['pathBase']);
     $image = getImage($filename);
     $maintainAspectRatio = true;
     if(!empty($options))
@@ -134,10 +138,10 @@ class Photo
     $image->scale($width, $height, $maintainAspectRatio);
 
     $image->write($filename);
-    $customPath = self::generateCustomUrl($photo['pathBase'], $width, $height, $options);
-    $key = self::generateCustomKey($width, $height, $options);
-    $resFs = getFs()->putPhoto($filename, $customPath);
-    $resDb = getDb()->postPhoto($id, array($key => $customPath));
+    $customPath = $this->generateCustomUrl($photo['pathBase'], $width, $height, $options);
+    $key = $this->generateCustomKey($width, $height, $options);
+    $resFs = $this->fs->putPhoto($filename, $customPath);
+    $resDb = $this->db->postPhoto($id, array($key => $customPath));
     // TODO unlink $filename
     if($resFs && $resDb)
       return $filename;
@@ -146,14 +150,14 @@ class Photo
   }
 
   /**
-    * Does the opposite of self::generateFragment.
+    * Does the opposite of $this->generateFragment.
     * Given a string fragment this will return it's parts as an array.
     * The $options must start with a width and height (i.e. 800x600)
     *
     * @param string $options Options for the photo such as crop (CR) and greyscale (BW)
     * @return array
     */
-  public static function generateFragmentReverse($options)
+  public function generateFragmentReverse($options)
   {
     $options = explode('x', $options);
     $width = array_shift($options);
@@ -172,7 +176,7 @@ class Photo
     * @param string $paramN any parameter value
     * @return string
     */
-  public static function generateHash(/*$args1, $args2, ...*/)
+  public function generateHash(/*$args1, $args2, ...*/)
   {
     $args = func_get_args();
     foreach($args as $k => $v)
@@ -180,7 +184,7 @@ class Photo
       if(strlen($v) == 0)
         unset($args[$k]);
     }
-    $args[] = getConfig()->get('secrets')->secret;
+    $args[] = $this->config->secrets->secret;
     return substr(sha1(implode('.', $args)), 0, 5);
   }
 
@@ -191,7 +195,7 @@ class Photo
     * @param string $photoName File name of the photo
     * @return array
     */
-  public static function generatePaths($photoName)
+  public function generatePaths($photoName)
   {
     $photoName = time() . '-' . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
     return array(
@@ -211,13 +215,13 @@ class Photo
     * @param string $options Optional options to be applied on the photo
     * @return mixed string URL on success, FALSE on failure
     */
-  public static function generateUrlPublic($photo, $width, $height, $options = null, $protocol = 'http')
+  public function generateUrlPublic($photo, $width, $height, $options = null, $protocol = 'http')
   {
-    $key = self::generateCustomKey($width, $height, $options);
+    $key = $this->generateCustomKey($width, $height, $options);
     if(isset($photo[$key]))
       return "{$protocol}://{$photo['host']}{$photo[$key]}";
     elseif(isset($photo['id']))
-      return "{$protocol}://{$_SERVER['HTTP_HOST']}".self::generateUrlInternal($photo['id'], $width, $height, $options);
+      return "{$protocol}://{$_SERVER['HTTP_HOST']}".$this->generateUrlInternal($photo['id'], $width, $height, $options);
     else
       return false;
   }
@@ -233,10 +237,10 @@ class Photo
     * @return string
     */
   // TODO make private and called via an API in the photo controller
-  public static function generateUrlInternal($id, $width, $height, $options = null)
+  public function generateUrlInternal($id, $width, $height, $options = null)
   {
-    $fragment = self::generateFragment($width, $height, $options);
-    $hash = self::generateHash($id, $width, $height, $options);
+    $fragment = $this->generateFragment($width, $height, $options);
+    $hash = $this->generateHash($id, $width, $height, $options);
     return sprintf('/photo/%s/create/%s/%s.jpg', $id, $hash, $fragment);
   }
 
@@ -249,7 +253,7 @@ class Photo
     * @param int $newHeight The height of the new photo.
     * @return array
     */
-  public static function getRealDimensions($originalWidth, $originalHeight, $newWidth, $newHeight)
+  public function getRealDimensions($originalWidth, $originalHeight, $newWidth, $newHeight)
   {
     if(empty($originalWidth) || empty($originalHeight))
       return array('width' => $newWidth, 'height' => $newHeight);
@@ -277,7 +281,7 @@ class Photo
    * @param $key the exif key to get the date from
    * @return the parsed date or false if not found
    */
-  private static function parseExifDate($exif, $key)
+  private function parseExifDate($exif, $key)
   {
     if(array_key_exists($key, $exif))
     {
@@ -294,7 +298,7 @@ class Photo
     * @param $photo Path to the photo.
     * @return array
     */
-  public static function readExif($photo)
+  public function readExif($photo)
   {
     $exif = @exif_read_data($photo);
     if(!$exif)
@@ -303,10 +307,10 @@ class Photo
     $size = getimagesize($photo);
     // DateTimeOriginal is the right thing. If it is not there
     // use DateTime which might be the date the photo was modified
-    $parsedDate = self::parseExifDate($exif, 'DateTimeOriginal');
+    $parsedDate = $this->parseExifDate($exif, 'DateTimeOriginal');
     if($parsedDate === false) 
     {
-        $parsedDate = self::parseExifDate($exif, 'DateTime');    
+        $parsedDate = $this->parseExifDate($exif, 'DateTime');    
 	if($parsedDate === false)
 	{
 	    if(array_key_exists('FileDateTime', $exif))
@@ -324,15 +328,15 @@ class Photo
       'exposureTime' => @$exif['ExposureTime']);
 
     if(isset($exif['GPSLongitude'])) {
-      $exif_array['longitude'] = self::getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
+      $exif_array['longitude'] = $this->getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
     }
 
     if(isset($exif['GPSLatitude'])) {
-      $exif_array['latitude'] = self::getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
+      $exif_array['latitude'] = $this->getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
     }
 
-    $exif_array['FNumber'] = self::frac2Num(@$exif['FNumber']);
-    $exif_array['focalLength'] = self::frac2Num(@$exif['FocalLength']);
+    $exif_array['FNumber'] = $this->frac2Num(@$exif['FNumber']);
+    $exif_array['focalLength'] = $this->frac2Num(@$exif['FocalLength']);
 
     return $exif_array;
   }
@@ -344,17 +348,18 @@ class Photo
     * @param array $attributes The attributes to save
     * @return mixed string on success, false on failure
     */
-  public static function update($id, $attributes = array())
+  public function update($id, $attributes = array())
   {
     if(empty($attributes))
       return $id;
 
-    $attributes = self::whitelistParams($attributes);
+    $tagObj = new Tag;
+    $attributes = $this->whitelistParams($attributes);
     if(isset($attributes['tags']) && !empty($attributes['tags']))
     {
-      $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
+      $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
     }
-    $status = getDb()->postPhoto($id, $attributes);
+    $status = $this->db->postPhoto($id, $attributes);
     if(!$status)
       return false;
 
@@ -369,36 +374,36 @@ class Photo
     * @param array $attributes The attributes to save
     * @return mixed string on success, false on failure
     */
-  public static function upload($localFile, $name, $attributes = array())
+  public function upload($localFile, $name, $attributes = array())
   {
-    $fs = getFs();
-    $db = getDb();
-    $id = User::getNextId('photo');
+    $userObj = new User;
+    $id = $userObj->getNextId('photo');
     if($id === false)
     {
-      getLogger()->crit('Could not fetch next photo ID');
+      $this->logger->crit('Could not fetch next photo ID');
       return false;
     }
-    $attributes = self::whitelistParams($attributes);
-    $paths = Photo::generatePaths($name);
-    $exiftran = getConfig()->get('modules')->exiftran;
+    $tagObj = new Tag;
+    $attributes = $this->whitelistParams($attributes);
+    $paths = $this->generatePaths($name);
+    $exiftran = $this->config->modules->exiftran;
     if(is_executable($exiftran))
       exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
 
     // resize the base image before uploading
     $localFileCopy = "{$localFile}-copy";
-    getLogger()->info("Making a local copy of the uploaded image. {$localFile} to {$localFileCopy}");
+    $this->logger->info("Making a local copy of the uploaded image. {$localFile} to {$localFileCopy}");
     copy($localFile, $localFileCopy);
 
     $baseImage = getImage($localFileCopy);
     if(!$baseImage)
     {
-      getLogger()->warn('Could not load image, possibly an invalid image file.');
+      $this->logger->warn('Could not load image, possibly an invalid image file.');
       return false;
     }
-    $baseImage->scale(getConfig()->get('photos')->baseSize, getConfig()->get('photos')->baseSize);
+    $baseImage->scale($this->config->photos->baseSize, $this->config->photos->baseSize);
     $baseImage->write($localFileCopy);
-    $uploaded = $fs->putPhotos(
+    $uploaded = $this->fs->putPhotos(
       array(
         array($localFile => $paths['pathOriginal']),
         array($localFileCopy => $paths['pathBase'])
@@ -406,9 +411,9 @@ class Photo
     );
     if($uploaded)
     {
-      getLogger()->info("Photo ({$id}) successfully stored on the file system");
-      $exif = self::readExif($localFile);
-      $iptc = self::readIptc($localFile);
+      $this->logger->info("Photo ({$id}) successfully stored on the file system");
+      $exif = $this->readExif($localFile);
+      $iptc = $this->readIptc($localFile);
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
       foreach($iptc as $iptckey => $iptcval)
       {
@@ -434,7 +439,7 @@ class Photo
       else
         $dateTaken = @$exif['dateTaken'];
 
-      if(getConfig()->get('photos')->autoTagWithDate == 1)
+      if($this->config->photos->autoTagWithDate == 1)
       {
         $dateTags = sprintf('%s,%s', date('F', $dateTaken), date('Y', $dateTaken));
         if(!isset($attributes['tags']) || empty($attributes['tags']))
@@ -449,11 +454,11 @@ class Photo
         $attributes['longitude'] = floatval($exif['longitude']);
       if(isset($attributes['tags']) && !empty($attributes['tags']))
       {
-        $attributes['tags'] = Tag::sanitizeTagsAsString($attributes['tags']);
+        $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
       }
 
       $attributes = array_merge(
-        self::getDefaultAttributes(),
+        $this->getDefaultAttributes(),
         array(
           'hash' => sha1_file($localFile),
           'size' => intval(filesize($localFile)/1024),
@@ -478,25 +483,25 @@ class Photo
         ),
         $attributes
       );
-      $stored = $db->putPhoto($id, $attributes);
+      $stored = $this->db->putPhoto($id, $attributes);
       unlink($localFile);
       unlink($localFileCopy);
       if($stored)
       {
         if(isset($attributes['tags']) && !empty($attributes['tags']))
-          Tag::updateTagCounts(array(), (array)explode(',', $attributes['tags']), $attributes['permission'], $attributes['permission']);
+          $tagObj->updateTagCounts(array(), (array)explode(',', $attributes['tags']), $attributes['permission'], $attributes['permission']);
 
-        getLogger()->info("Photo ({$id}) successfully stored to the database");
+        $this->logger->info("Photo ({$id}) successfully stored to the database");
         return $id;
       }
       else
       {
-        getLogger()->warn("Photo ({$id}) could NOT be stored to the database");
+        $this->logger->warn("Photo ({$id}) could NOT be stored to the database");
         return false;
       }
     }
 
-    getLogger()->warn("Photo ({$id}) could NOT be stored to the file system");
+    $this->logger->warn("Photo ({$id}) could NOT be stored to the file system");
     return false;
   }
 
@@ -510,9 +515,9 @@ class Photo
     * @param string $options The options for the desired photo version.
     * @return string The path to be used for this photo.
     */
-  private static function generateCustomUrl($basePath, $width, $height, $options)
+  private function generateCustomUrl($basePath, $width, $height, $options)
   {
-    $fragment = self::generateFragment($width, $height, $options);
+    $fragment = $this->generateFragment($width, $height, $options);
     $customPath = preg_replace('#^/base/#', '/custom/', $basePath);
     $customName = substr($customPath, 0, strrpos($customPath, '.'));
     return "{$customName}_{$fragment}.jpg";
@@ -523,11 +528,11 @@ class Photo
     *
     * @return array Default values for a new photo
     */
-  private static function getDefaultAttributes()
+  private function getDefaultAttributes()
   {
     return array(
-      'appId' => getConfig()->get('application')->appId,
-      'host' => getFs()->getHost(),
+      'appId' => $this->config->application->appId,
+      'host' => $this->fs->getHost(),
       'views' => 0,
       'status' => 1,
       'permission' => 0, // TODO
@@ -540,9 +545,11 @@ class Photo
     *
     * @return array Default values for a new photo
     */
-  private static function getPhotoViewUrl($photo)
+  private function getPhotoViewUrl($photo)
   {
-    return sprintf('%s://%s%s', Utility::getProtocol(false), $_SERVER['HTTP_HOST'], Url::photoView($photo['id'], null, false));
+    $utilityObj = new Utility;
+    $urlObj = new Url;
+    return sprintf('%s://%s%s', $utilityObj->getProtocol(false), $_SERVER['HTTP_HOST'], $urlObj->photoView($photo['id'], null, false));
   }
 
   /**
@@ -554,7 +561,7 @@ class Photo
     * @param $paramN One of the options
     * @return boolean
     */
-  private static function isValidateHash(/*$hash, $args1, $args2, ...*/)
+  private function isValidateHash(/*$hash, $args1, $args2, ...*/)
   {
     $args = func_get_args();
     foreach($args as $k => $v)
@@ -562,12 +569,12 @@ class Photo
       if(strlen($v) == 0)
         unset($args[$k]);
     }
-    $args[] = getConfig()->get('secrets')->secret;
+    $args[] = $this->config->secrets->secret;
     $hash = array_shift($args);
     return (substr(sha1(implode('.', $args)), 0, 5) == $hash);
   }
 
-  private static function frac2Num($frac)
+  private function frac2Num($frac)
   {
     $parts = explode('/', $frac);
 
@@ -586,11 +593,11 @@ class Photo
   /*** GPS Utils
    * from http://stackoverflow.com/questions/2526304/php-extract-gps-exif-data
    **/
-  private static function getGps($exifCoord, $hemi)
+  private function getGps($exifCoord, $hemi)
   {
-    $degrees = count($exifCoord) > 0 ? self::frac2Num($exifCoord[0]) : 0;
-    $minutes = count($exifCoord) > 1 ? self::frac2Num($exifCoord[1]) : 0;
-    $seconds = count($exifCoord) > 2 ? self::frac2Num($exifCoord[2]) : 0;
+    $degrees = count($exifCoord) > 0 ? $this->frac2Num($exifCoord[0]) : 0;
+    $minutes = count($exifCoord) > 1 ? $this->frac2Num($exifCoord[1]) : 0;
+    $seconds = count($exifCoord) > 2 ? $this->frac2Num($exifCoord[2]) : 0;
 
     $flip = ($hemi == 'W' or $hemi == 'S') ? -1 : 1;
 
@@ -604,7 +611,7 @@ class Photo
     * @param $photo Path to the photo.
     * @return array
     */
-  private static function readIptc($photo)
+  private function readIptc($photo)
   {
     $size = getimagesize($photo, $info);
     $iptc_array = array();
@@ -634,7 +641,7 @@ class Photo
     return $iptc_array;
   }
 
-  private static function whitelistParams($attributes)
+  private function whitelistParams($attributes)
   {
     $returnAttrs = array();
     $matches = array('id' => 1,'host' => 1,'appId' => 1,'title' => 1,'description' => 1,'key' => 1,'hash' => 1,'tags' => 1,'size' => 1,'width' => 1,'photo'=>1,

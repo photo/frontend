@@ -28,11 +28,11 @@ class ActionController extends BaseController
   {
     getAuthentication()->requireAuthentication(false);
     getAuthentication()->requireCrumb($_POST['crumb']);
-    $res = $this->api->invoke(sprintf('%s.json', Url::actionCreate($targetId, $targetType, false)), EpiRoute::httpPost);
+    $res = $this->api->invoke(sprintf('%s.json', $this->url->actionCreate($targetId, $targetType, false)), EpiRoute::httpPost);
     $result = $res ? '1' : '0';
     // TODO: standardize messaging parameter
     if($targetType == 'photo')
-      $this->route->redirect(sprintf('%s?message=%s', Url::photoView($targetId, null, false), $result));
+      $this->route->redirect(sprintf('%s?message=%s', $this->url->photoView($targetId, null, false), $result));
     else
       $this->route->run('/error/500');
   }

@@ -5,7 +5,7 @@
   * This controller handles all of the webhook subscription APIs.
   * @author Jaisen Mathai <jaisen@jmathai.com>
   */
-class ApiWebhookController extends BaseController
+class ApiWebhookController extends ApiBaseController
 {
   /**
     * Call the parent constructor
