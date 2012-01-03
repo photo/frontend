@@ -14,6 +14,7 @@ class UserController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->theme->setTheme('beisel');
   }
 
   /**
@@ -53,7 +54,8 @@ class UserController extends BaseController
   public function mobilePassphrase()
   {
     getAuthentication()->requireAuthentication();
-    User::setMobilePassphrase();
+    $userObj = new User;
+    $userObj->setMobilePassphrase();
     $this->route->redirect('/user/settings');
   }
 
@@ -65,11 +67,12 @@ class UserController extends BaseController
   public function settings()
   {
     getAuthentication()->requireAuthentication();
+    $userObj = new User;
     $credentials = $this->api->invoke('/oauth/list.json', EpiRoute::httpGet);
     $groups = $this->api->invoke('/groups/list.json', EpiRoute::httpGet);
     $webhooks = $this->api->invoke('/webhooks/list.json', EpiRoute::httpGet);
     $plugins = $this->api->invoke('/plugins/list.json', EpiRoute::httpGet);
-    $mobilePassphrase = User::getMobilePassphrase();
+    $mobilePassphrase = $userObj->getMobilePassphrase();
     if(!empty($mobilePassphrase))
       $mobilePassphrase['minutes'] = ceil(($mobilePassphrase['expiresAt']-time())/60);
     $template = sprintf('%s/settings.php', $this->config->paths->templates);

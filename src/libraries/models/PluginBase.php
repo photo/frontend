@@ -4,11 +4,12 @@
  *
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class PluginBase
+class PluginBase extends BaseModel
 {
   private $pluginName, $pluginConf = null;
   public function __construct()
   {
+    parent::__construct();
     $this->pluginName = preg_replace('/Plugin$/', '', get_class($this));
   }
 
@@ -32,31 +33,31 @@ class PluginBase
 
   public function onAction($params)
   {
-    getLogger()->info('Plugin onAction called');
+    $this->logger->info('Plugin onAction called');
   }
 
   public function onBodyBegin()
   {
-    getLogger()->info('Plugin onBodyBegin called');
+    $this->logger->info('Plugin onBodyBegin called');
   }
 
   public function onBodyEnd()
   {
-    getLogger()->info('Plugin onBodyEnd called');
+    $this->logger->info('Plugin onBodyEnd called');
   }
 
   public function onHead()
   {
-    getLogger()->info('Plugin onHead called');
+    $this->logger->info('Plugin onHead called');
   }
 
   public function onLoad()
   {
-    getLogger()->info('Plugin onLoad called');
+    $this->logger->info('Plugin onLoad called');
   }
 
   public function onView()
   {
-    getLogger()->info('Plugin onView called');  
+    $this->logger->info('Plugin onView called');  
   }
 }

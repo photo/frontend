@@ -4,8 +4,10 @@
   *
   * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class ApiGroupController extends BaseController
+class ApiGroupController extends ApiBaseController
 {
+  private $group;
+
   /**
     * Call the parent constructor
     *
@@ -14,6 +16,7 @@ class ApiGroupController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->group = new Group;
   }
 
   /**
@@ -26,7 +29,7 @@ class ApiGroupController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     // TODO add crumb check
-    $groupId = Group::create($_POST);
+    $groupId = $this->group->create($_POST);
 
     if($groupId !== false)
     {
@@ -46,7 +49,7 @@ class ApiGroupController extends BaseController
   public function delete($id)
   {
     getAuthentication()->requireAuthentication();
-    $res = Group::delete($id);
+    $res = $this->group->delete($id);
 
     if($res === false)
       return $this->error('Could not delete group', false);
@@ -64,7 +67,7 @@ class ApiGroupController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     // TODO add crumb check
-    $res = Group::update($id, $_POST);
+    $res = $this->group->update($id, $_POST);
 
     if($res)
     {
@@ -86,10 +89,11 @@ class ApiGroupController extends BaseController
   {
     getAuthentication()->requireAuthentication();
 
-    if(!User::isOwner())
+    $userObj = new User;
+    if(!$userObj->isOwner())
       return $this->forbidden('You do not have permission to access this API.', false);
 
-    $groups = Group::getGroups();
+    $groups = $this->group->getGroups();
     if($groups === false)
       return $this->error('An error occurred trying to get your groups', false);
 
@@ -106,7 +110,7 @@ class ApiGroupController extends BaseController
   {
     getAuthentication()->requireAuthentication();
 
-    $group = Group::getGroup($id);
+    $group = $this->group->getGroup($id);
     if($group === false)
       return $this->error('An error occurred trying to get your group', false);
 

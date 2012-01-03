@@ -6,10 +6,10 @@
     <?php if(!empty($photos)) { ?>
       <ul class="gallery">
         <?php foreach($photos as $photo) { ?>
-          <li><a href="<?php Url::photoView($photo['id'], $options); ?>" rel="external"><img src="<?php Url::photoUrl($photo, getConfig()->get('photoSizes')->thumbnail); ?>" alt="Image 001" /></a></li>
+          <li><a href="<?php $this->url->photoView($photo['id'], $options); ?>" rel="external"><img src="<?php $this->url->photoUrl($photo, $this->config->photoSizes->thumbnail); ?>" alt="Image 001" /></a></li>
         <?php } ?>
       </ul>
-      <?php getTheme()->display('partials/pagination.php', array_merge(array('labelPosition' => 'bottom'), $pages)); ?>
+      <?php $this->theme->display('partials/pagination.php', array_merge(array('labelPosition' => 'bottom'), $pages)); ?>
     <?php } else { ?>
       <h2>Sorry, no photos to see.</h2>
     <?php } ?>

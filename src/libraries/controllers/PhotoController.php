@@ -14,6 +14,7 @@ class PhotoController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->photo = new Photo;
   }
 
   
@@ -31,7 +32,7 @@ class PhotoController extends BaseController
   {
     $args = func_get_args();
     // TODO, this should call a method in the API
-    $photo = Photo::generate($id, $hash, $width, $height, $options);
+    $photo = $this->photo->generate($id, $hash, $width, $height, $options);
     // TODO return 404 graphic
     if($photo)
     {
@@ -103,14 +104,14 @@ class PhotoController extends BaseController
     $pages = array('pages' => array());
     if(!empty($photos))
     {
-      $pages['pages'] = Utility::getPaginationParams($photos[0]['currentPage'], $photos[0]['totalPages'], $this->config->pagination->pagesToDisplay);
+      $pages['pages'] = $this->utility->getPaginationParams($photos[0]['currentPage'], $photos[0]['totalPages'], $this->config->pagination->pagesToDisplay);
       $pages['currentPage'] = $photos[0]['currentPage'];
       $pages['totalPages'] = $photos[0]['totalPages'];
       $pages['requestUri'] = $_SERVER['REQUEST_URI'];
     }
 
-    $body = $this->theme->get(Utility::getTemplate('photos.php'), array('photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
-    $this->theme->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'photos'));
+    $body = $this->theme->get($this->utility->getTemplate('photos.php'), array('photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
+    $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'photos'));
   }
 
   /**
@@ -125,7 +126,7 @@ class PhotoController extends BaseController
     getAuthentication()->requireAuthentication();
     $status = $this->api->invoke("/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $_POST));
     // TODO include success/error paramter
-    $this->route->redirect(Url::photoView($id, null, false));
+    $this->route->redirect($this->url->photoView($id, null, false));
   }
 
   /**
@@ -135,14 +136,15 @@ class PhotoController extends BaseController
     */
   public function upload()
   {
-    if(!User::isOwner())
+    $userObj = new User;
+    if(!$userObj->isOwner())
     {
       $this->route->run('/error/403');
       return;
     }
-    $crumb = getSession()->get('crumb');
+    $crumb = $this->session->get('crumb');
     $template = sprintf('%s/upload.php', $this->config->paths->templates);
-    $body = $this->template->get($template, array('crumb' => $crumb, 'licenses' => Utility::getLicenses()));
+    $body = $this->template->get($template, array('crumb' => $crumb, 'licenses' => $this->utility->getLicenses()));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'upload'));
   }
 
@@ -167,9 +169,9 @@ class PhotoController extends BaseController
       $photo = $apiResp['result'];
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
-      $crumb = getSession()->get('crumb');
-      $body = $this->theme->get(Utility::getTemplate('photo-details.php'), array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
-      $this->theme->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'photo-details'));
+      $crumb = $this->session->get('crumb');
+      $body = $this->theme->get($this->utility->getTemplate('photo-details.php'), array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
+      $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'photo-details'));
     }
     else
     {

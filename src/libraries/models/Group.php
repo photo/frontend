@@ -5,39 +5,48 @@
   * This is the model for group data.
   * @author Jaisen Mathai <jaisen@jmathai.com>
   */
-class Group
+class Group extends BaseModel
 {
-  public static function create()
+  /*
+   * Constructor
+   */
+  public function __construct()
   {
-    $params = self::getDefaultAttributes();
+    parent::__construct();
+    $this->user = new User;
+  }
+
+  public function create()
+  {
+    $params = $this->getDefaultAttributes();
     foreach($params as $key => $value)
     {
       if(isset($_POST[$key]))
         $params[$key] = $_POST[$key];
     }
 
-    if(!self::validate($params))
+    if(!$this->validate($params))
       return false;
 
-    $nextGroupId = User::getNextId('group');
+    $nextGroupId = $this->user->getNextId('group');
     if($nextGroupId === false)
       return false;
 
-    $res = getDb()->putGroup($nextGroupId, $params);
+    $res = $this->db->putGroup($nextGroupId, $params);
     if($res === false)
       return false;
 
     return $nextGroupId;
   }
 
-  public static function delete($id)
+  public function delete($id)
   {
-    return getDb()->deleteGroup($id);
+    return $this->db->deleteGroup($id);
   }
 
-  public static function getGroup($id)
+  public function getGroup($id)
   {
-    $group = getDb()->getGroup($id);
+    $group = $this->db->getGroup($id);
     return $group;
   }
 
@@ -46,27 +55,27 @@ class Group
     * The ID is a base 32 string that represents an autoincrementing integer.
     * @return string
     */
-  public static function getGroups($email = null)
+  public function getGroups($email = null)
   {
-    return getDb()->getGroups($email);
+    return $this->db->getGroups($email);
   }
 
-  public static function update($id, $params)
+  public function update($id, $params)
   {
-    $defaults = self::getDefaultAttributes();
+    $defaults = $this->getDefaultAttributes();
     $params = array();
     foreach($defaults as $key => $value)
     {
       if(isset($_POST[$key]))
         $params[$key] = $_POST[$key];
     }
-    if(!self::validate($params, false))
+    if(!$this->validate($params, false))
       return false;
 
-    return getDb()->postGroup($id, $params);
+    return $this->db->postGroup($id, $params);
   }
 
-  private static function getDefaultAttributes()
+  private function getDefaultAttributes()
   {
     return array(
       'appId' => getConfig()->get('application')->appId,
@@ -75,7 +84,7 @@ class Group
     );
   }
 
-  private static function validate($params, $create = true)
+  private function validate($params, $create = true)
   {
     if( ($create && (!isset($params['appId']) || empty($params['appId']))) || (!isset($params['name']) || empty($params['name'])) )
       return false;

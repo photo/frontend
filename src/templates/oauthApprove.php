@@ -1,10 +1,10 @@
-<?php if(User::isOwner()) { ?>
+<?php if($this->user->isOwner()) { ?>
   <h1>Grant <em><?php echo $consumer['name']; ?></em>?</h1>
   <p>
     By clicking approve you are granting this application access to your account.
   </p>
   <form method="post">
-    <input type="hidden" name="client_key" value="<?php Utility::safe($consumer['id']); ?>">
+    <input type="hidden" name="client_key" value="<?php $this->utility->safe($consumer['id']); ?>">
     <button type="submit">Approve</button>
   </form>
 <?php } else { ?>

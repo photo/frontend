@@ -1,9 +1,11 @@
 <?php
 class Utility
 {
-  private static $isMobile;
+  private $isMobile, $licenses;
 
-  public static function callApis($apisToCall)
+  public function __construct() { }
+
+  public function callApis($apisToCall)
   {
     $params = array();
     if(!empty($apisToCall))
@@ -26,13 +28,13 @@ class Utility
     return $params;
   }
 
-  public static function decrypt($string, $secret = null, $salt = null)
+  public function decrypt($string, $secret = null, $salt = null)
   {
     if($secret === null)
       $secret = getConfig()->get('secrets')->secret;
 
     if($salt === null)
-      $salt = self::getBaseDir();
+      $salt = $this->getBaseDir();
 
     $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
     $key = md5(sprintf('%s~%s', $salt, $secret));
@@ -42,19 +44,19 @@ class Utility
     return $decryptedString;
   }
 
-  public static function diagnosticLine($status, $message)
+  public function diagnosticLine($status, $message)
   {
     $label = $status ? 'success' : 'failure';
     return array('status' => $status, 'label' => $label, 'message' => $message);
   }
 
-  public static function encrypt($string, $secret = null, $salt = null)
+  public function encrypt($string, $secret = null, $salt = null)
   {
     if($secret === null)
       $secret = getConfig()->get('secrets')->secret;
 
     if($salt === null)
-      $salt = self::getBaseDir();
+      $salt = $this->getBaseDir();
 
     $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND);
     $key = md5(sprintf('%s~%s', $salt, $secret));
@@ -63,17 +65,16 @@ class Utility
     return base64_encode($encryptedString);
   }
 
-  public static function getBaseDir()
+  public function getBaseDir()
   {
     return dirname(dirname(dirname(__FILE__)));
   }
 
-  public static function getLicenses($selected = null)
+  public function getLicenses($selected = null)
   {
-    static $licenses;
-    if(!$licenses)
+    if(!$this->licenses)
     {
-      $licenses = array(
+      $this->licenses = array(
         '' => array('name' => 'All Rights Reserved', 'description' => ''),
         'CC BY' => array('name' => 'Attribution', 'description' => ''),
         'CC BY-SA' => array('name' => 'Attribution-ShareAlike', 'description' => ''),
@@ -84,22 +85,22 @@ class Utility
       );
     }
 
-    foreach($licenses as $key => $value)
-      $licenses[$key]['selected'] = ($key == $selected);
+    foreach($this->licenses as $key => $value)
+      $this->licenses[$key]['selected'] = ($key == $selected);
 
     if($selected === null)
-      $licenses['']['selected'] = true;
+      $this->licenses['']['selected'] = true;
 
-    return $licenses;
+    return $this->licenses;
   }
 
-  public static function dateLong($ts, $write = true)
+  public function dateLong($ts, $write = true)
   {
-    return self::returnValue(date('l, F jS, Y \a\t g:ia', $ts), $write);
+    return $this->returnValue(date('l, F jS, Y \a\t g:ia', $ts), $write);
   }
 
   // http://stackoverflow.com/a/1268642
-  public static function generateIniString($array, $hasSections = false)
+  public function generateIniString($array, $hasSections = false)
   {
     $retval = ''; 
     if($hasSections)
@@ -143,12 +144,12 @@ class Utility
     return $retval;
   }
 
-  public static function getEmailHandle($email, $write = true)
+  public function getEmailHandle($email, $write = true)
   {
-    return self::returnValue(substr($email, 0, strpos($email, '@')), $write);
+    return $this->returnValue(substr($email, 0, strpos($email, '@')), $write);
   }
 
-  public static function getPaginationParams($currentPage, $totalPages, $pagesToDisplay)
+  public function getPaginationParams($currentPage, $totalPages, $pagesToDisplay)
   {
     $start = 1;
     $end = $pagesToDisplay;
@@ -163,13 +164,13 @@ class Utility
     return range($start, $end);
   }
 
-  public static function getProtocol($write = true)
+  public function getProtocol($write = true)
   {
     $protocol = $_SERVER['SERVER_PORT'] != '443' ? 'http' : 'https';
-    return self::returnValue($protocol, $write);
+    return $this->returnValue($protocol, $write);
   }
 
-  public static function isActiveTab($label)
+  public function isActiveTab($label)
   {
     if(!isset($_GET['__route__']))
       return $label == 'home';
@@ -201,19 +202,19 @@ class Utility
     }
   }
 
-  public static function isMobile()
+  public function isMobile()
   {
-    if(self::$isMobile !== null)
-      return self::$isMobile;
+    if($this->isMobile !== null)
+      return $this->isMobile;
 
     $detect = new Mobile_Detect();
-    self::$isMobile = $detect->isMobile();
-    return self::$isMobile;
+    $this->isMobile = $detect->isMobile();
+    return $this->isMobile;
   }
 
-  public static function getTemplate($template)
+  public function getTemplate($template)
   {
-    if(!self::isMobile())
+    if(!$this->isMobile())
       return $template;
 
     $mobileTemplate = str_replace('.php', '-mobile.php', $template);
@@ -223,9 +224,9 @@ class Utility
     return $mobileTemplate;
   }
 
-  public static function licenseLong($key, $write = true)
+  public function licenseLong($key, $write = true)
   {
-    $licenses = self::getLicenses();
+    $licenses = $this->getLicenses();
     // default it to the key, if the key doesn't exist then assume it's custom
     $license = $key;
     if(isset($licenses[$key]))
@@ -233,24 +234,24 @@ class Utility
       $license = sprintf('%s (%s)', $key, $licenses[$key]['name']);
     }
 
-    return self::returnValue($license, $write);
+    return $this->returnValue($license, $write);
   }
 
-  public static function permissionAsText($permission, $write = true)
+  public function permissionAsText($permission, $write = true)
   {
-    return self::returnValue(($permission ? 'public' : 'private'), $write);
+    return $this->returnValue(($permission ? 'public' : 'private'), $write);
   }
 
-  public static function plural($int, $word = null, $write = true)
+  public function plural($int, $word = null, $write = true)
   {
-    $word = self::safe($word, false);
+    $word = $this->safe($word, false);
     if(empty($word))
-      return self::returnValue(($int > 1 ? 's' : ''), $write);
+      return $this->returnValue(($int > 1 ? 's' : ''), $write);
     else
-      return self::returnValue(($int > 1 ? "{$word}s" : $word), $write);
+      return $this->returnValue(($int > 1 ? "{$word}s" : $word), $write);
   }
 
-  public static function returnValue($value, $write = true)
+  public function returnValue($value, $write = true)
   {
     if($write)
       echo $value;
@@ -258,51 +259,51 @@ class Utility
       return $value;
   }
 
-  public static function safe($string, $write = true)
+  public function safe($string, $write = true)
   {
-    return self::returnValue(htmlspecialchars($string), $write);
+    return $this->returnValue(htmlspecialchars($string), $write);
   }
 
-  public static function staticMapUrl($latitude, $longitude, $zoom, $size, $type = 'roadmap', $write = true)
+  public function functionMapUrl($latitude, $longitude, $zoom, $size, $type = 'roadmap', $write = true)
   {
     //http://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=14&size=512x512&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Ccolor:red%7Clabel:C%7C40.718217,-73.998284&sensor=false
-    return self::returnValue("http://maps.googleapis.com/maps/api/staticmap?center={$latitude},{$longitude}&zoom={$zoom}&size={$size}&maptype={$type}&markers=color:gray%7C{$latitude},{$longitude}&sensor=false", $write);
+    return $this->returnValue("http://maps.googleapis.com/maps/api/staticmap?center={$latitude},{$longitude}&zoom={$zoom}&size={$size}&maptype={$type}&markers=color:gray%7C{$latitude},{$longitude}&sensor=false", $write);
   }
 
-  public static function timeAsText($time, $prefix = null, $suffix = null, $write = true)
+  public function timeAsText($time, $prefix = null, $suffix = null, $write = true)
   {
     if(empty($time))
-      return self::returnValue('', $write);
+      return $this->returnValue('', $write);
 
     $seconds = intval(time() - $time);
     $hours = intval($seconds / 3600);
     if($hours < 0)
-      return self::returnValue('--', $write);
+      return $this->returnValue('--', $write);
     elseif($hours < 1)
-      return self::returnValue("{$prefix} a few minutes ago {$suffix}", $write);
+      return $this->returnValue("{$prefix} a few minutes ago {$suffix}", $write);
     elseif($hours < 24)
-      return self::returnValue("{$prefix} {$hours} " . self::plural($hours, 'hour', false) . " ago {$suffix}", $write);
+      return $this->returnValue("{$prefix} {$hours} " . $this->plural($hours, 'hour', false) . " ago {$suffix}", $write);
 
     $days = intval(round($seconds / 86400));
     if($days <= 7)
-      return self::returnValue("{$prefix} {$days} " . self::plural($days, 'day', false) . " ago {$suffix}", $write);
+      return $this->returnValue("{$prefix} {$days} " . $this->plural($days, 'day', false) . " ago {$suffix}", $write);
 
     $weeks = intval(round($days / 7));
     if($weeks <= 4)
-      return self::returnValue("{$prefix} {$weeks} " . self::plural($weeks, 'week', false) . " ago {$suffix}", $write);
+      return $this->returnValue("{$prefix} {$weeks} " . $this->plural($weeks, 'week', false) . " ago {$suffix}", $write);
 
     $months = intval(round($days / 30));
     if($months < 12)
-      return self::returnValue("{$prefix} {$months} " . self::plural($months, 'month', false) . " ago {$suffix}", $write);
+      return $this->returnValue("{$prefix} {$months} " . $this->plural($months, 'month', false) . " ago {$suffix}", $write);
 
     $years = intval(round($days / 365));
-    return self::returnValue("{$prefix} {$years} " . self::plural($years, 'year', false) . " ago {$suffix}", $write);
+    return $this->returnValue("{$prefix} {$years} " . $this->plural($years, 'year', false) . " ago {$suffix}", $write);
   }
 
   /**
    * Safe equivalent of getallheaders() the work more often.
    */
-  public static function getAllHeaders()
+  public function getAllHeaders()
   {
     // fetch values from header
     // See issue 171: getallheaders() might not be available on FastCGI or non-Apache.
@@ -324,4 +325,14 @@ class Utility
     }
     return $headers;
   }
+}
+
+function getUtility()
+{
+  static $utility;
+  if($utility)
+    return $utility;
+
+  $utility = new Utility;
+  return $utility;
 }

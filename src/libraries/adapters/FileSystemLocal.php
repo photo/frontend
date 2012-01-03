@@ -23,8 +23,8 @@ class FileSystemLocal implements FileSystemInterface
     else
       $this->db = getDb();
 
-    $this->root = $config->localfs->fsRoot;
-    $this->host = $config->localfs->fsHost;
+    $this->root = $this->config->localfs->fsRoot;
+    $this->host = $this->config->localfs->fsHost;
   }
 
   public function deletePhoto($photo)

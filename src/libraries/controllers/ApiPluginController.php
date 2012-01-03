@@ -4,7 +4,7 @@
   *
   * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class ApiPluginController extends BaseController
+class ApiPluginController extends ApiBaseController
 {
   /**
     * Call the parent constructor
@@ -45,7 +45,7 @@ class ApiPluginController extends BaseController
         $conf[$name] = $_POST[$name];
     }
 
-    $status = $pluginObj->writeConf($plugin, Utility::generateIniString($conf));
+    $status = $pluginObj->writeConf($plugin, $this->utility->generateIniString($conf));
   
     if($status)
       return $this->success('Plugin updated successfully', $conf);

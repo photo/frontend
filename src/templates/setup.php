@@ -22,7 +22,7 @@
       <div class="clearfix">
         <label for="email">Email address</label>
         <div class="input">
-          <input type="text" name="email" id="email" placeholder="user@example.com" <?php if(isset($email)) { ?>value="<?php Utility::safe($email); ?>"<?php } ?> data-validation="required email">
+          <input type="text" name="email" id="email" placeholder="user@example.com" <?php if(isset($email)) { ?>value="<?php $this->utility->safe($email); ?>"<?php } ?> data-validation="required email">
         </div>
       </div>
       <div class="clearfix">
@@ -30,7 +30,7 @@
         <div class="input">
           <select name="theme">
             <?php foreach($themes as $thisTheme) { ?>
-              <option value="<?php Utility::safe($thisTheme); ?>" <?php if($theme == $thisTheme){ ?> selected="selected" <?php } ?>><?php echo ucwords(Utility::safe($thisTheme, false)); ?></option>
+              <option value="<?php $this->utility->safe($thisTheme); ?>" <?php if($theme == $thisTheme){ ?> selected="selected" <?php } ?>><?php echo ucwords($this->utility->safe($thisTheme, false)); ?></option>
             <?php } ?>
           </select>
         </div>
@@ -39,7 +39,7 @@
         <?php if(isset($_GET['edit'])) { ?><button type="button" onclick="window.location = '/'">Cancel</button><?php } ?>
         <button type="submit">Continue to Step 2</button>
       </div>
-      <input type="hidden" name="appId" id="appId" <?php if(isset($appId)) { ?>value="<?php Utility::safe($appId); ?>"<?php } ?>>
+      <input type="hidden" name="appId" id="appId" <?php if(isset($appId)) { ?>value="<?php $this->utility->safe($appId); ?>"<?php } ?>>
     </form>
   </div>
   <div id="setup-step-2"<?php echo ($step != 2) ? ' class="hidden"' : ''?>>
@@ -105,9 +105,9 @@
           <div class="input">
             <?php if(isset($usesS3) && $usesS3) { ?>
               <?php if(isset($s3Bucket) && !empty($s3Bucket)) { ?>
-                <input type="text" name="s3Bucket" id="s3Bucket" size="50" placeholder="Globally unique bucket name" value="<?php Utility::safe($s3Bucket); ?>" data-validation="required">
+                <input type="text" name="s3Bucket" id="s3Bucket" size="50" placeholder="Globally unique bucket name" value="<?php $this->utility->safe($s3Bucket); ?>" data-validation="required">
               <?php } else { ?>
-                <input type="text" name="s3Bucket" id="s3Bucket" size="50" placeholder="Globally unique bucket name" value="<?php Utility::safe($_SERVER['HTTP_HOST']); ?>" data-validation="required">
+                <input type="text" name="s3Bucket" id="s3Bucket" size="50" placeholder="Globally unique bucket name" value="<?php $this->utility->safe($_SERVER['HTTP_HOST']); ?>" data-validation="required">
               <?php } ?>
             <?php } ?>
           </div>
@@ -117,7 +117,7 @@
             <label for="simpleDbDomain">Amazon SimpleDb Domain</label>
             <div class="input">
               <?php if(isset($simpleDbDomain) && !empty($simpleDbDomain)) { ?>
-                <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" value="<?php Utility::safe($simpleDbDomain); ?>" data-validation="required">
+                <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" value="<?php $this->utility->safe($simpleDbDomain); ?>" data-validation="required">
               <?php } else { ?>
                 <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" value="openphoto" data-validation="required">
               <?php } ?>
@@ -174,11 +174,11 @@
         </div>
       <?php } ?>
       <?php if(isset($usesDropbox) && !empty($usesDropbox)) { ?>
-        <input type="hidden" name="dropboxKey" value="<?php Utility::safe($dropboxKey); ?>">
-        <input type="hidden" name="dropboxSecret" value="<?php Utility::safe($dropboxSecret); ?>">
-        <input type="hidden" name="dropboxToken" value="<?php Utility::safe($dropboxToken); ?>">
-        <input type="hidden" name="dropboxTokenSecret" value="<?php Utility::safe($dropboxTokenSecret); ?>">
-        <input type="hidden" name="dropboxFolder" value="<?php Utility::safe($dropboxFolder); ?>">
+        <input type="hidden" name="dropboxKey" value="<?php $this->utility->safe($dropboxKey); ?>">
+        <input type="hidden" name="dropboxSecret" value="<?php $this->utility->safe($dropboxSecret); ?>">
+        <input type="hidden" name="dropboxToken" value="<?php $this->utility->safe($dropboxToken); ?>">
+        <input type="hidden" name="dropboxTokenSecret" value="<?php $this->utility->safe($dropboxTokenSecret); ?>">
+        <input type="hidden" name="dropboxFolder" value="<?php $this->utility->safe($dropboxFolder); ?>">
       <?php } ?>
       <div class="actions">
         <?php if(isset($_GET['edit'])) { ?><button type="button" onclick="window.location = '/'">Cancel</button><?php } ?>

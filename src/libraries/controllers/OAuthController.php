@@ -45,7 +45,7 @@ class OAuthController extends BaseController
         $body = $this->template->get($bodyTemplate, $params);
 
         $params = array('body' => $body, 'page' => 'oauth-approve');
-        if(Utility::isMobile())
+        if($this->utility->isMobile())
         {
           $template = sprintf('%s/template.php', $this->config->paths->templates);
           $this->template->display($template, $params);
@@ -65,7 +65,7 @@ class OAuthController extends BaseController
       $body = $this->template->get($bodyTemplate, $params);
 
       $params = array('body' => $body, 'page' => 'oauth-create');
-      if(Utility::isMobile())
+      if($this->utility->isMobile())
       {
         $template = sprintf('%s/template.php', $this->config->paths->templates);
         $this->template->display($template, $params);
@@ -79,7 +79,8 @@ class OAuthController extends BaseController
 
   public function authorizePost()
   {
-    if(!User::isOwner())
+    $userObj = new User;
+    if(!$userObj->isOwner())
     {
       echo '<h1>You need to be logged in to view this page.</h1><button class="login-click">Login now</button>';
       die();
@@ -154,7 +155,7 @@ class OAuthController extends BaseController
         $oauth = new OAuth($consumerKey,$consumerSecret,OAUTH_SIG_METHOD_HMACSHA1,OAUTH_AUTH_TYPE_AUTHORIZATION);
         $oauth->setVersion('1.0a');
         $oauth->setToken($token, $tokenSecret);
-        $accessToken = $oauth->getAccessToken(sprintf('%s://%s/v1/oauth/token/access', Utility::getProtocol(false), $_SERVER['HTTP_HOST']), null, $verifier);
+        $accessToken = $oauth->getAccessToken(sprintf('%s://%s/v1/oauth/token/access', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST']), null, $verifier);
         $accessToken['oauth_consumer_key'] = $consumerKey;
         $accessToken['oauth_consumer_secret'] = $consumerSecret;
         setcookie('oauth', http_build_query($accessToken));
@@ -172,9 +173,9 @@ class OAuthController extends BaseController
     }
     else if(!isset($_GET['reloaded']))
     {
-      $callback = sprintf('%s://%s/v1/oauth/flow', Utility::getProtocol(false), $_SERVER['HTTP_HOST']);
+      $callback = sprintf('%s://%s/v1/oauth/flow', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST']);
       $name = isset($_GET['name']) ? $_GET['name'] : 'OAuth Test Flow';
-      echo sprintf('<a href="%s://%s/v1/oauth/authorize?oauth_callback=%s&name=%s">Create a new client id</a>', Utility::getProtocol(false), $_SERVER['HTTP_HOST'], urlencode($callback), urlencode($name));
+      echo sprintf('<a href="%s://%s/v1/oauth/authorize?oauth_callback=%s&name=%s">Create a new client id</a>', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], urlencode($callback), urlencode($name));
     }
     else
     {

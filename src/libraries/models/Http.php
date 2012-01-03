@@ -5,9 +5,17 @@
  * This handles outgoing HTTP interactions.
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class Http
+class Http extends BaseModel
 {
-  public static function fireAndForget($url, $method = 'GET', $params = null)
+  /*
+   * Constructor
+   */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
+  public function fireAndForget($url, $method = 'GET', $params = null)
   {
     $url = escapeshellarg($url);
     $method = escapeshellarg($method);
@@ -18,7 +26,7 @@ class Http
         $paramsAsString .= sprintf("-F %s ", escapeshellarg("{$key}={$value}"));
     }
     $command = sprintf("curl -X %s %s %s > /dev/null 2> /dev/null &", $method, $paramsAsString, $url);
-    getLogger()->info($command);
+    $this->logger->info($command);
     exec($command);
   }
 }

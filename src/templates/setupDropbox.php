@@ -6,7 +6,7 @@
     <em>IMPORTANT:</em> make sure you select <em>Full Dropbox</em> access level.
   </p>
   <div id="setup-dropbox">
-    <form action="/setup/dropbox<?php Utility::safe($qs); ?>" method="post" class="validate">
+    <form action="/setup/dropbox<?php $this->utility->safe($qs); ?>" method="post" class="validate">
       <h2>Enter your Dropbox App credentials</h2>
       <div class="clearfix">
         <label for="dropboxKey">Dropbox Key <em>(<a href="https://www.dropbox.com/developers/apps" target="_blank">found under options</a>)</em></label>

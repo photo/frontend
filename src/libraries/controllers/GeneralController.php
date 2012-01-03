@@ -49,13 +49,13 @@ class GeneralController extends BaseController
     */
   public function home()
   {
-    $template = Utility::getTemplate('front.php');
+    $template = $this->utility->getTemplate('front.php');
     if(!$this->theme->fileExists($template))
-      $this->route->redirect(Url::photosView(null, false));
+      $this->route->redirect($this->url->photosView(null, false));
 
     $apisToCall = getConfig()->get('frontApis');
-    $params = Utility::callApis($apisToCall);
+    $params = $this->utility->callApis($apisToCall);
     $body = $this->theme->get($template, $params);
-    $this->theme->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'front'));
+    $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'front'));
   }
 }

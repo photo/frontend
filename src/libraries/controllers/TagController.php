@@ -14,6 +14,7 @@ class TagController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->tag = new Tag;
   }
 
   /**
@@ -24,8 +25,8 @@ class TagController extends BaseController
   public function list_()
   {
     $tags = $this->api->invoke("/tags/list.json");
-    $groupedTags = Tag::groupByWeight($tags['result']);
-    $body = $this->theme->get(Utility::getTemplate('tags.php'), array('tags' => $groupedTags));
-    $this->theme->display(Utility::getTemplate('template.php'), array('body' => $body, 'page' => 'tags'));
+    $groupedTags = $this->tag->groupByWeight($tags['result']);
+    $body = $this->theme->get($this->utility->getTemplate('tags.php'), array('tags' => $groupedTags));
+    $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'tags'));
   }
 }

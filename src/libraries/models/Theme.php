@@ -8,14 +8,16 @@
 class Theme
 {
   const themeDefault = 'default';
-  private $theme, $themeDir, $themeDirWeb;
+  private $template, $theme, $themeDir, $themeDirWeb, $user;
 
   public function __construct()
   {
+    $this->template = getTemplate();
     $this->theme = getConfig()->get('defaults')->theme;
     $behavior = getConfig()->get('behavior');
     $themeConfig = getConfig()->get('theme');
-    if($behavior !== null && Utility::isMobile() && $behavior->useDefaultMobile == '1')
+    $utilityObj = new Utility;
+    if($behavior !== null && $utilityObj->isMobile() && $behavior->useDefaultMobile == '1')
     {
       $this->theme = self::themeDefault;
       if(file_exists($mobileSettings = sprintf('%s/%s/config/settings-mobile.ini', getConfig()->get('paths')->themes, $this->getThemeName())))
@@ -28,38 +30,40 @@ class Theme
 
     $this->themeDir = sprintf('%s/%s', getConfig()->get('paths')->themes, $this->theme);
     $this->themeDirWeb = str_replace(sprintf('%s/html', dirname(dirname(dirname(__FILE__)))), '', $this->themeDir);
+    $this->user = new User;
   }
 
   public function asset($type, $filename = '', $write = true)
   {
+    $utilityObj = new Utility;
     $filename = "/{$filename}";
     switch($type)
     {
       case 'base':
-        return Utility::returnValue("{$this->themeDirWeb}{$filename}", $write);
+        return $utilityObj->returnValue("{$this->themeDirWeb}{$filename}", $write);
         break;
       case 'image':
-        return Utility::returnValue("{$this->themeDirWeb}/images{$filename}", $write);
+        return $utilityObj->returnValue("{$this->themeDirWeb}/images{$filename}", $write);
         break;
       case 'javascript':
-        return Utility::returnValue("{$this->themeDirWeb}/javascripts{$filename}", $write);
+        return $utilityObj->returnValue("{$this->themeDirWeb}/javascripts{$filename}", $write);
         break;
       case 'stylesheet':
-        return Utility::returnValue("{$this->themeDirWeb}/stylesheets{$filename}", $write);
+        return $utilityObj->returnValue("{$this->themeDirWeb}/stylesheets{$filename}", $write);
         break;
       //
       case 'jquery':
-        return Utility::returnValue('/assets/javascripts/jquery-1.6.2.min.js', $write);
+        return $utilityObj->returnValue('/assets/javascripts/jquery-1.6.2.min.js', $write);
         break;
       case 'util':
-        return Utility::returnValue('/assets/javascripts/openphoto-util.js', $write);
+        return $utilityObj->returnValue('/assets/javascripts/openphoto-util.js', $write);
         break;
     }
   }
 
   public function display($template, $params = null)
   {
-    getTemplate()->display("{$this->themeDir}/templates/{$template}", $params);
+    $this->template->display("{$this->themeDir}/templates/{$template}", $params);
   }
 
   public function fileExists($path)
@@ -69,7 +73,7 @@ class Theme
 
   public function get($template, $params = null)
   {
-    return getTemplate()->get("{$this->themeDir}/templates/{$template}", $params);
+    return $this->template->get("{$this->themeDir}/templates/{$template}", $params);
   }
 
   public function getThemeName()
@@ -93,17 +97,20 @@ class Theme
 
   public function meta($page, $key, $write = true)
   {
+    $utilityObj = new Utility;
     if(isset(getConfig()->get($page)->$key))
-      return Utility::returnValue(getConfig()->get($page)->$key, $write);
+      return $utilityObj->returnValue(getConfig()->get($page)->$key, $write);
     elseif(isset(getConfig()->get($page)->default))
-      return Utility::returnValue(getConfig()->get($page)->default, $write);
+      return $utilityObj->returnValue(getConfig()->get($page)->default, $write);
     else
-      return Utility::returnValue('', $write);
+      return $utilityObj->returnValue('', $write);
   }
 
-  public function setTheme($theme)
+  public function setTheme($theme = null)
   {
-    $this->theme = 'beisel';
+    if($theme === null)
+      $theme = 'beisel';
+    $this->theme = $theme;
     $this->themeDir = sprintf('%s/%s', dirname($this->themeDir), $this->theme);
     $this->themeDirWeb = sprintf('%s/%s', dirname($this->themeDirWeb), $this->theme);
   }

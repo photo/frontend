@@ -1,7 +1,7 @@
-<?php if(User::isOwner()) { ?>
+<?php if($this->user->isOwner()) { ?>
   <form method="post">
     <label>App Name</label>
-    <input type="text" name="name" placeholder="Enter a name" value="<?php Utility::safe($name); ?>">
+    <input type="text" name="name" placeholder="Enter a name" value="<?php $this->utility->safe($name); ?>">
 
     <!--<label>Permission</label>
     <ul>
@@ -11,15 +11,15 @@
       <li><input type="checkbox" name="permissions[]" value="delete" class="checkbox"> Delete</li>
     </ul>-->
 
-    <input type="hidden" name="oauth_callback" value="<?php Utility::safe($callback); ?>">
+    <input type="hidden" name="oauth_callback" value="<?php $this->utility->safe($callback); ?>">
     <button type="submit">Create App</button>
   </form>
 <?php } else { ?>
-  <?php if(Utility::isMobile()) { ?>
+  <?php if($this->utility->isMobile()) { ?>
     <?php if($error) { ?><h2 class="error">Incorrect Passphrase</h2><?php } ?>
     <form method="post" action="/user/login/mobile">
       <input type="text" name="passphrase" placeholder="Enter your passphrase">
-      <input type="hidden" name="redirect" value="<?php Utility::safe($redirect); ?>">
+      <input type="hidden" name="redirect" value="<?php $this->utility->safe($redirect); ?>">
       <button type="submit">Continue</button>
     </form>
     <h1>Don't have one?</h1>

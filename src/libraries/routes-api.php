@@ -13,7 +13,7 @@ getApi()->get('/hello.json', array('ApiController', 'hello'), EpiApi::external);
  */
 getApi()->get('/action/([a-zA-Z0-9]+)/view.json', array('ApiActionController', 'view'), EpiApi::external); // retrieve an action (/action/{id}/view.json)
 getApi()->post('/action/([a-zA-Z0-9]+)/delete.json', array('ApiActionController', 'delete'), EpiApi::external); // delete an action (/action/{id}/delete.json)
-getApi()->post('/action/([a-zA-Z0-9]+)/(photo)/create.json', array('ApiActionController', 'create'), EpiApi::external); // post an action (/action/{id}/{type}/update.json)
+getApi()->post('/action/([a-zA-Z0-9]+)/(photo)/create.json', array('ApiActionController', 'create'), EpiApi::external); // post an action (/action/{id}/{type}/create.json)
 
 /*
  * Photo endpoints

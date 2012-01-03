@@ -1,5 +1,5 @@
 <?php
-class Upgrade
+class Upgrade extends BaseModel
 {
   private $scriptsDir,
     $systems,
@@ -19,18 +19,19 @@ class Upgrade
 
   public function __construct()
   {
-    $this->scriptsDir = sprintf('%s/upgrade', getConfig()->get('paths')->configs);
+    parent::__construct();
+    $this->scriptsDir = sprintf('%s/upgrade', $this->config->paths->configs);
     $this->systems = array('readme','base','db','fs');
-    $defaults = getConfig()->get('defaults');
+    $defaults = $this->config->defaults;
     $this->currentCodeVersion = $defaults->currentCodeVersion;
     $currentParts = explode('.', $this->currentCodeVersion);
     $this->currentCodeMajorVersion = $currentParts[0];
     $this->currentCodeMinorVersion = $currentParts[1];
     $this->currentCodeTrivialVersion = $currentParts[2];
 
-    $siteConfig = getConfig()->get('site');
+    $siteConfig = $this->config->site;
     if(isset($siteConfig->lastCodeVersion) && !empty($siteConfig->lastCodeVersion))
-      $this->lastCodeVersion = getConfig()->get('site')->lastCodeVersion;
+      $this->lastCodeVersion = $this->config->site->lastCodeVersion;
     else
       $this->lastCodeVersion = $defaults->lastCodeVersion;
     $lastParts = explode('.', $this->lastCodeVersion);

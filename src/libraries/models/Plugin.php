@@ -5,12 +5,14 @@
  * This handles dispatching all plugin actions.
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class Plugin
+class Plugin extends BaseModel
 {
   private $pluginDir, $activePlugins = array(), $pluginInstances = array();
+
   public function __construct()
   {
-    $paths = getConfig()->get('paths');
+    parent::__construct();
+    $paths = $this->config->paths;
     if(isset($paths->plugins))
       $this->pluginDir = $paths->plugins;
     $this->registerAll();
@@ -19,7 +21,7 @@ class Plugin
   public function getActive()
   {
     $active = array();
-    $confPlugins = getConfig()->get('plugins');
+    $confPlugins = $this->config->plugins;
     if($confPlugins !== null)
       $pluginsFromConf = (array)explode(',', $confPlugins->activePlugins);
     else
@@ -42,7 +44,7 @@ class Plugin
     $plugins = array();
     while (($name = $dir->read()) !== false)
     {
-      if(is_dir(sprintf('%s/%s', getConfig()->get('paths')->plugins, $name)) || substr($name, 0, 1) == '.')
+      if(is_dir(sprintf('%s/%s', $this->config->paths->plugins, $name)) || substr($name, 0, 1) == '.')
         continue;
 
       $plugins[] = preg_replace('/Plugin$/', '', basename($name, '.php'));
@@ -80,7 +82,7 @@ class Plugin
       return null;
 
     $conf = $inst->defineConf();
-    if(file_exists($confPath = sprintf('%s/plugins/%s.%s.ini', getConfig()->get('paths')->userdata, $_SERVER['HTTP_HOST'], $plugin)))
+    if(file_exists($confPath = sprintf('%s/plugins/%s.%s.ini', $this->config->paths->userdata, $_SERVER['HTTP_HOST'], $plugin)))
     {
       $parsedConf = parse_ini_file($confPath);
       foreach($conf as $name => $tmp)
@@ -95,7 +97,7 @@ class Plugin
 
   public function writeConf($plugin, $string)
   {
-    $pluginDir = sprintf('%s/plugins', getConfig()->get('paths')->userdata);
+    $pluginDir = sprintf('%s/plugins', $this->config->paths->userdata);
     if(!is_dir($pluginDir))
       mkdir($pluginDir);
 

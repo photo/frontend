@@ -7,6 +7,11 @@
   */
 class Authentication
 {
+  /*
+   * Constructor
+   */
+  public function __construct() { } 
+
   /**
     * Checks to see if there are any authentication credentials present in this request
     *
@@ -14,9 +19,11 @@ class Authentication
     */
   public function isRequestAuthenticated()
   {
-    if(User::isLoggedIn())
+    $credentialObj = getCredential();
+    $userObj = new User;
+    if($userObj->isLoggedIn())
       return true;
-    elseif(getCredential()->isOAuthRequest())
+    elseif($credentialObj->isOAuthRequest())
       return true;
 
     return false;
@@ -24,14 +31,16 @@ class Authentication
 
   public function requireAuthentication($requireOwner = true)
   {
-    if(getCredential()->isOAuthRequest())
+    $credentialObj = getCredential();
+    $userObj = new User;
+    if($credentialObj->isOAuthRequest())
     {
-      if(!getCredential()->checkRequest())
+      if(!$credentialObj->checkRequest())
       {
-        OPException::raise(new OPAuthorizationOAuthException(getCredential()->getErrorAsString()));
+        OPException::raise(new OPAuthorizationOAuthException($credentialObj->getErrorAsString()));
       }
     }
-    elseif(!User::isLoggedIn() || ($requireOwner && !User::isOwner()))
+    elseif(!$userObj->isLoggedIn() || ($requireOwner && !$userObj->isOwner()))
     {
       OPException::raise(new OPAuthorizationSessionException());
     }
@@ -44,7 +53,8 @@ class Authentication
     */
   public function requireCrumb($crumb = null)
   {
-    if(getCredential()->isOAuthRequest())
+    $credentialObj = getCredential();
+    if($credentialObj->isOAuthRequest())
       return;
     elseif($crumb === null && isset($_REQUEST['crumb']))
       $crumb = $_REQUEST['crumb'];

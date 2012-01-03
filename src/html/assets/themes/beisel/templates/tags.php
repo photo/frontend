@@ -9,8 +9,8 @@
     <div class="span16">
       <ol class="tag-cloud">
         <?php foreach($tags as $tag) { ?>
-        <li class="size-<?php Utility::safe($tag['weight']); ?>">
-          <a href="<?php Url::photosView("tags-{$tag['id']}"); ?>" title="<?php Utility::safe($tag['count']); ?> photos"><?php Utility::safe($tag['id']); ?></a>
+        <li class="size-<?php $this->utility->safe($tag['weight']); ?>">
+          <a href="<?php $this->url->photosView("tags-{$tag['id']}"); ?>" title="<?php $this->utility->safe($tag['count']); ?> photos"><?php $this->utility->safe($tag['id']); ?></a>
         </li>
         <?php } ?>
       </ol>

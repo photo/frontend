@@ -30,8 +30,9 @@ class DatabaseMySql implements DatabaseInterface
     }
     else
     {
+      $utilityObj = new Utility;
       EpiDatabase::employ('mysql', $mysql->mySqlDb,
-                          $mysql->mySqlHost, $mysql->mySqlUser, Utility::decrypt($mysql->mySqlPassword));
+                          $mysql->mySqlHost, $mysql->mySqlUser, $utilityObj->decrypt($mysql->mySqlPassword));
       $this->db = getDatabase();
     }
 
@@ -452,7 +453,9 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getUser($owner = null)
   {
-    $res = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
+    if($owner === null)
+      $owner = $this->owner;
+    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
     if($res)
     {
       return self::normalizeUser($res);
