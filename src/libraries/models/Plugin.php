@@ -21,6 +21,9 @@ class Plugin extends BaseModel
   public function getActive()
   {
     $active = array();
+    if(!isset($this->config->plugins))
+      return $active;
+
     $confPlugins = $this->config->plugins;
     if($confPlugins !== null)
       $pluginsFromConf = (array)explode(',', $confPlugins->activePlugins);

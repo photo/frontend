@@ -23,10 +23,12 @@ class DatabaseSimpleDb implements DatabaseInterface
   {
     $this->config = !is_null($config) ? $config : getConfig()->get();
 
+
+    $utilityObj = new Utility;
     if(!is_null($params) && isset($params['db']))
       $this->db = $params['db'];
     else
-      $this->db = new AmazonSDB(Utility::decrypt($this->config->credentials->awsKey), Utility::decrypt($this->config->credentials->awsSecret));
+      $this->db = new AmazonSDB($utilityObj->decrypt($this->config->credentials->awsKey), $utilityObj->decrypt($this->config->credentials->awsSecret));
 
     $this->domainPhoto = $this->config->aws->simpleDbDomain;
     $this->domainAction = $this->config->aws->simpleDbDomain.'Action';
@@ -137,6 +139,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function diagnostics()
   {
     $diagnostics = array();
+    $utilityObj = new Utility;
     $domains = array('', 'Action', 'Credential', 'Group', 'User', 'Tag', 'Webhook');
     $queue = $this->getBatchRequest();
     foreach($domains as $domain)
@@ -144,14 +147,14 @@ class DatabaseSimpleDb implements DatabaseInterface
     $responses = $this->db->batch($queue)->send();
     if($responses->areOK())
     {
-      $diagnostics[] = Utility::diagnosticLine(true, 'All SimpleDb domains are accessible.');
+      $diagnostics[] = $utilityObj->diagnosticLine(true, 'All SimpleDb domains are accessible.');
     }
     else
     {
       foreach($responses as $key => $res)
       {
         if((int)$res->status !== 200)
-          $diagnostics[] = Utility::diagnosticLine(false, sprintf('The SimpleDb domains "%s" is NOT accessible.', $domains[$key]));
+          $diagnostics[] = $utilityObj->diagnosticLine(false, sprintf('The SimpleDb domains "%s" is NOT accessible.', $domains[$key]));
       }
     }
     return $diagnostics;
