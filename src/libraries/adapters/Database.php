@@ -74,9 +74,10 @@ function getDb(/*$type*/)
   if(func_num_args() == 1)
     $type = func_get_arg(0);
 
+  $systems = getConfig()->get('systems');
   // load configs only once
-  if(!$type)
-    $type = getConfig()->get('systems')->database;
+  if($systems !== null)
+    $type = $systems->database;
 
   switch($type)
   {

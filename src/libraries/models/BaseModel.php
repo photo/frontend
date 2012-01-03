@@ -15,10 +15,15 @@ class BaseModel
   {
     $this->api = getApi();
     $this->config = getConfig()->get();
-    $this->db = getDb();
-    $this->fs = getFs();
     $this->logger = getLogger();
     $this->route = getRoute();
     $this->session = getSession();
+    
+    // really just for setup when the systems don't yet exist
+    if(isset($this->config->systems))
+    {
+      $this->db = getDb();
+      $this->fs = getFs();
+    }
   }
 }
