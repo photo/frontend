@@ -98,13 +98,3 @@ class Url
     return $utilityObj->returnValue('/user/settings', $write);
   }
 }
-
-function getUrl()
-{
-  static $url;
-  if($url)
-    return $url;
-
-  $url = new Url;
-  return $url;
-}
