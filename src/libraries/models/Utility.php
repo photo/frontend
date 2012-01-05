@@ -5,8 +5,11 @@ class Utility
 
   public function __construct() { }
 
-  public function callApis($apisToCall)
+  public function callApis($apisToCall, $apiObj = null)
   {
+    if($apiObj === null)
+      $apiObj = getApi();
+
     $params = array();
     if(!empty($apisToCall))
     {
@@ -20,7 +23,7 @@ class Utility
         if(isset($apiUrlParts['query']))
           parse_str($apiUrlParts['query'], $apiParams);
 
-        $response = getApi()->invoke($apiUrlParts['path'], $apiMethod, array("_{$apiMethod}" => $apiParams));
+        $response = $apiObj->invoke($apiUrlParts['path'], $apiMethod, array("_{$apiMethod}" => $apiParams));
         $params[$name] = $response['result'];
 
       }
@@ -46,6 +49,7 @@ class Utility
 
   public function diagnosticLine($status, $message)
   {
+    $status = (bool)$status;
     $label = $status ? 'success' : 'failure';
     return array('status' => $status, 'label' => $label, 'message' => $message);
   }
