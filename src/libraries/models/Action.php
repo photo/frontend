@@ -13,6 +13,7 @@ class Action extends BaseModel
   public function __construct()
   {
     parent::__construct();
+    $this->user = new User;
   }
 
   /**
@@ -27,8 +28,7 @@ class Action extends BaseModel
     if(!isset($params['type']) || !isset($params['targetType']))
       return false;
 
-    $userObj = new User;
-    $id = $userObj->getNextId('action');
+    $id = $this->user->getNextId('action');
     if($id === false)
     {
       $this->logger->crit("Could not fetch next action ID for {$params['type']}");
@@ -77,8 +77,8 @@ class Action extends BaseModel
   private function getDefaultAttributes()
   {
     return array(
-      'appId' => getConfig()->get('application')->appId,
-      'owner' => getConfig()->get('user')->email,
+      'appId' => $this->config->application->appId,
+      'owner' => $this->config->user->email,
       'email' => '',
       'name' => '',
       'avatar' => '',
