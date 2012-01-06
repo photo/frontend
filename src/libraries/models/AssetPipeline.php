@@ -13,7 +13,7 @@ class AssetPipeline
   const js = 'js';
   const minified = 'm';
   const combined = 'c';
-  private $assets, $assetsRel, $docroot, $cacheDir, $mode;
+  protected $assets, $assetsRel, $docroot, $cacheDir, $mode;
 
   public function __construct()
   {
@@ -26,6 +26,21 @@ class AssetPipeline
       $this->mode = self::minified;
     else
       $this->mode = self::combined;
+  }
+
+  public function addCss($src)
+  {
+    if(file_exists($path = sprintf('%s%s', $this->docroot, $src)))
+      $this->addAsset($path, 'css');
+    return $this;
+  }
+
+  public function addJs($src)
+  {
+    if(file_exists($path = sprintf('%s%s', $this->docroot, $src)))
+      $this->addAsset($path, 'js');
+
+    return $this;
   }
 
   public function getCombined($type)
@@ -64,21 +79,6 @@ class AssetPipeline
     }
     
     return $url;
-  }
-
-  public function addCss($src)
-  {
-    if(file_exists($path = sprintf('%s%s', $this->docroot, $src)))
-      $this->addAsset($path, 'css');
-    return $this;
-  }
-
-  public function addJs($src)
-  {
-    if(file_exists($path = sprintf('%s%s', $this->docroot, $src)))
-      $this->addAsset($path, 'js');
-
-    return $this;
   }
 
   private function addAsset($src, $type)
