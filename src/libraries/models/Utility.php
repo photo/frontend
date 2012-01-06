@@ -100,6 +100,8 @@ class Utility
 
   public function dateLong($ts, $write = true)
   {
+    if(empty($ts))
+      return 'Unknown';
     return $this->returnValue(date('l, F jS, Y \a\t g:ia', $ts), $write);
   }
 
@@ -145,7 +147,7 @@ class Utility
       } 
     } 
 
-    return $retval;
+    return trim($retval);
   }
 
   public function getEmailHandle($email, $write = true)
@@ -168,6 +170,7 @@ class Utility
     return range($start, $end);
   }
 
+  // TODO do not look up $_SERVER
   public function getProtocol($write = true)
   {
     $protocol = $_SERVER['SERVER_PORT'] != '443' ? 'http' : 'https';
@@ -234,9 +237,7 @@ class Utility
     // default it to the key, if the key doesn't exist then assume it's custom
     $license = $key;
     if(isset($licenses[$key]))
-    {
       $license = sprintf('%s (%s)', $key, $licenses[$key]['name']);
-    }
 
     return $this->returnValue($license, $write);
   }

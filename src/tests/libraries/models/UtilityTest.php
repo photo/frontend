@@ -89,4 +89,194 @@ class UtilityTest extends PHPUnit_Framework_TestCase
     $res = $this->utility->getBaseDir();
     $this->assertEquals(dirname(dirname(dirname(dirname(__FILE__)))), $res, 'getBaseDir not correct');
   }
+
+  public function testGetLicenses()
+  {
+    $licenses = $this->utility->getLicenses();
+    $this->assertTrue(isset($licenses['']), 'no empty license as first option');
+    $this->assertEquals(7, count($licenses), 'There should be 7 licenses returned');
+  }
+
+  public function testGetLicensesSelected()
+  {
+    $licenses = $this->utility->getLicenses('CC BY');
+    $this->assertTrue($licenses['CC BY']['selected'], 'CC BY should be selected');
+    $this->assertFalse($licenses['CC BY-SA']['selected'], 'CC BY-SA should NOT be selected');
+  }
+
+  public function testDateLong()
+  {
+    date_default_timezone_set('America/Los_Angeles');
+    $res = $this->utility->dateLong(1325810036, false);
+    $this->assertEquals('Thursday, January 5th, 2012 at 4:33pm', $res, 'Date format does not match expected value');
+  }
+
+  public function testDateLongEmpty()
+  {
+    date_default_timezone_set('America/Los_Angeles');
+    $res = $this->utility->dateLong(0, false);
+    $this->assertEquals('Unknown', $res, 'Date format does not match expected value for 0');
+
+    $res = $this->utility->dateLong('', false);
+    $this->assertEquals('Unknown', $res, 'Date format does not match expected value for empty string');
+
+    $res = $this->utility->dateLong(null, false);
+    $this->assertEquals('Unknown', $res, 'Date format does not match expected value for null');
+  }
+
+  public function testGenerateIniString()
+  {
+    $res = $this->utility->generateIniString(array('foo' => array('bar' => 'value')), true);
+    $expected = <<<RES
+[foo]
+bar = "value"
+RES;
+    
+    $this->assertEquals($expected, $res, 'Ini string with sections failed');
+  }
+
+  public function testGetEmailHandle()
+  {
+    $res = $this->utility->getEmailHandle('user@example.com', false);
+    $this->assertEquals('user', $res);
+    $res = $this->utility->getEmailHandle('user+one@example.com', false);
+    $this->assertEquals('user+one', $res);
+    $res = $this->utility->getEmailHandle('user+.-)(*&^%$#!@example.com', false);
+    $this->assertEquals('user+.-)(*&^%$#!', $res);
+  }
+
+  public function testGetProtocol()
+  {
+    $_SERVER['SERVER_PORT'] = 80;
+    $res = $this->utility->getProtocol(false);
+    $this->assertEquals('http', $res);
+
+    $_SERVER['SERVER_PORT'] = 443;
+    $res = $this->utility->getProtocol(false);
+    $this->assertEquals('https', $res);
+
+    $_SERVER['SERVER_PORT'] = 0;
+    $res = $this->utility->getProtocol(false);
+    $this->assertEquals('http', $res);
+  }
+
+  public function testIsActiveTab()
+  {
+    $_GET['__route__'] = '/';
+    $res = $this->utility->isActiveTab('home');
+    $this->assertTrue($res, 'home is not active tab');
+
+    $_GET['__route__'] = '/photo/view';
+    $res = $this->utility->isActiveTab('photo');
+    $this->assertTrue($res, '/photo/view not photo tab');
+
+    $_GET['__route__'] = '/photos/one/two/three';
+    $res = $this->utility->isActiveTab('photo');
+    $this->assertTrue($res, '/photos/one/two/three  not photo tab');
+
+    $_GET['__route__'] = '/tags/list';
+    $res = $this->utility->isActiveTab('tags');
+    $this->assertTrue($res, '/tags/list not tags tab');
+
+    $_GET['__route__'] = '/photos/upload';
+    $res = $this->utility->isActiveTab('upload');
+    $this->assertTrue($res, '/photos/upload not upload tab');
+  }
+  
+  // TODO implement some sort of test
+  public function testIsMobile() {}
+
+  // TODO implement some sort of test
+  public function testGetTemplate() {}
+
+  public function testLicenseLong()
+  {
+    $res = $this->utility->licenseLong('CC BY', false);
+    $this->assertEquals('CC BY (Attribution)', $res, 'CC BY license not properly retrieved');
+
+    $res = $this->utility->licenseLong('Does not exist', false);
+    $this->assertEquals('Does not exist', $res, 'licenseLong should return string passed in of match is not found');
+  }
+
+  public function testPermissionAsText()
+  {
+    $res = $this->utility->permissionAsText(0, false);
+    $this->assertEquals('private', $res, '0 permission should be private');
+
+    $res = $this->utility->permissionAsText(1, false);
+    $this->assertEquals('public', $res, '1 permission should be public');
+
+    $res = $this->utility->permissionAsText('foobar', false);
+    $this->assertEquals('public', $res, 'foobar permission should be public');
+  }
+
+  public function testPlural()
+  {
+    $res = $this->utility->plural(1, 'word', false);
+    $this->assertEquals('word', $res, 'plural for word with 1 incorrect');
+
+    $res = $this->utility->plural(2, 'word', false);
+    $this->assertEquals('words', $res, 'plural for word with 2 incorrect');
+  }
+
+  public function testReturnValue()
+  {
+    $res = $this->utility->returnValue('foo', false);
+    $this->assertEquals('foo', $res, 'returnValue when false should return');
+
+    ob_start();
+    $this->utility->returnValue('foo', true);
+    $res = ob_get_contents();
+    $this->assertEquals('foo', $res, 'returnValue when true should write');
+    ob_end_clean();
+  }
+
+  public function testSafe()
+  {
+    $res = $this->utility->safe('Hello " there', false);
+    $this->assertEquals('Hello &quot; there', $res, 'content not properly safed');
+  }
+
+  // TODO populate this test
+  public function testStaticMapUrl() {}
+
+  public function testTimeAsText()
+  {
+    date_default_timezone_set('America/Los_Angeles');
+    $res = $this->utility->timeAsText('', null, null, false);
+    $this->assertEquals('', $res, 'when no time is passed then return empty');
+
+    $res = $this->utility->timeAsText(time()+3601, null, null, false);
+    $this->assertEquals('--', $res, 'future hours returns --');
+
+    $res = $this->utility->timeAsText(time()-3601, null, null, false);
+    $this->assertEquals(' 1 hour ago ', $res, 'future hours returns --');
+
+    $res = $this->utility->timeAsText(time()-7201, null, null, false);
+    $this->assertEquals(' 2 hours ago ', $res, 'future hours returns --');
+
+    $res = $this->utility->timeAsText(time()-86400, null, null, false);
+    $this->assertEquals(' 1 day ago ', $res, 'future hours returns --');
+
+    $res = $this->utility->timeAsText(time()-(86400*2), null, null, false);
+    $this->assertEquals(' 2 days ago ', $res, 'future hours returns --');
+
+    $res = $this->utility->timeAsText(time()-(86400*8), null, null, false);
+    $this->assertEquals(' 1 week ago ', $res, 'future hours returns --');
+
+    $res = $this->utility->timeAsText(time()-(86400*14), null, null, false);
+    $this->assertEquals(' 2 weeks ago ', $res, 'future hours returns --');
+
+    $res = $this->utility->timeAsText(time()-(86400*35), null, null, false);
+    $this->assertEquals(' 1 month ago ', $res, 'future hours returns --');
+
+    $res = $this->utility->timeAsText(time()-(86400*65), null, null, false);
+    $this->assertEquals(' 2 months ago ', $res, 'future hours returns --');
+
+    $res = $this->utility->timeAsText(time()-(86400*370), null, null, false);
+    $this->assertEquals(' 1 year ago ', $res, 'future hours returns --');
+
+    $res = $this->utility->timeAsText(time()-(86400*370*2), null, null, false);
+    $this->assertEquals(' 2 years ago ', $res, 'future hours returns --');
+  }
 }
