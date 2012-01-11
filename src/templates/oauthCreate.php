@@ -1,19 +1,34 @@
 <?php if($this->user->isOwner()) { ?>
-  <form method="post">
-    <label>App Name</label>
-    <input type="text" name="name" placeholder="Enter a name" value="<?php $this->utility->safe($name); ?>">
+  <div class="row">
+    <div class="span8 offset3">
+      <form method="post" class="form-stacked">
+        <h1>Create an app</h1>
+        <p>
+          Apps let other programs have access to your OpenPhoto account. 
+          It's a great way to add features and functionality to your photo library.
+          You'll want to make sure that you trust the site you just came from.
+          If you do not, then simply close this window.
+        </p>
+        <div class="clearfix">
+          <label for="name">A Name For Your App</label>
+          <div class="input">
+            <input type="text" name="name" placeholder="Enter a name" value="<?php $this->utility->safe($name); ?>">
+          </div>
+        </div>
 
-    <!--<label>Permission</label>
-    <ul>
-      <li><input type="checkbox" name="permissions[]" value="read" class="checkbox" checked="true"> Read</li>
-      <li><input type="checkbox" name="permissions[]" value="create" class="checkbox"> Create</li>
-      <li><input type="checkbox" name="permissions[]" value="update" class="checkbox"> Update</li>
-      <li><input type="checkbox" name="permissions[]" value="delete" class="checkbox"> Delete</li>
-    </ul>-->
+        <!--<label>Permission</label>
+        <ul>
+          <li><input type="checkbox" name="permissions[]" value="read" class="checkbox" checked="true"> Read</li>
+          <li><input type="checkbox" name="permissions[]" value="create" class="checkbox"> Create</li>
+          <li><input type="checkbox" name="permissions[]" value="update" class="checkbox"> Update</li>
+          <li><input type="checkbox" name="permissions[]" value="delete" class="checkbox"> Delete</li>
+        </ul>-->
 
-    <input type="hidden" name="oauth_callback" value="<?php $this->utility->safe($callback); ?>">
-    <button type="submit">Create App</button>
-  </form>
+        <input type="hidden" name="oauth_callback" value="<?php $this->utility->safe($callback); ?>">
+        <button type="submit">Create App</button>
+      </form>
+    </div>
+  </div>
 <?php } else { ?>
   <?php if($this->utility->isMobile()) { ?>
     <?php if($error) { ?><h2 class="error">Incorrect Passphrase</h2><?php } ?>
