@@ -268,7 +268,8 @@ class User extends BaseModel
     */
   private function update($params)
   {
-    $params = array_merge($this->getDefaultAttributes(), $params);
+    $user = $this->getUserRecord();
+    $params = array_merge($this->getDefaultAttributes(), $user, $params);
     return $this->db->postUser($params);
   }
 }
