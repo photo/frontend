@@ -678,8 +678,9 @@ class SetupController extends BaseController
     $errors = array();
     $configDir = $this->utility->getBaseDir() . '/userdata';
     $generatedDir = "{$configDir}/configs";
+    $assetsDir = $this->utility->getBaseDir() . '/html/assets/cache';
 
-    if(file_exists($generatedDir) && is_writable($generatedDir) && !empty($imageLibs))
+    if(file_exists($generatedDir) && is_writable($generatedDir) && file_exists($assetsDir) && is_writable($assetsDir) && !empty($imageLibs))
       # No errors, return empty array
       return $errors;
 
@@ -692,7 +693,7 @@ class SetupController extends BaseController
 
     if(!file_exists($generatedDir))
     {
-      $createDir = mkdir($generatedDir, 0700);
+      $createDir = @mkdir($generatedDir, 0700);
       if(!$createDir)
         $errors[] = "Could not create configuration directory.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
     }
@@ -700,6 +701,18 @@ class SetupController extends BaseController
     {
       $errors[] = "Directory exist but is not writable.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$generatedDir}</em>.</li></ul>";
     }
+
+    if(!file_exists($assetsDir))
+    {
+      $createDir = @mkdir($assetsDir, 0700);
+      if(!$createDir)
+        $errors[] = "Could not create assets cache directory.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$assetsDir}</em>.</li></ul>";
+    }
+    elseif(!is_writable($assetsDir))
+    {
+      $errors[] = "Directory exist but is not writable.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$assetsDir}</em>.</li></ul>";
+    }
+
 
     if(empty($imageLibs))
       $errors[] = 'No suitable image library exists.<ul><li>Make sure that one of the following are installed: <em><a href="http://php.net/imagick">Imagick</a></em>, <em><a href="http://php.net/gmagick">Gmagick</a></em>, or <em><a href="http://php.net/gd">GD</a></em>.</li></ul>';

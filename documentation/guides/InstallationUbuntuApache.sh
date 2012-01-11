@@ -69,6 +69,9 @@ echo ""
 mkdir /var/www/openphoto/src/userdata
 chown www-data:www-data /var/www/openphoto/src/userdata
 
+mkdir /var/www/openphoto/src/html/assets/cache
+chown www-data:www-data /var/www/openphoto/src/html/assets/cache
+
 echo ""
 echo ""
 echo "===================================================="
