@@ -15,15 +15,6 @@ getRoute()->get('/', array('GeneralController', 'home'));
 getRoute()->post('/action/([a-zA-Z0-9]+)/(photo)/create', array('ActionController', 'create')); // post an action (/action/{id}/{type}/create)
 
 /*
- * Asset endpoints
- * All asset endpoints follow the same convention.
- * Everything in []'s are optional
- * /assets/cache/:version/:type/:file[,:file]
- */
-getRoute()->get('/assets/cache/[^/]+/(js|css)/(c|m)(/.+)', array('AssetsController', 'get'));
-
-
-/*
  * Photo endpoints
  * All photo endpoints follow the same convention.
  * Everything in []'s are optional

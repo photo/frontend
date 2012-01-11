@@ -24,9 +24,12 @@ EpiSession::employ(getConfig()->get('epi')->session);
 getSession();
 
 // determine if this is a login endpoint
-$loginEndpoint = false;
+$loginEndpoint = $assetEndpoint = false;
 if(isset($_GET['__route__']) && preg_match('#/user/(.*)(login|logout)#', $_GET['__route__']))
   $loginEndpoint = true;
+
+if(isset($_GET['__route__']) && preg_match('#^/assets#', $_GET['__route__']))
+  $assetEndpoint = true;
 
 // determine if this is a setup endpoint
 $runSetup = false;
