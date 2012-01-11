@@ -35,8 +35,8 @@ class AssetsController extends BaseController
       header('Content-type: text/javascript');
 
     if($compression === 'm')
-      echo $pipeline->getMinified('css');
+      echo $pipeline->getMinified($type);
     elseif($compression === 'c')
-      echo $pipeline->getCombined('css');
+      echo $pipeline->getCombined($type);
   }
 }
