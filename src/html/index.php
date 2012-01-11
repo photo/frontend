@@ -8,7 +8,7 @@
 
 require sprintf('%s/libraries/initialize.php', dirname(dirname(__FILE__)));
 
-if($loginEndpoint || (!$runUpgrade && !$runSetup && $hasConfig))
+if($assetEndpoint || $loginEndpoint || (!$runUpgrade && !$runSetup && $hasConfig))
 {
   // if we're not running setup, don't need an upgrade and the config file exists, proceed as normal
   // else no config file then load up the setup dependencies
