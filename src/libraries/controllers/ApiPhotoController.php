@@ -488,6 +488,7 @@ class ApiPhotoController extends ApiBaseController
 
   private function parseFilters($filterOpts)
   {
+    $groupsObj = new Group;
     // If the user is logged in then we can display photos based on group membership
     $permission = 0;
     if($this->user->isOwner())
@@ -496,7 +497,7 @@ class ApiPhotoController extends ApiBaseController
     }
     elseif($this->user->isLoggedIn())
     {
-      $userGroups = Group::getGroups($this->user->getEmailAddress());
+      $userGroups = $groupsObj->getGroups($this->user->getEmailAddress());
       if(!empty($userGroups))
       {
         $permission = -1;
