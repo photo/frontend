@@ -18,6 +18,20 @@ function getLogger()
   return new ___L;
 }
 
+class OPException extends Exception
+{
+  public static function raise($exception)
+  {
+    throw $exception;
+  }
+}
+
+class OPAuthorizationException extends OPException{}
+class OPAuthorizationOAuthException extends OPAuthorizationException{}
+class OPAuthorizationSessionException extends OPAuthorizationException{}
+class OPInvalidImageException extends OPException{}
+
+
 /*function getBaseDir($file = null)
 {
   if($file === null)
