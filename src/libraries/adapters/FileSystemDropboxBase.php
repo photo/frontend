@@ -8,17 +8,19 @@
  */
 class FileSystemDropboxBase
 {
-  private $parent;
-  public function __construct($parent)
+  private $config, $parent;
+  public function __construct($parent, $config = null, $params = null)
   {
+    $this->config = !is_null($config) ? $config : getConfig()->get();
     $this->directoryMask = 'Y_m_F';
-    $oauth = new Dropbox_OAuth_PHP(Utility::decrypt(getConfig()->get('credentials')->dropboxKey), Utility::decrypt(getConfig()->get('credentials')->dropboxSecret));
+    $utilityObj = new Utility;
+    $oauth = new Dropbox_OAuth_PHP($utilityObj->decrypt($this->config->credentials->dropboxKey), $utilityObj->decrypt($this->config->credentials->dropboxSecret));
     $oauth->setToken(array(
-      'token' => Utility::decrypt(getConfig()->get('credentials')->dropboxToken),
-      'token_secret' => Utility::decrypt(getConfig()->get('credentials')->dropboxTokenSecret)
+      'token' => $utilityObj->decrypt($this->config->credentials->dropboxToken),
+      'token_secret' => $utilityObj->decrypt($this->config->credentials->dropboxTokenSecret)
     ));
     $this->dropbox = new Dropbox_API($oauth, Dropbox_API::ROOT_SANDBOX);
-    $this->dropboxFolder = getConfig()->get('dropbox')->dropboxFolder;
+    $this->dropboxFolder = $this->config->dropbox->dropboxFolder;
     $this->parent = $parent;
   }
 
@@ -44,21 +46,22 @@ class FileSystemDropboxBase
   public function diagnostics()
   {
     $diagnostics = array();
+    $utilityObj = new Utility;
     try
     {
       $queryDropboxFolder = $this->dropbox->getMetaData($this->dropboxFolder);
       if(isset($queryDropboxFolder['is_deleted']) && $queryDropboxFolder['is_deleted'] == 1)
-        $diagnostics[] = Utility::diagnosticLine(false, 'The specified Dropbox directory has been deleted.');
+        $diagnostics[] = $utilityObj->diagnosticLine(false, 'The specified Dropbox directory has been deleted.');
       else
-        $diagnostics[] = Utility::diagnosticLine(true, 'The Dropbox directory exists and looks okay.');
+        $diagnostics[] = $utilityObj->diagnosticLine(true, 'The Dropbox directory exists and looks okay.');
     }
     catch(Dropbox_Exception_NotFound $e)
     {
-      $diagnostics[] = Utility::diagnosticLine(false, 'Could not get meta data for your Dropbox Directory.');
+      $diagnostics[] = $utilityObj->diagnosticLine(false, 'Could not get meta data for your Dropbox Directory.');
     }
     catch(Dropbox_Exception $e)
     {
-      $diagnostics[] = Utility::diagnosticLine(false, 'An unknown error occured when trying to connect to Dropbox.');
+      $diagnostics[] = $utilityObj->diagnosticLine(false, 'An unknown error occured when trying to connect to Dropbox.');
     }
     return $diagnostics;
   }
@@ -79,6 +82,11 @@ class FileSystemDropboxBase
     {
       $folderDoesNotExist = true;
     }
+    catch(Exception $e)
+    {
+      getLogger()->crit('Call to getMetaData failed during initialize.', $e);
+      return false;
+    }
 
     if($folderDoesNotExist)
     {
@@ -89,7 +97,7 @@ class FileSystemDropboxBase
       }
       catch(Dropbox_Exception $e)
       {
-        getLogger()->crit(sprintf('Could not create folder. Message: %s', $e->getMessage()));
+        getLogger()->crit('Could not create folder.', $e);
       }
     }
 
@@ -106,7 +114,8 @@ class FileSystemDropboxBase
 
     if(strpos($remoteFile, '/original/') !== false)
     {
-      $exif = Photo::readExif($localFile);
+      $photoObj = new Photo;
+      $exif = $photoObj->readExif($localFile);
       $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
       if(!$this->putFileInDirectory($directory, $localFile, basename($remoteFile)))
         return false;
@@ -121,7 +130,8 @@ class FileSystemDropboxBase
       list($localFile, $remoteFile) = each($file);
       if(strpos($remoteFile, '/original/') !== false && file_exists($localFile))
       {
-        $exif = Photo::readExif($localFile);
+        $photoObj = new Photo;
+        $exif = $photoObj->readExif($localFile);
         $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
         if(!$this->putFileInDirectory($directory, $localFile, basename($remoteFile)))
           return false;
@@ -144,6 +154,11 @@ class FileSystemDropboxBase
     {
       $createDirectory = true;
     }
+    catch(Exception $e)
+    {
+      getLogger()->warn('Dropbox exception from getMetaData call', $e);
+      return false;
+    }
 
     if($createDirectory)
     {
@@ -154,7 +169,7 @@ class FileSystemDropboxBase
       }
       catch(Dropbox_Exception $e)
       {
-        getLogger()->info('Failed creating dropbox directory. Message: ' . $e->getMessage());
+        getLogger()->info('Failed creating dropbox directory.', $e);
         return false;
       }
     }
@@ -167,7 +182,7 @@ class FileSystemDropboxBase
     }
     catch(Dropbox_Exception $e)
     {
-      getLogger()->crit(sprintf('Could not put file on dropbox. Message: %s', $e->getMessage()));
+      getLogger()->crit('Could not put file on dropbox.', $e);
     }
     return false;
   }

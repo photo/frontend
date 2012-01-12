@@ -167,7 +167,7 @@ class SetupController extends BaseController
     }
     catch(Dropbox_Exception $e)
     {
-      getLogger()->crit(sprintf('An error occured getting the Dropbox authorize url. Message: %s', $e->getMessage()));
+      getLogger()->crit('An error occured getting the Dropbox authorize url.', $e);
       $this->route->run('/error/500', EpiRoute::httpGet);
     }
   }
