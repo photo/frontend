@@ -48,17 +48,20 @@ interface EpiSessionInterface
   public function set($key = null, $value = null);
 }
 
-function getSession()
+if(!function_exists('getSession'))
 {
-  $employ = EpiSession::employ();
-  if($employ && class_exists($employ))
-    return EpiSession::getInstance($employ);
-  elseif(class_exists(EpiSession::PHP))
-    return EpiSession::getInstance(EpiSession::PHP);
-  elseif(class_exists(EpiSession::APC))
-    return EpiSession::getInstance(EpiSession::APC);
-  elseif(class_exists(EpiSession::MEMCACHED))
-    return EpiSession::getInstance(EpiSession::MEMCACHED);
-  else
-    EpiException::raise(new EpiSessionException('Could not determine which session handler to load', 404));
+  function getSession()
+  {
+    $employ = EpiSession::employ();
+    if($employ && class_exists($employ))
+      return EpiSession::getInstance($employ);
+    elseif(class_exists(EpiSession::PHP))
+      return EpiSession::getInstance(EpiSession::PHP);
+    elseif(class_exists(EpiSession::APC))
+      return EpiSession::getInstance(EpiSession::APC);
+    elseif(class_exists(EpiSession::MEMCACHED))
+      return EpiSession::getInstance(EpiSession::MEMCACHED);
+    else
+      EpiException::raise(new EpiSessionException('Could not determine which session handler to load', 404));
+  }
 }

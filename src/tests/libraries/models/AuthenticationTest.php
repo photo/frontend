@@ -12,10 +12,6 @@ class AuthenticationWrapper extends Authentication
   }
 }
 
-function getCredential(){  }
-function getSession(){  }
-class User { }
-
 class AuthenticationTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()
