@@ -6,16 +6,50 @@ function arrayToObject($array)
   return json_decode(json_encode($array));
 }
 
-class ___L
+if(!function_exists('getConfig'))
 {
-  public function info() {}
-  public function warn() {}
-  public function crit() {}
+  function getConfig() { return new FauxObject; }
+}
+if(!function_exists('getLogger'))
+{
+  function getLogger() { return new FauxObject; }
+}
+if(!function_exists('getApi'))
+{
+  function getApi() { return new FauxObject; }
+}
+if(!function_exists('getRoute'))
+{
+  function getRoute() { return new FauxObject; }
+}
+if(!function_exists('getSession'))
+{
+  function getSession() { return new FauxObject; }
+}
+if(!function_exists('getDb'))
+{
+  function getDb() { return new FauxObject; }
+}
+if(!function_exists('getFs'))
+{
+  function getFs() { return new FauxObject; }
+}
+if(!function_exists('getCredential'))
+{
+  function getCredential() { return new FauxObject; }
 }
 
-function getLogger()
+
+if(!class_exists('BaseModel'))
 {
-  return new ___L;
+  class BaseModel
+  {
+    public function __construct() {}
+    public function inject($key, $value)
+    {
+      $this->$key = $value;
+    }
+  }
 }
 
 class OPException extends Exception
@@ -31,6 +65,23 @@ class OPAuthorizationOAuthException extends OPAuthorizationException{}
 class OPAuthorizationSessionException extends OPAuthorizationException{}
 class OPInvalidImageException extends OPException{}
 
+class FauxObject
+{
+  public function __call($name, $params)
+  {
+    return func_get_args();
+  }
+
+  public function __get($key)
+  {
+    return func_get_args();
+  }
+
+  public function __set($key, $value)
+  {
+    return func_get_args();
+  }
+}
 
 /*function getBaseDir($file = null)
 {

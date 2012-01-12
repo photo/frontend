@@ -3,15 +3,6 @@ $baseDir = dirname(dirname(dirname(dirname(__FILE__))));
 require_once sprintf('%s/tests/helpers/init.php', $baseDir);
 require_once sprintf('%s/libraries/models/Action.php', $baseDir);
 
-class BaseModel
-{
-  public function __construct() {}
-  public function inject($key, $value)
-  {
-    $this->$key = $value;
-  }
-}
-
 class User { }
 
 class ActionTest extends PHPUnit_Framework_TestCase
