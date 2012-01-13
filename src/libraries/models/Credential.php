@@ -9,15 +9,30 @@ class Credential extends BaseModel
   const statusActive = '1';
 
   const nonceCacheKey = 'oauthTimestamps';
-  private $consumer, $oauthException, $oauthParams, $provider;
+  public $consumer, $oauthException, $oauthParams, $provider, $sendHeadersOnError = true;
 
-  public function __construct()
+  /**
+    * Constructor
+    */
+  public function __construct($config = null, $params = null)
   {
     parent::__construct();
+    if(isset($params['utility']))
+      $this->utility = $params['utility'];
+    else
+      $this->utility = new Utility;
+
     if(class_exists('OAuthProvider'))
       $this->provider = new OAuthProvider($this->getOAuthParameters());
   }
 
+  /**
+    * Add an oauth credential for this user
+    *
+    * @param string $name Human readable name for this credential
+    * @param array $params Array of permissions
+    * @return mixed Credential ID on success, false on failure
+    */
   public function add($name, $permissions = array('read'))
   {
     if(!class_exists('OAuthProvider'))
@@ -46,6 +61,14 @@ class Credential extends BaseModel
     return false;
   }
 
+  /**
+    * Convert an existing token from one type to another.
+    *  Typically used to convert from an authorized request token to an access token
+    *
+    * @param string $name Human readable name for this credential
+    * @param array $params Array of permissions
+    * @return mixed Credential ID on success, false on failure
+    */
   public function convertToken($id, $toTokenType)
   {
     if(!class_exists('OAuthProvider'))
@@ -79,7 +102,7 @@ class Credential extends BaseModel
     catch(OAuthException $e)
     {
       $this->oauthException = $e;
-      $this->logger->crit(OAuthProvider::reportProblem($e));
+      $this->logger->crit(OAuthProvider::reportProblem($e, $this->sendHeadersOnError));
       return false;
     }
   }
@@ -118,7 +141,7 @@ class Credential extends BaseModel
       return false;
     }
 
-    $cache = getConfig()->get(self::nonceCacheKey);
+    $cache = $this->cache->get(self::nonceCacheKey);
     if(!$cache)
       $cache = array();
     list($lastTimestamp, $nonces) = each($cache);
@@ -193,9 +216,8 @@ class Credential extends BaseModel
     if($this->oauthParams)
       return $this->oauthParams;
 
-    $utilityObj = new Utility;
     $this->oauthParams = array();
-    $headers = $utilityObj->getAllHeaders();
+    $headers = $this->utility->getAllHeaders();
     foreach($headers as $name => $header)
     {
       if(stripos($name, 'authorization') === 0)
@@ -233,11 +255,14 @@ class Credential extends BaseModel
   }
 }
 
-function getCredential()
+if(!function_exists('getCredential'))
 {
-  static $credential;
-  if(!$credential)
-    $credential = new Credential;
+  function getCredential()
+  {
+    static $credential;
+    if(!$credential)
+      $credential = new Credential;
 
-  return $credential;
+    return $credential;
+  }
 }

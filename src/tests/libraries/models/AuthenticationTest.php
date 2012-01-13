@@ -3,9 +3,15 @@ $baseDir = dirname(dirname(dirname(dirname(__FILE__))));
 require_once sprintf('%s/tests/helpers/init.php', $baseDir);
 require_once sprintf('%s/libraries/models/Authentication.php', $baseDir);
 
+if(!class_exists('User'))
+{
+  class User {}
+}
+
+$_REQUEST['oauth_consumer_key'] = 'foo';
 class AuthenticationWrapper extends Authentication
 {
-  public function __construct() { parent::__construct();}
+  public function __construct() { parent::__construct(); }
   public function inject($key, $value)
   {
     $this->$key = $value;

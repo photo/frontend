@@ -130,9 +130,10 @@ class User extends BaseModel
 
   public function isLoggedIn()
   {
-    if(getCredential()->isOAuthRequest())
+    $credential = new Credential;
+    if($credential->isOAuthRequest())
     {
-      if(!getCredential()->checkRequest())
+      if(!$credential->checkRequest())
       {
         return false;
       }
@@ -146,9 +147,10 @@ class User extends BaseModel
 
   public function isOwner()
   {
-    if(getCredential()->isOAuthRequest())
+    $credential = new Credential;
+    if($credential->isOAuthRequest())
     {
-      if(!getCredential()->checkRequest())
+      if(!$credential->checkRequest())
       {
         return false;
       }
