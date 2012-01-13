@@ -6,6 +6,10 @@ function arrayToObject($array)
   return json_decode(json_encode($array));
 }
 
+if(!function_exists('getCache'))
+{
+  function getCache() { return new FauxObject; }
+}
 if(!function_exists('getConfig'))
 {
   function getConfig() { return new FauxObject; }
@@ -44,7 +48,10 @@ if(!class_exists('BaseModel'))
 {
   class BaseModel
   {
-    public function __construct() {}
+    public function __construct()
+    {
+      $this->logger = getLogger();
+    }
     public function inject($key, $value)
     {
       $this->$key = $value;
