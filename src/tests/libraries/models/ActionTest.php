@@ -3,7 +3,10 @@ $baseDir = dirname(dirname(dirname(dirname(__FILE__))));
 require_once sprintf('%s/tests/helpers/init.php', $baseDir);
 require_once sprintf('%s/libraries/models/Action.php', $baseDir);
 
-class User { }
+if(!class_exists('User'))
+{
+  class User { }
+}
 
 class ActionTest extends PHPUnit_Framework_TestCase
 {

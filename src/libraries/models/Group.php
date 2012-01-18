@@ -16,23 +16,23 @@ class Group extends BaseModel
     $this->user = new User;
   }
 
-  public function create()
+  public function create($params)
   {
-    $params = $this->getDefaultAttributes();
+    $whitelist = $validParams = $this->getDefaultAttributes();
     foreach($params as $key => $value)
     {
-      if(isset($_POST[$key]))
-        $params[$key] = $_POST[$key];
+      if(isset($whitelist[$key]))
+        $validParams[$key] = $params[$key];
     }
 
-    if(!$this->validate($params))
+    if(!$this->validate($validParams))
       return false;
 
     $nextGroupId = $this->user->getNextId('group');
     if($nextGroupId === false)
       return false;
 
-    $res = $this->db->putGroup($nextGroupId, $params);
+    $res = $this->db->putGroup($nextGroupId, $validParams);
     if($res === false)
       return false;
 
@@ -63,22 +63,22 @@ class Group extends BaseModel
   public function update($id, $params)
   {
     $defaults = $this->getDefaultAttributes();
-    $params = array();
+    $validParams = array();
     foreach($defaults as $key => $value)
     {
-      if(isset($_POST[$key]))
-        $params[$key] = $_POST[$key];
+      if(isset($params[$key]))
+        $validParams[$key] = $params[$key];
     }
-    if(!$this->validate($params, false))
+    if(!$this->validate($validParams, false))
       return false;
 
-    return $this->db->postGroup($id, $params);
+    return $this->db->postGroup($id, $validParams);
   }
 
   private function getDefaultAttributes()
   {
     return array(
-      'appId' => getConfig()->get('application')->appId,
+      'appId' => $this->config->application->appId,
       'name' => '',
       'members' => array()
     );
