@@ -27,7 +27,12 @@
         <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments" class="action-jump-click">see all</a></li>
         <li class="tags"><?php $this->url->tagsAsLinks($photo['tags']); ?></li>
         <?php if(isset($photo['license'])) { ?>
-          <li class="license"><?php $this->utility->licenseLong($photo['license']); ?></li>
+          <li class="license">
+	  <?php if(!empty($this->utility->licenseLink($photo['license'], false))) { ?>
+            <a rel="license" href="<?php $this->utility->licenseLink($photo['license']); ?>">
+          <?php } ?>
+          <?php $this->utility->licenseLong($photo['license']); ?>
+          <?php if(!empty($this->utility->licenseLink($photo['license'], false))) { ?></a><?php } ?>
         <?php } ?>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
           <li class="location">
