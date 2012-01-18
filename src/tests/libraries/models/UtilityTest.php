@@ -198,6 +198,15 @@ RES;
     $this->assertEquals('Does not exist', $res, 'licenseLong should return string passed in of match is not found');
   }
 
+  public function testLicenseLink()
+  {
+    $res = $this->utility->licenseLink('CC BY', false);
+    $this->assertEquals('http://creativecommons.org/licenses/by/3.0', $res, 'CC BY license not properly retrieved');
+
+    $res = $this->utility->licenseLink('Does not exist', false);
+    $this->assertEquals('', $res, 'licenseLink should return string passed in of match is not found');
+  }
+
   public function testPermissionAsText()
   {
     $res = $this->utility->permissionAsText(0, false);
