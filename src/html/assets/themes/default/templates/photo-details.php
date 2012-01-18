@@ -26,8 +26,12 @@
         <li class="date"><?php $this->utility->dateLong($photo['dateTaken']); ?></li>
         <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments" class="action-jump-click">see all</a></li>
         <li class="tags"><?php $this->url->tagsAsLinks($photo['tags']); ?></li>
-        <?php if(isset($photo['license'])) { ?>
-          <li class="license"><?php $this->utility->licenseLong($photo['license']); ?></li>
+        <?php if($this->utility->licenseLink($photo['license'], false)) { ?>
+          <a rel="license" href="<?php $this->utility->licenseLink($photo['license']); ?>">
+            <?php $this->utility->licenseLong($photo['license']); ?>
+          </a>
+        <?php } else { ?>
+          <?php $this->utility->licenseLong($photo['license']); ?>
         <?php } ?>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
           <li class="location">
@@ -99,7 +103,7 @@
     <form method="post" action="<?php $this->url->actionCreate($photo['id'], 'photo'); ?>">
       <input type="hidden" name="value" value="1">
       <input type="hidden" name="type" value="favorite">
-      <input type="hidden" name="targetUrl" value="<?php sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
+      <input type="hidden" name="targetUrl" value="<?php printf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI']); ?>">
       <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
       <br>
       <button type="submit">Favorite</button>

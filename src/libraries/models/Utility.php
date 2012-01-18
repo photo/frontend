@@ -80,12 +80,12 @@ class Utility
     {
       $this->licenses = array(
         '' => array('name' => 'All Rights Reserved', 'description' => ''),
-        'CC BY' => array('name' => 'Attribution', 'description' => ''),
-        'CC BY-SA' => array('name' => 'Attribution-ShareAlike', 'description' => ''),
-        'CC BY-ND' => array('name' => 'Attribution-NoDerivs', 'description' => ''),
-        'CC BY-NC' => array('name' => 'Attribution-NonCommercial', 'description' => ''),
-        'CC BY-NC-SA' => array('name' => 'Attribution-NonCommercial-ShareAlike', 'description' => ''),
-        'CC BY-NC-ND' => array('name' => 'Attribution-NonCommercial-NoDerivs', 'description' => '')
+        'CC BY' => array('name' => 'Attribution', 'description' => '', 'link' => 'http://creativecommons.org/licenses/by/3.0'),
+        'CC BY-SA' => array('name' => 'Attribution-ShareAlike', 'description' => '', 'link' => 'http://creativecommons.org/licenses/by-sa/3.0'),
+        'CC BY-ND' => array('name' => 'Attribution-NoDerivs', 'description' => '', 'link' => 'http://creativecommons.org/licenses/by-nd/3.0'),
+        'CC BY-NC' => array('name' => 'Attribution-NonCommercial', 'description' => '', 'link' => 'http://creativecommons.org/licenses/by-nc/3.0' ),
+        'CC BY-NC-SA' => array('name' => 'Attribution-NonCommercial-ShareAlike', 'description' => '', 'link' => 'http://creativecommons.org/licenses/by-nc-sa/3.0'),
+        'CC BY-NC-ND' => array('name' => 'Attribution-NonCommercial-NoDerivs', 'description' => '', 'link' => 'http://creativecommons.org/licenses/by-nc-nd/3.0')
       );
     }
 
@@ -240,6 +240,15 @@ class Utility
       $license = sprintf('%s (%s)', $key, $licenses[$key]['name']);
 
     return $this->returnValue($license, $write);
+  }
+
+  public function licenseLink($key, $write = true)
+  {
+    $licenses = $this->getLicenses();
+    $link = '';
+    if(isset($licenses[$key]))
+      $link = $licenses[$key]['link'];
+    return $this->returnValue($link, $write);
   }
 
   public function permissionAsText($permission, $write = true)
