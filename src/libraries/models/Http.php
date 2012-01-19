@@ -25,8 +25,19 @@ class Http extends BaseModel
       foreach($params as $key => $value)
         $paramsAsString .= sprintf("-F %s ", escapeshellarg("{$key}={$value}"));
     }
-    $command = sprintf("curl -X %s %s %s > /dev/null 2> /dev/null &", $method, $paramsAsString, $url);
+    $command = $this->generateCommand($method, $paramsAsString, $url);
     $this->logger->info($command);
-    exec($command);
+    return $this->executeCommand($command);
+  }
+
+  protected function generateCommand($method, $paramsAsString, $url)
+  {
+    return sprintf("curl -X %s %s %s > /dev/null 2> /dev/null &", $method, $paramsAsString, $url);
+  }
+
+  protected function executeCommand($command)
+  {
+    exec($command, $retval);
+    return $retval;
   }
 }
