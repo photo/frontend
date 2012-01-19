@@ -9,6 +9,7 @@
 interface ImageInterface
 {
   public function __construct($filename);
+  public function load($filename);
   public function scale($width, $height, $maintainAspectRatio = true);
   public function greyscale();
   public function write($outputFile);
@@ -24,8 +25,9 @@ interface ImageInterface
 function getImage($image)
 {
   static $type;
-  if(!$type)
-    $type = getConfig()->get('modules')->image;
+  $modules = getConfig()->get('modules');
+  if(!$type && isset($modules->image))
+    $type = $modules->image;
 
   try
   {

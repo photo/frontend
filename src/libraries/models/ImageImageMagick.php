@@ -17,12 +17,17 @@ class ImageImageMagick implements ImageInterface
   private $image;
 
   /**
-    * Constructor which initializes the Imagick object.
+    * Constructor
+    */
+  public function __construct() {}
+
+  /**
+    * Loads an image from a file path
     *
     * @param string $filename Full path to the file which will be manipulated
     * @return void
     */
-  public function __construct($filename)
+  public function load($filename)
   {
     try
     {

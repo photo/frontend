@@ -8,9 +8,23 @@
  */
 class Photo extends BaseModel
 {
-  public function __construct()
+  public function __construct($params = null)
   {
     parent::__construct();
+    if(isset($params['utility']))
+      $this->utility = $params['utility'];
+    else
+      $this->utility = new Utility;
+
+    if(isset($params['url']))
+      $this->url = $params['url'];
+    else
+      $this->url = new Url;
+
+    if(isset($params['image']))
+      $this->image = $params['image'];
+    else
+      $this->image = getImage();
   }
 
   /**
@@ -25,9 +39,8 @@ class Photo extends BaseModel
     */
   public function addApiUrls($photo, $sizes, $protocol=null)
   {
-    $utilityObj = new Utility;
     if($protocol === null)
-      $protocol = $utilityObj->getProtocol(false);
+      $protocol = $this->utility->getProtocol(false);
 
     foreach($sizes as $size)
     {
@@ -38,11 +51,11 @@ class Photo extends BaseModel
       if(strstr($fragment, 'xCR') === false)
       {
         $dimensions = $this->getRealDimensions($photo['width'], $photo['height'], $options['width'], $options['height']);
-        $photo["photo{$fragment}"] = array($path, $dimensions['width'], $dimensions['height']);
+        $photo["photo{$fragment}"] = array($path, intval($dimensions['width']), intval($dimensions['height']));
       }
       else
       {
-        $photo["photo{$fragment}"] = array($path, $options['width'], $options['height']);
+        $photo["photo{$fragment}"] = array($path, intval($options['width']), intval($options['height']));
       }
     }
     $photo['url'] = $this->getPhotoViewUrl($photo);
@@ -61,6 +74,9 @@ class Photo extends BaseModel
     // TODO, validation
     // TODO, do not delete record from db - mark as deleted
     $photo = $this->db->getPhoto($id);
+    if(!$photo)
+      return false;
+
     $fileStatus = $this->fs->deletePhoto($photo);
     $dataStatus = $this->db->deletePhoto($photo);
     return $fileStatus && $dataStatus;
@@ -89,7 +105,7 @@ class Photo extends BaseModel
     * @param string $options Options for the photo such as crop (CR) and greyscale (BW)
     * @return string
     */
-  public function generateFragment($width, $height, $options)
+  public function generateFragment($width, $height, $options = null)
   {
     $fragment = "{$width}x{$height}";
     if(!empty($options))
@@ -111,12 +127,33 @@ class Photo extends BaseModel
     */
   public function generate($id, $hash, $width, $height, $options = null)
   {
-    if(!$this->isValidateHash($hash, $id, $width, $height, $options))
+    if(!$this->isValidHash($hash, $id, $width, $height, $options))
       return false;
 
     $photo = $this->db->getPhoto($id);
+    if(!$photo)
+    {
+      $this->logger->crit('Could not get photo from db in generate method');
+      return false;
+    }
+
     $filename = $this->fs->getPhoto($photo['pathBase']);
-    $image = getImage($filename);
+    if(!$filename)
+    {
+      $this->logger->crit('Could not get photo from fs in generate method');
+      return false;
+    }
+
+    try
+    {
+      $this->image->load($filename);
+    }
+    catch(OPInvalidImageException $e)
+    {
+      $this->logger->crit('Could not get image from image adapter in generate method', $e);
+      return false;
+    }
+
     $maintainAspectRatio = true;
     if(!empty($options))
     {
@@ -126,7 +163,7 @@ class Photo extends BaseModel
         switch($option)
         {
           case 'BW':
-            $image->greyscale();
+            $this->image->greyscale();
             break;
           case 'CR':
             $maintainAspectRatio = false;
@@ -135,9 +172,9 @@ class Photo extends BaseModel
       }
     }
 
-    $image->scale($width, $height, $maintainAspectRatio);
+    $this->image->scale($width, $height, $maintainAspectRatio);
 
-    $image->write($filename);
+    $this->image->write($filename);
     $customPath = $this->generateCustomUrl($photo['pathBase'], $width, $height, $options);
     $key = $this->generateCustomKey($width, $height, $options);
     $resFs = $this->fs->putPhoto($filename, $customPath);
@@ -174,11 +211,14 @@ class Photo extends BaseModel
     * @param string $param1 any parameter value
     * ...
     * @param string $paramN any parameter value
-    * @return string
+    * @return mixed string on success, FALSE on error
     */
   public function generateHash(/*$args1, $args2, ...*/)
   {
     $args = func_get_args();
+    if(count($args) === 0)
+      return false;
+
     foreach($args as $k => $v)
     {
       if(strlen($v) == 0)
@@ -547,9 +587,7 @@ class Photo extends BaseModel
     */
   private function getPhotoViewUrl($photo)
   {
-    $utilityObj = new Utility;
-    $urlObj = new Url;
-    return sprintf('%s://%s%s', $utilityObj->getProtocol(false), $_SERVER['HTTP_HOST'], $urlObj->photoView($photo['id'], null, false));
+    return sprintf('%s://%s%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], $this->url->photoView($photo['id'], null, false));
   }
 
   /**
@@ -561,7 +599,7 @@ class Photo extends BaseModel
     * @param $paramN One of the options
     * @return boolean
     */
-  private function isValidateHash(/*$hash, $args1, $args2, ...*/)
+  private function isValidHash(/*$hash, $args1, $args2, ...*/)
   {
     $args = func_get_args();
     foreach($args as $k => $v)
