@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set('America/Los_Angeles');
 require_once 'PHPUnit/Framework.php';
 
 function arrayToObject($array)
