@@ -47,6 +47,10 @@ require getConfig()->get('paths')->adapters . '/FileSystemDropboxBase.php';
 require getConfig()->get('paths')->adapters . '/Login.php';
 require getConfig()->get('paths')->adapters . '/LoginBrowserId.php';
 require getConfig()->get('paths')->adapters . '/LoginFacebook.php';
+require getConfig()->get('paths')->adapters . '/Image.php';
+require getConfig()->get('paths')->adapters . '/ImageImageMagick.php';
+require getConfig()->get('paths')->adapters . '/ImageGraphicsMagick.php';
+require getConfig()->get('paths')->adapters . '/ImageGD.php';
 
 // models
 require getConfig()->get('paths')->models . '/BaseModel.php';
@@ -64,9 +68,5 @@ require getConfig()->get('paths')->models . '/Webhook.php';
 require getConfig()->get('paths')->models . '/Http.php';
 require getConfig()->get('paths')->models . '/Theme.php';
 require getConfig()->get('paths')->models . '/Upgrade.php';
-require getConfig()->get('paths')->models . '/Image.php';
-require getConfig()->get('paths')->models . '/ImageImageMagick.php';
-require getConfig()->get('paths')->models . '/ImageGraphicsMagick.php';
-require getConfig()->get('paths')->models . '/ImageGD.php';
 require getConfig()->get('paths')->models . '/PluginBase.php';
 require getConfig()->get('paths')->models . '/Plugin.php';

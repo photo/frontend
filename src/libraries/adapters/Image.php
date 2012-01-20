@@ -8,7 +8,7 @@
  */
 interface ImageInterface
 {
-  public function __construct($filename);
+  public function __construct();
   public function load($filename);
   public function scale($width, $height, $maintainAspectRatio = true);
   public function greyscale();
@@ -22,7 +22,7 @@ interface ImageInterface
   *
   * @return object An image object that implements ImageInterface
   */
-function getImage($image)
+function getImage()
 {
   static $type;
   $modules = getConfig()->get('modules');
@@ -34,13 +34,13 @@ function getImage($image)
     switch($type)
     {
       case 'GraphicsMagick':
-        return new ImageGraphicsMagick($image);
+        return new ImageGraphicsMagick();
         break;
       case 'ImageMagick':
-        return new ImageImageMagick($image);
+        return new ImageImageMagick();
         break;
       case 'GD':
-        return new ImageGD($image);
+        return new ImageGD();
         break;
     }
   }
