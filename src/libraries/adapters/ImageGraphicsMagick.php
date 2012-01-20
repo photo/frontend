@@ -1,16 +1,16 @@
 <?php
 /**
-  * ImageImageMagick model
+  * ImageGraphicsMagick model
   *
   * This implements imagine manipulation funcationality as defined by the Image interface.
-  * Requires PHP ImageMagick extension.
+  * Requires PHP GraphicsMagick extension.
   * The file is not written to disk until explicitly called.
   * @author Jaisen Mathai <jaisen@jmathai.com>
   */
-class ImageImageMagick implements ImageInterface
+class ImageGraphicsMagick implements ImageInterface
 {
   /**
-    * Private instance variable that holds an Imagick object
+    * Private instance variable that holds an Gmagick object
     * @access private
     * @var object
     */
@@ -25,20 +25,19 @@ class ImageImageMagick implements ImageInterface
     * Loads an image from a file path
     *
     * @param string $filename Full path to the file which will be manipulated
-    * @return void
+    * @return ImageGraphicsMagick
     */
   public function load($filename)
   {
     try
     {
-      $this->image = new Imagick($filename);
+      $this->image = new Gmagick($filename);
+      return $this;
     }
-    catch(ImagickException $e)
+    catch(GmagickException $e)
     {
-      OPException::raise(new OPInvalidImageException('Could not create jpeg with ImageMagick library'));
+      OPException::raise(new OPInvalidImageException('Could not create jpeg with GraphicsMagick library'));
     }
-    //$this->image->setImageCompression(imagick::COMPRESSION_NO);
-    //$this->image->setImageCompressionQuality(20);
   }
 
   /**
@@ -76,7 +75,6 @@ class ImageImageMagick implements ImageInterface
     */
   public function write($outputFile)
   {
-    $this->image->writeImage($outputFile);
+    $this->image->write($outputFile);
   }
 }
-

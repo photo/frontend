@@ -36,7 +36,7 @@ class ImageGD implements ImageInterface
     * Loads an image from a file path
     *
     * @param string $filename Full path to the file which will be manipulated
-    * @return void
+    * @return ImageGD
     */
   public function load($filename)
   {
@@ -64,9 +64,10 @@ class ImageGD implements ImageInterface
       $this->image = @imagecreatefromjpeg($filename);
 
     if(!$this->image)
-      OPException::raise(new OPInvalidImageException('Could not create jpeg with GD library'));
+      OPException::raise(new OPInvalidImageException('Could not create image with GD library'));
 		$this->width = imagesx($this->image);
 		$this->height = imagesy($this->image);
+    return $this;
   }
 
   /**

@@ -435,7 +435,7 @@ class Photo extends BaseModel
     $this->logger->info("Making a local copy of the uploaded image. {$localFile} to {$localFileCopy}");
     copy($localFile, $localFileCopy);
 
-    $baseImage = getImage($localFileCopy);
+    $baseImage = $this->image->load($localFileCopy);
     if(!$baseImage)
     {
       $this->logger->warn('Could not load image, possibly an invalid image file.');
