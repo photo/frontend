@@ -10,10 +10,13 @@ class Group extends BaseModel
   /*
    * Constructor
    */
-  public function __construct()
+  public function __construct($params = null)
   {
     parent::__construct();
-    $this->user = new User;
+    if(isset($params['user']))
+      $this->user = $params['user'];
+    else
+      $this->user = new User;
   }
 
   public function create($params)

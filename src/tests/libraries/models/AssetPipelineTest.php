@@ -7,6 +7,7 @@ foreach($paths as $path)
 }
 $baseDir = dirname(dirname(dirname(dirname(__FILE__))));
 require_once sprintf('%s/tests/helpers/init.php', $baseDir);
+require_once sprintf('%s/libraries/models/BaseModel.php', $baseDir);
 require_once sprintf('%s/libraries/models/AssetPipeline.php', $baseDir);
 
 class AssetPipelineOverride extends AssetPipeline

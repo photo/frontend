@@ -1,6 +1,7 @@
 <?php
 $baseDir = dirname(dirname(dirname(dirname(__FILE__))));
 require_once sprintf('%s/tests/helpers/init.php', $baseDir);
+require_once sprintf('%s/libraries/models/BaseModel.php', $baseDir);
 require_once sprintf('%s/libraries/models/Credential.php', $baseDir);
 
 class CredentialTest extends PHPUnit_Framework_TestCase
@@ -21,7 +22,7 @@ class CredentialTest extends PHPUnit_Framework_TestCase
       ->method('getAllHeaders')
       ->will($this->returnValue($this->headers));
 
-    $this->credential = new Credential(null, array('utility' => $utility));
+    $this->credential = new Credential(array('utility' => $utility));
     $this->credential->sendHeadersOnError = false;
     $this->token = 'abcdefghijklmnopqrstuvwxyz0123456789';
   }

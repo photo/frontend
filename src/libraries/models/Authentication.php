@@ -10,11 +10,22 @@ class Authentication
   /*
    * Constructor
    */
-  public function __construct()
+  public function __construct($params = null)
   {
-    $this->credential = getCredential();
-    $this->session = getSession();
-    $this->user = new User;
+    if(isset($params['credential']))
+      $this->credential = $params['credential'];
+    else
+      $this->credential = getCredential();
+
+    if(isset($params['session']))
+      $this->session = $params['session'];
+    else
+      $this->session = getSession();
+
+    if(isset($params['user']))
+      $this->user = $params['user'];
+    else
+      $this->user = new User;
   } 
 
   /**

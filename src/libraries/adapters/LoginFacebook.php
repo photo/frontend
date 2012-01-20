@@ -5,6 +5,8 @@
  * This class defines the functionality defined by LoginInterface for BrowserId.
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
+
+// TODO move this to the constructor so we can test this class better
 if(!class_exists('Facebook'))
   require getConfig()->get('paths')->external . '/facebook/facebook.php';
 

@@ -14,7 +14,7 @@ class Credential extends BaseModel
   /**
     * Constructor
     */
-  public function __construct($config = null, $params = null)
+  public function __construct($params = null)
   {
     parent::__construct();
     if(isset($params['utility']))

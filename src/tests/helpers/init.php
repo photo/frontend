@@ -2,11 +2,26 @@
 date_default_timezone_set('America/Los_Angeles');
 require_once 'PHPUnit/Framework.php';
 
+// stub out exceptions
+class OPException extends Exception
+{
+  public static function raise($exception)
+  {
+    throw $exception;
+  }
+}
+class OPAuthorizationException extends OPException{}
+class OPAuthorizationOAuthException extends OPAuthorizationException{}
+class OPAuthorizationSessionException extends OPAuthorizationException{}
+class OPInvalidImageException extends OPException{}
+
+// utility function
 function arrayToObject($array)
 {
   return json_decode(json_encode($array));
 }
 
+// framework stubs for Epiphany
 if(!function_exists('getCache'))
 {
   function getCache() { return new FauxObject; }
@@ -39,42 +54,18 @@ if(!function_exists('getFs'))
 {
   function getFs() { return new FauxObject; }
 }
-if(!function_exists('getCredential'))
-{
-  function getCredential() { return new FauxObject; }
-}
-
-
-if(!class_exists('BaseModel'))
-{
-  class BaseModel
-  {
-    public function __construct()
-    {
-      $this->logger = getLogger();
-    }
-    public function inject($key, $value)
-    {
-      $this->$key = $value;
-    }
-  }
-}
-
-class OPException extends Exception
-{
-  public static function raise($exception)
-  {
-    throw $exception;
-  }
-}
-
-class OPAuthorizationException extends OPException{}
-class OPAuthorizationOAuthException extends OPAuthorizationException{}
-class OPAuthorizationSessionException extends OPAuthorizationException{}
-class OPInvalidImageException extends OPException{}
 
 class FauxObject
 {
+  public function __construct($init = null)
+  {
+    if($init !== null)
+    {
+      foreach($init as $k => $v)
+        $this->$k = $v;
+    }
+  }
+
   public function __call($name, $params)
   {
     return func_get_args();
@@ -90,18 +81,3 @@ class FauxObject
     return func_get_args();
   }
 }
-
-/*function getBaseDir($file = null)
-{
-  if($file === null)
-    $file = __FILE__;
-
-  if(dirname($file) === $file)
-    return false; // we didn't find a 'src' direcory
-
-  echo "checking $file\n";
-  $dir = basename($file);
-  if($dir === 'src')
-    return $file;
-  return getBaseDir(dirname($file));
-}*/
