@@ -2,7 +2,6 @@
 $baseDir = dirname(dirname(dirname(dirname(__FILE__))));
 require_once sprintf('%s/tests/helpers/init.php', $baseDir);
 require_once sprintf('%s/libraries/models/Utility.php', $baseDir);
-require_once sprintf('%s/libraries/models/Url.php', $baseDir);
 
 class EpiRoute
 {

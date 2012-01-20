@@ -15,9 +15,12 @@ class AssetPipeline
   const combined = 'c';
   protected $assets, $assetsRel, $docroot, $cacheDir, $mode;
 
-  public function __construct()
+  public function __construct($params = null)
   {
-    $config = getConfig()->get();
+    if(isset($params['config']))
+      $config = $params['config'];
+    else
+      $config = getConfig()->get();
     $this->docroot = $config->paths->docroot;
     $this->cacheDir = sprintf('%s/assets/cache', $this->docroot);;
     $this->assets = $this->assetsRel = array('js' => array(), 'css' => array());

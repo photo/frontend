@@ -1,19 +1,15 @@
 <?php
 $baseDir = dirname(dirname(dirname(dirname(__FILE__))));
 require_once sprintf('%s/tests/helpers/init.php', $baseDir);
+require_once sprintf('%s/libraries/models/BaseModel.php', $baseDir);
 require_once sprintf('%s/libraries/models/Action.php', $baseDir);
-
-if(!class_exists('User'))
-{
-  class User { }
-}
 
 class ActionTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()
   {
     // to test the write methods
-    $this->action = new Action;
+    $this->action = new Action(array('user'=>new stdClass));
     $this->action->config = json_decode(json_encode(array('application' => array('appId' => 'foo'), 'user' => array('email' => 'bar'))));
   }
 

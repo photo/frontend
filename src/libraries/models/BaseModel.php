@@ -27,4 +27,13 @@ class BaseModel
       $this->fs = getFs();
     }
   }
+
+  /*
+   * Inject values for unit tests
+   * returns void
+   */
+  public function inject($key, $value)
+  {
+    $this->$key = $value;
+  }
 }
