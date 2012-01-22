@@ -47,7 +47,7 @@ if($hasConfig && !$runSetup)
   require getConfig()->get('paths')->libraries . '/routes.php';
 
   // initializes plugins
-  getPlugin();
+  getPlugin()->load();
   getPlugin()->invoke('onLoad');
 }
 else

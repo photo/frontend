@@ -34,8 +34,8 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
     if(class_exists('vfsStream'))
     {
       vfsStreamWrapper::register();
-      vfsStreamWrapper::setRoot(new vfsStreamDirectory('testDir'));
-      $this->root = vfsStream::url('testDir');
+      vfsStreamWrapper::setRoot(new vfsStreamDirectory('fsDir'));
+      $this->root = vfsStream::url('fsDir');
       $this->assertFalse(vfsStreamWrapper::getRoot()->hasChild($this->file), 'Init validation that vfs file does not exist failed');
     }
     $this->vfsPath = sprintf('%s%s', $this->root, $this->photo['path10x10']);
@@ -68,7 +68,7 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
   /**
    * @depends testValidateVfsFunctionSuccess
    */
-  public function testDeletePhotoSuccess($mockExists)
+  public function testDeletePhotoSuccess()
   {
     file_put_contents($this->vfsPath, 'foo');
     // now check if the virtual fs has the file
