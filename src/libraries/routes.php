@@ -22,7 +22,8 @@ getRoute()->post('/action/([a-zA-Z0-9]+)/(photo)/create', array('ActionControlle
  */
 getRoute()->get('/photo/([a-zA-Z0-9]+)/edit', array('PhotoController', 'edit')); // edit form for a photo (/photo/{id}/edit)
 getRoute()->get('/photo/([a-zA-Z0-9]+)/create/([a-z0-9]+)/([0-9]+)x([0-9]+)x?(.*).jpg', array('PhotoController', 'create')); // create a version of a photo (/photo/create/{id}/{options}.jpg)
-getRoute()->get('/photo/([a-zA-Z0-9]+)/?(.+)?/view', array('PhotoController', 'view')); // view a photo (/photo/{id}/view[/{options}])
+getRoute()->get('/photo/([a-zA-Z0-9]+)/?(.+)?/view', array('PhotoController', 'view')); // view a photo (/photo/{id}[/{options}])/view
+getRoute()->get('/p/([a-zA-Z0-9]+)/?(.+)?', array('PhotoController', 'view')); // (shortcut for photo/view) view a photo (/p/{id}[/{options}])
 getRoute()->post('/photo/([a-zA-Z0-9]+)/update', array('PhotoController', 'update')); // update a photo (/photo/{id}/update
 getRoute()->post('/photo/upload', array('PhotoController', 'uploadPost')); // upload a photo
 getRoute()->get('/photos/upload', array('PhotoController', 'upload')); // view the upload photo form

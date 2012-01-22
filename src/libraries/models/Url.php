@@ -43,10 +43,18 @@ class Url
   {
     $utilityObj = new Utility;
     $options = preg_replace('#/page-\d+#', '', $options);
+    $noOptionsStr = '/photo/%s/view';
+    $optionsStr = '/photo/%s/%s/view';
+    if(isset($_SERVER['REDIRECT_URL']) && preg_match('#^/p/#', $_SERVER['REDIRECT_URL']))
+    {
+      $noOptionsStr = '/p/%s';
+      $optionsStr = '/p/%s/%s';
+    }
+      
     if(empty($options))
-      return $utilityObj->returnValue(sprintf('/photo/%s/view', $utilityObj->safe($id, false)), $write);
+      return $utilityObj->returnValue(sprintf($noOptionsStr, $utilityObj->safe($id, false)), $write);
     else
-      return $utilityObj->returnValue(sprintf('/photo/%s/%s/view', $utilityObj->safe($id, false), $options), $write);
+      return $utilityObj->returnValue(sprintf($optionsStr, $utilityObj->safe($id, false), $options), $write);
   }
 
   public function photosView($options = null, $write = true)
