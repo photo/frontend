@@ -62,17 +62,18 @@ class FileSystemS3 implements FileSystemInterface
     */
   public function diagnostics()
   {
+    $utilityObj = new Utility;
     $diagnostics = array();
     $aclCheck = $this->fs->get_bucket_acl($this->bucket);
     if((int)$aclCheck->status == 200)
     {
       $storageSize = $this->fs->get_bucket_filesize($this->bucket, true);
-      $diagnostics[] = Utility::diagnosticLine(true, sprintf('Connection to bucket "%s" is okay.', $this->bucket));
-      $diagnostics[] = Utility::diagnosticLine(true, sprintf('Total space used in bucket "%s" is %s.', $this->bucket, $storageSize));
+      $diagnostics[] = $utilityObj->diagnosticLine(true, sprintf('Connection to bucket "%s" is okay.', $this->bucket));
+      $diagnostics[] = $utilityObj->diagnosticLine(true, sprintf('Total space used in bucket "%s" is %s.', $this->bucket, $storageSize));
     }
     else
     {
-      $diagnostics[] = Utility::diagnosticLine(false, sprintf('Connection to bucket "%s" is NOT okay.', $this->bucket));
+      $diagnostics[] = $utilityObj->diagnosticLine(false, sprintf('Connection to bucket "%s" is NOT okay.', $this->bucket));
     }
     return $diagnostics;
   }

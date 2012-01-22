@@ -129,12 +129,13 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function diagnostics()
   {
+    $utilityObj = new Utility;
     $diagnostics = array();
     $res = $this->db->execute("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE owner=:owner LIMIT 1", array(':owner' => $this->owner));
     if($res == 1)
-      $diagnostics[] = Utility::diagnosticLine(true, 'Database connectivity is okay.');
+      $diagnostics[] = $utilityObj->diagnosticLine(true, 'Database connectivity is okay.');
     else
-      $diagnostics[] = Utility::diagnosticLine(false, 'Could not properly connect to the database.');
+      $diagnostics[] = $utilityObj->diagnosticLine(false, 'Could not properly connect to the database.');
 
     return $diagnostics;
   }
