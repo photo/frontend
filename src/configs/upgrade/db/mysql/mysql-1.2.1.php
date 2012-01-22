@@ -5,7 +5,7 @@ $owner = getConfig()->get('user')->email;
 $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}group` (
     `id` varchar(6) NOT NULL,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `appId` varchar(255) DEFAULT NULL,
     `name` varchar(255) DEFAULT NULL,
     `permission` tinyint(4) NOT NULL COMMENT 'Bitmask of permissions',
@@ -33,7 +33,7 @@ SQL;
 
   // ALTER TABLE to add owner column to {$table} table
   $sql = <<<SQL
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` ADD `owner` VARCHAR( 255 ) NOT NULL AFTER `id`
+    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` ADD `owner` VARCHAR( 127 ) NOT NULL AFTER `id`
 SQL;
   mysql_1_2_1($sql);
 
@@ -61,7 +61,7 @@ SQL;
 $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}elementGroup` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `type` enum('photo') NOT NULL,
     `element` varchar(6) NOT NULL,
     `group` varchar(6) NOT NULL,
@@ -74,10 +74,10 @@ mysql_1_2_1($sql);
 $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}elementTag` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `type` enum('photo') NOT NULL,
     `element` varchar(6) NOT NULL DEFAULT 'photo',
-    `tag` varchar(255) NOT NULL,
+    `tag` varchar(127) NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`owner`,`type`,`element`,`tag`)
   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Tag mapping table for photos (and videos in the future)'
@@ -89,9 +89,9 @@ mysql_1_2_1($sql);
 $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}groupMember` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `group` varchar(6) NOT NULL,
-    `email` varchar(255) NOT NULL,
+    `email` varchar(127) NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `owner` (`owner`,`group`,`email`)
   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8
