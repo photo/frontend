@@ -24,8 +24,8 @@ class AssetPipelineOverride extends AssetPipeline
     if(class_exists('vfsStream'))
     {
       vfsStreamWrapper::register();
-      vfsStreamWrapper::setRoot(new vfsStreamDirectory('testDir'));
-      $config->paths->docroot = vfsStream::url('testDir');
+      vfsStreamWrapper::setRoot(new vfsStreamDirectory('assetDir'));
+      $config->paths->docroot = vfsStream::url('assetDir');
     }
 
     $this->docroot = $config->paths->docroot;

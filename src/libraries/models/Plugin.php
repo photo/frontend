@@ -7,15 +7,16 @@
  */
 class Plugin extends BaseModel
 {
-  private $pluginDir, $activePlugins = array(), $pluginInstances = array();
+  protected $pluginDir, $activePlugins = array(), $pluginInstances = array();
 
-  public function __construct()
+  public function __construct($params = null)
   {
     parent::__construct();
-    $paths = $this->config->paths;
-    if(isset($paths->plugins))
-      $this->pluginDir = $paths->plugins;
-    $this->registerAll();
+    if(isset($params['config']))
+      $this->config = $params['config'];
+
+    if(isset($this->config->paths->plugins))
+      $this->pluginDir = $this->config->paths->plugins;
   }
 
   public function getActive()
@@ -47,11 +48,12 @@ class Plugin extends BaseModel
     $plugins = array();
     while (($name = $dir->read()) !== false)
     {
-      if(is_dir(sprintf('%s/%s', $this->config->paths->plugins, $name)) || substr($name, 0, 1) == '.')
+      if(is_dir(sprintf('%s/%s', $this->pluginDir, $name)) || substr($name, 0, 1) == '.')
         continue;
 
       $plugins[] = preg_replace('/Plugin$/', '', basename($name, '.php'));
     }
+    sort($plugins);
     return $plugins;
   }
 
@@ -78,6 +80,12 @@ class Plugin extends BaseModel
     return false;
   }
 
+  public function load()
+  {
+    $this->registerAll();
+    return $this;
+  }
+
   public function loadConf($plugin)
   {
     $inst = $this->getInstance($plugin);
@@ -102,10 +110,19 @@ class Plugin extends BaseModel
   {
     $pluginDir = sprintf('%s/plugins', $this->config->paths->userdata);
     if(!is_dir($pluginDir))
-      mkdir($pluginDir);
+    {
+      if(!@mkdir($pluginDir))
+        $this->logger->warn(sprintf('Could not create directory at %s', $pluginDir));
+    }
 
     if($string !== false)
-      return file_put_contents(sprintf('%s/%s.%s.ini', $pluginDir, $_SERVER['HTTP_HOST'], $plugin), $string);
+    {
+      $fileCreated = @file_put_contents($pluginConfFile = sprintf('%s/%s.%s.ini', $pluginDir, $_SERVER['HTTP_HOST'], $plugin), $string) !== false;
+      if(!$fileCreated)
+        $this->logger->warn(sprintf('Could not create file at %s', $pluginConfFile));
+
+      return $fileCreated;
+    }
     return false;
   }
 
