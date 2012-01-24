@@ -7,6 +7,8 @@ A full introduction to OAuth is beyond the scope of the OpenPhoto documentation.
 In all reality you probably don't need to understand the ins and outs of OAuth, just grab one of our libraries.
 
 * <a href="https://github.com/openphoto/openphoto-php">openphoto/openphoto-php</a> - Our PHP language binding.
+* <a href="https://github.com/openphoto/openphoto-ruby">openphoto/openphoto-ruby</a> - Our Ruby language binding.
+* <a href="https://github.com/openphoto/openphoto-python">openphoto/openphoto-python</a> - Our Python language binding.
 * <a href="https://github.com/openphoto/openphoto-java">openphoto/openphoto-java</a> - Our Java language binding.
 * More coming soon, <a href="mailto:hello@openphoto.me">contact us</a> if you'd like to write bindings in an unlisted language.
 
