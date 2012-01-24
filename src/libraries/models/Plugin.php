@@ -14,6 +14,8 @@ class Plugin extends BaseModel
     parent::__construct();
     if(isset($params['config']))
       $this->config = $params['config'];
+    else
+      $this->config = getConfig()->get();
 
     if(isset($this->config->paths->plugins))
       $this->pluginDir = $this->config->paths->plugins;
