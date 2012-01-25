@@ -12,6 +12,13 @@ class User extends BaseModel
 {
   const mobilePassphraseExpiry = 900; // 15 minutes
 
+  /**
+    * A user object that caches the value once it's been fetched from the remote datasource.
+    * @access private
+    * @var array
+    */
+  protected $user, $credential;
+
   /*
    * Constructor
    */
@@ -19,13 +26,6 @@ class User extends BaseModel
   {
     parent::__construct();
   }
-
-  /**
-    * A user object that caches the value once it's been fetched from the remote datasource.
-    * @access private
-    * @var array
-    */
-  private $user;
 
   /**
     * Get an avatar given an email address
@@ -59,7 +59,7 @@ class User extends BaseModel
     */
   public function getMobilePassphrase()
   {
-    $phrase = getCache()->get($this->getMobilePassphraseKey());
+    $phrase = $this->cache->get($this->getMobilePassphraseKey());
     if(empty($phrase))
       return null;
 
@@ -130,24 +130,16 @@ class User extends BaseModel
 
   public function isLoggedIn()
   {
-    $credential = new Credential;
+    $credential = $this->getCredentialObject();
     if($credential->isOAuthRequest())
-    {
-      if(!$credential->checkRequest())
-      {
-        return false;
-      }
-      return true;
-    }
+      return $credential->checkRequest() === true;
     else
-    {
       return $this->session->get('email') != '';
-    }
   }
 
   public function isOwner()
   {
-    $credential = new Credential;
+    $credential = $this->getCredentialObject();
     if($credential->isOAuthRequest())
     {
       if(!$credential->checkRequest())
@@ -162,7 +154,7 @@ class User extends BaseModel
     }
     else
     {
-      $user = getConfig()->get('user');
+      $user = $this->config->user;
       if($user === null)
         return false;
       $len = max(strlen($this->session->get('email')), strlen($user->email));
@@ -206,7 +198,7 @@ class User extends BaseModel
   public function setEmail($email)
   {
     $this->session->set('email', $email);
-    $this->session->set('crumb', md5(getConfig()->get('secrets')->secret . time()));
+    $this->session->set('crumb', md5($this->config->secrets->secret . time()));
   }
 
   /**
@@ -218,12 +210,26 @@ class User extends BaseModel
   {
     if($destroy === true)
     {
-      getCache()->set($this->getMobilePassphraseKey(), '');
+      $this->cache->set($this->getMobilePassphraseKey(), '');
       return null;
     }
     $phrase = sprintf('%s-%s', substr(md5(uniqid()), 0, 6), time()+self::mobilePassphraseExpiry);
-    getCache()->set($this->getMobilePassphraseKey(), $phrase, self::mobilePassphraseExpiry);
+    $this->cache->set($this->getMobilePassphraseKey(), $phrase, self::mobilePassphraseExpiry);
     return $phrase;
+  }
+
+  /**
+    * Creates and returns a credential object
+    *
+    * @return object
+    */
+  protected function getCredentialObject()
+  {
+    if(isset($this->credential))
+      return $this->credential;
+
+    $this->credential = new Credential;
+    return $this->credential;
   }
 
   /**
