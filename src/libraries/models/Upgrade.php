@@ -17,9 +17,12 @@ class Upgrade extends BaseModel
     $fsMinorVersion,
     $fsTrivialVersion;
 
-  public function __construct()
+  public function __construct($params = null)
   {
     parent::__construct();
+    if(isset($params['config']))
+      $this->config = $params['config'];
+
     $this->scriptsDir = sprintf('%s/upgrade', $this->config->paths->configs);
     $this->systems = array('readme','base','db','fs');
     $defaults = $this->config->defaults;
@@ -31,7 +34,7 @@ class Upgrade extends BaseModel
 
     $siteConfig = $this->config->site;
     if(isset($siteConfig->lastCodeVersion) && !empty($siteConfig->lastCodeVersion))
-      $this->lastCodeVersion = $this->config->site->lastCodeVersion;
+      $this->lastCodeVersion = $siteConfig->lastCodeVersion;
     else
       $this->lastCodeVersion = $defaults->lastCodeVersion;
     $lastParts = explode('.', $this->lastCodeVersion);
@@ -57,8 +60,8 @@ class Upgrade extends BaseModel
 
     $scriptsExist = false;
     $scripts = array();
-    $databases = getDb()->identity();
-    $databaseVersion = getDb()->version();
+    $databases = $this->db->identity();
+    $databaseVersion = $this->db->version();
     // Backwards compatibility
     // Before the upgrade code the database was versioned as an int
     if(!preg_match('/\d\.\d\.\d/', $databaseVersion))
