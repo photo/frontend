@@ -5,8 +5,16 @@
  * This handles adding and updating webhooks.
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class Webhook
+class Webhook extends BaseModel
 {
+  /*
+   * Constructor
+   */
+  public function __construct()
+  {
+    parent::__construct();
+  }
+
   /**
     * Add an action to a photo/video.
     * Accepts a set of params that must include a type and targetType
@@ -14,26 +22,26 @@ class Webhook
     * @param array $params Params describing the action to be added
     * @return mixed Action ID on success, false on failure
     */
-  public static function add($params)
+  public function add($params)
   {
-    $params = self::getValidAttributes($params);
+    $params = $this->getValidAttributes($params);
     if(!isset($params['callback']) || !isset($params['topic']))
     {
-      getLogger()->info(sprintf('Not all required paramaters were passed in to add(), %s', json_encode($params)));
-      return false;
-    }
-    $id = md5(rand());
-    if($id === false)
-    {
-      getLogger()->crit('Could not fetch next webhook ID');
+      $this->logger->info(sprintf('Not all required paramaters were passed in to add(), %s', json_encode($params)));
       return false;
     }
 
-    $db = getDb();
-    $action = $db->putWebhook($id, $params);
+    $id = md5(rand());
+    if($id === false)
+    {
+      $this->logger->crit('Could not fetch next webhook ID');
+      return false;
+    }
+
+    $action = $this->db->putWebhook($id, $params);
     if(!$action)
     {
-      getLogger()->crit("Could not save webhook ID ({$id})");
+      $this->logger->crit("Could not save webhook ID ({$id})");
       return false;
     }
 
@@ -46,9 +54,9 @@ class Webhook
     * @param string $id ID of the webhook to be deleted.
     * @return boolean
     */
-  public static function delete($id)
+  public function delete($id)
   {
-    return getDb()->deleteWebhook($id);
+    return $this->db->deleteWebhook($id);
   }
 
   /**
@@ -57,9 +65,9 @@ class Webhook
     * @param string $id ID of the webhook to be deleted.
     * @return array
     */
-  public static function getById($id)
+  public function getById($id)
   {
-    return getDb()->getWebhook($id);
+    return $this->db->getWebhook($id);
   }
 
   /**
@@ -67,9 +75,9 @@ class Webhook
     *
     * @return array
     */
-  public static function getAll($topic = null)
+  public function getAll($topic = null)
   {
-    return getDb()->getWebhooks($topic);
+    return $this->db->getWebhooks($topic);
   }
 
   /**
@@ -78,12 +86,12 @@ class Webhook
     * @param string $id ID of the webhook to be updated.
     * @return boolean
     */
-  public static function update($id, $params)
+  public function update($id, $params)
   {
-    return getDb()->postWebhook($id, $params);
+    return $this->db->postWebhook($id, $params);
   }
 
-  public static function getValidAttributes($params)
+  public function getValidAttributes($params)
   {
     $valid = array('id' => 1, 'appId' => 1, 'callback' => 1, 'topic' => 1, 'verifyToken' => 1, 'challenge' => 1, 'secret' => 1);
     foreach((array)$params as $key => $val)
@@ -103,7 +111,7 @@ class Webhook
   private static function getDefaultAttributes()
   {
     return array(
-      'appId' => getConfig()->get('application')->appId
+      'appId' => $this->config->application->appId
     );
   }
 }
