@@ -12,8 +12,6 @@ class UserConfig
 
     if(isset($params['utility']))
       $this->utility = $params['utility'];
-    else
-      $this->utility = new Utility;
 
     $this->basePath = dirname(dirname(dirname(__FILE__)));
     $this->host = $_SERVER['HTTP_HOST']; // TODO this isn't the best idea
@@ -33,7 +31,8 @@ class UserConfig
     if(!$configFile)
       return false;
 
-    $iniString = $this->utility->generateIniString($settings, true);
+    $utilityObj = $this->getUtility();
+    $iniString = $utilityObj->generateIniString($settings, true);
     if(!$iniString || empty($iniString))
       return false;
 
@@ -58,12 +57,22 @@ class UserConfig
       require $this->config->get('paths')->libraries . '/dependencies.php';
 
       $this->config->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(dirname(__FILE__))), getTheme()->getThemeName()));
-      if($this->utility->isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(dirname(__FILE__))), getTheme(false)->getThemeName())))
+      $utilityObj = $this->getUtility();
+      if($utilityObj->isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(dirname(__FILE__))), getTheme(false)->getThemeName())))
         $this->config->load($mobileSettings);
 
       return true;
     }
     return false;
+  }
+
+  protected function getUtility()
+  {
+    if(isset($this->utility))
+      return $this->utility;
+
+    $this->utility = new Utility;
+    return $this->utility;
   }
 
   private function getConfigFile()
