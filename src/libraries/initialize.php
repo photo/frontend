@@ -17,7 +17,8 @@ Epi::setPath('view', '');
 Epi::init('api','cache','config','curl','form','logger','route','session','template','database');
 
 // loads configs and dependencies
-$hasConfig = getUserConfig()->load();
+$userConfigObj = new UserConfig;
+$hasConfig = $userConfigObj->load();
 
 EpiCache::employ(getConfig()->get('epi')->cache);
 EpiSession::employ(getConfig()->get('epi')->session);
