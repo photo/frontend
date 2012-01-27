@@ -1,11 +1,11 @@
 Contributing to The OpenPhoto Project
 =======================
 
-### There's a spot for everyone to be a part of something BIG
+## There's a spot for everyone to be a part of something BIG
 
 If you wanted to contribute to The OpenPhoto Project the good news is there's probably a place where we could use your help. <a href="#developers">Developers</a>, <a href="#developers">designers</a>, <a href="#copywriters">copywriters</a>, <a href="#community">community managers</a>, <a href="#translators">translators</a> and more.
 
-It's easy to get in touch with us. Many of us hang out in #openphoto on Freenode. Don't hesitate to chat come and <a href="http://webchat.freenode.net/">chat with us</a>. We're happy to answer any questions you might have.
+It's easy to get in touch with us. Many of us hang out in #openphoto on Freenode. Don't hesitate to come <a href="http://webchat.freenode.net/">chat with us</a>. We're happy to answer any questions you might have.
 
 Here's a full list of ways to contact us.
 
@@ -21,16 +21,16 @@ Here's a full list of ways to contact us.
 * <a href="http://www.facebook.com/OpenPhoto">Like us on Facebook</a>
 
 <a name="developers"></a>
-### Developers and Designers
+## Developers and Designers
 
 There's a lot of engineering goodness to be had here. We've got code written in HTML, CSS, JavaScript, PHP, Ruby, Python, Java and Objective-C. If you're interested helping out with a specific part of OpenPhoto then fork the repository and send us some pull requests. If you don't know exactly where to begin then contact us and we're more than happy to help you get started.
 
 That being said, the largest part of the code base is the <a href="https://github.com/openphoto/frontend">frontend</a> repository. It houses the web interface as well as the REST API which every other repository communicates to. This repository is also the one we've got a formal process to contribute to with unit tests and the works.
 
-<a href="http://theopenphotoproject.org/contribute/frontend" class="btn">Start contributing</a>
+<a href="http://theopenphotoproject.org/contribute/frontend" class="btn default">Start contributing</a>
 
 <a name="copywriters"></a>
-### Copywriters and Wordsmiths
+## Copywriters and Wordsmiths
 
 If you've got a gift with words we're in desperate need of your help. Much of the community consists of engineers and well, we suck at taking complex ideas and distilling them into small and easy to understand sentences.
 
@@ -41,11 +41,11 @@ Everything can be found in the <a href="https://github.com/openphoto/community">
 You can open an issue for the appropriate repository or fork it and send us a pull request. If you have any questions let us know using one of the channels above.
 
 <a name="community"></a>
-### Community Managers and Social Media
+## Community Managers and Social Media
 
 Send an email to <a href="mailto:hello@openphoto.me">hello@openphoto.me</a> or <a href="https://twitter.com/openphoto">@mention us</a> on Twitter if you'd like to help with Community Management or Social Media.
 
 <a name="translators"></a>
-### Translators
+## Translators
 
 We want to make The OpenPhoto Project available for everyone. This means translating it into as many languages as possible. If you're interested in helping us out then drop an email to <a href="mailto:hello@openphoto.me">hello@openphoto.me</a> and we'll be in touch once we have our translation platform ready.
