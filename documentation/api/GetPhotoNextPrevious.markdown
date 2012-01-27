@@ -145,7 +145,7 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
     }
 
 
-[Photo]: ../schemas/Photo.markdown
+[Photo]: http://theopenphotoproject.org/documentation/schemas/Photo
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters
@@ -154,6 +154,6 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
 [example-php]: #example-php
 [response]: #response
 [sample]: #sample
-[photogeneration]: ../faq/PhotoGeneration.markdown
-[ReturnSizes]: ../faq/ReturnSizes.markdown
+[photogeneration]: http://theopenphotoproject.org/documentation/faq/PhotoGeneration
+[ReturnSizes]: http://theopenphotoproject.org/documentation/faq/ReturnSizes
 [openphoto-php]: https://github.com/openphoto/openphoto-php

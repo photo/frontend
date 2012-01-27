@@ -71,7 +71,7 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
     }
 
 
-[Group]: ../schemas/Group.markdown
+[Group]: http://theopenphotoproject.org/documentation/schemas/Group
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters
