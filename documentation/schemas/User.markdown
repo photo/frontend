@@ -1,4 +1,4 @@
-Schema for an User object
+Schema for a User object
 =======================
 
 

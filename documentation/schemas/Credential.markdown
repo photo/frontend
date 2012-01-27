@@ -1,4 +1,4 @@
-Schema for an Credential object
+Schema for a Credential object
 =======================
 
 ----------------------------------------

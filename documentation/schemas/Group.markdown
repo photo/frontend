@@ -1,4 +1,4 @@
-Schema for an Group object
+Schema for a Group object
 =======================
 
 ----------------------------------------

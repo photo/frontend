@@ -1,4 +1,4 @@
-Schema for an Action object
+Schema for a Action object
 =======================
 
 ----------------------------------------
