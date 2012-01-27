@@ -1,4 +1,4 @@
-Schema for an Tag object
+Schema for a Tag object
 =======================
 
 

@@ -1,4 +1,4 @@
-Schema for an Photo object
+Schema for a Photo object
 =======================
 
 ----------------------------------------

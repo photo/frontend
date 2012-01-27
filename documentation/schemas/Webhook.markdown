@@ -1,4 +1,4 @@
-Schema for an Webhook object
+Schema for a Webhook object
 =======================
 
 
