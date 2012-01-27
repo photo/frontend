@@ -235,7 +235,14 @@ var opTheme = (function() {
         ev.preventDefault();
         var el = $(ev.target),
             key = $("#batch-key").val(),
-            value = $("form#batch-edit").find("*[name='value']").val();
+            fields = $("form#batch-edit").find("*[name='value']"),
+            value;
+
+        if(fields.length == 1)
+          value = fields.val();
+        else
+          value = $("form#batch-edit").find("*[name='value']:checked").val();
+
         params = {'crumb':crumb};
         params[key] = value;
         params['ids'] = OP.Batch.collection.getIds().join(',');
