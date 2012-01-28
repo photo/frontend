@@ -12,7 +12,7 @@ OPU = (function() {
         uploaderEl.pluploadQueue({
             // General settings
             runtimes : 'html5',
-            url : '/photo/upload.json',
+            url : '/photo/upload.json?httpCodes=500,403,404',
             max_file_size : '32mb',
             //chunk_size : '1mb',
             unique_names : true,
@@ -34,8 +34,20 @@ OPU = (function() {
                 $(".upload-progress .completed").html(uploader.total.uploaded+1);
                 $(".upload-progress").slideDown('fast');
               },
-              UploadComplete: function() {
-                $(".upload-progress").fadeOut('fast', function() { $(".upload-complete").fadeIn('fast'); });
+              UploadComplete: function(uploader, files) {
+                var i, file, failed = 0, total = 0;
+                for(i in files) {
+                  if(files.hasOwnProperty(i)) {
+                    total++;
+                    file = files[i];
+                    if(file.status !== plupload.DONE)
+                      failed++;
+                  }
+                }
+                if(failed === 0)
+                  $(".upload-progress").fadeOut('fast', function() { $(".upload-complete").fadeIn('fast'); });
+                else
+                  $(".upload-progress").fadeOut('fast', function() { $(".upload-warning .failed").html(failed); $(".upload-warning .total").html(total); $(".upload-warning").fadeIn('fast'); });
               },
               UploadFile: function() {
                 var uploader = $("#uploader").pluploadQueue(), license, permission, tags;

@@ -11,7 +11,7 @@ class ApiBaseController
    */
   const statusError = 500;
   const statusSuccess = 200;
-  const statusCreated = 202;
+  const statusCreated = 201;
   const statusForbidden = 403;
   const statusNotFound = 404;
 
@@ -34,7 +34,7 @@ class ApiBaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  public static function created($message, $result = null)
+  public function created($message, $result = null)
   {
     return self::json($message, self::statusCreated, $result);
   }
@@ -46,7 +46,7 @@ class ApiBaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  public static function error($message, $result = null)
+  public function error($message, $result = null)
   {
     return self::json($message, self::statusError, $result);
   }
@@ -58,7 +58,7 @@ class ApiBaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  public static function success($message, $result = null)
+  public function success($message, $result = null)
   {
     return self::json($message, self::statusSuccess, $result);
   }
@@ -70,7 +70,7 @@ class ApiBaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  public static function forbidden($message, $result = null)
+  public function forbidden($message, $result = null)
   {
     return self::json($message, self::statusForbidden, $result);
   }
@@ -82,7 +82,7 @@ class ApiBaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  public static function notFound($message, $result = null)
+  public function notFound($message, $result = null)
   {
     return self::json($message, self::statusNotFound, $result);
   }
@@ -94,12 +94,57 @@ class ApiBaseController
     * @param mixed $result The result with values needed by the caller to take action.
     * @return string Standard JSON envelope
     */
-  private static function json($message, $code, $result = null)
+  private function json($message, $code, $result = null)
   {
     $response = array('message' => $message, 'code' => $code, 'result' => $result);
+
+    // if httpCodes is * then always return the HTTP status code
+    // if httpCodes matches then we return a HTTP status code
+    if(isset($_REQUEST['httpCodes']))
+    {
+      if($_REQUEST['httpCodes'] === '*')
+      {
+        $this->putHttpHeader($code);
+      }
+      else
+      {
+        $codes = (array)explode(',', $_REQUEST['httpCodes']);
+        if(in_array($code, $codes))
+          $this->putHttpHeader($code);
+      }
+    }
+
+    // if a callback is in the request then we JSONP the response
     if(isset($_REQUEST['callback']))
       $response['__callback__'] = $_REQUEST['callback'];
+
     return $response;
   }
-}
 
+  private function putHttpHeader($code)
+  {
+    if($this->api->isInvoking())
+      return;
+
+    switch($code)
+    {
+      case '201':
+        $header = 'HTTP/1.0 201 Created';
+        break;
+      case '403':
+        $header = 'HTTP/1.0 403 Forbidden';
+        break;
+      case '404':
+        $header = 'HTTP/1.0 404 Not Found';
+        break;
+      case '500':
+        $header = 'HTTP/1.0 500 Internal Server Error';
+        break;
+      case '200':
+      default:
+        $header = 'HTTP/1.0 200 OK';
+        break;
+    }
+    header($header);
+  }
+}
