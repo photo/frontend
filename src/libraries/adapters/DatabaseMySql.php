@@ -177,7 +177,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       return false;
     }
-    return self::normalizeCredential($action);
+    return $this->normalizeCredential($action);
   }
 
   /**
@@ -194,7 +194,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       return false;
     }
-    return self::normalizeCredential($cred);
+    return $this->normalizeCredential($cred);
   }
 
   /**
@@ -211,7 +211,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       return false;
     }
-    return self::normalizeCredential($cred);
+    return $this->normalizeCredential($cred);
   }
 
   /**
@@ -231,7 +231,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       foreach($res as $cred)
       {
-        $credentials[] = self::normalizeCredential($cred);
+        $credentials[] = $this->normalizeCredential($cred);
       }
     }
     return $credentials;
@@ -253,7 +253,7 @@ class DatabaseMySql implements DatabaseInterface
     foreach($res as $r)
       $group['members'][] = $r['email'];
 
-    return self::normalizeGroup($group);
+    return $this->normalizeGroup($group);
   }
 
   /**
@@ -291,7 +291,7 @@ class DatabaseMySql implements DatabaseInterface
           $tempGroups[$group['id']]['members'][] = $group['email'];
         }
         foreach($tempGroups as $g)
-          $groups[] = self::normalizeGroup($g);
+          $groups[] = $this->normalizeGroup($g);
       }
       return $groups;
     }
@@ -310,7 +310,7 @@ class DatabaseMySql implements DatabaseInterface
     $photo = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     if(empty($photo))
       return false;
-    return self::normalizePhoto($photo);
+    return $this->normalizePhoto($photo);
   }
 
   /**
@@ -339,9 +339,9 @@ class DatabaseMySql implements DatabaseInterface
 
     $ret = array();
     if($photo_prev)
-      $ret['previous'] = self::normalizePhoto($photo_prev);
+      $ret['previous'] = $this->normalizePhoto($photo_prev);
     if($photo_next)
-      $ret['next'] = self::normalizePhoto($photo_next);
+      $ret['next'] = $this->normalizePhoto($photo_next);
 
     return $ret;
   }
@@ -386,7 +386,7 @@ class DatabaseMySql implements DatabaseInterface
       return false;
 
     for($i = 0; $i < count($photos); $i++)
-      $photos[$i] = self::normalizePhoto($photos[$i]);
+      $photos[$i] = $this->normalizePhoto($photos[$i]);
 
     // TODO evaluate SQL_CALC_FOUND_ROWS (indexes with the query builder might be hard to optimize)
     // http://www.mysqlperformanceblog.com/2007/08/28/to-sql_calc_found_rows-or-not-to-sql_calc_found_rows/
@@ -467,7 +467,7 @@ class DatabaseMySql implements DatabaseInterface
     $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
     if($res)
     {
-      return self::normalizeUser($res);
+      return $this->normalizeUser($res);
     }
     return null;
   }
@@ -483,7 +483,7 @@ class DatabaseMySql implements DatabaseInterface
     $webhook = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}webhook` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     if(empty($webhook))
       return false;
-    return self::normalizeWebhook($webhook);
+    return $this->normalizeWebhook($webhook);
   }
 
   /**
@@ -506,7 +506,7 @@ class DatabaseMySql implements DatabaseInterface
     $webhooks = array();
     foreach($res as $webhook)
     {
-      $webhooks[] = self::normalizeWebhook($webhook);
+      $webhooks[] = $this->normalizeWebhook($webhook);
     }
     return $webhooks;
   }
@@ -584,13 +584,13 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postCredential($id, $params)
   {
-    $params = self::prepareCredential($params);
+    $params = $this->prepareCredential($params);
     $bindings = array();
     if(isset($params['::bindings']))
     {
       $bindings = $params['::bindings'];
     }
-    $stmt = self::sqlUpdateExplode($params, $bindings);
+    $stmt = $this->sqlUpdateExplode($params, $bindings);
     $bindings[':id'] = $id;
     $bindings[':owner'] = $this->owner;
 
@@ -615,13 +615,13 @@ class DatabaseMySql implements DatabaseInterface
       $members = !empty($params['members']) ? (array)explode(',', $params['members']) : null;
       unset($params['members']);
     }
-    $params = self::prepareGroup($id, $params);
+    $params = $this->prepareGroup($id, $params);
     $bindings = array();
     if(isset($params['::bindings']))
     {
       $bindings = $params['::bindings'];
     }
-    $stmt = self::sqlUpdateExplode($params, $bindings);
+    $stmt = $this->sqlUpdateExplode($params, $bindings);
     $bindings[':id'] = $id;
     $bindings[':owner'] = $this->owner;
 
@@ -673,10 +673,10 @@ class DatabaseMySql implements DatabaseInterface
         // TODO: Generalize this and use for tags too -- @jmathai
         $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), implode(',', $params['groups']));
       }
-      $params = self::preparePhoto($id, $params);
+      $params = $this->preparePhoto($id, $params);
       unset($params['id']);
       $bindings = $params['::bindings'];
-      $stmt = self::sqlUpdateExplode($params, $bindings);
+      $stmt = $this->sqlUpdateExplode($params, $bindings);
       $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}photo` SET {$stmt} WHERE `id`=:id AND owner=:owner", 
         array_merge($bindings, array(':id' => $id, ':owner' => $this->owner)));
     }
@@ -712,14 +712,14 @@ class DatabaseMySql implements DatabaseInterface
       $params['id'] = $id;
     }
     $params['owner'] = $this->owner;
-    $params = self::prepareTag($params);
+    $params = $this->prepareTag($params);
     if(isset($params['::bindings']))
       $bindings = $params['::bindings'];
     else
       $bindings = array();
 
-    $stmtIns = self::sqlInsertExplode($params, $bindings);
-    $stmtUpd = self::sqlUpdateExplode($params, $bindings);
+    $stmtIns = $this->sqlInsertExplode($params, $bindings);
+    $stmtUpd = $this->sqlUpdateExplode($params, $bindings);
 
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}tag` ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']}) ON DUPLICATE KEY UPDATE {$stmtUpd}", $bindings);
     return ($result !== false);
@@ -754,7 +754,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postUser($params)
   {
-    $params = self::prepareUser($params);
+    $params = $this->prepareUser($params);
     $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}user` SET `extra`=:extra WHERE `id`=:id", array(':id' => $this->owner, ':extra' => $params));
     return ($res == 1);
   }
@@ -768,7 +768,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postWebhook($id, $params)
   {
-    $stmt = self::sqlUpdateExplode($params);
+    $stmt = $this->sqlUpdateExplode($params);
     $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}webhook` SET {$stmt} WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res == 1);
   }
@@ -783,7 +783,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putAction($id, $params)
   {
-    $stmt = self::sqlInsertExplode($params);
+    $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}action` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return ($result !== false);
   }
@@ -801,8 +801,8 @@ class DatabaseMySql implements DatabaseInterface
     $params['owner'] = $this->owner;
     if(!isset($params['id']))
       $params['id'] = $id;
-    $params = self::prepareCredential($params);
-    $stmt = self::sqlInsertExplode($params);
+    $params = $this->prepareCredential($params);
+    $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}credential` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
 
     return ($result !== false);
@@ -822,8 +822,8 @@ class DatabaseMySql implements DatabaseInterface
       $members = !empty($params['members']) ? (array)explode(',', $params['members']) : null;
       unset($params['members']);
     }
-    $params = self::prepareGroup($id, $params);
-    $stmt = self::sqlInsertExplode($params);
+    $params = $this->prepareGroup($id, $params);
+    $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}group` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
     if($members !== false)
       $this->addGroupMembers($id, $members);
@@ -845,9 +845,9 @@ class DatabaseMySql implements DatabaseInterface
     $tags = null;
     if(isset($params['tags']) && !empty($params['tags']))
       $tags = (array)explode(',', $params['tags']);
-    $params = self::preparePhoto($id, $params);
+    $params = $this->preparePhoto($id, $params);
     $bindings = $params['::bindings'];
-    $stmt = self::sqlInsertExplode($params, $bindings);
+    $stmt = $this->sqlInsertExplode($params, $bindings);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}photo` ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
     if(!empty($tags))
     {
@@ -880,7 +880,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putUser($params)
   {
-    $params = self::prepareUser($params);
+    $params = $this->prepareUser($params);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`extra`) VALUES (:id,:extra)", array(':id' => $this->owner, ':extra' => $params['extra']));
     return $result !== false;
   }
@@ -894,7 +894,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putWebhook($id, $params)
   {
-    $stmt = self::sqlInsertExplode($params);
+    $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}webhook` (id,owner,{$stmt['cols']}) VALUES (:id,:owner,{$stmt['vals']})", array(':id' => $id, ':owner' => $this->owner));
     return $result !== false;
   }
@@ -1291,7 +1291,7 @@ class DatabaseMySql implements DatabaseInterface
         case 'extra':
           break;
         default:
-          // skip empty lat/long Gh-313
+          // when lat/long is empty set value to null else it is stored as 0. Gh-313
           if(($key == 'latitude' || $key == 'longitude') && empty($value))
             $value = null;
           $bindings[":{$key}"] = $value;
@@ -1323,6 +1323,7 @@ class DatabaseMySql implements DatabaseInterface
       $bindings[':id'] = $params['id'];
       $params['id'] = ':id';
     }
+
     if(!empty($bindings))
     {
       $params['::bindings'] = $bindings;
