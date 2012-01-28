@@ -1,4 +1,5 @@
 <div class="message upload-complete"><img src="/assets/images/checkmark-big.gif" align="absmiddle">All done! Go have a <a href="<?php $this->url->photosView(); ?>">look at your photos</a>.</div>
+<div class="message upload-warning"><img src="/assets/images/warning-big.png" align="absmiddle">Uh oh! <span class="failed"></span> of <span class="total"></span> photos failed to upload.</div>
 <div class="message upload-progress"><img src="/assets/images/upload-big.gif" align="absmiddle">Currently uploading <span class="completed">0</span> of <span class="total">0</span> photos.</div>
 <form class="upload">
   <h2>Apply these settings to my photos.</h2>

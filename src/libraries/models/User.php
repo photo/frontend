@@ -154,7 +154,7 @@ class User extends BaseModel
       if($user === null)
         return false;
       $len = max(strlen($this->session->get('email')), strlen($user->email));
-      return isset($user->email) && strncmp($this->session->get('email'), $user->email, $len) === 0;
+      return isset($user->email) && strncmp(strtolower($this->session->get('email')), strtolower($user->email), $len) === 0;
     }
   }
 

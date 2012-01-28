@@ -1824,6 +1824,9 @@ body.upload form.upload {
 body.upload .poweredby a {
   font-style:italic;
 }
+body.upload .message img {
+  top:-4px;
+}
 
 /* 04.08 Setup *************************************************** */
 

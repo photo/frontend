@@ -159,7 +159,7 @@ li.plupload_delete a {
 }
 
 li.plupload_failed a {
-	background: url('../images/error.gif');
+	background: url('../images/error.png');
 	cursor: default;
 }
 
