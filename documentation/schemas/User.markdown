@@ -1,4 +1,4 @@
-Documentation
+Schema for a User object
 =======================
 
 
@@ -27,6 +27,6 @@ This includes the last uploaded [Photo][Photo]  and [Action][Action] id.
   * lastPhotoId, most recent photo id
   * lastActionId, most recent action id
 
-[User]: User.markdown
-[Photo]: Photo.markdown
-[Action]: Action.markdown
+[User]: http://theopenphotoproject.org/documentation/schemas/User
+[Photo]: http://theopenphotoproject.org/documentation/schemas/Photo
+[Action]: http://theopenphotoproject.org/documentation/schemas/Action

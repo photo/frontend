@@ -1,6 +1,5 @@
-Documentation
+Schema for a Credential object
 =======================
-
 
 ----------------------------------------
 

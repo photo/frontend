@@ -88,7 +88,7 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
     }
 
 
-[Action]: ../schemas/Action.markdown
+[Action]: http://theopenphotoproject.org/documentation/schemas/Action
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters
