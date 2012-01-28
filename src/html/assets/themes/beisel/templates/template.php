@@ -19,7 +19,7 @@
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                  addCss("/assets/stylesheets/upload.css")->
                                                                  addCss($this->theme->asset('stylesheet', 'main.css', false))->
-                                                                 getUrl(AssetPipeline::css, 'b'); ?>">
+                                                                 getUrl(AssetPipeline::css, 'd'); ?>">
     <?php } ?>
 
     <?php $this->plugin->invoke('onHead', array('page' => $page)); ?>
@@ -60,7 +60,7 @@
     <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
   <?php } else { ?>
     <script type="text/javascript" src="<?php echo getAssetPipeline(true)->addJs($this->theme->asset($this->config->dependencies->javascript, null, false))->
-                                                                      addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'b'); ?>"></script>
+                                                                      addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'd'); ?>"></script>
   <?php } ?>
   <script>
     OP.Util.init(jQuery, {
@@ -116,7 +116,7 @@
               '/assets/javascripts/jquery.plupload.queue.js',
               '/assets/javascripts/openphoto-upload.js',
             <?php } else { ?>
-              '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'b'); ?>',
+              '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'd'); ?>',
             <?php } ?>
           <?php } ?>
 
@@ -130,7 +130,7 @@
           <?php } else { ?>
             '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-batch.min.js')->
                                                 addJs($this->theme->asset('javascript', 'openphoto-theme-full-min.js', false))->
-                                                getUrl(AssetPipeline::js, 'c'); ?>'
+                                                getUrl(AssetPipeline::js, 'd'); ?>'
           <?php } ?>
         ],
         onComplete: function(){ 
