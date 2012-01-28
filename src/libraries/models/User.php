@@ -139,14 +139,11 @@ class User extends BaseModel
 
   public function isOwner()
   {
+    $user = $this->config->user;
     $credential = $this->getCredentialObject();
     if($credential->isOAuthRequest())
     {
-      if(!$credential->checkRequest())
-      {
-        return false;
-      }
-      return true;
+      return $credential->checkRequest() === true && $credential->getEmailFromOAuth() === $user->email;;
     }
     elseif(!$this->isLoggedIn())
     {
@@ -154,7 +151,6 @@ class User extends BaseModel
     }
     else
     {
-      $user = $this->config->user;
       if($user === null)
         return false;
       $len = max(strlen($this->session->get('email')), strlen($user->email));

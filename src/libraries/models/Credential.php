@@ -10,6 +10,7 @@ class Credential extends BaseModel
 
   const nonceCacheKey = 'oauthTimestamps';
   public $consumer, $oauthException, $oauthParams, $provider, $sendHeadersOnError = true;
+  private static $requestStatus;
 
   /**
     * Constructor
@@ -83,6 +84,9 @@ class Credential extends BaseModel
 
   public function checkRequest()
   {
+    if(isset(self::$requestStatus))
+      return self::$requestStatus;
+
     if(!class_exists('OAuthProvider'))
     {
       $this->logger->warn('No OAuthProvider class found on this system');
@@ -97,14 +101,16 @@ class Credential extends BaseModel
       $this->provider->setParam('__route__', null);
       $this->provider->setRequestTokenPath('/v1/oauth/token/request'); // No token needed for this end point
       $this->provider->checkOAuthRequest();
-      return true;
+      self::$requestStatus = true;
     }
     catch(OAuthException $e)
     {
       $this->oauthException = $e;
       $this->logger->crit(OAuthProvider::reportProblem($e, $this->sendHeadersOnError));
-      return false;
+      self::$requestStatus = false;
     }
+
+    return self::$requestStatus;
   }
 
   public function checkConsumer($provider)
@@ -204,6 +210,14 @@ class Credential extends BaseModel
       $this->consumer = $this->db->getCredential($consumerKey);
 
     return $this->consumer;
+  }
+
+  public function getEmailFromOAuth()
+  {
+    if(!$this->consumer)
+      return false;
+
+    return $this->consumer['owner'];
   }
 
   public function getErrorAsString()
