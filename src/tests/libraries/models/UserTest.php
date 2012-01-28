@@ -241,6 +241,7 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(null));
     $this->user->inject('session', $session);
     $this->user->inject('credential', $cred);
+    $this->user->inject('config', new FauxObject);
 
     $res = $this->user->isOwner();
     $this->assertFalse($res);
@@ -296,7 +297,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     $this->assertTrue($res);
   }
 
-  public function testIsOwnerOAuthFalse()
+  public function testIsOwnerOAuthInvalid()
   {
     $cred = $this->getMock('Credential', array('isOAuthRequest','checkRequest'));
     $cred->expects($this->once())
@@ -306,6 +307,32 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->method('checkRequest')
       ->will($this->returnValue(false));
     $this->user->inject('credential', $cred);
+    $config = new stdClass;
+    $config->user = new stdClass;
+    $config->user->email = 'doesnt matter';
+    $this->user->inject('config', $config);
+
+    $res = $this->user->isOwner();
+    $this->assertFalse($res);
+  }
+
+  public function testIsOwnerOAuthValidNotOwner()
+  {
+    $cred = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getEmailFromOAuth'));
+    $cred->expects($this->once())
+      ->method('isOAuthRequest')
+      ->will($this->returnValue(true));
+    $cred->expects($this->once())
+      ->method('checkRequest')
+      ->will($this->returnValue(true));
+    $cred->expects($this->once())
+      ->method('getEmailFromOAuth')
+      ->will($this->returnValue('test@example.com'));
+    $this->user->inject('credential', $cred);
+    $config = new stdClass;
+    $config->user = new stdClass;
+    $config->user->email = 'different@example.com';
+    $this->user->inject('config', $config);
 
     $res = $this->user->isOwner();
     $this->assertFalse($res);
@@ -313,14 +340,21 @@ class UserTest extends PHPUnit_Framework_TestCase
 
   public function testIsOwnerOAuthTrue()
   {
-    $cred = $this->getMock('Credential', array('isOAuthRequest','checkRequest'));
+    $cred = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getEmailFromOAuth'));
     $cred->expects($this->once())
       ->method('isOAuthRequest')
       ->will($this->returnValue(true));
     $cred->expects($this->once())
       ->method('checkRequest')
       ->will($this->returnValue(true));
+    $cred->expects($this->once())
+      ->method('getEmailFromOAuth')
+      ->will($this->returnValue('test@example.com'));
     $this->user->inject('credential', $cred);
+    $config = new stdClass;
+    $config->user = new stdClass;
+    $config->user->email = 'test@example.com';
+    $this->user->inject('config', $config);
 
     $res = $this->user->isOwner();
     $this->assertTrue($res);
