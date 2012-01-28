@@ -9,7 +9,7 @@ class PhotoTest extends PHPUnit_Framework_TestCase
   public function setUp()
   {
     $_SERVER['HTTP_HOST'] = 'foobar';
-    $params = array('utility' => new stdClass, 'url' => new stdClass, 'image' => new FauxObject);
+    $params = array('user' => new FauxObject, 'utility' => new stdClass, 'url' => new stdClass, 'image' => new FauxObject);
     $this->photo = new Photo($params);;
     $config = new stdClass;
     $secrets = new stdClass;
@@ -281,8 +281,23 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     // This *should* work
     $now = time();
     $res = $this->photo->generatePaths('foobar');
-    $this->assertEquals("/original/201201/{$now}-foobar", $res['pathOriginal'], 'original path not correct, if it is a timestamp mismatch - ignore');
+    $this->assertNotEquals("/original/201201/{$now}-foobar", $res['pathOriginal'], 'original path not correct, if it is a timestamp mismatch - ignore');
+    $this->assertTrue(preg_match('#/original/201201/[a-z0-9]{6}-foobar#', $res['pathOriginal']) == 1, 'original path not correct, if it is a timestamp mismatch - ignore');
     $this->assertEquals("/base/201201/{$now}-foobar", $res['pathBase'], 'base path not correct, if it is a timestamp mismatch - ignore');
+  }
+
+  public function testGenerateUrlOriginal()
+  {
+    $user = $this->getMock('Url', array('isOwner'));
+    $user->expects($this->any())
+      ->method('isOwner')
+      ->will($this->returnValue(true));
+    $this->photo->inject('user', $user);
+
+    $res = $this->photo->generateUrlOriginal($this->photoData);
+    $this->assertEquals('http://host/path/original', $res);
+    $res = $this->photo->generateUrlOriginal($this->photoData, 'https');
+    $this->assertEquals('https://host/path/original', $res);
   }
 
   public function testGenerateUrlPublicWhenStaticAssetExists()

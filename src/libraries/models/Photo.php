@@ -25,6 +25,11 @@ class Photo extends BaseModel
       $this->image = $params['image'];
     else
       $this->image = getImage();
+
+    if(isset($params['user']))
+      $this->user = $params['user'];
+    else
+      $this->user = new User;
   }
 
   /**
@@ -58,6 +63,13 @@ class Photo extends BaseModel
         $photo["photo{$fragment}"] = array($path, intval($options['width']), intval($options['height']));
       }
     }
+
+    // we never need the Base
+    if(isset($photo['pathBase']))
+      unset($photo['pathBase']);
+
+    $photo['pathOriginal'] = $this->generateUrlOriginal($photo);
+
     $photo['url'] = $this->getPhotoViewUrl($photo);
     return $photo;
   }
@@ -245,6 +257,20 @@ class Photo extends BaseModel
   }
 
   /**
+    * Obtain a public URL for the original photo.
+    * If the user is the owner we return the URL to the static asset.
+    * If the user is logged in but not the owner we route through the API host.
+    *
+    * @param array $photo The photo object as returned from the database.
+    * @param string $protocol Protocol for the URL
+    * @return mixed string URL on success, FALSE on failure
+    */
+  public function generateUrlOriginal($photo, $protocol = 'http')
+  {
+    return "{$protocol}://{$photo['host']}{$photo['pathOriginal']}";
+  }
+
+  /**
     * Photo urls are either to existing files on the remote filesystem or a call back to this server to generate it.
     * The requested photo is looked up in the database and if it exists is returned.
     * If it does not exist then a URL which will generate, store and return it when called is returned.
@@ -253,11 +279,13 @@ class Photo extends BaseModel
     * @param int $width The width of the requested photo.
     * @param int $height The height of the requested photo.
     * @param string $options Optional options to be applied on the photo
+    * @param string $protocol Protocol for the URL
     * @return mixed string URL on success, FALSE on failure
     */
   public function generateUrlPublic($photo, $width, $height, $options = null, $protocol = 'http')
   {
     $key = $this->generateCustomKey($width, $height, $options);
+
     if(isset($photo[$key]))
       return "{$protocol}://{$photo['host']}{$photo[$key]}";
     elseif(isset($photo['id']))
@@ -416,8 +444,7 @@ class Photo extends BaseModel
     */
   public function upload($localFile, $name, $attributes = array())
   {
-    $userObj = new User;
-    $id = $userObj->getNextId('photo');
+    $id = $this->user->getNextId('photo');
     if($id === false)
     {
       $this->logger->crit('Could not fetch next photo ID');
