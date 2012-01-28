@@ -1,6 +1,5 @@
-Documentation
+Schema for a Photo object
 =======================
-
 
 ----------------------------------------
 
@@ -105,6 +104,6 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
   * pathBase, The URL of the base version of the photo, used for photo generation
   * pathWxH, A pseudo key which represents any resized version of a photo and it's URL
 
-[User]: User.markdown
-[Photo]: Photo.markdown
-[Action]: Action.markdown
+[User]: http://theopenphotoproject.org/documentation/schemas/User
+[Photo]: http://theopenphotoproject.org/documentation/schemas/Photo
+[Action]: http://theopenphotoproject.org/documentation/schemas/Action

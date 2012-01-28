@@ -1,4 +1,4 @@
-Documentation
+Schema for a Tag object
 =======================
 
 
@@ -34,7 +34,7 @@ For example, the tag `sunnyvale` can have a `latitude` and `longitude` property.
   * latitude, Latitude if applicable
   * longitude, Longitude if applicable
 
-[User]: User.markdown
-[Photo]: Photo.markdown
-[Action]: Action.markdown
-[Tag]: Tag.markdown
+[User]: http://theopenphotoproject.org/documentation/schemas/User
+[Photo]: http://theopenphotoproject.org/documentation/schemas/Photo
+[Action]: http://theopenphotoproject.org/documentation/schemas/Action
+[Tag]: http://theopenphotoproject.org/documentation/schemas/Tag

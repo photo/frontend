@@ -1,6 +1,5 @@
-Documentation
+Schema for a Group object
 =======================
-
 
 ----------------------------------------
 
@@ -29,7 +28,6 @@ A Group consists of an `id`, `name` and array of `email addresses`.
   * name, the name of the group
   * members: a set of email addresses who belong to this group
 
-[User]: User.markdown
-[Photo]: Photo.markdown
-[Action]: Action.markdown
-
+[User]: http://theopenphotoproject.org/documentation/schemas/User
+[Photo]: http://theopenphotoproject.org/documentation/schemas/Photo
+[Action]: http://theopenphotoproject.org/documentation/schemas/Action

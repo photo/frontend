@@ -79,7 +79,7 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
     }
 
 
-[Tag]: ../schemas/Tag.markdown
+[Tag]: http://theopenphotoproject.org/documentation/schemas/Tag
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters

@@ -113,7 +113,7 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
     }
 
 
-[Photo]: ../schemas/Photo.markdown
+[Photo]: http://theopenphotoproject.org/documentation/schemas/Photo
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters

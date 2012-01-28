@@ -71,7 +71,6 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
     }
 
 
-[Action]: ../schemas/Action.markdown
 [purpose]: #purpose
 [endpoint]: #endpoint
 [parameters]: #parameters
