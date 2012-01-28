@@ -11,10 +11,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="<?php $this->theme->asset('image', 'favicon.png'); ?>">
     <link rel="apple-touch-icon" href="<?php $this->theme->asset('image', 'apple-touch-icon.png'); ?>">
-    <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
-                                                               addCss($this->theme->asset('stylesheet', 'main.css', false))->
-                                                               addCss("/assets/stylesheets/upload.css")->
-                                                               getUrl(AssetPipeline::css, 'b'); ?>">
+    <?php if($this->config->site->mode === 'dev') { ?>
+      <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>">
+      <link rel="stylesheet" href="/assets/stylesheets/upload.css">
+      <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'main.css'); ?>">
+    <?php } else { ?>
+      <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
+                                                                 addCss("/assets/stylesheets/upload.css")->
+                                                                 addCss($this->theme->asset('stylesheet', 'main.css', false))->
+                                                                 getUrl(AssetPipeline::css, 'b'); ?>">
+    <?php } ?>
 
     <?php $this->plugin->invoke('onHead', array('page' => $page)); ?>
 </head>
