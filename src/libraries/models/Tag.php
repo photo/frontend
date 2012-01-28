@@ -121,7 +121,7 @@ class Tag extends BaseModel
   public function updateTagCounts($existingTags, $updatedTags, $permission, $priorPermission)
   {
     $tagsToUpdate = $this->getUpdateTagCountValues($existingTags, $updatedTags, $permission, $priorPermission);
-    return $this->db->postTags($updatedTags);
+    return $this->db->postTags($tagsToUpdate);
   }
 
   /**
