@@ -179,6 +179,12 @@ class DatabaseMySql implements DatabaseInterface
     }
     return $this->normalizeCredential($action);
   }
+  
+    public function getBaseDir()
+  {
+    return dirname(dirname(dirname(__FILE__)));
+  }
+
 
   /**
     * Retrieve a credential with $id
