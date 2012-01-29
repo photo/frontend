@@ -28,7 +28,7 @@ echo "===================================================="
 echo ""
 echo ""
 
-apt-get install --assume-yes --quiet apache2 php5 libapache2-mod-php5 php5-curl curl php5-gd php5-mcrypt php-apc
+apt-get install --assume-yes --quiet apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-curl curl php5-gd php5-mcrypt php5-mysql php-apc
 a2enmod rewrite
 
 echo ""
@@ -71,6 +71,9 @@ chown www-data:www-data /var/www/openphoto/src/userdata
 
 mkdir /var/www/openphoto/src/html/assets/cache
 chown www-data:www-data /var/www/openphoto/src/html/assets/cache
+
+mkdir /var/www/openphoto/src/html/photos
+chown www-data:www-data /var/www/openphoto/src/html/photos
 
 echo ""
 echo ""
