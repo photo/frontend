@@ -28,7 +28,7 @@ echo "===================================================="
 echo ""
 echo ""
 
-apt-get install --assume-yes --quiet apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-curl curl php5-gd php5-mcrypt php5-mysql php-apc
+apt-get install --assume-yes --quiet apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-curl curl php5-gd php5-mcrypt php5-mysql php-pear php-apc build-essential libpcre3-dev
 a2enmod rewrite
 
 echo ""
@@ -44,6 +44,17 @@ pecl install oauth
 a2enmod deflate
 a2enmod expires
 a2enmod headers
+
+echo ""
+echo ""
+echo "===================================================="
+echo "Installing oauth from pecl"
+echo "===================================================="
+echo ""
+echo ""
+
+pecl install oauth
+echo "extension=oauth.so" >> /etc/php5/apache2/php.ini
 
 echo ""
 echo ""
