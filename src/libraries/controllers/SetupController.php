@@ -680,13 +680,16 @@ class SetupController extends BaseController
     $generatedDir = "{$configDir}/configs";
     $assetsDir = $this->utility->getBaseDir() . '/html/assets/cache';
 
-    if(file_exists($generatedDir) && is_writable($generatedDir) && file_exists($assetsDir) && is_writable($assetsDir) && !empty($imageLibs))
-      # No errors, return empty array
+    // No errors, return empty array
+    if(function_exists('exif_read_data') && file_exists($generatedDir) && is_writable($generatedDir) && file_exists($assetsDir) && is_writable($assetsDir) && !empty($imageLibs))
       return $errors;
 
     $user = exec("whoami");
     if(empty($user))
       $user = 'Apache user';
+
+    if(!function_exists('exif_read_data'))
+      $errors[] = 'We could not find PHP\'s exif functions. Please install php5-exif.';
 
     if(!is_writable($configDir))
       $errors[] = "Insufficient privileges to complete setup.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$configDir}</em>.</li></ul>";
