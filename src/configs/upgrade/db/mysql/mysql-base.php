@@ -1,10 +1,11 @@
 <?php
 try
 {
+  $utilityObj = new Utility;
   $sql = <<<SQL
   CREATE DATABASE IF NOT EXISTS `{$this->mySqlDb}`
 SQL;
-  $pdo = new PDO(sprintf('%s:host=%s', 'mysql', $this->mySqlHost), $this->mySqlUser, Utility::decrypt($this->mySqlPassword));
+  $pdo = new PDO(sprintf('%s:host=%s', 'mysql', $this->mySqlHost), $this->mySqlUser, $utilityObj->decrypt($this->mySqlPassword));
   $pdo->exec($sql);
 
   $sql = <<<SQL
