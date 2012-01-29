@@ -44,7 +44,6 @@ class EpiCache_File extends EpiCache
 
     $expiry += time();
     $saved = file_put_contents($this->getFileName($key), "{$value}-{$expiry}");
-    die();
     if(!$saved)
       return false;
 
