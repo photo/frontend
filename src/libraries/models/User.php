@@ -139,6 +139,9 @@ class User extends BaseModel
 
   public function isOwner()
   {
+    if(!isset($this->config->user))
+      return false;
+
     $user = $this->config->user;
     $credential = $this->getCredentialObject();
     if($credential->isOAuthRequest())
