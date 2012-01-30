@@ -1,6 +1,35 @@
 Contributing to The OpenPhoto Project
 =======================
 
+## TL;DR
+Alright, we get it. You'd rather code than read. Here's the checklist.
+
+1. Fork the <a href="https://github.com/openphoto/frontend">frontend</a> repository. <a href="http://help.github.com/fork-a-repo/">More info on forking</a>.
+1. Follow one of our <a href="/documentation">guides</a> on setting the software up.
+1. Get coding!
+1. <a href="/contribute/frontend">More details</a> if you need.
+
+<div></div>
+
+    # replace {username} with your github username
+    # clone your repository locally and cd into the new directory
+    user@ git clone git@github.com:{username}/frontend.git 
+    user@ cd frontend
+
+    # add the official openphoto repository as upstream 
+    user@[frontend] git remote add upstream git://github.com/openphoto/frontend.git
+    user@[frontend] git pull upstream
+    
+    # all active development happens in the development branch
+    # as a result it maybe unstable so you can always use master which should work
+    user@[frontend] git checkout development
+
+    # make your changes and commit then locally
+    user@[frontend] git commit -m 'Lots of details! Closes #123'
+    user@[frontend] git push origin development
+
+Now you're ready to <a href="http://help.github.com/send-pull-requests/">send a pull request</a>!
+
 ## There's a spot for everyone to be a part of something BIG
 
 Hear ye, hear ye! <a href="#developers">Developers</a>, <a href="designers">designers</a>, <a href="#copywriters">copywriters</a>, <a href="#community">community managers</a>, <a href="#translators">translators</a>, and anyone else who wants to help. If you want to contribute to The OpenPhoto Project, the good news is that there's probably a place where we could use your help!
@@ -27,7 +56,7 @@ There's a lot of engineering goodness to be had here. We've got code written in 
 
 That being said, the largest part of the code base is the <a href="https://github.com/openphoto/frontend">frontend</a> repository. It houses the web interface, as well as the REST API which every other repository communicates to. This repository is also the one we've got a formal process to contribute to with unit tests and the works.
 
-<a href="http://theopenphotoproject.org/contribute/frontend" class="btn">Start contributing</a>
+<a href="http://theopenphotoproject.org/contribute/frontend" class="btn danger">Start contributing</a>
 
 <a name="copywriters"></a>
 ## Copywriters and Wordsmiths
