@@ -272,16 +272,6 @@ var opTheme = (function() {
         ev.preventDefault();
         OP.Batch.clear();
       },
-      pinOver: function(ev) {
-        var el = $(ev.target),
-            a = el.parent().prev();
-        a.fadeIn('fast');
-      },
-      pinOut: function(ev) {
-        var el = $(ev.target),
-            a = el.filter('[class~="unpinned"]').children().filter('.pin').filter(':visible');
-        a.fadeOut('fast');
-      },
       pluginStatus: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
@@ -551,8 +541,6 @@ var opTheme = (function() {
         OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
-        OP.Util.on('mouseover:pin', opTheme.callback.pinOver);
-        OP.Util.on('mouseout:pin', opTheme.callback.pinOut);
         OP.Util.on('change:batch-field', opTheme.callback.batchField);
 
         OP.Util.on('callback:tags-autocomplete', opTheme.init.tags.autocomplete);

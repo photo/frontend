@@ -1290,6 +1290,16 @@ ul.photo-grid {
   background-color:#f1f1f1;
 }
 
+.grid-item:hover a.pin {
+  visibility:visible;
+  -moz-transition:opacity 0.5s;
+  -webkit-transition:opacity 0.5s;
+  -ms-transition:opacity 0.5s;
+  transition:opacity 0.5s;
+  opacity:1;
+  filter:alpha(opacity=100);
+}
+
 .photo-grid.size440x292xCR .grid-item {
   margin-right:5px;
   margin-bottom:10px;
@@ -1375,7 +1385,9 @@ a.pin {
 
 .unpinned a.pin {
   background:#fff url("../images/icons.png") 3px -1106px no-repeat;
-  display:none;
+  visibility:hidden;
+  opacity:0;
+  filter:alpha(opacity=0);
 }
 
 .grid-item a ul.meta li.geo span {
