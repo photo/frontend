@@ -216,6 +216,16 @@ class TagTest extends PHPUnit_Framework_TestCase
     $this->assertEquals('one,two', $res);
   }
 
+  /* Uncomment to verify issue Gh-399
+   * public function testSanitizeTagsAsStringMixedCase()
+  {
+    $res = $this->tag->sanitizeTagsAsString('one,two,Two');
+    $this->assertEquals('one,two', $res);
+
+    $res = $this->tag->sanitizeTagsAsString('one,Two,two');
+    $this->assertEquals('one,Two', $res);
+  }*/
+
   public function testValidateParams()
   {
     $tagToValidate = array('countPrivate' => 2, 'countPublic' => 3, 'illegal' => 'badkey');
