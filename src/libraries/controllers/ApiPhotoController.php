@@ -260,11 +260,33 @@ class ApiPhotoController extends ApiBaseController
     }
     elseif(isset($_POST['photo']))
     {
-      unset($attributes['photo']);
+      // if a filename is passed in we use it else it's the random temp name
       $localFile = tempnam($this->config->paths->temp, 'opme');
-      $name = basename($localFile).'.jpg';
-      file_put_contents($localFile, base64_decode($_POST['photo']));
-      $photoId = $this->photo->upload($localFile, $name, $attributes);
+      if(isset($_POST['filename']))
+        $name = $_POST['filename'];
+      else
+        $name = basename($localFile).'.jpg';
+
+      // if we have a path to a photo we download it
+      // else we base64_decode it
+      if(preg_match('#https?://#', $_POST['photo']))
+      {
+        unset($attributes['photo']);
+        $fp = fopen($localFile, 'w');
+        $ch = curl_init($_POST['photo']);
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        fclose($fp);
+        $photoId = $this->photo->upload($localFile, $name, $attributes);
+      }
+      else
+      {
+        unset($attributes['photo']);
+        file_put_contents($localFile, base64_decode($_POST['photo']));
+        $photoId = $this->photo->upload($localFile, $name, $attributes);
+      }
     }
 
     if($photoId)
