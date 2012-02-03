@@ -36,7 +36,7 @@ class ApiBaseController
     */
   public function created($message, $result = null)
   {
-    return self::json($message, self::statusCreated, $result);
+    return $this->json($message, self::statusCreated, $result);
   }
 
   /**
@@ -48,7 +48,7 @@ class ApiBaseController
     */
   public function error($message, $result = null)
   {
-    return self::json($message, self::statusError, $result);
+    return $this->json($message, self::statusError, $result);
   }
 
   /**
@@ -60,7 +60,7 @@ class ApiBaseController
     */
   public function success($message, $result = null)
   {
-    return self::json($message, self::statusSuccess, $result);
+    return $this->json($message, self::statusSuccess, $result);
   }
 
   /**
@@ -72,7 +72,7 @@ class ApiBaseController
     */
   public function forbidden($message, $result = null)
   {
-    return self::json($message, self::statusForbidden, $result);
+    return $this->json($message, self::statusForbidden, $result);
   }
 
   /**
@@ -84,7 +84,7 @@ class ApiBaseController
     */
   public function notFound($message, $result = null)
   {
-    return self::json($message, self::statusNotFound, $result);
+    return $this->json($message, self::statusNotFound, $result);
   }
 
   /**
