@@ -45,7 +45,7 @@ class EpiConfig
   public static function getInstance()
   {
     $params = func_get_args();
-    $hash   = md5(implode('.', $params));
+    $hash   = md5(json_encode($params));
     if(isset(self::$instances[$hash]))
       return self::$instances[$hash];
 
@@ -53,7 +53,6 @@ class EpiConfig
     if(!file_exists($file = dirname(__FILE__) . "/{$type}.php"))
       EpiException::raise(new EpiConfigTypeDoesNotExistException("EpiConfig type does not exist: ({$type}).  Tried loading {$file}", 404));
 
-    require_once $file;
     self::$instances[$hash] = new $type($params);
     self::$instances[$hash]->hash = $hash;
     return self::$instances[$hash];
@@ -65,11 +64,11 @@ function getConfig()
   $employ = EpiConfig::employ();
   $class = array_shift($employ);
   if($class && class_exists($class))
-    return EpiConfig::getInstance($class);
+    return EpiConfig::getInstance($class, $employ);
   elseif(class_exists(EpiConfig::FILE))
-    return EpiConfig::getInstance(EpiConfig::FILE);
+    return EpiConfig::getInstance(EpiConfig::FILE, $employ);
   elseif(class_exists(EpiConfig::MYSQL))
-    return EpiConfig::getInstance(EpiConfig::MYSQL);
+    return EpiConfig::getInstance(EpiConfig::MYSQL, $employ);
   else
     EpiException::raise(new EpiConfigTypeDoesNotExistException('Could not determine which cache handler to load', 404));
 }
