@@ -1,4 +1,4 @@
-OpenPhoto / Installation for Ubuntu
+OpenPhoto / Installation for Ubuntu + Apache
 =======================
 #### OpenPhoto, a photo service for the masses
 
