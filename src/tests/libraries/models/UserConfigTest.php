@@ -35,7 +35,7 @@ class UserConfigTest extends PHPUnit_Framework_TestCase
       mkdir("{$this->userConfigDir}/userdata/configs");
     }
     
-    $params = array('utility' => new FauxObject);
+    $params = array('utility' => new FauxObject, 'config' => new FauxObject);
     $_SERVER['HTTP_HOST'] = 'example.com';
     $this->userConfig = new UserConfigWrapper($params);
     $this->userConfig->inject('basePath', $this->userConfigDir);

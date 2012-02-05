@@ -6,9 +6,23 @@ class UserConfig
   public function __construct($params = null)
   {
     if(isset($params['config']))
+    {
       $this->config = $params['config'];
+    }
     else
+    {
+      $path = dirname(dirname(dirname(__FILE__)));
+      $params = parse_ini_file(sprintf('%s/configs/defaults.ini', $path), true);
+      if(file_exists($overrideIni = sprintf('%s/configs/override.ini', $path)))
+        $params = array_merge_recursive($params, parse_ini_file($overrideIni, true));
+
+      $configParams = array($params['epi']['config']);
+      if(isset($params['epiConfigParams']))
+        array_push($configParams, $params['epiConfigParams']);
+
+      EpiConfig::employ($configParams);
       $this->config = getConfig();
+    }
 
     if(isset($params['utility']))
       $this->utility = $params['utility'];
