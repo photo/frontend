@@ -1,44 +1,14 @@
 <?php
 class EpiConfig
 {
-  private static $instance;
-  private $config;
+  const FILE = 'EpiConfig_File';
+  const MYSQL = 'EpiConfig_MySql';
+  private static $employ;
+  protected static $instances;
+  protected $config;
   public function __construct()
   {
     $this->config = new stdClass;
-  }
-
-  public function load(/*$file, $file, $file, $file...*/)
-  {
-    $args = func_get_args();
-    foreach($args as $file)
-    {
-      // Prepend config directory if the path doesn't start with . or /
-      if($file[0] != '.' && $file[0] != '/')
-        $file = Epi::getPath('config') . "/{$file}";
-
-      if(!file_exists($file))
-      {
-        EpiException::raise(new EpiConfigException("Config file ({$file}) does not exist"));
-        break; // need to simulate same behavior if exceptions are turned off
-      }
-
-      $parsed_array = parse_ini_file($file, true);
-      foreach($parsed_array as $key => $value)
-      {
-        if(!is_array($value))
-        {
-          $this->config->$key = $value;
-        }
-        else
-        {
-          if(!isset($this->config->$key))
-            $this->config->$key = new stdClass;
-          foreach($value as $innerKey => $innerValue)
-            $this->config->$key->$innerKey = $innerValue;
-        }
-      }
-    }
   }
 
   public function get($key = null)
@@ -58,21 +28,50 @@ class EpiConfig
   }
 
   /*
+   * @param  $const
+   * @params optional
+   */
+  public static function employ()
+  {
+    if(func_num_args() === 1)
+      self::$employ = func_get_arg(0);
+
+    return self::$employ;
+  }
+
+  /*
    * EpiConfig::getInstance
    */
   public static function getInstance()
   {
-    if(self::$instance)
-      return self::$instance;
+    $params = func_get_args();
+    $hash   = md5(implode('.', $params));
+    if(isset(self::$instances[$hash]))
+      return self::$instances[$hash];
 
-    self::$instance = new EpiConfig;
-    return self::$instance;
+    $type = array_shift($params);
+    if(!file_exists($file = dirname(__FILE__) . "/{$type}.php"))
+      EpiException::raise(new EpiConfigTypeDoesNotExistException("EpiConfig type does not exist: ({$type}).  Tried loading {$file}", 404));
+
+    require_once $file;
+    self::$instances[$hash] = new $type($params);
+    self::$instances[$hash]->hash = $hash;
+    return self::$instances[$hash];
   }
 }
 
 function getConfig()
 {
-  return EpiConfig::getInstance();
+  $employ = EpiConfig::employ();
+  $class = array_shift($employ);
+  if($class && class_exists($class))
+    return EpiConfig::getInstance($class);
+  elseif(class_exists(EpiConfig::FILE))
+    return EpiConfig::getInstance(EpiConfig::FILE);
+  elseif(class_exists(EpiConfig::MYSQL))
+    return EpiConfig::getInstance(EpiConfig::MYSQL);
+  else
+    EpiException::raise(new EpiConfigTypeDoesNotExistException('Could not determine which cache handler to load', 404));
 }
 
 class EpiConfigException extends EpiException {}
