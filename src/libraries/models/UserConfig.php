@@ -14,7 +14,23 @@ class UserConfig
       $path = dirname(dirname(dirname(__FILE__)));
       $params = parse_ini_file(sprintf('%s/configs/defaults.ini', $path), true);
       if(file_exists($overrideIni = sprintf('%s/configs/override.ini', $path)))
-        $params = array_merge_recursive($params, parse_ini_file($overrideIni, true));
+      {
+        $override = parse_ini_file($overrideIni, true);
+        foreach($override as $key => $value)
+        {
+          if(array_key_exists($key, $params))
+          {
+            if(is_array($value))
+              $params[$key] = array_merge((array)$params[$key], $value);
+            else
+              $params[$key] = $value;
+          }
+          else
+          {
+            $params[$key] = $value;
+          }
+        }
+      }
 
       $configParams = array($params['epi']['config']);
       if(isset($params['epiConfigParams']))
