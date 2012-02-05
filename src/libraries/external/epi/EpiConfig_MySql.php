@@ -1,9 +1,12 @@
 <?php
 class EpiConfig_MySql extends EpiConfig
 {
+  private $db, $table;
   public function __construct($params)
   {
     parent::__construct();
+    $this->db = EpiDatabase::getInstance('mysql', $params['database'], $params['host'], $params['username'], $params['password']);
+    $this->table = $params['table'];
   }
 
   public function load(/*$file, $file, $file, $file...*/)
@@ -11,31 +14,17 @@ class EpiConfig_MySql extends EpiConfig
     $args = func_get_args();
     foreach($args as $file)
     {
-      // Prepend config directory if the path doesn't start with . or /
-      if($file[0] != '.' && $file[0] != '/')
-        $file = Epi::getPath('config') . "/{$file}";
+      $file = basename($file);
+      $res = $this->db->one("SELECT * FROM `{$this->table}` WHERE `id`=:file", array(':file' => $file));
 
-      if(!file_exists($file))
+      if(!$res)
       {
-        EpiException::raise(new EpiConfigException("Config file ({$file}) does not exist"));
+        EpiException::raise(new EpiConfigException("Config file ({$file}) does not exist in db"));
         break; // need to simulate same behavior if exceptions are turned off
       }
 
-      $parsed_array = parse_ini_file($file, true);
-      foreach($parsed_array as $key => $value)
-      {
-        if(!is_array($value))
-        {
-          $this->config->$key = $value;
-        }
-        else
-        {
-          if(!isset($this->config->$key))
-            $this->config->$key = new stdClass;
-          foreach($value as $innerKey => $innerValue)
-            $this->config->$key->$innerKey = $innerValue;
-        }
-      }
+      $config = parse_ini_string($res['value'], true);
+      $this->mergeConfig($config);
     }
   }
 }

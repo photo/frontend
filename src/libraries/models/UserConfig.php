@@ -34,8 +34,7 @@ class UserConfig
 
       $configParams = array($params['epi']['config']);
       if(isset($params['epiConfigParams']))
-        array_push($configParams, $params['epiConfigParams']);
-
+        $configParams = array_merge($configParams, $params['epiConfigParams']);
       EpiConfig::employ($configParams);
       $this->config = getConfig();
     }
@@ -71,7 +70,8 @@ class UserConfig
 
   public function load()
   {
-    $this->config->load('defaults.ini');
+    $path = dirname(dirname(dirname(__FILE__)));
+    $this->config->loadString(file_get_contents(sprintf('%s/configs/defaults.ini', $path)));
     $configFile = $this->getConfigFile();
 
     // backwards compatibility for 1.2.1 -> 1.2.2 upgrade
@@ -86,7 +86,7 @@ class UserConfig
       // we need to load the deps to get the theme modules
       require $this->config->get('paths')->libraries . '/dependencies.php';
 
-      $this->config->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(dirname(__FILE__))), getTheme()->getThemeName()));
+      $this->config->loadString(file_get_contents(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(dirname(__FILE__))), getTheme()->getThemeName())));
       $utilityObj = $this->getUtility();
       if($utilityObj->isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(dirname(__FILE__))), getTheme(false)->getThemeName())))
         $this->config->load($mobileSettings);

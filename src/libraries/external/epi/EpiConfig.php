@@ -39,6 +39,30 @@ class EpiConfig
     return self::$employ;
   }
 
+  public function loadString($iniAsString)
+  {
+    $config = parse_ini_string($iniAsString, true);
+    $this->mergeConfig($config);
+  }
+
+  protected function mergeConfig($config)
+  {
+    foreach($config as $key => $value)
+    {
+      if(!is_array($value))
+      {
+        $this->config->$key = $value;
+      }
+      else
+      {
+        if(!isset($this->config->$key))
+          $this->config->$key = new stdClass;
+        foreach($value as $innerKey => $innerValue)
+          $this->config->$key->$innerKey = $innerValue;
+      }
+    }
+  }
+
   /*
    * EpiConfig::getInstance
    */
@@ -49,11 +73,11 @@ class EpiConfig
     if(isset(self::$instances[$hash]))
       return self::$instances[$hash];
 
-    $type = array_shift($params);
+    $type = $params[0];
     if(!file_exists($file = dirname(__FILE__) . "/{$type}.php"))
       EpiException::raise(new EpiConfigTypeDoesNotExistException("EpiConfig type does not exist: ({$type}).  Tried loading {$file}", 404));
 
-    self::$instances[$hash] = new $type($params);
+    self::$instances[$hash] = new $type($params[1]);
     self::$instances[$hash]->hash = $hash;
     return self::$instances[$hash];
   }
