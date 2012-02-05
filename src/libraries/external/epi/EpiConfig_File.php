@@ -21,21 +21,8 @@ class EpiConfig_File extends EpiConfig
         break; // need to simulate same behavior if exceptions are turned off
       }
 
-      $parsed_array = parse_ini_file($file, true);
-      foreach($parsed_array as $key => $value)
-      {
-        if(!is_array($value))
-        {
-          $this->config->$key = $value;
-        }
-        else
-        {
-          if(!isset($this->config->$key))
-            $this->config->$key = new stdClass;
-          foreach($value as $innerKey => $innerValue)
-            $this->config->$key->$innerKey = $innerValue;
-        }
-      }
+      $config = parse_ini_file($file, true);
+      $this->mergeConfig($config);
     }
   }
 }
