@@ -59,6 +59,11 @@ class Plugin extends BaseModel
     return $plugins;
   }
 
+  public function getConfigObj()
+  {
+    return getConfig();
+  }
+
   public function invoke($action, $params = null)
   {
     $output = '';
@@ -97,7 +102,8 @@ class Plugin extends BaseModel
     $conf = $inst->defineConf();
     if(file_exists($confPath = sprintf('%s/plugins/%s.%s.ini', $this->config->paths->userdata, $_SERVER['HTTP_HOST'], $plugin)))
     {
-      $parsedConf = parse_ini_file($confPath);
+      $configObj = $this->getConfigObj();
+      $parsedConf = parse_ini_string($configObj->getString($confPath));
       foreach($conf as $name => $tmp)
       {
         if(isset($parsedConf[$name]))
@@ -110,16 +116,13 @@ class Plugin extends BaseModel
 
   public function writeConf($plugin, $string)
   {
+    $configObj = $this->getConfigObj();
     $pluginDir = sprintf('%s/plugins', $this->config->paths->userdata);
-    if(!is_dir($pluginDir))
-    {
-      if(!@mkdir($pluginDir))
-        $this->logger->warn(sprintf('Could not create directory at %s', $pluginDir));
-    }
 
     if($string !== false)
     {
-      $fileCreated = @file_put_contents($pluginConfFile = sprintf('%s/%s.%s.ini', $pluginDir, $_SERVER['HTTP_HOST'], $plugin), $string) !== false;
+      $pluginConfFile = sprintf('%s/%s.%s.ini', $pluginDir, $_SERVER['HTTP_HOST'], $plugin);
+      $fileCreated = $configObj->write($pluginConfFile, $string) !== false;
       if(!$fileCreated)
         $this->logger->warn(sprintf('Could not create file at %s', $pluginConfFile));
 
