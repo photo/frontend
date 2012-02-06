@@ -17,7 +17,7 @@ class FacebookConnectPlugin extends PluginBase
     return array('id' => null, 'secret' => null);
   }
 
-  public function onBodyEnd()
+  public function onBodyEnd($params = null)
   {
     parent::onBodyEnd();
     $conf = $this->getConf();

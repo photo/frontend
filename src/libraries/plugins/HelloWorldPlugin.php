@@ -11,12 +11,12 @@ class HelloWorldPlugin extends PluginBase
     parent::__construct();
   }
 
-  public function onBody()
+  public function onBodyBegin($params = null)
   {
-    parent::onBody();
+    parent::onBodyBegin();
   }
 
-  public function onView()
+  public function onView($params = null)
   {
     parent::onView();
   }
