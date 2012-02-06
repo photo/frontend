@@ -5,7 +5,8 @@ OpenPhoto / Installation for Ubuntu + Cherokee
 ## OS: Linux Ubuntu Server 10.04+
 
 This guide instructs you on how to install OpenPhoto on Cherokee Web Server on an Ubuntu server.
-To have a recent version of Cherokee, I advice to add the ppa maintained with latest version. You can add it with the command
+To have a recent version of Cherokee, I advice to add the ppa maintained with latest version. You can add it with the command below.
+
     add-apt-repository ppa:cherokee-webserver/ppa
 
 ----------------------------------------
