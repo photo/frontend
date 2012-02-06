@@ -87,6 +87,8 @@ Launch the administration web interface and connect to it
     cherokee-admin
     firefox http://localhost:9090
 
+Note that if you're not connecting from the same machine, you'll have to use the `-b[<IP>]` parameter to bind cherokee-admin to an externally accessible network interface.
+
 Go the sections "Vservers" and create a new vserver with the + button
 
 In the "Languages" sub-section, choose "PHP" and click "Add"
@@ -120,5 +122,8 @@ Once you complete the 3 steps your site will be up and running and you'll be red
 
     rm /var/www/yourdomain.com/src/configs/generated/settings.ini
 
-**ENJOY!**
+FIXME: On some systems (?), this config file is in another spot:
 
+    /var/www/yourdomain.com/src/userdata/configs/yourdomain.com.ini
+
+**ENJOY!**
