@@ -35,7 +35,7 @@ class ApiPhotoController extends ApiBaseController
     if($status)
     {
       $this->tag->updateTagCounts($res['result']['tags'], array(), 1, 1);
-      return $this->success('Photo deleted successfully', true);
+      return $this->noContent('Photo deleted successfully', true);
     }
     else
     {
@@ -67,7 +67,7 @@ class ApiPhotoController extends ApiBaseController
     }
 
     if($retval)
-      return $this->success(sprintf('%d photos deleted', count($ids)), true);
+      return $this->noContent(sprintf('%d photos deleted', count($ids)), true);
     else
       return $this->error('Error deleting one or more photos', false);
   }
