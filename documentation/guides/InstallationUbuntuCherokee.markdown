@@ -107,7 +107,7 @@ Now, go to the rules definition and add a "File Exists" rules, invert the rule w
 Go to the tab "Handler", set a "Redirection" handler with the following parameters:
 
 * Show: Internal
-* Regular Expression: `^/(.*)\?*$`
+* Regular Expression: `^/([^?]*)?.*$`
 * Substitution: `index.php?__route__=/$1`
 
 Click "Add".
