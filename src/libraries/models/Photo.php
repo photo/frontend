@@ -30,6 +30,9 @@ class Photo extends BaseModel
       $this->user = $params['user'];
     else
       $this->user = new User;
+
+    if(isset($params['config']))
+      $this->config = $params['config'];
   }
 
   /**
@@ -64,11 +67,15 @@ class Photo extends BaseModel
       }
     }
 
-    // we never need the Base
+    // we never need the base
     if(isset($photo['pathBase']))
       unset($photo['pathBase']);
 
-    $photo['pathOriginal'] = $this->generateUrlOriginal($photo);
+    // the original needs to be conditionally included
+    if($this->config->site->allowOriginalDownload == 1 || $this->user->isOwner())
+      $photo['pathOriginal'] = $this->generateUrlOriginal($photo);
+    elseif(isset($photo['pathOriginal']))
+      unset($photo['pathOriginal']);
 
     $photo['url'] = $this->getPhotoViewUrl($photo);
     return $photo;

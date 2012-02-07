@@ -12,6 +12,8 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $params = array('user' => new FauxObject, 'utility' => new stdClass, 'url' => new stdClass, 'image' => new FauxObject);
     $this->photo = new Photo($params);;
     $config = new stdClass;
+    $config->site = new stdClass;
+    $config->site->allowOriginalDownload = 1;
     $secrets = new stdClass;
     $secrets->secret = 'secret';
     $config->secrets = $secrets;
@@ -56,6 +58,81 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $this->assertEquals('http://foobar/photo/a/create/4b950/10x10xCR.jpg', $res['photo10x10xCR'][0], 'The path is not correct in the photo array');
     $this->assertEquals(10, $res['photo10x10xCR'][1], 'The width is not correct in the photo array');
     $this->assertEquals(10, $res['photo10x10xCR'][2], 'The height is not correct in the photo array');
+  }
+
+  public function testAddApiUrlsOriginalAsOwner()
+  {
+    $user = $this->getMock('User', array('isOwner'));
+    $user->expects($this->any())
+      ->method('isOwner')
+      ->will($this->returnValue(true));
+    $url = $this->getMock('Url', array('photoView'));
+    $url->expects($this->any())
+      ->method('photoView')
+      ->will($this->returnValue('/url'));
+    $utility = $this->getMock('Utility', array('getProtocol'));
+    $utility->expects($this->any())
+      ->method('getProtocol')
+      ->will($this->returnValue('http'));
+    $config = $this->photo->config;
+    $config->site->allowOriginalDownload = 0;
+    $this->photo->inject('user', $user);
+    $this->photo->inject('url', $url);
+    $this->photo->inject('utility', $utility);
+    $this->photo->inject('config', $config);
+
+    $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
+    $this->assertTrue(isset($res['pathOriginal']));
+  }
+
+  public function testAddApiUrlsOriginalAsNonOwner()
+  {
+    $user = $this->getMock('User', array('isOwner'));
+    $user->expects($this->any())
+      ->method('isOwner')
+      ->will($this->returnValue(false));
+    $url = $this->getMock('Url', array('photoView'));
+    $url->expects($this->any())
+      ->method('photoView')
+      ->will($this->returnValue('/url'));
+    $utility = $this->getMock('Utility', array('getProtocol'));
+    $utility->expects($this->any())
+      ->method('getProtocol')
+      ->will($this->returnValue('http'));
+    $config = $this->photo->config;
+    $config->site->allowOriginalDownload = 1;
+    $this->photo->inject('user', $user);
+    $this->photo->inject('url', $url);
+    $this->photo->inject('utility', $utility);
+    $this->photo->inject('config', $config);
+
+    $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
+    $this->assertTrue(isset($res['pathOriginal']));
+  }
+
+  public function testAddApiUrlsOriginalNotAllowed()
+  {
+    $user = $this->getMock('User', array('isOwner'));
+    $user->expects($this->any())
+      ->method('isOwner')
+      ->will($this->returnValue(false));
+    $url = $this->getMock('Url', array('photoView'));
+    $url->expects($this->any())
+      ->method('photoView')
+      ->will($this->returnValue('/url'));
+    $utility = $this->getMock('Utility', array('getProtocol'));
+    $utility->expects($this->any())
+      ->method('getProtocol')
+      ->will($this->returnValue('http'));
+    $config = $this->photo->config;
+    $config->site->allowOriginalDownload = 0;
+    $this->photo->inject('user', $user);
+    $this->photo->inject('url', $url);
+    $this->photo->inject('utility', $utility);
+    $this->photo->inject('config', $config);
+
+    $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
+    $this->assertFalse(isset($res['pathOriginal']));
   }
 
   public function testDeleteCouldNotGetPhoto()
