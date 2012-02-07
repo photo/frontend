@@ -44,6 +44,35 @@ class ApiPhotoController extends ApiBaseController
   }
 
   /**
+    * Delete multiple photos
+    *
+    * @return string Standard JSON envelope
+    */
+  public function deleteBatch()
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    if(!isset($_POST['ids']) || empty($_POST['ids']))
+      return $this->error('This API requires an ids parameter.', false);
+
+    $ids = (array)explode(',', $_POST['ids']);
+    $params = $_POST;
+    unset($params['ids']);
+
+    $retval = true;
+    foreach($ids as $id)
+    {
+      $response = $this->api->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost, array('_POST' => $params));
+      $retval = $retval && $response['result'] !== false;
+    }
+
+    if($retval)
+      return $this->success(sprintf('%d photos deleted', count($ids)), true);
+    else
+      return $this->error('Error deleting one or more photos', false);
+  }
+
+  /**
     * Get a form to edit a photo specified by the ID.
     *
     * @param string $id ID of the photo to be edited.
@@ -392,7 +421,6 @@ class ApiPhotoController extends ApiBaseController
     * Parameters to be updated are in _POST
     * This method also manages updating tag counts
     *
-    * @param string $id ID of the photo to be updated.
     * @return string Standard JSON envelope
     */
   public function updateBatch()
