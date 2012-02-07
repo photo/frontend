@@ -1597,7 +1597,7 @@ aside.sidebar .meta li span {
   top:2px;
   left:0;
   position:absolute;
-  width:15px;
+  width:20px;
 }
 
 aside.sidebar .meta li.date span {
@@ -1618,6 +1618,9 @@ aside.sidebar .meta li.license span {
 
 aside.sidebar .meta li.location span {
   background:transparent url("../images/icons.png") 0 -626px no-repeat;
+}
+aside.sidebar .meta li.original span {
+  background:transparent url("../images/icons.png") 0px 0px no-repeat;
 }
 
 aside.sidebar .meta li.location img {

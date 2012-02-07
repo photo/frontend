@@ -26,6 +26,9 @@
         <li class="date"><?php $this->utility->dateLong($photo['dateTaken']); ?></li>
         <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments" class="action-jump-click">see all</a></li>
         <li class="tags"><?php $this->url->tagsAsLinks($photo['tags']); ?></li>
+        <?php if(isset($photo['pathOriginal'])) { ?>
+          <li class="original"><span></span><a href="<?php $this->utility->safe($photo['pathOriginal']); ?>">Download original</a></li>
+        <?php } ?>
         <?php if($this->utility->licenseLink($photo['license'], false)) { ?>
           <a rel="license" href="<?php $this->utility->licenseLink($photo['license']); ?>">
             <?php $this->utility->licenseLong($photo['license']); ?>

@@ -116,6 +116,10 @@
     background: url(../images/icon-globe.png) left 2px no-repeat;
 }
 
+.photo-details .original {
+    background: url(../images/header-navigation-photos.png) center left no-repeat;
+}
+
 .photo-details .location img {
     display: block;
 }
