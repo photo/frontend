@@ -11,7 +11,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $config, $db, $domainAction, $domainCredential, $domainPhoto, 
+  private $config, $db, $domainAction, $domainActivity, $domainCredential, $domainPhoto, 
     $domainTag, $domainUser, $domainWebhook, $errors = array(), $owner;
 
   /**
@@ -32,6 +32,7 @@ class DatabaseSimpleDb implements DatabaseInterface
 
     $this->domainPhoto = $this->config->aws->simpleDbDomain;
     $this->domainAction = $this->config->aws->simpleDbDomain.'Action';
+    $this->domainActivity = $this->config->aws->simpleDbDomain.'Activity';
     $this->domainCredential = $this->config->aws->simpleDbDomain.'Credential';
     $this->domainGroup = $this->config->aws->simpleDbDomain.'Group';
     $this->domainUser = $this->config->aws->simpleDbDomain.'User';
@@ -196,6 +197,36 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->logErrors($res);
     if(isset($res->body->SelectResult->Item))
       return self::normalizeAction($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
+    * Retrieves activities
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getActivities()
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainActivities}`", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeActivity($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
+    * Retrieves activity
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getActivity($id)
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainActivities}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeActivity($res->body->SelectResult->Item);
     else
       return false;
   }
@@ -709,6 +740,20 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->logErrors($res);
     return $res->isOK();
   }
+  /**
+    * Add a new activity to the database
+    * This method does not overwrite existing values present in $params - hence "new action".
+    *
+    * @param string $id ID of the action to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putActivity($id, $params)
+  {
+    $res = $this->db->put_attributes($this->domainActivity, $id, $params);
+    $this->logErrors($res);
+    return $res->isOK();
+  }
 
   /**
     * Add a new credential to the database
@@ -946,6 +991,26 @@ class DatabaseSimpleDb implements DatabaseInterface
       $action[$name] = $value;
     }
     return $action;
+  }
+
+  /**
+    * Normalizes data from simpleDb into schema definition
+    *
+    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @return array
+    */
+  private function normalizeActivity($raw)
+  {
+    $activity = array();
+    $activity['id'] = strval($raw->Name);
+    $activity['appId'] = $this->config->application->appId;
+    foreach($raw->Attribute as $item)
+    {
+      $name = (string)$item->Name;
+      $value = (string)$item->Value;
+      $activity[$name] = $value;
+    }
+    return $activity;
   }
 
   /**
