@@ -1,3 +1,17 @@
+<?php if(count($activities) > 0) { ?>
+  <ul>
+    <?php foreach($activities as $activity) { ?>
+      <?php if($activity['type'] == 'photo-upload') { ?>
+        <li><?php $this->utility->safe($activity['type']); ?></li>
+      <?php } elseif($activity['type'] == 'photo-updated') {  ?>
+        <li><?php $this->utility->safe($activity['type']); ?></li>
+      <?php } elseif($activity['type'] == 'activity-created') {  ?>
+        <li><?php $this->utility->safe($activity['type']); ?></li>
+      <?php }  ?>
+    <?php } ?>
+  </ul>
+<?php } ?>
+
 <?php if($photos[0]['totalRows'] == 0) { ?>
   <?php if($this->user->isOwner()) { ?>
     <a href="<?php $this->url->photoUpload(); ?>" class="link" title="Start uploading now!"><img src="<?php $this->theme->asset('image', 'front.png'); ?>" class="front" /></a>

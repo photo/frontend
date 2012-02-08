@@ -96,7 +96,7 @@ class EpiApi
         EpiException::raise(new EpiException('Could not call ' . json_encode($def) . " for route {$regex}"));
       }
     }
-    EpiException::raise(new EpiException("Could not find route {$this->route} from {$_SERVER['REQUEST_URI']}"));
+    EpiException::raise(new EpiException("Could not find route ({$route}) from ({$_SERVER['REQUEST_URI']})"));
   }
 
   /**

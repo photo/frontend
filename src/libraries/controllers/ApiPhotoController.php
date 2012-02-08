@@ -347,6 +347,8 @@ class ApiPhotoController extends ApiBaseController
           $this->logger->info(sprintf('Webhook callback executing for photo.upload: %s', $hook['callback']));
         }
       }
+
+      $this->api->invoke('/activity/create.json', array('type' => 'photo-upload', 'data' => $photo, 'permission' => $attributes['permission']), EpiRoute::httpPost);
       return $this->created("Photo {$photoId} uploaded successfully", $photo['result']);
     }
 
@@ -410,6 +412,7 @@ class ApiPhotoController extends ApiBaseController
     if($photoUpdatedId)
     {
       $photo = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+      $this->api->invoke('/activity/create.json', EpiRoute::httpPost, array('type' => 'photo-update', 'data' => $photo, 'permission' => $attributes['permission']));
       return $this->success("photo {$id} updated", $photo['result']);
     }
 
