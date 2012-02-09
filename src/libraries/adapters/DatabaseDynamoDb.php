@@ -536,7 +536,8 @@ class DatabaseDynamoDb implements DatabaseInterface
 	return ($func_a['dateTaken'] > $func_b['dateTaken']) ? -1 : 1;
     });
 
-    $totalPhotos = intval($res->body->Count);
+    $totalPhotos = count($photos);
+    getLogger()->info($totalPhotos);
 
     if (array_key_exists("page", $filters))
     {
@@ -545,17 +546,20 @@ class DatabaseDynamoDb implements DatabaseInterface
 		case 1:
 			$start = 0;
 			$end = $start + $limit;
+			if ($end > $totalPhotos)
+				$end = $totalPhotos;
 			break;
 
 		case 2:
 			$start = $limit;
 			$end = $start + $limit;
+			if ($end > $totalPhotos)
+				$end = $totalPhotos;
 			break;
 
 		default:
 			$start = $limit * ($filters['page'] - 1);
 			$end = $start + $limit;
-
 			if ($end > $totalPhotos)
 				$end = $totalPhotos;
 			break;
@@ -565,6 +569,8 @@ class DatabaseDynamoDb implements DatabaseInterface
     {
 	$start = 0;
 	$end = $limit;
+	if ($end > $totalPhotos)
+		$end = $totalPhotos;
     }
 
     getLogger()->info("Start: {$start} End: {$end}");

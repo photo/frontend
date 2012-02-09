@@ -1,19 +1,19 @@
 <?php
 #$tables = $this->db->list_tables("/^({$this->domainPhoto}|{$this->domainAction}|{$this->domainCredential}|{$this->domainGroup}|{$this->domainTag}|{$this->domainUser}|{$this->domainWebhook})?$/");
 $tables = $this->db->list_tables();
-getLogger()->info("Existing tables....");
-getLogger()->info(print_r($tables->body->TableNames->to_array()->getArrayCopy(), 1));
-if(count($tables) == 7)
-  return true;
+#getLogger()->info("Existing tables....");
+#getLogger()->info(print_r($tables->body->TableNames->to_array()->getArrayCopy(), 1));
+#if(count($tables) == 7)
+#  return true;
 
-$dynamodb = new AmazonDynamoDB();
-$response = $this->db->list_tables();
+#$dynamodb = new AmazonDynamoDB();
+#$response = $this->db->list_tables();
 
-$existingTables = array();
-foreach($response->body->TableNames->{0} as $item)
-{
-        $existingTables[] = "$item";
-}
+#$existingTables = array();
+#foreach($response->body->TableNames->{0} as $item)
+#{
+#        $existingTables[] = "$item";
+#}
 
 $tablesToCreate = array($this->domainAction, $this->domainCredential, $this->domainGroup, 
   $this->domainPhoto, $this->domainTag, $this->domainUser, $this->domainWebhook);
