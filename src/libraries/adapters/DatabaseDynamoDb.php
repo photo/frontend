@@ -280,11 +280,19 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function getCredential($id)
   {
     getLogger()->info("Starting getCredential");
-    return false;
-    $res = $this->db->select("SELECT * FROM `{$this->domainCredential}` WHERE itemName()='{$id}' AND status='1'", array('ConsistentRead' => 'true'));
+
+    $res = $this->db->get_item(array(
+	'TableName' => $this->domainCredential,
+	'Key' => array(
+		'HashKeyElement' => array( // "id" column
+			AmazonDynamoDB::TYPE_STRING => $id
+		),
+	),
+    ));
+
     $this->logErrors($res);
-    if(isset($res->body->SelectResult->Item))
-      return self::normalizeCredential($res->body->SelectResult->Item);
+    if(isset($res->body->Item))
+      return self::normalizeCredential($res->body->Item);
     else
       return false;
   }
@@ -297,6 +305,7 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   public function getCredentialByUserToken($userToken)
   {
+    getLogger()->info("Starting getCredentialByUserToken");
     return false;
     $res = $this->db->select("SELECT * FROM `{$this->domainCredential}` WHERE userToken='{$userToken}' AND status='1'", array('ConsistentRead' => 'true'));
     $this->logErrors($res);
@@ -412,6 +421,9 @@ class DatabaseDynamoDb implements DatabaseInterface
   {
     getLogger()->info("Starting getPhotoNextPrevious");
     return false;
+
+    #  Grab all photos via a scan, search for the current photo in the array, get the previous & next one
+
     $buildQuery = self::buildQuery($filterOpts, null, null);
     $photo = $this->getPhoto($id);
     if(!$photo)
@@ -616,10 +628,10 @@ class DatabaseDynamoDb implements DatabaseInterface
     getLogger()->info("Starting getTags");
     getLogger()->info(print_r($filters,1));
     $countField = 'countPublic';
-    if(isset($filter['permission']) && $filter['permission'] == 0)
+    if(isset($filters['permission']) && $filters['permission'] == 0)
       $countField = 'countPrivate';
 
-    if(isset($filter['search']) && $filter['search'] != '')
+    if(isset($filters['search']) && $filters['search'] != '')
     {
 	getLogger()->info("Searching for tags");
 	$res = $this->db->scan(array(
@@ -632,9 +644,9 @@ class DatabaseDynamoDb implements DatabaseInterface
 				)
 			),
 			'id' => array(
-				'ComparisonOperator' => AmazonDynamoDB::CONTAINS,
+				'ComparisonOperator' => AmazonDynamoDB::CONDITION_CONTAINS,
 				'AttributeValueList' => array(
-					array( AmazonDynamoDB::TYPE_STRING => $filter['search'] )
+					array( AmazonDynamoDB::TYPE_STRING => $filters['search'] )
 				)
 			),
 
@@ -657,12 +669,6 @@ class DatabaseDynamoDb implements DatabaseInterface
 	));
     }
 
-    #  $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL AND itemName() LIKE '{$filter['search']}%' ORDER BY itemName()";
-    #  $params[':search'] = "{$filter['search']}%";
-    #}
-    #  $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL ORDER BY itemName()";
-    #}
-
     if(!$res->isOK())
       return false;
 
@@ -672,6 +678,13 @@ class DatabaseDynamoDb implements DatabaseInterface
     	foreach($res->body->Items->{0} as $val)
           $tags[] = self::normalizeTag($val);
     }
+
+    # Sort the returned tags
+    usort($tags, function($func_a, $func_b) {
+	if ($func_a['id'] == $func_b['id']) return 0;
+	return ($func_a['id'] < $func_b['id']) ? -1 : 1;
+    });
+
     return $tags;
   }
 
@@ -718,6 +731,7 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   public function getWebhook($id)
   {
+    getLogger()->info("Starting getWebhook");
     return false;
     $res = $this->db->select("SELECT * FROM `{$this->domainWebhook}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
     $this->logErrors($res);
@@ -734,6 +748,7 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   public function getWebhooks($topic = null)
   {
+    getLogger()->info("Starting getWebhooks");
     return false;
     if($topic)
       $res = $this->db->select("SELECT * FROM `{$this->domainWebhook}` WHERE topic='{$topic}'", array('ConsistentRead' => 'true'));
@@ -1313,6 +1328,10 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   private function normalizeCredential($raw)
   {
+    getLogger()->info("Starting normalizeAction");
+    getLogger()->info(print_r($raw,1));
+    return false;
+
     $credential = array();
     $credential['id'] = strval($raw->Name);
     foreach($raw->Attribute as $item)
