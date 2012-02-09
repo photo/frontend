@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2010-2011 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -37,8 +37,9 @@ class S3BrowserUpload extends AmazonS3
 	 * 	<li><code>key</code> - <code>string</code> - Optional - The location where the file should be uploaded to. The default value is <code>${filename}</code>.</li>
 	 * 	<li><code>success_action_redirect</code> - <code>string</code> - Optional - The URI for Amazon S3 to redirect to upon successful upload.</li>
 	 * 	<li><code>success_action_status</code> - <code>integer</code> - Optional - The status code for Amazon S3 to return upon successful upload.</li>
+	 * 	<li><code>x-amz-server-side-encryption</code> - <code>string</code> - Optional - The server-side encryption mechanism to use. [Allowed values: <code>AES256</code>].</li>
 	 * 	<li><code>x-amz-storage-class</code> - <code>string</code> - Optional - The storage setting to apply to the object. [Allowed values: <code>AmazonS3::STORAGE_STANDARD</code>, <code>AmazonS3::STORAGE_REDUCED</code>]. The default value is <code>AmazonS3::STORAGE_STANDARD</code>.</li>
-	 * 	<li>x-amz-meta-*</li>
+	 * 	<li><code>x-amz-meta-*</code> - <code>mixed</code> - Optional - Any custom meta tag that should be set to the object.</li>
 	 * </ul>
 	 * @return array An array of fields that can be converted into markup.
 	 * @link http://docs.amazonwebservices.com/AmazonS3/latest/API/RESTObjectPOST.html POST Object

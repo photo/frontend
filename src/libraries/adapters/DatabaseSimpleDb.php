@@ -28,7 +28,8 @@ class DatabaseSimpleDb implements DatabaseInterface
     if(!is_null($params) && isset($params['db']))
       $this->db = $params['db'];
     else
-      $this->db = new AmazonSDB($utilityObj->decrypt($this->config->credentials->awsKey), $utilityObj->decrypt($this->config->credentials->awsSecret));
+      $aws_info = array("key" => $utilityObj->decrypt($this->config->credentials->awsKey), "secret" => $utilityObj->decrypt($this->config->credentials->awsSecret));
+      $this->db = new AmazonSDB($aws_info);
 
     $this->domainPhoto = $this->config->aws->simpleDbDomain;
     $this->domainAction = $this->config->aws->simpleDbDomain.'Action';

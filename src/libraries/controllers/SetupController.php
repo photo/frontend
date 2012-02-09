@@ -297,6 +297,7 @@ class SetupController extends BaseController
     $usesS3 = (stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
+    $usesDynamoDb = (getSession()->get('database') == 'DynamoDb') ? true : false;
 
     $dropboxKey = getSession()->get('dropboxKey');
     if(!empty($dropboxKey))
@@ -331,6 +332,7 @@ class SetupController extends BaseController
     {
       $s3Bucket = getConfig()->get('aws')->s3BucketName;
       $simpleDbDomain = getConfig()->get('aws')->simpleDbDomain;
+      $dynamoDbPrefix = getConfig()->get('aws')->dynamoDbPrefix;
     }
 
     if(getConfig()->get('mysql') != null)
@@ -367,8 +369,8 @@ class SetupController extends BaseController
     // copied to/from setup3Post()
     $body = $this->template->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3,
-      'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
-      'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
+      'usesSimpleDb' => $usesSimpleDb, 'usesDynamoDb' => $usesDynamoDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
+      'simpleDbDomain' => $simpleDbDomain, 'dynamoDbPrefix' => $dynamoDbPrefix, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
       'mySqlPassword' => $mySqlPassword, 'mySqlTablePrefix' => $mySqlTablePrefix, 'fsRoot' => $fsRoot, 'fsHost' => $fsHost,
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
@@ -394,6 +396,7 @@ class SetupController extends BaseController
     $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
+    $usesDynamoDb = (getSession()->get('database') == 'DynamoDb') ? true : false;
     $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
     $usesS3 = (stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
@@ -424,6 +427,12 @@ class SetupController extends BaseController
       {
         $simpleDbDomain = $_POST['simpleDbDomain'];
         $input[] = array('Amazon SimpleDb Domain', $simpleDbDomain, 'required');
+      }
+
+      if($usesDynamoDb)
+      {
+        $dynamoDbPrefix = $_POST['dynamoDbPrefix'];
+        $input[] = array('Amazon DynamoDb Prefix', $dynamoDbPrefix, 'required');
       }
 
       $awsErrors = getForm()->hasErrors($input);
@@ -488,6 +497,12 @@ class SetupController extends BaseController
         {
           getSession()->set('simpleDbDomain', $simpleDbDomain);
           $aws->simpleDbDomain = $simpleDbDomain;
+        }
+
+        if($usesDynamoDb)
+        {
+          getSession()->set('dynamoDbPrefix', $dynamoDbPrefix);
+          $aws->dynamoDbPrefix = $dynamoDbPrefix;
         }
       }
       if($usesMySql)
@@ -622,8 +637,8 @@ class SetupController extends BaseController
     // copied to/from setup3()
     $body = $this->template->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3,
-      'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
-      'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
+      'usesSimpleDb' => $usesSimpleDb, 'usesDynamoDb' => $usesDynamoDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
+      'simpleDbDomain' => $simpleDbDomain, 'dynamoDbPrefix' => $dynamoDbPrefix, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
       'mySqlPassword' => $mySqlPassword, 'mySqlTablePrefix' => $mySqlTablePrefix, 'fsRoot' => $fsRoot, 'fsHost' => $fsHost,
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
@@ -662,7 +677,7 @@ class SetupController extends BaseController
 
   private function getDefaultConfigParams()
   {
-    return array('themes' => array(), 'awsKey' => '', 'awsSecret' => '', 's3Bucket' => '', 'simpleDbDomain' => '', 'mySqlHost' => '',
+    return array('themes' => array(), 'awsKey' => '', 'awsSecret' => '', 's3Bucket' => '', 'dynamoDbPrefix' => '', 'simpleDbDomain' => '', 'mySqlHost' => '',
       'mySqlUser' => '', 'mySqlPassword' => '', 'mySqlDb' => '', 'mySqlTablePrefix' => '',
       'fsRoot' => '', 'fsHost' => '', 'dropboxFolder' => '', 'dropboxKey' => '', 'dropboxSecret' => '',
       'dropboxKey' => '', 'dropboxToken' => '', 'dropboxTokenSecret' => '', 'errors' => '');
@@ -680,16 +695,13 @@ class SetupController extends BaseController
     $generatedDir = "{$configDir}/configs";
     $assetsDir = $this->utility->getBaseDir() . '/html/assets/cache';
 
-    // No errors, return empty array
-    if(function_exists('exif_read_data') && file_exists($generatedDir) && is_writable($generatedDir) && file_exists($assetsDir) && is_writable($assetsDir) && !empty($imageLibs))
+    if(file_exists($generatedDir) && is_writable($generatedDir) && file_exists($assetsDir) && is_writable($assetsDir) && !empty($imageLibs))
+      # No errors, return empty array
       return $errors;
 
     $user = exec("whoami");
     if(empty($user))
       $user = 'Apache user';
-
-    if(!function_exists('exif_read_data'))
-      $errors[] = 'We could not find PHP\'s exif functions. Please install php5-exif.';
 
     if(!is_writable($configDir))
       $errors[] = "Insufficient privileges to complete setup.<ul><li>Make sure the user <em>{$user}</em> can write to <em>{$configDir}</em>.</li></ul>";
@@ -758,6 +770,7 @@ class SetupController extends BaseController
       '{s3Bucket}' => getSession()->get('s3BucketName'),
       '{s3Host}' => getSession()->get('s3BucketName') . '.s3.amazonaws.com',
       '{simpleDbDomain}' => "",
+      '{dynamoDbPrefix}' => "",
       '{mySqlHost}' => "",
       '{mySqlUser}' => "",
       '{mySqlPassword}' => "",

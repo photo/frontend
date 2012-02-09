@@ -62,6 +62,7 @@
         <div class="input">
           <select name="database">
             <option value="SimpleDb"<?php echo ($database == 'SimpleDb') ? ' selected="selected"' : '' ?>>Amazon SimpleDb</option>
+            <option value="DynamoDb"<?php echo ($database == 'DynamoDb') ? ' selected="selected"' : '' ?>>Amazon DynamoDb</option>
             <option value="MySql"<?php echo ($database == 'MySql') ? ' selected="selected"' : '' ?>>MySQL</option>
           </select>
         </div>
@@ -124,6 +125,18 @@
             </div>
           </div>
         <?php } ?>
+        <?php if($usesDynamoDb) { ?>
+          <div class="clearfix">
+            <label for="dynamoDbPrefix">Amazon DynamoDb Prefix</label>
+            <div class="input">
+              <?php if(isset($dynamoDbPrefix) && !empty($dynamoDbPrefix)) { ?>
+                <input type="text" name="dynamoDbPrefix" id="dynamoDbPrefix" size="50" placeholder="DynamoDb prefix name (i.e. openphoto)" value="<?php $this->utility->safe($dynamoDbPrefix); ?>" data-validation="required">
+              <?php } else { ?>
+                <input type="text" name="dynamoDbPrefix" id="dynamoDbPrefix" size="50" placeholder="DynamoDb prefix name (i.e. openphoto)" value="openphoto" data-validation="required">
+              <?php } ?>
+            </div>
+          </div>
+        <?php } ?>
       <?php } ?>
       <?php if(isset($usesMySql) && !empty($usesMySql)) { ?>
         <h3>Enter your MySQL credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
@@ -146,7 +159,7 @@
           </div>
         </div>
         <div class="clearfix">
-          <label for="mySqlDb">MySQL Database <em>(make sure this database already exists)</em></label>
+          <label for="mySqlDb">MySQL Database <em>(we'll try to create this if it doesn't exist)</em></label>
           <div class="input">
             <input type="text" name="mySqlDb" placeholder="Name of your MySql database" id="mySqlDb" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlDb; ?>">
           </div>

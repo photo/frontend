@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2010-2011 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -15,63 +15,132 @@
  */
 
 /**
- *
- *
- * Amazon SimpleDB is a web service providing the core database functions of data indexing and querying in the cloud. By offloading the time
- * and effort associated with building and operating a web-scale database, SimpleDB provides developers the freedom to focus on application
+ * Amazon SimpleDB is a web service providing the core database functions of data indexing and
+ * querying in the cloud. By offloading the time and effort associated with building and operating
+ * a web-scale database, SimpleDB provides developers the freedom to focus on application
  * development.
- *
- *
- *
- * A traditional, clustered relational database requires a sizable upfront capital outlay, is complex to design, and often requires extensive
- * and repetitive database administration. Amazon SimpleDB is dramatically simpler, requiring no schema, automatically indexing your data and
- * providing a simple API for storage and access. This approach eliminates the administrative burden of data modeling, index maintenance, and
- * performance tuning. Developers gain access to this functionality within Amazon's proven computing environment, are able to scale instantly,
+ *  
+ * A traditional, clustered relational database requires a sizable upfront capital outlay, is
+ * complex to design, and often requires extensive and repetitive database administration. Amazon
+ * SimpleDB is dramatically simpler, requiring no schema, automatically indexing your data and
+ * providing a simple API for storage and access. This approach eliminates the administrative
+ * burden of data modeling, index maintenance, and performance tuning. Developers gain access to
+ * this functionality within Amazon's proven computing environment, are able to scale instantly,
  * and pay only for what they use.
+ *  
+ * Visit <a href="http://aws.amazon.com/simpledb/">http://aws.amazon.com/simpledb/</a> for more
+ * information.
  *
- * Visit <a href="http://aws.amazon.com/simpledb/">http://aws.amazon.com/simpledb/</a> for more information.
- *
- * @version Tue May 10 18:30:45 PDT 2011
+ * @version 2012.01.16
  * @license See the included NOTICE.md file for complete information.
  * @copyright See the included NOTICE.md file for complete information.
- * @link http://aws.amazon.com/simpledb/Amazon SimpleDB
- * @link http://aws.amazon.com/documentation/simpledb/Amazon SimpleDB documentation
+ * @link http://aws.amazon.com/simpledb/ Amazon SimpleDB
+ * @link http://aws.amazon.com/simpledb/documentation/ Amazon SimpleDB documentation
  */
 class AmazonSDB extends CFRuntime
 {
-
 	/*%******************************************************************************************%*/
 	// CLASS CONSTANTS
 
 	/**
-	 * Specify the default queue URL.
+	 * Specify the queue URL for the United States East (Northern Virginia) Region.
 	 */
-	const DEFAULT_URL = 'sdb.amazonaws.com';
+	const REGION_US_E1 = 'sdb.amazonaws.com';
 
 	/**
-	 * Specify the queue URL for the US-East (Northern Virginia) Region.
+	 * Specify the queue URL for the United States East (Northern Virginia) Region.
 	 */
-	const REGION_US_E1 = self::DEFAULT_URL;
+	const REGION_VIRGINIA = self::REGION_US_E1;
 
 	/**
-	 * Specify the queue URL for the US-West (Northern California) Region.
+	 * Specify the queue URL for the United States West (Northern California) Region.
 	 */
 	const REGION_US_W1 = 'sdb.us-west-1.amazonaws.com';
 
 	/**
-	 * Specify the queue URL for the EU (Ireland) Region.
+	 * Specify the queue URL for the United States West (Northern California) Region.
+	 */
+	const REGION_CALIFORNIA = self::REGION_US_W1;
+
+	/**
+	 * Specify the queue URL for the United States West (Oregon) Region.
+	 */
+	const REGION_US_W2 = 'sdb.us-west-2.amazonaws.com';
+
+	/**
+	 * Specify the queue URL for the United States West (Oregon) Region.
+	 */
+	const REGION_OREGON = self::REGION_US_W2;
+
+	/**
+	 * Specify the queue URL for the Europe West (Ireland) Region.
 	 */
 	const REGION_EU_W1 = 'sdb.eu-west-1.amazonaws.com';
 
 	/**
-	 * Specify the queue URL for the Asia Pacific (Singapore) Region.
+	 * Specify the queue URL for the Europe West (Ireland) Region.
+	 */
+	const REGION_IRELAND = self::REGION_EU_W1;
+
+	/**
+	 * Specify the queue URL for the Asia Pacific Southeast (Singapore) Region.
 	 */
 	const REGION_APAC_SE1 = 'sdb.ap-southeast-1.amazonaws.com';
 
 	/**
-	 * Specify the queue URL for the Asia Pacific (Japan) Region.
+	 * Specify the queue URL for the Asia Pacific Southeast (Singapore) Region.
+	 */
+	const REGION_SINGAPORE = self::REGION_APAC_SE1;
+
+	/**
+	 * Specify the queue URL for the Asia Pacific Northeast (Tokyo) Region.
 	 */
 	const REGION_APAC_NE1 = 'sdb.ap-northeast-1.amazonaws.com';
+
+	/**
+	 * Specify the queue URL for the Asia Pacific Northeast (Tokyo) Region.
+	 */
+	const REGION_TOKYO = self::REGION_APAC_NE1;
+
+	/**
+	 * Specify the queue URL for the South America (Sao Paulo) Region.
+	 */
+	const REGION_SA_E1 = 'sdb.sa-east-1.amazonaws.com';
+
+	/**
+	 * Specify the queue URL for the South America (Sao Paulo) Region.
+	 */
+	const REGION_SAO_PAULO = self::REGION_SA_E1;
+
+	/**
+	 * Default service endpoint.
+	 */
+	const DEFAULT_URL = self::REGION_US_E1;
+
+
+	/*%******************************************************************************************%*/
+	// CONSTRUCTOR
+
+	/**
+	 * Constructs a new instance of <AmazonSDB>.
+	 *
+	 * @param array $options (Optional) An associative array of parameters that can have the following keys: <ul>
+	 * 	<li><code>certificate_authority</code> - <code>boolean</code> - Optional - Determines which Cerificate Authority file to use. A value of boolean <code>false</code> will use the Certificate Authority file available on the system. A value of boolean <code>true</code> will use the Certificate Authority provided by the SDK. Passing a file system path to a Certificate Authority file (chmodded to <code>0755</code>) will use that. Leave this set to <code>false</code> if you're not sure.</li>
+	 * 	<li><code>credentials</code> - <code>string</code> - Optional - The name of the credential set to use for authentication.</li>
+	 * 	<li><code>default_cache_config</code> - <code>string</code> - Optional - This option allows a preferred storage type to be configured for long-term caching. This can be changed later using the <set_cache_config()> method. Valid values are: <code>apc</code>, <code>xcache</code>, or a file system path such as <code>./cache</code> or <code>/tmp/cache/</code>.</li>
+	 * 	<li><code>key</code> - <code>string</code> - Optional - Your AWS key, or a session key. If blank, the default credential set will be used.</li>
+	 * 	<li><code>secret</code> - <code>string</code> - Optional - Your AWS secret key, or a session secret key. If blank, the default credential set will be used.</li>
+	 * 	<li><code>token</code> - <code>string</code> - Optional - An AWS session token.</li></ul>
+	 * @return void
+	 */
+	public function __construct(array $options = array())
+	{
+		$this->api_version = '2009-04-15';
+		$this->hostname = self::DEFAULT_URL;
+		$this->auth_class = 'AuthV2Query';
+
+		return parent::__construct($options);
+	}
 
 
 	/*%******************************************************************************************%*/
@@ -80,14 +149,17 @@ class AmazonSDB extends CFRuntime
 	/**
 	 * This allows you to explicitly sets the region for the service to use.
 	 *
-	 * @param string $region (Required) The region to explicitly set. Available options are <REGION_US_E1>, <REGION_US_W1>, <REGION_EU_W1>, or <REGION_APAC_SE1>.
+	 * @param string $region (Required) The region to explicitly set. Available options are <REGION_US_E1>, <REGION_US_W1>, <REGION_US_W2>, <REGION_EU_W1>, <REGION_APAC_SE1>, <REGION_APAC_NE1>, <REGION_SA_E1>.
 	 * @return $this A reference to the current instance.
 	 */
 	public function set_region($region)
 	{
+		// @codeCoverageIgnoreStart
 		$this->set_hostname($region);
 		return $this;
+		// @codeCoverageIgnoreEnd
 	}
+
 
 	/*%******************************************************************************************%*/
 	// CONVENIENCE METHODS
@@ -210,73 +282,337 @@ class AmazonSDB extends CFRuntime
 
 
 	/*%******************************************************************************************%*/
-	// CONSTRUCTOR
-
-	/**
-	 * Constructs a new instance of <AmazonSDB>.
-	 *
-	 * @param string $key (Optional) Your Amazon API Key. If blank, it will look for the <code>AWS_KEY</code> constant.
-	 * @param string $secret_key (Optional) Your Amazon API Secret Key. If blank, it will look for the <code>AWS_SECRET_KEY</code> constant.
-	 * @return boolean false if no valid values are set, otherwise true.
-	 */
-	public function __construct($key = null, $secret_key = null)
-	{
-		$this->api_version = '2009-04-15';
-		$this->hostname = self::DEFAULT_URL;
-
-		if (!$key && !defined('AWS_KEY'))
-		{
-			// @codeCoverageIgnoreStart
-			throw new SDB_Exception('No account key was passed into the constructor, nor was it set in the AWS_KEY constant.');
-			// @codeCoverageIgnoreEnd
-		}
-
-		if (!$secret_key && !defined('AWS_SECRET_KEY'))
-		{
-			// @codeCoverageIgnoreStart
-			throw new SDB_Exception('No account secret was passed into the constructor, nor was it set in the AWS_SECRET_KEY constant.');
-			// @codeCoverageIgnoreEnd
-		}
-
-		return parent::__construct($key, $secret_key);
-	}
-
-
-	/*%******************************************************************************************%*/
 	// SERVICE METHODS
 
 	/**
+	 * Performs multiple DeleteAttributes operations in a single call, which reduces round trips and latencies.
+	 * This enables Amazon SimpleDB to optimize requests, which generally yields better throughput.
 	 *
-	 * The <code>Select</code> operation returns a set of attributes for <code>ItemNames</code> that match the select expression.
-	 * <code>Select</code> is similar to the standard SQL SELECT statement.
+	 * If you specify BatchDeleteAttributes without attributes or values, all the attributes for the item are
+	 * deleted. BatchDeleteAttributes is an idempotent operation; running it multiple times on the same item
+	 * or attribute doesn't result in an error. The BatchDeleteAttributes operation succeeds or fails in its
+	 * entirety. There are no partial deletes.
 	 *
-	 * The total size of the response cannot exceed 1 MB in total size. Amazon SimpleDB automatically adjusts the number of items returned per
-	 * page to enforce this limit. For example, if the client asks to retrieve 2500 items, but each individual item is 10 kB in size, the system
-	 * returns 100 items and an appropriate <code>NextToken</code> so the client can access the next page of results.
+	 * You can execute multiple BatchDeleteAttributes operations and other operations in parallel. However,
+	 * large numbers of concurrent BatchDeleteAttributes calls can result in Service Unavailable (503) responses.
+	 * This operation does not support conditions using <code>Expected.X.Name</code>, <code>Expected.X.Value</code>,
+	 * or <code>Expected.X.Exists</code>.
 	 *
-	 * For information on how to construct select expressions, see Using Select to Create Amazon SimpleDB Queries in the Developer Guide.
+	 * The following limitations are enforced for this operation:
 	 *
-	 * @param string $select_expression (Required) The expression used to query the domain.
+	 * <ul>
+	 * 	<li>1 MB request size</li>
+	 * 	<li>25 item limit per BatchDeleteAttributes operation</li>
+	 * </ul>
+	 *
+	 * @param string $domain_name (Required) The name of the domain in which the attributes are being deleted.
+	 * @param array $item_keypairs (Required) Associative array of parameters which are treated as item-key-value and item-key-multivalue pairs (i.e. a key can have one or more values; think tags). <ul>
+	 * 	<li><code>[item]</code> - <code>array</code> - Set the custom item name as the key for this value.<ul>
+	 * 		<li><code>[key]</code> - <code>array</code> - Set the custom key name as the key for this value. For the value, pass a string for a single value, or an indexed array for multiple values.</li>
+	 * 	</ul></li>
+	 * </ul>
 	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
-	 * 	<li><code>NextToken</code> - <code>string</code> - Optional - A string informing Amazon SimpleDB where to start the next list of <code>ItemNames</code>. </li>
-	 * 	<li><code>ConsistentRead</code> - <code>boolean</code> - Optional - Determines whether or not strong consistency should be enforced when data is read from SimpleDB. If <code>true</code>, any data previously written to SimpleDB will be returned. Otherwise, results will be consistent eventually, and the client may not see data that was written immediately before your read. </li>
+	 * 	<li><code>Item</code> - <code>array</code> - Optional - A list of items on which to perform the operation. <ul>
+	 * 		<li><code>x</code> - <code>array</code> - This represents a simple array index. <ul>
+	 * 			<li><code>ItemName</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the item name to use.</li>
+	 * 			<li><code>Attribute</code> - <code>array</code> - Optional -  This is the parameter format supported by the web service API. This is the attribute node. <ul>
+	 * 				<li><code>x</code> - <code>array</code> - This represents a simple array index. <ul>
+	 * 					<li><code>Name</code> - <code>string</code> - Required - The name of the attribute. </li>
+	 * 					<li><code>AlternateNameEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate name encoding to use.</li>
+	 * 					<li><code>Value</code> - <code>string</code> - Required - The value of the attribute. </li>
+	 * 					<li><code>AlternateValueEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate value encoding to use.</li>
+	 * 				</ul></li>
+	 * 			</ul></li>
+	 * 		</ul></li>
+	 * 	</ul></li>
+	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
+	 *  <li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This is useful for manually-managed batch requests.</li></ul>
+	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
+	 */
+	public function batch_delete_attributes($domain_name, $item_keypairs, $opt = null)
+	{
+		if (!$opt) $opt = array();
+		$opt['DomainName'] = $domain_name;
+
+		$opt = array_merge($opt, CFComplexType::map(
+			self::remap_batch_items_for_complextype($item_keypairs)
+		));
+
+		if (isset($opt['Item']))
+		{
+			$opt = array_merge($opt, CFComplexType::map(array(
+				'Item' => $opt['Item']
+			)));
+			unset($opt['Item']);
+		}
+
+		return $this->authenticate('BatchDeleteAttributes', $opt, $this->hostname);
+	}
+
+	/**
+	 * The BatchPutAttributes operation creates or replaces attributes within one or more items.
+	 *
+	 * Attributes are uniquely identified within an item by their name/value combination. For example, a single item can
+	 * have the attributes <code>{ "first_name", "first_value" }</code> and <code>{"first_name", "second_value" }</code>.
+	 * However, it cannot have two attribute instances where both the item attribute name and item attribute value are
+	 * the same.
+	 *
+	 * Optionally, the requester can supply the <code>Replace</code> parameter for each individual value. Setting this value to
+	 * true will cause the new attribute value to replace the existing attribute value(s). For example, if an item I has the
+	 * attributes <code>{ 'a', '1' }, { 'b', '2'}</code> and <code>{ 'b', '3' }</code> and the requester does a
+	 * <code>BatchPutAttributes</code> of <code>{'I', 'b', '4' }</code> with the <code>Replace</code> parameter set to true,
+	 * the final attributes of the item will be { 'a', '1' } and { 'b', '4' }, replacing the previous values of the 'b'
+	 * attribute with the new value. You cannot specify an empty string as an item or attribute name.
+	 *
+	 * The BatchPutAttributes operation succeeds or fails in its entirety. There are no partial puts. You can execute multiple
+	 * BatchPutAttributes operations and other operations in parallel. However, large numbers of concurrent BatchPutAttributes
+	 * calls can result in Service Unavailable (503) responses. The following limitations are enforced for this operation:
+	 *
+	 * <ul>
+	 * 	<li>256 attribute name-value pairs per item</li>
+	 * 	<li>1 MB request size</li>
+	 * 	<li>1 billion attributes per domain</li>
+	 * 	<li>10 GB of total user data storage per domain</li>
+	 * 	<li>25 item limit per BatchPutAttributes operation</li>
+	 * </ul>
+	 *
+	 * @param string $domain_name (Required) The name of the domain in which the attributes are being deleted.
+	 * @param array $item_keypairs (Required) Associative array of parameters which are treated as item-key-value and item-key-multivalue pairs (i.e. a key can have one or more values; think tags). <ul>
+	 * 	<li><code>[item]</code> - <code>array</code> - Set the custom item name as the key for this value.<ul>
+	 * 		<li><code>[key]</code> - <code>array</code> - Set the custom key name as the key for this value. For the value, pass a string for a single value, or an indexed array for multiple values.</li></ul>
+	 * 	</li></ul>
+	 * @param boolean|array $replace (Optional) Whether to replace a key-value pair if a matching key already exists. Supports either a boolean (which affects ALL key-value pairs) or an indexed array of key names (which affects only the keys specified). Defaults to boolean <code>false</code>.
+	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
+	 * 	<li><code>Item</code> - <code>array</code> - Optional - A list of items on which to perform the operation. <ul>
+	 * 		<li><code>x</code> - <code>array</code> - This represents a simple array index. <ul>
+	 * 			<li><code>ItemName</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the item name to use.</li>
+	 * 			<li><code>Attribute</code> - <code>array</code> - Optional -  This is the parameter format supported by the web service API. This is the attribute node. <ul>
+	 * 				<li><code>x</code> - <code>array</code> - This represents a simple array index. <ul>
+	 * 					<li><code>Name</code> - <code>string</code> - Required - The name of the attribute. </li>
+	 * 					<li><code>AlternateNameEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate name encoding to use.</li>
+	 * 					<li><code>Value</code> - <code>string</code> - Required - The value of the attribute. </li>
+	 * 					<li><code>AlternateValueEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate value encoding to use.</li>
+	 * 				</ul></li>
+	 * 			</ul></li>
+	 * 		</ul></li>
+	 * 	</ul></li>
+	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
+	 *  <li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This is useful for manually-managed batch requests.</li></ul>
+	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
+	 */
+	public function batch_put_attributes($domain_name, $item_keypairs, $replace = null, $opt = null)
+	{
+		if (!$opt) $opt = array();
+		$opt['DomainName'] = $domain_name;
+
+		$opt = array_merge($opt, CFComplexType::map(
+			self::remap_batch_items_for_complextype($item_keypairs, $replace)
+		));
+
+		if (isset($opt['Item']))
+		{
+			$opt = array_merge($opt, CFComplexType::map(array(
+				'Item' => $opt['Item']
+			)));
+			unset($opt['Item']);
+		}
+
+		return $this->authenticate('BatchPutAttributes', $opt, $this->hostname);
+	}
+
+	/**
+	 * The <code>CreateDomain</code> operation creates a new domain. The domain name should be unique
+	 * among the domains associated with the Access Key ID provided in the request. The
+	 * <code>CreateDomain</code> operation may take 10 or more seconds to complete.
+	 * 
+	 * <p class="note">
+	 * CreateDomain is an idempotent operation; running it multiple times using the same domain name
+	 * will not result in an error response.
+	 * </p> 
+	 * The client can create up to 100 domains per account.
+	 *  
+	 * If the client requires additional domains, go to <a href=
+	 * "http://aws.amazon.com/contact-us/simpledb-limit-request/">http://aws.amazon.com/contact-us/simpledb-limit-request/</a>.
+	 *
+	 * @param string $domain_name (Required) The name of the domain to create. The name can range between 3 and 255 characters and can contain the following characters: a-z, A-Z, 0-9, '_', '-', and '.'.
+	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
 	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
 	 * 	<li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This toggle is useful for manually managed batch requests.</li></ul>
 	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
 	 */
-	public function select($select_expression, $opt = null)
+	public function create_domain($domain_name, $opt = null)
 	{
 		if (!$opt) $opt = array();
-		$opt['SelectExpression'] = $select_expression;
+		$opt['DomainName'] = $domain_name;
+		
+		return $this->authenticate('CreateDomain', $opt);
+	}
 
-		return $this->authenticate('Select', $opt, $this->hostname);
+	/**
+	 * Deletes one or more attributes associated with the item. If all attributes of an item are deleted,
+	 * the item is deleted.
+	 *
+	 * If you specify DeleteAttributes without attributes or values, all the attributes for the item are
+	 * deleted.
+	 *
+	 * DeleteAttributes is an idempotent operation; running it multiple times on the same item or
+	 * attribute does not result in an error response.
+	 *
+	 * Because Amazon SimpleDB makes multiple copies of your data and uses an eventual consistency update
+	 * model, performing a GetAttributes or Select request (read) immediately after a DeleteAttributes or
+	 * PutAttributes request (write) might not return the updated data.
+	 *
+	 * @param string $domain_name (Required) The name of the domain in which the attributes are being deleted.
+	 * @param string $item_name (Required) The name of the base item which will contain the series of keypairs.
+	 * @param array $attributes (Optional) Similar to columns on a spreadsheet, attributes represent categories of data that can be assigned to items. Takes an associative array of parameters that can have the following keys: <ul>
+	 * 	<li><code>Attribute</code> - <code>array</code> - Optional -  This is the parameter format supported by the web service API. This is the attribute node.<ul>
+	 * 		<li><code>x</code> - <code>array</code> - This represents a simple array index. <ul>
+	 * 			<li><code>Name</code> - <code>string</code> - Required - The name of the attribute. </li>
+	 * 			<li><code>AlternateNameEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate name encoding to use.</li>
+	 * 			<li><code>Value</code> - <code>string</code> - Required - The value of the attribute. </li>
+	 * 			<li><code>AlternateValueEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate value encoding to use.</li>
+	 * 		</ul></li>
+	 * 	</ul></li></ul>
+	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
+	 * 	<li><code>Expected</code> - <code>array</code> - Optional - The update condition which, if specified, determines if the specified attributes will be updated or not. The update condition must be satisfied in order for this request to be processed and the attributes to be updated. <ul>
+	 * 		<li><code>Name</code> - <code>string</code> - Optional - The name of the attribute involved in the condition.</li>
+	 * 		<li><code>Value</code> - <code>string</code> - Optional - The value of an attribute. This value can only be specified when the exists parameter is equal to true.</li>
+	 * 		<li><code>Exists</code> - <code>string</code> - Optional - True if the specified attribute must exist with the specified value in order for this update condition to be satisfied, otherwise false if the specified attribute should not exist in order for this update condition to be satisfied.</li>
+	 * 	</ul></li>
+	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
+	 *  <li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This is useful for manually-managed batch requests.</li></ul>
+	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
+	 */
+	public function delete_attributes($domain_name, $item_name, $attributes = null, $opt = null)
+	{
+		if (!$opt) $opt = array();
+		$opt['DomainName'] = $domain_name;
+		$opt['ItemName'] = $item_name;
+
+		if ($attributes)
+		{
+			$opt = array_merge($opt, CFComplexType::map(array(
+				'Attribute' => (is_array($attributes) ? $attributes : array($attributes))
+			)));
+		}
+
+		if (isset($opt['Expected']))
+		{
+			$opt = array_merge($opt, CFComplexType::map(array(
+				'Expected' => $opt['Expected']
+			)));
+			unset($opt['Expected']);
+		}
+
+		return $this->authenticate('DeleteAttributes', $opt, $this->hostname);
+	}
+
+	/**
+	 * The <code>DeleteDomain</code> operation deletes a domain. Any items (and their attributes) in
+	 * the domain are deleted as well. The <code>DeleteDomain</code> operation might take 10 or more
+	 * seconds to complete.
+	 * 
+	 * <p class="note">
+	 * Running <code>DeleteDomain</code> on a domain that does not exist or running the function
+	 * multiple times using the same domain name will not result in an error response.
+	 * </p>
+	 *
+	 * @param string $domain_name (Required) The name of the domain to delete.
+	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
+	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
+	 * 	<li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This toggle is useful for manually managed batch requests.</li></ul>
+	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
+	 */
+	public function delete_domain($domain_name, $opt = null)
+	{
+		if (!$opt) $opt = array();
+		$opt['DomainName'] = $domain_name;
+		
+		return $this->authenticate('DeleteDomain', $opt);
+	}
+
+	/**
+	 * Returns information about the domain, including when the domain was created, the number of
+	 * items and attributes in the domain, and the size of the attribute names and values.
+	 *
+	 * @param string $domain_name (Required) The name of the domain for which to display the metadata of.
+	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
+	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
+	 * 	<li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This toggle is useful for manually managed batch requests.</li></ul>
+	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
+	 */
+	public function domain_metadata($domain_name, $opt = null)
+	{
+		if (!$opt) $opt = array();
+		$opt['DomainName'] = $domain_name;
+		
+		return $this->authenticate('DomainMetadata', $opt);
+	}
+
+	/**
+	 * Returns all of the attributes associated with the item. Optionally, the attributes returned can be
+	 * limited to one or more specified attribute name parameters.
+	 *
+	 * If the item does not exist on the replica that was accessed for this operation, an empty set is
+	 * returned. The system does not return an error as it cannot guarantee the item does not exist on
+	 * other replicas.
+	 *
+	 * If you specify GetAttributes without any attribute names, all the attributes for the item are
+	 * returned.
+	 *
+	 * @param string $domain_name (Required) The name of the domain in which to perform the operation.
+	 * @param string $item_name (Required) The name of the base item which will contain the series of keypairs.
+	 * @param string|array $attribute_name (Optional) The names of the attributes. Pass a string for a single value, or an indexed array for multiple values.
+	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
+	 * 	<li><code>ConsistentRead</code> - <code>boolean</code> - Optional - True if strong consistency should be enforced when data is read from SimpleDB, meaning that any data previously written to SimpleDB will be returned. Without specifying this parameter, results will be eventually consistent, and you may not see data that was written immediately before your read.</li>
+	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
+	 *  <li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This is useful for manually-managed batch requests.</li></ul>
+	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
+	 */
+	public function get_attributes($domain_name, $item_name, $attribute_name = null, $opt = null)
+	{
+		if (!$opt) $opt = array();
+		$opt['DomainName'] = $domain_name;
+		$opt['ItemName'] = $item_name;
+
+		if ($attribute_name)
+		{
+			$opt = array_merge($opt, CFComplexType::map(array(
+				'AttributeName' => (is_array($attribute_name) ? $attribute_name : array($attribute_name))
+			)));
+		}
+
+		return $this->authenticate('GetAttributes', $opt, $this->hostname);
+	}
+
+	/**
+	 * The <code>ListDomains</code> operation lists all domains associated with the Access Key ID. It
+	 * returns domain names up to the limit set by <a href=
+	 * "#MaxNumberOfDomains">MaxNumberOfDomains</a>. A <a href="#NextToken">NextToken</a> is returned
+	 * if there are more than <code>MaxNumberOfDomains</code> domains. Calling
+	 * <code>ListDomains</code> successive times with the <code>NextToken</code> provided by the
+	 * operation returns up to <code>MaxNumberOfDomains</code> more domain names with each successive
+	 * operation call.
+	 *
+	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
+	 * 	<li><code>MaxNumberOfDomains</code> - <code>integer</code> - Optional - The maximum number of domain names you want returned. The range is 1 to 100. The default setting is 100.</li>
+	 * 	<li><code>NextToken</code> - <code>string</code> - Optional - A string informing Amazon SimpleDB where to start the next list of domain names.</li>
+	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
+	 * 	<li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This toggle is useful for manually managed batch requests.</li></ul>
+	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
+	 */
+	public function list_domains($opt = null)
+	{
+		if (!$opt) $opt = array();
+				
+		return $this->authenticate('ListDomains', $opt);
 	}
 
 	/**
 	 * The PutAttributes operation creates or replaces attributes in an item.
 	 *
 	 * A single item can have the attributes <code>{ "first_name", "first_value" }</code> and
-	 * <code>{ "first_name", second_value" }</code>. However, it cannot have two attribute instances where
+	 * <code>{ "first_name", "second_value" }</code>. However, it cannot have two attribute instances where
 	 * both the attribute name and attribute value are the same. Optionally, the requestor can supply the
 	 * <code>Replace</code> parameter for each individual attribute. Setting this value to true causes the
 	 * new attribute value to replace the existing attribute value(s).
@@ -342,321 +678,33 @@ class AmazonSDB extends CFRuntime
 	}
 
 	/**
-	 * Performs multiple DeleteAttributes operations in a single call, which reduces round trips and latencies.
-	 * This enables Amazon SimpleDB to optimize requests, which generally yields better throughput.
+	 * The <code>Select</code> operation returns a set of attributes for <code>ItemNames</code> that
+	 * match the select expression. <code>Select</code> is similar to the standard SQL SELECT
+	 * statement.
+	 *  
+	 * The total size of the response cannot exceed 1 MB in total size. Amazon SimpleDB automatically
+	 * adjusts the number of items returned per page to enforce this limit. For example, if the client
+	 * asks to retrieve 2500 items, but each individual item is 10 kB in size, the system returns 100
+	 * items and an appropriate <code>NextToken</code> so the client can access the next page of
+	 * results.
+	 *  
+	 * For information on how to construct select expressions, see Using Select to Create Amazon
+	 * SimpleDB Queries in the Developer Guide.
 	 *
-	 * If you specify BatchDeleteAttributes without attributes or values, all the attributes for the item are
-	 * deleted. BatchDeleteAttributes is an idempotent operation; running it multiple times on the same item
-	 * or attribute doesn't result in an error. The BatchDeleteAttributes operation succeeds or fails in its
-	 * entirety. There are no partial deletes.
-	 *
-	 * You can execute multiple BatchDeleteAttributes operations and other operations in parallel. However,
-	 * large numbers of concurrent BatchDeleteAttributes calls can result in Service Unavailable (503) responses.
-	 * This operation does not support conditions using <code>Expected.X.Name</code>, <code>Expected.X.Value</code>,
-	 * or <code>Expected.X.Exists</code>.
-	 *
-	 * The following limitations are enforced for this operation:
-	 *
-	 * <ul>
-	 * 	<li>1 MB request size</li>
-	 * 	<li>25 item limit per BatchDeleteAttributes operation</li>
-	 * </ul>
-	 *
-	 * @param string $domain_name (Required) The name of the domain in which the attributes are being deleted.
-	 * @param array $item_keypairs (Required) Associative array of parameters which are treated as item-key-value and item-key-multivalue pairs (i.e. a key can have one or more values; think tags). <ul>
-	 * 	<li><code>[item]</code> - <code>array</code> - Set the custom item name as the key for this value.<ul>
-	 * 		<li><code>[key]</code> - <code>array</code> - Set the custom key name as the key for this value. For the value, pass a string for a single value, or an indexed array for multiple values.</li>
-	 * 	</ul></li></ul>
+	 * @param string $select_expression (Required) The expression used to query the domain.
 	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
-	 * 	<li><code>Item</code> - <code>array</code> - Optional - A list of items on which to perform the operation. <ul>
-	 * 		<li><code>x</code> - <code>array</code> - This represents a simple array index. <ul>
-	 * 			<li><code>ItemName</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the item name to use.<ul>
-	 * 			<li><code>Attribute</code> - <code>array</code> - Optional -  This is the parameter format supported by the web service API. This is the attribute node.<ul>
-	 * 				<li><code>x</code> - <code>array</code> - This represents a simple array index. <ul>
-	 * 					<li><code>Name</code> - <code>string</code> - Required - The name of the attribute. </li>
-	 * 					<li><code>AlternateNameEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate name encoding to use.</li>
-	 * 					<li><code>Value</code> - <code>string</code> - Required - The value of the attribute. </li>
-	 * 					<li><code>AlternateValueEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate value encoding to use.</li>
-	 * 				</ul></li>
-	 * 			</ul></li>
-	 * 		</ul></li>
-	 * 	</ul></li>
-	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
-	 *  <li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This is useful for manually-managed batch requests.</li></ul>
-	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
-	 */
-	public function batch_delete_attributes($domain_name, $item_keypairs, $opt = null)
-	{
-		if (!$opt) $opt = array();
-		$opt['DomainName'] = $domain_name;
-
-		$opt = array_merge($opt, CFComplexType::map(
-			self::remap_batch_items_for_complextype($item_keypairs)
-		));
-
-		if (isset($opt['Item']))
-		{
-			$opt = array_merge($opt, CFComplexType::map(array(
-				'Item' => $opt['Item']
-			)));
-			unset($opt['Item']);
-		}
-
-		return $this->authenticate('BatchDeleteAttributes', $opt, $this->hostname);
-	}
-
-	/**
-	 *
-	 * The <code>DeleteDomain</code> operation deletes a domain. Any items (and their attributes) in the domain are deleted as well. The
-	 * <code>DeleteDomain</code> operation might take 10 or more seconds to complete.
-	 *
-	 * Running <code>DeleteDomain</code> on a domain that does not exist or running the function multiple times using the same domain name will
-	 * not result in an error response.
-	 *
-	 * @param string $domain_name (Required) The name of the domain to delete.
-	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
+	 * 	<li><code>NextToken</code> - <code>string</code> - Optional - A string informing Amazon SimpleDB where to start the next list of <code>ItemNames</code> .</li>
+	 * 	<li><code>ConsistentRead</code> - <code>boolean</code> - Optional - Determines whether or not strong consistency should be enforced when data is read from SimpleDB. If <code>true</code> , any data previously written to SimpleDB will be returned. Otherwise, results will be consistent eventually, and the client may not see data that was written immediately before your read.</li>
 	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
 	 * 	<li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This toggle is useful for manually managed batch requests.</li></ul>
 	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
 	 */
-	public function delete_domain($domain_name, $opt = null)
+	public function select($select_expression, $opt = null)
 	{
 		if (!$opt) $opt = array();
-		$opt['DomainName'] = $domain_name;
-
-		return $this->authenticate('DeleteDomain', $opt, $this->hostname);
-	}
-
-	/**
-	 *
-	 * The <code>CreateDomain</code> operation creates a new domain. The domain name should be unique among the domains associated with the Access
-	 * Key ID provided in the request. The <code>CreateDomain</code> operation may take 10 or more seconds to complete.
-	 *
-	 * CreateDomain is an idempotent operation; running it multiple times using the same domain name will not result in an error response.
-	 *
-	 * The client can create up to 100 domains per account.
-	 *
-	 * If the client requires additional domains, go to <a
-	 * href="http://aws.amazon.com/contact-us/simpledb-limit-request/">http://aws.amazon.com/contact-us/simpledb-limit-request/</a>.
-	 *
-	 * @param string $domain_name (Required) The name of the domain to create. The name can range between 3 and 255 characters and can contain the following characters: a-z, A-Z, 0-9, '_', '-', and '.'.
-	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
-	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
-	 * 	<li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This toggle is useful for manually managed batch requests.</li></ul>
-	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
-	 */
-	public function create_domain($domain_name, $opt = null)
-	{
-		if (!$opt) $opt = array();
-		$opt['DomainName'] = $domain_name;
-
-		return $this->authenticate('CreateDomain', $opt, $this->hostname);
-	}
-
-	/**
-	 * Deletes one or more attributes associated with the item. If all attributes of an item are deleted,
-	 * the item is deleted.
-	 *
-	 * If you specify DeleteAttributes without attributes or values, all the attributes for the item are
-	 * deleted.
-	 *
-	 * DeleteAttributes is an idempotent operation; running it multiple times on the same item or
-	 * attribute does not result in an error response.
-	 *
-	 * Because Amazon SimpleDB makes multiple copies of your data and uses an eventual consistency update
-	 * model, performing a GetAttributes or Select request (read) immediately after a DeleteAttributes or
-	 * PutAttributes request (write) might not return the updated data.
-	 *
-	 * @param string $domain_name (Required) The name of the domain in which the attributes are being deleted.
-	 * @param string $item_name (Required) The name of the base item which will contain the series of keypairs.
-	 * @param array $attributes (Optional) Similar to columns on a spreadsheet, attributes represent categories of data that can be assigned to items. Takes an associative array of parameters that can have the following keys: <ul>
-	 * 	<li><code>Attribute</code> - <code>array</code> - Optional -  This is the parameter format supported by the web service API. This is the attribute node.<ul>
-	 * 		<li><code>x</code> - <code>array</code> - This represents a simple array index. <ul>
-	 * 			<li><code>Name</code> - <code>string</code> - Required - The name of the attribute. </li>
-	 * 			<li><code>AlternateNameEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate name encoding to use.</li>
-	 * 			<li><code>Value</code> - <code>string</code> - Required - The value of the attribute. </li>
-	 * 			<li><code>AlternateValueEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate value encoding to use.</li>
-	 * 		</ul></li>
-	 * 	</ul></li></ul>
-	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
-	 * 	<li><code>Expected</code> - <code>array</code> - Optional - The update condition which, if specified, determines if the specified attributes will be updated or not. The update condition must be satisfied in order for this request to be processed and the attributes to be updated. <ul>
-	 * 		<li><code>Name</code> - <code>string</code> - Optional - The name of the attribute involved in the condition.</li>
-	 * 		<li><code>Value</code> - <code>string</code> - Optional - The value of an attribute. This value can only be specified when the exists parameter is equal to true.</li>
-	 * 		<li><code>Exists</code> - <code>string</code> - Optional - True if the specified attribute must exist with the specified value in order for this update condition to be satisfied, otherwise false if the specified attribute should not exist in order for this update condition to be satisfied.</li>
-	 * 	</ul></li>
-	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
-	 *  <li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This is useful for manually-managed batch requests.</li></ul>
-	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
-	 */
-	public function delete_attributes($domain_name, $item_name, $attributes = null, $opt = null)
-	{
-		if (!$opt) $opt = array();
-		$opt['DomainName'] = $domain_name;
-		$opt['ItemName'] = $item_name;
-
-		if ($attributes)
-		{
-			$opt = array_merge($opt, CFComplexType::map(array(
-				'Attribute' => (is_array($attributes) ? $attributes : array($attributes))
-			)));
-		}
-
-		if (isset($opt['Expected']))
-		{
-			$opt = array_merge($opt, CFComplexType::map(array(
-				'Expected' => $opt['Expected']
-			)));
-			unset($opt['Expected']);
-		}
-
-		return $this->authenticate('DeleteAttributes', $opt, $this->hostname);
-	}
-
-	/**
-	 *
-	 * The <code>ListDomains</code> operation lists all domains associated with the Access Key ID. It returns domain names up to the limit set by
-	 * <a href="#MaxNumberOfDomains">MaxNumberOfDomains</a>. A <a href="#NextToken">NextToken</a> is returned if there are more than
-	 * <code>MaxNumberOfDomains</code> domains. Calling <code>ListDomains</code> successive times with the <code>NextToken</code> provided by the
-	 * operation returns up to <code>MaxNumberOfDomains</code> more domain names with each successive operation call.
-	 *
-	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
-	 * 	<li><code>MaxNumberOfDomains</code> - <code>integer</code> - Optional - The maximum number of domain names you want returned. The range is 1 to 100. The default setting is 100. </li>
-	 * 	<li><code>NextToken</code> - <code>string</code> - Optional - A string informing Amazon SimpleDB where to start the next list of domain names. </li>
-	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
-	 * 	<li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This toggle is useful for manually managed batch requests.</li></ul>
-	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
-	 */
-	public function list_domains($opt = null)
-	{
-		if (!$opt) $opt = array();
-
-		return $this->authenticate('ListDomains', $opt, $this->hostname);
-	}
-
-	/**
-	 * Returns all of the attributes associated with the item. Optionally, the attributes returned can be
-	 * limited to one or more specified attribute name parameters.
-	 *
-	 * If the item does not exist on the replica that was accessed for this operation, an empty set is
-	 * returned. The system does not return an error as it cannot guarantee the item does not exist on
-	 * other replicas.
-	 *
-	 * If you specify GetAttributes without any attribute names, all the attributes for the item are
-	 * returned.
-	 *
-	 * @param string $domain_name (Required) The name of the domain in which to perform the operation.
-	 * @param string $item_name (Required) The name of the base item which will contain the series of keypairs.
-	 * @param string|array $attribute_name (Optional) The names of the attributes. Pass a string for a single value, or an indexed array for multiple values.
-	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
-	 * 	<li><code>ConsistentRead</code> - <code>boolean</code> - Optional - True if strong consistency should be enforced when data is read from SimpleDB, meaning that any data previously written to SimpleDB will be returned. Without specifying this parameter, results will be eventually consistent, and you may not see data that was written immediately before your read.</li>
-	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
-	 *  <li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This is useful for manually-managed batch requests.</li></ul>
-	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
-	 */
-	public function get_attributes($domain_name, $item_name, $attribute_name = null, $opt = null)
-	{
-		if (!$opt) $opt = array();
-		$opt['DomainName'] = $domain_name;
-		$opt['ItemName'] = $item_name;
-
-		if ($attribute_name)
-		{
-			$opt = array_merge($opt, CFComplexType::map(array(
-				'AttributeName' => (is_array($attribute_name) ? $attribute_name : array($attribute_name))
-			)));
-		}
-
-		return $this->authenticate('GetAttributes', $opt, $this->hostname);
-	}
-
-	/**
-	 * The BatchPutAttributes operation creates or replaces attributes within one or more items.
-	 *
-	 * Attributes are uniquely identified within an item by their name/value combination. For example, a single item can
-	 * have the attributes <code>{ "first_name", "first_value" }</code> and <code>{"first_name", "second_value" }</code>.
-	 * However, it cannot have two attribute instances where both the item attribute name and item attribute value are
-	 * the same.
-	 *
-	 * Optionally, the requester can supply the <code>Replace</code> parameter for each individual value. Setting this value to
-	 * true will cause the new attribute value to replace the existing attribute value(s). For example, if an item I has the
-	 * attributes <code>{ 'a', '1' }, { 'b', '2'}</code> and <code>{ 'b', '3' }</code> and the requester does a
-	 * <code>BatchPutAttributes</code> of <code>{'I', 'b', '4' }</code> with the <code>Replace</code> parameter set to true,
-	 * the final attributes of the item will be { 'a', '1' } and { 'b', '4' }, replacing the previous values of the 'b'
-	 * attribute with the new value. You cannot specify an empty string as an item or attribute name.
-	 *
-	 * The BatchPutAttributes operation succeeds or fails in its entirety. There are no partial puts. You can execute multiple
-	 * BatchPutAttributes operations and other operations in parallel. However, large numbers of concurrent BatchPutAttributes
-	 * calls can result in Service Unavailable (503) responses. The following limitations are enforced for this operation:
-	 *
-	 * <ul>
-	 * 	<li>256 attribute name-value pairs per item</li>
-	 * 	<li>1 MB request size</li>
-	 * 	<li>1 billion attributes per domain</li>
-	 * 	<li>10 GB of total user data storage per domain</li>
-	 * 	<li>25 item limit per BatchPutAttributes operation</li>
-	 * </ul>
-	 *
-	 * @param string $domain_name (Required) The name of the domain in which the attributes are being deleted.
-	 * @param array $item_keypairs (Required) Associative array of parameters which are treated as item-key-value and item-key-multivalue pairs (i.e. a key can have one or more values; think tags). <ul>
-	 * 	<li><code>[item]</code> - <code>array</code> - Set the custom item name as the key for this value.<ul>
-	 * 		<li><code>[key]</code> - <code>array</code> - Set the custom key name as the key for this value. For the value, pass a string for a single value, or an indexed array for multiple values.</li>
-	 * 	</ul></li></ul>
-	 * @param boolean|array $replace (Optional) Whether to replace a key-value pair if a matching key already exists. Supports either a boolean (which affects ALL key-value pairs) or an indexed array of key names (which affects only the keys specified). Defaults to boolean <code>false</code>.
-	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
-	 * 	<li><code>Item</code> - <code>array</code> - Optional - A list of items on which to perform the operation. <ul>
-	 * 		<li><code>x</code> - <code>array</code> - This represents a simple array index. <ul>
-	 * 			<li><code>ItemName</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the item name to use.<ul>
-	 * 			<li><code>Attribute</code> - <code>array</code> - Optional -  This is the parameter format supported by the web service API. This is the attribute node.<ul>
-	 * 				<li><code>x</code> - <code>array</code> - This represents a simple array index. <ul>
-	 * 					<li><code>Name</code> - <code>string</code> - Required - The name of the attribute. </li>
-	 * 					<li><code>AlternateNameEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate name encoding to use.</li>
-	 * 					<li><code>Value</code> - <code>string</code> - Required - The value of the attribute. </li>
-	 * 					<li><code>AlternateValueEncoding</code> - <code>string</code> - Optional - This is the parameter format supported by the web service API. This is the alternate value encoding to use.</li>
-	 * 				</ul></li>
-	 * 			</ul></li>
-	 * 		</ul></li>
-	 * 	</ul></li>
-	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
-	 *  <li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This is useful for manually-managed batch requests.</li></ul>
-	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
-	 */
-	public function batch_put_attributes($domain_name, $item_keypairs, $replace = null, $opt = null)
-	{
-		if (!$opt) $opt = array();
-		$opt['DomainName'] = $domain_name;
-
-		$opt = array_merge($opt, CFComplexType::map(
-			self::remap_batch_items_for_complextype($item_keypairs, $replace)
-		));
-
-		if (isset($opt['Item']))
-		{
-			$opt = array_merge($opt, CFComplexType::map(array(
-				'Item' => $opt['Item']
-			)));
-			unset($opt['Item']);
-		}
-
-		return $this->authenticate('BatchPutAttributes', $opt, $this->hostname);
-	}
-
-	/**
-	 *
-	 * Returns information about the domain, including when the domain was created, the number of items and attributes in the domain, and the size
-	 * of the attribute names and values.
-	 *
-	 * @param string $domain_name (Required) The name of the domain for which to display the metadata of.
-	 * @param array $opt (Optional) An associative array of parameters that can have the following keys: <ul>
-	 * 	<li><code>curlopts</code> - <code>array</code> - Optional - A set of values to pass directly into <code>curl_setopt()</code>, where the key is a pre-defined <code>CURLOPT_*</code> constant.</li>
-	 * 	<li><code>returnCurlHandle</code> - <code>boolean</code> - Optional - A private toggle specifying that the cURL handle be returned rather than actually completing the request. This toggle is useful for manually managed batch requests.</li></ul>
-	 * @return CFResponse A <CFResponse> object containing a parsed HTTP response.
-	 */
-	public function domain_metadata($domain_name, $opt = null)
-	{
-		if (!$opt) $opt = array();
-		$opt['DomainName'] = $domain_name;
-
-		return $this->authenticate('DomainMetadata', $opt, $this->hostname);
+		$opt['SelectExpression'] = $select_expression;
+		
+		return $this->authenticate('Select', $opt);
 	}
 }
 
@@ -664,7 +712,4 @@ class AmazonSDB extends CFRuntime
 /*%******************************************************************************************%*/
 // EXCEPTIONS
 
-/**
- * Default SDB Exception.
- */
 class SDB_Exception extends Exception {}

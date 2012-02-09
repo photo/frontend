@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2010-2011 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ * Copyright 2010-2012 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
  * You may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
  * rapidly manipulating array data. Specifically, the `CFArray` object is intended for working with
  * <CFResponse> and <CFSimpleXML> objects that are returned by AWS services.
  *
- * @version 2011.04.25
+ * @version 2012.01.17
  * @license See the included NOTICE.md file for more information.
  * @copyright See the included NOTICE.md file for more information.
  * @link http://aws.amazon.com/php/ PHP Developer Center
@@ -41,7 +41,16 @@ class CFArray extends ArrayObject
 	 */
 	public function __construct($input = array(), $flags = self::STD_PROP_LIST, $iterator_class = 'ArrayIterator')
 	{
-		return parent::__construct($input, $flags, $iterator_class);
+		// Provide a default value
+		$input = $input ? $input : array();
+
+		try {
+			return parent::__construct($input, $flags, $iterator_class);
+		}
+		catch (InvalidArgumentException $e)
+		{
+			throw new CFArray_Exception($e->getMessage());
+		}
 	}
 
 	/**
@@ -143,6 +152,11 @@ class CFArray extends ArrayObject
 	/**
 	 * Iterates over a <CFArray> object, and executes a function for each matched element.
 	 *
+	 * The callback function takes three parameters: <ul>
+	 * 	<li><code>$item</code> - <code>mixed</code> - Optional - The individual node in the array.</li>
+	 * 	<li><code>$key</code> - <code>mixed</code> - Optional - The key for the array node.</li>
+	 * 	<li><code>$bind</code> - <code>mixed</code> - Optional - The variable that was passed into the $bind parameter.</li></ul>
+	 *
 	 * @param string|function $callback (Required) The callback function to execute. PHP 5.3 or newer can use an anonymous function.
 	 * @param mixed $bind (Optional) A variable from the calling scope to pass-by-reference into the local scope of the callback function.
 	 * @return CFArray The original <CFArray> object.
@@ -150,11 +164,10 @@ class CFArray extends ArrayObject
 	public function each($callback, &$bind = null)
 	{
 		$items = $this->getArrayCopy();
-		$max = count($items);
 
-		for ($i = 0; $i < $max; $i++)
+		foreach ($items as $key => &$item)
 		{
-			$callback($items[$i], $i, $bind);
+			$callback($item, $key, $bind);
 		}
 
 		return $this;
@@ -163,6 +176,11 @@ class CFArray extends ArrayObject
 	/**
 	 * Passes each element in the current <CFArray> object through a function, and produces a new <CFArray> object containing the return values.
 	 *
+	 * The callback function takes three parameters: <ul>
+	 * 	<li><code>$item</code> - <code>mixed</code> - Optional - The individual node in the array.</li>
+	 * 	<li><code>$key</code> - <code>mixed</code> - Optional - The key for the array node.</li>
+	 * 	<li><code>$bind</code> - <code>mixed</code> - Optional - The variable that was passed into the $bind parameter.</li></ul>
+	 *
 	 * @param string|function $callback (Required) The callback function to execute. PHP 5.3 or newer can use an anonymous function.
 	 * @param mixed $bind (Optional) A variable from the calling scope to pass-by-reference into the local scope of the callback function.
 	 * @return CFArray A new <CFArray> object containing the return values.
@@ -170,12 +188,11 @@ class CFArray extends ArrayObject
 	public function map($callback, &$bind = null)
 	{
 		$items = $this->getArrayCopy();
-		$max = count($items);
 		$collect = array();
 
-		for ($i = 0; $i < $max; $i++)
+		foreach ($items as $key => &$item)
 		{
-			$collect[] = $callback($items[$i], $i, $bind);
+			$collect[] = $callback($item, $key, $bind);
 		}
 
 		return new CFArray($collect);
@@ -184,6 +201,11 @@ class CFArray extends ArrayObject
 	/**
 	 * Filters the list of nodes by passing each value in the current <CFArray> object through a function. The node will be removed if the function returns `false`.
 	 *
+	 * The callback function takes three parameters: <ul>
+	 * 	<li><code>$item</code> - <code>mixed</code> - Optional - The individual node in the array.</li>
+	 * 	<li><code>$key</code> - <code>mixed</code> - Optional - The key for the array node.</li>
+	 * 	<li><code>$bind</code> - <code>mixed</code> - Optional - The variable that was passed into the $bind parameter.</li></ul>
+	 *
 	 * @param string|function $callback (Required) The callback function to execute. PHP 5.3 or newer can use an anonymous function.
 	 * @param mixed $bind (Optional) A variable from the calling scope to pass-by-reference into the local scope of the callback function.
 	 * @return CFArray A new <CFArray> object containing the return values.
@@ -191,14 +213,13 @@ class CFArray extends ArrayObject
 	public function filter($callback, &$bind = null)
 	{
 		$items = $this->getArrayCopy();
-		$max = count($items);
 		$collect = array();
 
-		for ($i = 0; $i < $max; $i++)
+		foreach ($items as $key => &$item)
 		{
-			if ($callback($items[$i], $i, $bind) !== false)
+			if ($callback($item, $key, $bind) !== false)
 			{
-				$collect[] = $items[$i];
+				$collect[] = $item;
 			}
 		}
 
@@ -287,3 +308,5 @@ class CFArray extends ArrayObject
 		return sfYaml::dump($this->getArrayCopy(), 5);
 	}
 }
+
+class CFArray_Exception extends Exception {}

@@ -83,6 +83,9 @@ if(!function_exists('getDb'))
 
     switch($type)
     {
+      case 'DynamoDb':
+        $database = new DatabaseDynamoDb();
+        break;
       case 'SimpleDb':
         $database = new DatabaseSimpleDb();
         break;

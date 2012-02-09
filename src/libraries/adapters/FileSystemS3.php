@@ -30,7 +30,8 @@ class FileSystemS3 implements FileSystemInterface
     else
     {
       $utilityObj = new Utility;
-      $this->fs = new AmazonS3($utilityObj->decrypt($this->config->credentials->awsKey), $utilityObj->decrypt($this->config->credentials->awsSecret));
+      $aws_info = array("key" => $utilityObj->decrypt($this->config->credentials->awsKey), "secret" => $utilityObj->decrypt($this->config->credentials->awsSecret));
+      $this->fs = new AmazonS3($aws_info);
     }
 
     $this->bucket = $this->config->aws->s3BucketName;
