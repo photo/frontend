@@ -37,31 +37,25 @@ class PluginBase extends BaseModel
 
   public function onAction($params)
   {
-    $this->logger->info('Plugin onAction called');
   }
 
   public function onBodyBegin($params = null)
   {
-    $this->logger->info('Plugin onBodyBegin called');
   }
 
   public function onBodyEnd($params = null)
   {
-    $this->logger->info('Plugin onBodyEnd called');
   }
 
   public function onHead($params = null)
   {
-    $this->logger->info('Plugin onHead called');
   }
 
   public function onLoad($params = null)
   {
-    $this->logger->info('Plugin onLoad called');
   }
 
   public function onView($params)
   {
-    $this->logger->info('Plugin onView called');  
   }
 }
