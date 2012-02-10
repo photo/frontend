@@ -419,29 +419,41 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   public function getPhotoNextPrevious($id, $filterOpts = null)
   {
-    getLogger()->info("Starting getPhotoNextPrevious");
-    return false;
-
-    #  Grab all photos via a scan, search for the current photo in the array, get the previous & next one
-
     $buildQuery = self::buildQuery($filterOpts, null, null);
     $photo = $this->getPhoto($id);
     if(!$photo)
       return false;
 
-    $queue = $this->getBatchRequest();
-    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$buildQuery['where']} AND dateTaken>'{$photo['dateTaken']}' ORDER BY dateTaken ASC LIMIT 1");
-    $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$buildQuery['where']} AND dateTaken<'{$photo['dateTaken']}' ORDER BY dateTaken DESC LIMIT 1");
-    $responses = $this->db->batch($queue)->send();
-    $this->logErrors($responses);
-    if(!$responses->areOK())
+    $res = $this->db->scan(array(
+	'TableName' => $this->domainPhoto,
+	'ScanFilter' => $buildQuery['where'],
+    ));
+
+    $this->logErrors($res);
+    if(!$res->isOK())
       return false;
 
+    $photos = array();
+    foreach($res->body->Items->{0} as $photo)
+      $photos[] = $this->normalizePhoto($photo);
+
+    usort($photos, function($func_a, $func_b) {
+	if ($func_a['dateTaken'] == $func_b['dateTaken']) return 0;
+	return ($func_a['dateTaken'] > $func_b['dateTaken']) ? -1 : 1;
+    });
+
+    $key=0;
+    foreach($photos as $item)
+	if ($item['id'] == $id)
+		break;
+	else
+		$key++;
+
     $ret = array();
-    if(isset($responses[0]->body->SelectResult->Item))
-      $ret['previous'] = self::normalizePhoto($responses[0]->body->SelectResult->Item);
-    if(isset($responses[1]->body->SelectResult->Item))
-      $ret['next'] = self::normalizePhoto($responses[1]->body->SelectResult->Item);
+    if(isset($photos[$key-1]))
+      $ret['previous'] = $photos[$key-1];
+    if(isset($photos[$key+1]))
+      $ret['next'] = $photos[$key+1];
 
     return $ret;
   }
@@ -498,23 +510,6 @@ class DatabaseDynamoDb implements DatabaseInterface
 
     return $photo;
 
-    #$queue = $this->getBatchRequest();
-    #$this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
-    #$this->db->batch($queue)->select("SELECT * FROM `{$this->domainAction}` WHERE targetType='photo' AND targetId='{$id}'", array('ConsistentRead' => 'true'));
-    #$responses = $this->db->batch($queue)->send();
-    #$this->logErrors($responses);
-    #if(!$responses->areOk())
-    #  return false;
-
-
-    #if(isset($responses[0]->body->SelectResult->Item))
-    #  $photo = self::normalizePhoto($responses[0]->body->SelectResult->Item);
-
-    #$photo['actions'] = array();
-    #foreach($responses[1]->body->SelectResult->Item as $action)
-    #  $photo['actions'][] = $this->normalizeAction($action);
-
-    #return $photo;
   }
 
   /**
@@ -549,7 +544,6 @@ class DatabaseDynamoDb implements DatabaseInterface
     });
 
     $totalPhotos = count($photos);
-    getLogger()->info($totalPhotos);
 
     if (array_key_exists("page", $filters))
     {
@@ -585,8 +579,6 @@ class DatabaseDynamoDb implements DatabaseInterface
 		$end = $totalPhotos;
     }
 
-    getLogger()->info("Start: {$start} End: {$end}");
-
     $return = array();
     for ($i = $start; $i < $end; $i++)
 	$return[] = $photos[$i];
@@ -607,13 +599,23 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function getTag($tag)
   {
     getLogger()->info("Starting getTag");
-    return false;
-    $res = $this->db->select("SELECT * FROM `{$this->domainTag}` WHERE itemName()='{$tag}')", array('ConsistentRead' => 'false'));
-    $this->logErrors($res);
-    if(isset($res->body->SelectResult->Item))
-      return self::normalizeTag($res->body->SelectResult->Item);
 
-    return false;
+    $res = $this->db->get_item(array(
+	'TableName' => $this->domainTag,
+	'Key' => array(
+		'HashKeyElement' => array( // "id" column
+			AmazonDynamoDB::TYPE_STRING => $owner
+		),
+	),
+    ));
+
+    $item = $res->body->Item;
+    $this->logErrors($res);
+
+    if(isset($res->body->Item))
+      return self::normalizeTag($res->body->Item);
+    else
+      return null;
   }
 
   /**
@@ -674,10 +676,8 @@ class DatabaseDynamoDb implements DatabaseInterface
 
     $tags = array();
     if(isset($res->body->Items))
-    {
     	foreach($res->body->Items->{0} as $val)
           $tags[] = self::normalizeTag($val);
-    }
 
     # Sort the returned tags
     usort($tags, function($func_a, $func_b) {
@@ -710,17 +710,12 @@ class DatabaseDynamoDb implements DatabaseInterface
     ));
 
     $item = $res->body->Item;
-    getLogger()->info(print_r($res,1));
     $this->logErrors($res);
 
     if(isset($res->body->Item))
-    {
       return self::normalizeUser($res->body->Item);
-    }
     else
-    {
       return null;
-    }
   }
 
   /**
@@ -969,7 +964,6 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function postUser($params)
   {
     getLogger()->info("Start of postUser");
-    getLogger()->info(print_r($params,1));
     $params = self::prepareUser($params);
 
     // make sure we don't overwrite an existing user record
@@ -1185,7 +1179,8 @@ class DatabaseDynamoDb implements DatabaseInterface
           case 'tags':
             if(!is_array($value))
               $value = (array)explode(',', $value);
-            $where = $this->buildWhere($where, array('field' => "tags", 'condition' => AmazonDynamoDB::CONDITION_CONTAINS, 'value' => $value[0]));
+	    foreach ($value as $item)
+            	$where = $this->buildWhere($where, array('field' => "tags", 'condition' => AmazonDynamoDB::CONDITION_CONTAINS, 'value' => $item));
             break;
         }
       }
@@ -1379,9 +1374,10 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   private function normalizePhoto($raw)
   {
-    #getLogger()->info("Starting normalizePhoto");
-    #getLogger()->info(print_r($raw->{0},1));
+    getLogger()->info("Starting normalizePhoto");
 
+    $photo['id'] = strval($raw->Name->S);
+    $photo['appId'] = $this->config->application->appId;
     $photo = array('tags' => array());
 
     foreach($raw->{0} as $key => $value)
@@ -1401,7 +1397,7 @@ class DatabaseDynamoDb implements DatabaseInterface
 	if($name == 'tags' || $name == 'groups')
 	{
 		if($value != '')
-			$photo[$name][] = $raw->$key->S;
+			$photo[$name] = explode(",", $raw->$key->S);
 		continue;
 	}
 	$photo[$name] = $value;
@@ -1418,7 +1414,7 @@ class DatabaseDynamoDb implements DatabaseInterface
     }
 
     #getLogger()->info("Photo: ");
-    #getLogger()->info(print_r($photo['tags'],1));
+    getLogger()->info(print_r($photo['tags'],1));
     return $photo;
   }
 
@@ -1563,11 +1559,6 @@ class DatabaseDynamoDb implements DatabaseInterface
     #}
     getLogger()->info("Ending preparePhoto");
     return $params;
-  }
-
-  private function sortPhotoResults($a, $b)
-  {
-	return strcmp($a['dateTaken'], $b['dateTaken']);	
   }
 
 }
