@@ -323,23 +323,28 @@ class ApiPhotoController extends ApiBaseController
       if(isset($returnSizes))
       {
         $sizes = (array)explode(',', $returnSizes);
-        foreach($sizes as $size)
-        {
-          $options = $this->photo->generateFragmentReverse($size);
-          $hash = $this->photo->generateHash($photoId, $options['width'], $options['height'], $options['options']);
-          $this->photo->generate($photoId, $hash, $options['width'], $options['height'], $options['options']);
-        }
+        if(!in_array('200x200xCR', $sizes))
+          $sizes[] = '200x200xCR';
+      }
+      else
+      {
+        $sizes = array('200x200xCR');
       }
 
-      $params = array();
-      if(isset($returnSizes))
-        $params = array('returnSizes' => $returnSizes);
-      $photo = $this->api->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => $params));
+      foreach($sizes as $size)
+      {
+        $options = $this->photo->generateFragmentReverse($size);
+        $hash = $this->photo->generateHash($photoId, $options['width'], $options['height'], $options['options']);
+        $this->photo->generate($photoId, $hash, $options['width'], $options['height'], $options['options']);
+      }
+
+      $apiResp = $this->api->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => implode(',', $sizes))));
+      $photo = $apiResp['result'];
 
       $webhookApi = $this->api->invoke('/webhooks/photo.upload/list.json', EpiRoute::httpGet);
       if(!empty($webhookApi['result']) && is_array($webhookApi['result']))
       {
-        $photoAsArgs = $photo['result'];
+        $photoAsArgs = $photo;
         $photoAsArgs['tags'] = implode(',', $photoAsArgs['tags']);
         foreach($webhookApi['result'] as $key => $hook)
         {
@@ -348,8 +353,8 @@ class ApiPhotoController extends ApiBaseController
         }
       }
 
-      $this->api->invoke('/activity/create.json', array('type' => 'photo-upload', 'data' => $photo, 'permission' => $attributes['permission']), EpiRoute::httpPost);
-      return $this->created("Photo {$photoId} uploaded successfully", $photo['result']);
+      $this->api->invoke('/activity/create.json', EpiRoute::httpPost, array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $attributes['permission'])));
+      return $this->created("Photo {$photoId} uploaded successfully", $photo);
     }
 
     return $this->error('File upload failure', false);
@@ -411,9 +416,10 @@ class ApiPhotoController extends ApiBaseController
 
     if($photoUpdatedId)
     {
-      $photo = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
-      $this->api->invoke('/activity/create.json', EpiRoute::httpPost, array('type' => 'photo-update', 'data' => $photo, 'permission' => $attributes['permission']));
-      return $this->success("photo {$id} updated", $photo['result']);
+      $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200xCR', 'generate' => 'true')));
+      $photo = $apiResp['result'];
+      $this->api->invoke('/activity/create.json', EpiRoute::httpPost, array('_POST' => array('type' => 'photo-update', 'data' => $photo, 'permission' => $params['permission'])));
+      return $this->success("photo {$id} updated", $photo);
     }
 
     return $this->error("photo {$id} could not be updated", false);
