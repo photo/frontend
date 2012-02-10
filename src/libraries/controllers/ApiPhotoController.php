@@ -323,12 +323,12 @@ class ApiPhotoController extends ApiBaseController
       if(isset($returnSizes))
       {
         $sizes = (array)explode(',', $returnSizes);
-        if(!in_array('200x200xCR', $sizes))
-          $sizes[] = '200x200xCR';
+        if(!in_array('100x100xCR', $sizes))
+          $sizes[] = '100x100xCR';
       }
       else
       {
-        $sizes = array('200x200xCR');
+        $sizes = array('100x100xCR');
       }
 
       foreach($sizes as $size)
@@ -416,7 +416,7 @@ class ApiPhotoController extends ApiBaseController
 
     if($photoUpdatedId)
     {
-      $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200xCR', 'generate' => 'true')));
+      $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
       $photo = $apiResp['result'];
       $this->api->invoke('/activity/create.json', EpiRoute::httpPost, array('_POST' => array('type' => 'photo-update', 'data' => $photo, 'permission' => $params['permission'])));
       return $this->success("photo {$id} updated", $photo);

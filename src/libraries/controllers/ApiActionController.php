@@ -41,9 +41,9 @@ class ApiActionController extends ApiBaseController
       $action = $this->action->view($id);
       getPlugin()->invoke('onAction', $action);
       // get the target element for the action
-      $apiResp = $this->api->invoke("/{$targetType}/{$targetId}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200xCR')));
+      $apiResp = $this->api->invoke("/{$targetType}/{$targetId}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR')));
       $target = $apiResp['result'];
-      $activityParams = array('type' => 'activity-created', 'data' => array('targetType' => $targetType, 'target' => $target, 'action' => $action), 'permission' => $target['permission']);
+      $activityParams = array('type' => 'action-create', 'data' => array('targetType' => $targetType, 'target' => $target, 'action' => $action), 'permission' => $target['permission']);
       $this->api->invoke('/activity/create.json', EpiRoute::httpPost, array('_POST' => $activityParams));
       return $this->success("Action {$id} created on {$targetType} {$targetId}", $action);
     }

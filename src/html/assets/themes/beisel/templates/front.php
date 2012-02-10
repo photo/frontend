@@ -1,13 +1,11 @@
 <?php if(count($activities) > 0) { ?>
   <ul>
-    <?php foreach($activities as $activity) { ?>
-      <?php if($activity['type'] == 'photo-upload') { ?>
-        <li><?php $this->utility->safe($activity['type']); ?></li>
-      <?php } elseif($activity['type'] == 'photo-updated') {  ?>
-        <li><?php $this->utility->safe($activity['type']); ?></li>
-      <?php } elseif($activity['type'] == 'activity-created') {  ?>
-        <li><?php $this->utility->safe($activity['type']); ?></li>
-      <?php }  ?>
+    <?php foreach($activities as $key => $activityGrp) { ?>
+      <li>
+        <?php if(preg_match('/photo-upload|photo-update|action-create/', $key)) { ?>
+          <?php $this->theme->display(sprintf('partials/feed-%s.php', $activityGrp[0]['type']), array('activities' => $activityGrp)); ?>
+        <?php } ?>
+      </li>
     <?php } ?>
   </ul>
 <?php } ?>
