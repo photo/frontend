@@ -23,7 +23,7 @@ getApi()->post('/action/([a-zA-Z0-9]+)/(photo)/create.json', array('ApiActionCon
  */
 getApi()->get('/activities/list.json', array('ApiActivityController', 'list_'), EpiApi::external); // retrieve activities (/activities/list.json)
 getApi()->get('/activity/([a-zA-Z0-9]+)/view.json', array('ApiActivityController', 'view'), EpiApi::external); // retrieve activity (/activity/:id/view.json)
-getApi()->post('/activity/create.json', array('ApiActivityController', 'create'), EpiApi::external); // post an action (/action/{id}/{type}/create.json)
+getApi()->post('/activity/create.json', array('ApiActivityController', 'create'), EpiApi::internal); // post an action (/action/{id}/{type}/create.json)
 
 /*
  * Photo endpoints
