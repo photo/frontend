@@ -8,6 +8,7 @@ if(isset($_GET['__route__']) && strstr($_GET['__route__'], '.json'))
 $basePath = dirname(dirname(__FILE__));
 $epiPath = "{$basePath}/libraries/external/epi";
 require "{$epiPath}/Epi.php";
+require "{$basePath}/libraries/compatability.php";
 require "{$basePath}/libraries/models/UserConfig.php";
 
 Epi::setSetting('exceptions', true);
