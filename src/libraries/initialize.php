@@ -76,7 +76,7 @@ else
   require getConfig()->get('paths')->libraries . '/routes-setup.php';
   require getConfig()->get('paths')->libraries . '/routes-error.php';
   require getConfig()->get('paths')->controllers . '/SetupController.php';
-  getConfig()->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName()));
+  getConfig()->loadString(file_get_contents(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(__FILE__)), getTheme()->getThemeName())));
 
   // Before we run the setup in edit mode, we need to validate ownership
   $userObj = new User;
