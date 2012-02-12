@@ -42,7 +42,7 @@
           <ul>
             <?php foreach(array('exifCameraMake' => 'Camera make: %s',
                                         'exifCameraModel' => 'Camera model: %s',
-                                        'exifFNumber' => 'Av: f/%1.0F',
+                                        'exifFNumber' => 'Av: f/%1.1F',
                                         'exifExposureTime' => 'Tv: %s',
                                         'exifISOSpeed' => 'ISO: %d',
                                         'exifFocalLength' => 'Focal Length: %1.0fmm') as $key => $value) { ?>
