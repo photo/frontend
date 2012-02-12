@@ -6,9 +6,6 @@ if(!isset($pathsObj))
 // exceptions
 require $pathsObj->libraries . '/exceptions.php';
 
-// compatability for php < 5.3
-require $pathsObj->libraries . '/compatability.php';
-
 // controllers
 require $pathsObj->controllers . '/ApiBaseController.php';
 require $pathsObj->controllers . '/BaseController.php';
