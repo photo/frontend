@@ -792,7 +792,7 @@ class SetupController extends BaseController
       file_get_contents("{$configDir}/template.ini")
     );
 
-    $iniWritten = file_put_contents(sprintf("%s/userdata/configs/%s.ini", $baseDir, getenv('HTTP_HOST')), $generatedIni);
+    $iniWritten = getConfig()->write(sprintf("%s/userdata/configs/%s.ini", $baseDir, getenv('HTTP_HOST')), $generatedIni);
     if(!$iniWritten)
       return false;
 
