@@ -11,16 +11,23 @@ class EpiConfig_MySql extends EpiConfig
 
   public function getString($file)
   {
-    $file = basename($file);
+    $file = $this->getFilePath($file);
     $res = $this->db->one("SELECT * FROM `{$this->table}` WHERE `id`=:file", array(':file' => $file));
 
     if(!$res)
     {
       EpiException::raise(new EpiConfigException("Config file ({$file}) does not exist in db"));
-      break; // need to simulate same behavior if exceptions are turned off
+      return; // need to simulate same behavior if exceptions are turned off
     }
 
     return $res['value'];
+  }
+
+  public function exists($file)
+  {
+    $file = $this->getFilePath($file);
+    $res = $this->db->one("SELECT * FROM `{$this->table}` WHERE `id`=:file", array(':file' => $file));
+    return $res !== false;
   }
 
   public function load(/*$file, $file, $file, $file...*/)
@@ -36,8 +43,13 @@ class EpiConfig_MySql extends EpiConfig
 
   public function write($file, $string)
   {
-    $file = basename($file);
+    $file = $this->getFilePath($file);
     $res = $this->db->execute("REPLACE INTO `{$this->table}` (`id`, `value`) VALUES(:file, :value)", array(':file' => $file, ':value' => $string));
     return $res;
+  }
+
+  private function getFilePath($file)
+  {
+    return basename($file);
   }
 }
