@@ -51,7 +51,8 @@ class UserConfig
     $configFile = $this->getConfigFile();
     if(!$configFile)
       return false;
-    return parse_ini_file($configFile, true);
+    $iniString = $this->config->getString($configFile);
+    return parse_ini_string($iniString, true);
   }
 
   public function writeSiteSettings($settings)
@@ -85,15 +86,20 @@ class UserConfig
 
       // we need to load the deps to get the theme modules
       require $this->config->get('paths')->libraries . '/dependencies.php';
-
-      $this->config->loadString(file_get_contents(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(dirname(__FILE__))), getTheme()->getThemeName())));
-      $utilityObj = $this->getUtility();
-      if($utilityObj->isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(dirname(__FILE__))), getTheme(false)->getThemeName())))
-        $this->config->load($mobileSettings);
-
       return true;
     }
     return false;
+  }
+
+  public function loadTheme()
+  {
+    if(!$this->getConfigFile())
+      return;
+
+    $this->config->loadString(file_get_contents(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(dirname(__FILE__))), getTheme()->getThemeName())));
+    $utilityObj = $this->getUtility();
+    if($utilityObj->isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(dirname(__FILE__))), getTheme(false)->getThemeName())))
+      $this->config->load($mobileSettings);
   }
 
   protected function getUtility()
@@ -108,7 +114,7 @@ class UserConfig
   private function getConfigFile()
   {
     $configFile = sprintf('%s/userdata/configs/%s.ini', $this->basePath, $this->host);
-    if(!file_exists($configFile))
+    if(!$this->config->exists($configFile))
       return false;
     return $configFile;
   }

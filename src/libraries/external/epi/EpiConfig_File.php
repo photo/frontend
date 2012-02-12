@@ -8,17 +8,20 @@ class EpiConfig_File extends EpiConfig
 
   public function getString($file)
   {
-    // Prepend config directory if the path doesn't start with . or /
-    if($file[0] != '.' && $file[0] != '/')
-      $file = Epi::getPath('config') . "/{$file}";
+    $file = $this->getFilePath($file);
 
     if(!file_exists($file))
     {
       EpiException::raise(new EpiConfigException("Config file ({$file}) does not exist"));
-      break; // need to simulate same behavior if exceptions are turned off
+      return; // need to simulate same behavior if exceptions are turned off
     }
-
     return file_get_contents($file);
+  }
+
+  public function exists($file)
+  {
+    $file = $this->getFilePath($file);
+    return file_exists($file);
   }
 
   public function load(/*$file, $file, $file, $file...*/)
@@ -47,5 +50,14 @@ class EpiConfig_File extends EpiConfig
 
     // try to do a recursive write
     return mkdir($dir, 0600, true);
+  }
+
+  private function getFilePath($file)
+  {
+    // Prepend config directory if the path doesn't start with . or /
+    if($file[0] != '.' && $file[0] != '/')
+      $file = Epi::getPath('config') . "/{$file}";
+
+    return $file;
   }
 }

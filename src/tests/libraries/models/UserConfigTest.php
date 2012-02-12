@@ -54,7 +54,15 @@ class UserConfigTest extends PHPUnit_Framework_TestCase
 
   public function testGetSiteSettingsWithoutSections()
   {
-    file_put_contents("{$this->userConfigDir}/userdata/configs/example.com.ini", "foo=bar");
+    $config = $this->getMock('config', array('getString','exists'));
+    $config->expects($this->any())
+      ->method('getString')
+      ->will($this->returnValue('foo=bar'));
+    $config->expects($this->any())
+      ->method('exists')
+      ->will($this->returnValue(true));
+    $this->userConfig->inject('config', $config);
+
     $res = $this->userConfig->getSiteSettings();
     $expected = array('foo' => 'bar');
     $this->assertEquals($expected, $res);
@@ -62,7 +70,15 @@ class UserConfigTest extends PHPUnit_Framework_TestCase
 
   public function testGetSiteSettingsWithSections()
   {
-    file_put_contents("{$this->userConfigDir}/userdata/configs/example.com.ini", "[stuff]\nfoo=bar");
+    $config = $this->getMock('config', array('getString','exists'));
+    $config->expects($this->any())
+      ->method('getString')
+      ->will($this->returnValue("[stuff]\nfoo=bar"));
+    $config->expects($this->any())
+      ->method('exists')
+      ->will($this->returnValue(true));
+    $this->userConfig->inject('config', $config);
+
     $res = $this->userConfig->getSiteSettings();
     $expected = array('stuff' => array('foo' => 'bar'));
     $this->assertEquals($expected, $res);
@@ -70,12 +86,24 @@ class UserConfigTest extends PHPUnit_Framework_TestCase
 
   public function testGetSiteSettingsDNE()
   {
+    $config = $this->getMock('config', array('exists'));
+    $config->expects($this->any())
+      ->method('exists')
+      ->will($this->returnValue(false));
+    $this->userConfig->inject('config', $config);
+
     $res = $this->userConfig->getSiteSettings();
     $this->assertFalse($res);
   }
 
   public function testWriteSiteSettingsDNE()
   {
+    $config = $this->getMock('config', array('exists'));
+    $config->expects($this->any())
+      ->method('exists')
+      ->will($this->returnValue(false));
+    $this->userConfig->inject('config', $config);
+
     $res = $this->userConfig->writeSiteSettings(array('foo'));
     $this->assertFalse($res);
   }
