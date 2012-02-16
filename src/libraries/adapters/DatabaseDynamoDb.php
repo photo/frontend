@@ -96,7 +96,7 @@ class DatabaseDynamoDb implements DatabaseInterface
 	)
     ));
 
-    getLogger()->info("End of deleteGroup");
+    getLogger()->info("End of deleteCredential");
     $this->logErrors($res);
     return $res->isOK();
   }
@@ -262,13 +262,36 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function getAction($id)
   {
     getLogger()->info("Starting getAction");
-    return false;
-    $res = $this->db->select("SELECT * FROM `{$this->domainAction}` WHERE itemName()='{$id}' AND status='1'", array('ConsistentRead' => 'true'));
+
+    $res = $this->db->scan(array(
+	'TableName' => $this->domainAction,
+	'ScanFilter' => array(
+		'status' => array(
+			'ComparisonOperator' => AmazonDynamoDB::CONDITION_EQUAL,
+			'AttributeValueList' => array(
+				array( AmazonDynamoDB::TYPE_STRING => '1' )
+			)
+		),
+		'id' => array(
+			'ComparisonOperator' => AmazonDynamoDB::CONDITION_EQUAL,
+			'AttributeValueList' => array(
+				array( AmazonDynamoDB::TYPE_STRING => $id)
+			)
+		),
+	)
+    ));
+
+    getLogger()->info(print_r($res->body,1));
     $this->logErrors($res);
-    if(isset($res->body->SelectResult->Item))
-      return self::normalizeAction($res->body->SelectResult->Item);
+    if(isset($res->body->Items))
+    {
+	foreach($res->body->Items->{0} as $val)
+		$actions[] = self::normalizeAction($val);
+	return $actions[0];
+    }
     else
       return false;
+
   }
 
   /**
@@ -306,11 +329,36 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function getCredentialByUserToken($userToken)
   {
     getLogger()->info("Starting getCredentialByUserToken");
-    return false;
-    $res = $this->db->select("SELECT * FROM `{$this->domainCredential}` WHERE userToken='{$userToken}' AND status='1'", array('ConsistentRead' => 'true'));
+
+    $res = $this->db->scan(array(
+	'TableName' => $this->domainCredential,
+	'ScanFilter' => array(
+		'status' => array(
+			'ComparisonOperator' => AmazonDynamoDB::CONDITION_EQUAL,
+			'AttributeValueList' => array(
+				array( AmazonDynamoDB::TYPE_STRING => '1' )
+			)
+		),
+		'userToken' => array(
+			'ComparisonOperator' => AmazonDynamoDB::CONDITION_EQUAL,
+			'AttributeValueList' => array(
+				array( AmazonDynamoDB::TYPE_STRING => $userToken )
+			)
+		),
+	)
+    ));
+
+    getLogger()->info(print_r($res->body,1));
     $this->logErrors($res);
-    if(isset($res->body->SelectResult->Item))
-      return self::normalizeCredential($res->body->SelectResult->Item);
+    if(isset($res->body->Items))
+    {
+	foreach($res->body->Items->{0} as $val)
+	{
+		$credentials[] = self::normalizeCredential($val);
+		getLogger()->info(print_r($credentials,1));
+	}
+	return $credentials[0];
+    }
     else
       return false;
   }
@@ -322,21 +370,38 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   public function getCredentials()
   {
-    getLogger()->info("Starting getCredentials");
-    return false;
-    $res = $this->db->select("SELECT * FROM `{$this->domainCredential}` WHERE status='1'", array('ConsistentRead' => 'true'));
-    $this->logErrors($res);
-    if(isset($res->body->SelectResult->Item))
-    {
-      $credentials = array();
-      foreach($res->body->SelectResult->Item as $credential)
-        $credentials[] = self::normalizeCredential($credential);
-      return $credentials;
-    }
-    else
-    {
-      return false;
-    }
+	getLogger()->info("Starting getCredentials");
+
+	$res = $this->db->scan(array(
+		'TableName' => $this->domainCredential,
+		'ScanFilter' => array(
+			'status' => array(
+				'ComparisonOperator' => AmazonDynamoDB::CONDITION_EQUAL,
+				'AttributeValueList' => array(
+					array( AmazonDynamoDB::TYPE_STRING => '1' )
+				)
+			),
+		)
+	));
+
+	if(!$res->isOK())
+		return false;
+
+	$credentials = array();
+	if(isset($res->body->Items))
+	{
+		foreach($res->body->Items->{0} as $val)
+		{
+			$credentials[] = self::normalizeCredential($val);
+			getLogger()->info(print_r($credentials,1));
+		}
+		return $credentials;
+	}
+	else
+	{
+		return false;
+	}
+
   }
 
   /**
@@ -348,13 +413,25 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function getGroup($id = null)
   {
     getLogger()->info("Starting getGroup");
-    return false;
-    $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+
+    $res = $this->db->get_item(array(
+	'TableName' => $this->domainGroup,
+	'Key' => array(
+		'HashKeyElement' => array( // "id" column
+			AmazonDynamoDB::TYPE_STRING => $id
+		),
+	),
+    ));
+
+    getLogger()->info(print_r($res,1));
     $this->logErrors($res);
-    if(isset($res->body->SelectResult->Item))
-      return self::normalizeGroup($res->body->SelectResult->Item);
+    if(isset($res->body->Item))
+      return self::normalizeGroup($res->body->Item);
     else
       return false;
+
+    getLogger()->info("Ending getGroup");
+
   }
 
   /**
@@ -366,19 +443,38 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function getGroups($email = null)
   {
     getLogger()->info("Starting getGroups");
-    return false;
+
     if(empty($email))
-      $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE `name` IS NOT NULL ORDER BY `name`", array('ConsistentRead' => 'true'));
+	$res = $this->db->scan(array(
+		'TableName' => $this->domainGroup,
+	));
     else
-      $res = $this->db->select("SELECT * FROM `{$this->domainGroup}` WHERE members in ('{$email}') AND `name` IS NOT NULL ORDER BY `name`", array('ConsistentRead' => 'true'));
+	$res = $this->db->scan(array(
+		'TableName' => $this->domainGroup,
+		'ScanFilter' => array(
+			'members' => array(
+				'ComparisonOperator' => AmazonDynamoDB::CONDITION_CONTAINS,
+				'AttributeValueList' => array(
+					array( AmazonDynamoDB::TYPE_STRING => $email )
+				)
+			),
+
+		)
+	));
 
     $this->logErrors($res);
 
-    if(isset($res->body->SelectResult->Item))
+    if(isset($res->body->Items->{0}))
     {
       $groups = array();
-      foreach($res->body->SelectResult->Item as $group)
+      foreach($res->body->Items->{0} as $group)
         $groups[] = self::normalizeGroup($group);
+
+      usort($groups, function($func_a, $func_b) {
+	if ($func_a['name'] == $func_b['name']) return 0;
+	return ($func_a['name'] > $func_b['name']) ? -1 : 1;
+      });
+
       return $groups;
     }
 
@@ -762,13 +858,24 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function getWebhook($id)
   {
     getLogger()->info("Starting getWebhook");
-    return false;
-    $res = $this->db->select("SELECT * FROM `{$this->domainWebhook}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+
+    $res = $this->db->get_item(array(
+	'TableName' => $this->domainWebhook,
+	'Key' => array(
+		'HashKeyElement' => array( // "id" column
+			AmazonDynamoDB::TYPE_STRING => $id
+		),
+	),
+    ));
+
+    $item = $res->body->Item;
     $this->logErrors($res);
-    if(isset($res->body->SelectResult->Item))
-      return self::normalizeWebhook($res->body->SelectResult->Item);
+
+    if(isset($res->body->Item))
+      return self::normalizeWebhook($res->body->Item);
     else
-      return false;
+      return null;
+
   }
 
   /**
@@ -779,30 +886,48 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function getWebhooks($topic = null)
   {
     getLogger()->info("Starting getWebhooks");
-    return false;
+
     if($topic)
-      $res = $this->db->select("SELECT * FROM `{$this->domainWebhook}` WHERE topic='{$topic}'", array('ConsistentRead' => 'true'));
+    {
+	$res = $this->db->scan(array(
+		'TableName' => $this->domainWebhook,
+		'ScanFilter' => array(
+			'topic' => array(
+				'ComparisonOperator' => AmazonDynamoDB::EQUAL,
+				'AttributeValueList' => array(
+					array( AmazonDynamoDB::TYPE_STRING => '$topic' )
+				)
+			),
+		)
+	));
+    }
     else
-      $res = $this->db->select("SELECT * FROM `{$this->domainWebhook}`", array('ConsistentRead' => 'true'));
+    {
+	$res = $this->db->scan(array(
+		'TableName' => $this->domainWebhook,
+	));
+    }
 
     $this->logErrors($res);
     if(!$res->isOK())
       return false;
 
-
-    if(isset($res->body->SelectResult))
+    if(isset($res->body->Items))
     {
-      if(isset($res->body->SelectResult->Item))
+      if(isset($res->body->Item->{0}))
       {
         $webhooks = array();
-        foreach($res->body->SelectResult->Item as $webhook)
+        foreach($res->body->Item->{0} as $webhook)
           $webhooks[] = $this->normalizeWebhook($webhook);
 
+    	getLogger()->info("Ending getWebhooks");
         return $webhooks;
       }
 
+      getLogger()->info("Ending getWebhooks");
       return null;
     }
+    getLogger()->info("Ending getWebhooks");
     return false;
   }
 
@@ -856,8 +981,24 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function postCredential($id, $params)
   {
     getLogger()->info("Start of postCredential");
-    $res = $this->db->put_attributes($this->domainCredential, $id, $params, true);
-    $this->logErrors($res);
+
+    $updates = array();
+    foreach (array_keys($params) as $key)
+	$updates[$key] = array('Action' => AmazonDynamoDB::ACTION_PUT, 'Value' => array( AmazonDynamoDB::TYPE_STRING => (string)$params[$key] ) );
+
+    getLogger()->info(print_r($updates,1));
+
+    $res = $this->db->update_item(array(
+	'TableName' => $this->domainCredential,
+	'Key' => array(
+		'HashKeyElement' => array( // id column
+			AmazonDynamoDB::TYPE_STRING => $id
+		)
+	),
+	'AttributeUpdates' => $updates
+    ));
+
+    getLogger()->info("End of postCredential");
     return $res->isOK();
   }
 
@@ -871,8 +1012,33 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function postGroup($id, $params)
   {
     getLogger()->info("Start of postGroup");
+
+    if(empty($id))
+      return false;
+    elseif(empty($params))
+      return true;
+
     $params = self::prepareGroup($id, $params);
-    $res = $this->db->put_attributes($this->domainGroup, $id, $params, true);
+    # Remove the id param as we cannot update it
+    unset($params['id']);
+
+    $updates = array();
+    foreach (array_keys($params) as $key)
+	$updates[$key] = array('Action' => AmazonDynamoDB::ACTION_PUT, 'Value' => array( AmazonDynamoDB::TYPE_STRING => (string)$params[$key] ) );
+
+    $res = $this->db->update_item(array(
+	'TableName' => $this->domainGroup,
+	'Key' => array(
+		'HashKeyElement' => array( // id column
+			AmazonDynamoDB::TYPE_STRING => $id
+		)
+	),
+	'AttributeUpdates' => $updates
+    ));
+
+    getLogger()->info(print_r($res,1));
+    getLogger()->info("End of postGroup");
+
     $this->logErrors($res);
     return $res->isOK();
   }
@@ -888,7 +1054,6 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function postPhoto($id, $params)
   {
     getLogger()->info("Start of postPhoto");
-    #getLogger()->info(print_r($params,1));
 
     if(empty($id))
       return false;
@@ -913,7 +1078,6 @@ class DatabaseDynamoDb implements DatabaseInterface
 	'AttributeUpdates' => $updates
     ));
 
-    getLogger()->info(print_r($res,1));
     getLogger()->info("End of postPhoto");
     return $res->isOK();
   }
@@ -1030,8 +1194,23 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function postWebhook($id, $params)
   {
     getLogger()->info("Start of postWebhook");
-    // make sure we don't overwrite an existing user record
-    $res = $this->db->put_attributes($this->domainWebhook, $id, $params, true);
+
+    $updates = array();
+    foreach (array_keys($params) as $key)
+	$updates[$key] = array('Action' => AmazonDynamoDB::ACTION_PUT, 'Value' => array( AmazonDynamoDB::TYPE_STRING => (string)$params[$key] ) );
+
+    $res = $this->db->update_item(array(
+	'TableName' => $this->domainWebhook,
+	'Key' => array(
+		'HashKeyElement' => array( // id column
+			AmazonDynamoDB::TYPE_STRING => $id
+		)
+	),
+	'AttributeUpdates' => $updates
+    ));
+
+    getLogger()->info("End of postWebhook");
+
     $this->logErrors($res);
     return $res->isOK();
   }
@@ -1063,7 +1242,23 @@ class DatabaseDynamoDb implements DatabaseInterface
   public function putCredential($id, $params)
   {
     getLogger()->info("Start of putCredential");
-    $res = $this->db->put_attributes($this->domainCredential, $id, $params);
+    getLogger()->info(print_r($params,1));
+
+    $res = $this->db->put_item(array(
+	'TableName' => $this->domainCredential,
+	'Item' => array(
+		'id'			=> array( AmazonDynamoDB::TYPE_STRING => $id ),
+		'owner'			=> array( AmazonDynamoDB::TYPE_STRING => $this->owner ),
+		'name'			=> array( AmazonDynamoDB::TYPE_STRING => $params['name'] ),
+		'clientSecret'		=> array( AmazonDynamoDB::TYPE_STRING => $params['clientSecret'] ),
+		'userToken'		=> array( AmazonDynamoDB::TYPE_STRING => $params['userToken'] ),
+		'userSecret'		=> array( AmazonDynamoDB::TYPE_STRING => $params['userSecret'] ),
+		'verifier'		=> array( AmazonDynamoDB::TYPE_STRING => $params['verifier'] ),
+		'type'			=> array( AmazonDynamoDB::TYPE_STRING => $params['type'] ),
+		'status'		=> array( AmazonDynamoDB::TYPE_STRING => $params['status'] ),
+	)
+    ));
+    getLogger()->info(print_r($res,1));
     $this->logErrors($res);
     return $res->isOK();
   }
@@ -1212,8 +1407,6 @@ class DatabaseDynamoDb implements DatabaseInterface
             $where = $this->buildWhere($where, array('field' => $field, 'condition' => AmazonDynamoDB::CONDITION_NOT_NULL, 'value' => ""));
             break;
           case 'tags':
-            #if(!is_array($value))
-            #  $value = (array)explode(',', $value);
             $where = $this->buildWhere($where, array('field' => "tags", 'condition' => AmazonDynamoDB::CONDITION_CONTAINS, 'value' => $value));
             break;
         }
@@ -1337,16 +1530,34 @@ class DatabaseDynamoDb implements DatabaseInterface
     getLogger()->info("Starting normalizeAction");
     getLogger()->info(print_r($raw,1));
 
-    $action = array();
-    $action['id'] = strval($raw->Name);
+    $action['id'] = strval($raw->Name->S);
     $action['appId'] = $this->config->application->appId;
-    foreach($raw->Attribute as $item)
+
+    foreach($raw->{0} as $key => $value)
     {
-      $name = (string)$item->Name;
-      $value = (string)$item->Value;
-      $action[$name] = $value;
+	if ($raw->$key->S)
+        {
+    		$name = (string)$key;
+    		$value = (string)$raw->$key->S;
+	}
+	else
+	{
+    		$name = (string)$key;
+    		$value = (string)$raw->$key;
+	}
+
+	if($name == 'permissions')
+		$action[$name] = (array)explode(',', $value);
+	else
+		$action[$name] = $value;
+		
+	$action[$name] = $value;
     }
+
+    getLogger()->info(print_r($action,1));
+
     return $action;
+
   }
 
   /**
@@ -1357,21 +1568,34 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   private function normalizeCredential($raw)
   {
-    getLogger()->info("Starting normalizeAction");
-    getLogger()->info(print_r($raw,1));
-    return false;
+    getLogger()->info("Starting normalizeCredential");
 
-    $credential = array();
-    $credential['id'] = strval($raw->Name);
-    foreach($raw->Attribute as $item)
+    $credential['id'] = strval($raw->Name->S);
+    $credential['appId'] = $this->config->application->appId;
+
+    foreach($raw->{0} as $key => $value)
     {
-      $name = (string)$item->Name;
-      $value = (string)$item->Value;
-      if($name == 'permissions')
-        $credential[$name] = (array)explode(',', $value);
-      else
-        $credential[$name] = $value;
+	if ($raw->$key->S)
+        {
+    		$name = (string)$key;
+    		$value = (string)$raw->$key->S;
+	}
+	else
+	{
+    		$name = (string)$key;
+    		$value = (string)$raw->$key;
+	}
+
+	if($name == 'permissions')
+		$credential[$name] = (array)explode(',', $value);
+	else
+		$credential[$name] = $value;
+		
+	$credential[$name] = $value;
     }
+
+    getLogger()->info(print_r($credential,1));
+
     return $credential;
   }
 
@@ -1383,21 +1607,37 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   private function normalizeGroup($raw)
   {
-    $group = array();
-    $group['id'] = strval($raw->Name);
-    foreach($raw->Attribute as $item)
+
+    getLogger()->info("Starting normalizeGroup");
+    getLogger()->info(print_r($raw,1));
+
+    $group['id'] = strval($raw->Name->S);
+    $group['appId'] = $this->config->application->appId;
+
+    foreach($raw->{0} as $key => $value)
     {
-      $name = (string)$item->Name;
-      $value = (string)$item->Value;
-      if($name == 'members')
-      {
-        if($value != '')
-          $group[$name][] = $value;
-        continue;
-      }
-      $group[$name] = $value;
+	if ($raw->$key->S)
+        {
+    		$name = (string)$key;
+    		$value = (string)$raw->$key->S;
+	}
+	else
+	{
+    		$name = (string)$key;
+    		$value = (string)$raw->$key;
+	}
+
+	if($name == 'permissions' || $name == 'members')
+		$group[$name] = (array)explode(",", $value);
+	else
+		$group[$name] = $value;
+		
     }
+
+    getLogger()->info("Ending normalizeGroup");
+    getLogger()->info(print_r($group,1));
     return $group;
+
   }
 
   /**
@@ -1408,8 +1648,6 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   private function normalizePhoto($raw)
   {
-    #getLogger()->info("Starting normalizePhoto");
-
     $photo['id'] = strval($raw->Name->S);
     $photo['appId'] = $this->config->application->appId;
     $photo = array('tags' => array());
@@ -1496,15 +1734,33 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   private function normalizeWebhook($raw)
   {
-    $webhook = array();
-    $webhook['id'] = strval($raw->Name);
-    foreach($raw->Attribute as $item)
+    $webhook['id'] = strval($raw->Name->S);
+    $webhook['appId'] = $this->config->application->appId;
+
+    foreach($raw->{0} as $key => $value)
     {
-      $name = (string)$item->Name;
-      $value = (string)$item->Value;
-      $webhook[$name] = $value;
+	if ($raw->$key->S)
+        {
+    		$name = (string)$key;
+    		$value = (string)$raw->$key->S;
+	}
+	else
+	{
+    		$name = (string)$key;
+    		$value = (string)$raw->$key;
+	}
+
+	if($name == 'permissions')
+		$webhook[$name] = (array)explode(',', $value);
+	else
+		$webhook[$name] = $value;
+		
+	$webhook[$name] = $value;
     }
+
+    getLogger()->info(print_r($webhook,1));
     return $webhook;
+
   }
 
   /** Prepare tags to store in the database
@@ -1547,11 +1803,14 @@ class DatabaseDynamoDb implements DatabaseInterface
     */
   private function prepareGroup($id, $params)
   {
+    getLogger()->info("Starting prepareGroup");
+    getLogger()->info(print_r($params,1));
+
     $params['Name'] = $id;
-    if(!isset($params['members']))
-      $params['members'] = array();
-    elseif(!is_array($params['members']))
-      $params['members'] = (array)explode(',', $params['members']);
+    #if(!isset($params['members']))
+    #  $params['members'] = array();
+    #elseif(!is_array($params['members']))
+    #  $params['members'] = (array)explode(',', $params['members']);
     return $params;
   }
 
