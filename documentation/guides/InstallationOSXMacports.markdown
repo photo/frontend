@@ -50,7 +50,7 @@ Download and install the source code. We recommend `~/Sites/yourdomain.com` but 
 
     # OSX should have git already installed. If not:
     sudo port install git-core
-    git clone git@github.com:openphoto/frontend.git ~/Sites/yourdomain.com
+    git clone git://github.com:openphoto/frontend.git ~/Sites/yourdomain.com
 
 #### Using tar
 
