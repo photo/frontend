@@ -281,6 +281,28 @@ class DatabaseDynamoDb implements DatabaseInterface
 	)
     ));
 
+    # Scan for more results if there are any
+    if (isset($res->body->LastEvaluatedKey))
+    {
+	    $res2 = $this->db->scan(array(
+		'TableName' => $this->domainAction,
+		'ScanFilter' => array(
+			'status' => array(
+				'ComparisonOperator' => AmazonDynamoDB::CONDITION_EQUAL,
+				'AttributeValueList' => array(
+					array( AmazonDynamoDB::TYPE_STRING => '1' )
+				)
+			),
+			'id' => array(
+				'ComparisonOperator' => AmazonDynamoDB::CONDITION_EQUAL,
+				'AttributeValueList' => array(
+					array( AmazonDynamoDB::TYPE_STRING => $id)
+				)
+			),
+		)
+	    ));
+    }
+
     getLogger()->info(print_r($res->body,1));
     $this->logErrors($res);
     if(isset($res->body->Items))
@@ -645,17 +667,33 @@ class DatabaseDynamoDb implements DatabaseInterface
 
     $buildQuery = self::buildQuery($filters, $limit, $offset);
 
-    $res = $this->db->scan(array(
-	'TableName' => $this->domainPhoto,
-	'ScanFilter' => $buildQuery['where'],
-    ));
+
+    #$res = $this->db->scan(array(
+#	'TableName' => $this->domainPhoto,
+#	'ScanFilter' => $buildQuery['where'],
+#    ));
+
+    $LastEvaluatedKey = True;
+    $scanResults = array();
+    # Scan for more results if there are any
+    while($LastEvaluatedKey)
+    {
+	    $res = $this->db->scan(array(
+		'TableName' => $this->domainPhoto,
+		'ScanFilter' => $buildQuery['where'],
+	    ));
+	    foreach($res->body->Items->{0} as $result)
+		$scanResults[] = $result;
+	    $LastEvaluatedKey = $res->body->LastEvaluatedKey;
+	    getLogger()->info("LastEvaluatedKey: " . $LastEvaluatedKey);
+    }
 
     $this->logErrors($res);
     if(!$res->isOK())
       return false;
 
     $photos = array();
-    foreach($res->body->Items->{0} as $photo)
+    foreach($scanResults as $photo)
     {
       $photo = $this->normalizePhoto($photo);
       if (isset($tags))
