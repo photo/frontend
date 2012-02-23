@@ -9,8 +9,8 @@ class Credential extends BaseModel
   const statusActive = '1';
 
   const nonceCacheKey = 'oauthTimestamps';
-  public $consumer, $oauthException, $oauthParams, $provider, $sendHeadersOnError = true;
-  private static $requestStatus;
+  public $oauthException, $oauthParams, $provider, $sendHeadersOnError = true;
+  private static $consumer = null, $requestStatus = null;
 
   /**
     * Constructor
@@ -84,7 +84,7 @@ class Credential extends BaseModel
 
   public function checkRequest()
   {
-    if(isset(self::$requestStatus))
+    if(self::$requestStatus !== null)
       return self::$requestStatus;
 
     if(!class_exists('OAuthProvider'))
@@ -206,18 +206,18 @@ class Credential extends BaseModel
 
   public function getConsumer($consumerKey)
   {
-    if(!$this->consumer)
-      $this->consumer = $this->db->getCredential($consumerKey);
+    if(!self::$consumer)
+      self::$consumer = $this->db->getCredential($consumerKey);
 
-    return $this->consumer;
+    return self::$consumer;
   }
 
   public function getEmailFromOAuth()
   {
-    if(!$this->consumer)
+    if(!self::$consumer)
       return false;
 
-    return $this->consumer['owner'];
+    return self::$consumer['owner'];
   }
 
   public function getErrorAsString()
@@ -266,6 +266,12 @@ class Credential extends BaseModel
     $params = $this->getOAuthParameters();
     // oauth_token and oauth_callback can be passed in for authenticated endpoints to obtain a credential
     return (count($params) > 2);
+  }
+
+  public function reset()
+  {
+    self::$consumer = null;
+    self::$requestStatus = null;
   }
 }
 
