@@ -353,7 +353,12 @@ class ApiPhotoController extends ApiBaseController
         }
       }
 
-      $this->api->invoke('/activity/create.json', EpiRoute::httpPost, array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $attributes['permission'])));
+      $permission = isset($attributes['permission']) ? $attributes['permission'] : 0;
+      $this->api->invoke(
+        '/activity/create.json', 
+        EpiRoute::httpPost, 
+        array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
+      );
       return $this->created("Photo {$photoId} uploaded successfully", $photo);
     }
 
