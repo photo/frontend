@@ -99,7 +99,7 @@ class UserConfig
     $this->config->loadString(file_get_contents(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(dirname(__FILE__))), getTheme()->getThemeName())));
     $utilityObj = $this->getUtility();
     if($utilityObj->isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(dirname(__FILE__))), getTheme(false)->getThemeName())))
-      $this->config->load($mobileSettings);
+      $this->config->loadString(file_get_contents($mobileSettings));
   }
 
   protected function getUtility()

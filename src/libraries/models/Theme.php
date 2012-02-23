@@ -21,7 +21,7 @@ class Theme
     {
       $this->theme = self::themeDefault;
       if(file_exists($mobileSettings = sprintf('%s/%s/config/settings-mobile.ini', getConfig()->get('paths')->themes, $this->getThemeName())))
-        getConfig()->load($mobileSettings);
+        getConfig()->loadString(file_get_contents($mobileSettings));
     }
     elseif($themeConfig !== null)
     {
