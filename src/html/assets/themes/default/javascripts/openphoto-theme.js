@@ -472,6 +472,6 @@ var opTheme = (function() {
         var params = {assertion: assertion};
         OP.Util.makeRequest('/user/browserid/login.json', params, opTheme.user.loginProcessed, 'json');
       }
-    },
+    }
   };
 }());

@@ -4,20 +4,40 @@ var opTheme = (function() {
       console.log(msg);
   };
   return{
-    init: {
-      attach: function(PhotoSwipe) {
-        $('div.gallery-page').live('pageshow', function(e){
-          var
-            currentPage = $(e.target),
-            photoSwipeInstanceId = parseInt(Math.random()*10000),
-            photoSwipeInstance = PhotoSwipe.getInstance(photoSwipeInstanceId)
-            options = {};
-
-          if ($("ul.gallery a").length > 0 && (typeof photoSwipeInstance === "undefined" || photoSwipeInstance === null)) {
-            photoSwipeInstance = $("ul.gallery a", e.target).photoSwipe(options, photoSwipeInstanceId);
-          }
-          return true;
+    callback: {
+      login: function(el) {
+        navigator.id.getVerifiedEmail(function(assertion) {
+            if (assertion) {
+              opTheme.user.loginSuccess(assertion);
+            } else {
+              opTheme.user.loginFailure(assertion);
+            }
         });
+      }
+    },
+    init: {
+      attach: function() {
+        OP.Util.on('click:login', opTheme.callback.login);
+      }
+    },
+    user: {
+      loginFailure: function(assertion) {
+        log('login failed');
+        // TODO something here to handle failed login
+      },
+      loginProcessed: function(response) {
+        if(response.code != 200) {
+          log('processing of login failed');
+          // TODO do something here to handle failed login
+          return;
+        }
+
+        log('login processing succeeded');
+        window.location.reload();
+      },
+      loginSuccess: function(assertion) {
+        var params = {assertion: assertion};
+        OP.Util.makeRequest('/user/browserid/login.json', params, opTheme.user.loginProcessed, 'json');
       }
     }
   };
