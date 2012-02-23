@@ -1,3 +1,4 @@
+<?php /*
 <?php if(count($activities) > 0) { ?>
   <ul>
     <?php foreach($activities as $key => $activityGrp) { ?>
@@ -9,6 +10,7 @@
     <?php } ?>
   </ul>
 <?php } ?>
+<?php */ ?>
 
 <?php if($photos[0]['totalRows'] == 0) { ?>
   <?php if($this->user->isOwner()) { ?>
