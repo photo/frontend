@@ -1,3 +1,17 @@
+<?php /*
+<?php if(count($activities) > 0) { ?>
+  <ul>
+    <?php foreach($activities as $key => $activityGrp) { ?>
+      <li>
+        <?php if(preg_match('/photo-upload|photo-update|action-create/', $key)) { ?>
+          <?php $this->theme->display(sprintf('partials/feed-%s.php', $activityGrp[0]['type']), array('activities' => $activityGrp)); ?>
+        <?php } ?>
+      </li>
+    <?php } ?>
+  </ul>
+<?php } ?>
+<?php */ ?>
+
 <?php if($photos[0]['totalRows'] == 0) { ?>
   <?php if($this->user->isOwner()) { ?>
     <a href="<?php $this->url->photoUpload(); ?>" class="link" title="Start uploading now!"><img src="<?php $this->theme->asset('image', 'front.png'); ?>" class="front" /></a>

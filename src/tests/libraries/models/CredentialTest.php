@@ -24,6 +24,7 @@ class CredentialTest extends PHPUnit_Framework_TestCase
 
     $this->credential = new Credential(array('utility' => $utility));
     $this->credential->sendHeadersOnError = false;
+    $this->credential->reset();
     $this->token = 'abcdefghijklmnopqrstuvwxyz0123456789';
   }
 

@@ -132,15 +132,17 @@
           <?php if(!empty($photo[$key])) { ?>
           <li><?php printf($value, $this->utility->safe($photo[$key], false)); ?></li>
           <?php } ?>
-        <?php } ?>
-      </ul>
-    </li>
+        </ul>
+      </li>
+    <?php } ?>
+    <?php if(isset($photo['pathOriginal'])) { ?>
+      <li class="original"><span></span><a href="<?php $this->utility->safe($photo['pathOriginal']); ?>">Download original</a></li>
     <?php } ?>
     <?php if($this->user->isOwner()) { ?>
-    <li class="edit">
-      <span></span>
-      <a href="<?php $this->url->photoEdit($photo['id']); ?>" class="button photo-edit-click">Edit this photo</a>
-    </li>
+      <li class="edit">
+        <span></span>
+        <a href="<?php $this->url->photoEdit($photo['id']); ?>" class="button photo-edit-click">Edit this photo</a>
+      </li>
     <?php } ?>
   </ul>
 </aside>

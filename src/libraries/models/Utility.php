@@ -246,7 +246,7 @@ class Utility
   {
     $licenses = $this->getLicenses();
     $link = '';
-    if(isset($licenses[$key]))
+    if(isset($licenses[$key]) && isset($licenses[$key]['link']))
       $link = $licenses[$key]['link'];
     return $this->returnValue($link, $write);
   }

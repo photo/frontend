@@ -164,6 +164,41 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Retrieves activity
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getActivity($id)
+  {
+    $activity = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}activity` WHERE `id`=:id AND `owner`=:owner",
+                               array(':id' => $id, ':owner' => $this->owner));
+    if($activity === false)
+      return false;
+
+    $activity = $this->normalizeActivity($activity);
+
+    return $activity;
+  }
+
+  /**
+    * Retrieves activities
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getActivities()
+  {
+    $activities = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}activity` WHERE `owner`=:owner",
+                               array(':owner' => $this->owner));
+    if($activities === false)
+      return false;
+
+    foreach($activities as $key => $activity)
+      $activities[$key] = $this->normalizeActivity($activity);
+
+    return $activities;
+  }
+
+  /**
     * Retrieve an action with $id
     *
     * @param string $id ID of the action to get
@@ -174,10 +209,9 @@ class DatabaseMySql implements DatabaseInterface
     $action = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}action` WHERE `id`=:id AND owner=:owner",
                                array(':id' => $id, ':owner' => $this->owner));
     if(empty($action))
-    {
       return false;
-    }
-    return $this->normalizeCredential($action);
+    
+    return $this->normalizeAction($action);
   }
 
   /**
@@ -364,7 +398,7 @@ class DatabaseMySql implements DatabaseInterface
       if(!empty($actions))
       {
         foreach($actions as $action)
-           $photo['actions'][] = $action;
+           $photo['actions'][] = $this->normalizeAction($action);
       }
     }
     return $photo;
@@ -774,6 +808,21 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Add a new activity to the database
+    * This method does not overwrite existing values present in $params - hence "new action".
+    *
+    * @param string $id ID of the action to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putActivity($id, $params)
+  {
+    $stmt = $this->sqlInsertExplode($this->prepareActivity($params));
+    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}activity` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    return ($result !== false);
+  }
+
+  /**
     * Add a new action to the database
     * This method does not overwrite existing values present in $params - hence "new action".
     *
@@ -1155,9 +1204,21 @@ class DatabaseMySql implements DatabaseInterface
     * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
+  private function normalizeActivity($raw)
+  {
+    $raw['data'] = json_decode($raw['data'], 1);
+    return $raw;
+  }
+
+  /**
+    * Normalizes data from MySql into schema definition
+    *
+    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @return array
+    */
   private function normalizeAction($raw)
   {
-    // TODO shouldn't we require and use this method?
+    return $raw;
   }
 
   /**
@@ -1247,6 +1308,16 @@ class DatabaseMySql implements DatabaseInterface
     if(!isset($raw['members']) || empty($raw['members']))
       $raw['members'] = array();
     return $raw;
+  }
+
+  /** Prepare activity to store in the database
+   */
+  private function prepareActivity($params)
+  {
+    if(isset($params['data']))
+      $params['data'] = json_encode($params['data']);
+
+    return $params;
   }
 
   /** Prepare credential to store in the database

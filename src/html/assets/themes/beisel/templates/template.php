@@ -19,7 +19,7 @@
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                  addCss("/assets/stylesheets/upload.css")->
                                                                  addCss($this->theme->asset('stylesheet', 'main.css', false))->
-                                                                 getUrl(AssetPipeline::css, 'd'); ?>">
+                                                                 getUrl(AssetPipeline::css, 'e'); ?>">
     <?php } ?>
 
     <?php $this->plugin->invoke('onHead', array('page' => $page)); ?>
@@ -130,7 +130,7 @@
           <?php } else { ?>
             '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-batch.min.js')->
                                                 addJs($this->theme->asset('javascript', 'openphoto-theme-full-min.js', false))->
-                                                getUrl(AssetPipeline::js, 'd'); ?>'
+                                                getUrl(AssetPipeline::js, 'e'); ?>'
           <?php } ?>
         ],
         onComplete: function(){ 

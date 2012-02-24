@@ -6,9 +6,38 @@ class UserConfig
   public function __construct($params = null)
   {
     if(isset($params['config']))
+    {
       $this->config = $params['config'];
+    }
     else
+    {
+      $path = dirname(dirname(dirname(__FILE__)));
+      $params = parse_ini_file(sprintf('%s/configs/defaults.ini', $path), true);
+      if(file_exists($overrideIni = sprintf('%s/configs/override.ini', $path)))
+      {
+        $override = parse_ini_file($overrideIni, true);
+        foreach($override as $key => $value)
+        {
+          if(array_key_exists($key, $params))
+          {
+            if(is_array($value))
+              $params[$key] = array_merge((array)$params[$key], $value);
+            else
+              $params[$key] = $value;
+          }
+          else
+          {
+            $params[$key] = $value;
+          }
+        }
+      }
+
+      $configParams = array($params['epi']['config']);
+      if(isset($params['epiConfigParams']))
+        $configParams = array_merge($configParams, $params['epiConfigParams']);
+      EpiConfig::employ($configParams);
       $this->config = getConfig();
+    }
 
     if(isset($params['utility']))
       $this->utility = $params['utility'];
@@ -22,7 +51,8 @@ class UserConfig
     $configFile = $this->getConfigFile();
     if(!$configFile)
       return false;
-    return parse_ini_file($configFile, true);
+    $iniString = $this->config->getString($configFile);
+    return parse_ini_string($iniString, true);
   }
 
   public function writeSiteSettings($settings)
@@ -41,7 +71,8 @@ class UserConfig
 
   public function load()
   {
-    $this->config->load('defaults.ini');
+    $path = dirname(dirname(dirname(__FILE__)));
+    $this->config->loadString(file_get_contents(sprintf('%s/configs/defaults.ini', $path)));
     $configFile = $this->getConfigFile();
 
     // backwards compatibility for 1.2.1 -> 1.2.2 upgrade
@@ -55,15 +86,20 @@ class UserConfig
 
       // we need to load the deps to get the theme modules
       require $this->config->get('paths')->libraries . '/dependencies.php';
-
-      $this->config->load(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(dirname(__FILE__))), getTheme()->getThemeName()));
-      $utilityObj = $this->getUtility();
-      if($utilityObj->isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(dirname(__FILE__))), getTheme(false)->getThemeName())))
-        $this->config->load($mobileSettings);
-
       return true;
     }
     return false;
+  }
+
+  public function loadTheme()
+  {
+    if(!$this->getConfigFile())
+      return;
+
+    $this->config->loadString(file_get_contents(sprintf('%s/html/assets/themes/%s/config/settings.ini', dirname(dirname(dirname(__FILE__))), getTheme()->getThemeName())));
+    $utilityObj = $this->getUtility();
+    if($utilityObj->isMobile() && file_exists($mobileSettings = sprintf('%s/html/assets/themes/%s/config/settings-mobile.ini', dirname(dirname(dirname(__FILE__))), getTheme(false)->getThemeName())))
+      $this->config->loadString(file_get_contents($mobileSettings));
   }
 
   protected function getUtility()
@@ -78,7 +114,7 @@ class UserConfig
   private function getConfigFile()
   {
     $configFile = sprintf('%s/userdata/configs/%s.ini', $this->basePath, $this->host);
-    if(!file_exists($configFile))
+    if(!$this->config->exists($configFile))
       return false;
     return $configFile;
   }

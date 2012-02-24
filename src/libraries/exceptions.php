@@ -5,13 +5,14 @@ class OPException extends Exception
   {
     getLogger()->warn($exception->getMessage());
     $class = get_class($exception);
+    $baseController = new BaseController;
     switch($class)
     {
       case 'OPAuthorizationException':
       case 'OPAuthorizationSessionException':
         if(isset($_GET['__route__']) && substr($_GET['__route__'], -5) == '.json')
         {
-          echo json_encode(BaseController::forbidden('You do not have sufficient permissions to access this page.'));
+          echo json_encode($baseController->forbidden('You do not have sufficient permissions to access this page.'));
         }
         else
         {
@@ -20,7 +21,7 @@ class OPException extends Exception
         die();
         break;
       case 'OPAuthorizationOAuthException':
-        echo json_encode(BaseController::forbidden($exception->getMessage()));
+        echo json_encode($baseController->forbidden($exception->getMessage()));
         die();
         break;
       default:
@@ -38,11 +39,12 @@ class OPInvalidImageException extends OPException{}
 function op_exception_handler($exception)
 {
   static $handled;
+  $baseController = new BaseController;
   if(!$handled)
   {
     getLogger()->warn(sprintf('Uncaught exception (%s:%s): %s', $exception->getFile(), $exception->getLine(), $exception->getMessage()));
     if(isset($_GET['__route__']) && substr($_GET['__route__'], -5) == '.json')
-      echo json_encode(BaseController::error('An unknown error occurred.'));
+      echo json_encode($baseController->error('An unknown error occurred.'));
     else
       getRoute()->run('/error/500', EpiRoute::httpGet);
 
