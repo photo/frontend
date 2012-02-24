@@ -243,7 +243,7 @@ class Upgrade extends BaseModel
       {
         foreach($versions as $file)
         {
-          getLogger()->info(sprintf('Calling executeScript on base file %s', $file));
+          $this->logger->info(sprintf('Calling executeScript on base file %s', $file));
           $this->executeScript($file);
         }
       }
@@ -257,8 +257,8 @@ class Upgrade extends BaseModel
         {
           foreach($version as $file)
           {
-            getLogger()->info(sprintf('Calling executeScript on %s file %s', $database, $file));
-            getDb()->executeScript($file, $database);
+            $this->logger->info(sprintf('Calling executeScript on %s file %s', $database, $file));
+            $this->db->executeScript($file, $database);
           }
         }
       }
@@ -272,8 +272,8 @@ class Upgrade extends BaseModel
         {
           foreach($version as $file)
           {
-            getLogger()->info(sprintf('Calling executeScript on %s file %s', $filesystem, $file));
-            getFs()->executeScript($file, $filesystem);
+            $this->logger->info(sprintf('Calling executeScript on %s file %s', $filesystem, $file));
+            $this->fs->executeScript($file, $filesystem);
           }
         }
       }

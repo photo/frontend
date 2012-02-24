@@ -35,12 +35,41 @@ class ApiPhotoController extends ApiBaseController
     if($status)
     {
       $this->tag->updateTagCounts($res['result']['tags'], array(), 1, 1);
-      return $this->success('Photo deleted successfully', true);
+      return $this->noContent('Photo deleted successfully', true);
     }
     else
     {
       return $this->error('Photo deletion failure', false);
     }
+  }
+
+  /**
+    * Delete multiple photos
+    *
+    * @return string Standard JSON envelope
+    */
+  public function deleteBatch()
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    if(!isset($_POST['ids']) || empty($_POST['ids']))
+      return $this->error('This API requires an ids parameter.', false);
+
+    $ids = (array)explode(',', $_POST['ids']);
+    $params = $_POST;
+    unset($params['ids']);
+
+    $retval = true;
+    foreach($ids as $id)
+    {
+      $response = $this->api->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost, array('_POST' => $params));
+      $retval = $retval && $response['result'] !== false;
+    }
+
+    if($retval)
+      return $this->noContent(sprintf('%d photos deleted', count($ids)), true);
+    else
+      return $this->error('Error deleting one or more photos', false);
   }
 
   /**
@@ -260,11 +289,33 @@ class ApiPhotoController extends ApiBaseController
     }
     elseif(isset($_POST['photo']))
     {
-      unset($attributes['photo']);
+      // if a filename is passed in we use it else it's the random temp name
       $localFile = tempnam($this->config->paths->temp, 'opme');
-      $name = basename($localFile).'.jpg';
-      file_put_contents($localFile, base64_decode($_POST['photo']));
-      $photoId = $this->photo->upload($localFile, $name, $attributes);
+      if(isset($_POST['filename']))
+        $name = $_POST['filename'];
+      else
+        $name = basename($localFile).'.jpg';
+
+      // if we have a path to a photo we download it
+      // else we base64_decode it
+      if(preg_match('#https?://#', $_POST['photo']))
+      {
+        unset($attributes['photo']);
+        $fp = fopen($localFile, 'w');
+        $ch = curl_init($_POST['photo']);
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        fclose($fp);
+        $photoId = $this->photo->upload($localFile, $name, $attributes);
+      }
+      else
+      {
+        unset($attributes['photo']);
+        file_put_contents($localFile, base64_decode($_POST['photo']));
+        $photoId = $this->photo->upload($localFile, $name, $attributes);
+      }
     }
 
     if($photoId)
@@ -272,23 +323,28 @@ class ApiPhotoController extends ApiBaseController
       if(isset($returnSizes))
       {
         $sizes = (array)explode(',', $returnSizes);
-        foreach($sizes as $size)
-        {
-          $options = $this->photo->generateFragmentReverse($size);
-          $hash = $this->photo->generateHash($photoId, $options['width'], $options['height'], $options['options']);
-          $this->photo->generate($photoId, $hash, $options['width'], $options['height'], $options['options']);
-        }
+        if(!in_array('100x100xCR', $sizes))
+          $sizes[] = '100x100xCR';
+      }
+      else
+      {
+        $sizes = array('100x100xCR');
       }
 
-      $params = array();
-      if(isset($returnSizes))
-        $params = array('returnSizes' => $returnSizes);
-      $photo = $this->api->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => $params));
+      foreach($sizes as $size)
+      {
+        $options = $this->photo->generateFragmentReverse($size);
+        $hash = $this->photo->generateHash($photoId, $options['width'], $options['height'], $options['options']);
+        $this->photo->generate($photoId, $hash, $options['width'], $options['height'], $options['options']);
+      }
+
+      $apiResp = $this->api->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => implode(',', $sizes))));
+      $photo = $apiResp['result'];
 
       $webhookApi = $this->api->invoke('/webhooks/photo.upload/list.json', EpiRoute::httpGet);
       if(!empty($webhookApi['result']) && is_array($webhookApi['result']))
       {
-        $photoAsArgs = $photo['result'];
+        $photoAsArgs = $photo;
         $photoAsArgs['tags'] = implode(',', $photoAsArgs['tags']);
         foreach($webhookApi['result'] as $key => $hook)
         {
@@ -296,7 +352,14 @@ class ApiPhotoController extends ApiBaseController
           $this->logger->info(sprintf('Webhook callback executing for photo.upload: %s', $hook['callback']));
         }
       }
-      return $this->created("Photo {$photoId} uploaded successfully", $photo['result']);
+
+      $permission = isset($attributes['permission']) ? $attributes['permission'] : 0;
+      $this->api->invoke(
+        '/activity/create.json', 
+        EpiRoute::httpPost, 
+        array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
+      );
+      return $this->created("Photo {$photoId} uploaded successfully", $photo);
     }
 
     return $this->error('File upload failure', false);
@@ -358,8 +421,10 @@ class ApiPhotoController extends ApiBaseController
 
     if($photoUpdatedId)
     {
-      $photo = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
-      return $this->success("photo {$id} updated", $photo['result']);
+      $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
+      $photo = $apiResp['result'];
+      $this->api->invoke('/activity/create.json', EpiRoute::httpPost, array('_POST' => array('type' => 'photo-update', 'data' => $photo, 'permission' => $params['permission'])));
+      return $this->success("photo {$id} updated", $photo);
     }
 
     return $this->error("photo {$id} could not be updated", false);
@@ -370,7 +435,6 @@ class ApiPhotoController extends ApiBaseController
     * Parameters to be updated are in _POST
     * This method also manages updating tag counts
     *
-    * @param string $id ID of the photo to be updated.
     * @return string Standard JSON envelope
     */
   public function updateBatch()

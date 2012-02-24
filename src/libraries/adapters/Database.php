@@ -20,6 +20,8 @@ interface DatabaseInterface
   public function deleteWebhook($id);
   // get methods read
   public function getAction($id);
+  public function getActivities();
+  public function getActivity($id);
   public function getCredential($id);
   public function getCredentialByUserToken($userToken);
   public function getCredentials();
@@ -48,6 +50,7 @@ interface DatabaseInterface
   // put methods create but do not update
   public function putGroup($id, $params);
   public function putAction($id, $params);
+  public function putActivity($id, $params);
   public function putCredential($id, $params);
   public function putPhoto($id, $params);
   public function putUser($params);

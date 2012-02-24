@@ -30,16 +30,29 @@ class PhotoController extends BaseController
     */
   public function create($id, $hash, $width, $height, $options = null)
   {
-    $args = func_get_args();
-    // TODO, this should call a method in the API
-    $photo = $this->photo->generate($id, $hash, $width, $height, $options);
-    // TODO return 404 graphic
-    if($photo)
+    $fragment = $this->photo->generateFragment($width, $height, $options);
+    $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $fragment)));
+    if($apiResp['code'] === 200);
     {
-      header('Content-Type: image/jpeg');
-      readfile($photo);
-      unlink($photo);
-      return;
+      // check if this size exists
+      if(stristr($apiResp['result']["path{$fragment}"], "/{$hash}/") === false)
+      {
+        $this->route->redirect($apiResp['result']["path{$fragment}"], 301, true);
+        return;
+      }
+      else
+      {
+        // TODO, this should call a method in the API
+        $photo = $this->photo->generate($id, $hash, $width, $height, $options);
+        // TODO return 404 graphic
+        if($photo)
+        {
+          header('Content-Type: image/jpeg');
+          readfile($photo);
+          unlink($photo);
+          return;
+        }
+      }
     }
     $this->route->run('/error/500');
   }

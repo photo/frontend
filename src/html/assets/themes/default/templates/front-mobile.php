@@ -8,6 +8,16 @@
             </div>
         </form>
     <ul data-role="listview" data-inset="true">
+        <?php if($this->user->isLoggedIn()) { ?>
+          <li data-icon="delete"><a href="/user/logout" rel="external"><img 
+            src="<?php echo $this->user->getAvatarFromEmail(16, $this->user->getEmailAddress()); ?>"
+                          class="ui-li-icon ui-corner-none"><?php $this->utility->safe($this->user->getEmailAddress()); ?></a></li>
+          <li></li>
+        <?php } else { ?>
+          <li><a href="#" class="login-click"><img
+            src="<?php $this->theme->asset('image', 'header-navigation-login.png'); ?>" alt="my photos"
+                          class="ui-li-icon">Login</a></li>
+        <?php } ?>
         <li><a href="/photos/list"><img
         src="<?php $this->theme->asset('image', 'header-navigation-photos.png'); ?>" alt="my photos"
                         class="ui-li-icon">Photos</a></li>

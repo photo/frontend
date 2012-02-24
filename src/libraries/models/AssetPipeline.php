@@ -84,6 +84,12 @@ class AssetPipeline
     return $url;
   }
 
+  public function setMode($mode)
+  {
+    $this->mode = $mode;
+    return $this;
+  }
+
   private function addAsset($src, $type)
   {
     // verify this file exists

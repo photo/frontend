@@ -8,7 +8,7 @@ class PluginBaseTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()
   {
-    $this->pluginBase = new PluginBase;
+    $this->pluginBase = new PluginBase(array('plugin' => new FauxObject));
   }
 
   public function testDefineConf()
