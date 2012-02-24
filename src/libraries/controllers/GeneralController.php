@@ -58,4 +58,15 @@ class GeneralController extends BaseController
     $body = $this->theme->get($template, $params);
     $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'front'));
   }
+
+  /**
+    * Maintenance page
+    *
+    * @return string HTML
+    */
+  public function maintenance()
+  {
+    $this->theme->setTheme('default');
+    $this->theme->display($this->utility->getTemplate('maintenance.php'));
+  }
 }
