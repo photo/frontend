@@ -81,7 +81,7 @@ class UserConfig
     if($configFile)
     {
       $this->config->load($configFile);
-      if(file_exists(sprintf('%s/override.ini', $this->config->get('paths')->configs)))
+      if($this->config->exists(sprintf('%s/override.ini', $this->config->get('paths')->configs)))
         $this->config->load('override.ini');
 
       // we need to load the deps to get the theme modules
