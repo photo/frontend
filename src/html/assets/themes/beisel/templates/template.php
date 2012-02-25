@@ -137,7 +137,7 @@
           <?php } else { ?>
             '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-batch.min.js')->
                                                 addJs($this->theme->asset('javascript', 'openphoto-theme-full-min.js', false))->
-                                                getUrl(AssetPipeline::js, 'e'); ?>'
+                                                getUrl(AssetPipeline::js, 'f'); ?>'
           <?php } ?>
         ],
         onComplete: function(){ 

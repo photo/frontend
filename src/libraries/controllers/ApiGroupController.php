@@ -54,7 +54,7 @@ class ApiGroupController extends ApiBaseController
     if($res === false)
       return $this->error('Could not delete group', false);
 
-    return $this->error('Successfully deleted group', true);
+    return $this->noContent('Successfully deleted group', true);
   }
 
   /**
