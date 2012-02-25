@@ -1286,10 +1286,6 @@ ul.photo-grid {
   text-align:left;
 }
 
-.grid-item:hover {
-  background-color:#f1f1f1;
-}
-
 .photo-grid.size440x292xCR .grid-item {
   margin-right:5px;
   margin-bottom:10px;

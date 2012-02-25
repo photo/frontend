@@ -15,11 +15,18 @@
       <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>">
       <link rel="stylesheet" href="/assets/stylesheets/upload.css">
       <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'main.css'); ?>">
+      <?php if(true || $this->user->isOwner()) { ?>
+        <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'owner.css'); ?>">
+      <?php } ?>
     <?php } else { ?>
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
-                                                                 addCss("/assets/stylesheets/upload.css")->
-                                                                 addCss($this->theme->asset('stylesheet', 'main.css', false))->
-                                                                 getUrl(AssetPipeline::css, 'e'); ?>">
+                                                                  addCss("/assets/stylesheets/upload.css")->
+                                                                  addCss($this->theme->asset('stylesheet', 'main.css', false))->
+                                                                  getUrl(AssetPipeline::css, 'f'); ?>">
+      <?php if(true || $this->user->isOwner()) { ?>
+        <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'owner.css', false))->
+                                                                  getUrl(AssetPipeline::css, 'a'); ?>">
+      <?php } ?>
     <?php } ?>
 
     <?php $this->plugin->invoke('onHead', array('page' => $page)); ?>
