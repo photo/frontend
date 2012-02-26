@@ -202,6 +202,21 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Retrieves activity
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getActivity($id)
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainActivities}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeActivity($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
     * Retrieves activities
     *
     * @return mixed Array on success, FALSE on failure
@@ -217,18 +232,13 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
-    * Retrieves activity
+    * Retrieve albums
     *
+    * @param string $id ID of the action to get
     * @return mixed Array on success, FALSE on failure
     */
-  public function getActivity($id)
+  public function getAlbums($email)
   {
-    $res = $this->db->select("SELECT * FROM `{$this->domainActivities}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
-    $this->logErrors($res);
-    if(isset($res->body->SelectResult->Item))
-      return self::normalizeActivity($res->body->SelectResult->Item);
-    else
-      return false;
   }
 
   /**

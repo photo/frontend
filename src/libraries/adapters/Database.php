@@ -22,6 +22,7 @@ interface DatabaseInterface
   public function getAction($id);
   public function getActivities();
   public function getActivity($id);
+  public function getAlbums($email);
   public function getCredential($id);
   public function getCredentialByUserToken($userToken);
   public function getCredentials();

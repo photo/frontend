@@ -164,20 +164,19 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Retrieves activity
+    * Retrieve an action with $id
     *
+    * @param string $id ID of the action to get
     * @return mixed Array on success, FALSE on failure
     */
-  public function getActivity($id)
+  public function getAction($id)
   {
-    $activity = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}activity` WHERE `id`=:id AND `owner`=:owner",
+    $action = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}action` WHERE `id`=:id AND owner=:owner",
                                array(':id' => $id, ':owner' => $this->owner));
-    if($activity === false)
+    if(empty($action))
       return false;
-
-    $activity = $this->normalizeActivity($activity);
-
-    return $activity;
+    
+    return $this->normalizeAction($action);
   }
 
   /**
@@ -199,19 +198,50 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Retrieve an action with $id
+    * Retrieves activity
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getActivity($id)
+  {
+    $activity = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}activity` WHERE `id`=:id AND `owner`=:owner",
+                               array(':id' => $id, ':owner' => $this->owner));
+    if($activity === false)
+      return false;
+
+    $activity = $this->normalizeActivity($activity);
+
+    return $activity;
+  }
+
+  /**
+    * Retrieve albums
     *
     * @param string $id ID of the action to get
     * @return mixed Array on success, FALSE on failure
     */
-  public function getAction($id)
+  public function getAlbums($email)
   {
-    $action = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}action` WHERE `id`=:id AND owner=:owner",
-                               array(':id' => $id, ':owner' => $this->owner));
-    if(empty($action))
+    $groups = $this->getGroups($email);
+    if($groups === false)
       return false;
+
+    $groupIds = array();
+    foreach($groups as $grp)
+      $groupIds[] = $this->_($grp['id']);
+
+    $groupIds = implode("','", $groupIds);
+    $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` AS `alb` INNER JOIN `{$this->mySqlTablePrefix}elementGroup` AS `grp`
+      ON `alb`.`id`=`grp`.`element` AND `grp`.`type`='album' WHERE `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
+                               array(':owner' => $this->owner));
+
+    if(empty($albums))
+      return false;
+
+    foreach($albums as $key => $album)
+      $albums[$key] = $this->normalizeAlbum($album);
     
-    return $this->normalizeAction($action);
+    return $albums;
   }
 
   /**
@@ -1222,6 +1252,27 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function normalizeAction($raw)
   {
+    return $raw;
+  }
+
+  /**
+    * Normalizes data from MySql into schema definition
+    *
+    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @return array
+    */
+  private function normalizeAlbum($raw)
+  {
+    $raw['coverId'] = $raw['coverPhoto'] = null;
+    if(!empty($raw['extra']))
+    {
+      $extra = json_decode($raw['extra'], 1);
+      if(isset($extra['coverId']))
+        $raw['coverId'] = $extra['coverId'];
+      if(isset($extra['coverPhoto']))
+        $raw['coverPhoto'] = $extra['coverPhoto'];
+    }
+    unset($raw['extra']);
     return $raw;
   }
 
