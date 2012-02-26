@@ -15,6 +15,7 @@ class ApiBaseController
   const statusNoContent = 204;
   const statusForbidden = 403;
   const statusNotFound = 404;
+  const statusConflict = 409;
 
   public function __construct()
   {
@@ -38,6 +39,19 @@ class ApiBaseController
   public function created($message, $result = null)
   {
     return $this->json($message, self::statusCreated, $result);
+  }
+
+  /**
+    * Conflict, HTTP 409
+    * This is used when there's a conflict/duplicate
+    *
+    * @param string $message A friendly message to describe the operation
+    * @param mixed $result The result with values needed by the caller to take action.
+    * @return string Standard JSON envelope
+    */
+  public function conflict($message, $result = null)
+  {
+    return $this->json($message, self::statusConflict, $result);
   }
 
   /**

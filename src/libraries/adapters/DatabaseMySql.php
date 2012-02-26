@@ -426,7 +426,7 @@ class DatabaseMySql implements DatabaseInterface
     // http://www.mysqlperformanceblog.com/2007/08/28/to-sql_calc_found_rows-or-not-to-sql_calc_found_rows/
     $result = $this->db->one("SELECT COUNT(*) {$query['from']} {$query['where']} {$query['groupBy']}");
     if(!empty($result))
-      $photos[0]['totalRows'] = $result['COUNT(*)'];
+      $photos[0]['totalRows'] = intval($result['COUNT(*)']);
 
     return $photos;
   }
@@ -1057,6 +1057,10 @@ class DatabaseMySql implements DatabaseInterface
       {
         switch($name)
         {
+          case 'hash':
+            $hash = $this->_($value);
+            $where = $this->buildWhere($where, "hash='{$hash}'");
+            break;
           case 'groups':
             if(!is_array($value))
               $value = (array)explode(',', $value);
@@ -1070,15 +1074,15 @@ class DatabaseMySql implements DatabaseInterface
             if($value > 1)
             {
               $value = min($value, 40); // 40 pages at max of 2,500 recursion limit means 100k photos
-              $offset = ($limit * $value) - $limit;
+              $offset = intval(($limit * $value) - $limit);
             }
             break;
           case 'permission':
             $where = $this->buildWhere($where, "permission='1'");
             break;
           case 'sortBy':
-            $sortBy = 'ORDER BY ' . str_replace(',', ' ', $value);
-            $field = substr($value, 0, strpos($value, ','));
+            $sortBy = 'ORDER BY ' . $this->_(str_replace(',', ' ', $value));
+            $field = $this->_(substr($value, 0, strpos($value, ',')));
             $where = $this->buildWhere($where, "{$field} is not null");
             break;
           case 'tags':

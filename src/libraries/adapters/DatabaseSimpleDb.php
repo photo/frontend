@@ -871,6 +871,9 @@ class DatabaseSimpleDb implements DatabaseInterface
       {
         switch($name)
         {
+          case 'hash':
+            $where = $this->buildWhere($where, "hash='{$value}')");
+            break;
           case 'groups':
             $where = $this->buildWhere($where, "(groups IN('" . implode("','", $value) . "') OR permission='1')");
             break;
