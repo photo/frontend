@@ -16,12 +16,30 @@ SQL;
 $status = $status && mysql_1_4_0($sql);
 
 $sql = <<<SQL
+  CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}album` (
+    `id` varchar(6) NOT NULL,
+    `owner` varchar(255) NOT NULL,
+    `name` varchar(255) NOT NULL,
+    `extra` text,
+    `count` int(10) unsigned NOT NULL DEFAULT '0',
+    `permission` tinyint(1) NOT NULL DEFAULT '1',
+    PRIMARY KEY (`id`,`owner`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+$status = $status && mysql_1_4_0($sql);
+
+$sql = <<<SQL
   ALTER TABLE  `{$this->mySqlTablePrefix}elementTag` ADD INDEX (  `element` )
 SQL;
 $status = $status && mysql_1_4_0($sql);
 
 $sql = <<<SQL
   ALTER TABLE  `{$this->mySqlTablePrefix}photo` ADD  `filenameOriginal` VARCHAR( 255 ) NULL AFTER  `dateUploadedYear`
+SQL;
+$status = $status && mysql_1_4_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE  `{$this->mySqlTablePrefix}elementGroup` CHANGE  `type`  `type` ENUM(  'photo',  'album' )  NOT NULL
 SQL;
 $status = $status && mysql_1_4_0($sql);
 
