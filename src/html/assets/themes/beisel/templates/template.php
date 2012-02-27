@@ -22,10 +22,10 @@
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'main.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'f'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'g'); ?>">
       <?php if(true || $this->user->isOwner()) { ?>
         <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'owner.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'a'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'b'); ?>">
       <?php } ?>
     <?php } ?>
 
@@ -103,10 +103,6 @@
         <?php if($this->user->isOwner()) { ?>
           'change': {
               'batch-field-change':'change:batch-field'
-          },
-          'mouseover': {
-              'pin-over':'mouseover:pin',
-              'pin-out':'mouseout:pin',
           },
         <?php } ?>
         'keydown': {
