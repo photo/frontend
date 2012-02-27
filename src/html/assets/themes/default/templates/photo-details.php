@@ -97,7 +97,7 @@
     <?php if($this->user->isLoggedIn()) { ?>
       <button type="submit">Leave a comment</button>
     <?php } else { ?>
-      <button type="button" class="login-click">Sign in to comment</button>
+      <button type="button" class="login-click browserid">Sign in to comment</button>
     <?php } ?>
     </div>
   </form>
