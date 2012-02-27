@@ -11,7 +11,7 @@ SQL;
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}action` (
     `id` varchar(6) NOT NULL,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `appId` varchar(255) DEFAULT NULL,
     `targetId` varchar(255) DEFAULT NULL,
     `targetType` varchar(255) DEFAULT NULL,
@@ -43,7 +43,7 @@ SQL;
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}credential` (
     `id` varchar(30) NOT NULL,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `name` varchar(255) DEFAULT NULL,
     `image` text,
     `clientSecret` varchar(255) DEFAULT NULL,
@@ -61,7 +61,7 @@ SQL;
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}elementGroup` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `type` enum('photo') NOT NULL,
     `element` varchar(6) NOT NULL,
     `group` varchar(6) NOT NULL,
@@ -74,10 +74,10 @@ SQL;
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}elementTag` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `type` enum('photo') NOT NULL,
     `element` varchar(6) NOT NULL DEFAULT 'photo',
-    `tag` varchar(255) NOT NULL,
+    `tag` varchar(127) NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`owner`,`type`,`element`,`tag`)
   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Tag mapping table for photos (and videos in the future)';
@@ -87,7 +87,7 @@ SQL;
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}group` (
     `id` varchar(6) NOT NULL,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `appId` varchar(255) DEFAULT NULL,
     `name` varchar(255) DEFAULT NULL,
     `permission` tinyint(4) NOT NULL COMMENT 'Bitmask of permissions',
@@ -99,9 +99,9 @@ SQL;
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}groupMember` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `group` varchar(6) NOT NULL,
-    `email` varchar(255) NOT NULL,
+    `email` varchar(127) NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `owner` (`owner`,`group`,`email`)
   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
@@ -111,7 +111,7 @@ SQL;
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}photo` (
     `id` varchar(6) NOT NULL,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `appId` varchar(255) NOT NULL,
     `host` varchar(255) DEFAULT NULL,
     `title` varchar(255) DEFAULT NULL,
@@ -149,8 +149,8 @@ SQL;
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}photoVersion` (
     `id` varchar(6) NOT NULL DEFAULT '',
-    `owner` varchar(255) NOT NULL,
-    `key` varchar(255) NOT NULL DEFAULT '',
+    `owner` varchar(127) NOT NULL,
+    `key` varchar(127) NOT NULL DEFAULT '',
     `path` varchar(1000) DEFAULT NULL,
     UNIQUE KEY `id` (`id`,`owner`,`key`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -159,8 +159,8 @@ SQL;
 
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}tag` (
-    `id` varchar(255) NOT NULL,
-    `owner` varchar(255) NOT NULL,
+    `id` varchar(127) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `countPublic` int(11) NOT NULL DEFAULT '0',
     `countPrivate` int(11) NOT NULL DEFAULT '0',
     `extra` text NOT NULL,
@@ -181,7 +181,7 @@ SQL;
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}webhook` (
     `id` varchar(6) NOT NULL,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `appId` varchar(255) DEFAULT NULL,
     `callback` varchar(1000) DEFAULT NULL,
     `topic` varchar(255) DEFAULT NULL,
