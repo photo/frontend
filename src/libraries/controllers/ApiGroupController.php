@@ -49,6 +49,7 @@ class ApiGroupController extends ApiBaseController
   public function delete($id)
   {
     getAuthentication()->requireAuthentication();
+    // TODO add crumb check
     $res = $this->group->delete($id);
 
     if($res === false)

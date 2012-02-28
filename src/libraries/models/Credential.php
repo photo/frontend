@@ -148,8 +148,9 @@ class Credential extends BaseModel
     }
 
     $cache = $this->cache->get(self::nonceCacheKey);
-    if(!$cache)
+    if(!$cache || !is_array($cache))
       $cache = array();
+
     list($lastTimestamp, $nonces) = each($cache);
     if($provider->timestamp > (time()+300) || $provider->timestamp < $lastTimestamp)
     {
