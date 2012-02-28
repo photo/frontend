@@ -15,6 +15,18 @@ class Url
     return $utilityObj->returnValue(sprintf('/action/%s/delete', $utilityObj->safe($id, false)), $write);
   }
 
+  public function albumView($id, $write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue(sprintf('/album/%s', $utilityObj->safe($id, false)), $write);
+  }
+
+  public function albumsView($id, $write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue('/albums/list', $write);
+  }
+
   public function photoDelete($id, $write = true)
   {
     $utilityObj = new Utility;
