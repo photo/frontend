@@ -200,6 +200,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Retrieves activity
     *
+    * @param string $id ID of the activity to get
     * @return mixed Array on success, FALSE on failure
     */
   public function getActivity($id)
@@ -215,25 +216,90 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Retrieves album
+    *
+    * @param string $id ID of the album to get
+    * @param string $email email of viewer to determine which albums they have access to
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAlbum($id, $email)
+  {
+    if($this->owner === $email)
+    {
+      $album = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner",
+        array(':id' => $id, ':owner' => $this->owner));
+    }
+    else
+    {
+      $groups = $this->getGroups($email);
+      if($groups === false)
+        return false;
+
+      $groupIds = array();
+      foreach($groups as $grp)
+        $groupIds[] = $this->_($grp['id']);
+
+      $groupIds = implode("','", $groupIds);
+      $album = $this->db->one("SELECT `alb`.* FROM `{$this->mySqlTablePrefix}album` AS `alb` INNER JOIN `{$this->mySqlTablePrefix}elementGroup` AS `grp`
+        ON `alb`.`id`=`grp`.`element` AND `grp`.`type`='album' WHERE `alb`.`id`=:id AND `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
+                                 array(':id' => $id, ':owner' => $this->owner));
+    }
+
+    if($album === false)
+      return false;
+
+    $album = $this->normalizeAlbum($album);
+    return $album;
+  }
+
+  /**
+    * Retrieve elements for an album
+    *
+    * @param string $id ID of the album to get elements of
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAlbumElements($id)
+  {
+    $photos = $this->db->all("SELECT `pht`.* 
+      FROM `{$this->mySqlTablePrefix}photo` AS `pht` INNER JOIN `{$this->mySqlTablePrefix}elementAlbum` AS `alb` ON `pht`.`id`=`alb`.`element`
+      WHERE `pht`.`owner`=:owner AND `alb`.`owner`=:owner AND `alb`.`type`=:type",
+      array(':owner' => $this->owner, ':type' => 'photo'));
+
+    if($photos === false)
+      return false;
+
+    foreach($photos as $key => $photo)
+      $photos[$key] = $this->normalizePhoto($photo);
+    return $photos;
+  }
+
+  /**
     * Retrieve albums
     *
-    * @param string $id ID of the action to get
+    * @param string $email email of viewer to determine which albums they have access to
     * @return mixed Array on success, FALSE on failure
     */
   public function getAlbums($email)
   {
-    $groups = $this->getGroups($email);
-    if($groups === false)
-      return false;
+    if($this->owner === $email)
+    {
+      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner", array(':owner' => $this->owner));
+    }
+    else
+    {
+      $groups = $this->getGroups($email);
+      if($groups === false)
+        return false;
 
-    $groupIds = array();
-    foreach($groups as $grp)
-      $groupIds[] = $this->_($grp['id']);
+      $groupIds = array();
+      foreach($groups as $grp)
+        $groupIds[] = $this->_($grp['id']);
 
-    $groupIds = implode("','", $groupIds);
-    $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` AS `alb` INNER JOIN `{$this->mySqlTablePrefix}elementGroup` AS `grp`
-      ON `alb`.`id`=`grp`.`element` AND `grp`.`type`='album' WHERE `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
-                               array(':owner' => $this->owner));
+      $groupIds = implode("','", $groupIds);
+      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` AS `alb` INNER JOIN `{$this->mySqlTablePrefix}elementGroup` AS `grp`
+        ON `alb`.`id`=`grp`.`element` AND `grp`.`type`='album' WHERE `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
+                                 array(':owner' => $this->owner));
+    }
 
     if(empty($albums))
       return false;
@@ -639,6 +705,44 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Add an element to an album
+    *
+    * @param string $albumId ID of the album to update.
+    * @param string $type Type of element
+    * @param array $elementIds IDs of the elements to update.
+    * @return boolean
+    */
+  public function postAlbumAdd($albumId, $type, $elementIds)
+  {
+    $res = true;
+    foreach($elementIds as $elementId)
+    {
+      $res = $res && $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`,`type`,`element`,`album`) VALUES(:owner,:type,:elementId,:albumId)",
+        array(':owner' => $this->owner, ':type' => $type, ':elementId' => $elementId, ':albumId' => $albumId));
+    }
+    return $res !== false;
+  }
+
+  /**
+    * Remove an element from an album
+    *
+    * @param string $albumId ID of the album to update.
+    * @param string $type Type of element
+    * @param array $elementIds IDs of the elements to update.
+    * @return boolean
+    */
+  public function postAlbumRemove($albumId, $type, $elementIds)
+  {
+    $res = true;
+    foreach($elementIds as $elementId)
+    {
+      $res = $res && $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `element`=:elementId AND `album`=:albumId AND `type`=:type",
+        array(':owner' => $this->owner, ':elementId' => $elementId, ':albumId' => $albumId, ':type' => $type));
+    }
+    return $res !== false;
+  }
+
+  /**
     * Update the information for an existing credential.
     * This method overwrites existing values present in $params.
     *
@@ -864,6 +968,22 @@ class DatabaseMySql implements DatabaseInterface
   {
     $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}action` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    return ($result !== false);
+  }
+
+  /**
+    * Add a new album to the database
+    * This method does not overwrite existing values present in $params - hence "new action".
+    *
+    * @param string $id ID of the action to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putAlbum($id, $params)
+  {
+    $params['owner'] = $this->owner;
+    $stmt = $this->sqlInsertExplode($params);
+    $result = $this->db->execute($sql = "INSERT INTO `{$this->mySqlTablePrefix}album` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return ($result !== false);
   }
 
@@ -1263,6 +1383,9 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function normalizeAlbum($raw)
   {
+    if(empty($raw))
+      return $raw;
+
     $raw['coverId'] = $raw['coverPhoto'] = null;
     if(!empty($raw['extra']))
     {
@@ -1285,6 +1408,9 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function normalizePhoto($photo)
   {
+    if(empty($photo))
+      return $photo;
+
     $photo['appId'] = $this->config->application->appId;
 
     $versions = $this->getPhotoVersions($photo['id']);

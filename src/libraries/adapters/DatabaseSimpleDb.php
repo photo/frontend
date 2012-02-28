@@ -232,9 +232,32 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Retrieves album
+    *
+    * @param string $id ID of the album to get
+    * @param string $email email of viewer to determine which albums they have access to
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAlbum($id, $email)
+  {
+    return false;
+  }
+
+  /**
+    * Retrieve elements for an album
+    *
+    * @param string $id ID of the album to get elements of
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAlbumElements($id)
+  {
+    return false;
+  }
+
+  /**
     * Retrieve albums
     *
-    * @param string $id ID of the action to get
+    * @param string $email email of viewer to determine which albums they have access to
     * @return mixed Array on success, FALSE on failure
     */
   public function getAlbums($email)
@@ -610,6 +633,32 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Add an element to an album
+    *
+    * @param string $albumId ID of the album to update.
+    * @param string $type Type of element
+    * @param array $elementIds IDs of the elements to update.
+    * @return boolean
+    */
+  public function postAlbumAdd($albumId, $type, $elementIds)
+  {
+    return false;
+  }
+
+  /**
+    * Remove an element from an album
+    *
+    * @param string $albumId ID of the album to update.
+    * @param string $type Type of element
+    * @param array $elementIds IDs of the elements to update.
+    * @return boolean
+    */
+  public function postAlbumRemove($albumId, $type, $elementIds)
+  {
+    return false;
+  }
+
+  /**
     * Update the information for an existing credential.
     * This method overwrites existing values present in $params.
     *
@@ -750,6 +799,20 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->logErrors($res);
     return $res->isOK();
   }
+
+  /**
+    * Add a new album to the database
+    * This method does not overwrite existing values present in $params - hence "new action".
+    *
+    * @param string $id ID of the action to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putAlbum($id, $params)
+  {
+    return false;
+  }
+
   /**
     * Add a new activity to the database
     * This method does not overwrite existing values present in $params - hence "new action".

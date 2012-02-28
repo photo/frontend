@@ -31,10 +31,10 @@ getApi()->post('/activity/create.json', array('ApiActivityController', 'create')
  * Everything in []'s are optional
  * /album[s][/:id]/{action}.json
  */
+getApi()->post('/album/create.json', array('ApiAlbumController', 'create'), EpiApi::external); // post an activity (/activity/create.json)
+getApi()->post('/album/([a-zA-Z0-9]+)/(photo)/(add|remove).json', array('ApiAlbumController', 'updateIndex'), EpiApi::external); // post an action (/action/{id}/{type}/{action}.json)
 getApi()->get('/albums/list.json', array('ApiAlbumController', 'list_'), EpiApi::external); // retrieve activities (/albums/list.json)
 getApi()->get('/album/([a-zA-Z0-9]+)/view.json', array('ApiAlbumController', 'view'), EpiApi::external); // retrieve activity (/activity/:id/view.json)
-getApi()->post('/album/([a-zA-Z0-9]+)/(photo)/(add|remove).json', array('ApiAlbumController', 'updateIndex'), EpiApi::internal); // post an action (/action/{id}/{type}/{action}.json)
-getApi()->post('/album/create.json', array('ApiAlbumController', 'create'), EpiApi::internal); // post an activity (/activity/create.json)
 
 /*
  * Photo endpoints
