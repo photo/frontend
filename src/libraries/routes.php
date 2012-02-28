@@ -15,6 +15,14 @@ getRoute()->get('/', array('GeneralController', 'home'));
 getRoute()->post('/action/([a-zA-Z0-9]+)/(photo)/create', array('ActionController', 'create')); // post an action (/action/{id}/{type}/create)
 
 /*
+ * Album endpoints
+ * All album endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /album[s][/:id]/{action}
+ */
+getRoute()->get('/albums/list', array('AlbumController', 'list_')); // retrieve activities (/albums/list)
+
+/*
  * Photo endpoints
  * All photo endpoints follow the same convention.
  * Everything in []'s are optional
