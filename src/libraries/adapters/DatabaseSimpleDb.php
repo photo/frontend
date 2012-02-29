@@ -11,7 +11,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $config, $db, $domainAction, $domainActivity, $domainCredential, $domainPhoto, 
+  private $config, $db, $domainAction, $domainActivity, $domainAlbum, $domainCredential, $domainPhoto, 
     $domainTag, $domainUser, $domainWebhook, $errors = array(), $owner;
 
   /**
@@ -33,6 +33,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->domainPhoto = $this->config->aws->simpleDbDomain;
     $this->domainAction = $this->config->aws->simpleDbDomain.'Action';
     $this->domainActivity = $this->config->aws->simpleDbDomain.'Activity';
+    $this->domainAlbum = $this->config->aws->simpleDbDomain.'Album';
     $this->domainCredential = $this->config->aws->simpleDbDomain.'Credential';
     $this->domainGroup = $this->config->aws->simpleDbDomain.'Group';
     $this->domainUser = $this->config->aws->simpleDbDomain.'User';
