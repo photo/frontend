@@ -31,13 +31,17 @@ class PhotoController extends BaseController
   public function create($id, $hash, $width, $height, $options = null)
   {
     $fragment = $this->photo->generateFragment($width, $height, $options);
-    $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $fragment)));
-    if($apiResp['code'] === 200);
+    // We cannot call the API since this may not be authenticated.
+    // Rely on the hash to confirm it was a valid request
+    $db = getDb();
+    $photo = $db->getPhoto($id);
+    if($photo);
     {
       // check if this size exists
-      if(stristr($apiResp['result']["path{$fragment}"], "/{$hash}/") === false)
+      if(isset($photo["path{$fragment}"]) && stristr($photo["path{$fragment}"], "/{$hash}/") === false)
       {
-        $this->route->redirect($apiResp['result']["path{$fragment}"], 301, true);
+        $url = $this->photo->generateUrlPublic($photo, $width, $height, $options);
+        $this->route->redirect($url, 301, true);
         return;
       }
       else
