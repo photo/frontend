@@ -164,6 +164,9 @@ class ApiBaseController
       case '404':
         $header = 'HTTP/1.0 404 Not Found';
         break;
+      case '409':
+        $header = 'HTTP/1.0 409 Conflict';
+        break;
       case '500':
         $header = 'HTTP/1.0 500 Internal Server Error';
         break;
