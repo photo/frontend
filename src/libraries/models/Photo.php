@@ -533,7 +533,7 @@ class Photo extends BaseModel
       $attributes = array_merge(
         $this->getDefaultAttributes(),
         array(
-          'hash' => sha1_file($localFile),
+          'hash' => sha1_file($localFile), // fallback if not in $attributes
           'size' => intval(filesize($localFile)/1024),
           'exifCameraMake' => @$exif['cameraMake'],
           'exifCameraModel' => @$exif['cameraModel'],
