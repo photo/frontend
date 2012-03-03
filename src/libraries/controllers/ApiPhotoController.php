@@ -317,21 +317,21 @@ class ApiPhotoController extends ApiBaseController
       }
     }
 
-    $exiftran = $this->config->modules->exiftran;
-    if(is_executable($exiftran))
-      exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
-
+    $attributes['hash'] = sha1_file($localFile);
     // set default to config and override with parameter
     $allowDuplicate = $this->config->site->allowDuplicate;
     if(isset($attributes['allowDuplicate']))
       $allowDuplicate = $attributes['allowDuplicate'];
     if($allowDuplicate == '0')
     {
-      $hash = sha1_file($localFile);
-      $hashResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('hash' => $hash)));
+      $hashResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('hash' => $attributes['hash'])));
       if($hashResp['result'][0]['totalRows'] > 0)
         return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates do not pass in allowDuplicates=false', false);
     }
+
+    $exiftran = $this->config->modules->exiftran;
+    if(is_executable($exiftran))
+      exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
 
     $photoId = $this->photo->upload($localFile, $name, $attributes);
 
