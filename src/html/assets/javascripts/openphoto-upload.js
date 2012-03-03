@@ -12,7 +12,7 @@ OPU = (function() {
         uploaderEl.pluploadQueue({
             // General settings
             runtimes : 'html5',
-            url : '/photo/upload.json?httpCodes=500,403,404',
+            url : '/photo/upload.json?httpCodes=500,403,404', // omit 409 since it's somewhat idempotent
             max_file_size : '32mb',
             //chunk_size : '1mb',
             unique_names : true,
