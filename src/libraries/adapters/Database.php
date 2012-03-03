@@ -22,6 +22,9 @@ interface DatabaseInterface
   public function getAction($id);
   public function getActivities();
   public function getActivity($id);
+  public function getAlbum($id, $email);
+  public function getAlbumElements($id);
+  public function getAlbums($email);
   public function getCredential($id);
   public function getCredentialByUserToken($userToken);
   public function getCredentials();
@@ -40,6 +43,8 @@ interface DatabaseInterface
   public function identity();
   public function executeScript($file, $database);
   // post methods update
+  public function postAlbumAdd($albumId, $type, $elementIds);
+  public function postAlbumRemove($albumId, $type, $elementIds);
   public function postCredential($id, $params);
   public function postGroup($id, $params);
   public function postPhoto($id, $params);
@@ -51,6 +56,7 @@ interface DatabaseInterface
   public function putGroup($id, $params);
   public function putAction($id, $params);
   public function putActivity($id, $params);
+  public function putAlbum($id, $params);
   public function putCredential($id, $params);
   public function putPhoto($id, $params);
   public function putUser($params);

@@ -462,9 +462,6 @@ class Photo extends BaseModel
     $attributes = $this->whitelistParams($attributes);
     $filenameOriginal = $name;
     $paths = $this->generatePaths($name);
-    $exiftran = $this->config->modules->exiftran;
-    if(is_executable($exiftran))
-      exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
 
     // resize the base image before uploading
     $localFileCopy = "{$localFile}-copy";

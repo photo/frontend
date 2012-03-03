@@ -58,7 +58,7 @@ var opTheme = (function() {
             id = el.attr('data-id');
       
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
-          if(response.code === 200)
+          if(response.code === 204)
             $(".action-container-"+id).hide('medium', function(){ $(this).remove(); });
           else
             opTheme.message.error('Could not delete the photo.');
@@ -137,7 +137,7 @@ var opTheme = (function() {
             url = el.attr('href')+'.json';
 
         OP.Util.makeRequest(url, {}, function(response) {
-          if(response.code === 200) {
+          if(response.code === 204) {
             el.parent().remove();
             opTheme.message.confirm('Credential successfully deleted.');
           } else {
@@ -205,7 +205,7 @@ var opTheme = (function() {
           	url = el.parent().attr('action')+'.json';
       
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
-          if(response.code === 200) {
+          if(response.code === 204) {
             el.html('This photo has been deleted');
             opTheme.message.confirm('This photo has been deleted.');
           } else {
@@ -344,7 +344,7 @@ var opTheme = (function() {
             url = el.attr('href')+'.json';
 
         OP.Util.makeRequest(url, {}, function(response) {
-          if(response.code === 200) {
+          if(response.code === 204) {
             el.parent().remove();
             opTheme.message.confirm('Credential successfully deleted.');
           } else {
