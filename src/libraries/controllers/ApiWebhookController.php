@@ -45,7 +45,7 @@ class ApiWebhookController extends ApiBaseController
     //getAuthentication()->requireAuthentication();
     $status = $this->webhook->delete($id);
     if($status)
-      return $this->success('Webhook deleted successfully', true);
+      return $this->noContent('Webhook deleted successfully', true);
     else
       return $this->error('Webhook deletion failure', false);
   }

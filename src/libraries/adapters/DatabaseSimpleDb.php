@@ -11,7 +11,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $config, $db, $domainAction, $domainActivity, $domainCredential, $domainPhoto, 
+  private $config, $db, $domainAction, $domainActivity, $domainAlbum, $domainCredential, $domainPhoto, 
     $domainTag, $domainUser, $domainWebhook, $errors = array(), $owner;
 
   /**
@@ -33,6 +33,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->domainPhoto = $this->config->aws->simpleDbDomain;
     $this->domainAction = $this->config->aws->simpleDbDomain.'Action';
     $this->domainActivity = $this->config->aws->simpleDbDomain.'Activity';
+    $this->domainAlbum = $this->config->aws->simpleDbDomain.'Album';
     $this->domainCredential = $this->config->aws->simpleDbDomain.'Credential';
     $this->domainGroup = $this->config->aws->simpleDbDomain.'Group';
     $this->domainUser = $this->config->aws->simpleDbDomain.'User';
@@ -202,6 +203,21 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Retrieves activity
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getActivity($id)
+  {
+    $res = $this->db->select("SELECT * FROM `{$this->domainActivities}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeActivity($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
     * Retrieves activities
     *
     * @return mixed Array on success, FALSE on failure
@@ -217,18 +233,36 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
-    * Retrieves activity
+    * Retrieves album
     *
+    * @param string $id ID of the album to get
+    * @param string $email email of viewer to determine which albums they have access to
     * @return mixed Array on success, FALSE on failure
     */
-  public function getActivity($id)
+  public function getAlbum($id, $email)
   {
-    $res = $this->db->select("SELECT * FROM `{$this->domainActivities}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
-    $this->logErrors($res);
-    if(isset($res->body->SelectResult->Item))
-      return self::normalizeActivity($res->body->SelectResult->Item);
-    else
-      return false;
+    return false;
+  }
+
+  /**
+    * Retrieve elements for an album
+    *
+    * @param string $id ID of the album to get elements of
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAlbumElements($id)
+  {
+    return false;
+  }
+
+  /**
+    * Retrieve albums
+    *
+    * @param string $email email of viewer to determine which albums they have access to
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAlbums($email)
+  {
   }
 
   /**
@@ -600,6 +634,32 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Add an element to an album
+    *
+    * @param string $albumId ID of the album to update.
+    * @param string $type Type of element
+    * @param array $elementIds IDs of the elements to update.
+    * @return boolean
+    */
+  public function postAlbumAdd($albumId, $type, $elementIds)
+  {
+    return false;
+  }
+
+  /**
+    * Remove an element from an album
+    *
+    * @param string $albumId ID of the album to update.
+    * @param string $type Type of element
+    * @param array $elementIds IDs of the elements to update.
+    * @return boolean
+    */
+  public function postAlbumRemove($albumId, $type, $elementIds)
+  {
+    return false;
+  }
+
+  /**
     * Update the information for an existing credential.
     * This method overwrites existing values present in $params.
     *
@@ -740,6 +800,20 @@ class DatabaseSimpleDb implements DatabaseInterface
     $this->logErrors($res);
     return $res->isOK();
   }
+
+  /**
+    * Add a new album to the database
+    * This method does not overwrite existing values present in $params - hence "new action".
+    *
+    * @param string $id ID of the action to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putAlbum($id, $params)
+  {
+    return false;
+  }
+
   /**
     * Add a new activity to the database
     * This method does not overwrite existing values present in $params - hence "new action".
@@ -871,6 +945,9 @@ class DatabaseSimpleDb implements DatabaseInterface
       {
         switch($name)
         {
+          case 'hash':
+            $where = $this->buildWhere($where, "hash='{$value}')");
+            break;
           case 'groups':
             $where = $this->buildWhere($where, "(groups IN('" . implode("','", $value) . "') OR permission='1')");
             break;

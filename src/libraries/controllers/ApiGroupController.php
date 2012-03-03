@@ -49,12 +49,13 @@ class ApiGroupController extends ApiBaseController
   public function delete($id)
   {
     getAuthentication()->requireAuthentication();
+    // TODO add crumb check
     $res = $this->group->delete($id);
 
     if($res === false)
       return $this->error('Could not delete group', false);
 
-    return $this->error('Successfully deleted group', true);
+    return $this->noContent('Successfully deleted group', true);
   }
 
   /**

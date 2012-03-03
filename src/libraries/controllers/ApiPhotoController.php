@@ -247,8 +247,8 @@ class ApiPhotoController extends ApiBaseController
         $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
     }
 
-    $photos[0]['pageSize'] = $pageSize;
-    $photos[0]['currentPage'] = $page;
+    $photos[0]['pageSize'] = intval($pageSize);
+    $photos[0]['currentPage'] = intval($page);
     $photos[0]['totalPages'] = ceil($photos[0]['totalRows'] / $pageSize);
     return $this->success("Successfully retrieved user's photos", $photos);
   }
@@ -285,7 +285,8 @@ class ApiPhotoController extends ApiBaseController
     // TODO call API
     if(isset($_FILES) && isset($_FILES['photo']))
     {
-      $photoId = $this->photo->upload($_FILES['photo']['tmp_name'], $_FILES['photo']['name'], $attributes);
+      $localFile = $_FILES['photo']['tmp_name'];
+      $name = $_FILES['photo']['name'];
     }
     elseif(isset($_POST['photo']))
     {
@@ -308,15 +309,31 @@ class ApiPhotoController extends ApiBaseController
         $data = curl_exec($ch);
         curl_close($ch);
         fclose($fp);
-        $photoId = $this->photo->upload($localFile, $name, $attributes);
       }
       else
       {
         unset($attributes['photo']);
         file_put_contents($localFile, base64_decode($_POST['photo']));
-        $photoId = $this->photo->upload($localFile, $name, $attributes);
       }
     }
+
+    $exiftran = $this->config->modules->exiftran;
+    if(is_executable($exiftran))
+      exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
+
+    // set default to config and override with parameter
+    $allowDuplicate = $this->config->site->allowDuplicate;
+    if(isset($attributes['allowDuplicate']))
+      $allowDuplicate = $attributes['allowDuplicate'];
+    if($allowDuplicate == '0')
+    {
+      $hash = sha1_file($localFile);
+      $hashResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('hash' => $hash)));
+      if($hashResp['result'][0]['totalRows'] > 0)
+        return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates do not pass in allowDuplicates=false', false);
+    }
+
+    $photoId = $this->photo->upload($localFile, $name, $attributes);
 
     if($photoId)
     {

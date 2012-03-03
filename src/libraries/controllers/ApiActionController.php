@@ -63,7 +63,7 @@ class ApiActionController extends ApiBaseController
     getAuthentication()->requireCrumb();
     $status = $this->action->delete($id);
     if($status)
-      return $this->success('Action deleted successfully', true);
+      return $this->noContent('Action deleted successfully', true);
     else
       return $this->error('Action deletion failure', false);
   }

@@ -15,11 +15,18 @@
       <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>">
       <link rel="stylesheet" href="/assets/stylesheets/upload.css">
       <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'main.css'); ?>">
+      <?php if(true || $this->user->isOwner()) { ?>
+        <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'owner.css'); ?>">
+      <?php } ?>
     <?php } else { ?>
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
-                                                                 addCss("/assets/stylesheets/upload.css")->
-                                                                 addCss($this->theme->asset('stylesheet', 'main.css', false))->
-                                                                 getUrl(AssetPipeline::css, 'e'); ?>">
+                                                                  addCss("/assets/stylesheets/upload.css")->
+                                                                  addCss($this->theme->asset('stylesheet', 'main.css', false))->
+                                                                  getUrl(AssetPipeline::css, 'g'); ?>">
+      <?php if(true || $this->user->isOwner()) { ?>
+        <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'owner.css', false))->
+                                                                  getUrl(AssetPipeline::css, 'b'); ?>">
+      <?php } ?>
     <?php } ?>
 
     <?php $this->plugin->invoke('onHead', array('page' => $page)); ?>
@@ -97,10 +104,6 @@
           'change': {
               'batch-field-change':'change:batch-field'
           },
-          'mouseover': {
-              'pin-over':'mouseover:pin',
-              'pin-out':'mouseout:pin',
-          },
         <?php } ?>
         'keydown': {
             37: 'keydown:browse-previous',
@@ -130,7 +133,7 @@
           <?php } else { ?>
             '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-batch.min.js')->
                                                 addJs($this->theme->asset('javascript', 'openphoto-theme-full-min.js', false))->
-                                                getUrl(AssetPipeline::js, 'e'); ?>'
+                                                getUrl(AssetPipeline::js, 'f'); ?>'
           <?php } ?>
         ],
         onComplete: function(){ 
