@@ -11,6 +11,7 @@ Follow these step by step guides to get OpenPhoto installed on your server or la
 1.  [Amazon EC2 OpenPhoto AMI][guideinstallamazonec2]
 1.  [SUSE][guideinstallsuse]
 1.  [Ubuntu with Cherokee][guideinstallubuntucherokee]
+1.  [Fedora 16 with Apache][guideinstallfedora16apache]
 
 ### The quick and dirty installation
 
@@ -27,3 +28,4 @@ That's it. View the [source of the installer][guideinstallcli] or [watch a scree
 [guideinstallamazonec2]: InstallationUsingOpenPhotoEC2-AMI.markdown
 [guideinstallcli]: InstallationUbuntuApache.sh
 [screencast]: http://youtu.be/2QXtHPkO8eQ
+[guideinstallfedora16apache]: InstallFedora16Apache.markdown
