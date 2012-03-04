@@ -115,7 +115,7 @@
     <?php if(isset($photo['latitude']) && !empty($photo['latitude'])) { ?>
       <li class="location">
         <span></span>
-        <?php $this->utility->safe($photo['latitude']); ?>, <?php $this->utility->safe($photo['longitude']); ?>
+        <a href="http://maps.google.com/maps?q=<?php $this->utility->safe($photo['latitude']); ?>,<?php $this->utility->safe($photo['longitude']); ?>"><?php $this->utility->safe($photo['latitude']); ?>, <?php $this->utility->safe($photo['longitude']); ?></a>
         <img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 5, '255x150'); ?>" class="map">
       </li>
     <?php } ?>
