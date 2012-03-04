@@ -280,13 +280,31 @@ var opTheme = (function() {
       },
       pinClearClick: function(ev) {
         ev.preventDefault();
+	//fix clear all pins bug where pin disappears
+	$(".pin").each(function(index){
+	  var id = $(this).attr('data-id'),
+	  container = $(this).parent();
+	  if(container.hasClass("pinned")) {
+	    OP.Batch.remove(id);
+	  }
+	});
         OP.Batch.clear();
+      },
+      pinClearPageClick: function(ev) {
+        ev.preventDefault();
+	$(".pin").each(function(index){
+	  var id = $(this).attr('data-id'),
+	  container = $(this).parent();
+	  if(container.hasClass("pinned")) {
+	    OP.Batch.remove(id);
+	  }
+	});
       },
       pinSelectAll: function(ev) {
         ev.preventDefault();
 	$(".pin").each(function(index){
-	  id=$(this).attr('data-id');
-	  container=$(this).parent();
+	  var id = $(this).attr('data-id'),
+	  container = $(this).parent();
 	  if(container.hasClass("unpinned")) {
 	    OP.Batch.add(id);
 	  }
@@ -559,6 +577,7 @@ var opTheme = (function() {
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
         OP.Util.on('click:pin', opTheme.callback.pinClick);
         OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
+        OP.Util.on('click:pin-clearpage', opTheme.callback.pinClearPageClick);
         OP.Util.on('click:pin-selectall', opTheme.callback.pinSelectAll);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
@@ -752,7 +771,7 @@ var opTheme = (function() {
           opTheme.message.append(
             messageMarkup(
               '  <a id="batch-message"></a>You have <span id="batch-count">'+idsLength+'</span> photos pinned.' +
-              '  <div class="alert-actions"><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a><a href="#" class="btn small pin-selectall-click">Select all pins</a><a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
+              '  <div class="alert-actions"><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a><a href="#" class="btn small pin-selectall-click">Select all pins</a><a href="#" class="btn small pin-clearpage-click">Clear pins on page</a><a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
             )
           );
         }

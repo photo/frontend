@@ -99,6 +99,7 @@
             'webhook-delete-click':'click:webhook-delete',
             'pin-click':'click:pin',
             'pin-clear-click':'click:pin-clear',
+            'pin-clearpage-click':'click:pin-clearpage',
             'pin-selectall-click':'click:pin-selectall'
         },
         <?php if($this->user->isOwner()) { ?>
