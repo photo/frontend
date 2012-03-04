@@ -28,4 +28,4 @@ That's it. View the [source of the installer][guideinstallcli] or [watch a scree
 [guideinstallamazonec2]: InstallationUsingOpenPhotoEC2-AMI.markdown
 [guideinstallcli]: InstallationUbuntuApache.sh
 [screencast]: http://youtu.be/2QXtHPkO8eQ
-[guideinstallfedora16apache]: InstallFedora16Apache.markdown
+[guideinstallfedora16apache]: InstallationFedora16Apache.markdown
