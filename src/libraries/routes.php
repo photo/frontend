@@ -55,7 +55,7 @@ getRoute()->post('/user/mobile/passphrase', array('UserController', 'mobilePassp
  * Everything in []'s are optional
  * /webhook[s][/{id}]/{action}
  */
-getRoute()->post('/webhook/subscribe', array('WebhookController', 'subscribe'));
+getRoute()->post('/?1?/webhook/subscribe', array('WebhookController', 'subscribe'));
 
 /*
  * OAuth endpoints

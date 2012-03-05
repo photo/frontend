@@ -26,7 +26,7 @@ class ApiAlbumController extends ApiBaseController
     $albumId = $this->album->create($_POST);
     if($albumId)
     {
-      $albumResp = $this->api->invoke("/album/{$albumId}/view.json", EpiRoute::httpGet);
+      $albumResp = $this->api->invoke("/{$this->apiVersion}/album/{$albumId}/view.json", EpiRoute::httpGet);
       if($albumResp['code'] == 200)
         return $this->success('Album created', $albumResp['result']);
     }

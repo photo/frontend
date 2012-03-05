@@ -44,6 +44,19 @@ class ApiController extends ApiBaseController
     *
     * @return string Standard JSON envelope
     */
+  public function helloV0()
+  {
+    if(isset($_GET['auth']) && !empty($_GET['auth']))
+      getAuthentication()->requireAuthentication();
+
+    return $this->success('Hello, world! This is version zero of the API!', array_merge($_GET, array('api' => $api)));
+  }
+
+  /**
+    * A diagnostics endpoint used to verify calls are working.
+    *
+    * @return string Standard JSON envelope
+    */
   public function hello()
   {
     if(isset($_GET['auth']) && !empty($_GET['auth']))
@@ -60,12 +73,13 @@ class ApiController extends ApiBaseController
   public function version()
   {
     getAuthentication()->requireAuthentication();
+    $apiVersion = Request::getLatestApiVersion();
     $systemVersion = getConfig()->get('site')->lastCodeVersion;
     $databaseVersion = getDb()->version();
     $databaseType = getDb()->identity();
     $filesystemVersion = '0.0.0';
     $filesystemType = getFs()->identity();
-    return $this->success('System versions', array('system' => $systemVersion, 'database' => $databaseVersion, 'databaseType' => $databaseType,
+    return $this->success('System versions', array('api' => $apiVersion, 'system' => $systemVersion, 'database' => $databaseVersion, 'databaseType' => $databaseType,
       'filesystem' => $filesystemVersion, 'filesystemType' => $filesystemType));
   }
 }
