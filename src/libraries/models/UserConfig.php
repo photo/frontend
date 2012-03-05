@@ -66,7 +66,7 @@ class UserConfig
     if(!$iniString || empty($iniString))
       return false;
 
-    return file_put_contents($configFile, $iniString);
+    return $this->config->write($configFile, $iniString);
   }
 
   public function load()
