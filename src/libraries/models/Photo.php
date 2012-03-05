@@ -595,6 +595,9 @@ class Photo extends BaseModel
   {
     $fragment = $this->generateFragment($width, $height, $options);
     $customPath = preg_replace('#^/base/#', '/custom/', $basePath);
+    if(stristr($customPath, '.') === false)
+      return "{$customPath}_{$fragment}.jpg";
+
     $customName = substr($customPath, 0, strrpos($customPath, '.'));
     return "{$customName}_{$fragment}.jpg";
   }
