@@ -250,14 +250,16 @@ class Photo extends BaseModel
   /**
     * Generates the default paths given a photo name.
     * These paths will also be the initial versions of the photo that are stored in the file system and database.
+    * We need the prefix for the original to be different from the base
+    * A random number between 1,000,000 and 9,999,999 is sufficient when paired with the filename
     *
     * @param string $photoName File name of the photo
     * @return array
     */
   public function generatePaths($photoName)
   {
-    $baseName = time() . '-' . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
-    $originalName = substr(uniqid(), 0, 6) . '-' . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
+    $baseName = dechex(rand(1000000,9999999)) . '-' . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
+    $originalName = uniqid() . '-' . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
     return array(
       'pathOriginal' => sprintf('/original/%s/%s', date('Ym'), $originalName),
       'pathBase' => sprintf('/base/%s/%s', date('Ym'), $baseName)
