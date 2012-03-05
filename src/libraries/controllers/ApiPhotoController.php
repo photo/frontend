@@ -326,7 +326,7 @@ class ApiPhotoController extends ApiBaseController
     {
       $hashResp = $this->api->invoke("/{$this->apiVersion}/photos/list.json", EpiRoute::httpGet, array('_GET' => array('hash' => $attributes['hash'])));
       if($hashResp['result'][0]['totalRows'] > 0)
-        return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates do not pass in allowDuplicates=false', false);
+        return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates do not pass in allowDuplicate=1', false);
     }
 
     $exiftran = $this->config->modules->exiftran;
