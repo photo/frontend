@@ -78,3 +78,4 @@ require $pathsObj->models . '/Theme.php';
 require $pathsObj->models . '/Upgrade.php';
 require $pathsObj->models . '/PluginBase.php';
 require $pathsObj->models . '/Plugin.php';
+require $pathsObj->models . '/Request.php';
