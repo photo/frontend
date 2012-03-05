@@ -17,6 +17,8 @@ Epi::setPath('config', "{$basePath}/configs");
 Epi::setPath('view', '');
 Epi::init('api','cache','config','curl','form','logger','route','session','template','database');
 
+$routeObj = getRoute();
+
 // loads configs and dependencies
 $userConfigObj = new UserConfig;
 $hasConfig = $userConfigObj->load();
@@ -56,6 +58,8 @@ if($hasConfig && !$runSetup)
     $runUpgrade = true;
   require $configObj->get('paths')->libraries . '/routes.php';
 
+  Request::setApiVersion();
+
   // initializes plugins
   getPlugin()->load();
   getPlugin()->invoke('onLoad');
@@ -90,5 +94,5 @@ else
   // Before we run the setup in edit mode, we need to validate ownership
   $userObj = new User;
   if(isset($_GET['edit']) && !$userObj->isOwner())
-    getRoute()->run('/error/403');
+    $routeObj->run('/error/403');
 }

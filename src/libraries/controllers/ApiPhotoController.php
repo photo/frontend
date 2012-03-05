@@ -30,7 +30,7 @@ class ApiPhotoController extends ApiBaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-    $res = $this->api->invoke("/photo/{$id}/view.json");
+    $res = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json");
     $status = $this->photo->delete($id);
     if($status)
     {
@@ -62,7 +62,7 @@ class ApiPhotoController extends ApiBaseController
     $retval = true;
     foreach($ids as $id)
     {
-      $response = $this->api->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost, array('_POST' => $params));
+      $response = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/delete.json", EpiRoute::httpPost, array('_POST' => $params));
       $retval = $retval && $response['result'] !== false;
     }
 
@@ -81,8 +81,8 @@ class ApiPhotoController extends ApiBaseController
   public function edit($id)
   {
     getAuthentication()->requireAuthentication();
-    $photoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
-    $groupsResp = $this->api->invoke('/groups/list.json', EpiRoute::httpGet);
+    $photoResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
+    $groupsResp = $this->api->invoke("/{$this->apiVersion}/groups/list.json", EpiRoute::httpGet);
     $photo = $photoResp['result'];
     $groups = $groupsResp['result'];
     if(!$groups)
@@ -324,7 +324,7 @@ class ApiPhotoController extends ApiBaseController
       $allowDuplicate = $attributes['allowDuplicate'];
     if($allowDuplicate == '0')
     {
-      $hashResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('hash' => $attributes['hash'])));
+      $hashResp = $this->api->invoke("/{$this->apiVersion}/photos/list.json", EpiRoute::httpGet, array('_GET' => array('hash' => $attributes['hash'])));
       if($hashResp['result'][0]['totalRows'] > 0)
         return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates do not pass in allowDuplicates=false', false);
     }
@@ -355,10 +355,10 @@ class ApiPhotoController extends ApiBaseController
         $this->photo->generate($photoId, $hash, $options['width'], $options['height'], $options['options']);
       }
 
-      $apiResp = $this->api->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => implode(',', $sizes))));
+      $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => implode(',', $sizes))));
       $photo = $apiResp['result'];
 
-      $webhookApi = $this->api->invoke('/webhooks/photo.upload/list.json', EpiRoute::httpGet);
+      $webhookApi = $this->api->invoke("/{$this->apiVersion}/webhooks/photo.upload/list.json", EpiRoute::httpGet);
       if(!empty($webhookApi['result']) && is_array($webhookApi['result']))
       {
         $photoAsArgs = $photo;
@@ -372,7 +372,7 @@ class ApiPhotoController extends ApiBaseController
 
       $permission = isset($attributes['permission']) ? $attributes['permission'] : 0;
       $this->api->invoke(
-        '/activity/create.json', 
+        "/{$this->apiVersion}/activity/create.json", 
         EpiRoute::httpPost, 
         array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
       );
@@ -398,7 +398,7 @@ class ApiPhotoController extends ApiBaseController
     $params = $_POST;
     if(isset($params['tags']) || isset($params['tagsAdd']) || isset($params['tagsRemove']))
     {
-      $photoBefore = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+      $photoBefore = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
       $photoBefore = $photoBefore['result'];
       if($photoBefore)
       {
@@ -438,9 +438,9 @@ class ApiPhotoController extends ApiBaseController
 
     if($photoUpdatedId)
     {
-      $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
+      $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
       $photo = $apiResp['result'];
-      $this->api->invoke('/activity/create.json', EpiRoute::httpPost, array('_POST' => array('type' => 'photo-update', 'data' => $photo, 'permission' => $params['permission'])));
+      $this->api->invoke("/{$this->apiVersion}/activity/create.json", EpiRoute::httpPost, array('_POST' => array('type' => 'photo-update', 'data' => $photo, 'permission' => $params['permission'])));
       return $this->success("photo {$id} updated", $photo);
     }
 
@@ -468,7 +468,7 @@ class ApiPhotoController extends ApiBaseController
     $retval = true;
     foreach($ids as $id)
     {
-      $response = $this->api->invoke("/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $params));
+      $response = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $params));
       $retval = $retval && $response['result'] !== false;
     }
 

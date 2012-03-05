@@ -6,9 +6,6 @@
  */
 class BaseController extends ApiBaseController
 {
-
-  protected $api, $config, $theme;
-
   public function __construct()
   {
     $this->api = getApi();

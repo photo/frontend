@@ -6,6 +6,8 @@
  */
 class ApiBaseController
 {
+  protected $apiVersion;
+
   /**
    * Status constants
    */
@@ -27,6 +29,8 @@ class ApiBaseController
     $this->template = getTemplate();
     $this->utility = new Utility;
     $this->url = new Url;
+
+    $this->apiVersion = Request::getApiVersion();
   }
 
   /**
