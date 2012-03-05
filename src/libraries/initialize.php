@@ -18,6 +18,7 @@ Epi::setPath('view', '');
 Epi::init('api','cache','config','curl','form','logger','route','session','template','database');
 
 $routeObj = getRoute();
+$apiObj = getApi();
 
 // loads configs and dependencies
 $userConfigObj = new UserConfig;
