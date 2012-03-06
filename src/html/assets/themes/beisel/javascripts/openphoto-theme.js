@@ -282,16 +282,6 @@ var opTheme = (function() {
         ev.preventDefault();
         OP.Batch.clear();
       },
-      pinOver: function(ev) {
-        var el = $(ev.target),
-            a = el.parent().prev();
-        a.fadeIn('fast');
-      },
-      pinOut: function(ev) {
-        var el = $(ev.target),
-            a = el.filter('[class~="unpinned"]').children().filter('.pin').filter(':visible');
-        a.fadeOut('fast');
-      },
       pluginStatus: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
