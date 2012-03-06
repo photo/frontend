@@ -76,6 +76,23 @@ class Plugin extends BaseModel
       echo $output;
   }
 
+  public function deferInvocation($action, $params = null)
+  {
+    $retval = array();
+    foreach($this->pluginInstances as $instance)
+    {
+      $retval[] = array($instance, $action, $params);
+    }
+    return $retval;
+  }
+
+  public function invokeSingle($invocationDef)
+  {
+    $output = (string)$invocationDef[0]->$invocationDef[1]($invocationDef[2]);
+    if($output != '')
+      echo $output;
+  }
+
   public function isActive($plugin)
   {
     foreach($this->getActive() as $p)

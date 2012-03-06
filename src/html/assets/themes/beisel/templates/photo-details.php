@@ -94,6 +94,8 @@
     <?php } ?>
   </ul>
 
+  <?php $this->plugin->invoke('renderPhotoDetail', $photo); ?>
+
   <p><strong>Photo details</strong></p>
   <ul class="meta">
     <li class="date"><span></span><?php $this->utility->dateLong($photo['dateTaken']); ?></li>

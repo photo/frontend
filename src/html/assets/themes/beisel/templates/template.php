@@ -29,12 +29,10 @@
       <?php } ?>
     <?php } ?>
 
-    <?php $this->plugin->invoke('onHead', array('page' => $page)); ?>
+    <?php $this->plugin->invoke('renderHead', array('page' => $page)); ?>
 </head>
 
 <body class="<?php echo $page; ?>">
-  <?php $this->plugin->invoke('onBodyBegin', array('page' => $page)); ?>
-
   <div id="wrapper" class="container">
 
     <div class="row">
@@ -146,6 +144,6 @@
       }
     });
   </script>
-  <?php $this->plugin->invoke('onBodyEnd', array('page' => $page)); ?>
+  <?php $this->plugin->invoke('renderFooter', array('page' => $page)); ?>
 </body>
 </html>
