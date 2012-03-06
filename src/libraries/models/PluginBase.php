@@ -35,27 +35,21 @@ class PluginBase extends BaseModel
     return $this->pluginConf;
   }
 
-  public function onAction($params)
-  {
-  }
+  public function onAction($params = null) { }
 
-  public function onBodyBegin($params = null)
-  {
-  }
+  public function onBodyBegin($params = null) { }
 
-  public function onBodyEnd($params = null)
-  {
-  }
+  public function onBodyEnd($params = null) { }
 
-  public function onHead($params = null)
-  {
-  }
+  public function onHead($params = null) { }
 
-  public function onLoad($params = null)
-  {
-  }
+  public function onLoad($params = null) { }
 
-  public function onView($params)
-  {
-  }
+  public function onView($params = null) { }
+
+  public function renderHead($params = null) { }
+
+  public function renderPhotoDetail($params = null) { }
+
+  public function renderFooter($params = null) { }
 }
