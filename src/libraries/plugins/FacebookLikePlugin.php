@@ -26,7 +26,10 @@ class FacebookLikePlugin extends PluginBase
   public function renderPhotoDetail()
   {
     parent::renderPhotoDetail();
+    $photo = $this->plugin->getData('photo');
     if($this->plugin->getData('page') !== 'photo-detail')
+      return;
+    if(!isset($photo['permission']) || $photo['permission'] == 0)
       return;
 
     return <<<MKP
