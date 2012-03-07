@@ -17,7 +17,7 @@ class GoogleAnalyticsPlugin extends PluginBase
     return array('id' => null);
   }
 
-  public function renderHead($params = null)
+  public function renderHead()
   {
     parent::renderHead();
     $conf = $this->getConf();
