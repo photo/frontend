@@ -56,6 +56,7 @@ class GeneralController extends BaseController
     $apisToCall = getConfig()->get('frontApis');
     $params = $this->utility->callApis($apisToCall);
     $body = $this->theme->get($template, $params);
+    $this->plugin->setData('page', 'front');
     $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'front'));
   }
 

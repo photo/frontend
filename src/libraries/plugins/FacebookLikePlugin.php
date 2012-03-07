@@ -26,6 +26,9 @@ class FacebookLikePlugin extends PluginBase
   public function renderPhotoDetail()
   {
     parent::renderPhotoDetail();
+    if($this->plugin->getData('page') !== 'photo-detail')
+      return;
+
     return <<<MKP
 <fb:like ref="top_left"></fb:like>
 MKP;
