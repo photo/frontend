@@ -11,11 +11,12 @@ class EmailNotificationPlugin extends PluginBase
     parent::__construct();
   }
 
-  public function onAction($params)
+  public function onAction()
   {
-    parent::onAction($params);
+    parent::onAction();
     // TODO proper email sending
-    $actionResp = getApi()->invoke("/action/{$params['id']}/view.json", EpiRoute::httpGet);
+    $target = $this->plugin->getData('target');
+    $actionResp = getApi()->invoke("/action/{$target['id']}/view.json", EpiRoute::httpGet);
     if($actionResp['code'] !== 200)
       return;
 

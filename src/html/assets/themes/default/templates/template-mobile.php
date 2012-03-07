@@ -31,10 +31,9 @@
     <?php } ?>
 
 
-    <?php $this->plugin->invoke('onHead', array('page' => $page)); ?>
+    <?php $this->plugin->invoke('renderHead'); ?>
 </head>
 <body class="<?php echo $page; ?>">
-    <?php $this->plugin->invoke('onBodyBegin', array('page' => $page)); ?>
     <?php echo $body; ?>
     <?php if($this->config->site->mode === 'dev') { ?>
       <script type="text/javascript" src="<?php $this->theme->asset($this->config->dependencies->javascript); ?>"></script>
@@ -68,6 +67,6 @@
             },
         });
     </script>
-    <?php $this->plugin->invoke('onBodyEnd', array('page' => $page)); ?>
+    <?php $this->plugin->invoke('renderFooter'); ?>
 </body>
 </html>
