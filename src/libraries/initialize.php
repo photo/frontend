@@ -63,7 +63,6 @@ if($hasConfig && !$runSetup)
 
   // initializes plugins
   getPlugin()->load();
-  getPlugin()->invoke('onLoad');
 }
 else
 {

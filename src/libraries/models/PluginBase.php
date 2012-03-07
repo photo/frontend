@@ -6,7 +6,8 @@
  */
 class PluginBase extends BaseModel
 {
-  private $plugin, $pluginName, $pluginConf = null;
+  protected $plugin;
+  private $pluginName, $pluginConf = null;
   public function __construct($params = null)
   {
     parent::__construct();
@@ -36,14 +37,6 @@ class PluginBase extends BaseModel
   }
 
   public function onAction($params = null) { }
-
-  public function onBodyBegin($params = null) { }
-
-  public function onBodyEnd($params = null) { }
-
-  public function onHead($params = null) { }
-
-  public function onLoad($params = null) { }
 
   public function onView($params = null) { }
 

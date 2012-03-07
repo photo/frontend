@@ -7,7 +7,7 @@
  */
 class Plugin extends BaseModel
 {
-  protected $pluginDir, $activePlugins = array(), $pluginInstances = array();
+  protected $pluginDir, $activePlugins = array(), $pluginInstances = array(), $data = array();
 
   public function __construct($params = null)
   {
@@ -62,6 +62,16 @@ class Plugin extends BaseModel
   public function getConfigObj()
   {
     return getConfig();
+  }
+
+  public function getData($key = null)
+  {
+    if($key === null)
+      return $this->data;
+    elseif(array_key_exists($key, $this->data))
+      return $this->data[$key];
+    else
+      return null;
   }
 
   public function invoke($action, $params = null)
@@ -129,6 +139,11 @@ class Plugin extends BaseModel
       return $conf;
     }
     return $conf;
+  }
+
+  public function setData($key, $value)
+  {
+    $this->data[$key] = $value;
   }
 
   public function writeConf($plugin, $string)
