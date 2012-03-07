@@ -17,7 +17,7 @@ class FacebookConnectPlugin extends PluginBase
     return array('id' => null, 'secret' => null);
   }
 
-  public function renderFooter($params = null)
+  public function renderFooter()
   {
     parent::renderFooter();
     $conf = $this->getConf();

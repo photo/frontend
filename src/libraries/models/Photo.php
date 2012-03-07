@@ -67,10 +67,7 @@ class Photo extends BaseModel
       }
     }
 
-    // we never need the base
-    if(isset($photo['pathBase']))
-      unset($photo['pathBase']);
-
+    $photo['pathBase'] = $this->generateUrlBase($photo);
     // the original needs to be conditionally included
     if($this->config->site->allowOriginalDownload == 1 || $this->user->isOwner())
       $photo['pathOriginal'] = $this->generateUrlOriginal($photo);
@@ -262,6 +259,18 @@ class Photo extends BaseModel
       'pathOriginal' => sprintf('/original/%s/%s', date('Ym'), $originalName),
       'pathBase' => sprintf('/base/%s/%s', date('Ym'), $baseName)
     );
+  }
+
+  /**
+    * Obtain a public URL for the base photo.
+    *
+    * @param array $photo The photo object as returned from the database.
+    * @param string $protocol Protocol for the URL
+    * @return mixed string URL on success, FALSE on failure
+    */
+  public function generateUrlBase($photo, $protocol = 'http')
+  {
+    return "{$protocol}://{$photo['host']}{$photo['pathBase']}";
   }
 
   /**

@@ -29,7 +29,7 @@
       <?php } ?>
     <?php } ?>
 
-    <?php $this->plugin->invoke('renderHead', array('page' => $page)); ?>
+    <?php $this->plugin->invoke('renderHead'); ?>
 </head>
 
 <body class="<?php echo $page; ?>">
@@ -144,6 +144,6 @@
       }
     });
   </script>
-  <?php $this->plugin->invoke('renderFooter', array('page' => $page)); ?>
+  <?php $this->plugin->invoke('renderFooter'); ?>
 </body>
 </html>

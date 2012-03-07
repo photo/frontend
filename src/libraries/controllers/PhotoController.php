@@ -184,6 +184,7 @@ class PhotoController extends BaseController
       else
         $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
       $photo = $apiResp['result'];
+      $this->plugin->setData('photo', $photo);
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
       $crumb = $this->session->get('crumb');
