@@ -53,11 +53,6 @@ class Group extends BaseModel
     return $group;
   }
 
-  /**
-    * Get the next ID to be used for a action, group or photo.
-    * The ID is a base 32 string that represents an autoincrementing integer.
-    * @return string
-    */
   public function getGroups($email = null)
   {
     return $this->db->getGroups($email);

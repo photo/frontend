@@ -39,7 +39,16 @@ class ApiActionController extends ApiBaseController
     if($id)
     {
       $action = $this->action->view($id);
-      getPlugin()->invoke('onAction', $action);
+      // get the target element for the action
+      $apiResp = $this->api->invoke("/{$targetType}/{$targetId}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR')));
+      $target = $apiResp['result'];
+      $plugin = getPlugin();
+      $plugin->set('action', $action);
+      $plugin->set('type', $targetType);
+      $plugin->set('target', $target);
+      getPlugin()->invoke('onAction');
+      $activityParams = array('type' => 'action-create', 'data' => array('targetType' => $targetType, 'target' => $target, 'action' => $action), 'permission' => $target['permission']);
+      $this->api->invoke('/activity/create.json', EpiRoute::httpPost, array('_POST' => $activityParams));
       return $this->success("Action {$id} created on {$targetType} {$targetId}", $action);
     }
 
@@ -58,7 +67,7 @@ class ApiActionController extends ApiBaseController
     getAuthentication()->requireCrumb();
     $status = $this->action->delete($id);
     if($status)
-      return $this->success('Action deleted successfully', true);
+      return $this->noContent('Action deleted successfully', true);
     else
       return $this->error('Action deletion failure', false);
   }

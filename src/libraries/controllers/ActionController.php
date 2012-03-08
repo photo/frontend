@@ -14,6 +14,7 @@ class ActionController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->authentication = getAuthentication();
   }
 
   /**
@@ -26,8 +27,9 @@ class ActionController extends BaseController
     */
   public function create($targetId, $targetType)
   {
-    getAuthentication()->requireAuthentication(false);
-    getAuthentication()->requireCrumb($_POST['crumb']);
+    // does not need to be owner, anyone can comment
+    $this->authentication->requireAuthentication(false);
+    $this->authentication->requireCrumb($_POST['crumb']);
     $res = $this->api->invoke(sprintf('%s.json', $this->url->actionCreate($targetId, $targetType, false)), EpiRoute::httpPost);
     $result = $res ? '1' : '0';
     // TODO: standardize messaging parameter

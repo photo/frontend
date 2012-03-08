@@ -1286,20 +1286,6 @@ ul.photo-grid {
   text-align:left;
 }
 
-.grid-item:hover {
-  background-color:#f1f1f1;
-}
-
-.grid-item:hover a.pin {
-  visibility:visible;
-  -moz-transition:opacity 0.5s;
-  -webkit-transition:opacity 0.5s;
-  -ms-transition:opacity 0.5s;
-  transition:opacity 0.5s;
-  opacity:1;
-  filter:alpha(opacity=100);
-}
-
 .photo-grid.size440x292xCR .grid-item {
   margin-right:5px;
   margin-bottom:10px;
@@ -1364,30 +1350,6 @@ ul.photo-grid {
 
 .grid-item a ul.meta li.geo span {
   background:transparent url("../images/icons.png") 0 -626px no-repeat;
-}
-
-a.pin {
-  background:#fff url("../images/icons.png") 3px -1146px no-repeat;
-  position:absolute;
-  width:17px;
-  height:30px;
-  display:block;
-  z-index:1000;
-  padding:3px;
-  border-radius:3px;
-  margin:6px 0 0 6px;
-  -webkit-box-shadow:inset 0px 0px 5px 0px #999;
-  -moz-box-shadow:inset 0px 0px 5px 0px #999;
-  box-shadow:inset 0px 0px 5px 0px #999;
-  cursor:pointer;
-  display:block;
-}
-
-.unpinned a.pin {
-  background:#fff url("../images/icons.png") 3px -1106px no-repeat;
-  visibility:hidden;
-  opacity:0;
-  filter:alpha(opacity=0);
 }
 
 .grid-item a ul.meta li.geo span {
@@ -1609,7 +1571,7 @@ aside.sidebar .meta li span {
   top:2px;
   left:0;
   position:absolute;
-  width:15px;
+  width:20px;
 }
 
 aside.sidebar .meta li.date span {
@@ -1630,6 +1592,9 @@ aside.sidebar .meta li.license span {
 
 aside.sidebar .meta li.location span {
   background:transparent url("../images/icons.png") 0 -626px no-repeat;
+}
+aside.sidebar .meta li.original span {
+  background:transparent url("../images/icons.png") 0px 0px no-repeat;
 }
 
 aside.sidebar .meta li.location img {

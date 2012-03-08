@@ -17,27 +17,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="<?php $this->theme->asset('image', 'favicon.ico'); ?>">
     <link rel="apple-touch-icon" href="<?php $this->theme->asset('image', 'apple-touch-icon.png'); ?>">
-    <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'jquery.mobile.css'); ?>">
-    <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'photoswipe.css'); ?>">
-    <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'pagination.css'); ?>">
-    <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'mobile.css'); ?>">
-    <?php $this->plugin->invoke('onHead', array('page' => $page)); ?>
+    <?php if($this->config->site->mode === 'dev') { ?>
+      <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'jquery.mobile.css'); ?>">
+      <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'photoswipe.css'); ?>">
+      <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'pagination.css'); ?>">
+      <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'mobile.css'); ?>">
+    <?php } else { ?>
+      <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'jquery.mobile.css', false))->
+                                        addCss($this->theme->asset('stylesheet', 'photoswipe.css', false))->
+                                        addCss($this->theme->asset('stylesheet', 'pagination.css', false))->
+                                        addCss($this->theme->asset('stylesheet', 'mobile.css', false))->
+                                        getUrl(AssetPipeline::css, 'a'); ?>">
+    <?php } ?>
+
+
+    <?php $this->plugin->invoke('renderHead'); ?>
 </head>
 <body class="<?php echo $page; ?>">
-    <?php $this->plugin->invoke('onBodyBegin', array('page' => $page)); ?>
     <?php echo $body; ?>
-    <script type="text/javascript" src="<?php $this->theme->asset($this->config->dependencies->javascript); ?>"></script>
-    <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
+    <?php if($this->config->site->mode === 'dev') { ?>
+      <script type="text/javascript" src="<?php $this->theme->asset($this->config->dependencies->javascript); ?>"></script>
+      <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
+    <?php } else { ?>
+      <script type="text/javascript" src="<?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
+                                      addJs($this->theme->asset('util', null, false))->
+                                      addJs($this->theme->asset($this->config->dependencies->javascript, null, false))->
+                                      getUrl(AssetPipeline::js, 'e'); ?>"></script>
+    <?php } ?>
     <script>
         OP.Util.init(jQuery, {
+            eventMap: {
+              click: {
+                'login-click':'click:login'
+              }
+            },
             js: {
                 assets: [
+          <?php if($this->config->site->mode === 'dev') { ?>
                     '<?php $this->theme->asset('javascript', 'jquery.mobile.js'); ?>',
                     '<?php $this->theme->asset('javascript', 'openphoto-theme-mobile.js'); ?>'
-                    ]
-            }
+          <?php } else { ?>
+                    '<?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
+                                              addJs($this->theme->asset('javascript', 'jquery.mobile.js', false))->
+                                              addJs($this->theme->asset('javascript', 'openphoto-theme-mobile.js', false))->
+                                              getUrl(AssetPipeline::js, 'b'); ?>'
+          <?php } ?>
+                    ],
+                onComplete: function(){ opTheme.init.attach(); }
+            },
         });
     </script>
-    <?php $this->plugin->invoke('onBodyEnd', array('page' => $page)); ?>
+    <?php $this->plugin->invoke('renderFooter'); ?>
 </body>
 </html>

@@ -12,8 +12,10 @@ class ApiBaseController
   const statusError = 500;
   const statusSuccess = 200;
   const statusCreated = 201;
+  const statusNoContent = 204;
   const statusForbidden = 403;
   const statusNotFound = 404;
+  const statusConflict = 409;
 
   public function __construct()
   {
@@ -28,7 +30,7 @@ class ApiBaseController
   }
 
   /**
-    * Created, HTTP 202
+    * Created, HTTP 201
     *
     * @param string $message A friendly message to describe the operation
     * @param mixed $result The result with values needed by the caller to take action.
@@ -36,7 +38,32 @@ class ApiBaseController
     */
   public function created($message, $result = null)
   {
-    return self::json($message, self::statusCreated, $result);
+    return $this->json($message, self::statusCreated, $result);
+  }
+
+  /**
+    * Conflict, HTTP 409
+    * This is used when there's a conflict/duplicate
+    *
+    * @param string $message A friendly message to describe the operation
+    * @param mixed $result The result with values needed by the caller to take action.
+    * @return string Standard JSON envelope
+    */
+  public function conflict($message, $result = null)
+  {
+    return $this->json($message, self::statusConflict, $result);
+  }
+
+  /**
+    * No content, HTTP 204
+    *
+    * @param string $message A friendly message to describe the operation
+    * @param mixed $result The result with values needed by the caller to take action.
+    * @return string Standard JSON envelope
+    */
+  public function noContent($message, $result = null)
+  {
+    return $this->json($message, self::statusNoContent, $result);
   }
 
   /**
@@ -48,7 +75,7 @@ class ApiBaseController
     */
   public function error($message, $result = null)
   {
-    return self::json($message, self::statusError, $result);
+    return $this->json($message, self::statusError, $result);
   }
 
   /**
@@ -60,7 +87,7 @@ class ApiBaseController
     */
   public function success($message, $result = null)
   {
-    return self::json($message, self::statusSuccess, $result);
+    return $this->json($message, self::statusSuccess, $result);
   }
 
   /**
@@ -72,7 +99,7 @@ class ApiBaseController
     */
   public function forbidden($message, $result = null)
   {
-    return self::json($message, self::statusForbidden, $result);
+    return $this->json($message, self::statusForbidden, $result);
   }
 
   /**
@@ -84,7 +111,7 @@ class ApiBaseController
     */
   public function notFound($message, $result = null)
   {
-    return self::json($message, self::statusNotFound, $result);
+    return $this->json($message, self::statusNotFound, $result);
   }
 
   /**

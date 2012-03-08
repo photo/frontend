@@ -49,8 +49,11 @@ class User extends BaseModel
     */
   public function getEmailAddress()
   {
-    // TODO support oauth calls
-    return $this->session->get('email');
+    $credential = $this->getCredentialObject();
+    if($credential->isOAuthRequest())
+      return $credential->getEmailFromOAuth();
+    else
+      return $this->session->get('email');
   }
 
   /**

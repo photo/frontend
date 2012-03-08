@@ -3,7 +3,7 @@ $domains = $this->db->get_domain_list("/^{$this->domainPhoto}(Action|Credential|
 if(count($domains) == 7)
   return true;
 
-$domainsToCreate = array($this->domainAction, $this->domainCredential, $this->domainGroup, 
+$domainsToCreate = array($this->domainAction, $this->domainActivity, $this->domainAlbum, $this->domainCredential, $this->domainGroup, 
   $this->domainPhoto, $this->domainTag, $this->domainUser, $this->domainWebhook);
 
 $queue = new CFBatchRequest();

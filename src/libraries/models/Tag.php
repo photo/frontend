@@ -169,7 +169,7 @@ class Tag extends BaseModel
   public function sanitizeTagsAsString($tags)
   {
     $tagsArray = preg_split('/\s*,\s*/', trim($tags), -1, PREG_SPLIT_NO_EMPTY);
-    $tagsArray = array_unique($tagsArray);
+    $tagsArray = $this->deduplicate($tagsArray);
     foreach($tagsArray as $key => $val)
       $tagsArray[$key] = $this->sanitize($val);
 
@@ -194,5 +194,23 @@ class Tag extends BaseModel
     if($json)
       $params['params'] = json_encode($json);
     return $params;
+  }
+
+  private function deduplicate($tags)
+  {
+    $table = array();
+    foreach($tags as $tag)
+    {
+      $key = strtolower($tag);
+      if(!isset($table[$key]))
+        $table[$key] = array();
+      $table[$key][] = $tag;
+    }
+
+    $retval = array();
+    foreach($table as $tags)
+      $retval[] = min($tags);
+
+    return $retval;
   }
 }

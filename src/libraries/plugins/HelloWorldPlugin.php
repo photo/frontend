@@ -11,11 +11,6 @@ class HelloWorldPlugin extends PluginBase
     parent::__construct();
   }
 
-  public function onBody()
-  {
-    parent::onBody();
-  }
-
   public function onView()
   {
     parent::onView();

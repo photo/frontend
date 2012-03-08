@@ -1,10 +1,12 @@
 <?php
-require getConfig()->get('paths')->libraries . '/routes-api.php';
+require $configObj->get('paths')->libraries . '/routes-api.php';
 
 /*
  * Home page, optionally redirects if the theme doesn't have a front.php
  */
 getRoute()->get('/', array('GeneralController', 'home'));
+if($configObj->get('site')->maintenance == 1)
+  getRoute()->get('/maintenance', array('GeneralController', 'maintenance'));
 
 /*
  * Action endpoints
@@ -69,6 +71,6 @@ getRoute()->get('/v[1]/oauth/test', array('OAuthController', 'test'));
 getRoute()->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
 
 if($runUpgrade)
-  require getConfig()->get('paths')->libraries . '/routes-upgrade.php';
+  require $configObj->get('paths')->libraries . '/routes-upgrade.php';
 
-require getConfig()->get('paths')->libraries . '/routes-error.php';
+require $configObj->get('paths')->libraries . '/routes-error.php';

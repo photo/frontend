@@ -17,9 +17,9 @@ class GoogleAnalyticsPlugin extends PluginBase
     return array('id' => null);
   }
 
-  public function onHead()
+  public function renderHead()
   {
-    parent::onHead();
+    parent::renderHead();
     $conf = $this->getConf();
     return <<<MKP
   <script type="text/javascript">

@@ -27,7 +27,7 @@ class ApiTagController extends ApiBaseController
     getAuthentication()->requireAuthentication();
     $res = Tag::delete($tag);
     if($res)
-      return $this->success('Tag deleted successfully', true);
+      return $this->noContent('Tag deleted successfully', true);
     else
       return $this->error('Tag could not be deleted', false);
   }

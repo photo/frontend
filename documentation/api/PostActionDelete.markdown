@@ -58,7 +58,7 @@ _N/A_
 The response is in a standard [response envelope](http://theopenphotoproject.org/documentation/api/Envelope).
 
 * _message_, A string describing the result. Don't use this for anything but reading.
-* _code_, _200_ on success
+* _code_, _204_ on success
 * _result_, boolean
 
 <a name="sample"></a>
@@ -66,7 +66,7 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
 
     {
       "message":"",
-      "code":200,
+      "code":204,
       "result": true
     }
 

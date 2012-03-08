@@ -1,11 +1,12 @@
-OpenPhoto / Installation for Ubuntu
+OpenPhoto / Installation for Ubuntu + Cherokee
 =======================
 #### OpenPhoto, a photo service for the masses
 
 ## OS: Linux Ubuntu Server 10.04+
 
 This guide instructs you on how to install OpenPhoto on Cherokee Web Server on an Ubuntu server.
-To have a recent version of Cherokee, I advice to add the ppa maintained with latest version. You can add it with the command
+To have a recent version of Cherokee, I advice to add the ppa maintained with latest version. You can add it with the command below.
+
     add-apt-repository ppa:cherokee-webserver/ppa
 
 ----------------------------------------
@@ -28,7 +29,7 @@ Once you've confirmed that your cloud account is setup you can get started on yo
 
     apt-get update
     apt-get upgrade
-    apt-get install cherokee php5-fpm php5-curl php5-mcrypt php-apc
+    apt-get install cherokee php5-fpm php5-curl php5-mcrypt php-apc build-essential libpcre3-dev
 
 There are also a few optional but recommended packages and modules.
 
@@ -44,7 +45,7 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
 #### Using git clone
 
     apt-get install git-core
-    git clone git@github.com:openphoto/frontend.git /var/www/yourdomain.com
+    git clone git://github.com/openphoto/frontend.git /var/www/yourdomain.com
     chown -R www-data:www-data /var/www/yourdomain.com
 
 #### Using tar

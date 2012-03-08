@@ -26,6 +26,9 @@
         <li class="date"><?php $this->utility->dateLong($photo['dateTaken']); ?></li>
         <li class="heart"><?php echo count($photo['actions']); ?> favorites &amp; comments - <a href="#comments" class="action-jump-click">see all</a></li>
         <li class="tags"><?php $this->url->tagsAsLinks($photo['tags']); ?></li>
+        <?php if(isset($photo['pathOriginal'])) { ?>
+          <li class="original"><span></span><a href="<?php $this->utility->safe($photo['pathOriginal']); ?>">Download original</a></li>
+        <?php } ?>
         <?php if($this->utility->licenseLink($photo['license'], false)) { ?>
           <a rel="license" href="<?php $this->utility->licenseLink($photo['license']); ?>">
             <?php $this->utility->licenseLong($photo['license']); ?>
@@ -43,7 +46,7 @@
           <ul>
             <?php foreach(array('exifCameraMake' => 'Camera make: %s',
                                         'exifCameraModel' => 'Camera model: %s',
-                                        'exifFNumber' => 'Av: f/%1.0F',
+                                        'exifFNumber' => 'Av: f/%1.1F',
                                         'exifExposureTime' => 'Tv: %s',
                                         'exifISOSpeed' => 'ISO: %d',
                                         'exifFocalLength' => 'Focal Length: %1.0fmm') as $key => $value) { ?>
@@ -94,7 +97,7 @@
     <?php if($this->user->isLoggedIn()) { ?>
       <button type="submit">Leave a comment</button>
     <?php } else { ?>
-      <button type="button" class="login-click">Sign in to comment</button>
+      <button type="button" class="login-click browserid">Sign in to comment</button>
     <?php } ?>
     </div>
   </form>

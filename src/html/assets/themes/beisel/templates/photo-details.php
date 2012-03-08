@@ -94,6 +94,8 @@
     <?php } ?>
   </ul>
 
+  <?php $this->plugin->invoke('renderPhotoDetail', $photo); ?>
+
   <p><strong>Photo details</strong></p>
   <ul class="meta">
     <li class="date"><span></span><?php $this->utility->dateLong($photo['dateTaken']); ?></li>
@@ -124,23 +126,26 @@
       <span></span>
       <ul>
         <?php foreach(array('exifCameraMake' => 'Camera make: <em>%s</em>',
-        'exifCameraModel' => 'Camera model: <em>%s</em>',
-        'exifFNumber' => 'Av: <em>f/%1.0F</em>',
-        'exifExposureTime' => 'Tv: <em>%s</em>',
-        'exifISOSpeed' => 'ISO: <em>%d</em>',
-        'exifFocalLength' => 'Focal Length: %1.0fmm') as $key => $value) { ?>
-          <?php if(!empty($photo[$key])) { ?>
-          <li><?php printf($value, $this->utility->safe($photo[$key], false)); ?></li>
+          'exifCameraModel' => 'Camera model: <em>%s</em>',
+          'exifFNumber' => 'Av: <em>f/%1.1F</em>',
+          'exifExposureTime' => 'Tv: <em>%s</em>',
+          'exifISOSpeed' => 'ISO: <em>%d</em>',
+          'exifFocalLength' => 'Focal Length: %1.0fmm') as $key => $value) { ?>
+            <?php if(!empty($photo[$key])) { ?>
+            <li><?php printf($value, $this->utility->safe($photo[$key], false)); ?></li>
+            <?php } ?>
           <?php } ?>
-        <?php } ?>
-      </ul>
-    </li>
+        </ul>
+      </li>
+    <?php } ?>
+    <?php if(isset($photo['pathOriginal'])) { ?>
+      <li class="original"><span></span><a href="<?php $this->utility->safe($photo['pathOriginal']); ?>">Download original</a></li>
     <?php } ?>
     <?php if($this->user->isOwner()) { ?>
-    <li class="edit">
-      <span></span>
-      <a href="<?php $this->url->photoEdit($photo['id']); ?>" class="button photo-edit-click">Edit this photo</a>
-    </li>
+      <li class="edit">
+        <span></span>
+        <a href="<?php $this->url->photoEdit($photo['id']); ?>" class="button photo-edit-click">Edit this photo</a>
+      </li>
     <?php } ?>
   </ul>
 </aside>

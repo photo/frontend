@@ -17,9 +17,9 @@ class FacebookConnectPlugin extends PluginBase
     return array('id' => null, 'secret' => null);
   }
 
-  public function onBodyEnd()
+  public function renderFooter()
   {
-    parent::onBodyEnd();
+    parent::renderFooter();
     $conf = $this->getConf();
     return <<<MKP
   <div id="fb-root"></div>

@@ -30,16 +30,33 @@ class PhotoController extends BaseController
     */
   public function create($id, $hash, $width, $height, $options = null)
   {
-    $args = func_get_args();
-    // TODO, this should call a method in the API
-    $photo = $this->photo->generate($id, $hash, $width, $height, $options);
-    // TODO return 404 graphic
-    if($photo)
+    $fragment = $this->photo->generateFragment($width, $height, $options);
+    // We cannot call the API since this may not be authenticated.
+    // Rely on the hash to confirm it was a valid request
+    $db = getDb();
+    $photo = $db->getPhoto($id);
+    if($photo);
     {
-      header('Content-Type: image/jpeg');
-      readfile($photo);
-      unlink($photo);
-      return;
+      // check if this size exists
+      if(isset($photo["path{$fragment}"]) && stristr($photo["path{$fragment}"], "/{$hash}/") === false)
+      {
+        $url = $this->photo->generateUrlPublic($photo, $width, $height, $options);
+        $this->route->redirect($url, 301, true);
+        return;
+      }
+      else
+      {
+        // TODO, this should call a method in the API
+        $photo = $this->photo->generate($id, $hash, $width, $height, $options);
+        // TODO return 404 graphic
+        if($photo)
+        {
+          header('Content-Type: image/jpeg');
+          readfile($photo);
+          unlink($photo);
+          return;
+        }
+      }
     }
     $this->route->run('/error/500');
   }
@@ -100,6 +117,8 @@ class PhotoController extends BaseController
       $photos = $this->api->invoke("/photos/list.json", EpiRoute::httpGet, $params);
 
     $photos = $photos['result'];
+    $this->plugin->setData('photos', $photos);
+    $this->plugin->setData('page', 'photos');
 
     $pages = array('pages' => array());
     if(!empty($photos))
@@ -167,6 +186,8 @@ class PhotoController extends BaseController
       else
         $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
       $photo = $apiResp['result'];
+      $this->plugin->setData('photo', $photo);
+      $this->plugin->setData('page', 'photo-detail');
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
       $crumb = $this->session->get('crumb');

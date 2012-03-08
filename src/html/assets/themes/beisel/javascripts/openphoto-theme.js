@@ -58,7 +58,7 @@ var opTheme = (function() {
             id = el.attr('data-id');
       
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
-          if(response.code === 200)
+          if(response.code === 204)
             $(".action-container-"+id).hide('medium', function(){ $(this).remove(); });
           else
             opTheme.message.error('Could not delete the photo.');
@@ -73,7 +73,7 @@ var opTheme = (function() {
         opTheme.ui.batchMessage();
         log("Adding photo " + photo.id);
       },
-      batchClear: function(photo) {
+      batchClear: function() {
         var el = $("#batch-message").parent();
         $(".pinned").removeClass("pinned").addClass("unpinned").children().filter(".pin").fadeOut();
         el.slideUp('fast', function(){ $(this).remove(); });
@@ -83,6 +83,9 @@ var opTheme = (function() {
             val = el.val(),
             tgt = $("form#batch-edit .form-fields");
         switch(val) {
+          case 'delete':
+            tgt.html(opTheme.ui.batchFormFields.empty());
+            break;
           case 'permission':
             tgt.html(opTheme.ui.batchFormFields.permission());
             break;
@@ -106,12 +109,13 @@ var opTheme = (function() {
               '        <option value="tagsAdd">Add Tags</option>' +
               '        <option value="tagsRemove">Remove Tags</option>' +
               '        <option value="permission">Permission</option>' +
+              '        <option value="delete">Delete</option>' +
               '      </select>' +
               '    </div>' +
               '  </div>' +
               '  <div class="form-fields">'+opTheme.ui.batchFormFields.tags()+'</div>' +
               '</form>',
-              '<a href="#" class="btn photo-update-batch-click">Update</a>'
+              '<a href="#" class="btn photo-update-batch-click">Submit</a>'
             );
         el.html(html);
         OP.Util.fire('callback:tags-autocomplete');
@@ -133,7 +137,7 @@ var opTheme = (function() {
             url = el.attr('href')+'.json';
 
         OP.Util.makeRequest(url, {}, function(response) {
-          if(response.code === 200) {
+          if(response.code === 204) {
             el.parent().remove();
             opTheme.message.confirm('Credential successfully deleted.');
           } else {
@@ -201,7 +205,7 @@ var opTheme = (function() {
           	url = el.parent().attr('action')+'.json';
       
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
-          if(response.code === 200) {
+          if(response.code === 204) {
             el.html('This photo has been deleted');
             opTheme.message.confirm('This photo has been deleted.');
           } else {
@@ -246,12 +250,18 @@ var opTheme = (function() {
         params = {'crumb':crumb};
         params[key] = value;
         params['ids'] = OP.Batch.collection.getIds().join(',');
-        log(params);
-        OP.Util.makeRequest('/photos/update.json', params, opTheme.callback.photoUpdateBatchCb, 'json', 'post');
+        if(key !== 'delete') {
+          OP.Util.makeRequest('/photos/update.json', params, opTheme.callback.photoUpdateBatchCb, 'json', 'post');
+        } else {
+          OP.Util.makeRequest('/photos/delete.json', params, opTheme.callback.photoUpdateBatchCb, 'json', 'post');
+        }
       },
       photoUpdateBatchCb: function(response) {
         if(response.code == 200) {
           opTheme.message.append(messageMarkup('Your photos were successfully updated.', 'confirm'));
+        } else if(response.code == 204) {
+          OP.Batch.clear();
+          opTheme.message.append(messageMarkup('Your photos were successfully deleted.', 'confirm'));
         } else {
           opTheme.message.append(messageMarkup('There was a problem updating your photos.', 'error'));
         }
@@ -334,7 +344,7 @@ var opTheme = (function() {
             url = el.attr('href')+'.json';
 
         OP.Util.makeRequest(url, {}, function(response) {
-          if(response.code === 200) {
+          if(response.code === 204) {
             el.parent().remove();
             opTheme.message.confirm('Credential successfully deleted.');
           } else {
@@ -687,6 +697,9 @@ var opTheme = (function() {
 		}, 
     ui: {
       batchFormFields: {
+        empty: function() {
+          return '';
+        },
         permission: function() {
           return '  <div class="clearfix">' +
                  '    <label>Value</label>' +

@@ -1,4 +1,4 @@
-OpenPhoto / Installation for Ubuntu
+OpenPhoto / Installation for Ubuntu + Apache
 =======================
 #### OpenPhoto, a photo service for the masses
 
@@ -26,12 +26,12 @@ Once you've confirmed that your cloud account is setup you can get started on yo
 
     apt-get update
     apt-get upgrade
-    apt-get install apache2 php5 libapache2-mod-php5 php5-curl php5-gd php5-mcrypt php-apc
+    apt-get install apache2 php5 libapache2-mod-php5 php5-curl php5-gd php5-mcrypt php-apc build-essential libpcre3-dev
     a2enmod rewrite
 
 There are also a few optional but recommended packages and modules.
 
-    apt-get install php5-imagick exiftran
+    apt-get install php5-dev php5-imagick exiftran
     pecl install oauth
     a2enmod deflate
     a2enmod expires
@@ -46,8 +46,7 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
 #### Using git clone
 
     apt-get install git-core
-    git clone git@github.com:openphoto/frontend.git /var/www/yourdomain.com
-    chown -R www-data:www-data /var/www/yourdomain.com
+    git clone git://github.com/openphoto/frontend.git /var/www/yourdomain.com
 
 #### Using tar
 
@@ -55,12 +54,15 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
     wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
     tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
-    chown -R www-data:www-data yourdomain.com
 
 Assuming that this is a development machine you only need to make the config writable by the user Apache runs as. Most likely `www-data`.
 
     mkdir /var/www/yourdomain.com/src/userdata
+    mkdir /var/www/yourdomain.com/src/html/photos
+    mkdir /var/www/yourdomain.com/src/html/assets/cache
     chown www-data:www-data /var/www/yourdomain.com/src/userdata
+    chown www-data:www-data /var/www/yourdomain.com/src/html/photos
+    chown www-data:www-data /var/www/yourdomain.com/src/html/assets/cache
 
 ----------------------------------------
 
@@ -116,7 +118,7 @@ Now you're ready to launch your OpenPhoto site. Point your browser to your host 
 
 Once you complete the 3 steps your site will be up and running and you'll be redirected there. The _setup_ screen won't show up anymore. If for any reason you want to go through the setup again you will need to delete the generated config file and refresh your browser.
 
-    rm /var/www/yourdomain.com/src/configs/generated/settings.ini
+    rm /var/www/yourdomain.com/src/userdata/configs/yourdomain.com.ini
 
 **ENJOY!**
 

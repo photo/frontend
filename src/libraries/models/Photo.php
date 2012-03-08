@@ -30,6 +30,9 @@ class Photo extends BaseModel
       $this->user = $params['user'];
     else
       $this->user = new User;
+
+    if(isset($params['config']))
+      $this->config = $params['config'];
   }
 
   /**
@@ -64,11 +67,12 @@ class Photo extends BaseModel
       }
     }
 
-    // we never need the Base
-    if(isset($photo['pathBase']))
-      unset($photo['pathBase']);
-
-    $photo['pathOriginal'] = $this->generateUrlOriginal($photo);
+    $photo['pathBase'] = $this->generateUrlBase($photo);
+    // the original needs to be conditionally included
+    if($this->config->site->allowOriginalDownload == 1 || $this->user->isOwner())
+      $photo['pathOriginal'] = $this->generateUrlOriginal($photo);
+    elseif(isset($photo['pathOriginal']))
+      unset($photo['pathOriginal']);
 
     $photo['url'] = $this->getPhotoViewUrl($photo);
     return $photo;
@@ -255,6 +259,18 @@ class Photo extends BaseModel
       'pathOriginal' => sprintf('/original/%s/%s', date('Ym'), $originalName),
       'pathBase' => sprintf('/base/%s/%s', date('Ym'), $baseName)
     );
+  }
+
+  /**
+    * Obtain a public URL for the base photo.
+    *
+    * @param array $photo The photo object as returned from the database.
+    * @param string $protocol Protocol for the URL
+    * @return mixed string URL on success, FALSE on failure
+    */
+  public function generateUrlBase($photo, $protocol = 'http')
+  {
+    return "{$protocol}://{$photo['host']}{$photo['pathBase']}";
   }
 
   /**
@@ -453,10 +469,8 @@ class Photo extends BaseModel
     }
     $tagObj = new Tag;
     $attributes = $this->whitelistParams($attributes);
+    $filenameOriginal = $name;
     $paths = $this->generatePaths($name);
-    $exiftran = $this->config->modules->exiftran;
-    if(is_executable($exiftran))
-      exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
 
     // resize the base image before uploading
     $localFileCopy = "{$localFile}-copy";
@@ -536,6 +550,7 @@ class Photo extends BaseModel
           'exifExposureTime' => @$exif['exposureTime'],
           'exifISOSpeed' => @$exif['ISO'],
           'exifFocalLength' => @$exif['focalLength'],
+          'filenameOriginal' => $filenameOriginal,
           'width' => @$exif['width'],
           'height' => @$exif['height'],
           'dateTaken' => $dateTaken,
@@ -712,7 +727,7 @@ class Photo extends BaseModel
     $returnAttrs = array();
     $matches = array('id' => 1,'host' => 1,'appId' => 1,'title' => 1,'description' => 1,'key' => 1,'hash' => 1,'tags' => 1,'size' => 1,'width' => 1,'photo'=>1,
       'height' => 1,'altitude' => 1, 'latitude' => 1,'longitude' => 1,'views' => 1,'status' => 1,'permission' => 1,'groups' => 1,'license' => 1,
-      'dateTaken' => 1, 'dateUploaded' => 1);
+      'dateTaken' => 1, 'dateUploaded' => 1, 'filenameOriginal' => 1 /* TODO remove in 1.5.0, only used for upgrade */);
     $patterns = array('exif.*' => 1,'date.*' => 1,'path.*' => 1);
     foreach($attributes as $key => $val)
     {

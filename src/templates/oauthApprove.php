@@ -13,5 +13,5 @@
   </div>
 <?php } else { ?>
   <h1>You need to be logged in to view this page.</h1>
-  <button class="login-click">Login now</button>
+  <button class="login-click browserid">Login now</button>
 <?php } ?>
