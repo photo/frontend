@@ -14,6 +14,8 @@ class DatabaseDynamoDb implements DatabaseInterface
   private $config, $db, $domainAction, $domainCredential, $domainPhoto, 
     $domainTag, $domainUser, $domainWebhook, $errors = array(), $owner;
 
+  private $SCAN_LIMIT = 500;
+
   /**
     * Constructor
     *
@@ -394,6 +396,8 @@ class DatabaseDynamoDb implements DatabaseInterface
   {
 	getLogger()->info("Starting getCredentials");
 
+    	$scanResults = array();
+
 	$res = $this->db->scan(array(
 		'TableName' => $this->domainCredential,
 		'ScanFilter' => array(
@@ -405,6 +409,23 @@ class DatabaseDynamoDb implements DatabaseInterface
 			),
 		)
 	));
+
+	foreach($res->body->Items->{0} as $result)
+		$scanResults[] = $result;
+
+	# Scan for more results if there are any
+	while (isset($res->body->LastEvaluatedKey)) 
+	{
+		$res = $this->db->scan(array(
+			'TableName' => $this->domainCredential,
+			'ScanFilter' => $buildQuery['where'],
+			'Limit' => $this->SCAN_LIMIT,
+			'ExclusiveStartKey' => $res->body->LastEvaluatedKey->to_array()->getArrayCopy()
+		));
+
+		foreach($res->body->Items->{0} as $result)
+			$scanResults[] = $result;
+	}
 
 	if(!$res->isOK())
 		return false;
@@ -667,25 +688,29 @@ class DatabaseDynamoDb implements DatabaseInterface
 
     $buildQuery = self::buildQuery($filters, $limit, $offset);
 
-
-    #$res = $this->db->scan(array(
-#	'TableName' => $this->domainPhoto,
-#	'ScanFilter' => $buildQuery['where'],
-#    ));
-
-    $LastEvaluatedKey = True;
     $scanResults = array();
+
+    $res = $this->db->scan(array(
+	'TableName' => $this->domainPhoto,
+	'ScanFilter' => $buildQuery['where'],
+	'Limit' => $this->SCAN_LIMIT,
+    ));
+
+    foreach($res->body->Items->{0} as $result)
+	$scanResults[] = $result;
+
     # Scan for more results if there are any
-    while($LastEvaluatedKey)
+    while (isset($res->body->LastEvaluatedKey)) 
     {
-	    $res = $this->db->scan(array(
+	$res = $this->db->scan(array(
 		'TableName' => $this->domainPhoto,
 		'ScanFilter' => $buildQuery['where'],
-	    ));
-	    foreach($res->body->Items->{0} as $result)
+		'Limit' => $this->SCAN_LIMIT,
+		'ExclusiveStartKey' => $res->body->LastEvaluatedKey->to_array()->getArrayCopy()
+	));
+
+   	foreach($res->body->Items->{0} as $result)
 		$scanResults[] = $result;
-	    $LastEvaluatedKey = $res->body->LastEvaluatedKey;
-	    getLogger()->info("LastEvaluatedKey: " . $LastEvaluatedKey);
     }
 
     $this->logErrors($res);
@@ -931,7 +956,7 @@ class DatabaseDynamoDb implements DatabaseInterface
 		'TableName' => $this->domainWebhook,
 		'ScanFilter' => array(
 			'topic' => array(
-				'ComparisonOperator' => AmazonDynamoDB::EQUAL,
+				'ComparisonOperator' => AmazonDynamoDB::CONDITION_EQUAL,
 				'AttributeValueList' => array(
 					array( AmazonDynamoDB::TYPE_STRING => '$topic' )
 				)
@@ -1608,6 +1633,8 @@ class DatabaseDynamoDb implements DatabaseInterface
   {
     getLogger()->info("Starting normalizeCredential");
 
+    $credential = array();
+
     $credential['id'] = strval($raw->Name->S);
     $credential['appId'] = $this->config->application->appId;
 
@@ -1634,6 +1661,7 @@ class DatabaseDynamoDb implements DatabaseInterface
 
     getLogger()->info(print_r($credential,1));
 
+    getLogger()->info("Ending normalizeCredential");
     return $credential;
   }
 
