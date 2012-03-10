@@ -319,6 +319,72 @@ class DatabaseDynamoDb implements DatabaseInterface
   }
 
   /**
+    * Retrieves activity
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getActivity($id)
+  {
+    return false;
+    $res = $this->db->select("SELECT * FROM `{$this->domainActivities}` WHERE itemName()='{$id}'", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeActivity($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
+    * Retrieves activities
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getActivities()
+  {
+    return false;
+    $res = $this->db->select("SELECT * FROM `{$this->domainActivities}`", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeActivity($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
+    * Retrieves album
+    *
+    * @param string $id ID of the album to get
+    * @param string $email email of viewer to determine which albums they have access to
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAlbum($id, $email)
+  {
+    return false;
+  }
+
+  /**
+    * Retrieve elements for an album
+    *
+    * @param string $id ID of the album to get elements of
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAlbumElements($id)
+  {
+    return false;
+  }
+
+  /**
+    * Retrieve albums
+    *
+    * @param string $email email of viewer to determine which albums they have access to
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAlbums($email)
+  {
+  }
+
+
+  /**
     * Retrieve a credential with $id
     *
     * @param string $id ID of the credential to get
@@ -1034,6 +1100,32 @@ class DatabaseDynamoDb implements DatabaseInterface
   }
 
   /**
+    * Add an element to an album
+    *
+    * @param string $albumId ID of the album to update.
+    * @param string $type Type of element
+    * @param array $elementIds IDs of the elements to update.
+    * @return boolean
+    */
+  public function postAlbumAdd($albumId, $type, $elementIds)
+  {
+    return false;
+  }
+
+  /**
+    * Remove an element from an album
+    *
+    * @param string $albumId ID of the album to update.
+    * @param string $type Type of element
+    * @param array $elementIds IDs of the elements to update.
+    * @return boolean
+    */
+  public function postAlbumRemove($albumId, $type, $elementIds)
+  {
+    return false;
+  }
+
+  /**
     * Update the information for an existing credential.
     * This method overwrites existing values present in $params.
     *
@@ -1293,6 +1385,36 @@ class DatabaseDynamoDb implements DatabaseInterface
     $this->logErrors($res);
     return $res->isOK();
   }
+
+  /**
+    * Add a new album to the database
+    * This method does not overwrite existing values present in $params - hence "new action".
+    *
+    * @param string $id ID of the action to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putAlbum($id, $params)
+  {
+    return false;
+  }
+
+  /**
+    * Add a new activity to the database
+    * This method does not overwrite existing values present in $params - hence "new action".
+    *
+    * @param string $id ID of the action to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function putActivity($id, $params)
+  {
+    return false;
+    $res = $this->db->put_attributes($this->domainActivity, $id, $params);
+    $this->logErrors($res);
+    return $res->isOK();
+  }
+
 
   /**
     * Add a new credential to the database
