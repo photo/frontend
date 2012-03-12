@@ -26,7 +26,7 @@ Once you've confirmed that your cloud account is setup you can get started on yo
 
     apt-get update
     apt-get upgrade
-    apt-get install apache2 php5 libapache2-mod-php5 php5-curl php5-gd php5-mcrypt php-apc build-essential libpcre3-dev
+    apt-get install apache2 php5 libapache2-mod-php5 php5-curl php5-gd php5-mcrypt php-apc build-essential libpcre3-dev php5-mysql
     a2enmod rewrite
 
 There are also a few optional but recommended packages and modules.
