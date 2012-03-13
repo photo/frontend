@@ -64,6 +64,7 @@
             <option value="SimpleDb"<?php echo ($database == 'SimpleDb') ? ' selected="selected"' : '' ?>>Amazon SimpleDb</option>
             <option value="DynamoDb"<?php echo ($database == 'DynamoDb') ? ' selected="selected"' : '' ?>>Amazon DynamoDb</option>
             <option value="MySql"<?php echo ($database == 'MySql') ? ' selected="selected"' : '' ?>>MySQL</option>
+            <option value="PostgreSql"<?php echo ($database == 'PostgreSql') ? ' selected="selected"' : '' ?>>PostgreSQL</option>
           </select>
         </div>
       </div>
@@ -168,6 +169,39 @@
           <label for="mySqlTablePrefix">Table prefix <em>(optional)</em></label>
           <div class="input">
             <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
+          </div>
+        </div>
+      <?php } ?>
+      <?php if(isset($usesPostgreSql) && !empty($usesPostgreSql)) { ?>
+        <h3>Enter your PostgreSQL credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
+        <div class="clearfix">
+          <label for="postgreSqlHost">PostgreSQL Host</label>
+          <div class="input">
+            <input type="text" name="postgreSqlHost" id="postgreSqlHost" placeholder="Your PostgreSql host (i.e. 127.0.0.1)" size="50" autocomplete="off" data-validation="required" value="<?php echo $postgreSqlHost; ?>">
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="postgreSqlUser">PostgreSQL Username</label>
+          <div class="input">
+            <input type="text" name="postgreSqlUser" id="postgreSqlUser" placeholder="Your PostgreSql username" size="50" autocomplete="off" data-validation="required" value="<?php echo $postgreSqlUser; ?>">
+          </div>
+        </div>
+        <div class="clearfix">
+        <label for="postgreSqlPassword">PostgreSQL Password</label>
+          <div class="input">
+            <input type="password" name="postgreSqlPassword" id="postgreSqlPassword" placeholder="Your PostgreSql password" size="50" autocomplete="off" data-validation="required" value="<?php echo $postgreSqlPassword; ?>">
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="postgreSqlDb">PostgreSQL Database <em>(we'll try to create this if it doesn't exist)</em></label>
+          <div class="input">
+            <input type="text" name="postgreSqlDb" placeholder="Name of your PostgreSql database" id="postgreSqlDb" size="50" autocomplete="off" data-validation="required" value="<?php echo $postgreSqlDb; ?>">
+          </div>
+        </div>
+        <div class="clearfix">
+          <label for="postgreSqlTablePrefix">Table prefix <em>(optional)</em></label>
+          <div class="input">
+            <input type="text" name="postgreSqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" id="postgreSqlTablePrefix" size="50" autocomplete="off" value="<?php echo $postgreSqlTablePrefix; ?>">
           </div>
         </div>
       <?php } ?>

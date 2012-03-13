@@ -101,6 +101,9 @@ if(!function_exists('getDb'))
       case 'MySql':
         $database = new DatabaseMySql();
         break;
+      case 'PostgreSql':
+        $database = new DatabasePostgreSql();
+        break;
     }
 
     if($database)
