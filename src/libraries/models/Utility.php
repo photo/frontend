@@ -242,6 +242,17 @@ class Utility
     return $this->returnValue($license, $write);
   }
 
+  public function licenseName($key, $write = true)
+  {
+    $licenses = $this->getLicenses();
+    // default it to the key, if the key doesn't exist then assume it's custom
+    $license = $key;
+    if(isset($licenses[$key]))
+      $license = $licenses[$key]['name'];
+
+    return $this->returnValue($license, $write);
+  }
+
   public function licenseLink($key, $write = true)
   {
     $licenses = $this->getLicenses();
