@@ -1201,7 +1201,7 @@ class DatabaseMySql implements DatabaseInterface
     $from = "FROM `{$this->mySqlTablePrefix}photo` ";
     $where = "WHERE `{$this->mySqlTablePrefix}photo`.`owner`='{$this->owner}'";
     $groupBy = '';
-    $sortBy = 'ORDER BY CONCAT(dateTakenYear,dateTakenMonth,dateTakenDay) DESC, dateTaken ASC';
+    $sortBy = 'ORDER BY CONCAT(dateTakenYear,LPAD(dateTakenMonth,2,"0"),LPAD(dateTakenDay,2,"0")) DESC, dateTaken ASC';
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -1233,13 +1233,13 @@ class DatabaseMySql implements DatabaseInterface
             break;
           case 'sortBy':
             if($value === 'dateTaken,desc')
-              $sortBy = 'ORDER BY CONCAT(dateTakenYear,dateTakenMonth,dateTakenDay) DESC, dateTaken ASC';
+              $sortBy = 'ORDER BY CONCAT(dateTakenYear,LPAD(dateTakenMonth,2,"0"),LPAD(dateTakenDay,2,"0")) DESC, dateTaken ASC';
             elseif($value === 'dateTaken,asc')
-              $sortBy = 'ORDER BY CONCAT(dateTakenYear,dateTakenMonth,dateTakenDay) ASC, dateTaken ASC';
+              $sortBy = 'ORDER BY CONCAT(dateTakenYear,LPAD(dateTakenMonth,2,"0"),LPAD(dateTakenDay,2,"0")) ASC, dateTaken ASC';
             elseif($value === 'dateUploaded,desc')
-              $sortBy = 'ORDER BY CONCAT(dateUploadedYear,dateUploadedMonth,dateUploadedDay) DESC, dateUploaded ASC';
+              $sortBy = 'ORDER BY CONCAT(dateUploadedYear,LPAD(dateUploadedMonth,2,"0"),LPAD(dateUploadedDay,2,"0")) DESC, dateUploaded ASC';
             elseif($value === 'dateUploaded,asc')
-              $sortBy = 'ORDER BY CONCAT(dateUploadedYear,dateUploadedMonth,dateUploadedDay) ASC, dateUploaded ASC';
+              $sortBy = 'ORDER BY CONCAT(dateUploadedYear,LPAD(dateUploadedMonth,2,"0"),LPAD(dateUploadedDay,2,"0")) ASC, dateUploaded ASC';
             else
               $sortBy = 'ORDER BY ' . $this->_(str_replace(',', ' ', $value));
             $field = $this->_(substr($value, 0, strpos($value, ',')));
