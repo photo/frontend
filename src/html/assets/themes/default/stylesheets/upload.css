@@ -1,6 +1,9 @@
 body.upload h1 {
   font-size:2em;
 }
+body.upload .upload-button {
+  display:none;
+}
 div#upload {
   padding:10px 0;
 }
