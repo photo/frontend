@@ -22,10 +22,10 @@
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'main.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'g'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'h'); ?>">
       <?php if(true || $this->user->isOwner()) { ?>
         <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'owner.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'b'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'c'); ?>">
       <?php } ?>
     <?php } ?>
 
@@ -118,7 +118,7 @@
               '/assets/javascripts/jquery.plupload.queue.js',
               '/assets/javascripts/openphoto-upload.js',
             <?php } else { ?>
-              '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'd'); ?>',
+              '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'e'); ?>',
             <?php } ?>
           <?php } ?>
 
@@ -132,7 +132,7 @@
           <?php } else { ?>
             '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-batch.min.js')->
                                                 addJs($this->theme->asset('javascript', 'openphoto-theme-full-min.js', false))->
-                                                getUrl(AssetPipeline::js, 'g'); ?>'
+                                                getUrl(AssetPipeline::js, 'i'); ?>'
           <?php } ?>
         ],
         onComplete: function(){ 
