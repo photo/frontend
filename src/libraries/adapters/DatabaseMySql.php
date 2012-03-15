@@ -511,7 +511,6 @@ class DatabaseMySql implements DatabaseInterface
   public function getPhotos($filters = array(), $limit = 20, $offset = null)
   {
     $query = $this->buildQuery($filters, $limit, $offset);
-
     // buildQuery includes owner
     $photos = $this->db->all($sql = "SELECT {$this->mySqlTablePrefix}photo.* {$query['from']} {$query['where']} {$query['groupBy']} {$query['sortBy']} {$query['limit']} {$query['offset']}");
     if($photos === false)
@@ -1202,7 +1201,7 @@ class DatabaseMySql implements DatabaseInterface
     $from = "FROM `{$this->mySqlTablePrefix}photo` ";
     $where = "WHERE `{$this->mySqlTablePrefix}photo`.`owner`='{$this->owner}'";
     $groupBy = '';
-    $sortBy = 'ORDER BY dateTaken DESC';
+    $sortBy = 'ORDER BY CONCAT(dateTakenYear,dateTakenMonth,dateTakenDay) DESC, dateTaken ASC';
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -1233,7 +1232,16 @@ class DatabaseMySql implements DatabaseInterface
             $where = $this->buildWhere($where, "permission='1'");
             break;
           case 'sortBy':
-            $sortBy = 'ORDER BY ' . $this->_(str_replace(',', ' ', $value));
+            if($value === 'dateTaken,desc')
+              $sortBy = 'ORDER BY CONCAT(dateTakenYear,dateTakenMonth,dateTakenDay) DESC, dateTaken ASC';
+            elseif($value === 'dateTaken,asc')
+              $sortBy = 'ORDER BY CONCAT(dateTakenYear,dateTakenMonth,dateTakenDay) ASC, dateTaken ASC';
+            elseif($value === 'dateUploaded,desc')
+              $sortBy = 'ORDER BY CONCAT(dateUploadedYear,dateUploadedMonth,dateUploadedDay) DESC, dateUploaded ASC';
+            elseif($value === 'dateUploaded,asc')
+              $sortBy = 'ORDER BY CONCAT(dateUploadedYear,dateUploadedMonth,dateUploadedDay) ASC, dateUploaded ASC';
+            else
+              $sortBy = 'ORDER BY ' . $this->_(str_replace(',', ' ', $value));
             $field = $this->_(substr($value, 0, strpos($value, ',')));
             $where = $this->buildWhere($where, "{$field} is not null");
             break;
