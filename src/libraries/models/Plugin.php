@@ -86,6 +86,7 @@ class Plugin extends BaseModel
       echo $output;
   }
 
+  /* to be used with invokeSingle() */
   public function deferInvocation($action, $params = null)
   {
     $retval = array();
@@ -117,6 +118,7 @@ class Plugin extends BaseModel
   public function load()
   {
     $this->registerAll();
+    $this->registerRoutes();
     return $this;
   }
 
@@ -185,6 +187,27 @@ class Plugin extends BaseModel
       require sprintf('%s/%sPlugin.php', $this->pluginDir, $plugin);
       $classname = "{$plugin}Plugin";
       $this->pluginInstances[] = new $classname;
+    }
+  }
+
+  private function registerRoutes()
+  {
+    foreach($this->pluginInstances as $instance)
+    {
+      $routes = $instance->defineRoutes();
+      if(empty($routes))
+        continue;
+
+      foreach($routes as $name => $route)
+      {
+        // this logic is duplicated in PluginBase::getRouteUrl
+        $class = get_class($instance);
+        $name = preg_replace('/Plugin$/', '', $class);
+        $method = strtolower($route[0]);
+
+        $routePath = sprintf('/plugin/%s(%s)', $name, $route[1]);
+        $this->route->$method($routePath, array($class, 'routeHandler'));
+      }
     }
   }
 }

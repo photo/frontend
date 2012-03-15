@@ -33,7 +33,7 @@ class FacebookLikePlugin extends PluginBase
       return;
 
     return <<<MKP
-<fb:like ref="top_left"></fb:like>
+<div class="fb-like"></div>
 MKP;
   }
 
