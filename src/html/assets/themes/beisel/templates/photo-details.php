@@ -103,17 +103,15 @@
     <?php if(isset($photo['tags']) && !empty($photo['tags'])) { ?>
       <li class="tags"><span></span><?php $this->url->tagsAsLinks($photo['tags']); ?></li>
     <?php } ?>
-    <?php if(isset($photo['license']) && !empty($photo['license'])) { ?>
-      <li class="license"><span></span>
-        <?php if($this->utility->licenseLink($photo['license'], false)) { ?>
-          <a rel="license" href="<?php $this->utility->licenseLink($photo['license']); ?>">
-            <?php $this->utility->licenseLong($photo['license']); ?>
-          </a>
-        <?php } else { ?>
+    <li class="license"><span></span>
+      <?php if($this->utility->licenseLink($photo['license'], false)) { ?>
+        <a rel="license" href="<?php $this->utility->licenseLink($photo['license']); ?>">
           <?php $this->utility->licenseLong($photo['license']); ?>
-        <?php } ?>
-      </li>
-    <?php } ?>
+        </a>
+      <?php } else { ?>
+        <?php $this->utility->licenseLong($photo['license']); ?>
+      <?php } ?>
+    </li>
     <?php if(isset($photo['latitude']) && !empty($photo['latitude'])) { ?>
       <li class="location">
         <span></span>
