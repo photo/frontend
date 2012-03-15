@@ -1795,17 +1795,6 @@ aside.sidebar .meta li.edit span {
 }
 
 
-/* UPLOAD ********/
-body.upload form.upload {
-  margin:0 10px;
-}
-body.upload .poweredby a {
-  font-style:italic;
-}
-body.upload .message img {
-  top:-4px;
-}
-
 /* 04.08 Setup *************************************************** */
 
 div#setup h1 {
@@ -2152,4 +2141,11 @@ form {
 }
 .alert-actions a.btn {
   margin-right:4px;
+}
+
+/* fbml override */
+.fb-send iframe.fb_ltr, .fb-like iframe.fb_ltr {
+  overflow:visible;
+  min-height:20px !important;
+  min-width:57px; !important;
 }

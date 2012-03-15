@@ -46,9 +46,6 @@ var opTheme = (function() {
   var timeoutId = undefined;
   return {
     callback: {
-      keyboard: function(ev) {
-        log("keyboard!!!!");
-      },
       actionDelete: function(ev) {
       
         ev.preventDefault();
@@ -171,6 +168,20 @@ var opTheme = (function() {
           }
         });
         return false;
+      },
+      keyBrowseNext: function(ev) {
+          var ref;
+          ref = $(".image-pagination .next a").attr("href");
+          if (ref) {
+              location.href = ref;
+          }
+      },
+      keyBrowsePrevious: function(ev) {
+          var ref;
+          ref = $(".image-pagination .previous a").attr("href");
+          if (ref) {
+              location.href = ref;
+          }
       },
       login: function(ev) {
         var el = $(ev.target);
@@ -324,19 +335,16 @@ var opTheme = (function() {
         $("li#nav-signin").toggleClass('active');
         return false;
       },
-      keyBrowseNext: function(ev) {
-          var ref;
-          ref = $(".image-pagination .next a").attr("href");
-          if (ref) {
-              location.href = ref;
-          }
+      uploadCompleteSuccess: function() {
+        $("form.upload").fadeOut('fast', function() {
+          $(".upload-progress").fadeOut('fast', function() { $(".upload-complete").fadeIn('fast'); });
+          $(".upload-share").fadeIn('fast');
+        });
       },
-      keyBrowsePrevious: function(ev) {
-          var ref;
-          ref = $(".image-pagination .previous a").attr("href");
-          if (ref) {
-              location.href = ref;
-          }
+      uploadCompleteFailure: function() {
+        $("form.upload").fadeOut('fast', function() {
+          $(".upload-progress").fadeOut('fast', function() { $(".upload-warning .failed").html(failed); $(".upload-warning .total").html(total); $(".upload-warning").fadeIn('fast'); });
+        });
       },
       webhookDelete: function(ev) {
         ev.preventDefault();
@@ -538,17 +546,17 @@ var opTheme = (function() {
         OP.Util.on('click:group-update', opTheme.callback.groupPost);
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:modal-close', opTheme.callback.modalClose);
+        OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:photo-edit', opTheme.callback.photoEdit);
         OP.Util.on('click:photo-update-batch', opTheme.callback.photoUpdateBatch);
         OP.Util.on('click:plugin-status', opTheme.callback.pluginStatus);
         OP.Util.on('click:plugin-update', opTheme.callback.pluginUpdate);
-        OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
+        OP.Util.on('click:pin', opTheme.callback.pinClick);
+        OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
         OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
-        OP.Util.on('click:pin', opTheme.callback.pinClick);
-        OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
         OP.Util.on('change:batch-field', opTheme.callback.batchField);
@@ -557,6 +565,9 @@ var opTheme = (function() {
         OP.Util.on('callback:batch-add', opTheme.callback.batchAdd);
         OP.Util.on('callback:batch-remove', opTheme.callback.batchRemove);
         OP.Util.on('callback:batch-clear', opTheme.callback.batchClear);
+
+        OP.Util.on('upload:complete-success', opTheme.callback.uploadCompleteSuccess);
+        OP.Util.on('upload:complete-failure', opTheme.callback.uploadCompleteFailure);
 
         OP.Util.fire('callback:tags-autocomplete');
 

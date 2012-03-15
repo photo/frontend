@@ -90,13 +90,14 @@
             'photo-thumbnail-click':'click:photo-thumbnail',
             'photo-update-click':'click:photo-update',
             'photo-update-batch-click':'click:photo-update-batch',
+            'pin-click':'click:pin',
+            'pin-clear-click':'click:pin-clear',
             'plugin-status-click':'click:plugin-status',
             'plugin-update-click':'click:plugin-update',
             'search-click':'click:search',
             'settings-click':'click:settings',
-            'webhook-delete-click':'click:webhook-delete',
-            'pin-click':'click:pin',
-            'pin-clear-click':'click:pin-clear'
+            'upload-start-click':'click:upload-start',
+            'webhook-delete-click':'click:webhook-delete'
         },
         <?php if($this->user->isOwner()) { ?>
           'change': {

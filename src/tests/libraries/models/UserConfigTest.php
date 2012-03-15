@@ -124,16 +124,22 @@ class UserConfigTest extends PHPUnit_Framework_TestCase
   public function testWriteSiteSettingSuccess()
   {
     file_put_contents($configFile = "{$this->userConfigDir}/userdata/configs/example.com.ini", "[stuff]\nfoo=bar");
-    $utility = $this->getMock('User', array('generateIniString'));
+    $utility = $this->getMock('utility', array('generateIniString'));
     $utility->expects($this->any())
       ->method('generateIniString')
       ->will($this->returnValue('foobar'));
+    $config = $this->getMock('config', array('write','exists'));
+    $config->expects($this->any())
+      ->method('write')
+      ->will($this->returnValue(true));
+    $config->expects($this->any())
+      ->method('exists')
+      ->will($this->returnValue(true));
+    $this->userConfig->inject('config', $config);
     $this->userConfig->inject('utility', $utility);
 
     $res = $this->userConfig->writeSiteSettings(array('foo'));
-    $this->assertEquals(6, $res);
-    $writtenFile = file_get_contents($configFile);
-    $this->assertEquals('foobar', $writtenFile);
+    $this->assertEquals(true, $res);
   }
 
   public function testLoad()

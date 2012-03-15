@@ -3,6 +3,11 @@
 * Supports drag/drop with plupload
 */
 OPU = (function() {
+  var sortByFilename = function(a, b) {
+    var aName = a.name;
+    var bName = b.name;
+    return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
+  };
   return {
       init: function() {
         var uploaderEl = $("#uploader");
@@ -14,6 +19,7 @@ OPU = (function() {
             runtimes : 'html5',
             url : '/photo/upload.json?httpCodes=500,403,404', // omit 409 since it's somewhat idempotent
             max_file_size : '32mb',
+            file_data_name : 'photo',
             //chunk_size : '1mb',
             unique_names : true,
      
@@ -34,6 +40,11 @@ OPU = (function() {
                 $(".upload-progress .completed").html(uploader.total.uploaded+1);
                 $(".upload-progress").slideDown('fast');
               },
+              FilesAdded: function(uploader, files) {
+                var queue = uploader.files.concat(files);
+                queue.sort(sortByFilename);
+                uploader.files = queue;
+              },
               UploadComplete: function(uploader, files) {
                 var i, file, failed = 0, total = 0;
                 for(i in files) {
@@ -44,10 +55,12 @@ OPU = (function() {
                       failed++;
                   }
                 }
-                if(failed === 0)
-                  $(".upload-progress").fadeOut('fast', function() { $(".upload-complete").fadeIn('fast'); });
-                else
-                  $(".upload-progress").fadeOut('fast', function() { $(".upload-warning .failed").html(failed); $(".upload-warning .total").html(total); $(".upload-warning").fadeIn('fast'); });
+                if(failed === 0) {
+                  OP.Util.fire('upload:complete-success');
+                } else {
+                  OP.Util.fire('upload:complete-error');
+                }
+
               },
               UploadFile: function() {
                 var uploader = $("#uploader").pluploadQueue(), license, permission, tags;
@@ -62,6 +75,11 @@ OPU = (function() {
                 uploader.settings.multipart_params.permission = permission;
               }
             }
+        });
+
+        OP.Util.on('click:upload-start', function() {
+          var uploader = $("#uploader").pluploadQueue();
+          uploader.start();
         });
      
         // Client side form validation
