@@ -118,7 +118,7 @@
               '/assets/javascripts/jquery.plupload.queue.js',
               '/assets/javascripts/openphoto-upload.js',
             <?php } else { ?>
-              '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'e'); ?>',
+              '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'f'); ?>',
             <?php } ?>
           <?php } ?>
 
