@@ -1,0 +1,11 @@
+            <div class="span1">
+              <img src="<?php $this->utility->safe($this->user->getAvatarFromEmail(50, $activity[0]['owner'])); ?>" alt="church" class="thumbnail" />
+            </div>
+            <div class="span8">
+              <h3><span class="capitalize"><?php $this->utility->safe($this->utility->getEmailHandle($activity[0]['owner'], false)); ?></span> uploaded <?php printf('%d %s', count($activity), $this->utility->plural(count($activity), 'photo', false)); ?></h3>
+              <p>
+                <?php foreach($activity as $activityDetails) { ?>
+                  <a href="<?php $this->url->photoView($activityDetails['data']['id']); ?>"><img src="<?php $this->utility->safe($activityDetails['data']['path100x100xCR']); ?>" class="activity-thumbnail"></a>
+                <?php } ?>
+              </p>
+            </div>

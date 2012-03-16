@@ -1,0 +1,1 @@
+minify jquery.tokeninput.js bootstrap-modal.js openphoto-theme.js openphoto-theme-full-min.js --force
