@@ -186,9 +186,11 @@ class DatabaseMySql implements DatabaseInterface
     *
     * @return mixed Array on success, FALSE on failure
     */
-  public function getActivities()
+  public function getActivities($filters = array(), $limit = 10)
   {
-    $activities = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}activity` WHERE `owner`=:owner",
+    $filters['sortBy'] = 'dateCreated,desc';
+    $buildQuery = $this->buildQuery($filters, $limit, null, 'activity');
+    $activities = $this->db->all($sql = "SELECT * FROM `{$this->mySqlTablePrefix}activity` {$buildQuery['where']} {$buildQuery['sortBy']} {$buildQuery['limit']}",
                                array(':owner' => $this->owner));
     if($activities === false)
       return false;
@@ -453,7 +455,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getPhotoNextPrevious($id, $filterOpts = null)
   {
-    $buildQuery = $this->buildQuery($filterOpts, null, null);
+    $buildQuery = $this->buildQuery($filterOpts, null, null, 'photo');
     $photo = $this->getPhoto($id);
     if(!$photo)
       return false;
@@ -510,7 +512,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getPhotos($filters = array(), $limit = 20, $offset = null)
   {
-    $query = $this->buildQuery($filters, $limit, $offset);
+    $query = $this->buildQuery($filters, $limit, $offset, 'photo');
     // buildQuery includes owner
     $photos = $this->db->all($sql = "SELECT {$this->mySqlTablePrefix}photo.* {$query['from']} {$query['where']} {$query['groupBy']} {$query['sortBy']} {$query['limit']} {$query['offset']}");
     if($photos === false)
@@ -1195,11 +1197,11 @@ class DatabaseMySql implements DatabaseInterface
     * @param offset $offset starting point for records
     * @return array
     */
-  private function buildQuery($filters, $limit, $offset)
+  private function buildQuery($filters, $limit, $offset, $table)
   {
     // TODO: support logic for multiple conditions
-    $from = "FROM `{$this->mySqlTablePrefix}photo` ";
-    $where = "WHERE `{$this->mySqlTablePrefix}photo`.`owner`='{$this->owner}'";
+    $from = "FROM `{$this->mySqlTablePrefix}{$table}` ";
+    $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
     $groupBy = '';
     $sortBy = 'ORDER BY CONCAT(dateTakenYear,LPAD(dateTakenMonth,2,"0"),LPAD(dateTakenDay,2,"0")) DESC, dateTaken ASC';
     if(!empty($filters) && is_array($filters))
@@ -1229,7 +1231,7 @@ class DatabaseMySql implements DatabaseInterface
             }
             break;
           case 'permission':
-            $where = $this->buildWhere($where, "permission='1'");
+            $where = $this->buildWhere($where, "`permission`='1'");
             break;
           case 'sortBy':
             if($value === 'dateTaken,desc')
@@ -1273,6 +1275,10 @@ class DatabaseMySql implements DatabaseInterface
             }
 
             $where = $this->buildWhere($where, sprintf("`%sphoto`.`id` IN('%s')", $this->mySqlTablePrefix, implode("','", array_keys($ids))));
+            break;
+          case 'type': // type for activity
+            $value = $this->_($value);
+            $where = $this->buildWhere($where, "`type`='{$value}'");
             break;
         }
       }

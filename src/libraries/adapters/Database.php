@@ -20,7 +20,7 @@ interface DatabaseInterface
   public function deleteWebhook($id);
   // get methods read
   public function getAction($id);
-  public function getActivities();
+  public function getActivities($filters = array(), $limit = null);
   public function getActivity($id);
   public function getAlbum($id, $email);
   public function getAlbumElements($id);
@@ -33,7 +33,7 @@ interface DatabaseInterface
   public function getGroups($email = null);
   public function getPhoto($id);
   public function getPhotoWithActions($id);
-  public function getPhotos($filter = array(), $limit = null, $offset = null);
+  public function getPhotos($filters = array(), $limit = null, $offset = null);
   public function getUser($owner = null);
   public function getTag($tag);
   public function getTags($filter = array());
