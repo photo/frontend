@@ -43,12 +43,12 @@ class Url
   {
     $utilityObj = new Utility;
     $options = preg_replace('#/page-\d+#', '', $options);
-    $noOptionsStr = '/photo/%s/view';
-    $optionsStr = '/photo/%s/%s/view';
-    if(isset($_SERVER['REDIRECT_URL']) && preg_match('#^/p/#', $_SERVER['REDIRECT_URL']))
+    $noOptionsStr = '/p/%s';
+    $optionsStr = '/p/%s/%s';
+    if(isset($_SERVER['REDIRECT_URL']) && preg_match('#^/photo/#', $_SERVER['REDIRECT_URL']))
     {
-      $noOptionsStr = '/p/%s';
-      $optionsStr = '/p/%s/%s';
+      $noOptionsStr = '/photo/%s/view';
+      $optionsStr = '/photo/%s/%s/view';
     }
       
     if(empty($options))
