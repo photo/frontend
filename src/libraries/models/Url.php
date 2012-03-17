@@ -15,6 +15,12 @@ class Url
     return $utilityObj->returnValue(sprintf('/action/%s/delete', $utilityObj->safe($id, false)), $write);
   }
 
+  public function manage($write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue('/manage', $write);
+  }
+
   public function photoDelete($id, $write = true)
   {
     $utilityObj = new Utility;

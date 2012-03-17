@@ -12,7 +12,7 @@ var opTheme = (function() {
   };
   var modalMarkup = function(header, body, footer) {
     return '<div class="modal-header">' +
-           '  <a href="#" class="close">&times;</a>' +
+           '  <a href="#" class="close" data-dismiss="modal">&times;</a>' +
            '  <h3>'+header+'</h3>' +
            '</div>' +
            '<div class="modal-body">' +
@@ -65,15 +65,14 @@ var opTheme = (function() {
         
       },
       batchAdd: function(photo) {
-        var el = $(".id-"+photo.id);
-        el.removeClass("unpinned").addClass("pinned");
+        var el = $(".pin.photo-"+photo.id);
+        el.addClass("revealed pinned");
         opTheme.ui.batchMessage();
         log("Adding photo " + photo.id);
       },
       batchClear: function() {
-        var el = $("#batch-message").parent();
-        $(".pinned").removeClass("pinned").addClass("unpinned").children().filter(".pin").fadeOut();
-        el.slideUp('fast', function(){ $(this).remove(); });
+        $(".pin.pinned").removeClass("revealed pinned");
+        opTheme.ui.batchMessage();
       },
       batchField: function(ev) {
         var el = $(ev.target),
@@ -114,12 +113,12 @@ var opTheme = (function() {
               '</form>',
               '<a href="#" class="btn photo-update-batch-click">Submit</a>'
             );
-        el.html(html);
-        OP.Util.fire('callback:tags-autocomplete');
+        el.html(html).modal();
+        //OP.Util.fire('callback:tags-autocomplete');
       },
       batchRemove: function(id) {
-        var el = $(".id-"+id);
-        el.addClass("unpinned").removeClass("pinned");
+        var el = $(".pin.photo-"+id);
+        el.removeClass("pinned revealed");
         opTheme.ui.batchMessage();
         log("Removing photo " + id);
       },
@@ -203,10 +202,12 @@ var opTheme = (function() {
             }
           }, {scope: 'email'});
         }
+        return false;
       },
       modalClose: function(ev) {
         ev.preventDefault();
-        var el = $(ev.target).parent();
+        var el = $(ev.target).parent().parent();
+        console.log(el);
         el.slideUp('fast', function() { $(this).remove(); });
       },
       photoDelete: function(ev) {
@@ -228,23 +229,29 @@ var opTheme = (function() {
       photoEdit: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
-          	url = el.attr('href')+'.json';
-        if($("div.owner-edit").length == 1) {
-          $.scrollTo($('div.owner-edit'), 200);
-        } else {
-          
-          OP.Util.makeRequest(url, {}, function(response){
-            if(response.code === 200) {
-              $("#main").append(response.result.markup);
-              $.scrollTo($('div.owner-edit'), 200);
-              OP.Util.fire('callback:tags-autocomplete');
-            } else {
-              opTheme.message.error('Could not load the form to edit this photo.');
-            }
-          }, 'json', 'get');
-          
-        }
+          	id = el.attr('data-id'),
+            url = '/photo/'+id+'/edit.json';
+        OP.Util.makeRequest(url, {}, function(response){
+          if(response.code === 200) {
+            var el = $("#modal"),
+                html = modalMarkup(
+                  'Edit this photo',
+                  response.result.markup,
+                  '<a href="#" class="btn photo-update-click">Save</a>'
+                );
+            el.html(html).modal();  
+            //OP.Util.fire('callback:tags-autocomplete');
+          } else {
+            opTheme.message.error('Could not load the form to edit this photo.');
+          }
+        }, 'json', 'get');
         return false;
+      },
+      photoUpdate: function() {
+        var form = $("#photo-edit-form"),
+            action = form.attr('action') + '.json',
+            params = form.serialize();
+        OP.Util.makeRequest(action, params, opTheme.callback.photoUpdateCb, 'json', 'post');
       },
       photoUpdateBatch: function(ev) {
         ev.preventDefault();
@@ -278,15 +285,22 @@ var opTheme = (function() {
         }
         $("#modal").modal('hide');
       },
+      photoUpdateCb: function(response) {
+        if(response.code === 200) {
+          opTheme.message.confirm('Your photo was successfully updated.');
+        } else {
+          opTheme.message.error('We could not update your photo.');
+        }
+        $("#modal").modal('hide');
+      },
       pinClick: function(ev) {
         var el = $(ev.target),
-            id = el.attr('data-id'),
-            container = el.parent();;
-        // if the parent has class="unpinned" then add, else remove
-        if(container.hasClass("unpinned")) {
-          OP.Batch.add(id);
-        } else {
+            id = el.attr('data-id');
+        // if the el has class="pinned" then remove, else add
+        if(el.hasClass("pinned")) {
           OP.Batch.remove(id);
+        } else {
+          OP.Batch.add(id);
         }
       },
       pinClearClick: function(ev) {
@@ -560,6 +574,7 @@ var opTheme = (function() {
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:photo-edit', opTheme.callback.photoEdit);
+        OP.Util.on('click:photo-update', opTheme.callback.photoUpdate);
         OP.Util.on('click:photo-update-batch', opTheme.callback.photoUpdateBatch);
         OP.Util.on('click:plugin-status', opTheme.callback.pluginStatus);
         OP.Util.on('click:plugin-update', opTheme.callback.pluginUpdate);
@@ -587,26 +602,50 @@ var opTheme = (function() {
         // TODO standardize this somehow
         $('form.validate').each(opTheme.formHandlers.init);
       },
-      photos: function() {
-        var ids = OP.Batch.collection.getAll(),
-            idsLength = OP.Batch.collection.getLength(),
-            els = $(".unpinned"),
-            cls,
-            el,
-            parts;
+      pages: {
+        front: function() {
+          var swipeLeft = function(event, direction) {
+            if(typeof newBG === "undefined" || newBG === "undefined") {
+              $('.carousel').carousel('next');
+            }
+          };
+          var swipeRight = function (event, direction) {
+            if(typeof newBG === "undefined" || newBG === "undefined") {
+              $('.carousel').carousel('prev');
+            }
+          };
+          var swipeOptions = {
+            swipeLeft:swipeLeft,
+            swipeRight:swipeRight,
+            threshold:100
+          };
 
-        if(idsLength > 0)
-          opTheme.ui.batchMessage();
+          $('.carousel').swipe(swipeOptions);
+          $('.carousel.front').carousel({interval: 7000});
+          $('.carousel.feed').carousel();
+          $('.carousel.feed').carousel('pause');
+        },
+        manage: function() {
+          var ids = OP.Batch.collection.getAll(),
+              idsLength = OP.Batch.collection.getLength(),
+              els = $(".pin"),
+              cls,
+              el,
+              parts;
 
-        els.each(function(i, el) {
-          el = $(el);
-          cls = el.attr('class');
-          parts = cls.match(/ id-([a-z0-9]+)/);
-          if(parts.length == 2) {
-            if(ids[parts[1]] !== undefined)
-              el.removeClass("unpinned").addClass("pinned");
-          }
-        });
+          if(idsLength > 0)
+            opTheme.ui.batchMessage();
+
+          els.each(function(i, el) {
+            el = $(el);
+            cls = el.attr('class');
+            parts = cls.match(/ photo-([a-z0-9]+)/);
+            if(parts.length == 2) {
+              if(ids[parts[1]] !== undefined)
+                el.addClass("revealed pinned");
+            }
+          });
+        }
       },
       tags: {
         autocomplete: function() {
@@ -637,16 +676,11 @@ var opTheme = (function() {
     
     message: {
       append: function(html) {
-        $("#message").append(html).slideDown();
-      },
-      close: function() {
-        if(timeoutId != undefined) {
-          clearTimeout(timeoutId);
-          timeoutId = undefined;
-          $('#message-box').animate({height:'toggle'}, 500, function() {
-            $('#message-box').remove();
-          });
-        }
+        var el = $(".message:first").clone(false),
+            last = $(".message:last");
+
+        el.addClass('alert alert-info').html(html);
+        last.after(el).slideDown();
       },
       confirm: function(messageHtml) {
         opTheme.message.show(messageHtml, 'confirm');
@@ -655,37 +689,7 @@ var opTheme = (function() {
         opTheme.message.show(messageHtml, 'error');
       },
       show: function(messageHtml, type) {
-        var thisType = type,
-          removeType = type == 'error' ? 'confirm' : 'error';
-        if(timeoutId != undefined) {
-          clearTimeout(timeoutId);
-          timeoutId = undefined;
-          $('#message-box').
-            removeClass(removeType).
-            addClass(thisType).
-            html('<div><a class="message-close">close</a>' + messageHtml + '</div>');
-          timeoutId = setTimeout(function() {
-            $('#message-box').animate({height:'toggle'}, 500, function() {
-              $('#message-box').remove();
-              timeoutId = undefined;
-            });
-          }, 7000);
-        } else {
-          $('html').append('<section id="message-box" style="display:none;"><div><a class="message-close">close</a>' + messageHtml + '</div></section>');
-          $('#message-box').
-            removeClass(removeType).
-            addClass(thisType).
-            animate({height:'toggle'}, 500, function() {
-              timeoutId = setTimeout(function() {
-                $('#message-box').animate({height:'toggle'}, 500, function() {
-                  $('#message-box').remove();
-                  timeoutId = undefined;
-                });
-              }, 7000);
-            }
-          );
-        }
-        $('a.message-close').click(opTheme.message.close);
+        opTheme.message.append(messageMarkup(messageHtml, type));
       }
     },
     submitHandlers: {
@@ -757,13 +761,13 @@ var opTheme = (function() {
           $("#batch-count").html(idsLength);
           return;
         } else if(idsLength == 0) {
-          $("#batch-message").parent().slideUp('fast', function() { $(this).remove(); });
+          $("#batch-message").parent().parent().slideUp('fast', function() { $(this).html('').removeClass(); });
           return;
         } else {
           opTheme.message.append(
             messageMarkup(
               '  <a id="batch-message"></a>You have <span id="batch-count">'+idsLength+'</span> photos pinned.' +
-              '  <div class="alert-actions"><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a><a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
+              '  <div><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a><a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
             )
           );
         }
