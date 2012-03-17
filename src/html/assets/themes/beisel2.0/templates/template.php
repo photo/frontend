@@ -52,9 +52,7 @@
 					<a class="btn btn-navbar pull-left" data-toggle="collapse" data-target=".nav-collapse">
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
-            <?php if($this->user->isOwner()) { ?>
-              <span class="icon-bar"></span>
-            <?php } ?>
+            <span class="icon-bar"></span>
 					</a>
 					<a class="brand" href="/" title="The OpenPhoto Project">The OpenPhoto Project</a>
 					<div class="nav-collapse">
