@@ -132,7 +132,7 @@ class Plugin extends BaseModel
     $conf = $inst->defineConf();
     if($configObj->exists($confPath = sprintf('%s/plugins/%s.%s.ini', $this->config->paths->userdata, $_SERVER['HTTP_HOST'], $plugin)))
     {
-      $parsedConf = parse_ini_string($configObj->getString($confPath));
+      $parsedConf = parse_ini_string($configObj->getString($confPath), true);
       foreach($conf as $name => $tmp)
       {
         if(isset($parsedConf[$name]))

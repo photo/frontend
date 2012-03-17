@@ -2,7 +2,6 @@
 <html lang="en">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title><?php $this->theme->meta('titles', $page); ?></title>
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 
 		<meta name="language" content="english,en" />
@@ -11,7 +10,7 @@
 		<meta name="revisit-after" content="7 days" />
     <meta name="description" content="<?php $this->theme->meta('descriptions', $page); ?>">
     <meta name="keywords" content="<?php $this->theme->meta('keywords', $page); ?>">
-    <meta name="author" content="openphoto.me">
+    <meta name="author" content="The OpenPhoto Project (http://theopenphotoproject.org)">
 		<!--<meta name="publisher" content="openphoto" />
 		<meta name="copyright" content="openphoto" />-->
 
@@ -40,6 +39,9 @@
       <?php } ?>
     <?php } ?>
 
+    <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
+      <title><?php $this->theme->meta('titles', $page); ?></title>
+    <?php } ?>
     <?php $this->plugin->invoke('renderHead'); ?>
 	</head>
 
@@ -82,9 +84,9 @@
                     <?php } else { ?>
                       <li class="nav-header">Login using</li>
                       <?php if($this->plugin->isActive('FacebookConnect')) { ?>
-                        <li><a class="login-click facebook" title="Signin using Facebook"><i class="icon-cog icon-large"></i> Facebook</a></li>
+                        <li><a href="#" class="login-click facebook" title="Signin using Facebook"><i class="icon-cog icon-large"></i> Facebook</a></li>
                       <?php } ?>
-                      <li><a class="login-click browserid" title="Signin using BrowserID"><i class="icon-cog icon-large"></i> Browser ID</a></li>
+                      <li><a href="#" class="login-click browserid" title="Signin using BrowserID"><i class="icon-cog icon-large"></i> Browser ID</a></li>
                     <?php } ?>
                   </ul>
                 </li>
@@ -96,7 +98,7 @@
 						<form class="navbar-search pull-right" action="">
 							<div class="input-append">
 								<input class="search-query span2" id="appendedInput" size="16" type="text">
-								<a href="" class="add-on"><i class="icon-search icon-large"></i></a>
+								<a href="" class="add-on"><i class="icon-search"></i></a>
 							</div>
 						</form>
 					</div>
@@ -204,5 +206,6 @@
         }
       });
     </script>
+    <?php $this->plugin->invoke('renderFooter'); ?>
   </body>
 </html>
