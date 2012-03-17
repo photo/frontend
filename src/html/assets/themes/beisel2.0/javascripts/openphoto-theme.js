@@ -593,6 +593,12 @@ var opTheme = (function() {
 
           $('.carousel').swipe(swipeOptions);
           $('.carousel.front').carousel({interval: 7000});
+          $('.carousel.front').on('slid', function() {
+            var el = $('.carousel.front .active'),
+                ind = parseInt(el.attr('data-index'))+1;
+            $('.carouselthumbs .active').removeClass('active');
+            $('.carouselthumbs li:nth-child('+ind+') a').addClass('active');
+          });
           $('.carousel.feed').carousel();
           $('.carousel.feed').carousel('pause');
         },
