@@ -70,7 +70,7 @@
               <ul class="nav pull-right">
                 <li class="dropdown">
                   <?php if($this->user->isLoggedIn()) { ?>
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="<?php $this->utility->safe($this->user->getAvatarFromEmail(19, $this->user->getEmailAddress())); ?>" class="profile-icon"/> <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="<?php $this->utility->safe($this->user->getAvatarFromEmail(25, $this->user->getEmailAddress())); ?>" class="gravatar"/> <b class="caret"></b></a>
                   <?php } else { ?>
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-large"></i> <b class="caret"></b></a>
                   <?php } ?>
