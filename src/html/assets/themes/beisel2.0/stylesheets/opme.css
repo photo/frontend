@@ -792,8 +792,14 @@ textarea {
 }
 label {
 	display:block;
-	margin-bottom:5px;
+	margin-bottom:2px;
+	font-weight:bold;
 	color:#333333;
+}
+label>input,
+label>select,
+label>textarea {
+  margin-bottom: 5px;
 }
 input,
 textarea,
@@ -3160,7 +3166,7 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 	top:50%;
 	left:50%;
 	z-index:1050;
-	max-height:500px;
+	max-height:525px;
 	overflow:auto;
 	width:560px;
 	margin:-250px 0 0 -280px;
