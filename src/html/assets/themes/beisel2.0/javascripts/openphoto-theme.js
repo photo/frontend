@@ -183,6 +183,7 @@ var opTheme = (function() {
           }
       },
       login: function(ev) {
+        ev.preventDefault();
         var el = $(ev.target);
         if(el.hasClass('browserid')) {
           navigator.id.getVerifiedEmail(function(assertion) {
@@ -519,48 +520,18 @@ var opTheme = (function() {
 				});
 			}
 		},
-
-    front: {
-      init: function(el) {
-        if(el.length > 0) {
-          el.cycle({ fx: 'fade' }).find('img').click(
-            function(ev) {
-              var img = ev.target;
-              location.href=$(img).attr('data-origin');
-            }
-          );
-        }
-      }
-    },
     
     init: {
       load: function(_crumb) {
         setCrumb(_crumb);
-        var swipeOptions= {
-          swipeLeft:swipeLeft,
-          swipeRight:swipeRight,
-          threshold:100
-        }
 
-        //swipe controls
-        function swipeLeft(event, direction)
-        {
-          if(typeof newBG === "undefined" || newBG === "undefined") {
-            $('.carousel').carousel('next');
-          }
-        }
-        function swipeRight(event, direction)
-        {
-          if(typeof newBG === "undefined" || newBG === "undefined") {
-            $('.carousel').carousel('prev');
-          }
-        }
+        $('.dropdown-toggle').dropdown();
 
-        $(function() { 
-          $('.dropdown-toggle').dropdown();
-          $('.carousel').carousel({interval: 7000});
-          $('.carousel').swipe(swipeOptions);
-        });
+        if(location.pathname === '/')
+          opTheme.init.pages.front();
+        else if(location.pathname === '/manage')
+          opTheme.init.pages.manage();
+
       },
       attach: function() {
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);

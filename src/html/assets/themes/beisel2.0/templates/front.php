@@ -1,11 +1,25 @@
-      <?php if($activity = current($activities)) { ?>
+      <?php if(count($activities) > 0) { ?>
         <!-- activity feed -->
         <div class="row activityfeed-startpage">
           <div class="span12">
-            <div class="span3">
-              <h2>Latest activity</h2>
+            <div id="feedCarousel" class="carousel feed">
+              <div class="span3">
+                <h2>Latest activity</h2>
+                <div class="carousel-control feed">
+                  <a class="right btn" href="#feedCarousel" data-slide="next"><i class="icon-chevron-right icon-large"></i></a>
+                  <a class="left btn" href="#feedCarousel" data-slide="prev"><i class="icon-chevron-left icon-large"></i></a>
+                </div>
+              </div>
+              <div class="carousel-inner span9">
+                <?php $i = 0; ?>
+                <?php foreach($activities as $activity) { ?>
+                  <div class="item <?php if($i == 0) { ?>active<?php } ?>">
+                    <?php $this->theme->display(sprintf('partials/feed-%s.php', $activity[0]['type']), array('activity' => $activity)); ?>
+                  </div>
+                  <?php $i++; ?>
+                <?php } ?>
+              </div>
             </div>
-            <?php $this->theme->display(sprintf('partials/feed-%s.php', $activity[0]['type']), array('activity' => $activity)); ?>
           </div>
         </div>
       <?php } ?>
@@ -23,7 +37,7 @@
         <div class="row hero-unit">
             <!-- large photo -->
             <div class="row">
-              <div id="myCarousel" class="carousel">
+              <div id="homeCarousel" class="carousel front">
                 <div class="carousel-inner">
                   <?php for($i=0; $i<5 && $i<$photos[0]['totalRows']; $i++) { ?>
                     <div class="item <?php if($i == 0) { ?>active<?php } ?>">
@@ -64,9 +78,9 @@
                   <?php } ?>
                 </div>
                 <div class="carousel-control">
-                  <a class="right btn" href="#myCarousel" data-slide="next"><i class="icon-chevron-right icon-large"></i></a>
-                  <a class="pause btn" href="#myCarousel" data-slide="pause"><i class="icon-pause icon-large"></i></a>
-                  <a class="left btn" href="#myCarousel" data-slide="prev"><i class="icon-chevron-left icon-large"></i></a>
+                  <a class="right btn" href="#homeCarousel" data-slide="next"><i class="icon-chevron-right icon-large"></i></a>
+                  <a class="pause btn" href="#homeCarousel" data-slide="pause"><i class="icon-pause icon-large"></i></a>
+                  <a class="left btn" href="#homeCarousel" data-slide="prev"><i class="icon-chevron-left icon-large"></i></a>
                 </div>
               </div>
             </div>

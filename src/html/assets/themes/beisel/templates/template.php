@@ -41,7 +41,7 @@
       </header>
     </div>
     
-    <div id="message" class="row"></div>
+    <div id="message"></div>
 
     <div class="row">
       <article id="main" role="main">

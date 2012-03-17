@@ -3776,12 +3776,30 @@ a.thumbnail:hover {
 	height:auto;
 	margin:0;
 	font-weight:normal;
-	opacity:1.0;
+	opacity:.5;
 	padding-top:2px;
 	padding-bottom:7px;
+	-webkit-transition:opacity 0.15s linear;
+	-moz-transition:opacity 0.15s linear;
+	-ms-transition:opacity 0.15s linear;
+	-o-transition:opacity 0.15s linear;
+	transition:opacity 0.15s linear;
+}
+.carousel-control.feed {
+  opacity:.25;
+  position:relative;
+  left:0;
+  bottom:0;
+  text-align:left;
+  width:80px;
 }
 .carousel-control:hover {
 	opacity:1.0;
+	-webkit-transition:opacity 0.15s linear;
+	-moz-transition:opacity 0.15s linear;
+	-ms-transition:opacity 0.15s linear;
+	-o-transition:opacity 0.15s linear;
+	transition:opacity 0.15s linear;
 	filter:alpha(opacity=100);
 }
 .carousel-control .pause,
