@@ -17,6 +17,12 @@ if($configObj->get('site')->maintenance == 1)
 $routeObj->post('/action/([a-zA-Z0-9]+)/(photo)/create', array('ActionController', 'create')); // post an action (/action/{id}/{type}/create)
 
 /*
+ * Manage endpoints
+ * /manage
+ */
+$routeObj->get('/manage', array('ManageController', 'home'));
+
+/*
  * Photo endpoints
  * All photo endpoints follow the same convention.
  * Everything in []'s are optional

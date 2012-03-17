@@ -19,6 +19,7 @@ require $pathsObj->controllers . '/ApiAlbumController.php';
 require $pathsObj->controllers . '/ApiGroupController.php';
 require $pathsObj->controllers . '/GroupController.php';
 require $pathsObj->controllers . '/ApiPhotoController.php';
+require $pathsObj->controllers . '/ManageController.php';
 require $pathsObj->controllers . '/PhotoController.php';
 require $pathsObj->controllers . '/ApiPluginController.php';
 //require $pathsObj->controllers . '/PluginController.php';

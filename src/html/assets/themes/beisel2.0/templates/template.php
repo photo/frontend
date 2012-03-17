@@ -61,6 +61,7 @@
               <li><a href="<?php $this->url->tagsView(); ?>"><i class="icon-tag icon-large"></i> Tags</a></li>
               <?php if($this->user->isOwner()) { ?>
                 <li><a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload icon-large"></i> Upload</a></li>
+                <li><a href="<?php $this->url->manage(); ?>"><i class="icon-th icon-large"></i> Manage</a></li>
               <?php } ?>
 						</ul>
 
@@ -104,15 +105,13 @@
 		</div>
 		<div class="container">
 			
-      <!-- messaging -->
-			<div class="alert alert-tip">
-				<a class="close" data-dismiss="alert">&times;</a>
-				<strong>Tip:</strong> Mouse over an image to mark it as favorite.
-			</div>
+      <?php $this->plugin->invoke('renderBody'); ?>
+      <div class="message"></div>
 
       <?php echo $body; ?>
+      
+      <div class="modal" id="modal"></div>
 
-      <!-- footer -->
 			<footer>
         <p>&copy; <?php echo date('Y'); ?> <a href="http://theopenphotoproject.org">The OpenPhoto Project</a></p>
 			</footer>
@@ -120,7 +119,6 @@
 		</div>
 
     <?php if($this->config->site->mode === 'dev') { ?>
-    <script src="<?php $this->theme->asset('javascript', 'jquery-1.7.1.min.js'); ?>"></script>
       <script type="text/javascript" src="<?php $this->theme->asset($this->config->dependencies->javascript); ?>"></script>
       <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
     <?php } else { ?>
@@ -146,6 +144,7 @@
               'pagination-click':'click:pagination',
               'photo-delete-click':'click:photo-delete',
               'photo-edit-click':'click:photo-edit',
+              'photo-update-click':'click:photo-update',
               'photo-tag-click':'click:tag',
               'photo-thumbnail-click':'click:photo-thumbnail',
               'photo-update-click':'click:photo-update',
@@ -185,6 +184,7 @@
             <?php if($this->config->site->mode === 'dev') { ?>
               '/assets/javascripts/openphoto-batch.js',
               '<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'bootstrap-modal.js'); ?>',
               '<?php $this->theme->asset('javascript', 'touchSwipe.js'); ?>',
               '<?php $this->theme->asset('javascript', 'browserupdate.js'); ?>',
               '<?php $this->theme->asset('javascript', 'openphoto-theme.js'); ?>'
@@ -196,7 +196,7 @@
           ],
           onComplete: function(){ 
             opTheme.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
-            //opTheme.init.attach(); 
+            opTheme.init.attach(); 
             <?php if(isset($_GET['__route__']) && strstr($_GET['__route__'], 'photo') !== false) { ?>
               opTheme.init.photos(); 
             <?php } ?>

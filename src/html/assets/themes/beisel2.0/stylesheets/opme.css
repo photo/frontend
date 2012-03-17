@@ -39,6 +39,7 @@ Index:
 	07.01. modals
 	07.02. tooltip
 	07.03. popovers
+	07.04. messages
 08. Components:Misc
 	08.01. thumbnails
 	08.02. labels
@@ -55,6 +56,11 @@ Index:
 	09.06. screen width min. 1200px
 10. Custom classes
 	10.01. Activity feed startpage
+  10.02. Photos list
+  10.03. Photos details
+  10.04. Tags
+  10.05. Manage
+  10.06. Settings
 	
 Notice:
 - All manually added/changed CSS properties are sorted alphabetical!
@@ -361,6 +367,9 @@ a:hover {
 }
 .container-fluid:after {
 	clear:both;
+}
+.audible {
+  display:none;
 }
 
 /* 03. Base CSS ############################################################################# */
@@ -3141,6 +3150,7 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 	filter:alpha(opacity=80);
 }
 .modal {
+  display:none;
 	position:fixed;
 	top:50%;
 	left:50%;
@@ -3385,6 +3395,13 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 }
 .popover-content p, .popover-content ul, .popover-content ol {
 	margin-bottom:0;
+}
+
+/* 07.04. messages -------------------------------------------------------------------------- */
+.message>div+div {
+  margin-top:10px;
+  padding-top:10px;
+  border-top:solid 1px #aaa;
 }
 
 /* 08. Components:Misc ##################################################################### */
@@ -4657,3 +4674,49 @@ a.invert:hover i {
 .nomargin {
 	margin:0;
 }
+
+/* 10.02. Photos list ----------------------------------------------------------- */
+/* 10.03. Photos details ----------------------------------------------------------- */
+/* 10.04. Tags ----------------------------------------------------------- */
+/* 10.05. Manage ----------------------------------------------------------- */
+.manage ul.thumbnails li div.thumbnail {
+  border:0px;
+  -webkit-box-shadow:0;
+  -mox-box-shadow:0;
+  box-shadow:0;
+}
+.manage ul.thumbnails img~.reveal.revealed, .manage ul.thumbnails img:hover+.reveal.revealed {
+  opacity:1.0;
+}
+.manage ul.thumbnails img~.reveal {
+  display:block;
+  float:left;
+  opacity:0;
+  border-radius:5px;
+  background:#ddd;
+  width:22px;
+  height:18px;
+  position:relative;
+  margin:0px;
+  border:solid 1px #aaa;
+  cursor:pointer;
+  top:-30px;
+}
+.manage ul.thumbnails img~.reveal.pin {
+  left:5px;
+}
+.manage ul.thumbnails img~.reveal.edit {
+  left:10px;
+}
+.manage ul.thumbnails img~.reveal.edit:hover {
+  opacity:1.0;
+}
+.manage ul.thumbnails img:hover~.reveal, .manage ul.thumbnails .reveal:hover {
+  opacity:.5;
+	-webkit-transition:opacity linear 0.2s;
+	-moz-transition:opacity linear 0.2s;
+	-ms-transition:opacity linear 0.2s;
+	-o-transition:opacity linear 0.2s;
+	transition:opacity linear 0.2s;
+}
+/* 10.06. Settings ----------------------------------------------------------- */
