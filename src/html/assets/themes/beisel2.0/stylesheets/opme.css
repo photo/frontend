@@ -792,8 +792,8 @@ textarea {
 }
 label {
 	display:block;
-	margin-bottom:2px;
-	font-weight:bold;
+  margin-bottom:2px;
+ 	font-weight:bold;
 	color:#333333;
 }
 label>input,
@@ -3166,7 +3166,7 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 	top:50%;
 	left:50%;
 	z-index:1050;
-	max-height:525px;
+	max-height:500px;
 	overflow:auto;
 	width:560px;
 	margin:-250px 0 0 -280px;
@@ -3441,7 +3441,7 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 	display:block;
 	padding:0;
 	line-height:1;
-	border:none;
+	border:2px solid white;
 	-webkit-border-radius:5px;
 	-moz-border-radius:5px;
 	border-radius:5px;
@@ -3450,13 +3450,13 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 	box-shadow: 0px 1px 1px 0px rgba(61, 57, 51, 0.25);
 }
 a.thumbnail:hover {
-	border-color:none;
+	border:2px solid white;
 	-webkit-box-shadow: 0px 1px 1px 0px rgba(61, 57, 51, 0.25);
 	-moz-box-shadow: 0px 1px 1px 0px rgba(61, 57, 51, 0.25);
 	box-shadow: 0px 1px 1px 0px rgba(61, 57, 51, 0.25);
 	opacity:0.5;
 }
-.thumbnail > img {
+.thumbnail img {
 	display:block;
 	max-width:100%;
 	margin-left:auto;
@@ -3473,7 +3473,7 @@ a.thumbnail:hover {
 	border:2px solid #e6501e;
 	margin-bottom:-1px;
 }
-.thumbnail.active > img {
+.thumbnail.active img {
 	-webkit-border-radius:3px;
 	-moz-border-radius:3px;
 	border-radius:3px;
