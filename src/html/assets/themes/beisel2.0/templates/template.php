@@ -57,38 +57,36 @@
 					<a class="brand" href="/" title="The OpenPhoto Project">The OpenPhoto Project</a>
 					<div class="nav-collapse">
 						<ul class="nav">
-              <li><a href="<?php $this->url->photosView(); ?>"><i class="icon-picture icon-large"></i> Gallery</a></li>
-              <li><a href="<?php $this->url->tagsView(); ?>"><i class="icon-tag icon-large"></i> Tags</a></li>
+              <li <?php if($this->utility->isActiveTab('photos')) { ?>class="active"<?php } ?>><a href="<?php $this->url->photosView(); ?>"><i class="icon-picture icon-large"></i> Gallery</a></li>
+              <li <?php if($this->utility->isActiveTab('tags')) { ?>class="active"<?php } ?>><a href="<?php $this->url->tagsView(); ?>"><i class="icon-tag icon-large"></i> Tags</a></li>
               <?php if($this->user->isOwner()) { ?>
-                <li><a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload icon-large"></i> Upload</a></li>
-                <li><a href="<?php $this->url->manage(); ?>"><i class="icon-th icon-large"></i> Manage</a></li>
+                <li <?php if($this->utility->isActiveTab('upload')) { ?>class="active"<?php } ?>><a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload icon-large"></i> Upload</a></li>
+                <li <?php if($this->utility->isActiveTab('manage')) { ?>class="active"<?php } ?>><a href="<?php $this->url->manage(); ?>"><i class="icon-th icon-large"></i> Manage</a></li>
               <?php } ?>
 						</ul>
 
-              <ul class="nav pull-right">
-                <li class="dropdown">
+            <ul class="nav pull-right">
+              <li class="dropdown">
+                <?php if($this->user->isLoggedIn()) { ?>
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="<?php $this->utility->safe($this->user->getAvatarFromEmail(25, $this->user->getEmailAddress())); ?>" class="gravatar"/> <b class="caret"></b></a>
+                <?php } ?>
+                <ul class="dropdown-menu">
                   <?php if($this->user->isLoggedIn()) { ?>
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="<?php $this->utility->safe($this->user->getAvatarFromEmail(25, $this->user->getEmailAddress())); ?>" class="gravatar"/> <b class="caret"></b></a>
-                  <?php } else { ?>
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-user icon-large"></i> <b class="caret"></b></a>
-                  <?php } ?>
-                  <ul class="dropdown-menu">
-                    <?php if($this->user->isLoggedIn()) { ?>
-                      <?php if($this->user->isOwner()) { ?>
-                        <li><a href="<?php $this->url->userSettings(); ?>"><i class="icon-cog icon-large"></i> Preferences</a></li>
-                        <li class="divider"></li>
-                      <?php } ?>
-                      <li><a href="<?php $this->url->userLogout(); ?>"><i class="icon-signout icon-large"></i> Logout</a></li>
-                    <?php } else { ?>
-                      <li class="nav-header">Login using</li>
-                      <?php if($this->plugin->isActive('FacebookConnect')) { ?>
-                        <li><a href="#" class="login-click facebook" title="Signin using Facebook"><i class="icon-cog icon-large"></i> Facebook</a></li>
-                      <?php } ?>
-                      <li><a href="#" class="login-click browserid" title="Signin using BrowserID"><i class="icon-cog icon-large"></i> Browser ID</a></li>
+                    <?php if($this->user->isOwner()) { ?>
+                      <li><a href="<?php $this->url->userSettings(); ?>"><i class="icon-cog icon-large"></i> Preferences</a></li>
+                      <li class="divider"></li>
                     <?php } ?>
-                  </ul>
-                </li>
+                    <li><a href="<?php $this->url->userLogout(); ?>"><i class="icon-signout icon-large"></i> Logout</a></li>
+                  <?php } ?>
+                </ul>
+              </li>
+            </ul>
+            <?php if(!$this->user->isLoggedIn()) { ?>
+              <ul class="nav pull-right">
+                <li><a href="https://openphoto.me/signup"><i class="icon-plus icon-large"></i> Register</a></li>
+                <li><a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> Sign in</a></li>
               </ul>
+            <?php } ?>
 						<!-- <ul class="nav pull-right">
 							<li><a href="#"><i class="icon-plus icon-large"></i> Register</a></li>
 							<li><a href="#"><i class="icon-signin icon-large"></i> Login</a></li>
@@ -96,7 +94,7 @@
 						<form class="navbar-search pull-right" action="">
 							<div class="input-append">
 								<input class="search-query span2" id="appendedInput" size="16" type="text">
-								<a href="" class="add-on"><i class="icon-search"></i></a>
+								<a href="" class="add-on"><i class="icon-search icon-large"></i></a>
 							</div>
 						</form>
 					</div>
@@ -110,7 +108,10 @@
 
       <?php echo $body; ?>
       
-      <div class="modal" id="modal"></div>
+      <div class="modal hide fade" id="modal"></div>
+      <?php if(!$this->user->isLoggedIn()) { ?>
+        <?php $this->theme->display('partials/login.php'); ?>
+      <?php } ?>
 
 			<footer>
         <p>&copy; <?php echo date('Y'); ?> <a href="http://theopenphotoproject.org">The OpenPhoto Project</a></p>
@@ -140,6 +141,7 @@
               'group-email-add-click':'click:group-email-add',
               'group-email-remove-click':'click:group-email-remove',
               'group-post-click':'click:group-post',
+              'login-modal-click':'click:login-modal',
               'login-click':'click:login',
               'map-jump-click':'click:map-jump',
               'modal-close-click':'click:modal-close',

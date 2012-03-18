@@ -206,6 +206,11 @@ class Utility
           return true;
         return false;
         break;
+      case 'manage':
+        if(!empty($route) && preg_match('#^/manage#', $route))
+          return true;
+        return false;
+        break;
     }
   }
 
