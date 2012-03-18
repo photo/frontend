@@ -16,6 +16,15 @@ class ManageController extends BaseController
     parent::__construct();
     $this->photo = new Photo;
     $this->theme->setTheme('beisel2.0');
+    getAuthentication()->requireAuthentication();
+  }
+
+  public function apps()
+  {
+    $credentialsResp = $this->api->invoke('/oauth/list.json');
+    $credentials = $credentialsResp['result'];
+    $body = $this->theme->get('manage-apps.php', array('credentials' => $credentials, 'page' => 'apps', 'crumb' => getSession()->get('crumb')));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
   }
 
   public function home()
@@ -33,8 +42,15 @@ class ManageController extends BaseController
       $pages['requestUri'] = $_SERVER['REQUEST_URI'];
     }
 
-    $body = $this->theme->get('manage.php', array('photos' => $photos, 'pages' => $pages, 'crumb' => getSession()->get('crumb')));
+    $body = $this->theme->get('manage.php', array('photos' => $photos, 'pages' => $pages, 'page' => 'home', 'crumb' => getSession()->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage'));
   }
-}
 
+  public function groups()
+  {
+    $groupsResp = $this->api->invoke('/groups/list.json');
+    $groups = $groupsResp['result'];
+    $body = $this->theme->get('manage-groups.php', array('groups' => $groups, 'page' => 'groups', 'crumb' => getSession()->get('crumb')));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-groups'));
+  }
+}

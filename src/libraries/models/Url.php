@@ -106,9 +106,14 @@ class Url
     return $utilityObj->returnValue('/user/logout', $write);
   }
 
-  public function userSettings($write = true)
+  public function userManage($write = true)
   {
     $utilityObj = new Utility;
-    return $utilityObj->returnValue('/user/settings', $write);
+    return $utilityObj->returnValue('/manage', $write);
+  }
+
+  public function userSettings($write = true)
+  {
+    return $this->userManage($write);
   }
 }

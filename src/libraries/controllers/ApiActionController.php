@@ -49,7 +49,7 @@ class ApiActionController extends ApiBaseController
       getPlugin()->invoke('onAction');
       $activityParams = array('type' => 'action-create', 'data' => array('targetType' => $targetType, 'target' => $target, 'action' => $action), 'permission' => $target['permission']);
       $this->api->invoke("/{$this->apiVersion}/activity/create.json", EpiRoute::httpPost, array('_POST' => $activityParams));
-      return $this->success("Action {$id} created on {$targetType} {$targetId}", $action);
+      return $this->created("Action {$id} created on {$targetType} {$targetId}", $action);
     }
 
     return $this->error("Error creating action {$id} on {$targetType} {$targetId}", false);

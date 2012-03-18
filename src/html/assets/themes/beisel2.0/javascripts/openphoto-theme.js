@@ -134,10 +134,10 @@ var opTheme = (function() {
 
         OP.Util.makeRequest(url, {}, function(response) {
           if(response.code === 204) {
-            el.parent().remove();
-            opTheme.message.confirm('Credential successfully deleted.');
+            el.parent().parent().slideUp('medium', function() { this.remove(); });
+            opTheme.message.confirm('Application successfully deleted.');
           } else {
-            opTheme.message.error('Could not delete credential.');
+            opTheme.message.error('Could not delete Application.');
           }
         });
         return false;
@@ -150,16 +150,50 @@ var opTheme = (function() {
           $("input.group-checkbox.none").removeAttr("checked");
         }
       },
+      groupDelete: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href')+'.json',
+            form = el.parent();
+
+        OP.Util.makeRequest(url, function(response) {
+          if(response.code === 204) {
+            form.slideUp('medium', function() { this.remove(); });
+          } else {
+            opTheme.message.error('We could not delete this group.');
+          }
+        });
+      },
+      groupEmailAdd: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target).prev(),
+            tgt = $('ul.group-emails-add-list');
+        $('<li><span class="group-email-queue">'+el.val()+'</span> <a href="#" class="group-email-remove-click"><i class="group-email-remove-click icon-minus-sign"></i></a></li>').prependTo(tgt);
+        el.val('');
+      },
+      groupEmailRemove: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target).parent().parent();
+        el.remove();
+      },
       groupPost: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
-            form = el.parent().parent(),
+            form = el.parent(),
             url = form.attr('action')+'.json',
-            isCreate = (url.search('create') > -1);
-        OP.Util.makeRequest(url, form.serializeArray(), function(response) {
-          if(response.code === 200) {
+            isCreate = (url.search('create') > -1),
+            emails,
+            params = {name: $('input[name="name"]', form).val()};
+        emails = [];
+        $('span.group-email-queue', form).each(function(i, el) {
+          emails.push($(el).html());
+        });
+        params.members = emails.join(',');
+
+        OP.Util.makeRequest(url, params, function(response) {
+          if(response.code === 200 || response.code === 201) {
             if(isCreate)
-              location.href = location.href;
+              location.href = '/manage/groups?m=group-created';
             else
               opTheme.message.confirm('Group updated successfully.');
           } else {
@@ -539,7 +573,10 @@ var opTheme = (function() {
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
         OP.Util.on('click:group-checkbox', opTheme.callback.groupCheckbox);
-        OP.Util.on('click:group-update', opTheme.callback.groupPost);
+        OP.Util.on('click:group-delete', opTheme.callback.groupDelete);
+        OP.Util.on('click:group-email-add', opTheme.callback.groupEmailAdd);
+        OP.Util.on('click:group-email-remove', opTheme.callback.groupEmailRemove);
+        OP.Util.on('click:group-post', opTheme.callback.groupPost);
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:modal-close', opTheme.callback.modalClose);
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
@@ -744,7 +781,7 @@ var opTheme = (function() {
           opTheme.message.append(
             messageMarkup(
               '  <a id="batch-message"></a>You have <span id="batch-count">'+idsLength+'</span> photos pinned.' +
-              '  <div><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a><a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
+              '  <div><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a>&nbsp;<a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
             )
           );
         }
