@@ -1,19 +1,27 @@
-<div class="headerbar">
-	Tags <!-- function bar for e.g. sharing function -->
-</div>
-<h1 class="audible">Your Tags</h1>
-<?php if(empty($tags)) { ?>
-  Sorry, no photos have been tagged.
-<?php } else { ?>
-  <div class="row">
-    <div class="span16">
-      <ol class="tag-cloud">
-        <?php foreach($tags as $tag) { ?>
-        <li class="size-<?php $this->utility->safe($tag['weight']); ?>">
-          <a href="<?php $this->url->photosView("tags-{$tag['id']}"); ?>" title="<?php $this->utility->safe($tag['count']); ?> photos"><?php $this->utility->safe($tag['id']); ?></a>
+<div class="tags">
+  <header>
+    <h1>Tags</h1>
+    <div class="subnav">
+      <ul class="nav nav-pills">
+        <li><a href="#"><i class="icon-arrow-down icon-large"></i> A-Z</a></li>
+        <li><a href="#"><i class="icon-arrow-up icon-large"></i> Z-A</a></li>
+        <li class="last">
+          <form action="">
+            <div class="input-append">
+              <input class="search-query span2" id="appendedInput" size="16" type="text" data-provide="typeahead" />
+              <a href="" class="add-on"><i class="icon-search icon-large"></i></a>
+            </div>
+          </form>
         </li>
-        <?php } ?>
-      </ol>
+      </ul>
     </div>
+  </header>
+
+  <div class="row hero-unit tag-list <?php if(empty($tags)) { ?>empty<?php } ?>">
+    <?php foreach($tags as $tag) { ?>
+      <span class="label label-tag">
+        <a href="<?php $this->url->photosView(sprintf('tags-%s', $this->utility->safe($tag['id'], false))); ?>"><?php $this->utility->safe($tag['id']); ?></a>
+      </span>
+    <?php } ?>
   </div>
-<?php } ?>
+</div>

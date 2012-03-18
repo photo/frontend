@@ -239,6 +239,10 @@ var opTheme = (function() {
         }
         return false;
       },
+      loginModal: function(ev) {
+        ev.preventDefault();
+        $('#loginBox').modal();
+      },
       modalClose: function(ev) {
         ev.preventDefault();
         var el = $(ev.target).parent().parent();
@@ -578,6 +582,7 @@ var opTheme = (function() {
         OP.Util.on('click:group-email-remove', opTheme.callback.groupEmailRemove);
         OP.Util.on('click:group-post', opTheme.callback.groupPost);
         OP.Util.on('click:login', opTheme.callback.login);
+        OP.Util.on('click:login-modal', opTheme.callback.loginModal);
         OP.Util.on('click:modal-close', opTheme.callback.modalClose);
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
