@@ -16,7 +16,7 @@
 		<div class="settings-click">
 			<?php echo $this->session->get('email'); ?>
 			<ul id="settingsbar">
-				<li id="nav-settings"><a href="<?php $this->url->userSettings(); ?>">Settings</a></li>
+				<li id="nav-settings"><a href="<?php $this->url->userSettings(); ?>">Manage Account</a></li>
 				<li id="nav-logout"><a href="<?php $this->url->userLogout(); ?>">Logout</a></li>
 			<ul>
 		</div>
