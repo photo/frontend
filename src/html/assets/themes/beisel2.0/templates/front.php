@@ -67,7 +67,7 @@
                 <div id="likebutton">
                   <?php if($this->plugin->isActive('FacebookConnect')) {?>
                     <div class="facebook">
-                      <div class="fb-like" data-href="<?php $this->url->photosView($photo['id']); ?>" data-font="lucida grande"></div>
+                      <div class="fb-like" data-href="<?php $this->utility->safe(sprintf('%s://%s%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], $this->url->photoView($photo['id'], null, false))); ?>" data-font="lucida grande"></div>
                     </div>
                   <?php } ?>
                   <!--<div class="twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.openphoto.me" data-via="openphoto">Tweet</a></div>
