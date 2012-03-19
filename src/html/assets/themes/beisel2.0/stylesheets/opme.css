@@ -3985,7 +3985,8 @@ a.thumbnail:hover {
 		margin:0;
 	}
 	.modal.fade.in {
-		top:auto;
+    /* jm this causes the modal to display at the bottom of the page on mobile, requiring scrolling */
+		/*top:auto;*/
 	}
 	.modal-header .close {
 		padding:10px;

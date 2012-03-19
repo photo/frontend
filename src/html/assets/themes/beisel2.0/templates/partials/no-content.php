@@ -1,8 +1,14 @@
 <div class="row hero-unit empty middle">
   <?php if(!$this->user->isLoggedIn()) { // user is not logged in ?>
-    <strong class="bigtext">:-(</strong><br/>
-    <h1>Sorry, nothing to see here. You might want to sign in.</h1>
-    <p>Start by click the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
+    <?php if($type == 'oauth') { ?>
+      <strong class="bigtext">:-(</strong><br/>
+      <h1>You need to sign in to create an app.</h1>
+      <p>Start by click the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
+    <?php } else { // default with message appropriate for non logged in user ?>
+      <strong class="bigtext">:-(</strong><br/>
+      <h1>Sorry, nothing to see here. You might want to sign in.</h1>
+      <p>Start by click the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
+    <?php } ?>
   <?php } else { // user is logged in ?>
     <?php if($type == 'upload') { // message to upload folders ?>
       <br/>

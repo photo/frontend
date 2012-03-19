@@ -15,16 +15,23 @@ class ManageController extends BaseController
   {
     parent::__construct();
     $this->photo = new Photo;
-    $this->theme->setTheme('beisel2.0');
-    getAuthentication()->requireAuthentication();
+    $this->theme->setTheme(); // defaults
+    if(stristr($_SERVER['REQUEST_URI'], '/manage/apps/callback') === false)
+      getAuthentication()->requireAuthentication();
   }
 
   public function apps()
   {
     $credentialsResp = $this->api->invoke('/oauth/list.json');
     $credentials = $credentialsResp['result'];
-    $body = $this->theme->get('manage-apps.php', array('credentials' => $credentials, 'page' => 'apps', 'crumb' => getSession()->get('crumb')));
+    $bodyTemplate = sprintf('%s/manage-apps.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'page' => 'apps', 'crumb' => getSession()->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
+  }
+
+  public function appsCallback()
+  {
+    $this->route->redirect('/manage/apps?m=app-created');
   }
 
   public function home()
@@ -42,7 +49,8 @@ class ManageController extends BaseController
       $pages['requestUri'] = $_SERVER['REQUEST_URI'];
     }
 
-    $body = $this->theme->get('manage.php', array('photos' => $photos, 'pages' => $pages, 'page' => 'home', 'crumb' => getSession()->get('crumb')));
+    $bodyTemplate = sprintf('%s/manage.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('photos' => $photos, 'pages' => $pages, 'page' => 'home', 'crumb' => getSession()->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage'));
   }
 
@@ -50,7 +58,8 @@ class ManageController extends BaseController
   {
     $groupsResp = $this->api->invoke('/groups/list.json');
     $groups = $groupsResp['result'];
-    $body = $this->theme->get('manage-groups.php', array('groups' => $groups, 'page' => 'groups', 'crumb' => getSession()->get('crumb')));
+    $bodyTemplate = sprintf('%s/manage-groups.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('groups' => $groups, 'page' => 'groups', 'crumb' => getSession()->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-groups'));
   }
 }
