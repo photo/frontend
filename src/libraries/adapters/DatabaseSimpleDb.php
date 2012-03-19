@@ -494,17 +494,21 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getTags($filters = array())
   {
     $countField = 'countPublic';
+    $sortBy = 'itemName()';
+    if(isset($filters['sortBy']))
+      $sortBy = str_replace(',', ' ', $sortBy);
     if(isset($filter['permission']) && $filter['permission'] == 0)
       $countField = 'countPrivate';
 
+
     if(isset($filter['search']) && $filter['search'] != '')
     {
-      $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL AND itemName() LIKE '{$filter['search']}%' ORDER BY itemName()";
+      $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL AND itemName() LIKE '{$filter['search']}%' ORDER BY {$sortBy})";
       $params[':search'] = "{$filter['search']}%";
     }
     else
     {
-      $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL ORDER BY itemName()";
+      $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL ORDER BY {$sortBy}";
     }
 
     $res = $this->db->select($query, array('ConsistentRead' => 'false'));
