@@ -377,10 +377,13 @@ var opTheme = (function() {
           tags = $($('input[name=tags]', form)[0]).val(),
           url = form.attr('action');
 
-        if(tags.length > 0)
-          location.href = url.replace('/list', '')+'/tags-'+tags+'/list';
-        else
-          location.href = url;
+        if(tags.length > 0) {
+          if(url.search('/list') > 0) {
+            location.href = url.replace('/list', '')+'/tags-'+tags+'/list';
+          } else {
+            form.submit();
+          }
+        }
         return false;
       },
       settings: function(ev) {
@@ -633,7 +636,7 @@ var opTheme = (function() {
             threshold:100
           };
 
-          $('.carousel').swipe(swipeOptions);
+          $('.carousel.front').swipe(swipeOptions);
           $('.carousel.front').carousel({interval: 7000});
           $('.carousel.front').on('slid', function() {
             var el = $('.carousel.front .active'),

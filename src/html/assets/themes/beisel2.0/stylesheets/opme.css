@@ -2844,6 +2844,7 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 	-webkit-box-shadow: inset 1px 1px 1px 0px rgba(66, 50, 18, 0.5);
 	-moz-box-shadow: inset 1px 1px 1px 0px rgba(66, 50, 18, 0.5);
 	box-shadow: inset 1px 1px 1px 0px rgba(66, 50, 18, 0.5);
+  color:#000;
 }
 .navbar-search .search-query :-moz-placeholder {
 	color:black;
