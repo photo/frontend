@@ -28,6 +28,6 @@ class BaseController extends ApiBaseController
 
     $class = get_class($this);
     if($class === 'UserController' || $class === 'SetupController')
-      $this->theme->setTheme('beisel');
+      $this->theme->setTheme(); // defaults
   }
 }

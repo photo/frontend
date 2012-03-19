@@ -109,7 +109,7 @@ class Theme
   public function setTheme($theme = null)
   {
     if($theme === null)
-      $theme = 'beisel';
+      $theme = 'beisel2.0';
     $this->theme = $theme;
     $this->themeDir = sprintf('%s/%s', dirname($this->themeDir), $this->theme);
     $this->themeDirWeb = sprintf('%s/%s', dirname($this->themeDirWeb), $this->theme);

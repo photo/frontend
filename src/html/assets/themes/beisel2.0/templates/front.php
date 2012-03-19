@@ -46,23 +46,34 @@
               </h1>
               <p>This photo was taken <?php $this->utility->safe($this->utility->timeAsText($photo['dateTaken'])); ?></p>
               <?php if(isset($photo['longitude']) && !empty($photo['longitude'])) { ?>
-                <a href="" class="invert"><i class="icon-map-marker"></i> <?php printf('%s, %s', $this->utility->safe($photo['longitude'], false), $this->utility->safe($photo['latitude'], false)); ?></a><br/>
-                <div class="map"><img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 10, '250x100'); ?>"></div>
+                <div class="map">
+                  <a href="<?php $this->url->photoView($photo['id']); ?>" class="invert"><i class="icon-map-marker"></i> <?php printf('%s, %s', $this->utility->safe($photo['longitude'], false), $this->utility->safe($photo['latitude'], false)); ?></a>
+                  <a href="<?php $this->url->photoView($photo['id']); ?>"><img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 10, '250x100'); ?>"></a>
+                </div>
               <?php } ?>
-              <!--<a href="" class="invert"><i class="icon-heart"></i> 4 favorites</a><br />-->
-              <a href="" class="invert"><i class="icon-comment"></i> <?php if(!isset($photos['actions'])) { ?>0<?php } else { $this->utility->safe(count($photos['actions'])); } ?> comments &amp; favorites</a><br />
-              <!--<a href="" class="invert"><i class="icon-signal"></i> 154 visits</a><br />
-              <a href="" class="invert"><i class="icon-folder-close"></i> path photos</a>-->
-              <br /><br />
+              <div class="iconbox">
+                <a href="" class="invert"><i class="icon-comment"></i> <?php if(!isset($photos['actions'])) { ?>0<?php } else { $this->utility->safe(count($photos['actions'])); } ?> comments &amp; favorites</a>
+                <!--<a href="" class="invert"><i class="icon-signal"></i> 154 visits</a><br />
+                <a href="" class="invert"><i class="icon-folder-close"></i> path photos</a>-->
+              </div>
               <?php if(count($photo['tags']) > 0) { ?>
-                <p>
+                <div class="tags">
                   <?php foreach($photo['tags'] as $tag) { ?>
-                    <span class="label label-tag">
-                      <a href="<?php $this->url->photosView(sprintf('tags-%s', $this->utility->safe($tag, false))); ?>"><?php $this->utility->safe($tag); ?></a>
-                    </span>
+                    <a href="<?php $this->url->photosView(sprintf('tags-%s', $this->utility->safe($tag, false))); ?>" class="label label-tag"><?php $this->utility->safe($tag); ?></a>
                   <?php } ?>
-                </p>
+                </div>
               <?php } ?>
+              <div class="social">
+                <div id="likebutton">
+                  <?php if($this->plugin->isActive('FacebookConnect')) {?>
+                    <div class="facebook">
+                      <div class="fb-like" data-href="<?php $this->url->photosView($photo['id']); ?>" data-font="lucida grande"></div>
+                    </div>
+                  <?php } ?>
+                  <!--<div class="twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.openphoto.me" data-via="openphoto">Tweet</a></div>
+                  <div class="google"><g:plusone size="medium" href="http://www.openphoto.me"></g:plusone></div>-->
+                </div>
+              </div>
             </div>
           </div>
           <?php if($photos[0]['totalRows'] < 12 && $i >= 6) break; ?>
