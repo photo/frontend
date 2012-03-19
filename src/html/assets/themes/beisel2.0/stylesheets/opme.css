@@ -2539,10 +2539,12 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 	-webkit-border-radius:5px;
 	-moz-border-radius:5px;
 	border-radius:5px;
+	color:#645840;
+	background-color:#EFE8DA;
 }
 .nav-pills .active > a, .nav-pills .active > a:hover {
-	color:#ffffff;
-	background-color:#0088cc;
+	color:#fff;
+	background-color:#e6501e;
 }
 .nav-stacked > li {
 	float:none;
@@ -4994,6 +4996,36 @@ header h1 {
 /* 10.04. Tags ----------------------------------------------------------- */
 body.tags div.tags .tag-list {
   padding:20px;
+}
+body.tags .tag-1 {
+  background-color:#E5CADA;
+}
+body.tags .tag-2 {
+  background-color:#EFCADA;
+}
+body.tags .tag-3 {
+  background-color:#EFD4DA;
+}
+body.tags .tag-4 {
+  background-color:#EFDEDA;
+}
+body.tags .tag-5 {
+  background-color:#EFE8DA;
+}
+body.tags .tag-6 {
+  background-color:#EFF2DA;
+}
+body.tags .tag-7 {
+  background-color:#EFFCE4;
+}
+body.tags .tag-8 {
+  background-color:#EFFCEE;
+}
+body.tags .tag-9 {
+  background-color:#EFFCF8;
+}
+body.tags .tag-10 {
+  background-color:#EFFCFF;
 }
 /* 10.05. Manage ----------------------------------------------------------- */
 .manage ul.thumbnails li div.thumbnail {
