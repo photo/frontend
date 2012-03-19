@@ -3731,9 +3731,9 @@ a.thumbnail:hover {
 	transition:0.6s ease-in-out left;
 }
 .carousel .map img {
-       -webkit-border-radius:5px;
-       -moz-border-radius:5px;
-       border-radius:5px;
+  -webkit-border-radius:5px;
+  -moz-border-radius:5px;
+  border-radius:5px;
   margin-bottom:10px;
 
 }

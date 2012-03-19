@@ -373,9 +373,9 @@ var opTheme = (function() {
       },
       searchByTags: function(ev) {
         ev.preventDefault();
-        var form = $(ev.target).parent(),
-          tags = $(form.find('input[name=tags]')[0]).val(),
-          url = $(form).attr('action');
+        var form = $(ev.target).parent().parent(),
+          tags = $($('input[name=tags]', form)[0]).val(),
+          url = form.attr('action');
 
         if(tags.length > 0)
           location.href = url.replace('/list', '')+'/tags-'+tags+'/list';

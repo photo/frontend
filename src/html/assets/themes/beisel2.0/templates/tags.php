@@ -9,11 +9,15 @@
     </div>
   </header>
 
-  <div class="row hero-unit tag-list <?php if(empty($tags)) { ?>empty<?php } ?>">
-    <?php foreach($tags as $tag) { ?>
-      <span class="label label-tag tag-<?php $this->utility->safe($tag['weight']); ?>">
-        <a href="<?php $this->url->photosView(sprintf('tags-%s', $this->utility->safe($tag['id'], false))); ?>"><?php $this->utility->safe($tag['id']); ?></a>
-      </span>
-    <?php } ?>
-  </div>
+  <?php if(empty($tags)) { ?>
+    <?php $this->theme->display('partials/no-content.php'); ?>
+  <?php } else { ?>
+    <div class="row hero-unit tag-list">
+      <?php foreach($tags as $tag) { ?>
+        <span class="label label-tag tag-<?php $this->utility->safe($tag['weight']); ?>">
+          <a href="<?php $this->url->photosView(sprintf('tags-%s', $this->utility->safe($tag['id'], false))); ?>"><?php $this->utility->safe($tag['id']); ?></a>
+        </span>
+      <?php } ?>
+    </div>
+  <?php } ?>
 </div>
