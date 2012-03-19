@@ -851,6 +851,8 @@ class DatabaseMySql implements DatabaseInterface
     {
       if(isset($params['groups']))
       {
+        if(!is_array($params['groups']))
+          $params['groups'] = (array)explode(',', $params['groups']);
         $this->deleteGroupsFromElement($id, 'photo');
         $this->addGroupsToElement($id, $params['groups'], 'photo');
         // TODO: Generalize this and use for tags too -- @jmathai
