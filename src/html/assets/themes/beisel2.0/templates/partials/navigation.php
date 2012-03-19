@@ -39,7 +39,7 @@
             <li><a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> Sign in</a></li>
           </ul>
         <?php } ?>
-        <form class="navbar-search pull-right form-horizontal" action="<?php $this->url->photosView(); ?>">
+        <form class="navbar-search pull-right form-horizontal" action="<?php $this->utility->isActiveTab('manage') ? $this->url->manage() : $this->url->photosView(); ?>">
           <div class="input-append">
             <input class="search-query span2" id="appendedInput" name="tags" size="16" type="text">
             <a href="#" class="add-on search-click"><i class="icon-search icon-large"></i></a>

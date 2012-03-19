@@ -46,8 +46,8 @@
               </h1>
               <p>This photo was taken <?php $this->utility->safe($this->utility->timeAsText($photo['dateTaken'])); ?></p>
               <?php if(isset($photo['longitude']) && !empty($photo['longitude'])) { ?>
-                <div class="map"><img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 10, '250x100'); ?>"></div>
                 <a href="" class="invert"><i class="icon-map-marker"></i> <?php printf('%s, %s', $this->utility->safe($photo['longitude'], false), $this->utility->safe($photo['latitude'], false)); ?></a><br/>
+                <div class="map"><img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 10, '250x100'); ?>"></div>
               <?php } ?>
               <!--<a href="" class="invert"><i class="icon-heart"></i> 4 favorites</a><br />-->
               <a href="" class="invert"><i class="icon-comment"></i> <?php if(!isset($photos['actions'])) { ?>0<?php } else { $this->utility->safe(count($photos['actions'])); } ?> comments &amp; favorites</a><br />
