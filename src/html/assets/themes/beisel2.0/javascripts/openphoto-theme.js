@@ -82,13 +82,16 @@ var opTheme = (function() {
           case 'delete':
             tgt.html(opTheme.ui.batchFormFields.empty());
             break;
+          case 'groups':
+            tgt.html(opTheme.ui.batchFormFields.groups());
+            break;
           case 'permission':
             tgt.html(opTheme.ui.batchFormFields.permission());
             break;
           case 'tagsAdd':
           case 'tagsRemove':
             tgt.html(opTheme.ui.batchFormFields.tags());
-            OP.Util.fire('callback:tags-autocomplete');
+            //OP.Util.fire('callback:tags-autocomplete');
             break;
         }
       },
@@ -104,6 +107,7 @@ var opTheme = (function() {
               '      <select id="batch-key" class="batch-field-change" name="property">' +
               '        <option value="tagsAdd">Add Tags</option>' +
               '        <option value="tagsRemove">Remove Tags</option>' +
+              '        <option value="groups">Groups</option>' +
               '        <option value="permission">Permission</option>' +
               '        <option value="delete">Delete</option>' +
               '      </select>' +
@@ -299,10 +303,20 @@ var opTheme = (function() {
             fields = $("form#batch-edit").find("*[name='value']"),
             value;
 
-        if(fields.length == 1)
+        if(fields.length == 1) {
           value = fields.val();
-        else
-          value = $("form#batch-edit").find("*[name='value']:checked").val();
+        } else {
+          var checked = $("form#batch-edit").find("*[name='value']:checked");
+          if(checked.length == 1) {
+            value = checked.val();
+          } else {
+            value = [];
+            checked.each(function(i, el) {
+              value.push($(el).val());
+            });
+            value = value.join(',');
+          }
+        }
 
         params = {'crumb':crumb};
         params[key] = value;
@@ -747,6 +761,27 @@ var opTheme = (function() {
       batchFormFields: {
         empty: function() {
           return '';
+        },
+        groups: function() {
+          var groupsArr, group, html = '';
+          $.ajax({
+            url: '/groups/list.json',
+            async: false,
+            success: function(response) {
+              if(response.code === 200) {
+                for(i in response.result) {
+                  if(response.result.hasOwnProperty(i)) {
+                    group = response.result[i];
+                    html += '<label class="checkbox inline">' +
+                        '<input type="checkbox" name="value" value="'+group.id+'" class="group-checkbox-click group-checkbox">' +
+                        group.name + 
+                      '</label>';
+                  }
+                }
+              }
+            }
+          });
+          return html;
         },
         permission: function() {
           return '  <div class="clearfix">' +
