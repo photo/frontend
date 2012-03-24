@@ -697,14 +697,11 @@ var opTheme = (function() {
 
             if(_this.page === null) {
               var qsMatch = loc.href.match('page=([0-9]+)');
-              console.log('qsMatched ');
               if(qsMatch !== null) {
                 _this.page = qsMatch[1];
               } else {
-                console.log('check uri');
                 var uriMatch = loc.pathname.match(/\/page-([0-9]+)/);
                 if(uriMatch !== null) {
-                  console.log('check uri matched');
                   _this.page = uriMatch[1];
                 }
               }
@@ -713,24 +710,42 @@ var opTheme = (function() {
                 _this.page = 1;
             }
 
-            var api = location.pathname+'.json',
-                params = {returnSizes:'960x180', page: _this.page};
-            $.getJSON(api, params, function(response) {
-              var items = response.result;
-              if(items[0].totalPages >= _this.page) {
-                GPlusGallery.showImages($(".photo-grid-justify"), items);
-                _this.page++;
-                _this.running = false;
-              } else {
-                _this.end = true;
-                $("p.page-hr:last").remove();
+            var api = location.pathname+'.json';
+                params = {}, qs = window.location.search.replace('?', '');
+            
+            if(qs.length > 0) {
+              var qsKeyValueStrings = qs.split('&'), qsKeyAndValue;
+              for(i in qsKeyValueStrings) {
+                if(qsKeyValueStrings.hasOwnProperty(i)) {
+                  qsKeyAndValue = qsKeyValueStrings[i].split('=');
+                  if(qsKeyAndValue.length === 2) {
+                    params[qsKeyAndValue[0]] = qsKeyAndValue[1];
+                  }
+                }
               }
-            });
+            }
+
+            params.returnSizes = '960x180';
+            params.page = _this.page;
+
+            $.getJSON(api, params, _this.loadCb);
+            // TODO move
             $(window).scroll(function(){
               if($(window).scrollTop() == $(document).height() - $(window).height()){
                 _this.load();
               }
             });
+          },
+          loadCb: function(response) {
+            var items = response.result, _page = opTheme.init.pages.photos;
+            if(items[0].totalPages >= _page.page) {
+              GPlusGallery.showImages($(".photo-grid-justify"), items);
+              _page.page++;
+              _page.running = false;
+            } else {
+              _page.end = true;
+              $("p.page-hr:last").remove();
+            }
           }
         }
       },
