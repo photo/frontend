@@ -48,6 +48,10 @@ Index:
 	08.06. hero-unit
 09. Custom classes
 	09.01. Activity feed startpage
+  09.02. Photos list
+  09.03. Photos details
+  09.04. Tags
+  09.05. Manage
 10. Responsive definitions
 	10.01. screen width max. 480px
 	10.02. screen width max. 767px
@@ -2538,10 +2542,12 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 	-webkit-border-radius:5px;
 	-moz-border-radius:5px;
 	border-radius:5px;
+	background-color:#efe8da;
+	color:#645840;
 }
 .nav-pills .active > a, .nav-pills .active > a:hover {
 	color:#ffffff;
-	background-color:#0088cc;
+	background-color:#e6501e;
 }
 .nav-stacked > li {
 	float:none;
@@ -2841,6 +2847,7 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 	-webkit-box-shadow: inset 1px 1px 1px 0px rgba(66, 50, 18, 0.5);
 	-moz-box-shadow: inset 1px 1px 1px 0px rgba(66, 50, 18, 0.5);
 	box-shadow: inset 1px 1px 1px 0px rgba(66, 50, 18, 0.5);
+	color:#444;
 }
 .navbar-search .search-query :-moz-placeholder {
 	color:black;
@@ -3992,6 +3999,94 @@ a.invert:hover i {
 	height:25px;
 	margin:0 10px 10px 0;
 }
+
+/* 09.02. Photos list ----------------------------------------------------------- */
+/* 09.03. Photos details ----------------------------------------------------------- */
+/* 09.04. Tags ----------------------------------------------------------- */
+body.tags div.tags .tag-list {
+  padding:20px;
+}
+body.tags .tag-1 {
+  background-color:#E5CADA;
+}
+body.tags .tag-2 {
+  background-color:#EFCADA;
+}
+body.tags .tag-3 {
+  background-color:#EFD4DA;
+}
+body.tags .tag-4 {
+  background-color:#EFDEDA;
+}
+body.tags .tag-5 {
+  background-color:#EFE8DA;
+}
+body.tags .tag-6 {
+  background-color:#EFF2DA;
+}
+body.tags .tag-7 {
+  background-color:#EFFCE4;
+}
+body.tags .tag-8 {
+  background-color:#EFFCEE;
+}
+body.tags .tag-9 {
+  background-color:#EFFCF8;
+}
+body.tags .tag-10 {
+  background-color:#EFFCFF;
+}
+/* 09.05. Manage ----------------------------------------------------------- */
+.manage ul.thumbnails li div.thumbnail {
+  border:0px;
+  -webkit-box-shadow:0;
+  -mox-box-shadow:0;
+  box-shadow:0;
+}
+.manage ul.thumbnails img~.reveal.revealed, .manage ul.thumbnails img:hover+.reveal.revealed {
+  opacity:1.0;
+}
+.manage ul.thumbnails img~.reveal {
+  display:block;
+  float:left;
+  opacity:0;
+  border-radius:5px;
+  background:#ddd;
+  width:22px;
+  height:18px;
+  position:relative;
+  margin:0px;
+  border:solid 1px #aaa;
+  cursor:pointer;
+  top:-30px;
+}
+.manage ul.thumbnails img~.reveal.pin {
+  left:5px;
+}
+.manage ul.thumbnails img~.reveal.edit {
+  left:10px;
+}
+.manage ul.thumbnails img~.reveal.edit:hover {
+  opacity:1.0;
+}
+.manage ul.thumbnails img:hover~.reveal, .manage ul.thumbnails .reveal:hover {
+  opacity:.5;
+       -webkit-transition:opacity linear 0.2s;
+       -moz-transition:opacity linear 0.2s;
+       -ms-transition:opacity linear 0.2s;
+       -o-transition:opacity linear 0.2s;
+       transition:opacity linear 0.2s;
+}
+
+
+
+
+
+
+
+
+
+/* Where does this go? jmathai */
 #loginBox .form-horizontal {
 	margin-bottom:0;
 }

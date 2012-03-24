@@ -1,6 +1,5 @@
 <div class="tags">
   <header>
-    <h1>Tags</h1>
     <div class="subnav">
       <ul class="nav nav-pills">
         <li><a href="/tags/list"><i class="icon-arrow-down icon-large"></i> A-Z</a></li>
