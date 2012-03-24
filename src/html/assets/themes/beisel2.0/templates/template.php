@@ -46,6 +46,7 @@
 	</head>
 
   <body class="<?php echo $page; ?>">
+    <script>document.body.className += ' js';</script>
     <?php $this->theme->display('partials/navigation.php'); ?>
 
 		<div class="container">	
@@ -148,9 +149,6 @@
           onComplete: function(){ 
             opTheme.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
             opTheme.init.attach(); 
-            <?php if(isset($_GET['__route__']) && strstr($_GET['__route__'], 'photo') !== false) { ?>
-              opTheme.init.photos(); 
-            <?php } ?>
           }
         }
       });
