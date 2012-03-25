@@ -1,49 +1,78 @@
 var opTheme = (function() {
-  var crumb = null;
-  var setCrumb = function(_crumb) {
-    crumb = _crumb;
-  }
-  var getCrumb = function() {
-    return crumb;
+  var crumb, log, markup, pushstate;
+
+  crumb = {
+    value: null,
+    get: function() {
+      return crumb.value;
+    },
+    set: function(crumb) {
+      crumb.value = crumb;
+    }
   };
-  var log = function(msg) {
+
+  log = function(msg) {
     if(console !== undefined && console.log !== undefined)
       console.log(msg);
   };
-  var modalMarkup = function(header, body, footer) {
-    return '<div class="modal-header">' +
-           '  <a href="#" class="close" data-dismiss="modal">&times;</a>' +
-           '  <h3>'+header+'</h3>' +
-           '</div>' +
-           '<div class="modal-body">' +
-           '  <p>'+body+'</p>' +
-           '</div>' +
-           '<div class="modal-footer">' + footer + '</div>';
-  };
-  var messageMarkup = function(message) {
-    var cls = '';
-    if(arguments.length > 1) {
-      if(arguments[1] == 'error')
-        cls = 'error';
-      else if(arguments[1] == 'confirm')
-        cls = 'success';
+
+  // markup helpers
+  markup = {
+    message: function(message) { // messageMarkup
+      var cls = '';
+      if(arguments.length > 1) {
+        if(arguments[1] == 'error')
+          cls = 'error';
+        else if(arguments[1] == 'confirm')
+          cls = 'success';
+      }
+      return '<div class="alert-message block-message '+cls+'"><a class="modal-close-click close" href="#">x</a>' + message + '</div>'
+    },
+    modal: function(header, body, footer) { // modalMarkup
+      return '<div class="modal-header">' +
+             '  <a href="#" class="close" data-dismiss="modal">&times;</a>' +
+             '  <h3>'+header+'</h3>' +
+             '</div>' +
+             '<div class="modal-body">' +
+             '  <p>'+body+'</p>' +
+             '</div>' +
+             '<div class="modal-footer">' + footer + '</div>';
     }
-    return '<div class="alert-message block-message '+cls+'"><a class="modal-close-click close" href="#">x</a>' + message + '</div>'
   };
-  var tokenPreProcess = function(results) {
-    var term = $(document.activeElement).val(), result = results.result, retval = [];
-    for(i in result){ 
-      if(result.hasOwnProperty(i))
-        retval.push({id:result[i].id, name:result[i].id + ' ('+result[i].count+')'}); 
-    } 
-    // we need to append the current term into the list to allow users to use "new" tags
-    retval.push({id: term, name: term});
-    return retval;
+  /* pushstate */
+  pushstate = {
+    url: null,
+    clickHandler: function(ev) { // anchorBinder
+      var el = ev.currentTarget,
+          url = $(el).attr('href');
+      
+      if(History.enabled && url.search('#') == -1 && (url.match(/^http/) === null || url.search(document.location.hostname) != -1)) {
+        ev.preventDefault();
+        get(url);
+      }
+    },
+    get: function(url) {
+      pushstate.url = url;
+      $.get(pushstate.url, pushstate.store);
+    },
+    parse: function(markup) {
+      var dom = $(markup),
+          bodyClass = $('body', dom).attr('class'),
+          content = $('.content', dom).html();
+      return {bodyClass: bodyClass, content: content};
+    },
+    render: function(result) {
+      if(result.content === undefined) {
+        window.location.reload();
+      } else {
+        $('body').attr('class', result.bodyClass);
+        $('.content').fadeTo('opacity', .25, function() { $(this).html(result.content).fadeTo('opacity', 1); });
+      }
+    },
+    store: function(response) {
+      History.pushState(pushstate.parse(response),'',pushstate.url);
+    },
   };
-  var tokenFormatter = function(item) {
-    return '<li>'+item.name+'</li>';
-  };
-  var timeoutId = undefined;
   return {
     callback: {
       actionDelete: function(ev) {
@@ -91,14 +120,13 @@ var opTheme = (function() {
           case 'tagsAdd':
           case 'tagsRemove':
             tgt.html(opTheme.ui.batchFormFields.tags());
-            //OP.Util.fire('callback:tags-autocomplete');
             break;
         }
       },
       batchModal: function() {
         var el = $("#modal"),
             fieldMarkup = {},
-            html = modalMarkup(
+            html = modal.markup(
               'Batch edit your pinned photos',
               '<form id="batch-edit">' +
               '  <div class="clearfix">' +
@@ -118,7 +146,6 @@ var opTheme = (function() {
               '<a href="#" class="btn photo-update-batch-click">Submit</a>'
             );
         el.html(html).modal();
-        //OP.Util.fire('callback:tags-autocomplete');
       },
       batchRemove: function(id) {
         var el = $(".pin.photo-"+id);
@@ -207,18 +234,16 @@ var opTheme = (function() {
         return false;
       },
       keyBrowseNext: function(ev) {
-          var ref;
-          ref = $(".image-pagination .next a").attr("href");
-          if (ref) {
-              location.href = ref;
-          }
+        if(ev.ctrlKey || ev.altKey || ev.metaKey)
+          return;
+        
+        $(".next-photo").click();
       },
       keyBrowsePrevious: function(ev) {
-          var ref;
-          ref = $(".image-pagination .previous a").attr("href");
-          if (ref) {
-              location.href = ref;
-          }
+        if(ev.ctrlKey || ev.altKey || ev.metaKey)
+          return;
+
+        $(".previous-photo").click();
       },
       login: function(ev) {
         ev.preventDefault();
@@ -250,7 +275,6 @@ var opTheme = (function() {
       modalClose: function(ev) {
         ev.preventDefault();
         var el = $(ev.target).parent().parent();
-        console.log(el);
         el.slideUp('fast', function() { $(this).remove(); });
       },
       photoDelete: function(ev) {
@@ -277,17 +301,24 @@ var opTheme = (function() {
         OP.Util.makeRequest(url, {}, function(response){
           if(response.code === 200) {
             var el = $("#modal"),
-                html = modalMarkup(
+                html = modal.markup(
                   'Edit this photo',
                   response.result.markup,
                   '<a href="#" class="btn photo-update-click">Save</a>'
                 );
             el.html(html).modal();  
-            //OP.Util.fire('callback:tags-autocomplete');
           } else {
             opTheme.message.error('Could not load the form to edit this photo.');
           }
         }, 'json', 'get');
+        return false;
+      },
+      photoView: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target).parent(),
+            photoEl = $('.photo-view'),
+            url = el.attr('href');
+        pushstate.get(url);
         return false;
       },
       photoUpdate: function() {
@@ -318,7 +349,7 @@ var opTheme = (function() {
           }
         }
 
-        params = {'crumb':crumb};
+        params = {'crumb':crumb.get()};
         params[key] = value;
         params['ids'] = OP.Batch.collection.getIds().join(',');
         if(key !== 'delete') {
@@ -329,12 +360,12 @@ var opTheme = (function() {
       },
       photoUpdateBatchCb: function(response) {
         if(response.code == 200) {
-          opTheme.message.append(messageMarkup('Your photos were successfully updated.', 'confirm'));
+          opTheme.message.append(markup.message('Your photos were successfully updated.', 'confirm'));
         } else if(response.code == 204) {
           OP.Batch.clear();
-          opTheme.message.append(messageMarkup('Your photos were successfully deleted.', 'confirm'));
+          opTheme.message.append(markup.message('Your photos were successfully deleted.', 'confirm'));
         } else {
-          opTheme.message.append(messageMarkup('There was a problem updating your photos.', 'error'));
+          opTheme.message.append(markup.message('There was a problem updating your photos.', 'error'));
         }
         $("#modal").modal('hide');
       },
@@ -431,154 +462,11 @@ var opTheme = (function() {
         });
         return false;
       }
-    },
-    formHandlers: {
-			hasErrors: function(form, attribute) {
-				var errors = new Array();
-
-				form.children('input, textarea').each(function() {
-					var child = $(this);
-					// remove any old error classes
-					child.prev().removeClass('error');
-					var dataValidation = child.attr(attribute);
-					if(dataValidation != undefined) {
-						var dataValidationArray = dataValidation.split(' ');
-						for(var i = 0; i < dataValidationArray.length; i++) {
-							if(dataValidationArray[i] == 'date') {
-								if(!opTheme.formHandlers.passesDate(child)) {
-									var message = child.prev().html() + ' is not a valid date';
-									errors.push(new Array(child, message));
-								}
-							}
-
-							if(dataValidationArray[i] == 'email') {
-								if(!opTheme.formHandlers.passesEmail(child)) {
-									var message = child.prev().html() + ' is not a valid email address';
-									errors.push(new Array(child, message));
-								}
-							}
-
-							if(dataValidationArray[i] == 'ifexists') {
-								if(child.val() != '' && child.val() != undefined) {
-									$.merge(errors, opTheme.formHandlers.hasErrors(form, 'data-ifexists'));
-								}
-							}
-
-							if(dataValidationArray[i] == 'integer') {
-								if(!opTheme.formHandlers.passesInteger(child)) {
-									var message = child.prev().html() + ' is not a number';
-									errors.push(new Array(child, message));
-								}
-							}
-
-							if(dataValidationArray[i] == 'match') {
-								var matchId = child.attr('data-match');
-								if(!opTheme.formHandlers.passesMatch(child, matchId)) {
-									var message = child.prev().html() + ' does not match ' + $('#' + matchId).prev().html();
-									errors.push(new Array(child, message));
-								}
-							}
-
-							if(dataValidationArray[i] == 'required') {
-								if(!opTheme.formHandlers.passesRequired(child)) {
-									var message = child.prev().html() + ' is required';
-									errors.push(new Array(child, message));
-								}
-							}
-
-							if(dataValidationArray[i] == 'alphanumeric') {
-								if(!opTheme.formHandlers.passesAlphaNumeric(child)) {
-									var message = child.prev().html() + ' can only contain alpha-numeric characters';
-									errors.push(new Array(child, message));
-								}
-							}
-						}
-					}
-				});
-
-				return errors;
-			},
-
-			init: function(index) {
-				$(this).submit(opTheme.submitHandlers.siteForm);
-				opTheme.formHandlers.showPlaceholders();
-				$('input[data-placeholder]').live('focus', opTheme.formHandlers.placeholderFocus);
-				$('input[data-placeholder]').live('blur', opTheme.formHandlers.placeholderBlur);
-			},
-
-      passesAlphaNumeric: function(obj) {
-				var regex = /^[a-zA-Z0-9]+$/;
-				return regex.test(obj.val());
-      },
-
-			passesDate: function(obj) {
-				var regex = /^\d{1,2}\/\d{1,2}\/\d{4}$/;
-				return regex.test(obj.val());
-			},
-
-			passesEmail: function(obj) {
-				var regex = /^([\w-\.+]+@([\w-]+\.)+[\w-]{2,4})?$/;
-				return regex.test(obj.val());
-			},
-
-			passesInteger: function(obj) {
-				var regex = /^\d+$/;
-				return regex.test(obj.val());
-			},
-
-			passesMatch: function(obj, matchId) {
-				return obj.val() == $('#' + matchId).val();
-			},
-
-			passesRequired: function(obj) {
-				if(obj.is('textarea') || (obj.is('input') && (obj.attr('type') == 'text' || obj.attr('type') == 'password')))
-					return obj.val() != '' && obj.val() != undefined;
-				else if(obj.is('checkbox'))
-					return obj.is(':checked');
-				else
-					return true;
-			},
-
-			placeholderBlur: function() {
-				var obj = $(this);
-				if(obj.val() == '') {
-					obj.val(obj.attr('data-placeholder'));
-					obj.addClass('placeholder');
-				}
-			},
-
-			placeholderFocus: function() {
-				var obj = $(this);
-				if(obj.val() == obj.attr('data-placeholder')) {
-					obj.val('');
-					obj.removeClass('placeholder');
-				}
-			},
-
-			removePlaceholders: function() {
-				$('input[data-placeholder]').each(function() {
-					var obj = $(this);
-					if(obj.val() == obj.attr('data-placeholder')) {
-						obj.val('');
-						obj.removeClass('placeholder');
-					}
-				});
-			},
-
-			showPlaceholders: function() {
-				$('input[data-placeholder]').each(function() {
-					var obj = $(this);
-					if(obj.val() == '') {
-						obj.val(obj.attr('data-placeholder'));
-						obj.addClass('placeholder');
-					}
-				});
-			}
-		},
+    }, // callback
     
     init: {
       load: function(_crumb) {
-        setCrumb(_crumb);
+        crumb.set(_crumb);
 
         $('.dropdown-toggle').dropdown();
 
@@ -588,7 +476,6 @@ var opTheme = (function() {
           opTheme.init.pages.manage();
         else if(location.pathname.search(/^\/photos(.*)\/list/) === 0)
           opTheme.init.pages.photos.load();
-
       },
       attach: function() {
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
@@ -606,10 +493,11 @@ var opTheme = (function() {
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:photo-edit', opTheme.callback.photoEdit);
-        OP.Util.on('click:photo-update', opTheme.callback.photoUpdate);
-        OP.Util.on('click:photo-update-batch', opTheme.callback.photoUpdateBatch);
         OP.Util.on('click:plugin-status', opTheme.callback.pluginStatus);
         OP.Util.on('click:plugin-update', opTheme.callback.pluginUpdate);
+        OP.Util.on('click:photo-update', opTheme.callback.photoUpdate);
+        OP.Util.on('click:photo-update-batch', opTheme.callback.photoUpdateBatch);
+        OP.Util.on('click:photo-view', opTheme.callback.photoView);
         OP.Util.on('click:pin', opTheme.callback.pinClick);
         OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
         OP.Util.on('click:search', opTheme.callback.searchByTags);
@@ -619,7 +507,6 @@ var opTheme = (function() {
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
         OP.Util.on('change:batch-field', opTheme.callback.batchField);
 
-        OP.Util.on('callback:tags-autocomplete', opTheme.init.tags.autocomplete);
         OP.Util.on('callback:batch-add', opTheme.callback.batchAdd);
         OP.Util.on('callback:batch-remove', opTheme.callback.batchRemove);
         OP.Util.on('callback:batch-clear', opTheme.callback.batchClear);
@@ -627,12 +514,13 @@ var opTheme = (function() {
         OP.Util.on('upload:complete-success', opTheme.callback.uploadCompleteSuccess);
         OP.Util.on('upload:complete-failure', opTheme.callback.uploadCompleteFailure);
 
-        OP.Util.fire('callback:tags-autocomplete');
+        History.Adapter.bind(window,'statechange',function(){
+          var State = History.getState();
+          pushstate.render(State.data);
+        });
 
         if(typeof OPU === 'object')
           OPU.init();
-        // TODO standardize this somehow
-        $('form.validate').each(opTheme.formHandlers.init);
       },
       pages: {
         front: function() {
@@ -748,33 +636,8 @@ var opTheme = (function() {
             }
           }
         }
-      },
-      tags: {
-        autocomplete: function() {
-          var config = {};
-          config.queryParam = 'search';
-          config.propertyToSearch = 'id';
-          config.preventDuplicates = true;
-          config.onResult = tokenPreProcess;
-          config.resultsFormatter = tokenFormatter;
-          $("input[class~='tags-autocomplete']").each(function(i, el) {
-            var cfg = config, el = $(el), val = el.attr('value');
-            // check if this input has been tokenized already
-            if(el.css('display') == 'none')
-              return;
-
-            if(val != '') {
-              var tags = val.split(','), prePopulate = [];
-              for(i=0; i<tags.length; i++) {
-                prePopulate.push({id: tags[i], name: tags[i]});
-              }
-              config.prePopulate = prePopulate;
-            }
-            $(el).tokenInput("/tags/list.json", config);
-          });
-        }
       }
-    },
+    }, // init
     
     message: {
       append: function(html) {
@@ -791,38 +654,9 @@ var opTheme = (function() {
         opTheme.message.show(messageHtml, 'error');
       },
       show: function(messageHtml, type) {
-        opTheme.message.append(messageMarkup(messageHtml, type));
+        opTheme.message.append(markup.message(messageHtml, type));
       }
-    },
-    submitHandlers: {
-			siteForm: function(event) {
-				var form = $(this);
-				event.preventDefault();
-				opTheme.formHandlers.removePlaceholders();
-				var errors = opTheme.formHandlers.hasErrors(form, 'data-validation');
-				opTheme.formHandlers.showPlaceholders();
-
-				if(errors.length == 0) {
-					// submit the form
-					this.submit();
-				} else {
-					var messageHtml = '<ul>';
-					for(var i = 0; i < errors.length; i++) {
-						// highlight all errors
-						errors[i][0].prev().addClass('error');
-						messageHtml += '<li>' + errors[i][1] + '</li>';
-					}
-					messageHtml += '</ul>';
-
-					// scroll to the topmost error and focus
-					$('html').animate({scrollTop: errors[0][0].offset().top-30}, 500);
-					errors[0][0].focus();
-
-					// bring up the error message box
-					opTheme.message.error(messageHtml);
-				}
-			}
-		}, 
+    }, // message
     ui: {
       batchFormFields: {
         empty: function() {
@@ -888,14 +722,14 @@ var opTheme = (function() {
           return;
         } else {
           opTheme.message.append(
-            messageMarkup(
+            markup.message(
               '  <a id="batch-message"></a>You have <span id="batch-count">'+idsLength+'</span> photos pinned.' +
               '  <div><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a>&nbsp;<a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
             )
           );
         }
       }
-    },
+    }, // ui
     user: {
       base: {
         loginProcessed: function(response) {
@@ -919,7 +753,7 @@ var opTheme = (function() {
           OP.Util.makeRequest('/user/browserid/login.json', params, opTheme.user.base.loginProcessed);
         }
       }
-    }
+    } // user
   };
 }());
 

@@ -53,9 +53,12 @@
       <?php $this->plugin->invoke('renderBody'); ?>
       <div class="message"></div>
 
-      <?php echo $body; ?>
+      <div class="content">
+        <?php echo $body; ?>
+      </div>
       
       <div class="modal hide fade" id="modal"></div>
+      <div class="modal-photo-detail hide fade span12" id="modal-photo-detail"></div>
       <?php if(!$this->user->isLoggedIn()) { ?>
         <?php $this->theme->display('partials/login.php'); ?>
       <?php } ?>
@@ -96,11 +99,11 @@
               'pagination-click':'click:pagination',
               'photo-delete-click':'click:photo-delete',
               'photo-edit-click':'click:photo-edit',
-              'photo-update-click':'click:photo-update',
               'photo-tag-click':'click:tag',
               'photo-thumbnail-click':'click:photo-thumbnail',
               'photo-update-click':'click:photo-update',
               'photo-update-batch-click':'click:photo-update-batch',
+              'photo-view-click':'click:photo-view',
               'pin-click':'click:pin',
               'pin-clear-click':'click:pin-clear',
               'plugin-status-click':'click:plugin-status',
@@ -135,6 +138,7 @@
 
             <?php if($this->config->site->mode === 'dev') { ?>
               '/assets/javascripts/openphoto-batch.js',
+              '<?php $this->theme->asset('javascript', 'jquery.history.js'); ?>',
               '<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>',
               '<?php $this->theme->asset('javascript', 'bootstrap-modal.js'); ?>',
               '<?php $this->theme->asset('javascript', 'touchSwipe.js'); ?>',
