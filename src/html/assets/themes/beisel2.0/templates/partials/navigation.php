@@ -9,11 +9,11 @@
       <a class="brand" href="/" title="The OpenPhoto Project">The OpenPhoto Project</a>
       <div class="nav-collapse">
         <ul class="nav">
-          <li <?php if($this->utility->isActiveTab('photos')) { ?>class="active"<?php } ?>><a href="<?php $this->url->photosView(); ?>"><i class="icon-picture icon-large"></i> Gallery</a></li>
-          <li <?php if($this->utility->isActiveTab('tags')) { ?>class="active"<?php } ?>><a href="<?php $this->url->tagsView(); ?>"><i class="icon-tag icon-large"></i> Tags</a></li>
+          <li class="photos"><a href="<?php $this->url->photosView(); ?>"><i class="icon-picture icon-large"></i> Gallery</a></li>
+          <li class="tags"><a href="<?php $this->url->tagsView(); ?>"><i class="icon-tag icon-large"></i> Tags</a></li>
           <?php if($this->user->isOwner()) { ?>
-            <li <?php if($this->utility->isActiveTab('upload')) { ?>class="active"<?php } ?>><a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload icon-large"></i> Upload</a></li>
-            <li <?php if($this->utility->isActiveTab('manage')) { ?>class="active"<?php } ?>><a href="<?php $this->url->manage(); ?>"><i class="icon-th icon-large"></i> Manage</a></li>
+            <li class="upload"><a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload icon-large"></i> Upload</a></li>
+            <li class="manage"><a href="<?php $this->url->manage(); ?>"><i class="icon-th icon-large"></i> Manage</a></li>
           <?php } ?>
         </ul>
 
