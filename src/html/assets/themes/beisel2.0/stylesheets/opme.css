@@ -3202,6 +3202,24 @@ body.manage .navbar .nav .manage > a, body.manage .navbar .nav .manage > a:hover
 .modal.fade.in {
 	top:50%;
 }
+/* jmathai
+ * I am adding this as a larger modal for the photo preview when you click on a thumbnail from the gallery
+ *  it will contain the contents from the photo detail page
+ *
+ *  see here screenshots
+ *  http://imgur.com/a/qatwW
+ */
+.modal.photo-detail.fade.in {
+	width:95%;
+  height:95%;
+  top:5%;
+  left:2%;
+  margin:0;
+}
+.modal.photo-detail.fade.in .photo-view{
+  padding:10px;
+}
+
 .modal-header {
 	padding:9px 15px;
 	border-bottom:1px solid #EFE8DA;

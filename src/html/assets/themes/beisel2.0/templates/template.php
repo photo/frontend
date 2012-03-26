@@ -58,7 +58,7 @@
       </div>
       
       <div class="modal hide fade" id="modal"></div>
-      <div class="modal-photo-detail hide fade span12" id="modal-photo-detail"></div>
+      <div class="modal photo-detail hide fade span12" id="modal-photo-detail"></div>
       <?php if(!$this->user->isLoggedIn()) { ?>
         <?php $this->theme->display('partials/login.php'); ?>
       <?php } ?>
@@ -104,6 +104,7 @@
               'photo-update-click':'click:photo-update',
               'photo-update-batch-click':'click:photo-update-batch',
               'photo-view-click':'click:photo-view',
+              'photo-view-modal-click':'click:photo-view-modal',
               'pin-click':'click:pin',
               'pin-clear-click':'click:pin-clear',
               'plugin-status-click':'click:plugin-status',
@@ -138,11 +139,12 @@
 
             <?php if($this->config->site->mode === 'dev') { ?>
               '/assets/javascripts/openphoto-batch.js',
-              '<?php $this->theme->asset('javascript', 'jquery.history.js'); ?>',
               '<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'jquery.history.js'); ?>',
               '<?php $this->theme->asset('javascript', 'bootstrap-modal.js'); ?>',
               '<?php $this->theme->asset('javascript', 'touchSwipe.js'); ?>',
               '<?php $this->theme->asset('javascript', 'browserupdate.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'jquery.scrollTo-1.4.2.js'); ?>',
               '<?php $this->theme->asset('javascript', 'openphoto-theme.js'); ?>'
             <?php } else { ?>
               '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-batch.min.js')->

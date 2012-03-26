@@ -1,15 +1,17 @@
 var opTheme = (function() {
   var crumb, log, markup, pushstate;
 
-  crumb = {
-    value: null,
-    get: function() {
-      return crumb.value;
-    },
-    set: function(crumb) {
-      crumb.value = crumb;
-    }
-  };
+  crumb = (function() {
+    var value = null;
+    return {
+      get: function() {
+        return value;
+      },
+      set: function(crumb) {
+        value = crumb;
+      }
+    };
+  })();
 
   log = function(msg) {
     if(console !== undefined && console.log !== undefined)
@@ -39,40 +41,47 @@ var opTheme = (function() {
              '<div class="modal-footer">' + footer + '</div>';
     }
   };
-  /* pushstate */
-  pushstate = {
-    url: null,
-    clickHandler: function(ev) { // anchorBinder
-      var el = ev.currentTarget,
-          url = $(el).attr('href');
-      
-      if(History.enabled && url.search('#') == -1 && (url.match(/^http/) === null || url.search(document.location.hostname) != -1)) {
-        ev.preventDefault();
-        get(url);
-      }
-    },
-    get: function(url) {
-      pushstate.url = url;
-      $.get(pushstate.url, pushstate.store);
-    },
-    parse: function(markup) {
+
+  // pushstate
+  pushstate = (function() {
+    var url = null,
+        parse;
+
+    parse = function(markup) {
       var dom = $(markup),
           bodyClass = $('body', dom).attr('class'),
           content = $('.content', dom).html();
       return {bodyClass: bodyClass, content: content};
-    },
-    render: function(result) {
-      if(result.content === undefined) {
-        window.location.reload();
-      } else {
-        $('body').attr('class', result.bodyClass);
-        $('.content').fadeTo('opacity', .25, function() { $(this).html(result.content).fadeTo('opacity', 1); });
+    };
+
+    return {
+      clickHandler: function(ev) { // anchorBinder
+        var el = ev.currentTarget,
+            url = $(el).attr('href');
+        
+        if(History.enabled && url.search('#') == -1 && (url.match(/^http/) === null || url.search(document.location.hostname) != -1)) {
+          ev.preventDefault();
+          get(url);
+        }
+      },
+      get: function(url) {
+        pushstate.url = url;
+        $.get(pushstate.url, pushstate.store);
+      },
+      render: function(result) {
+        if(result.content === undefined) {
+          window.location.reload();
+        } else {
+          $('body').attr('class', result.bodyClass);
+          $('.content').fadeTo('fast', .25, function() { $(this).html(result.content).fadeTo('fast', 1); });
+        }
+      },
+      store: function(response) {
+        History.pushState(parse(response),'',pushstate.url);
       }
-    },
-    store: function(response) {
-      History.pushState(pushstate.parse(response),'',pushstate.url);
-    },
-  };
+    };
+  })();
+
   return {
     callback: {
       actionDelete: function(ev) {
@@ -126,7 +135,7 @@ var opTheme = (function() {
       batchModal: function() {
         var el = $("#modal"),
             fieldMarkup = {},
-            html = modal.markup(
+            html = markup.modal(
               'Batch edit your pinned photos',
               '<form id="batch-edit">' +
               '  <div class="clearfix">' +
@@ -301,7 +310,7 @@ var opTheme = (function() {
         OP.Util.makeRequest(url, {}, function(response){
           if(response.code === 200) {
             var el = $("#modal"),
-                html = modal.markup(
+                html = markup.modal(
                   'Edit this photo',
                   response.result.markup,
                   '<a href="#" class="btn photo-update-click">Save</a>'
@@ -318,7 +327,27 @@ var opTheme = (function() {
         var el = $(ev.target).parent(),
             photoEl = $('.photo-view'),
             url = el.attr('href');
-        pushstate.get(url);
+        if($('body').hasClass('photo-details')) {
+          pushstate.get(url);
+        } else {
+          var modal = $('#modal-photo-detail'),
+              photoContainer = $('#modal-photo-detail .photo-view');
+          photoContainer.fadeTo('fast', .25, function() {
+            modal.load(url + ' .photo-view', function() {
+              photoContainer.fadeTo('fast', 1, function() {
+                modal.scrollTo(this);
+              });
+            });
+          });
+        }
+        return false;
+      },
+      photoViewModal: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target).parent(),
+            photoEl = $('.photo-view'),
+            url = el.attr('href');
+        $('#modal-photo-detail').load(url + ' .photo-view').modal();
         return false;
       },
       photoUpdate: function() {
@@ -498,6 +527,7 @@ var opTheme = (function() {
         OP.Util.on('click:photo-update', opTheme.callback.photoUpdate);
         OP.Util.on('click:photo-update-batch', opTheme.callback.photoUpdateBatch);
         OP.Util.on('click:photo-view', opTheme.callback.photoView);
+        OP.Util.on('click:photo-view-modal', opTheme.callback.photoViewModal);
         OP.Util.on('click:pin', opTheme.callback.pinClick);
         OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
         OP.Util.on('click:search', opTheme.callback.searchByTags);
@@ -874,6 +904,7 @@ var GPlusGallery = (function($) {
 		
 		var img = $("<img/>");
 		img.attr("src", item.path960x180);
+    img.attr('class', 'photo-view-modal-click');
 		img.attr("title", item.title);
 		img.css("width", "" + $nz(item['path960x180'][1], 120) + "px");
 		img.css("height", "" + $nz(item['path960x180'][2], 120) + "px");
