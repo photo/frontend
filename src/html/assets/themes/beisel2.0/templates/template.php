@@ -111,6 +111,7 @@
               'plugin-update-click':'click:plugin-update',
               'search-click':'click:search',
               'settings-click':'click:settings',
+              'tags-focus':'focus:tags',
               'upload-start-click':'click:upload-start',
               'webhook-delete-click':'click:webhook-delete'
           },
@@ -138,10 +139,11 @@
             <?php } ?>
 
             <?php if($this->config->site->mode === 'dev') { ?>
-              '/assets/javascripts/openphoto-batch.js',
+              '/assets/javascripts/openphoto-helper.js',
               '<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>',
               '<?php $this->theme->asset('javascript', 'jquery.history.js'); ?>',
               '<?php $this->theme->asset('javascript', 'bootstrap-modal.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'bootstrap-typeahead.js'); ?>',
               '<?php $this->theme->asset('javascript', 'touchSwipe.js'); ?>',
               '<?php $this->theme->asset('javascript', 'browserupdate.js'); ?>',
               '<?php $this->theme->asset('javascript', 'jquery.scrollTo-1.4.2.js'); ?>',
@@ -153,8 +155,8 @@
             <?php } ?>
           ],
           onComplete: function(){ 
-            opTheme.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
             opTheme.init.attach(); 
+            opTheme.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
           }
         }
       });

@@ -1,7 +1,6 @@
 <?php $thumbnailSize = isset($_GET['size']) ? $_GET['size'] : '960x180'; ?>
-<div class="subnav">
+<div class="subnav js-hide">
   <ul class="nav nav-pills">
-    <?php $this->theme->display('partials/pagination.php',  array_merge(array('simple' => true), $pages)); ?>
     <!--<li><a href="#"><i class="icon-th icon-large"></i> Small</a></li>
     <li class="active"><a href="#"><i class="icon-th-large icon-large"></i> Big</a></li>
     <li><a href="#"><i class="icon-th-list icon-large"></i> List</a></li>-->
@@ -10,6 +9,10 @@
       <li class="last"><a href="/manage"><i class="icon-edit icon-large"></i> Manage photos</a></li>
     <?php } ?>
   </ul>
+</div>
+
+<div class="js-hide">
+  <?php $this->theme->display('partials/pagination.php', $pages); ?>
 </div>
 
 <div class="row hero-unit empty gallery">
