@@ -30,13 +30,8 @@
       <?php } ?>
     <?php } else { ?>
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
-                                                                  addCss("/assets/stylesheets/upload.css")->
-                                                                  addCss($this->theme->asset('stylesheet', 'main.css', false))->
+                                                                  addCss($this->theme->asset('stylesheet', 'opme.css', false))->
                                                                   getUrl(AssetPipeline::css, 'h'); ?>">
-      <?php if($this->user->isOwner()) { ?>
-        <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'owner.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'c'); ?>">
-      <?php } ?>
     <?php } ?>
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
@@ -149,7 +144,7 @@
               '<?php $this->theme->asset('javascript', 'jquery.scrollTo-1.4.2.js'); ?>',
               '<?php $this->theme->asset('javascript', 'openphoto-theme.js'); ?>'
             <?php } else { ?>
-              '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-batch.min.js')->
+              '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'openphoto-theme-full-min.js', false))->
                                                   getUrl(AssetPipeline::js, 'i'); ?>'
             <?php } ?>
