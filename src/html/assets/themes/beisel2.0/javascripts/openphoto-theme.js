@@ -1,5 +1,5 @@
 var opTheme = (function() {
-  var crumb, log, markup, pushstate;
+  var crumb, log, markup, pushstate, tags, pathname;
 
   crumb = (function() {
     var value = null;
@@ -14,7 +14,7 @@ var opTheme = (function() {
   })();
 
   log = function(msg) {
-    if(console !== undefined && console.log !== undefined)
+    if(typeof(console) !== 'undefined' && typeof(console.log) !== 'undefined')
       console.log(msg);
   };
 
@@ -64,11 +64,29 @@ var opTheme = (function() {
           get(url);
         }
       },
-      get: function(url) {
+      get: function(url) { // fetch and render
         pushstate.url = url;
         $.get(pushstate.url, pushstate.store);
       },
+      replace: function(url) { // update state without fetching or rendering
+        var data = arguments[1] || {};
+        data.type = 'replace';
+        History.replaceState(data,'',url);
+      },
+      insert: function(url) { // update state and store in history but do not render
+        var data = arguments[1] || {};
+        data.type = 'insert';
+        History.pushState(data,'',url);
+      },
       render: function(result) {
+        // this is only functional for the gallery and modal
+        /*if(location.pathname === pathname)
+          $('#modal-photo-detail').modal('hide');
+        */
+        if(result.type === 'replace' || result.type === 'insert') {
+          return;
+        }
+
         if(result.content === undefined) {
           window.location.reload();
         } else {
@@ -76,8 +94,11 @@ var opTheme = (function() {
           $('.content').fadeTo('fast', .25, function() { $(this).html(result.content).fadeTo('fast', 1); });
         }
       },
-      store: function(response) {
-        History.pushState(parse(response),'',pushstate.url);
+      store: function() {
+        var response = arguments[0] || {},
+            data = parse(response);
+        data.type = 'store';
+        History.pushState(data,'',pushstate.url);
       }
     };
   })();
@@ -286,6 +307,9 @@ var opTheme = (function() {
         var el = $(ev.target).parent().parent();
         el.slideUp('fast', function() { $(this).remove(); });
       },
+      modalUnload: function(ev) {
+        pushstate.replace(pathname);
+      },
       photoDelete: function(ev) {
       
         ev.preventDefault();
@@ -331,12 +355,13 @@ var opTheme = (function() {
           pushstate.get(url);
         } else {
           var modal = $('#modal-photo-detail'),
-              photoContainer = $('#modal-photo-detail .photo-view');
+          photoContainer = $('#modal-photo-detail .photo-view');
           photoContainer.fadeTo('fast', .25, function() {
             modal.load(url + ' .photo-view', function() {
               photoContainer.fadeTo('fast', 1, function() {
                 modal.scrollTo(this);
               });
+              pushstate.replace(url);
             });
           });
         }
@@ -346,8 +371,10 @@ var opTheme = (function() {
         ev.preventDefault();
         var el = $(ev.target).parent(),
             photoEl = $('.photo-view'),
-            url = el.attr('href');
-        $('#modal-photo-detail').load(url + ' .photo-view').modal();
+            url = el.attr('href'),
+            modal = $('#modal-photo-detail');
+        modal.load(url + ' .photo-view').modal().on('hidden', opTheme.callback.modalUnload);
+        pushstate.replace(url);
         return false;
       },
       photoUpdate: function() {
@@ -465,6 +492,11 @@ var opTheme = (function() {
         $("li#nav-signin").toggleClass('active');
         return false;
       },
+      tagsInitialized: function() {
+        var tags = OP.Tag.getTags();
+        if(tags !== null  && tags.length > 0)
+          $(".typeahead-tags").typeahead({source: OP.Tag.getTags(), mode: 'multiple'});
+      },
       uploadCompleteSuccess: function() {
         $("form.upload").fadeOut('fast', function() {
           $(".upload-progress").fadeOut('fast', function() { $(".upload-complete").fadeIn('fast'); });
@@ -496,6 +528,16 @@ var opTheme = (function() {
     init: {
       load: function(_crumb) {
         crumb.set(_crumb);
+        OP.Tag.init();
+        pathname = location.pathname;
+
+        History.Adapter.bind(window,'statechange',function(){
+          var State = History.getState();
+          pushstate.render(State.data);
+        });
+
+        if(typeof OPU === 'object')
+          OPU.init();
 
         $('.dropdown-toggle').dropdown();
 
@@ -533,24 +575,22 @@ var opTheme = (function() {
         OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
+
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
+
         OP.Util.on('change:batch-field', opTheme.callback.batchField);
 
         OP.Util.on('callback:batch-add', opTheme.callback.batchAdd);
         OP.Util.on('callback:batch-remove', opTheme.callback.batchRemove);
         OP.Util.on('callback:batch-clear', opTheme.callback.batchClear);
+        OP.Util.on('callback:tags-initialized', opTheme.callback.tagsInitialized);
+
 
         OP.Util.on('upload:complete-success', opTheme.callback.uploadCompleteSuccess);
         OP.Util.on('upload:complete-failure', opTheme.callback.uploadCompleteFailure);
 
-        History.Adapter.bind(window,'statechange',function(){
-          var State = History.getState();
-          pushstate.render(State.data);
-        });
-
-        if(typeof OPU === 'object')
-          OPU.init();
+        OP.Util.on('tags:autocomplete', opTheme.callback.tagsAutocomplete);
       },
       pages: {
         front: function() {
@@ -800,6 +840,43 @@ var GPlusGallery = (function($) {
 		}
 		return value;
 	};
+
+  var parseURL = function(url) {
+      //save the unmodified url to href property
+      //so that the object we get back contains
+      //all the same properties as the built-in location object
+      var loc = { 'href' : url };
+
+      //split the URL by single-slashes to get the component parts
+      var parts = url.replace('//', '/').split('/');
+
+      //store the protocol and host
+      loc.protocol = parts[0];
+      loc.host = parts[1];
+
+      //extract any port number from the host
+      //from which we derive the port and hostname
+      parts[1] = parts[1].split(':');
+      loc.hostname = parts[1][0];
+      loc.port = parts[1].length > 1 ? parts[1][1] : '';
+
+      //splice and join the remainder to get the pathname
+      parts.splice(0, 2);
+      loc.pathname = '/' + parts.join('/');
+
+      //extract any hash and remove from the pathname
+      loc.pathname = loc.pathname.split('#');
+      loc.hash = loc.pathname.length > 1 ? '#' + loc.pathname[1] : '';
+      loc.pathname = loc.pathname[0];
+
+      //extract any search query and remove from the pathname
+      loc.pathname = loc.pathname.split('?');
+      loc.search = loc.pathname.length > 1 ? '?' + loc.pathname[1] : '';
+      loc.pathname = loc.pathname[0];
+
+      //return the final object
+      return loc;
+  }
 	
 	/**
 	 * Distribute a delta (integer value) to n items based on
@@ -899,8 +976,9 @@ var GPlusGallery = (function($) {
 		overflow.css("height", ""+$nz(item['path960x180'][1], 120)+"px");
 		overflow.css("overflow", "hidden");
 
+    var urlParts = parseURL(item.url);
 		var link = $('<a/>');
-    link.attr('href', item.url);
+    link.attr('href', urlParts.pathname);
 		
 		var img = $("<img/>");
 		img.attr("src", item.path960x180);

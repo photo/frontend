@@ -10,8 +10,8 @@
     <p>Perhaps you should <a href="javascript:history.back();"><i class="icon-chevron-left icon-large"></i> go back</a> and try again.</p>
     <p>HTTP 500</p>
   <?php } elseif(!$this->user->isLoggedIn()) { // user is not logged in ?>
-    <?php if($type == 'oauth') { ?>
-      <strong class="bigtext">:-(</strong><br/>
+    <?php if($type == 'oauth') { // oauth ?>
+      <strong class="bigtext">\o/</strong><br/>
       <h1>You need to sign in to create an app.</h1>
       <p>Start by click the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
     <?php } elseif($type == '403') { // requires user to be logged in ?>
