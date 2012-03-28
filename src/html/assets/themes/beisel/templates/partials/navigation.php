@@ -9,7 +9,7 @@
 	<li id="nav-upload" <?php if($this->utility->isActiveTab('upload')) { ?> class="active" <?php } ?>>
 		<a href="<?php $this->url->photosUpload(); ?>">Upload</a>
 	</li>
-	<li id="nav-manage" <?php if($this->utility->isActiveTab('upload')) { ?> class="active" <?php } ?>>
+	<li id="nav-manage">
 		<a href="<?php $this->url->userManage(); ?>">Manage</a>
 	</li>
 <?php } ?>
