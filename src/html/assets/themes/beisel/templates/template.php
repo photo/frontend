@@ -22,10 +22,10 @@
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'main.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'h'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'i'); ?>">
       <?php if(true || $this->user->isOwner()) { ?>
         <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'owner.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'c'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'd'); ?>">
       <?php } ?>
     <?php } ?>
 
