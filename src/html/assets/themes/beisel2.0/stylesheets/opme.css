@@ -4440,7 +4440,8 @@ header h1 {
 		margin:0;
 	}
 	.modal.fade.in {
-		top:auto;
+    /* jmathai commenting this out makes the login modal visible on narrow screens */
+		/*top:auto;*/
 	}
 	.modal-header .close {
 		padding:10px;
