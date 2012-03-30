@@ -22,7 +22,7 @@
     <link rel="apple-touch-icon" sizes="72x72" href="<?php $this->theme->asset('image', 'apple-touch-icon-72x72.png'); ?>">
     <link rel="apple-touch-icon" sizes="114x114" href="<?php $this->theme->asset('image', 'apple-touch-icon-114x114.png'); ?>">
 
-    <?php if($this->config->site->mode === 'dev') { ?>
+    <?php if(true || $this->config->site->mode === 'dev') { ?>
       <link href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'opme.css'); ?>" rel="stylesheet">
       <?php if($this->user->isOwner()) { ?>
@@ -64,7 +64,7 @@
 
 		</div>
 
-    <?php if($this->config->site->mode === 'dev') { ?>
+    <?php if(true || $this->config->site->mode === 'dev') { ?>
       <script type="text/javascript" src="<?php $this->theme->asset($this->config->dependencies->javascript); ?>"></script>
       <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
     <?php } else { ?>
@@ -123,7 +123,7 @@
         js: {
           assets: [
             <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
-              <?php if($this->config->site->mode === 'dev') { ?>
+              <?php if(true || $this->config->site->mode === 'dev') { ?>
                 '/assets/javascripts/plupload.js',
                 '/assets/javascripts/plupload.html5.js',
                 '/assets/javascripts/jquery.plupload.queue.js',
@@ -133,7 +133,7 @@
               <?php } ?>
             <?php } ?>
 
-            <?php if($this->config->site->mode === 'dev') { ?>
+            <?php if(true || $this->config->site->mode === 'dev') { ?>
               '/assets/javascripts/openphoto-helper.js',
               '<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>',
               '<?php $this->theme->asset('javascript', 'jquery.history.js'); ?>',
