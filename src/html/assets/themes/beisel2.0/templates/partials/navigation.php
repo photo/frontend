@@ -35,7 +35,7 @@
         </ul>
         <?php if(!$this->user->isLoggedIn()) { ?>
           <ul class="nav pull-right">
-            <li><a href="https://openphoto.me/signup"><i class="icon-plus icon-large"></i> Register</a></li>
+            <li><a href="https://openphoto.me/signup"><i class="icon-plus icon-large"></i> Create an account</a></li>
             <li><a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> Sign in</a></li>
           </ul>
         <?php } ?>

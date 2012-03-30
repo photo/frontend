@@ -18,12 +18,13 @@ function swipeRight(event, direction)
   }
 }
 
-$(function() { 
+$(function() {
 	$('.dropdown-toggle').dropdown();
 	$('#activityCarousel').carousel('pause');
 	$('#heroCarousel').carousel();
 	$('#heroCarousel').swipe(swipeOptionsHero);
 	$('#loginBox').modal('hide');
+	$('#subnav').scrollspy()
 	
 	var $win = $(window)
 	   , $nav = $('.subnav')
