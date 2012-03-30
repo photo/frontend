@@ -142,11 +142,13 @@
               '<?php $this->theme->asset('javascript', 'touchSwipe.js'); ?>',
               '<?php $this->theme->asset('javascript', 'browserupdate.js'); ?>',
               '<?php $this->theme->asset('javascript', 'jquery.scrollTo-1.4.2.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'gallery.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'phpjs.js'); ?>',
               '<?php $this->theme->asset('javascript', 'openphoto-theme.js'); ?>'
             <?php } else { ?>
               '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'openphoto-theme-full-min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'i'); ?>'
+                                                  getUrl(AssetPipeline::js, 'j'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 

@@ -1,19 +1,20 @@
 <?php $thumbnailSize = isset($_GET['size']) ? $_GET['size'] : '960x180'; ?>
-<div class="subnav js-hide">
-  <ul class="nav nav-pills">
-    <!--<li><a href="#"><i class="icon-th icon-large"></i> Small</a></li>
-    <li class="active"><a href="#"><i class="icon-th-large icon-large"></i> Big</a></li>
-    <li><a href="#"><i class="icon-th-list icon-large"></i> List</a></li>-->
-    <!-- <li><a href="#"><i class="icon-asterisk icon-large"></i> Justified</a></li> -->
-    <?php if($this->user->isOwner()) { ?>
-      <li class="last"><a href="/manage"><i class="icon-edit icon-large"></i> Manage photos</a></li>
-    <?php } ?>
-  </ul>
-</div>
+<?php $minDate = min($photos[0]['dateTaken'], $photos[count($photos)-1]['dateTaken']); ?>
+<?php $maxDate = max($photos[count($photos)-1]['dateTaken'], $photos[count($photos)-1]['dateTaken']); ?>
+<?php if($photos[0]['totalRows'] > 0) { ?>
+  <div class="infobar subnav subnav-fixed">
+    <ul class="nav nav-pills">
+      <li class="plain"><a>Showing photos between <i class="icon-calendar icon-large"></i> <span class="enddate date" data-time="<?php $this->utility->safe($minDate); ?>"><?php $this->utility->safe(date('l F jS, Y', $minDate)); ?></span> and <i class="icon-calendar icon-large"></i> <span class="startdate date" data-time="<?php $this->utility->safe($maxDate); ?>"><?php $this->utility->safe(date('l F jS, Y', $maxDate)); ?></span></a></li>
+    </ul>
+  </div>
 
-<div class="js-hide">
-  <?php $this->theme->display('partials/pagination.php', $pages); ?>
-</div>
+  <?php if(count($pages) > 1) { ?>
+    <div class="js-hide">
+      <?php $this->theme->display('partials/pagination.php', $pages); ?>
+    </div>
+  <?php } ?>
+<?php } ?>
+
 
 <div class="row hero-unit empty gallery">
   <?php if($photos[0]['totalRows'] > 0) { ?>
@@ -33,6 +34,6 @@
       <?php } ?>
     </ul>
   <?php } ?>
-  <div class="photo-grid-justify"><p class="page-hr">Page <?php $this->utility->safe($pages['currentPage']); ?></p></div>
+  <div class="photo-grid-justify"></div>
   <br clear="all">
 </div>
