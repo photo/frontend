@@ -19,7 +19,7 @@
 
 !function( $ ){
 
-  "use strict"
+  //"use strict"
 
   var Typeahead = function ( element, options ) {
     this.$element = $(element)
