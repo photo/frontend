@@ -3,9 +3,9 @@
 openphoto.me - Your photos, liberated.
 
 Project:		Beisel theme
-Version:		0.3
+Version:		0.31
 Generated:		03/03/12
-Last change:	28/03/12
+Last change:	01/04/12
 Author:			Tobias Beisel
 
 Index:
@@ -1811,12 +1811,15 @@ button.btn.small, input[type="submit"].btn.small {
 	display:inline-block;
 	vertical-align:bottom;
 }
+.orange {
+	color:#E6501E;
+}
 .icon-large:before {
 	font-size:1.3333333333333333em;
 }
-.btn [class^="icon-"], .btn [class*=" icon-"] {
+/*.btn [class^="icon-"], .btn [class*=" icon-"] {
 	line-height:.9em;
-}
+}*/
 li [class^="icon-"], li [class*=" icon-"] {
 	display:inline-block;
 	width:1.25em;
@@ -4008,7 +4011,8 @@ a.invert:hover i {
 }
 .social {
 	display:block;
-	margin:10px 0 20px 0;
+	float:left;
+	margin:10px 0 0 0;
 }
 .social .facebook,
 .social .google,
@@ -4017,6 +4021,10 @@ a.invert:hover i {
 	float:left;
 	height:25px;
 	margin:0 10px 10px 0;
+}
+.map {
+	display:block;
+
 }
 
 /* 09.02. Photos list ----------------------------------------------------------- */
@@ -4029,35 +4037,35 @@ body.photos .infobar .date {
 body.tags div.tags .tag-list {
   padding:20px;
 }
-body.tags .tag-1 {
-  background-color:#E5CADA;
+.tag-1 {
+  background-color:#f4bfde;
 }
-body.tags .tag-2 {
-  background-color:#EFCADA;
+.tag-2 {
+  background-color:#f8afaf;
 }
-body.tags .tag-3 {
-  background-color:#EFD4DA;
+.tag-3 {
+  background-color:#fdc7d3;
 }
-body.tags .tag-4 {
-  background-color:#EFDEDA;
+.tag-4 {
+  background-color:#f9d5ae;
 }
-body.tags .tag-5 {
-  background-color:#EFE8DA;
+.tag-5 {
+  background-color:#eddebd;
 }
-body.tags .tag-6 {
-  background-color:#EFF2DA;
+.tag-6 {
+  background-color:#e7efbb;
 }
-body.tags .tag-7 {
-  background-color:#EFFCE4;
+.tag-7 {
+  background-color:#d5f7ba;
 }
-body.tags .tag-8 {
-  background-color:#EFFCEE;
+.tag-8 {
+  background-color:#d4fed1;
 }
-body.tags .tag-9 {
-  background-color:#EFFCF8;
+.tag-9 {
+  background-color:#d1f9ed;
 }
-body.tags .tag-10 {
-  background-color:#EFFCFF;
+.tag-10 {
+  background-color:#cdf2fd;
 }
 /* 09.05. Manage ----------------------------------------------------------- */
 .manage ul.thumbnails li div.thumbnail {
@@ -4129,10 +4137,130 @@ body.tags .tag-10 {
 	*zoom:1;
 	margin:0 -20px;
 }
+.photodetail {
+	min-height:350px;
+	margin-bottom:20px;
+	padding:0;
+}
+
+.photodetail .span9 {
+	margin:0 10px 0 0;
+}
+
+.photodetail .span9 img {
+	-webkit-border-top-left-radius: 5px;
+	-moz-border-top-left-radius: 5px;
+	border-top-left-radius: 5px;
+  display:block;
+  margin:auto;
+}
+
+.photodetail .span9 .form-horizontal {
+	background-color: #FBF9F1;
+	-webkit-border-bottom-left-radius: 5px;
+	-moz-border-bottom-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	margin:0;
+	padding:20px 0 0 0;
+}
+
+.photodetail .span9 .form-horizontal  .control-label,
+.photodetail .span9 .form-horizontal .controls {
+	padding:0 20px;
+}
+.photodetail .span9 .form-horizontal .controls .input-xlarge {
+	width:100%;
+}
+
+.photodetail .span9 .form-horizontal .form-actions {
+	background-color: #EFE8DA;
+	-webkit-border-bottom-left-radius: 5px;
+	-moz-border-bottom-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border-top: 1px solid #C8BEA0;
+	-webkit-box-shadow: inset 0 1px 0 white;
+	-moz-box-shadow: inset 0 1px 0 white;
+	box-shadow: inset 0 1px 0 white;
+	margin:0;
+}
+
+.photodetailpos {
+	position:relative;
+}
+
+.photodetailpos:hover .private {
+	opacity:1.0;
+}
+
+.photodetailpos .private {
+	background-color:black;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	bottom:10px;
+	color:white;
+	display:block;
+	font-size:24px;
+	opacity:0.35;
+	padding:10px;
+	position:absolute;
+	left:10px;
+}
+
+.photodetail .camera {
+	margin:10px 10px 0 0;
+}
+
+.photodetail .camera li {
+	list-style-type:none;
+	display:inline-block;
+	vertical-align:top;
+}
+
+.avatar {
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.morephotos {
+	margin-right:10px;
+}
+
+.morephotos ul {
+	margin:5px 0 0 0;
+}
+
+.morephotos ul li {
+	float:left;
+	margin:0;
+	list-style-type:none;
+}
+
+.morephotos ul li.mspacer {
+	margin-right:10px;
+}
+
+.morephotos ul li.buttonmp {
+	margin-right:15px;
+}
+
+.morephotos ul li.buttonmp:last-child {
+	margin-left:15px;
+	margin-right:0;
+}
+
+.morephotos ul li .btn {
+	height:70px;
+}
+
 .empty {
 	min-height:350px;
 	margin-bottom:20px;
 	padding:0 20px 20px 20px;
+}
+.empty .tags {
+	padding-top:20px;
 }
 .middle {
 	text-align:center;
@@ -4642,11 +4770,32 @@ header h1 {
 		-moz-box-shadow: none;
 		box-shadow: none;
 	}
-	
-	.photo-grid {
-		-moz-column-count:    2;
-		-webkit-column-count: 2;
-		column-count:         2;
+	.photodetail .span9 .form-horizontal .row {
+		padding:10px 10px 0 10px;
+	}	
+	.photodetail .span1 {
+		display:inline-block;
+		float:left;
+		margin-right:10px;
+		width:42px;
+	}
+	.photodetail .span9 .form-horizontal .form-actions {
+		-webkit-border-bottom-left-radius:0;
+		-moz-border-bottom-left-radius:0;
+		border-bottom-left-radius:0;
+	}
+	.photodetail .span9 .form-horizontal .control-label,
+	.photodetail .span9 .form-horizontal .controls {
+		padding:0 20px 0 10px;
+	}
+	.photodetail .span3 {
+		padding:0 10px;
+	}
+	.morephotos {
+		display:none;
+	}
+	.photodetail .camera {
+		margin-bottom:20px;
 	}
 }
 
@@ -4840,11 +4989,6 @@ header h1 {
 		display:block;
 		line-height:1;
 	}
-	.photo-grid {
-		-moz-column-count:    4;
-		-webkit-column-count: 4;
-		column-count:         4;
-	}
 }
 
 /* 10.04. screen width max. 979px ----------------------------------------------------------- */
@@ -5029,6 +5173,19 @@ header h1 {
 	.activityfeed-startpage .carousel-control {
 		display:block;
 	}
+	.morephotos ul li .btn {
+		height:70px;
+		padding-right:0;
+		padding-left:0;
+		width:20px;
+	}
+	.morephotos ul li.buttonmp {
+		margin-right:10px;
+	}
+	.morephotos ul li.buttonmp:last-child {
+		margin-left:10px;
+		margin-right:0;
+	}
 }
 
 /* 10.05. screen width min. 980px and max. 1199px ------------------------------------------- */
@@ -5052,6 +5209,15 @@ header h1 {
 	}
 	.carousel {
 		margin-left:0px;
+	}
+	.morephotos ul li .btn {
+		height:70px;
+		padding-right:0;
+		padding-left:0;
+		width:20px;
+	}
+	.photodetail .span9 .form-horizontal .span8 {
+		width: 650px;
 	}
 }
 
