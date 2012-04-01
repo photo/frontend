@@ -350,14 +350,21 @@ var opTheme = (function() {
         ev.preventDefault();
         var el = $(ev.target).parent(),
             photoEl = $('.photo-view'),
-            url = el.attr('href');
+            url = el.attr('href'),
+            urlAjax = url;
         if($('body').hasClass('photo-details')) {
           pushstate.get(url);
         } else {
           var modal = $('#modal-photo-detail'),
           photoContainer = $('#modal-photo-detail .photo-view');
+
+          if(urlAjax.indexOf('?') === -1)
+            urlAjax += '?modal=true';
+          else
+            urlAjax += '&modal=true';
+
           photoContainer.fadeTo('fast', .25, function() {
-            modal.load(url + ' .photo-view', function() {
+            modal.load(urlAjax + ' .photo-view', function() {
               photoContainer.fadeTo('fast', 1, function() {
                 modal.scrollTo(this);
               });
@@ -372,8 +379,14 @@ var opTheme = (function() {
         var el = $(ev.target).parent(),
             photoEl = $('.photo-view'),
             url = el.attr('href'),
-            modal = $('#modal-photo-detail');
-        modal.load(url + ' .photo-view').modal().on('hidden', opTheme.callback.modalUnload);
+            urlAjax = url,
+            modalEl = $('#modal-photo-detail');
+
+        if(urlAjax.indexOf('?') === -1)
+          urlAjax += '?modal=true';
+        else
+          urlAjax += '&modal=true';
+        modalEl.load(urlAjax + ' .photo-view').modal().on('hidden', opTheme.callback.modalUnload);
         pushstate.replace(url);
         return false;
       },

@@ -95,7 +95,7 @@ class Url
     $utilityObj = new Utility;
     $ret = array();
     foreach($tags as $tag)
-      $ret[] = sprintf('<a href="%s">%s</a>', self::photosView("tags-{$tag}", false), $utilityObj->safe($tag, false));
+      $ret[] = sprintf('<a href="%s">%s</a>', $this->photosView("tags-{$tag}", false), $utilityObj->safe($tag, false));
 
     return $utilityObj->returnValue(implode(', ', $ret), $write);
   }
