@@ -508,7 +508,7 @@ var opTheme = (function() {
       tagsInitialized: function() {
         var tags = OP.Tag.getTags();
         if(tags !== null  && tags.length > 0)
-          $(".typeahead-tags").typeahead({source: OP.Tag.getTags(), mode: 'multiple'});
+          $(".typeahead-tags").typeahead({source: tags, mode: 'multiple'});
       },
       uploadCompleteSuccess: function() {
         $("form.upload").fadeOut('fast', function() {
@@ -540,12 +540,20 @@ var opTheme = (function() {
     
     init: {
       load: function(_crumb) {
+        // http://stackoverflow.com/a/6974186
+        var popped = ('state' in window.history), initialURL = location.href;
+
         crumb.set(_crumb);
         OP.Tag.init();
         pathname = location.pathname;
 
         History.Adapter.bind(window,'statechange',function(){
-          var State = History.getState();
+          var State = History.getState(),
+              initialPop = !popped && location.href == initialURL;
+          popped = true;
+          if(initialPop)
+            return;
+
           pushstate.render(State.data);
         });
 

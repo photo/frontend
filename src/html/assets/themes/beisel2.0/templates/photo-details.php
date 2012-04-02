@@ -84,6 +84,9 @@
             <?php $this->utility->safe($photo['filenameOriginal']); ?>
           <?php } ?>
         </h1>
+        <?php if($photo['description'] != '') { ?>
+          <p><?php $this->utility->safe($photo['description']); ?></p>
+        <?php } ?>
         <p>This photo was taken <?php $this->utility->timeAsText($photo['dateTaken']); ?> ago</p>
         <div class="social">
           <div class="facebook">
