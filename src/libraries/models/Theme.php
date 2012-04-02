@@ -53,7 +53,7 @@ class Theme
         break;
       //
       case 'jquery':
-        return $utilityObj->returnValue('/assets/javascripts/jquery-1.7.1.min.js', $write);
+        return $utilityObj->returnValue('/assets/javascripts/jquery-1.7.2.min.js', $write);
         break;
       case 'util':
         return $utilityObj->returnValue('/assets/javascripts/openphoto-util.js', $write);

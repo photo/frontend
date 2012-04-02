@@ -22,16 +22,13 @@
     <link rel="apple-touch-icon" sizes="72x72" href="<?php $this->theme->asset('image', 'apple-touch-icon-72x72.png'); ?>">
     <link rel="apple-touch-icon" sizes="114x114" href="<?php $this->theme->asset('image', 'apple-touch-icon-114x114.png'); ?>">
 
-    <?php if(true || $this->config->site->mode === 'dev') { ?>
+    <?php if($this->config->site->mode === 'dev') { ?>
       <link href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'opme.css'); ?>" rel="stylesheet">
-      <?php if($this->user->isOwner()) { ?>
-        <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'owner.css'); ?>">
-      <?php } ?>
     <?php } else { ?>
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'h'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'i'); ?>">
     <?php } ?>
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
@@ -64,7 +61,7 @@
 
 		</div>
 
-    <?php if(true || $this->config->site->mode === 'dev') { ?>
+    <?php if($this->config->site->mode === 'dev') { ?>
       <script type="text/javascript" src="<?php $this->theme->asset($this->config->dependencies->javascript); ?>"></script>
       <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
     <?php } else { ?>
@@ -123,7 +120,7 @@
         js: {
           assets: [
             <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
-              <?php if(true || $this->config->site->mode === 'dev') { ?>
+              <?php if($this->config->site->mode === 'dev') { ?>
                 '/assets/javascripts/plupload.js',
                 '/assets/javascripts/plupload.html5.js',
                 '/assets/javascripts/jquery.plupload.queue.js',
@@ -133,22 +130,28 @@
               <?php } ?>
             <?php } ?>
 
-            <?php if(true || $this->config->site->mode === 'dev') { ?>
+            <?php if($this->config->site->mode === 'dev') { ?>
               '/assets/javascripts/openphoto-helper.js',
-              '<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>',
               '<?php $this->theme->asset('javascript', 'jquery.history.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'bootstrap-modal.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'bootstrap-typeahead.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'jquery.scrollTo.js'); ?>',
               '<?php $this->theme->asset('javascript', 'touchSwipe.js'); ?>',
               '<?php $this->theme->asset('javascript', 'browserupdate.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'jquery.scrollTo-1.4.2.js'); ?>',
               '<?php $this->theme->asset('javascript', 'gallery.js'); ?>',
               '<?php $this->theme->asset('javascript', 'phpjs.js'); ?>',
               '<?php $this->theme->asset('javascript', 'openphoto-theme.js'); ?>'
+              /*'<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'min/jquery.history.min.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'min/jquery.scrollTo.min.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'min/touchSwipe.min.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'min/browserupdate.min.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'min/gallery.min.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'min/phpjs.min.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'min/openphoto-theme.min.js'); ?>'*/
             <?php } else { ?>
-              '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-helper.min.js')->
-                                                  addJs($this->theme->asset('javascript', 'openphoto-theme-full-min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'j'); ?>'
+            '<?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
+                                                  addJs('/assets/javascripts/openphoto-helper.min.js')->
+                                                  addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
+                                                  getUrl(AssetPipeline::js, 'k'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
