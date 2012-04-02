@@ -33,9 +33,23 @@ class EpiDatabase
     {
       $sth = $this->prepare($sql, $params);
       if(!$sth)
+      {
+ 	getLogger()->info("sth is empty, returning false");
         return false;
+      }
       else if(preg_match('/(insert|replace)/i', $sql))
-        return $this->dbh->lastInsertId();
+      {
+ 	getLogger()->info("insert or replace");
+	switch($this->_type) {
+		case 'pgsql':
+			/* FIXME */
+        		return "true";
+			break;
+		default:
+        		return $this->dbh->lastInsertId();
+			break;
+	}
+      }
       else
         return $sth->rowCount();
     }

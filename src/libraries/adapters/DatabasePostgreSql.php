@@ -56,7 +56,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function deleteAction($id)
   {
-    $res = $this->db->execute("DELETE FROM `{$this->postgreSqlTablePrefix}action` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $res = $this->db->execute("DELETE FROM {$this->postgreSqlTablePrefix}action WHERE idx=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res !== false);
   }
 
@@ -67,7 +67,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function deleteCredential($id)
   {
-    $res = $this->db->execute("DELETE FROM `{$this->postgreSqlTablePrefix}credential` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $res = $this->db->execute("DELETE FROM {$this->postgreSqlTablePrefix}credential WHERE idx=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res !== false);
   }
 
@@ -79,7 +79,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function deleteGroup($id)
   {
-    $res = $this->db->execute("DELETE FROM `{$this->postgreSqlTablePrefix}group` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $res = $this->db->execute("DELETE FROM {$this->postgreSqlTablePrefix}group WHERE idx=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res !== false);
   }
 
@@ -94,7 +94,7 @@ class DatabasePostgreSql implements DatabaseInterface
     if(!isset($photo['id']))
       return false;
 
-    $res = $this->db->execute("DELETE FROM `{$this->postgreSqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
+    $res = $this->db->execute("DELETE FROM {$this->postgreSqlTablePrefix}photo WHERE idx=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
     // TODO delete all versions
     return ($res !== false);
   }
@@ -107,8 +107,8 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function deleteTag($id)
   {
-    $resDel = $this->db->execute("DELETE FROM `{$this->postgreSqlTablePrefix}tag` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
-    $resClean = $this->db->execute("DELETE FROM `{$this->postgreSqlTablePrefix}elementTag` WHERE `owner`=:owner AND `tag`=:tag", array(':owner' => $this->owner, ':tag' => $id));
+    $resDel = $this->db->execute("DELETE FROM {$this->postgreSqlTablePrefix}tag WHERE idx=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $resClean = $this->db->execute("DELETE FROM {$this->postgreSqlTablePrefix}elementtag WHERE owner=:owner AND tag=:tag", array(':owner' => $this->owner, ':tag' => $id));
     return ($resDel !== false);
   }
 
@@ -120,7 +120,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function deleteWebhook($id)
   {
-    $res = $this->db->execute("DELETE FROM `{$this->postgreSqlTablePrefix}webhook` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $res = $this->db->execute("DELETE FROM {$this->postgreSqlTablePrefix}webhook WHERE id=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res !== false);
   }
 
@@ -133,7 +133,7 @@ class DatabasePostgreSql implements DatabaseInterface
   {
     $utilityObj = new Utility;
     $diagnostics = array();
-    $res = $this->db->execute("SELECT * FROM `{$this->postgreSqlTablePrefix}photo` WHERE owner=:owner LIMIT 1", array(':owner' => $this->owner));
+    $res = $this->db->execute("SELECT * FROM {$this->postgreSqlTablePrefix}photo WHERE owner=:owner LIMIT 1", array(':owner' => $this->owner));
     if($res == 1)
       $diagnostics[] = $utilityObj->diagnosticLine(true, 'Database connectivity is okay.');
     else
@@ -173,7 +173,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getAction($id)
   {
-    $action = $this->db->one("SELECT * FROM `{$this->postgreSqlTablePrefix}action` WHERE `id`=:id AND owner=:owner",
+    $action = $this->db->one("SELECT * FROM {$this->postgreSqlTablePrefix}action WHERE idx=:id AND owner=:owner",
                                array(':id' => $id, ':owner' => $this->owner));
     if(empty($action))
       return false;
@@ -188,7 +188,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getActivities()
   {
-    $activities = $this->db->all("SELECT * FROM `{$this->postgreSqlTablePrefix}activity` WHERE `owner`=:owner",
+    $activities = $this->db->all("SELECT * FROM {$this->postgreSqlTablePrefix}activity WHERE owner=:owner",
                                array(':owner' => $this->owner));
     if($activities === false)
       return false;
@@ -207,7 +207,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getActivity($id)
   {
-    $activity = $this->db->all("SELECT * FROM `{$this->postgreSqlTablePrefix}activity` WHERE `id`=:id AND `owner`=:owner",
+    $activity = $this->db->all("SELECT * FROM {$this->postgreSqlTablePrefix}activity WHERE idx=:id AND owner=:owner",
                                array(':id' => $id, ':owner' => $this->owner));
     if($activity === false)
       return false;
@@ -228,7 +228,7 @@ class DatabasePostgreSql implements DatabaseInterface
   {
     if($this->owner === $email)
     {
-      $album = $this->db->one("SELECT * FROM `{$this->postgreSqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner",
+      $album = $this->db->one("SELECT * FROM {$this->postgreSqlTablePrefix}album WHERE idx=:id AND owner=:owner",
         array(':id' => $id, ':owner' => $this->owner));
     }
     else
@@ -242,8 +242,8 @@ class DatabasePostgreSql implements DatabaseInterface
         $groupIds[] = $this->_($grp['id']);
 
       $groupIds = implode("','", $groupIds);
-      $album = $this->db->one("SELECT `alb`.* FROM `{$this->postgreSqlTablePrefix}album` AS `alb` INNER JOIN `{$this->postgreSqlTablePrefix}elementGroup` AS `grp`
-        ON `alb`.`id`=`grp`.`element` AND `grp`.`type`='album' WHERE `alb`.`id`=:id AND `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
+      $album = $this->db->one("SELECT alb.* FROM {$this->postgreSqlTablePrefix}album AS alb INNER JOIN {$this->postgreSqlTablePrefix}elementGroup AS grp
+        ON alb.id=grp.element AND grp.type='album' WHERE alb.idx=:id AND alb.owner=:owner AND (alb.permission='1' OR alb.id IN ('{$groupIds}'))",
                                  array(':id' => $id, ':owner' => $this->owner));
     }
 
@@ -262,9 +262,9 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getAlbumElements($id)
   {
-    $photos = $this->db->all("SELECT `pht`.* 
-      FROM `{$this->postgreSqlTablePrefix}photo` AS `pht` INNER JOIN `{$this->postgreSqlTablePrefix}elementAlbum` AS `alb` ON `pht`.`id`=`alb`.`element`
-      WHERE `pht`.`owner`=:owner AND `alb`.`owner`=:owner AND `alb`.`type`=:type",
+    $photos = $this->db->all("SELECT pht.* 
+      FROM {$this->postgreSqlTablePrefix}photo AS pht INNER JOIN {$this->postgreSqlTablePrefix}elementalbum AS alb ON pht.id=alb.element
+      WHERE pht.owner=:owner AND alb.owner=:owner AND alb.type=:type",
       array(':owner' => $this->owner, ':type' => 'photo'));
 
     if($photos === false)
@@ -285,7 +285,7 @@ class DatabasePostgreSql implements DatabaseInterface
   {
     if($this->owner === $email)
     {
-      $albums = $this->db->all("SELECT * FROM `{$this->postgreSqlTablePrefix}album` WHERE `owner`=:owner", array(':owner' => $this->owner));
+      $albums = $this->db->all("SELECT * FROM {$this->postgreSqlTablePrefix}album WHERE owner=:owner", array(':owner' => $this->owner));
     }
     else
     {
@@ -298,8 +298,8 @@ class DatabasePostgreSql implements DatabaseInterface
         $groupIds[] = $this->_($grp['id']);
 
       $groupIds = implode("','", $groupIds);
-      $albums = $this->db->all("SELECT * FROM `{$this->postgreSqlTablePrefix}album` AS `alb` INNER JOIN `{$this->postgreSqlTablePrefix}elementGroup` AS `grp`
-        ON `alb`.`id`=`grp`.`element` AND `grp`.`type`='album' WHERE `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
+      $albums = $this->db->all("SELECT * FROM {$this->postgreSqlTablePrefix}album AS alb INNER JOIN {$this->postgreSqlTablePrefix}elementGroup AS grp
+        ON alb.id=grp.element AND grp.type='album' WHERE alb.owner=:owner AND (alb.permission='1' OR alb.id IN ('{$groupIds}'))",
                                  array(':owner' => $this->owner));
     }
 
@@ -320,7 +320,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getCredential($id)
   {
-    $cred = $this->db->one("SELECT * FROM `{$this->postgreSqlTablePrefix}credential` WHERE `id`=:id AND owner=:owner",
+    $cred = $this->db->one("SELECT * FROM {$this->postgreSqlTablePrefix}credential WHERE idx=:id AND owner=:owner",
                                array(':id' => $id, ':owner' => $this->owner));
     if(empty($cred))
     {
@@ -337,7 +337,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getCredentialByUserToken($userToken)
   {
-    $cred = $this->db->one("SELECT * FROM `{$this->postgreSqlTablePrefix}credential` WHERE userToken=:userToken AND owner=:owner",
+    $cred = $this->db->one("SELECT * FROM {$this->postgreSqlTablePrefix}credential WHERE userToken=:userToken AND owner=:owner",
                                array(':userToken' => $userToken, ':owner' => $this->owner));
     if(empty($cred))
     {
@@ -353,7 +353,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getCredentials()
   {
-    $res = $this->db->all("SELECT * FROM `{$this->postgreSqlTablePrefix}credential` WHERE owner=:owner AND status=1", array(':owner' => $this->owner));
+    $res = $this->db->all("SELECT * FROM {$this->postgreSqlTablePrefix}credential WHERE owner=:owner AND status=1", array(':owner' => $this->owner));
     if($res === false)
     {
       return false;
@@ -377,7 +377,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getGroup($id = null)
   {
-    $res = $this->db->all("SELECT grp.*, memb.* FROM `{$this->postgreSqlTablePrefix}group` AS grp INNER JOIN `{$this->postgreSqlTablePrefix}groupMember` AS memb ON `grp`.`owner`=`memb`.`owner` WHERE `grp`.`id`=:id AND `grp`.`owner`=:owner", array(':id' => $id ,':owner' => $this->owner));
+    $res = $this->db->all("SELECT grp.*, memb.* FROM {$this->postgreSqlTablePrefix}group AS grp INNER JOIN {$this->postgreSqlTablePrefix}groupmember AS memb ON grp.owner=memb.owner WHERE grp.idx=:id AND grp.owner=:owner", array(':id' => $id ,':owner' => $this->owner));
     if($res === false || empty($res))
       return false;
 
@@ -398,17 +398,17 @@ class DatabasePostgreSql implements DatabaseInterface
   {
 
     if(empty($email))
-      $res = $this->db->all("SELECT `grp`.*, `memb`.`email` 
-        FROM `{$this->postgreSqlTablePrefix}group` AS `grp` 
-        INNER JOIN `{$this->postgreSqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
-        WHERE `grp`.`id` IS NOT NULL AND `grp`.`owner`=:owner 
-        ORDER BY `grp`.`name`", array(':owner' => $this->owner));
+      $res = $this->db->all("SELECT grp.*, memb.email 
+        FROM {$this->postgreSqlTablePrefix}groupname AS grp 
+        INNER JOIN {$this->postgreSqlTablePrefix}groupmember AS memb ON grp.owner=memb.owner AND grp.idx=memb.group 
+        WHERE grp.idx IS NOT NULL AND grp.owner=:owner 
+        ORDER BY grp.name", array(':owner' => $this->owner));
     else
-      $res = $this->db->all("SELECT `grp`.*, `memb`.`email` 
-        FROM `{$this->postgreSqlTablePrefix}group` AS `grp` 
-        INNER JOIN `{$this->postgreSqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
-        WHERE `memb`.`email`=:email AND `grp`.`id` IS NOT NULL AND `grp`.`owner`=:owner 
-        ORDER BY `grp`.`name`", array(':email' => $email, ':owner' => $this->owner));
+      $res = $this->db->all("SELECT grp.*, memb.email 
+        FROM {$this->postgreSqlTablePrefix}groupname AS grp 
+        INNER JOIN {$this->postgreSqlTablePrefix}groupmember AS memb ON grp.owner=memb.owner AND grp.idx=memb.group 
+        WHERE memb.email=:email AND grp.idx IS NOT NULL AND grp.owner=:owner 
+        ORDER BY grp.name", array(':email' => $email, ':owner' => $this->owner));
 
     if($res !== false)
     {
@@ -439,7 +439,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getPhoto($id)
   {
-    $photo = $this->db->one("SELECT * FROM `{$this->postgreSqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $photo = $this->db->one("SELECT * FROM {$this->postgreSqlTablePrefix}photo WHERE idx=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     if(empty($photo))
       return false;
     return $this->normalizePhoto($photo);
@@ -458,7 +458,7 @@ class DatabasePostgreSql implements DatabaseInterface
     if(!$photo)
       return false;
 
-    $sortKey = 'dateTaken';
+    $sortKey = 'datetaken';
     if(isset($filterOpts['sortBy'])) {
         $sortOptions = (array)explode(',', $filterOpts['sortBy']);
         if(!empty($sortOptions)) {
@@ -466,8 +466,8 @@ class DatabasePostgreSql implements DatabaseInterface
         }
     }
     // owner is in buildQuery
-    $photo_prev = $this->db->one("SELECT `{$this->postgreSqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND {$sortKey}> :{$sortKey} AND {$sortKey} IS NOT NULL {$buildQuery['groupBy']} ORDER BY {$sortKey} ASC LIMIT 1", array(":{$sortKey}" => $photo[$sortKey]));
-    $photo_next = $this->db->one("SELECT `{$this->postgreSqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND {$sortKey}< :{$sortKey} AND {$sortKey} IS NOT NULL {$buildQuery['groupBy']} ORDER BY {$sortKey} DESC LIMIT 1", array(":{$sortKey}" => $photo[$sortKey]));
+    $photo_prev = $this->db->one("SELECT {$this->postgreSqlTablePrefix}photo {$buildQuery['from']} {$buildQuery['where']} AND {$sortKey}> :{$sortKey} AND {$sortKey} IS NOT NULL {$buildQuery['groupBy']} ORDER BY {$sortKey} ASC LIMIT 1", array(":{$sortKey}" => $photo[$sortKey]));
+    $photo_next = $this->db->one("SELECT {$this->postgreSqlTablePrefix}photo {$buildQuery['from']} {$buildQuery['where']} AND {$sortKey}< :{$sortKey} AND {$sortKey} IS NOT NULL {$buildQuery['groupBy']} ORDER BY {$sortKey} DESC LIMIT 1", array(":{$sortKey}" => $photo[$sortKey]));
 
     $ret = array();
     if($photo_prev)
@@ -491,7 +491,7 @@ class DatabasePostgreSql implements DatabaseInterface
     $photo['actions'] = array();
     if($photo)
     {
-      $actions = $this->db->all("SELECT * FROM `{$this->postgreSqlTablePrefix}action` WHERE owner=:owner AND targetType='photo' AND targetId=:id",
+      $actions = $this->db->all("SELECT * FROM {$this->postgreSqlTablePrefix}action WHERE owner=:owner AND targetType='photo' AND targetId=:id",
       	       array(':id' => $id, ':owner' => $this->owner));
       if(!empty($actions))
       {
@@ -524,7 +524,7 @@ class DatabasePostgreSql implements DatabaseInterface
     // http://www.mysqlperformanceblog.com/2007/08/28/to-sql_calc_found_rows-or-not-to-sql_calc_found_rows/
     $result = $this->db->one("SELECT COUNT(*) {$query['from']} {$query['where']} {$query['groupBy']}");
     if(!empty($result))
-      $photos[0]['totalRows'] = intval($result['COUNT(*)']);
+      $photos[0]['totalRows'] = intval($result['count']);
 
     return $photos;
   }
@@ -538,7 +538,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getTag($tag)
   {
-    $tag = $this->db->one('SELECT * FROM `{$this->postgreSqlTablePrefix}tag` WHERE `id`=:id AND owner=:owner', array(':id' => $tag));
+    $tag = $this->db->one('SELECT * FROM {$this->postgreSqlTablePrefix}tag WHERE idx=:id AND owner=:owner', array(':id' => $tag));
     // TODO this should be in the normalize method
     if($tag['params'])
       $tag = array_merge($tag, json_decode($tag['params'], 1));
@@ -555,20 +555,20 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getTags($filter = array())
   {
-    $countField = 'countPublic';
+    $countField = 'countpublic';
     $params = array(':owner' => $this->owner);
 
     if(isset($filter['permission']) && $filter['permission'] == 0)
-      $countField = 'countPrivate';
+      $countField = 'countprivate';
 
     if(isset($filter['search']) && $filter['search'] != '')
     {
-      $query = "SELECT * FROM `{$this->postgreSqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND `id` LIKE :search ORDER BY `id`";
+      $query = "SELECT * FROM {$this->postgreSqlTablePrefix}tag WHERE idx IS NOT NULL AND owner=:owner AND {$countField} IS NOT NULL AND {$countField} > '0' AND idx LIKE :search ORDER BY idx";
       $params[':search'] = "{$filter['search']}%";
     }
     else
     {
-      $query = "SELECT * FROM `{$this->postgreSqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY `id`";
+      $query = "SELECT * FROM {$this->postgreSqlTablePrefix}tag WHERE idx IS NOT NULL AND owner=:owner AND {$countField} IS NOT NULL AND {$countField} > '0' ORDER BY idx";
     }
 
     $tags = $this->db->all($query, $params);
@@ -582,6 +582,11 @@ class DatabasePostgreSql implements DatabaseInterface
       if($tag['extra'])
         $tags[$key] = array_merge($tag, json_decode($tag['extra'], 1));
       unset($tags[$key]['params']);
+
+      $tags[$key]['id'] = $tags[$key]['idx'];
+      $tags[$key]['countPublic'] = $tags[$key]['countpublic'];
+      $tags[$key]['countPrivate'] = $tag[$key]['countprivate'];
+
     }
 
     return $tags;
@@ -596,7 +601,7 @@ class DatabasePostgreSql implements DatabaseInterface
   {
     if($owner === null)
       $owner = $this->owner;
-    $res = $this->db->one($sql = "SELECT * FROM `{$this->postgreSqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
+    $res = $this->db->one($sql = "SELECT * FROM {$this->postgreSqlTablePrefix}username WHERE idx=:owner", array(':owner' => $owner));
     if($res)
     {
       return $this->normalizeUser($res);
@@ -612,7 +617,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function getWebhook($id)
   {
-    $webhook = $this->db->one("SELECT * FROM `{$this->postgreSqlTablePrefix}webhook` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $webhook = $this->db->one("SELECT * FROM {$this->postgreSqlTablePrefix}webhook WHERE idx=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     if(empty($webhook))
       return false;
     return $this->normalizeWebhook($webhook);
@@ -626,9 +631,9 @@ class DatabasePostgreSql implements DatabaseInterface
   public function getWebhooks($topic = null)
   {
     if($topic)
-      $res = $this->db->all("SELECT * FROM `{$this->postgreSqlTablePrefix}webhook` WHERE owner=:owner AND `topic`='{$topic}'", array(':owner' => $this->owner));
+      $res = $this->db->all("SELECT * FROM {$this->postgreSqlTablePrefix}webhook WHERE owner=:owner AND topic='{$topic}'", array(':owner' => $this->owner));
     else
-      $res = $this->db->all("SELECT * FROM `{$this->postgreSqlTablePrefix}webhook` WHERE owner=:owner", array(':owner' => $this->owner));
+      $res = $this->db->all("SELECT * FROM {$this->postgreSqlTablePrefix}webhook WHERE owner=:owner", array(':owner' => $this->owner));
 
     if($res === false)
       return false;
@@ -719,7 +724,7 @@ class DatabasePostgreSql implements DatabaseInterface
     $res = true;
     foreach($elementIds as $elementId)
     {
-      $res = $res && $this->db->execute("REPLACE INTO `{$this->postgreSqlTablePrefix}elementAlbum`(`owner`,`type`,`element`,`album`) VALUES(:owner,:type,:elementId,:albumId)",
+      $res = $res && $this->db->execute("REPLACE INTO {$this->postgreSqlTablePrefix}elementAlbum(owner,type,element,album) VALUES(:owner,:type,:elementId,:albumId)",
         array(':owner' => $this->owner, ':type' => $type, ':elementId' => $elementId, ':albumId' => $albumId));
     }
     return $res !== false;
@@ -738,7 +743,7 @@ class DatabasePostgreSql implements DatabaseInterface
     $res = true;
     foreach($elementIds as $elementId)
     {
-      $res = $res && $this->db->execute("DELETE FROM `{$this->postgreSqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `element`=:elementId AND `album`=:albumId AND `type`=:type",
+      $res = $res && $this->db->execute("DELETE FROM {$this->postgreSqlTablePrefix}elementalbum WHERE owner=:owner AND element=:elementid AND album=:albumid AND tagtype=:type",
         array(':owner' => $this->owner, ':elementId' => $elementId, ':albumId' => $albumId, ':type' => $type));
     }
     return $res !== false;
@@ -764,7 +769,7 @@ class DatabasePostgreSql implements DatabaseInterface
     $bindings[':id'] = $id;
     $bindings[':owner'] = $this->owner;
 
-    $result = $this->db->execute("UPDATE `{$this->postgreSqlTablePrefix}credential` SET {$stmt} WHERE `id`=:id AND owner=:owner", $bindings);
+    $result = $this->db->execute("UPDATE {$this->postgreSqlTablePrefix}credential SET {$stmt} WHERE idx=:id AND owner=:owner", $bindings);
 
     return ($result !== false);
   }
@@ -795,7 +800,7 @@ class DatabasePostgreSql implements DatabaseInterface
     $bindings[':id'] = $id;
     $bindings[':owner'] = $this->owner;
 
-    $result = $this->db->execute("UPDATE `{$this->postgreSqlTablePrefix}group` SET {$stmt} WHERE `id`=:id AND owner=:owner", $bindings);
+    $result = $this->db->execute("UPDATE {$this->postgreSqlTablePrefix}groupname SET {$stmt} WHERE idx=:id AND owner=:owner", $bindings);
     if($members !== false)
     {
       $this->deleteGroupMembers($id);
@@ -815,6 +820,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function postPhoto($id, $params)
   {
+    getLogger()->info("Starting postPhoto"); 
     if(empty($id))
       return false;
     elseif(empty($params))
@@ -847,7 +853,7 @@ class DatabasePostgreSql implements DatabaseInterface
       unset($params['id']);
       $bindings = $params['::bindings'];
       $stmt = $this->sqlUpdateExplode($params, $bindings);
-      $res = $this->db->execute("UPDATE `{$this->postgreSqlTablePrefix}photo` SET {$stmt} WHERE `id`=:id AND owner=:owner", 
+      $res = $this->db->execute("UPDATE {$this->postgreSqlTablePrefix}photo SET {$stmt} WHERE idx=:id AND owner=:owner", 
         array_merge($bindings, array(':id' => $id, ':owner' => $this->owner)));
     }
     if(!empty($versions))
@@ -869,7 +875,7 @@ class DatabasePostgreSql implements DatabaseInterface
 
   /**
     * Update a single tag.
-    * The $params should include the tag in the `id` field.
+    * The $params should include the tag in the id field.
     * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
     *
     * @param array $params Tags and related attributes to update.
@@ -877,9 +883,14 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function postTag($id, $params)
   {
-    if(!isset($params['id']))
+    getLogger()->info("Starting postTag");
+
+    /* Can't use this in PostgreSQL, using idx instead */
+    unset($params['id']);
+
+    if(!isset($params['idx']))
     {
-      $params['id'] = $id;
+      $params['idx'] = $id;
     }
     $params['owner'] = $this->owner;
     $params = $this->prepareTag($params);
@@ -888,16 +899,30 @@ class DatabasePostgreSql implements DatabaseInterface
     else
       $bindings = array();
 
+    $results = $this->db->one("SELECT * FROM {$this->postgreSqlTablePrefix}tag WHERE owner=:owner AND idx=:idx",
+                               array(':owner' => $this->owner, ':idx' => $id));
+
     $stmtIns = $this->sqlInsertExplode($params, $bindings);
     $stmtUpd = $this->sqlUpdateExplode($params, $bindings);
 
-    $result = $this->db->execute("INSERT INTO `{$this->postgreSqlTablePrefix}tag` ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']}) ON DUPLICATE KEY UPDATE {$stmtUpd}", $bindings);
+    if ($results)
+    { 
+	getLogger()->info(print_r($bindings,1));
+	getLogger()->info(print_r($stmtUpd,1));
+	$result = $this->db->execute("UPDATE {$this->postgreSqlTablePrefix}tag SET {$stmtUpd} WHERE owner='{$this->owner}' AND idx='{$id}'", $bindings);
+    }
+    else
+    {
+	$result = $this->db->execute("INSERT INTO {$this->postgreSqlTablePrefix}tag ({$stmtIns['cols']}) VALUES ({$stmtIns['vals']})", $bindings);
+	getLogger()->info(print_r($stmtIns,1));
+    }
+
     return ($result !== false);
   }
 
   /**
     * Update multiple tags.
-    * The $params should include the tag in the `id` field.
+    * The $params should include the tag in the id field.
     * [{id: tag1, count:10, longitude:12.34, latitude:56.78},...]
     *
     * @param array $params Tags and related attributes to update.
@@ -925,7 +950,7 @@ class DatabasePostgreSql implements DatabaseInterface
   public function postUser($params)
   {
     $params = $this->prepareUser($params);
-    $res = $this->db->execute("UPDATE `{$this->postgreSqlTablePrefix}user` SET `extra`=:extra WHERE `id`=:id", array(':id' => $this->owner, ':extra' => $params));
+    $res = $this->db->execute("UPDATE {$this->postgreSqlTablePrefix}username SET extra=:extra WHERE idx=:id", array(':id' => $this->owner, ':extra' => $params));
     return ($res == 1);
   }
 
@@ -939,7 +964,7 @@ class DatabasePostgreSql implements DatabaseInterface
   public function postWebhook($id, $params)
   {
     $stmt = $this->sqlUpdateExplode($params);
-    $res = $this->db->execute("UPDATE `{$this->postgreSqlTablePrefix}webhook` SET {$stmt} WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $res = $this->db->execute("UPDATE {$this->postgreSqlTablePrefix}webhook SET {$stmt} WHERE idx=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res == 1);
   }
 
@@ -954,7 +979,7 @@ class DatabasePostgreSql implements DatabaseInterface
   public function putActivity($id, $params)
   {
     $stmt = $this->sqlInsertExplode($this->prepareActivity($params));
-    $result = $this->db->execute("INSERT INTO `{$this->postgreSqlTablePrefix}activity` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $result = $this->db->execute("INSERT INTO {$this->postgreSqlTablePrefix}activity (idx,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return ($result !== false);
   }
 
@@ -969,7 +994,7 @@ class DatabasePostgreSql implements DatabaseInterface
   public function putAction($id, $params)
   {
     $stmt = $this->sqlInsertExplode($params);
-    $result = $this->db->execute("INSERT INTO `{$this->postgreSqlTablePrefix}action` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $result = $this->db->execute("INSERT INTO {$this->postgreSqlTablePrefix}action (idx,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return ($result !== false);
   }
 
@@ -985,7 +1010,7 @@ class DatabasePostgreSql implements DatabaseInterface
   {
     $params['owner'] = $this->owner;
     $stmt = $this->sqlInsertExplode($params);
-    $result = $this->db->execute($sql = "INSERT INTO `{$this->postgreSqlTablePrefix}album` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $result = $this->db->execute($sql = "INSERT INTO {$this->postgreSqlTablePrefix}album (idx,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return ($result !== false);
   }
 
@@ -1004,7 +1029,7 @@ class DatabasePostgreSql implements DatabaseInterface
       $params['id'] = $id;
     $params = $this->prepareCredential($params);
     $stmt = $this->sqlInsertExplode($params);
-    $result = $this->db->execute("INSERT INTO `{$this->postgreSqlTablePrefix}credential` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
+    $result = $this->db->execute("INSERT INTO {$this->postgreSqlTablePrefix}credential ({$stmt['cols']}) VALUES ({$stmt['vals']})");
 
     return ($result !== false);
   }
@@ -1025,7 +1050,7 @@ class DatabasePostgreSql implements DatabaseInterface
     }
     $params = $this->prepareGroup($id, $params);
     $stmt = $this->sqlInsertExplode($params);
-    $result = $this->db->execute("INSERT INTO `{$this->postgreSqlTablePrefix}group` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
+    $result = $this->db->execute("INSERT INTO {$this->postgreSqlTablePrefix}groupname ({$stmt['cols']}) VALUES ({$stmt['vals']})");
     if($members !== false)
       $this->addGroupMembers($id, $members);
     return $result !== false;
@@ -1041,7 +1066,8 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   public function putPhoto($id, $params)
   {
-    $params['id'] = $id;
+    getLogger()->info("Starting putPhoto");
+    $params['idx'] = $id;
     $params['owner'] = $this->owner;
     $tags = null;
     if(isset($params['tags']) && !empty($params['tags']))
@@ -1049,13 +1075,19 @@ class DatabasePostgreSql implements DatabaseInterface
     $params = $this->preparePhoto($id, $params);
     $bindings = $params['::bindings'];
     $stmt = $this->sqlInsertExplode($params, $bindings);
-    $result = $this->db->execute("INSERT INTO `{$this->postgreSqlTablePrefix}photo` ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
+    $sql = "INSERT INTO {$this->postgreSqlTablePrefix}photo ({$stmt['cols']}) VALUES ({$stmt['vals']})";
+    getLogger()->info(print_r($bindings,1));
+    getLogger()->info($sql);
+    $result = $this->db->execute("INSERT INTO {$this->postgreSqlTablePrefix}photo ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
     if(!empty($tags))
     {
       foreach($tags as $tag)
         $this->addTagToElement($id, $tag, 'photo');
     }
-    return ($result !== false);
+    if($result !== false)
+	getLogger()->info("result is going to be false");
+    getLogger()->info("Ending putPhoto");
+    return $result !== false;
   }
 
   /**
@@ -1082,7 +1114,7 @@ class DatabasePostgreSql implements DatabaseInterface
   public function putUser($params)
   {
     $params = $this->prepareUser($params);
-    $result = $this->db->execute("INSERT INTO `{$this->postgreSqlTablePrefix}user` (`id`,`extra`) VALUES (:id,:extra)", array(':id' => $this->owner, ':extra' => $params['extra']));
+    $result = $this->db->execute("INSERT INTO {$this->postgreSqlTablePrefix}username (idx,extra) VALUES (:id,:extra)", array(':id' => $this->owner, ':extra' => $params['extra']));
     return $result !== false;
   }
 
@@ -1096,7 +1128,7 @@ class DatabasePostgreSql implements DatabaseInterface
   public function putWebhook($id, $params)
   {
     $stmt = $this->sqlInsertExplode($params);
-    $result = $this->db->execute("INSERT INTO `{$this->postgreSqlTablePrefix}webhook` (id,owner,{$stmt['cols']}) VALUES (:id,:owner,{$stmt['vals']})", array(':id' => $id, ':owner' => $this->owner));
+    $result = $this->db->execute("INSERT INTO {$this->postgreSqlTablePrefix}webhook (idx,owner,{$stmt['cols']}) VALUES (:id,:owner,{$stmt['vals']})", array(':id' => $id, ':owner' => $this->owner));
     return $result !== false;
   }
 
@@ -1109,7 +1141,7 @@ class DatabasePostgreSql implements DatabaseInterface
   {
     try
     {
-      $result = $this->db->one("SELECT * from `{$this->postgreSqlTablePrefix}admin` WHERE `key`=:key", array(':key' => 'version'));
+      $result = $this->db->one("SELECT * from {$this->postgreSqlTablePrefix}admin WHERE key=:key", array(':key' => 'version'));
       if($result)
         return $result['value'];
     }
@@ -1133,7 +1165,7 @@ class DatabasePostgreSql implements DatabaseInterface
     if(empty($id) || empty($members))
       return false;
 
-    $sql = "REPLACE INTO `{$this->postgreSqlTablePrefix}groupMember`(`owner`, `group`, `email`) VALUES ";
+    $sql = "REPLACE INTO {$this->postgreSqlTablePrefix}groupmember(owner, group, email) VALUES ";
     foreach($members as $member)
       $sql .= sprintf("('%s', '%s', '%s'),", $this->_($this->owner), $this->_($id), $this->_($member));
 
@@ -1156,7 +1188,7 @@ class DatabasePostgreSql implements DatabaseInterface
       return false;
 
     $hasGroup = false;
-    $sql = "REPLACE INTO `{$this->postgreSqlTablePrefix}elementGroup`(`owner`, `type`, `element`, `group`) VALUES";
+    $sql = "REPLACE INTO {$this->postgreSqlTablePrefix}elementgroup(owner, type, element, group) VALUES";
     foreach($groups as $group)
     {
       if(strlen($group) > 0)
@@ -1184,7 +1216,20 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   private function addTagToElement($id, $tag, $type)
   {
-    $res = $this->db->execute("REPLACE INTO `{$this->postgreSqlTablePrefix}elementTag`(`owner`, `type`, `element`, `tag`) VALUES(:owner, :type, :element, :tag)", array(':owner' => $this->owner, ':type' => $type, ':element' => $id, ':tag' => $tag));
+    getLogger()->info("Starting addTagToElement");
+
+    /* Look for existing tag first */
+    $results = $this->db->one("SELECT * FROM {$this->postgreSqlTablePrefix}elementtag WHERE owner=:owner AND tagtype=:tagtype AND element=:element AND tag=:tag",
+                               array(':owner' => $this->owner, ':tagtype' => $type, ':element' => $id, ':tag' => $tag));
+
+    /* if it exists do an insert, otherwise do an update */
+    if(empty($results))
+    	$sql = "INSERT INTO {$this->postgreSqlTablePrefix}elementtag (owner, tagtype, element, tag) VALUES ('$this->owner', '$type', '$id', '$tag')";
+    else
+    	$sql = "UPDATE {$this->postgreSqlTablePrefix}elementtag SET (owner, tagtype, element, tag) = ('$this->owner', '$type', '$id', '$tag') WHERE element = '$id'";
+
+    $res = $this->db->execute($sql);
+    
     return $res !== false;
   }
 
@@ -1199,10 +1244,10 @@ class DatabasePostgreSql implements DatabaseInterface
   private function buildQuery($filters, $limit, $offset)
   {
     // TODO: support logic for multiple conditions
-    $from = "FROM `{$this->postgreSqlTablePrefix}photo` ";
-    $where = "WHERE `{$this->postgreSqlTablePrefix}photo`.`owner`='{$this->owner}'";
+    $from = "FROM {$this->postgreSqlTablePrefix}photo ";
+    $where = "WHERE {$this->postgreSqlTablePrefix}photo.owner='{$this->owner}'";
     $groupBy = '';
-    $sortBy = 'ORDER BY dateTaken DESC';
+    $sortBy = 'ORDER BY datetaken DESC';
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -1218,7 +1263,7 @@ class DatabasePostgreSql implements DatabaseInterface
               $value = (array)explode(',', $value);
             foreach($value as $k => $v)
               $value[$k] = $this->_($v);
-            $subquery = sprintf("(id IN (SELECT element FROM `{$this->postgreSqlTablePrefix}elementGroup` WHERE `{$this->postgreSqlTablePrefix}elementGroup`.`owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
+            $subquery = sprintf("(id IN (SELECT element FROM {$this->postgreSqlTablePrefix}elementgroup WHERE {$this->postgreSqlTablePrefix}elementgroup.owner='%s' AND type='%s' AND group IN('%s')) OR permission='1')",
               $this->_($this->owner), 'photo', implode("','", $value));
             $where = $this->buildWhere($where, $subquery);
             break;
@@ -1248,7 +1293,7 @@ class DatabasePostgreSql implements DatabaseInterface
             foreach($value as $k => $v)
             {
               $v = $value[$k] = $this->_($v);
-              $thisRes = $this->db->all(sprintf("SELECT `element`, `tag` FROM `%selementTag` WHERE `owner`='%s' AND `type`='photo' AND `tag`='%s'", $this->postgreSqlTablePrefix, $this->owner, $v));
+              $thisRes = $this->db->all(sprintf("SELECT element, tag FROM %selementtag WHERE owner='%s' AND tagtype='photo' AND tag='%s'", $this->postgreSqlTablePrefix, $this->owner, $v));
               foreach($thisRes as $t)
               {
                 if(isset($ids[$t['element']]))
@@ -1264,7 +1309,7 @@ class DatabasePostgreSql implements DatabaseInterface
                 unset($ids[$k]);
             }
 
-            $where = $this->buildWhere($where, sprintf("`%sphoto`.`id` IN('%s')", $this->postgreSqlTablePrefix, implode("','", array_keys($ids))));
+            $where = $this->buildWhere($where, sprintf("%sphoto.idx IN('%s')", $this->postgreSqlTablePrefix, implode("','", array_keys($ids))));
             break;
         }
       }
@@ -1308,7 +1353,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   private function deleteGroupsFromElement($id, $type)
   {
-    $res = $this->db->execute("DELETE FROM `{$this->postgreSqlTablePrefix}elementGroup` WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':owner' => $this->owner, ':type' => $type, ':element' => $id));
+    $res = $this->db->execute("DELETE FROM {$this->postgreSqlTablePrefix}elementgroup WHERE owner=:owner AND type=:type AND element=:element", array(':owner' => $this->owner, ':type' => $type, ':element' => $id));
     return $res !== false;
   }
 
@@ -1320,7 +1365,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   private function deleteGroupMembers($id)
   {
-    $res = $this->db->execute("DELETE FROM `{$this->postgreSqlTablePrefix}groupMember` WHERE `owner`=:owner AND `group`=:group", array(':owner' => $this->owner, ':group' => $id));
+    $res = $this->db->execute("DELETE FROM {$this->postgreSqlTablePrefix}groupmember WHERE owner=:owner AND group=:group", array(':owner' => $this->owner, ':group' => $id));
     return $res !== false;
   }
 
@@ -1334,7 +1379,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   private function deleteTagsFromElement($id, $type)
   {
-    $res = $this->db->execute("DELETE FROM `{$this->postgreSqlTablePrefix}elementTag` WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':owner' => $this->owner, ':type' => $type, ':element' => $id));
+    $res = $this->db->execute("DELETE FROM {$this->postgreSqlTablePrefix}elementtag WHERE owner=:owner AND tagtype=:type AND element=:element", array(':owner' => $this->owner, ':type' => $type, ':element' => $id));
     return $res !== false;
   }
 
@@ -1347,7 +1392,7 @@ class DatabasePostgreSql implements DatabaseInterface
     */
   private function getPhotoVersions($id)
   {
-    $versions = $this->db->all("SELECT `key`,path FROM `{$this->postgreSqlTablePrefix}photoVersion` WHERE `id`=:id AND owner=:owner",
+    $versions = $this->db->all("SELECT key,path FROM {$this->postgreSqlTablePrefix}photoversion WHERE idx=:id AND owner=:owner",
                  array(':id' => $id, ':owner' => $this->owner));
     if(empty($versions))
       return false;
@@ -1415,7 +1460,7 @@ class DatabasePostgreSql implements DatabaseInterface
 
     $photo['appId'] = $this->config->application->appId;
 
-    $versions = $this->getPhotoVersions($photo['id']);
+    $versions = $this->getPhotoVersions($photo['idx']);
     if($versions && !empty($versions))
     {
       foreach($versions as $version)
@@ -1423,6 +1468,11 @@ class DatabasePostgreSql implements DatabaseInterface
         $photo[$version['key']] = $version['path'];
       }
     }
+
+    $photo['id'] = $photo['idx'];
+    $photo['pathBase'] = $photo['pathbase'];
+    $photo['pathOriginal'] = $photo['pathoriginal'];
+    $photo['dateTaken'] = $photo['datetaken'];
 
     $photo['tags'] = strlen($photo['tags']) ? (array)explode(",", $photo['tags']) : array();
     $photo['groups'] = strlen($photo['groups']) ? (array)explode(",", $photo['groups']) : array();
@@ -1564,7 +1614,7 @@ class DatabasePostgreSql implements DatabaseInterface
       $paramsOut['extra'] = ':extra';
     }
     $paramsOut['::bindings'] = $bindings;
-    return $paramsOut;
+    return array_change_key_case($paramsOut, CASE_LOWER);
   }
 
   /** Prepare tags to store in the database
@@ -1572,10 +1622,10 @@ class DatabasePostgreSql implements DatabaseInterface
   private function prepareTag($params)
   {
     $bindings = array();
-    if(!empty($params['id']))
+    if(!empty($params['idx']))
     {
-      $bindings[':id'] = $params['id'];
-      $params['id'] = ':id';
+      $bindings[':idx'] = $params['idx'];
+      $params['idx'] = ':idx';
     }
 
     if(!empty($bindings))
@@ -1625,7 +1675,7 @@ class DatabasePostgreSql implements DatabaseInterface
     {
       // TODO this is gonna fail if we already have the version -- hfiguiere
       // Possibly use REPLACE INTO? -- jmathai
-      $result = $this->db->execute("INSERT INTO {$this->postgreSqlTablePrefix}photoVersion (`id`, `owner`, `key`, `path`) VALUES(:id, :owner, :key, :value)",
+      $result = $this->db->execute("INSERT INTO {$this->postgreSqlTablePrefix}photoversion (idx, owner, key, path) VALUES(:id, :owner, :key, :value)",
         array(':id' => $id, ':owner' => $this->owner, ':key' => $key, ':value' => $value));
     }
     // TODO, what type of return value should we have here -- jmathai
@@ -1683,9 +1733,9 @@ class DatabasePostgreSql implements DatabaseInterface
         $stmt .= ",";
       }
       if(!empty($bindings) && array_key_exists($value, $bindings))
-        $stmt .= "`{$key}`={$value}";
+        $stmt .= "{$key}={$value}";
       else
-        $stmt .= sprintf("`%s`='%s'", $key, $this->_($value));
+        $stmt .= sprintf("%s='%s'", $key, $this->_($value));
     }
     return $stmt;
   }

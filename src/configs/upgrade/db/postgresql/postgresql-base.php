@@ -16,22 +16,22 @@ SQL;
 
   $sql = <<<SQL
   CREATE TABLE {$this->postgreSqlTablePrefix}action (
-    id varchar(6) NOT NULL,
+    idx varchar(6) NOT NULL,
     owner varchar(255) NOT NULL,
     appId varchar(255) DEFAULT NULL,
-    targetId varchar(255) DEFAULT NULL,
-    targetType varchar(255) DEFAULT NULL,
+    targetid varchar(255) DEFAULT NULL,
+    targettype varchar(255) DEFAULT NULL,
     email varchar(255) DEFAULT NULL,
     name varchar(255) DEFAULT NULL,
     avatar varchar(255) DEFAULT NULL,
     website varchar(255) DEFAULT NULL,
-    targetUrl varchar(1000) DEFAULT NULL,
+    targeturl varchar(1000) DEFAULT NULL,
     permalink varchar(1000) DEFAULT NULL,
     type varchar(255) DEFAULT NULL,
     value varchar(255) DEFAULT NULL,
-    datePosted varchar(255) DEFAULT NULL,
+    dateposted varchar(255) DEFAULT NULL,
     status integer DEFAULT NULL,
-    UNIQUE(id,owner)
+    UNIQUE(idx,owner)
   );
 SQL;
   if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}action"))
@@ -39,13 +39,13 @@ SQL;
 
   $sql = <<<SQL
   CREATE TABLE {$this->postgreSqlTablePrefix}activity (
-    id varchar(6) PRIMARY KEY,
+    idx varchar(6) PRIMARY KEY,
     owner varchar(255) NOT NULL,
-    appId varchar(255) NOT NULL,
+    appid varchar(255) NOT NULL,
     type varchar(32) NOT NULL,
     data text NOT NULL,
     permission integer DEFAULT NULL,
-    dateCreated integer NOT NULL
+    datecreated integer NOT NULL
   );
 SQL;
   if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}activity"))
@@ -65,7 +65,7 @@ SQL;
 
   $sql = <<<SQL
   CREATE TABLE {$this->postgreSqlTablePrefix}album (
-    id varchar(6) PRIMARY KEY,
+    idx varchar(6) PRIMARY KEY,
     owner varchar(255) NOT NULL,
     name varchar(255) NOT NULL,
     extra text,
@@ -78,8 +78,8 @@ SQL;
 
   $sql = <<<SQL
   CREATE TABLE {$this->postgreSqlTablePrefix}config (
-    id varchar(255) PRIMARY KEY DEFAULT '',
-    aliasOf varchar(255) DEFAULT NULL,
+    idx varchar(255) PRIMARY KEY DEFAULT '',
+    aliasof varchar(255) DEFAULT NULL,
     value text NOT NULL
   );
 SQL;
@@ -88,94 +88,94 @@ SQL;
 
   $sql = <<<SQL
   CREATE TABLE {$this->postgreSqlTablePrefix}credential (
-    id varchar(30) NOT NULL,
+    idx varchar(30) NOT NULL,
     owner varchar(255) NOT NULL,
     name varchar(255) DEFAULT NULL,
     image text,
-    clientSecret varchar(255) DEFAULT NULL,
-    userToken varchar(255) DEFAULT NULL,
-    userSecret varchar(255) DEFAULT NULL,
+    clientsecret varchar(255) DEFAULT NULL,
+    usertoken varchar(255) DEFAULT NULL,
+    usersecret varchar(255) DEFAULT NULL,
     permissions varchar(255) DEFAULT NULL,
     verifier varchar(255) DEFAULT NULL,
     type varchar(100) NOT NULL,
     status integer DEFAULT '0',
-    UNIQUE(id,owner)
+    UNIQUE(idx,owner)
   );
 SQL;
   if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}credential"))
   	postgresql_base($sql);
 
   $sql = <<<SQL
-  CREATE TABLE {$this->postgreSqlTablePrefix}elementAlbum (
-    id serial PRIMARY Key,
+  CREATE TABLE {$this->postgreSqlTablePrefix}elementalbum (
+    idx serial PRIMARY Key,
     owner varchar(255) NOT NULL,
-    "type" photo_type NOT NULL,
+    type photo_type NOT NULL,
     element varchar(6) NOT NULL DEFAULT 'photo',
     album varchar(255) NOT NULL,
-    "order" smallint NOT NULL DEFAULT '0',
+    orderby smallint NOT NULL DEFAULT '0',
     UNIQUE(owner,type,element,album)
   );
 SQL;
-  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}elementAlbum"))
+  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}elementalbum"))
   {
   	postgresql_base($sql);
-  	postgresql_base("CREATE INDEX element ON {$this->postgreSqlTablePrefix}elementAlbum (element);");
+  	postgresql_base("CREATE INDEX element ON {$this->postgreSqlTablePrefix}elementalbum (element);");
   }
 
   $sql = <<<SQL
-  CREATE TABLE {$this->postgreSqlTablePrefix}elementGroup (
-    id SERIAL PRIMARY Key,
-    owner varchar(255) NOT NULL,
+  CREATE TABLE {$this->postgreSqlTablePrefix}elementgroup (
+    "id" SERIAL PRIMARY Key,
+    "owner" varchar(255) NOT NULL,
     "type" photo_album_type NOT NULL,
-    element varchar(6) NOT NULL,
+    "element" varchar(6) NOT NULL,
     "group" varchar(6) NOT NULL,
-    UNIQUE(owner,type,element,"group")
+    UNIQUE("owner","type","element","group")
   );
 SQL;
-  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}elementGroup"))
+  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}elementgroup"))
   	postgresql_base($sql);
 
   $sql = <<<SQL
-  CREATE TABLE {$this->postgreSqlTablePrefix}elementTag (
-    id SERIAL PRIMARY KEY,
+  CREATE TABLE {$this->postgreSqlTablePrefix}elementtag (
+    idx SERIAL PRIMARY KEY,
     owner varchar(255) NOT NULL,
-    "type" photo_type NOT NULL,
+    tagtype photo_type NOT NULL,
     element varchar(6) NOT NULL DEFAULT 'photo',
     tag varchar(255) NOT NULL,
-    UNIQUE(owner,"type",element,tag)
+    UNIQUE(owner,tagtype,element,tag)
   );
 SQL;
-  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}elementTag"))
+  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}elementtag"))
   	postgresql_base($sql);
 
   $sql = <<<SQL
-  CREATE TABLE "{$this->postgreSqlTablePrefix}group" (
-    id varchar(6) NOT NULL,
+  CREATE TABLE {$this->postgreSqlTablePrefix}groupname (
+    idx varchar(6) NOT NULL,
     owner varchar(255) NOT NULL,
-    appId varchar(255) DEFAULT NULL,
+    appid varchar(255) DEFAULT NULL,
     name varchar(255) DEFAULT NULL,
     permission smallint NOT NULL,
-    UNIQUE(id,owner)
+    UNIQUE(idx,owner)
   );
 SQL;
-  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}group"))
+  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}groupname"))
   	postgresql_base($sql);
 
   $sql = <<<SQL
-  CREATE TABLE {$this->postgreSqlTablePrefix}groupMember (
-    id serial PRIMARY KEY,
-    owner varchar(255) NOT NULL,
+  CREATE TABLE {$this->postgreSqlTablePrefix}groupmember (
+    "id" serial PRIMARY KEY,
+    "owner" varchar(255) NOT NULL,
     "group" varchar(6) NOT NULL,
-    email varchar(255) NOT NULL,
-    UNIQUE(owner,"group",email)
+    "email" varchar(255) NOT NULL,
+    UNIQUE("owner","group","email")
   );
 SQL;
-  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}groupMember"))
+  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}groupmember"))
   	postgresql_base($sql);
 
   $sql = <<<SQL
   CREATE TABLE {$this->postgreSqlTablePrefix}photo (
-    id varchar(6) NOT NULL,
+    idx varchar(6) NOT NULL,
     owner varchar(255) NOT NULL,
     appId varchar(255) NOT NULL,
     host varchar(255) DEFAULT NULL,
@@ -207,54 +207,54 @@ SQL;
     pathBase varchar(1000) DEFAULT NULL,
     groups text,
     tags text,
-    UNIQUE(id,owner)
+    UNIQUE(idx,owner)
   );
 SQL;
   if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}photo"))
   	postgresql_base($sql);
 
   $sql = <<<SQL
-  CREATE TABLE {$this->postgreSqlTablePrefix}photoVersion (
-    id varchar(6) NOT NULL DEFAULT '',
+  CREATE TABLE {$this->postgreSqlTablePrefix}photoversion (
+    idx varchar(6) NOT NULL DEFAULT '',
     owner varchar(255) NOT NULL,
     key varchar(255) NOT NULL DEFAULT '',
     path varchar(1000) DEFAULT NULL,
-    UNIQUE(id,owner,key)
+    UNIQUE(idx,owner,key)
   );
 SQL;
-  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}photoVersion"))
+  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}photoversion"))
   	postgresql_base($sql);
 
   $sql = <<<SQL
   CREATE TABLE {$this->postgreSqlTablePrefix}tag (
-    id varchar(255) NOT NULL,
+    idx varchar(255) NOT NULL,
     owner varchar(255) NOT NULL,
     countPublic integer NOT NULL DEFAULT '0',
     countPrivate integer NOT NULL DEFAULT '0',
     extra text NOT NULL,
-    UNIQUE(id,owner)
+    UNIQUE(idx,owner)
   );
 SQL;
   if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}tag"))
   	postgresql_base($sql);
 
   $sql = <<<SQL
-  CREATE TABLE "{$this->postgreSqlTablePrefix}user" (
-    id varchar(255) PRIMARY KEY,
+  CREATE TABLE {$this->postgreSqlTablePrefix}username (
+    idx varchar(255) PRIMARY KEY,
     extra text NOT NULL
   );
 SQL;
-  if (!postgresql_db_table_exists("$this->postgreSqlTablePrefix}user"))
+  if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}username)"))
   	postgresql_base($sql);
 
   $sql = <<<SQL
   CREATE TABLE {$this->postgreSqlTablePrefix}webhook (
-    id varchar(6) NOT NULL,
+    idx varchar(6) NOT NULL,
     owner varchar(255) NOT NULL,
     appId varchar(255) DEFAULT NULL,
     callback varchar(1000) DEFAULT NULL,
     topic varchar(255) DEFAULT NULL,
-    UNIQUE(id,owner)
+    UNIQUE(idx,owner)
   );
 SQL;
   if (!postgresql_db_table_exists("{$this->postgreSqlTablePrefix}webhook"))
