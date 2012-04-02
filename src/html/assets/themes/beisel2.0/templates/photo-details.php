@@ -105,7 +105,7 @@
         <?php if(count($photo['tags']) > 0) { ?>
           <div class="tags">
             <?php foreach($photo['tags'] as $tag) { ?>
-              <a href="<?php $this->url->photosView("tags-{$tag}"); ?>"><?php $this->utility->safe($tag); ?></a>
+              <a href="<?php $this->url->photosView("tags-{$tag}"); ?>" class="label label-tag"><?php $this->utility->safe($tag); ?></a>
             <?php } ?>
           </div>
         <?php } ?>
