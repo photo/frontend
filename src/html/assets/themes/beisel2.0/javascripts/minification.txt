@@ -1,1 +1,0 @@
-minify bootstrap.min.js jquery.history.js  bootstrap-modal.js bootstrap-typeahead.js touchSwipe.js browserupdate.js jquery.scrollTo-1.4.2.js openphoto-theme.js openphoto-theme-full-min.js --force
