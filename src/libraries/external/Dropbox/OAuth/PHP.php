@@ -35,8 +35,7 @@ class Dropbox_OAuth_PHP extends Dropbox_OAuth {
         if (!class_exists('OAuth'))
             throw new Dropbox_Exception('The OAuth class could not be found! Did you install and enable the oauth extension?');
 
-        $this->OAuth = new OAuth($consumerKey, $consumerSecret);
-        //$this->OAuth = new OAuth($consumerKey, $consumerSecret,OAUTH_AUTH_TYPE_URI);
+        $this->OAuth = new OAuth($consumerKey, $consumerSecret,OAUTH_SIG_METHOD_HMACSHA1/*,OAUTH_AUTH_TYPE_URI*/);
         $this->OAuth->enableDebug();
     }
 
