@@ -371,6 +371,10 @@ nav>ul>li a {
   padding:0 10px 0 34px;
 }
 
+nav>ul>li#nav-manage a {
+  background:transparent url("../images/icons.png") 10px -113px no-repeat;
+}
+
 nav>ul>li#nav-photos a {
   background:transparent url("../images/icons.png") 10px 2px no-repeat;
 }
@@ -1436,10 +1440,6 @@ aside.sidebar .meta {
   padding:0;
   width:139px;
 }
-.image-pagination li.previous a.pin {
-  margin-left:55px;
-}
-
 .image-pagination li a img {
   -webkit-border-radius: 2px;
   -moz-border-radius: 2px;
@@ -1980,7 +1980,7 @@ nav ul li#nav-search {
   padding:0;
   margin:10px 5px 0 0;
   position:absolute;
-  left:295px;
+  left:335px;
   z-index:9999;
 }
 nav>ul>li#nav-search:hover {

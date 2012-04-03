@@ -9,6 +9,7 @@ class OAuthController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->theme->setTheme(); // defaults
   }
 
   
@@ -24,57 +25,13 @@ class OAuthController extends BaseController
         $separator = '&';
     }
 
-    // if an oauth_token is passed then display the approval screen else ask to create a credential
-    if(isset($_GET['oauth_token']))
-    {
-      $consumer = getDb()->getCredentialByUserToken($_GET['oauth_token']);
-      if(!$consumer)
-      {
-        // TODO templatize this
-        echo sprintf('Could not find consumer for token %s', $_GET['oauth_token']);
-      }
-      else if($consumer['type'] != Credential::typeUnauthorizedRequest)
-      {
-        // TODO templatize this
-        echo sprintf('This token has been approved or is invalid %s', $_GET['oauth_token']);
-      }
-      else
-      {
-        $bodyTemplate = sprintf('%s/oauthApprove.php', $this->config->paths->templates);
-        $params = array('consumer' => $consumer);
-        $body = $this->template->get($bodyTemplate, $params);
-
-        $params = array('body' => $body, 'page' => 'oauth-approve');
-        if($this->utility->isMobile())
-        {
-          $template = sprintf('%s/template.php', $this->config->paths->templates);
-          $this->template->display($template, $params);
-        }
-        else
-        {
-          $this->theme->display('template.php', $params);
-        }
-      }
-    }
-    else
-    {
-      $bodyTemplate = sprintf('%s/oauthCreate.php', $this->config->paths->templates);
-      $params = array('callback' => $callback, 'redirect' => $_SERVER['REQUEST_URI']);
-      $params['error'] = isset($_GET['error']) && $_GET['error'] == 1;
-      $params['name'] = isset($_GET['name']) ? $_GET['name'] : '';
-      $body = $this->template->get($bodyTemplate, $params);
-
-      $params = array('body' => $body, 'page' => 'oauth-create');
-      if($this->utility->isMobile())
-      {
-        $template = sprintf('%s/template.php', $this->config->paths->templates);
-        $this->template->display($template, $params);
-      }
-      else
-      {
-        $this->theme->display('template.php', $params);
-      }
-    }
+    $bodyTemplate = sprintf('%s/oauth-create.php', $this->config->paths->templates);
+    $params = array('callback' => $callback, 'redirect' => $_SERVER['REQUEST_URI']);
+    $params['error'] = isset($_GET['error']) && $_GET['error'] == 1;
+    $params['name'] = isset($_GET['name']) ? $_GET['name'] : '';
+    $body = $this->template->get($bodyTemplate, $params);
+    $params = array('body' => $body, 'page' => 'oauth-create');
+    $this->theme->display('template.php', $params);
   }
 
   public function authorizePost()
@@ -82,61 +39,51 @@ class OAuthController extends BaseController
     $userObj = new User;
     if(!$userObj->isOwner())
     {
-      echo '<h1>You need to be logged in to view this page.</h1><button class="login-click">Login now</button>';
+      $this->route->run('/error/403', EpiRoute::httpGet);
       die();
     }
 
-    if(isset($_GET['oauth_token']) && !empty($_GET['oauth_token']))
+    if(!isset($_POST['name']) || empty($_POST['name']))
     {
-      $token = $_GET['oauth_token'];
-      // if an oauth_token exists then the user wants to approve it
-      // change the status from unauthorized_request to request
-      $token = $_GET['oauth_token'];
-      $consumer = getDb()->getCredentialByUserToken($token);
-      $res = getCredential()->convertToken($consumer['id'], Credential::typeRequest);
-      if(!$res)
-      {
-        // TODO templatize this
-        echo sprintf('Could not convert this unauthorized request token to a request token %s', $_GET['oauth_token']);
-        die();
-      }
-
-      // we have to fetch this again to have the consumer key and secret
-      $consumer = getDb()->getCredentialByUserToken($token);
-      $callback = null;
-      $separator = '?';
-
-      if(isset($_GET['oauth_callback']))
-      {
-        $callback = $_GET['oauth_callback'];
-        if(stripos($callback, '?') !== false)
-          $separator = '&';
-      }
-      $callback .= "{$separator}oauth_consumer_key={$consumer['id']}&oauth_consumer_secret={$consumer['clientSecret']}&oauth_token={$consumer['userToken']}&oauth_token_secret={$consumer['userSecret']}&oauth_verifier={$consumer['verifier']}";
-      $this->route->redirect($callback, null, true);
-    }
-    elseif(isset($_POST['name']) && !empty($_POST['name']))
-    {
-      // no oauth token so this call is to create a credential
-      // TODO make permissions an array
-      $consumerKey = getCredential()->add($_POST['name'], array()/*$_POST['permissions']*/);
-      if(!$consumerKey)
-      {
-        getLogger()->warn(sprintf('Could not add credential for: %s', json_encode($consumerKey)));
-        echo sprintf('Could not add credential for: %s', json_encode($consumerKey));
-        die();
-      }
-
-      $consumer = getDb()->getCredential($consumerKey);
-      $callback = urlencode($_GET['oauth_callback']);
-      $this->route->redirect("/v1/oauth/authorize?oauth_token={$consumer['userToken']}&oauth_callback={$callback}");
-    }
-    else
-    {
-      // TODO templatize this
-      echo sprintf('Could not convert this unauthorized request token to a request token %s', $_GET['oauth_token']);
+      $this->route->run('/error/500', EpiRoute::httpGet);
       die();
     }
+
+    // TODO make permissions an array
+    $consumerKey = getCredential()->add($_POST['name'], array()/*$_POST['permissions']*/);
+    if(!$consumerKey)
+    {
+      getLogger()->warn(sprintf('Could not add credential for: %s', json_encode($consumerKey)));
+      $this->route->run('/error/500', EpiRoute::httpGet);
+      die();
+    }
+
+    $consumer = getDb()->getCredential($consumerKey);
+    $token = $consumer['userToken'];
+
+    $res = getCredential()->convertToken($consumer['id'], Credential::typeRequest);
+    if(!$res)
+    {
+      getLogger()->warn(sprintf('Could not convert credential for: %s', json_encode($token)));
+      $this->route->run('/error/500', EpiRoute::httpGet);
+      die();
+    }
+
+    // we have to fetch this again to have the consumer key and secret
+    $consumer = getDb()->getCredentialByUserToken($token);
+    $callback = null;
+    $separator = '?';
+
+    if(isset($_GET['oauth_callback']))
+    {
+      $callback = $_GET['oauth_callback'];
+      if(stripos($callback, '?') !== false)
+        $separator = '&';
+    }
+    $callback .= "{$separator}oauth_consumer_key={$consumer['id']}&oauth_consumer_secret={$consumer['clientSecret']}&oauth_token={$consumer['userToken']}&oauth_token_secret={$consumer['userSecret']}&oauth_verifier={$consumer['verifier']}";
+    $this->route->redirect($callback, null, true);
+    /*$callback = urlencode($_GET['oauth_callback']);
+    $this->route->redirect("/v1/oauth/authorize?oauth_token={$consumer['userToken']}&oauth_callback={$callback}");*/
   }
 
   public function flow()
