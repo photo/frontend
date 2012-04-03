@@ -1,6 +1,6 @@
 <div class="manage groups">
 
-  <?php $this->theme->display('partials/manage-navigation.php', array('page' => $page)); ?>
+  <?php echo $navigation; ?>
 
   <form class="well" action="/group/create">
     <h3>Create a new group</h3>
@@ -11,7 +11,7 @@
     <input type="text" class="group-email-input">&nbsp;&nbsp;&nbsp;<a href="#" class="group-email-add-click">Add</a>
     <ul class="group-emails-add-list unstyled">
     </ul>
-    <a class="btn group-post-click">Create</a>
+    <a class="btn btn-primary group-post-click">Create</a>
   </form>
 
   <?php foreach($groups as $group) { ?>

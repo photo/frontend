@@ -7,7 +7,7 @@
   <textarea name="description" id="description" placeholder="A description of the photo (typically longer than the title)"><?php $this->utility->safe($photo['description']); ?></textarea>
 
   <label for="tags">Tags</label>
-  <input type="text" name="tags" id="tags" class="tags-autocomplete" placeholder="A comma separated list of tags" value="<?php $this->utility->safe(implode(',', $photo['tags'])); ?>">
+  <input type="text" name="tags" id="tags" class="typeahead-tags" placeholder="A comma separated list of tags" value="<?php $this->utility->safe(implode(',', $photo['tags'])); ?>">
 
   <label for="latitude">Latitude &amp; Longitude</label>
   <input type="text" class="input-small" name="latitude" id="latitude" placeholder="Lat, i.e. 49.73" value="<?php $this->utility->safe($photo['latitude']); ?>">

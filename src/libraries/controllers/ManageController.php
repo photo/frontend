@@ -24,8 +24,9 @@ class ManageController extends BaseController
   {
     $credentialsResp = $this->api->invoke('/oauth/list.json');
     $credentials = $credentialsResp['result'];
+    $navigation = $this->getNavigation('apps');
     $bodyTemplate = sprintf('%s/manage-apps.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'page' => 'apps', 'crumb' => getSession()->get('crumb')));
+    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
   }
 
@@ -48,9 +49,11 @@ class ManageController extends BaseController
       $pages['totalPages'] = $photos[0]['totalPages'];
       $pages['requestUri'] = $_SERVER['REQUEST_URI'];
     }
+    $pagination = $this->theme->get('partials/pagination.php', $pages);
+    $navigation = $this->getNavigation('home');
 
     $bodyTemplate = sprintf('%s/manage.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('photos' => $photos, 'pages' => $pages, 'page' => 'home', 'crumb' => getSession()->get('crumb')));
+    $body = $this->template->get($bodyTemplate, array('photos' => $photos, 'pagination' => $pagination, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage'));
   }
 
@@ -58,8 +61,15 @@ class ManageController extends BaseController
   {
     $groupsResp = $this->api->invoke('/groups/list.json');
     $groups = $groupsResp['result'];
+    $navigation = $this->getNavigation('groups');
     $bodyTemplate = sprintf('%s/manage-groups.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('groups' => $groups, 'page' => 'groups', 'crumb' => getSession()->get('crumb')));
+    $body = $this->template->get($bodyTemplate, array('groups' => $groups, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-groups'));
+  }
+
+  private function getNavigation($page)
+  {
+    $tpl = sprintf('%s/manage-navigation.php', $this->config->paths->templates);
+    return $this->template->get($tpl, array('page' => $page));
   }
 }
