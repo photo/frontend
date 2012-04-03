@@ -729,19 +729,30 @@ var opTheme = (function() {
           loadCb: function(response) {
             var items = response.result, _this = opTheme.init.pages.photos, infobar = $('.infobar'),
                 minDate = $('.startdate', infobar), maxDate = $('.enddate', infobar),
-                ui = opTheme.ui;
+                minDateVal = parseInt(minDate.attr('data-time')), maxDateVal = parseInt(maxDate.attr('data-time')),
+                ui = opTheme.ui, i;
             if(items[0].totalPages >= _this.page) {
 
-              if(items[0].dateTaken < parseInt(maxDate.attr('data-time')))
-                ui.fadeAndSet(maxDate, phpjs.date('l F jS, Y', items[0].dateTaken));
-              if(items[items.length-1].dateTaken < parseInt(minDate.attr('data-time')))
-                ui.fadeAndSet(minDate, phpjs.date('l F jS, Y', items[items.length-1].dateTaken));
+              var thisTaken;
+              for(i=0; i<items.length; i++) {
+                thisTaken = parseInt(items[i].dateTaken);
+                if(thisTaken > maxDateVal) {
+                  ui.fadeAndSet(maxDate, phpjs.date('l F jS, Y', thisTaken));
+                  maxDate.attr('data-time', thisTaken);
+                  maxDateVal = thisTaken;
+                } else if(parseInt(items[i].dateTaken) < parseInt(minDate.attr('data-time'))) {
+                  ui.fadeAndSet(minDate, phpjs.date('l F jS, Y', thisTaken));
+                  minDate.attr('data-time', thisTaken);
+                  minDateVal = thisTaken;
+                }
+              }
 
               Gallery.showImages($(".photo-grid-justify"), items);
               _this.page++;
               _this.pageCount++;
               _this.running = false;
             } else {
+              $('.load-more').hide();
               _this.end = true;
             }
           }
