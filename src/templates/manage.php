@@ -1,6 +1,6 @@
 <div class="manage home">
 
-  <?php $this->theme->display('partials/manage-navigation.php', array('page' => $page)); ?>
+  <?php $this->template->display(dirname(__FILE__).'/manage-navigation.php', array('page' => $page)); ?>
   <?php $this->theme->display('partials/pagination.php', $pages); ?>
 
   <ul class="thumbnails">
