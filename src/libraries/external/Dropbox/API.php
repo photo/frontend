@@ -28,7 +28,7 @@ class Dropbox_API {
     /**
      * Content API URl
      */
-    protected $api_content_url = 'api-content.dropbox.com/0/';
+    protected $api_content_url = 'api-content.dropbox.com/1/';
 
     /**
      * OAuth object
