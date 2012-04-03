@@ -55,6 +55,8 @@ class PluginBase extends BaseModel
 
   public function renderHead() { }
 
+  public function renderBody() { }
+
   public function renderPhotoDetail() { }
 
   public function renderPhotoUploaded() {}

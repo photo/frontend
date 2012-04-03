@@ -27,8 +27,14 @@ $hasConfig = $userConfigObj->load();
 $configObj = getConfig();
 EpiCache::employ($configObj->get('epi')->cache);
 $sessionParams = array($configObj->get('epi')->session);
-if($configObj->get('epiSessionParams'))
+if($configObj->get('epiSessionParams')) {
   $sessionParams = array_merge($sessionParams, (array)$configObj->get('epiSessionParams'));
+  // for TLDs we need to override the cookie domain if specified
+  if(isset($sessionParams['domain']) && stristr($_SERVER['HTTP_HOST'], $sessionParams['domain']) === false)
+    $sessionParams['domain'] = $_SERVER['HTTP_HOST'];
+
+  $sessionParams = array_values($sessionParams); // reset keys
+}
 EpiSession::employ($sessionParams);
 getSession();
 
