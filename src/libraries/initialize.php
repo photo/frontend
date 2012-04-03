@@ -100,5 +100,8 @@ else
   // Before we run the setup in edit mode, we need to validate ownership
   $userObj = new User;
   if(isset($_GET['edit']) && !$userObj->isOwner())
+  {
     $routeObj->run('/error/403');
+    die();
+  }
 }
