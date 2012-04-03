@@ -4032,6 +4032,9 @@ body.photos .infobar .date {
   font-style:italic;
 	color:#e6501e;
 }
+.load-more {
+  text-align:center;
+}
 /* 09.03. Photos details ----------------------------------------------------------- */
 /* 09.04. Tags ----------------------------------------------------------- */
 body.tags div.tags .tag-list {

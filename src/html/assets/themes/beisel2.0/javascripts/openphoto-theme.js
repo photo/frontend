@@ -337,7 +337,7 @@ var opTheme = (function() {
                 html = markup.modal(
                   'Edit this photo',
                   response.result.markup,
-                  '<a href="#" class="btn photo-update-click">Save</a>'
+                  '<a href="#" class="btn btn-primary photo-update-click">Save</a>'
                 );
             el.html(html).modal();  
           } else {
@@ -445,6 +445,10 @@ var opTheme = (function() {
           opTheme.message.error('We could not update your photo.');
         }
         $("#modal").modal('hide');
+      },
+      photosViewMore: function(ev) {
+        ev.preventDefault();
+        opTheme.init.pages.photos.load();
       },
       pinClick: function(ev) {
         var el = $(ev.target),
@@ -591,6 +595,7 @@ var opTheme = (function() {
         OP.Util.on('click:photo-update-batch', opTheme.callback.photoUpdateBatch);
         OP.Util.on('click:photo-view', opTheme.callback.photoView);
         OP.Util.on('click:photo-view-modal', opTheme.callback.photoViewModal);
+        OP.Util.on('click:photos-load-more', opTheme.callback.photosViewMore);
         OP.Util.on('click:pin', opTheme.callback.pinClick);
         OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
         OP.Util.on('click:search', opTheme.callback.searchByTags);
