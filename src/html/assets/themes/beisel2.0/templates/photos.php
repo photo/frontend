@@ -4,7 +4,7 @@
 <?php if($photos[0]['totalRows'] > 0) { ?>
   <div class="infobar subnav subnav-fixed">
     <ul class="nav nav-pills">
-      <li class="plain"><a>Showing photos between <i class="icon-calendar icon-large"></i> <span class="enddate date" data-time="<?php $this->utility->safe($minDate); ?>"><?php $this->utility->safe(date('l F jS, Y', $minDate)); ?></span> and <i class="icon-calendar icon-large"></i> <span class="startdate date" data-time="<?php $this->utility->safe($maxDate); ?>"><?php $this->utility->safe(date('l F jS, Y', $maxDate)); ?></span></a></li>
+      <li class="plain"><a>Showing photos between <i class="icon-calendar icon-large"></i> <span class="startdate date" data-time="<?php $this->utility->safe($minDate); ?>"><?php $this->utility->safe(date('l F jS, Y', $minDate)); ?></span> and <i class="icon-calendar icon-large"></i> <span class="enddate date" data-time="<?php $this->utility->safe($maxDate); ?>"><?php $this->utility->safe(date('l F jS, Y', $maxDate)); ?></span></a></li>
     </ul>
   </div>
 
@@ -36,7 +36,9 @@
   <?php } ?>
   <div class="photo-grid-justify"></div>
   <br clear="all">
-  <div class="load-more">
-    <button type="button" class="span2 btn btn-primary photos-load-more-click"><i class="icon-plus icon-large"></i> Load more</button>
-  </div>
+  <?php if($photos[0]['totalPages'] > 1) { ?>
+    <div class="load-more">
+      <button type="button" class="span2 btn btn-primary photos-load-more-click"><i class="icon-plus icon-large"></i> Load more</button>
+    </div>
+  <?php } ?>
 </div>
