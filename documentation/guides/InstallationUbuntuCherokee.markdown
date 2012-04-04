@@ -31,6 +31,8 @@ Once you've confirmed that your cloud account is setup you can get started on yo
     apt-get upgrade
     apt-get install cherokee php5-fpm php5-curl php5-mcrypt php-apc build-essential libpcre3-dev
 
+And if you are going to use MySQL install `php5-mysql`.
+
 There are also a few optional but recommended packages and modules.
 
     apt-get install php5-imagick exiftran

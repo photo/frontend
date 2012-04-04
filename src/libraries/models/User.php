@@ -212,6 +212,8 @@ class User extends BaseModel
   {
     $this->session->set('email', $email);
     $this->session->set('crumb', md5($this->config->secrets->secret . time()));
+    if($this->isOwner())
+      $this->session->set('site', $_SERVER['HTTP_HOST']);
   }
 
   /**

@@ -554,24 +554,36 @@ class DatabaseMySql implements DatabaseInterface
     * @param array $filters Filters to be applied to the list
     * @return mixed Array on success, FALSE on failure
     */
-  public function getTags($filter = array())
+  public function getTags($filters = array())
   {
     $countField = 'countPublic';
+    $sortBy = '`id`';
     $params = array(':owner' => $this->owner);
+    if(isset($filters['sortBy']))
+    {
+      $sortParts = (array)explode(',', $filters['sortBy']);
+      $sortParts[0] = $this->_($sortParts[0]);
+      $sortBy = "`{$sortParts[0]}` ";
+      if(isset($sortParts[1]))
+      {
+        $sortParts[1] = $this->_($sortParts[1]);
+        $sortBy .= $sortParts[1];
+      }
+    }
 
-    if(isset($filter['permission']) && $filter['permission'] == 0)
+    if(isset($filters['permission']) && $filters['permission'] == 0)
       $countField = 'countPrivate';
 
-    if(isset($filter['search']) && $filter['search'] != '')
+    if(isset($filters['search']) && $filters['search'] != '')
     {
-      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND `id` LIKE :search ORDER BY `id`";
-      $params[':search'] = "{$filter['search']}%";
+      $filters['search'] = $this->_($filters['search']);
+      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND `id` LIKE :search ORDER BY {$sortBy}";
+      $params[':search'] = "{$filters['search']}%";
     }
     else
     {
-      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY `id`";
+      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY {$sortBy}";
     }
-
     $tags = $this->db->all($query, $params);
 
     if($tags === false)
@@ -839,6 +851,8 @@ class DatabaseMySql implements DatabaseInterface
     {
       if(isset($params['groups']))
       {
+        if(!is_array($params['groups']))
+          $params['groups'] = (array)explode(',', $params['groups']);
         $this->deleteGroupsFromElement($id, 'photo');
         $this->addGroupsToElement($id, $params['groups'], 'photo');
         // TODO: Generalize this and use for tags too -- @jmathai
@@ -1192,7 +1206,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Build parts of the photos select query
     *
-    * @param array $filters filers used to perform searches
+    * @param array $filters filters used to perform searches
     * @param int $limit number of records to have returned
     * @param offset $offset starting point for records
     * @return array

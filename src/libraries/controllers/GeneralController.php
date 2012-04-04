@@ -67,7 +67,7 @@ class GeneralController extends BaseController
     */
   public function maintenance()
   {
-    $this->theme->setTheme('default');
+    $this->theme->setTheme(); // defaults
     $this->theme->display($this->utility->getTemplate('maintenance.php'));
   }
 }

@@ -15,6 +15,12 @@ class Url
     return $utilityObj->returnValue(sprintf('/action/%s/delete', $utilityObj->safe($id, false)), $write);
   }
 
+  public function manage($write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue('/manage', $write);
+  }
+
   public function photoDelete($id, $write = true)
   {
     $utilityObj = new Utility;
@@ -89,7 +95,7 @@ class Url
     $utilityObj = new Utility;
     $ret = array();
     foreach($tags as $tag)
-      $ret[] = sprintf('<a href="%s">%s</a>', self::photosView("tags-{$tag}", false), $utilityObj->safe($tag, false));
+      $ret[] = sprintf('<a href="%s">%s</a>', $this->photosView("tags-{$tag}", false), $utilityObj->safe($tag, false));
 
     return $utilityObj->returnValue(implode(', ', $ret), $write);
   }
@@ -100,9 +106,14 @@ class Url
     return $utilityObj->returnValue('/user/logout', $write);
   }
 
-  public function userSettings($write = true)
+  public function userManage($write = true)
   {
     $utilityObj = new Utility;
-    return $utilityObj->returnValue('/user/settings', $write);
+    return $utilityObj->returnValue('/manage', $write);
+  }
+
+  public function userSettings($write = true)
+  {
+    return $this->userManage($write);
   }
 }

@@ -163,7 +163,8 @@ class PhotoController extends BaseController
     }
     $crumb = $this->session->get('crumb');
     $template = sprintf('%s/upload.php', $this->config->paths->templates);
-    $body = $this->template->get($template, array('crumb' => $crumb, 'licenses' => $this->utility->getLicenses()));
+    $groupsResp = $this->api->invoke('/groups/list.json');
+    $body = $this->template->get($template, array('crumb' => $crumb, 'groups' => $groupsResp['result'], 'licenses' => $this->utility->getLicenses()));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'upload'));
   }
 

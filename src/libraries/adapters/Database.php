@@ -36,7 +36,7 @@ interface DatabaseInterface
   public function getPhotos($filters = array(), $limit = null, $offset = null);
   public function getUser($owner = null);
   public function getTag($tag);
-  public function getTags($filter = array());
+  public function getTags($filters = array());
   public function getWebhook($id);
   public function getWebhooks($topic = null);
   // upgrade
