@@ -281,6 +281,16 @@ class Utility
       return $this->returnValue(($int > 1 ? "{$word}s" : $word), $write);
   }
 
+  public function posessive($noun, $write = true)
+  {
+    if(substr($noun, -1) === 's')
+      $val = sprintf('%s', $noun);
+    else
+      $val = sprintf("%s's", $noun);
+
+    return $this->returnValue($val, $write);
+  }
+
   public function returnValue($value, $write = true)
   {
     if($write)

@@ -15,8 +15,19 @@ class FacebookLikePlugin extends PluginBase
 
   public function renderHead()
   {
+    $utility = new Utility;
     $photo = $this->plugin->getData('photo');
     $tags = '';
+    $title = $photo['title'] !== '' ? $photo['title'] : "{$photo['filenameOriginal']} on OpenPhoto";
+    $tags .= $this->addTag('og:site_name', 
+      sprintf('%s OpenPhoto site', 
+        ucwords(
+          $utility->posessive(
+            $utility->getEmailHandle($this->config->user->email, false),
+            false)
+        )
+      )
+    );;
     $tags .= $this->addTag('og:title', $photo['title']);
     $tags .= $this->addTag('og:url', $photo['url']);
     $tags .= $this->addTag('og:image', $photo['pathBase']);
