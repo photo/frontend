@@ -13,8 +13,7 @@
     //constants
     var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
         BROWSER_ID_SRC = 'https://browserid.org/include.js',
-        log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } };
-
+        log = function(msg) { if(typeof(console) !== 'undefined' && typeof(console.log) !== 'undefined') {  console.log(msg); } };
 
     /**
     * Class that contains all utility functions for OpenPhoto
@@ -125,6 +124,7 @@
 
             //attach events
             this.attachEvent( 'body', 'click', this.onviewevent, this);
+            this.attachEvent( 'body', 'focus', this.onviewevent, this);
             this.attachEvent( 'body', 'change', this.onviewevent, this);
             this.attachEvent( 'body', 'mouseover', this.onmouseevent, this);
             this.attachEvent( 'body', 'mouseout', this.onmouseevent, this);
@@ -166,8 +166,6 @@
                     this.fire( map[cls], e);
                 }
             }
-
-
         };
 
         /**

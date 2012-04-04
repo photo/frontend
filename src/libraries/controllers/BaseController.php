@@ -18,6 +18,7 @@ class BaseController extends ApiBaseController
     $this->utility = new Utility;
     $this->url = new Url;
 
+    $this->template->template = $this->template;
     $this->template->config = $this->config;
     $this->template->plugin = $this->plugin;
     $this->template->session = $this->session;
@@ -25,9 +26,5 @@ class BaseController extends ApiBaseController
     $this->template->utility = $this->utility;
     $this->template->url = $this->url;
     $this->template->user = new User;
-
-    $class = get_class($this);
-    if($class === 'UserController' || $class === 'SetupController')
-      $this->theme->setTheme('beisel');
   }
 }

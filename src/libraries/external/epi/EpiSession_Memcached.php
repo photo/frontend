@@ -7,16 +7,17 @@ class EpiSession_Memcached implements EpiSessionInterface
 
   public function __construct($params = array())
   {
-    if(empty($_COOKIE[EpiSession::COOKIE]))
-    {
-      $cookieVal = md5(uniqid(rand(), true));
-      setcookie(EpiSession::COOKIE, $cookieVal, time()+1209600, '/');
-      $_COOKIE[EpiSession::COOKIE] = $cookieVal;
-    }
     $this->host = !empty($params[0]) ? $params[0] : 'localhost';
     $this->port = !empty($params[1]) ? $params[1] : 11211;;
     $this->compress = !empty($params[2]) ? $params[2] : 0;;
     $this->expiry   = !empty($params[3]) ? $params[3] : 3600;
+    $this->domain   = !empty($params[4]) ? $params[4] : $_SERVER['HTTP_HOST'];
+    if(empty($_COOKIE[EpiSession::COOKIE]))
+    {
+      $cookieVal = md5(uniqid(rand(), true));
+      setcookie(EpiSession::COOKIE, $cookieVal, time()+$this->expiry, '/', $this->domain);
+      $_COOKIE[EpiSession::COOKIE] = $cookieVal;
+    }
   }
 
   public function end()

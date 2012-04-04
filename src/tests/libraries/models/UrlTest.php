@@ -104,15 +104,15 @@ class UrlTest extends PHPUnit_Framework_TestCase
   public function testPhotoView()
   {
     $url = $this->url->photoView($this->id, null, false);
-    $this->assertEquals("/photo/{$this->id}/view", $url, 'Urls do not match');
+    $this->assertEquals("/p/{$this->id}", $url, 'Urls do not match');
     $this->url->photoView($this->id);
     $url = ob_get_contents();
     ob_clean();
-    $this->assertEquals("/photo/{$this->id}/view", $url, 'Urls do not match');
+    $this->assertEquals("/p/{$this->id}", $url, 'Urls do not match');
     $this->url->photoView($this->id, null, true);
     $url = ob_get_contents();
     ob_clean();
-    $this->assertEquals("/photo/{$this->id}/view", $url, 'Urls do not match');
+    $this->assertEquals("/p/{$this->id}", $url, 'Urls do not match');
   }
 
   public function testPhotoViewShort()
