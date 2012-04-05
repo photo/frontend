@@ -453,6 +453,40 @@ class Photo extends BaseModel
     return $id;
   }
 
+  public function replace($id, $localFile, $name)
+  {
+    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile);
+    if(!$resp['status'])
+    {
+      $this->logger->warn('Could not upload files for replacement');
+      return false;
+    }
+    $pathsToUpdate = $resp['paths'];
+    $pathsToUpdae['hash'] = sha1_file($localFile);
+
+
+    $exiftran = $this->config->modules->exiftran;
+    if(is_executable($exiftran))
+      exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
+    
+    $photo = $this->db->getPhoto($id);
+
+    // purge photoVersions
+    $delVersionsResp = $this->db->deletePhotoVersions($photo);
+    if(!$delVersionsResp)
+      return false;
+    // delete all photos
+    $delFilesResp = $this->fs->deletePhoto($photo);
+    if(!$delFilesResp)
+      return false;
+    // update photo paths / hash
+    $updPathsResp = $this->db->postPhoto($id, $pathsToUpdate);
+    if(!$updPathsResp)
+      return false;
+    
+    return true;
+  }
+
   /**
     * Uploads a new photo to the remote file system and database.
     *
@@ -472,28 +506,9 @@ class Photo extends BaseModel
     $tagObj = new Tag;
     $attributes = $this->whitelistParams($attributes);
     $filenameOriginal = $name;
-    $paths = $this->generatePaths($name);
 
-    // resize the base image before uploading
-    $localFileCopy = "{$localFile}-copy";
-    $this->logger->info("Making a local copy of the uploaded image. {$localFile} to {$localFileCopy}");
-    copy($localFile, $localFileCopy);
-
-    $baseImage = $this->image->load($localFileCopy);
-    if(!$baseImage)
-    {
-      $this->logger->warn('Could not load image, possibly an invalid image file.');
-      return false;
-    }
-    $baseImage->scale($this->config->photos->baseSize, $this->config->photos->baseSize);
-    $baseImage->write($localFileCopy);
-    $uploaded = $this->fs->putPhotos(
-      array(
-        array($localFile => $paths['pathOriginal']),
-        array($localFileCopy => $paths['pathBase'])
-      )
-    );
-    if($uploaded)
+    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile);
+    if($resp['status'])
     {
       $this->logger->info("Photo ({$id}) successfully stored on the file system");
       $exif = $this->readExif($localFile);
@@ -688,6 +703,33 @@ class Photo extends BaseModel
     $flip = ($hemi == 'W' or $hemi == 'S') ? -1 : 1;
 
     return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
+  }
+
+  private function createAndStoreBaseAndOriginal($name, $localFile)
+  {
+    $paths = $this->generatePaths($name);
+
+    // resize the base image before uploading
+    $localFileCopy = "{$localFile}-copy";
+    $this->logger->info("Making a local copy of the uploaded image. {$localFile} to {$localFileCopy}");
+    copy($localFile, $localFileCopy);
+    
+    $baseImage = $this->image->load($localFileCopy);
+    if(!$baseImage)
+    {
+      $this->logger->warn('Could not load image, possibly an invalid image file.');
+      return false;
+    }
+    $baseImage->scale($this->config->photos->baseSize, $this->config->photos->baseSize);
+    $baseImage->write($localFileCopy);
+    $uploaded = $this->fs->putPhotos(
+      array(
+        array($localFile => $paths['pathOriginal']),
+        array($localFileCopy => $paths['pathBase'])
+      )
+    );
+
+    return array('status' => $uploaded, 'paths' => $paths);;
   }
 
 
