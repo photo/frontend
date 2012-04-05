@@ -17,7 +17,7 @@ class SetupController extends BaseController
   public function __construct()
   {
     parent::__construct();
-    $this->theme->setTheme('beisel');
+    $this->theme->setTheme(); // defaults
     $this->user = new User;
   }
   
@@ -102,7 +102,7 @@ class SetupController extends BaseController
     if(isset($_GET['edit']))
       $qs = '?edit';
 
-    $template = sprintf('%s/setupDropbox.php', getConfig()->get('paths')->templates);
+    $template = sprintf('%s/setup-dropbox.php', getConfig()->get('paths')->templates);
     $body = $this->template->get($template, array('dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }

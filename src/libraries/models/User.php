@@ -147,6 +147,7 @@ class User extends BaseModel
 
     $user = $this->config->user;
     $credential = $this->getCredentialObject();
+    $loggedInEmail = $this->session->get('email');
     if($credential->isOAuthRequest())
     {
       return $credential->checkRequest() === true && $credential->getEmailFromOAuth() === $user->email;;
@@ -159,9 +160,19 @@ class User extends BaseModel
     {
       if($user === null)
         return false;
-      $len = max(strlen($this->session->get('email')), strlen($user->email));
-      return isset($user->email) && strncmp(strtolower($this->session->get('email')), strtolower($user->email), $len) === 0;
+      $len = max(strlen($loggedInEmail), strlen($user->email));
+      $isOwner = isset($user->email) && strncmp(strtolower($loggedInEmail), strtolower($user->email), $len) === 0;
+      if($isOwner)
+        return true;
+
+      if(isset($user->admins))
+      {
+        $admins = (array)explode(',', $user->admins);
+        if(array_search(strtolower($loggedInEmail), array_map('strtolower', $admins)) !== false)
+          return true;
+      }
     }
+    return false;
   }
 
   /**
@@ -201,6 +212,8 @@ class User extends BaseModel
   {
     $this->session->set('email', $email);
     $this->session->set('crumb', md5($this->config->secrets->secret . time()));
+    if($this->isOwner())
+      $this->session->set('site', $_SERVER['HTTP_HOST']);
   }
 
   /**

@@ -57,9 +57,6 @@
           </ul>
         </li>
       </ul>
-      <?php if($this->user->isOwner()) { ?>
-        <a href="<?php $this->url->photoEdit($photo['id']); ?>" class="button photo-edit-click">Edit this photo</a>
-      <?php } ?>
     </div>
   </div>
 </div>

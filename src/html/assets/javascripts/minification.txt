@@ -1,2 +1,2 @@
 minify plupload.js plupload.html5.js jquery.plupload.queue.js openphoto-upload.js openphoto-upload.min.js --force
-minify openphoto-batch.js openphoto-batch.min.js --force
+minify openphoto-helper.js openphoto-helper.min.js --force
