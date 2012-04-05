@@ -186,9 +186,11 @@ class DatabaseMySql implements DatabaseInterface
     *
     * @return mixed Array on success, FALSE on failure
     */
-  public function getActivities()
+  public function getActivities($filters = array(), $limit = 10)
   {
-    $activities = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}activity` WHERE `owner`=:owner",
+    $filters['sortBy'] = 'dateCreated,desc';
+    $buildQuery = $this->buildQuery($filters, $limit, null, 'activity');
+    $activities = $this->db->all($sql = "SELECT * FROM `{$this->mySqlTablePrefix}activity` {$buildQuery['where']} {$buildQuery['sortBy']} {$buildQuery['limit']}",
                                array(':owner' => $this->owner));
     if($activities === false)
       return false;
@@ -453,7 +455,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getPhotoNextPrevious($id, $filterOpts = null)
   {
-    $buildQuery = $this->buildQuery($filterOpts, null, null);
+    $buildQuery = $this->buildQuery($filterOpts, null, null, 'photo');
     $photo = $this->getPhoto($id);
     if(!$photo)
       return false;
@@ -510,7 +512,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getPhotos($filters = array(), $limit = 20, $offset = null)
   {
-    $query = $this->buildQuery($filters, $limit, $offset);
+    $query = $this->buildQuery($filters, $limit, $offset, 'photo');
     // buildQuery includes owner
     $photos = $this->db->all($sql = "SELECT {$this->mySqlTablePrefix}photo.* {$query['from']} {$query['where']} {$query['groupBy']} {$query['sortBy']} {$query['limit']} {$query['offset']}");
     if($photos === false)
@@ -552,24 +554,36 @@ class DatabaseMySql implements DatabaseInterface
     * @param array $filters Filters to be applied to the list
     * @return mixed Array on success, FALSE on failure
     */
-  public function getTags($filter = array())
+  public function getTags($filters = array())
   {
     $countField = 'countPublic';
+    $sortBy = '`id`';
     $params = array(':owner' => $this->owner);
+    if(isset($filters['sortBy']))
+    {
+      $sortParts = (array)explode(',', $filters['sortBy']);
+      $sortParts[0] = $this->_($sortParts[0]);
+      $sortBy = "`{$sortParts[0]}` ";
+      if(isset($sortParts[1]))
+      {
+        $sortParts[1] = $this->_($sortParts[1]);
+        $sortBy .= $sortParts[1];
+      }
+    }
 
-    if(isset($filter['permission']) && $filter['permission'] == 0)
+    if(isset($filters['permission']) && $filters['permission'] == 0)
       $countField = 'countPrivate';
 
-    if(isset($filter['search']) && $filter['search'] != '')
+    if(isset($filters['search']) && $filters['search'] != '')
     {
-      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND `id` LIKE :search ORDER BY `id`";
-      $params[':search'] = "{$filter['search']}%";
+      $filters['search'] = $this->_($filters['search']);
+      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND `id` LIKE :search ORDER BY {$sortBy}";
+      $params[':search'] = "{$filters['search']}%";
     }
     else
     {
-      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY `id`";
+      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY {$sortBy}";
     }
-
     $tags = $this->db->all($query, $params);
 
     if($tags === false)
@@ -837,6 +851,8 @@ class DatabaseMySql implements DatabaseInterface
     {
       if(isset($params['groups']))
       {
+        if(!is_array($params['groups']))
+          $params['groups'] = (array)explode(',', $params['groups']);
         $this->deleteGroupsFromElement($id, 'photo');
         $this->addGroupsToElement($id, $params['groups'], 'photo');
         // TODO: Generalize this and use for tags too -- @jmathai
@@ -1190,16 +1206,16 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Build parts of the photos select query
     *
-    * @param array $filters filers used to perform searches
+    * @param array $filters filters used to perform searches
     * @param int $limit number of records to have returned
     * @param offset $offset starting point for records
     * @return array
     */
-  private function buildQuery($filters, $limit, $offset)
+  private function buildQuery($filters, $limit, $offset, $table)
   {
     // TODO: support logic for multiple conditions
-    $from = "FROM `{$this->mySqlTablePrefix}photo` ";
-    $where = "WHERE `{$this->mySqlTablePrefix}photo`.`owner`='{$this->owner}'";
+    $from = "FROM `{$this->mySqlTablePrefix}{$table}` ";
+    $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
     $groupBy = '';
     $sortBy = 'ORDER BY CONCAT(dateTakenYear,LPAD(dateTakenMonth,2,"0"),LPAD(dateTakenDay,2,"0")) DESC, dateTaken ASC';
     if(!empty($filters) && is_array($filters))
@@ -1229,7 +1245,7 @@ class DatabaseMySql implements DatabaseInterface
             }
             break;
           case 'permission':
-            $where = $this->buildWhere($where, "permission='1'");
+            $where = $this->buildWhere($where, "`permission`='1'");
             break;
           case 'sortBy':
             if($value === 'dateTaken,desc')
@@ -1273,6 +1289,10 @@ class DatabaseMySql implements DatabaseInterface
             }
 
             $where = $this->buildWhere($where, sprintf("`%sphoto`.`id` IN('%s')", $this->mySqlTablePrefix, implode("','", array_keys($ids))));
+            break;
+          case 'type': // type for activity
+            $value = $this->_($value);
+            $where = $this->buildWhere($where, "`type`='{$value}'");
             break;
         }
       }

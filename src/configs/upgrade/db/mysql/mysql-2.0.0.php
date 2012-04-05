@@ -1,8 +1,12 @@
 <?php
 $status = true;
 
+$sql = <<<SQL
+  UPDATE `{$this->mySqlTablePrefix}admin` SET `value`=:version WHERE `key`=:key
+SQL;
+$status = $status && mysql_2_0_0($sql, array(':key' => 'version', ':version' => '2.0.0'));
 
-function mysql_1_4_0($sql, $params = array())
+function mysql_2_0_0($sql, $params = array())
 {
   try
   {

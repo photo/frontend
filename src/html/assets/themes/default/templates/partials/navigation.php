@@ -17,12 +17,14 @@
     <li id="nav-upload" <?php if($this->utility->isActiveTab('search')) { ?> class="on" <?php } ?>>
       <a href="<?php $this->url->photosUpload(); ?>">Upload</a>
     </li>
+    <li id="nav-manage">
+      <a href="<?php $this->url->userManage(); ?>">Manage</a>
+    </li>
   <?php } ?>
   <?php if($this->user->isLoggedIn()) { ?>
     <li id="nav-signin">
       <?php echo $this->session->get('email'); ?><button class="settings-click"><img src="<?php $this->theme->asset('image', 'header-navigation-user.png'); ?>" class="settings-click"></button>
       <div id="settingsbar">
-        <p><a href="<?php $this->url->userSettings(); ?>">Settings</a></p>
         <p><a href="<?php $this->url->userLogout(); ?>">Logout</a></p>
       </div>
     </li>

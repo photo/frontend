@@ -222,7 +222,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     *
     * @return mixed Array on success, FALSE on failure
     */
-  public function getActivities()
+  public function getActivities($filter = array(), $limit = 10)
   {
     $res = $this->db->select("SELECT * FROM `{$this->domainActivities}`", array('ConsistentRead' => 'true'));
     $this->logErrors($res);
@@ -385,7 +385,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function getPhotoNextPrevious($id, $filterOpts = null)
   {
-    $buildQuery = self::buildQuery($filterOpts, null, null);
+    $buildQuery = $this->buildQuery($filterOpts, null, null);
     $photo = $this->getPhoto($id);
     if(!$photo)
       return false;
@@ -445,7 +445,7 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function getPhotos($filters = array(), $limit = 20, $offset = null)
   {
-    $buildQuery = self::buildQuery($filters, $limit, $offset);
+    $buildQuery = $this->buildQuery($filters, $limit, $offset);
     $queue = $this->getBatchRequest();
     $this->db->batch($queue)->select("SELECT * FROM `{$this->domainPhoto}` {$buildQuery['where']} {$buildQuery['sortBy']} LIMIT {$buildQuery['limit']}", $buildQuery['params']);
     if(isset($buildQuery['params']['NextToken']))
@@ -494,17 +494,21 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function getTags($filters = array())
   {
     $countField = 'countPublic';
+    $sortBy = 'itemName()';
+    if(isset($filters['sortBy']))
+      $sortBy = str_replace(',', ' ', $sortBy);
     if(isset($filter['permission']) && $filter['permission'] == 0)
       $countField = 'countPrivate';
 
+
     if(isset($filter['search']) && $filter['search'] != '')
     {
-      $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL AND itemName() LIKE '{$filter['search']}%' ORDER BY itemName()";
+      $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL AND itemName() LIKE '{$filter['search']}%' ORDER BY {$sortBy})";
       $params[':search'] = "{$filter['search']}%";
     }
     else
     {
-      $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL ORDER BY itemName()";
+      $query = "SELECT * FROM `{$this->domainTag}` WHERE `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND itemName() IS NOT NULL ORDER BY {$sortBy}";
     }
 
     $res = $this->db->select($query, array('ConsistentRead' => 'false'));
@@ -971,6 +975,10 @@ class DatabaseSimpleDb implements DatabaseInterface
             if(!is_array($value))
               $value = (array)explode(',', $value);
             $where = $this->buildWhere($where, "tags IN('" . implode("','", $value) . "')");
+            break;
+          case 'type': // type for activities
+            $value = $this->_($value);
+            $where = $this->buildWhere($where, "type='{$value}'");
             break;
         }
       }

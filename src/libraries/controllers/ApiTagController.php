@@ -82,7 +82,6 @@ class ApiTagController extends ApiBaseController
       $filters['permission'] = 0;
 
     $tagField = $userObj->isOwner() ? 'countPrivate' : 'countPublic';
-
     $tags = getDb()->getTags($filters);
     if(is_array($tags))
     {

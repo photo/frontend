@@ -187,6 +187,9 @@ li.plupload_done a {
 .plupload_scroll .plupload_filelist_header .plupload_file_action, .plupload_scroll .plupload_filelist_footer .plupload_file_action {
 	margin-right: 17px;
 }
+a.plupload_button.plupload_start {
+  display:none !important;
+}
 
 /* Floats */
 
