@@ -92,7 +92,7 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
-    * Delete a photo from the database
+    * Delete a photo in it's entirety from the database
     *
     * @param string $id ID of the photo to delete
     * @return boolean
@@ -105,6 +105,31 @@ class DatabaseSimpleDb implements DatabaseInterface
     $res = $this->db->delete_attributes($this->domainPhoto, $photo['id']);
     $this->logErrors($res);
     return $res->isOK();
+  }
+
+  /**
+    * Delete a photos versions excluding base and original
+    *
+    * @param string $id ID of the photo to delete versions of
+    * @return boolean
+    */
+  public function deletePhotoVersions($photo)
+  {
+    if(!isset($photo['id']))
+      return false;
+
+    $photo = $this->getPhoto($photo['id']);
+    $attrs = array();
+    foreach($photo as $key => $val)
+    {
+      if(preg_match('/^path/', $key) === 1 && !in_array($key, array('pathOriginal', 'pathBase')))
+      {
+        $attrs[] = array('Name' => $key);
+      }
+    }
+
+    $res = $this->db->delete_attributes($this->domainPhoto, $photo['id'], $attrs);
+    return $res !== false;
   }
 
   /**
