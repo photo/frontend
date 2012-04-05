@@ -9,6 +9,6 @@
       <a href="/manage/apps">Apps</a>
     </li>
     <li>
-      <a href="/setup">Rerun Setup</a>
+      <a href="/setup?edit">Rerun Setup</a>
     </li>
   </ul>
