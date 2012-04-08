@@ -1,6 +1,6 @@
 <?php
 /**
- * Dropbox adapter that extends much of the FileSystemLocal logic
+ * Dropbox adapter that extends much of the FileSystemS3 logic
  *
  * This class defines the functionality defined by FileSystemInterface for a plain Filesystem.
  * @author Hub Figuiere <hub@figuiere.net>
