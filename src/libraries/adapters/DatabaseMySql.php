@@ -82,7 +82,7 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Delete a photo from the database
+    * Delete a photo in it's entirety from the database
     *
     * @param string $id ID of the photo to delete
     * @return boolean
@@ -93,10 +93,24 @@ class DatabaseMySql implements DatabaseInterface
       return false;
 
     $resPhoto = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
-    $resVersions = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
+    $resVersions = $this->deletePhotoVersions($photo);
 
-    // TODO delete all versions
     return ($resPhoto !== false && $resVersions !== false);
+  }
+
+  /**
+    * Delete a photos versions excluding base and original
+    *
+    * @param string $id ID of the photo to delete versions of
+    * @return boolean
+    */
+  public function deletePhotoVersions($photo)
+  {
+    if(!isset($photo['id']))
+      return false;
+
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
+    return $res !== false;
   }
 
   /**

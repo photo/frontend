@@ -453,6 +453,73 @@ class Photo extends BaseModel
     return $id;
   }
 
+  public function replace($id, $localFile, $name)
+  {
+    $attributes = array();
+    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile);
+    $paths = $resp['paths'];
+    if($resp['status'])
+    {
+      $this->logger->info("Photo ({$id}) successfully stored on the file system (replacement)");
+      $exif = $this->readExif($localFile);
+      $iptc = $this->readIptc($localFile);
+      $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
+      $attributes = $paths;
+      foreach($iptc as $iptckey => $iptcval)
+      {
+        if(empty($iptcval))
+          continue;
+
+        if($iptckey == 'tags')
+        {
+          $iptcval = implode(',', $iptcval);
+        }
+        $attributes[$iptckey] = $iptcval;
+      }
+      foreach($defaults as $default)
+      {
+        if(!isset($attributes[$default]))
+          $attributes[$default] = null;
+      }
+      $attributes['hash'] = sha1_file($localFile);
+      $attributes['size'] = intval(filesize($localFile)/1024);
+
+      $exifParams = array('width' => 'width', 'height' => 'height', 'exifCameraMake' => 'exifCameraMake', 'exifCameraModel' => 'exifCameraModel', 
+        'FNumber' => 'exifFNumber', 'exposureTime' => 'exifExposureTime', 'ISO' => 'exifISOSpeed', 'focalLength' => 'exifFocalLength', 'latitude' => 'latitude', 'longitude' => 'longitude');
+      foreach($exifParams as $paramName => $mapName)
+      {
+        if(isset($exif[$paramName]))
+          $attributes[$mapName] = $exif[$paramName];
+      }
+
+      $exiftran = $this->config->modules->exiftran;
+      if(is_executable($exiftran))
+        exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
+      
+      $photo = $this->db->getPhoto($id);
+
+      // purge photoVersions
+      $delVersionsResp = $this->db->deletePhotoVersions($photo);
+      if(!$delVersionsResp)
+        return false;
+      // delete all photos
+      $delFilesResp = $this->fs->deletePhoto($photo);
+      if(!$delFilesResp)
+        return false;
+      // update photo paths / hash
+      $updPathsResp = $this->db->postPhoto($id, $attributes);
+
+      unlink($localFile);
+      unlink($resp['localFileCopy']);
+
+      if($updPathsResp)
+        return true;
+    }
+
+    $this->logger->warn('Could not upload files for replacement');
+    return false;
+  }
+
   /**
     * Uploads a new photo to the remote file system and database.
     *
@@ -470,30 +537,12 @@ class Photo extends BaseModel
       return false;
     }
     $tagObj = new Tag;
-    $attributes = $this->whitelistParams($attributes);
     $filenameOriginal = $name;
-    $paths = $this->generatePaths($name);
 
-    // resize the base image before uploading
-    $localFileCopy = "{$localFile}-copy";
-    $this->logger->info("Making a local copy of the uploaded image. {$localFile} to {$localFileCopy}");
-    copy($localFile, $localFileCopy);
-
-    $baseImage = $this->image->load($localFileCopy);
-    if(!$baseImage)
-    {
-      $this->logger->warn('Could not load image, possibly an invalid image file.');
-      return false;
-    }
-    $baseImage->scale($this->config->photos->baseSize, $this->config->photos->baseSize);
-    $baseImage->write($localFileCopy);
-    $uploaded = $this->fs->putPhotos(
-      array(
-        array($localFile => $paths['pathOriginal']),
-        array($localFileCopy => $paths['pathBase'])
-      )
-    );
-    if($uploaded)
+    $attributes = $this->whitelistParams($attributes);
+    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile);
+    $paths = $resp['paths'];
+    if($resp['status'])
     {
       $this->logger->info("Photo ({$id}) successfully stored on the file system");
       $exif = $this->readExif($localFile);
@@ -501,6 +550,9 @@ class Photo extends BaseModel
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
       foreach($iptc as $iptckey => $iptcval)
       {
+        if(empty($iptcval))
+          continue;
+
         if($iptckey == 'tags')
         {
           $iptcval = implode(',', $iptcval);
@@ -570,7 +622,7 @@ class Photo extends BaseModel
       );
       $stored = $this->db->putPhoto($id, $attributes);
       unlink($localFile);
-      unlink($localFileCopy);
+      unlink($resp['localFileCopy']);
       if($stored)
       {
         if(isset($attributes['tags']) && !empty($attributes['tags']))
@@ -688,6 +740,33 @@ class Photo extends BaseModel
     $flip = ($hemi == 'W' or $hemi == 'S') ? -1 : 1;
 
     return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
+  }
+
+  private function createAndStoreBaseAndOriginal($name, $localFile)
+  {
+    $paths = $this->generatePaths($name);
+
+    // resize the base image before uploading
+    $localFileCopy = "{$localFile}-copy";
+    $this->logger->info("Making a local copy of the uploaded image. {$localFile} to {$localFileCopy}");
+    copy($localFile, $localFileCopy);
+    
+    $baseImage = $this->image->load($localFileCopy);
+    if(!$baseImage)
+    {
+      $this->logger->warn('Could not load image, possibly an invalid image file.');
+      return false;
+    }
+    $baseImage->scale($this->config->photos->baseSize, $this->config->photos->baseSize);
+    $baseImage->write($localFileCopy);
+    $uploaded = $this->fs->putPhotos(
+      array(
+        array($localFile => $paths['pathOriginal']),
+        array($localFileCopy => $paths['pathBase'])
+      )
+    );
+
+    return array('status' => $uploaded, 'paths' => $paths, 'localFileCopy' => $localFileCopy);;
   }
 
 

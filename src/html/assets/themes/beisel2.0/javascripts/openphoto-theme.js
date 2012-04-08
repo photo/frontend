@@ -44,15 +44,7 @@ var opTheme = (function() {
 
   // pushstate
   pushstate = (function() {
-    var url = null,
-        parse;
-
-    parse = function(markup) {
-      var dom = $(markup),
-          bodyClass = $('body', dom).attr('class'),
-          content = $('.content', dom).html();
-      return {bodyClass: bodyClass, content: content};
-    };
+    var url = null;
 
     return {
       clickHandler: function(ev) { // anchorBinder
@@ -78,25 +70,31 @@ var opTheme = (function() {
         data.type = 'insert';
         History.pushState(data,'',url);
       },
+      parse: function(markup) {
+        var dom = $(markup),
+            bodyClass = $('body', dom).attr('class'),
+            content = $('.content', dom).html();
+        return {bodyClass: bodyClass, content: content};
+      },
       render: function(result) {
-        // this is only functional for the gallery and modal
-        /*if(location.pathname === pathname)
-          $('#modal-photo-detail').modal('hide');
-        */
-        if(result.type === 'replace' || result.type === 'insert') {
+        if(result.type === 'replace') {
+          // for the moment replace is only when exiting the photo viewing modal
+          $('.modal').modal('hide');
           return;
         }
 
         if(result.content === undefined) {
-          window.location.reload();
+          //window.location.reload();
+          //$('.modal').modal('hide');
         } else {
-          $('body').attr('class', result.bodyClass);
-          $('.content').fadeTo('fast', .25, function() { $(this).html(result.content).fadeTo('fast', 1); });
+          //$('body').attr('class', result.bodyClass);
+          var sel = (typeof(result.bodyClass) === 'undefined' || result.bodyClass === 'photo-details') ? '#modal-photo-detail' : '.content';
+          $(sel).fadeTo('fast', .25, function() { $(this).html(result.content).fadeTo('fast', 1); });
         }
       },
       store: function() {
         var response = arguments[0] || {},
-            data = parse(response);
+            data = pushstate.parse(response);
         data.type = 'store';
         History.pushState(data,'',pushstate.url);
       }
@@ -308,6 +306,7 @@ var opTheme = (function() {
         el.slideUp('fast', function() { $(this).remove(); });
       },
       modalUnload: function(ev) {
+        $('#modal-photo-detail').html('');
         pushstate.replace(pathname);
       },
       photoDelete: function(ev) {
@@ -364,11 +363,11 @@ var opTheme = (function() {
             urlAjax += '&modal=true';
 
           photoContainer.fadeTo('fast', .25, function() {
-            modal.load(urlAjax + ' .photo-view', function() {
+            modal.load(urlAjax + ' .photo-view', function(response) {
               photoContainer.fadeTo('fast', 1, function() {
                 modal.scrollTo(this);
               });
-              pushstate.replace(url);
+              pushstate.insert(url, pushstate.parse(response));
             });
           });
         }
@@ -386,9 +385,15 @@ var opTheme = (function() {
           urlAjax += '?modal=true';
         else
           urlAjax += '&modal=true';
-        modalEl.load(urlAjax + ' .photo-view').modal().on('hidden', opTheme.callback.modalUnload);
-        pushstate.replace(url);
+        // we call update the path without storing it
+        // the callback from load() stores the response for navigation
+        //pushstate.replace(url);
+        location.hash=url;
+        modalEl.load(urlAjax + ' .photo-view', opTheme.callback.photoViewModalCb).modal().on('hidden', opTheme.callback.modalUnload);
         return false;
+      },
+      photoViewModalCb: function(response) {
+        pushstate.insert(location.hash, pushstate.parse(response));
       },
       photoUpdate: function() {
         var form = $("#photo-edit-form"),
