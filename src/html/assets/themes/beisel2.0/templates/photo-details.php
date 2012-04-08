@@ -1,4 +1,4 @@
-    <div class="subnav">
+    <div class="subnav photodetail-nav">
       <ul class="nav nav-pills">
         <li><a href="#"><i class="icon-heart icon-large"></i> Mark as favorite</a></li>
         <li><a href="#"><i class="icon-comment icon-large"></i> Leave a comment</a></li>

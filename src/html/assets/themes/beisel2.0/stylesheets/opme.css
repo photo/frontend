@@ -4140,6 +4140,18 @@ body.tags div.tags .tag-list {
 	*zoom:1;
 	margin:0 -20px;
 }
+.photodetail-nav {
+  display:none;
+}
+.photo-details .photodetail-nav {
+  display:block;
+}
+.photodetail.modal-header {
+  display:none;
+}
+.photo .photodetail.modal-header {
+  display:block;
+}
 .photodetail {
 	min-height:350px;
 	margin-bottom:20px;

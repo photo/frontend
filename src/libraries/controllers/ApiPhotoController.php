@@ -268,54 +268,23 @@ class ApiPhotoController extends ApiBaseController
     getAuthentication()->requireCrumb();
     $httpObj = new Http;
     $attributes = $_REQUEST;
+
+    // this determines where to get the photo from and populates $localFile and $name
+    extract($this->parsePhotoFromRequest());
+
     if(isset($attributes['__route__']))
       unset($attributes['__route__']);
-
+    if(isset($attributes['photo']))
+      unset($attributes['photo']);
+    if(isset($attributes['crumb']))
+      unset($attributes['crumb']);
     if(isset($attributes['returnSizes']))
     {
       $returnSizes = $attributes['returnSizes'];
       unset($attributes['returnSizes']);
     }
-    if(isset($attributes['crumb']))
-    {
-      unset($attributes['crumb']);
-    }
 
     $photoId = false;
-    // TODO call API
-    if(isset($_FILES) && isset($_FILES['photo']))
-    {
-      $localFile = $_FILES['photo']['tmp_name'];
-      $name = $_FILES['photo']['name'];
-    }
-    elseif(isset($_POST['photo']))
-    {
-      // if a filename is passed in we use it else it's the random temp name
-      $localFile = tempnam($this->config->paths->temp, 'opme');
-      if(isset($_POST['filename']))
-        $name = $_POST['filename'];
-      else
-        $name = basename($localFile).'.jpg';
-
-      // if we have a path to a photo we download it
-      // else we base64_decode it
-      if(preg_match('#https?://#', $_POST['photo']))
-      {
-        unset($attributes['photo']);
-        $fp = fopen($localFile, 'w');
-        $ch = curl_init($_POST['photo']);
-        curl_setopt($ch, CURLOPT_FILE, $fp);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        fclose($fp);
-      }
-      else
-      {
-        unset($attributes['photo']);
-        file_put_contents($localFile, base64_decode($_POST['photo']));
-      }
-    }
 
     $attributes['hash'] = sha1_file($localFile);
     // set default to config and override with parameter
@@ -380,6 +349,42 @@ class ApiPhotoController extends ApiBaseController
     }
 
     return $this->error('File upload failure', false);
+  }
+
+  /**
+    * Replace the binary image file and the associated hash
+    * This method does not take any additional parameters
+    *   call the update API to update meta data
+    *
+    * @param string $id ID of the photo to be updated.
+    * @return string Standard JSON envelope
+    */
+  public function replace($id)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+
+    $attributes = $_GET;
+    // this determines where to get the photo from and populates $localFile and $name
+    extract($this->parsePhotoFromRequest());
+
+    $hash = sha1_file($localFile);
+    $allowDuplicate = $this->config->site->allowDuplicate;
+    if(isset($attributes['allowDuplicate']))
+      $allowDuplicate = $attributes['allowDuplicate'];
+    if($allowDuplicate == '0')
+    {
+      $hashResp = $this->api->invoke("/{$this->apiVersion}/photos/list.json", EpiRoute::httpGet, array('_GET' => array('hash' => $hash)));
+      if($hashResp['result'][0]['totalRows'] > 0)
+        return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates do not pass in allowDuplicate=1', false);
+    }
+
+    $status = $this->photo->replace($id, $localFile, $name);
+    if(!$status)
+      return $this->error('Could not complete the replacement of the photo', false);
+
+    $photoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+    return $this->success('yes', $photoResp['result']);
   }
 
   /**
@@ -666,5 +671,44 @@ class ApiPhotoController extends ApiBaseController
       }
     }
     return $photo;
+  }
+
+  private function parsePhotoFromRequest()
+  {
+    $name = '';
+    if(isset($_FILES) && isset($_FILES['photo']))
+    {
+      $localFile = $_FILES['photo']['tmp_name'];
+      $name = $_FILES['photo']['name'];
+    }
+    elseif(isset($_POST['photo']))
+    {
+      // if a filename is passed in we use it else it's the random temp name
+      $localFile = tempnam($this->config->paths->temp, 'opme');
+      $name = basename($localFile).'.jpg';
+
+      // if we have a path to a photo we download it
+      // else we base64_decode it
+      if(preg_match('#https?://#', $_POST['photo']))
+      {
+        $fp = fopen($localFile, 'w');
+        $ch = curl_init($_POST['photo']);
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        fclose($fp);
+      }
+      else
+      {
+        file_put_contents($localFile, base64_decode($_POST['photo']));
+      }
+    }
+
+    if(isset($_POST['filename']))
+      $name = $_POST['filename'];
+
+    return array('localFile' => $localFile, 'name' => $name);
+
   }
 }
