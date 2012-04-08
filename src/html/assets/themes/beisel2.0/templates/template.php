@@ -155,7 +155,7 @@
             '<?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'n'); ?>'
+                                                  getUrl(AssetPipeline::js, 'o'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 

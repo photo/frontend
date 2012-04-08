@@ -1,4 +1,4 @@
-<?php if(!empty($activities) && $photos[0]['totalRows'] > 0) { ?>
+<?php if($photos[0]['totalRows'] > 0) { ?>
   <?php if(!empty($activities)) { ?>
     <!-- activity feed -->
     <div class="row activityfeed-startpage">
