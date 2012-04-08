@@ -455,36 +455,69 @@ class Photo extends BaseModel
 
   public function replace($id, $localFile, $name)
   {
+    $attributes = array();
     $resp = $this->createAndStoreBaseAndOriginal($name, $localFile);
-    if(!$resp['status'])
+    $paths = $resp['paths'];
+    if($resp['status'])
     {
-      $this->logger->warn('Could not upload files for replacement');
-      return false;
+      $this->logger->info("Photo ({$id}) successfully stored on the file system (replacement)");
+      $exif = $this->readExif($localFile);
+      $iptc = $this->readIptc($localFile);
+      $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
+      $attributes = $paths;
+      foreach($iptc as $iptckey => $iptcval)
+      {
+        if(empty($iptcval))
+          continue;
+
+        if($iptckey == 'tags')
+        {
+          $iptcval = implode(',', $iptcval);
+        }
+        $attributes[$iptckey] = $iptcval;
+      }
+      foreach($defaults as $default)
+      {
+        if(!isset($attributes[$default]))
+          $attributes[$default] = null;
+      }
+      $attributes['hash'] = sha1_file($localFile);
+      $attributes['size'] = intval(filesize($localFile)/1024);
+
+      $exifParams = array('width' => 'width', 'height' => 'height', 'exifCameraMake' => 'exifCameraMake', 'exifCameraModel' => 'exifCameraModel', 
+        'FNumber' => 'exifFNumber', 'exposureTime' => 'exifExposureTime', 'ISO' => 'exifISOSpeed', 'focalLength' => 'exifFocalLength', 'latitude' => 'latitude', 'longitude' => 'longitude');
+      foreach($exifParams as $paramName => $mapName)
+      {
+        if(isset($exif[$paramName]))
+          $attributes[$mapName] = $exif[$paramName];
+      }
+
+      $exiftran = $this->config->modules->exiftran;
+      if(is_executable($exiftran))
+        exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
+      
+      $photo = $this->db->getPhoto($id);
+
+      // purge photoVersions
+      $delVersionsResp = $this->db->deletePhotoVersions($photo);
+      if(!$delVersionsResp)
+        return false;
+      // delete all photos
+      $delFilesResp = $this->fs->deletePhoto($photo);
+      if(!$delFilesResp)
+        return false;
+      // update photo paths / hash
+      $updPathsResp = $this->db->postPhoto($id, $attributes);
+
+      unlink($localFile);
+      unlink($resp['localFileCopy']);
+
+      if($updPathsResp)
+        return true;
     }
-    $pathsToUpdate = $resp['paths'];
-    $pathsToUpdae['hash'] = sha1_file($localFile);
 
-
-    $exiftran = $this->config->modules->exiftran;
-    if(is_executable($exiftran))
-      exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
-    
-    $photo = $this->db->getPhoto($id);
-
-    // purge photoVersions
-    $delVersionsResp = $this->db->deletePhotoVersions($photo);
-    if(!$delVersionsResp)
-      return false;
-    // delete all photos
-    $delFilesResp = $this->fs->deletePhoto($photo);
-    if(!$delFilesResp)
-      return false;
-    // update photo paths / hash
-    $updPathsResp = $this->db->postPhoto($id, $pathsToUpdate);
-    if(!$updPathsResp)
-      return false;
-    
-    return true;
+    $this->logger->warn('Could not upload files for replacement');
+    return false;
   }
 
   /**
@@ -504,10 +537,11 @@ class Photo extends BaseModel
       return false;
     }
     $tagObj = new Tag;
-    $attributes = $this->whitelistParams($attributes);
     $filenameOriginal = $name;
 
+    $attributes = $this->whitelistParams($attributes);
     $resp = $this->createAndStoreBaseAndOriginal($name, $localFile);
+    $paths = $resp['paths'];
     if($resp['status'])
     {
       $this->logger->info("Photo ({$id}) successfully stored on the file system");
@@ -516,6 +550,9 @@ class Photo extends BaseModel
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
       foreach($iptc as $iptckey => $iptcval)
       {
+        if(empty($iptcval))
+          continue;
+
         if($iptckey == 'tags')
         {
           $iptcval = implode(',', $iptcval);
@@ -585,7 +622,7 @@ class Photo extends BaseModel
       );
       $stored = $this->db->putPhoto($id, $attributes);
       unlink($localFile);
-      unlink($localFileCopy);
+      unlink($resp['localFileCopy']);
       if($stored)
       {
         if(isset($attributes['tags']) && !empty($attributes['tags']))
@@ -729,7 +766,7 @@ class Photo extends BaseModel
       )
     );
 
-    return array('status' => $uploaded, 'paths' => $paths);;
+    return array('status' => $uploaded, 'paths' => $paths, 'localFileCopy' => $localFileCopy);;
   }
 
 
