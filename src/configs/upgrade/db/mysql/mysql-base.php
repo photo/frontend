@@ -113,13 +113,8 @@ SQL;
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}elementGroup` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-<<<<<<< HEAD
-    `owner` varchar(255) NOT NULL,
-    `type` enum('photo','album') NOT NULL,
-=======
     `owner` varchar(127) NOT NULL,
-    `type` enum('photo') NOT NULL,
->>>>>>> 14baa284f6934fea735a1b010c156d5fbf798060
+    `type` enum('photo','album') NOT NULL,
     `element` varchar(6) NOT NULL,
     `group` varchar(6) NOT NULL,
     PRIMARY KEY (`id`),
