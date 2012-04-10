@@ -4,7 +4,7 @@ OpenPhoto / Installation for Ubuntu + Apache
 
 ## OS: Linux Ubuntu Server 10.04+
 
-This guide instructs you on how to install OpenPhoto on an Ubuntu server.
+This guide instructs you on how to install OpenPhoto on an Ubuntu Server.
 
 ----------------------------------------
 
