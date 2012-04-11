@@ -1585,6 +1585,8 @@ class DatabaseMySql implements DatabaseInterface
           $exif[$key] = $value;
           break;
         case 'extra':
+        case 'extraDropboxSource':
+          $extra[$key] = $value;
           break;
         default:
           // when lat/long is empty set value to null else it is stored as 0. Gh-313

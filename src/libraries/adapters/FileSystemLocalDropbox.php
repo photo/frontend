@@ -60,12 +60,23 @@ class FileSystemLocalDropbox extends FileSystemLocal implements FileSystemInterf
 
   public function putPhoto($localFile, $remoteFile)
   {
-    return $this->dropbox->putPhoto($localFile, $remoteFile) && parent::putPhoto($localFile, $remoteFile);
+    $parentStatus = true;
+    if(strpos($remoteFile, '/original/') === false)
+      $parentStatus = parent::putPhoto($localFile, $remoteFile);
+
+    return $this->dropbox->putPhoto($localFile, $remoteFile) && $parentStatus;
   }
 
   public function putPhotos($files)
   {
-    return $this->dropbox->putPhotos($files) && parent::putPhotos($files);
+    $parentFiles = array();
+    foreach($files as $file)
+    {
+      list($local, $remote) = each($file);
+      if(strpos($remote, '/original/') === false)
+        $parentFiles[] = $file;
+    }
+    return $this->dropbox->putPhotos($files) && parent::putPhotos($parentFiles);
   }
 
   /**
