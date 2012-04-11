@@ -16,7 +16,7 @@
   <br clear="all">
   <?php $this->theme->display('partials/pagination.php', array_merge($pages, array('labelPosition' => 'bottom'))); ?>
 <?php } else { ?>
-  <?php if($this->user-$this->user->er()) { ?>
+  <?php if($this->user->isOwner()) { ?>
     <h1>There don't seem to be any photos. You should <a href="<?php $this->url->photosUpload(); ?>">upload</a> some.</h1>
     <p>
       If you're searching for photos then there aren't any which match your query.
