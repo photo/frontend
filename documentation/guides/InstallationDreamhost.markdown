@@ -26,11 +26,13 @@ Variables:
 1. Create directories
 
 		mkdir OpenPhotoRoot/src/html/assets/cache
-		chmod 775 $_
+		chmod 775 OpenPhotoRoot/src/html/assets/cache
+		
 		mkdir OpenPhotoRoot/src/html/photos
-		chmod 775 $_
+		chmod 775 OpenPhotoRoot/src/html/photos
+		
 		mkdir OpenPhotoRoot/src/userdata
-		chmod 775 $_
+		chmod 775 OpenPhotoRoot/src/userdata_
 	
 1. Configure the subdomain or domain.
 Go to the [Dreamhost control panel for managing domains](https://panel.dreamhost.com/index.cgi?tree=domain.manage)
