@@ -106,6 +106,9 @@ class FileSystemDropboxBase
 
   public function putPhoto($localFile, $remoteFile)
   {
+    if(isset($_POST['uploadSource']) && $_POST['uploadSource'] === 'dropbox')
+      return true;
+
     if(!file_exists($localFile))
     {
       getLogger()->warn("The photo {$localFile} does not exist so putPhoto failed");
@@ -125,6 +128,9 @@ class FileSystemDropboxBase
 
   public function putPhotos($files)
   {
+    if(isset($_POST['uploadSource']) && $_POST['uploadSource'] === 'dropbox')
+      return true;
+
     foreach($files as $file)
     {
       list($localFile, $remoteFile) = each($file);
