@@ -97,7 +97,7 @@
         <?php if($photo['description'] != '') { ?>
           <p><?php $this->utility->safe($photo['description']); ?></p>
         <?php } ?>
-        <p>This photo was taken <?php $this->utility->timeAsText($photo['dateTaken']); ?> ago</p>
+        <p>This photo was taken <?php $this->utility->timeAsText($photo['dateTaken']); ?></p>
         <div class="social">
           <div class="facebook">
             <?php $this->plugin->invoke('renderPhotoDetail', $photo); ?>
