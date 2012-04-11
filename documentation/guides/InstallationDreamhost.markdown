@@ -40,7 +40,7 @@ Go to the [Dreamhost control panel for managing domains](https://panel.dreamhost
 	- Select the *Fully Hosted* portion of the configuration panel.
 	- *Do you want the www in your URL?* Select "Leave it alone"
 	- *Web directory:* Set to *OpenPhotoRoot*/src/html
-	- *PHP mode:* Select the latest version of PHP (use FastCGI configuration although this shouldn't matter)
+	- *PHP mode:* Select the latest version of PHP (use FastCGI configuration)
 
 1. Go to the [Dreamhost control panel for managing databases](https://panel.dreamhost.com/index.cgi?tree=goodies.mysql)
 and create a new database and a new user for the database.  Remember the hostname (the default should be fine), database name, user name, and password, since you'll need this information during the setup.
@@ -67,9 +67,9 @@ Double check all the parameters.  Open the Dreamhost control panel for databases
 	
 ### Launching your OpenPhoto site
 
-Now you're ready to launch your OpenPhoto site. Point your browser to your host and you'll be taken to a setup screen. You'll need your account credentials to continue.
+Now you're ready to launch your OpenPhoto site. Point your browser to your host and you'll be taken to a setup screen.
 
-Once you complete the 3 steps your site will be up and running.
+Once you complete the three steps your site will be up and running.
 
 **ENJOY!**
 
