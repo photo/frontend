@@ -107,7 +107,7 @@ $status = $status && mysql_2_0_1($sql);
 $sql = <<<SQL
   UPDATE `{$this->mySqlTablePrefix}admin` SET `value`=:version WHERE `key`=:key
 SQL;
-$status = $status && mysql_2_0_1($sql, array(':key' => 'version', ':version' => '1.3.3'));
+$status = $status && mysql_2_0_1($sql, array(':key' => 'version', ':version' => '2.0.1'));
 
 function mysql_2_0_1($sql, $params = array())
 {
