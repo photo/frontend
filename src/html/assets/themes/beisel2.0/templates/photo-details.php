@@ -119,8 +119,8 @@
         </div>
         <?php if(isset($photo['latitude']) && !empty($photo['latitude'])) { ?>
           <div class="map">
-            <i class="icon-map-marker"></i>	<?php $this->utility->safe($photo['latitude']); ?>, <?php $this->utility->safe($photo['longitude']); ?>
-            <img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 5, '250x100'); ?>">
+            <a href="<?php $this->utility->mapLinkUrl($photo['latitude'], $photo['longitude'], 5); ?>"><i class="icon-map-marker"></i>	<?php $this->utility->safe($photo['latitude']); ?>, <?php $this->utility->safe($photo['longitude']); ?>
+            <img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 5, '250x100'); ?>"></a>
           </div>
         <?php } ?>
         <div class="iconbox">

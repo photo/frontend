@@ -304,6 +304,18 @@ class Utility
     return $this->returnValue(htmlspecialchars($string), $write);
   }
 
+  public function mapLinkUrl($latitude, $longitude, $zoom, $write = true)
+  {
+    $service = getConfig()->get('maps')->service;
+    switch($service) {
+    case "osm":
+      return $this->returnValue("http://www.openstreetmap.org/?lat={$latitude}&lon={$longitude}&zoom={$zoom}&layers=M", $write);
+    case "google":
+    default:
+      return $this->returnValue("http://maps.google.com/maps?q={$latitude},{$longitude}&zoom={$zoom}", $write);
+    }
+  }
+
   public function staticMapUrl($latitude, $longitude, $zoom, $size, $type = 'roadmap', $write = true)
   {
     $service = getConfig()->get('maps')->service;
