@@ -322,10 +322,7 @@ class Utility
     //http://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=14&size=512x512&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Ccolor:red%7Clabel:C%7C40.718217,-73.998284&sensor=false
     switch ($service) {
     case "osm":
-        $dimensions = explode("x", $size);
-        $width      = $dimensions[0];
-        $height     = $dimensions[1];
-        return $this->returnValue("http://dev.openstreetmap.org/~pafciu17/?module=map&lat={$latitude}&lon={$longitude}&zoom={$zoom}&width={$width}&height={$height}&points={$longitude},{$latitude}&pointImagePattern=redA", $write);
+        return $this->returnValue("http://staticmap.openstreetmap.de/staticmap.php?center={$latitude},{$longitude}&zoom={$zoom}&size={$size}&markers={$latitude},{$longitude},ol-marker", $write);
     case "google":
     default:
         return $this->returnValue("http://maps.googleapis.com/maps/api/staticmap?center={$latitude},{$longitude}&zoom={$zoom}&size={$size}&maptype={$type}&markers=color:gray%7C{$latitude},{$longitude}&sensor=false", $write);
