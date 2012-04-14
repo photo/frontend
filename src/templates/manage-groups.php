@@ -1,6 +1,21 @@
 <div class="manage groups">
 
   <?php echo $navigation; ?>
+  
+  <div class="row hero-unit blurb">
+    <h2>What are groups?</h2>
+    <p>
+      Groups allow you to explicitly share private photos with people.
+      <br>
+      For example, say you have a photo marked as private but want <em>joe@example.com</em> see it.
+      <ol>
+        <li>Make sure <em>joe@example.com</em> belongs to a group</li>
+        <li>Mark the photo as private</li>
+        <li>Add the photo to a group <em>joe@example.com</em> is a member of</li>
+      </ol>
+      When Joe signs in he will be able to see the photo but others won't.
+    </p>
+  </div>
 
   <form class="well" action="/group/create">
     <h3>Create a new group</h3>

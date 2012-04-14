@@ -226,8 +226,12 @@ var opTheme = (function() {
       groupEmailAdd: function(ev) {
         ev.preventDefault();
         var el = $(ev.target).prev(),
-            tgt = $('ul.group-emails-add-list');
-        $('<li><span class="group-email-queue">'+el.val()+'</span> <a href="#" class="group-email-remove-click"><i class="group-email-remove-click icon-minus-sign"></i></a></li>').prependTo(tgt);
+            tgt = $('ul.group-emails-add-list'),
+            val = el.val();
+        if(val === '')
+          return;
+
+        $('<li><span class="group-email-queue">'+val+'</span> <a href="#" class="group-email-remove-click"><i class="group-email-remove-click icon-minus-sign"></i></a></li>').prependTo(tgt);
         el.val('');
       },
       groupEmailRemove: function(ev) {
@@ -243,6 +247,7 @@ var opTheme = (function() {
             isCreate = (url.search('create') > -1),
             emails,
             params = {name: $('input[name="name"]', form).val()};
+        $('.group-email-add-click', form).trigger('click');
         emails = [];
         $('span.group-email-queue', form).each(function(i, el) {
           emails.push($(el).html());

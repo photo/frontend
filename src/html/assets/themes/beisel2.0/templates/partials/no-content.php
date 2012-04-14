@@ -1,4 +1,4 @@
-<div class="row hero-unit empty middle">
+<div class="row hero-unit blurb middle">
   <?php if($type == '404') { // 404 error ?>
     <strong class="bigtext">:'(</strong><br/>
     <h1>We could not find the page you were looking for.</h1>
