@@ -3,8 +3,8 @@
         <li><a href="#"><i class="icon-heart icon-large"></i> Mark as favorite</a></li>
         <li><a href="#"><i class="icon-comment icon-large"></i> Leave a comment</a></li>
         <!-- <li><a href="#"><i class="icon-envelope icon-large"></i> Share this photo</a></li> -->
-        <li class="last"><a href="">Next <i class="icon-arrow-right icon-large"></i></a></li>
-        <li class="last"><a href=""><i class="icon-arrow-left icon-large"></i> Previous</a></li>
+        <li class="last"><a href="<?php $this->url->photoView($photo['next']['id'], $options); ?>">Next <i class="icon-arrow-right icon-large"></i></a></li>
+        <li class="last"><a href="<?php $this->url->photoView($photo['previous']['id'], $options); ?>"><i class="icon-arrow-left icon-large"></i> Previous</a></li>
       </ul>
     </div>
   

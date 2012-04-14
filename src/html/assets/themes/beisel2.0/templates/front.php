@@ -6,10 +6,12 @@
         <div id="feedCarousel" class="carousel feed">
           <div class="span3">
             <h2>Latest activity</h2>
-            <div class="carousel-control feed">
-              <a class="left btn" href="#feedCarousel" data-slide="prev"><i class="icon-chevron-left icon-large"></i></a>
-              <a class="right btn" href="#feedCarousel" data-slide="next"><i class="icon-chevron-right icon-large"></i></a>
-            </div>
+            <?php if(count($activities) > 1) { ?>
+              <div class="carousel-control feed">
+                <a class="left btn" href="#feedCarousel" data-slide="prev"><i class="icon-chevron-left icon-large"></i></a>
+                <a class="right btn" href="#feedCarousel" data-slide="next"><i class="icon-chevron-right icon-large"></i></a>
+              </div>
+            <?php } ?>
           </div>
           <div class="carousel-inner span9">
             <?php $i = 0; ?>
@@ -79,11 +81,13 @@
           <?php if($photos[0]['totalRows'] < 12 && $i >= 6) break; ?>
         <?php } ?>
       </div>
-      <div class="carousel-control">
-        <a class="right btn" href="#homeCarousel" data-slide="next"><i class="icon-chevron-right icon-large"></i></a>
-        <a class="pause btn" href="#homeCarousel" data-slide="pause"><i class="icon-pause icon-large"></i></a>
-        <a class="left btn" href="#homeCarousel" data-slide="prev"><i class="icon-chevron-left icon-large"></i></a>
-      </div>
+      <?php if(count($photos) > 1) { ?>
+        <div class="carousel-control">
+          <a class="right btn" href="#homeCarousel" data-slide="next"><i class="icon-chevron-right icon-large"></i></a>
+          <a class="pause btn" href="#homeCarousel" data-slide="pause"><i class="icon-pause icon-large"></i></a>
+          <a class="left btn" href="#homeCarousel" data-slide="prev"><i class="icon-chevron-left icon-large"></i></a>
+        </div>
+      <?php } ?>
     </div>
 
     <?php if($photos[0]['totalRows'] > 0) { ?>
