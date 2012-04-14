@@ -4268,7 +4268,10 @@ body.tags div.tags .tag-list {
 .morephotos ul li .btn {
 	height:70px;
 }
-
+.blurb {
+	margin-bottom:20px;
+	padding:0 20px 20px 20px;
+}
 .empty {
 	min-height:350px;
 	margin-bottom:20px;
