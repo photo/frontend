@@ -24,10 +24,6 @@
             <?php } ?>
             <ul class="dropdown-menu">
               <?php if($this->user->isLoggedIn()) { ?>
-                <?php if($this->user->isOwner()) { ?>
-                  <li><a href="<?php $this->url->userSettings(); ?>"><i class="icon-cog icon-large"></i> Preferences</a></li>
-                  <li class="divider"></li>
-                <?php } ?>
                 <li><a href="<?php $this->url->userLogout(); ?>"><i class="icon-signout icon-large"></i> Logout</a></li>
               <?php } ?>
             </ul>
