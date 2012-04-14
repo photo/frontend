@@ -1,7 +1,7 @@
     <div class="subnav photodetail-nav">
       <ul class="nav nav-pills">
         <li><a href="#"><i class="icon-heart icon-large"></i> Mark as favorite</a></li>
-        <li><a href="#"><i class="icon-comment icon-large"></i> Leave a comment</a></li>
+        <li><a href="#comment-form"><i class="icon-comment icon-large"></i> Leave a comment</a></li>
         <!-- <li><a href="#"><i class="icon-envelope icon-large"></i> Share this photo</a></li> -->
         <li class="last"><a href="<?php $this->url->photoView($photo['next']['id'], $options); ?>">Next <i class="icon-arrow-right icon-large"></i></a></li>
         <li class="last"><a href="<?php $this->url->photoView($photo['previous']['id'], $options); ?>"><i class="icon-arrow-left icon-large"></i> Previous</a></li>
@@ -26,6 +26,7 @@
           <div class="private" title="private"><i class="icon-lock icon-large"></i></div>
           <img class="photo" style="width:<?php $this->utility->safe($photo['photo'.$this->config->photoSizes->detail][1]); ?>px; height:<?php $this->utility->safe($photo['photo'.$this->config->photoSizes->detail][2]); ?>px;" src="<?php $this->url->photoUrl($photo, $this->config->photoSizes->detail); ?>" alt="<?php $this->utility->safe($photo['title']); ?>">
         </div>
+        <a name="comment-form"></a>
         <form class="form-horizontal" method="post" action="<?php $this->url->actionCreate($photo['id'], 'photo'); ?>">
           <?php if(count($photo['actions']) > 0) { ?>
             <?php foreach($photo['actions'] as $action) { ?>
