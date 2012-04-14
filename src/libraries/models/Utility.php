@@ -312,7 +312,7 @@ class Utility
       return $this->returnValue("http://www.openstreetmap.org/?lat={$latitude}&lon={$longitude}&zoom={$zoom}&layers=M", $write);
     case "google":
     default:
-      return $this->returnValue("http://maps.google.com/maps?q={$latitude},{$longitude}&zoom={$zoom}", $write);
+      return $this->returnValue("http://maps.google.com/maps?q={$latitude},{$longitude}&z={$zoom}", $write);
     }
   }
 
