@@ -357,7 +357,8 @@ var opTheme = (function() {
             url = el.attr('href'),
             urlAjax = url;
         if($('body').hasClass('photo-details')) {
-          pushstate.get(url);
+          //pushstate.get(url);
+          location.href = url;
         } else {
           var modal = $('#modal-photo-detail'),
           photoContainer = $('#modal-photo-detail .photo-view');
