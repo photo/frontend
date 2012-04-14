@@ -161,6 +161,7 @@ class PhotoController extends BaseController
       $this->route->run('/error/403');
       return;
     }
+    $this->theme->setTheme(); // defaults
     $crumb = $this->session->get('crumb');
     $template = sprintf('%s/upload.php', $this->config->paths->templates);
     $groupsResp = $this->api->invoke('/groups/list.json');
