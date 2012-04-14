@@ -5,7 +5,7 @@
   <div class="row hero-unit blurb">
     <h2>What are groups?</h2>
     <p>
-      Groups allow you to explicitly share private photos with people.
+      Groups allow you to explicitly share private photos with others.
       <br>
       For example, say you have a photo marked as private but want <em>joe@example.com</em> see it.
       <ol>
