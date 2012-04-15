@@ -115,7 +115,8 @@
           </div>
         <?php } ?>
         <div class="iconbox">
-          <a href="" class="invert"><i class="icon-comment"></i> <?php echo count($photo['actions']); ?> comments &amp; favorites</a>
+          <a href="#" class="invert"><i class="icon-comment"></i> <?php echo count($photo['actions']); ?> comments &amp; favorites</a>
+          <a href="#" class="invert"><i class="icon-eye-open"></i> <?php $this->utility->licenseName($photo['license']); ?></a>
         </div>
         <?php if(count($photo['tags']) > 0) { ?>
           <div class="tags">
