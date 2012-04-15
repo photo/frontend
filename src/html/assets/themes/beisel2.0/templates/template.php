@@ -30,7 +30,7 @@
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'l'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'm'); ?>">
     <?php } ?>
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
