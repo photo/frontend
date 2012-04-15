@@ -74,7 +74,6 @@
       OP.Util.init(jQuery, {
         eventMap: {
           'click': {
-              'action-box-click':'click:action-box',
               'action-delete-click':'click:action-delete',
               'action-jump-click':'click:action-jump',
               'action-post-click':'click:action-post',
@@ -155,7 +154,7 @@
             '<?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 's'); ?>'
+                                                  getUrl(AssetPipeline::js, 't'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
