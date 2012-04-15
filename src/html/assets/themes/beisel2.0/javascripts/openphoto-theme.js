@@ -104,22 +104,36 @@ var opTheme = (function() {
   return {
     callback: {
       actionDelete: function(ev) {
-      
         ev.preventDefault();
-      
         var el = $(ev.target),
           	url = el.attr('href')+'.json',
             id = el.attr('data-id');
-      
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 204)
             $(".action-container-"+id).hide('medium', function(){ $(this).remove(); });
           else
             opTheme.message.error('Could not delete the photo.');
         });
-        
         return false;
-        
+      },
+      actionPost: function(ev) {
+        ev.preventDefault();
+        var form = $('#favorite-form'),
+            url = form.attr('action')+'.json',
+            params = form.serialize();
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: params,
+            dataType: 'json',
+            success: function(data) {
+              if(data.code === 201)
+                location.href = location.pathname + '?c=favorited';
+              else
+                location.href = location.pathname + '?e=unknown';
+            }
+          }
+        );
       },
       batchAdd: function(photo) {
         var el = $(".pin.photo-"+photo.id);
@@ -587,6 +601,7 @@ var opTheme = (function() {
       attach: function() {
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
+        OP.Util.on('click:action-post', opTheme.callback.actionPost);
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
         OP.Util.on('click:group-checkbox', opTheme.callback.groupCheckbox);

@@ -1,6 +1,6 @@
     <div class="subnav photodetail-nav">
       <ul class="nav nav-pills">
-        <li><a href="#"><i class="icon-heart icon-large"></i> Mark as favorite</a></li>
+        <li><a href="#" class="action-post-click"><i class="icon-heart icon-large"></i> Mark as favorite</a></li>
         <li><a href="#comment-form"><i class="icon-comment icon-large"></i> Leave a comment</a></li>
         <!-- <li><a href="#"><i class="icon-envelope icon-large"></i> Share this photo</a></li> -->
         <li class="last"><a href="<?php $this->url->photoView($photo['next']['id'], $options); ?>">Next <i class="icon-arrow-right icon-large"></i></a></li>
@@ -68,6 +68,11 @@
                 <?php } ?>
               </div>
             </fieldset>
+          </form>
+          <form method="post" action="<?php $this->url->actionCreate($photo['id'], 'photo'); ?>" id="favorite-form">
+            <input type="hidden" name="type" value="favorite">
+            <input type="hidden" name="targetUrl" value="<?php $this->utility->safe(sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])); ?>">
+            <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
           </form>
         </div>
       </div>
