@@ -74,7 +74,7 @@
           <strong>Discover more photos:</strong>
           <ul>
             <?php if(!empty($photo['previous'])) { ?>
-              <li class="buttonmp"><form action="<?php $this->url->photoView($photo['previous']['id'], $options); ?>"><button type="submit" class="btn btn-primary"><i class="icon-arrow-left"></i></button></form></li>
+              <li class="buttonmp"><a href="<?php $this->url->photoView($photo['previous']['id'], $options); ?>"><button type="button" class="btn btn-primary photo-view-click previous-photo"><i class="icon-arrow-left"></i></button></a></li>
               <li class="span1 mspacer"><a href="<?php $this->url->photoView($photo['previous']['id'], $options); ?>"><img src="<?php $this->url->photoUrl($photo['previous'], $this->config->photoSizes->nextPrevious); ?>" alt="Previous photo: <?php $this->utility->safe($photo['previous']['title']); ?>" class="photo-view-click previous-photo"/></a></li>
             <?php } else { ?>
               <li class="buttonmp"><button type="button" class="btn disabled"><i class="icon-arrow-left"></i></button></li>
@@ -82,7 +82,7 @@
             <?php } ?>
             <?php if(!empty($photo['next'])) { ?>
               <li class="span1"><a href="<?php $this->url->photoView($photo['next']['id'], $options); ?>"><img src="<?php $this->url->photoUrl($photo['next'], $this->config->photoSizes->nextPrevious); ?>" alt="Next photo: <?php $this->utility->safe($photo['previous']['title']); ?>" class="photo-view-click next-photo" /></a></li>
-              <li class="buttonmp"><form action="<?php $this->url->photoView($photo['next']['id'], $options); ?>"><button type="submit" class="btn btn-primary"><i class="icon-arrow-right"></i></button></form></li>
+              <li class="buttonmp"><a href="<?php $this->url->photoView($photo['next']['id'], $options); ?>"><button type="button" class="btn btn-primary photo-view-click next-photo"><i class="icon-arrow-right"></i></button></a></li>
             <?php } else { ?>
               <li class="span1">&nbsp;</li>
               <li class="buttonmp"><button type="button" class="btn disabled"><i class="icon-arrow-right"></i></button></li>
