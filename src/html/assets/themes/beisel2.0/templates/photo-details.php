@@ -28,46 +28,48 @@
           <?php } ?>
           <img class="photo" style="width:<?php $this->utility->safe($photo['photo'.$this->config->photoSizes->detail][1]); ?>px; height:<?php $this->utility->safe($photo['photo'.$this->config->photoSizes->detail][2]); ?>px;" src="<?php $this->url->photoUrl($photo, $this->config->photoSizes->detail); ?>" alt="<?php $this->utility->safe($photo['title']); ?>">
         </div>
-        <a name="comment-form"></a>
-        <form class="form-horizontal" method="post" action="<?php $this->url->actionCreate($photo['id'], 'photo'); ?>">
-          <?php if(count($photo['actions']) > 0) { ?>
-            <?php foreach($photo['actions'] as $action) { ?>
-              <div class="row">
-                <div class="span1">
-                  <img src="<?php $this->utility->safe($this->user->getAvatarFromEmail(70, $action['email'])); ?>" class="avatar">
+        <div class="comment-form">
+          <a name="comment-form"></a>
+          <form class="form-horizontal" method="post" action="<?php $this->url->actionCreate($photo['id'], 'photo'); ?>">
+            <?php if(count($photo['actions']) > 0) { ?>
+              <?php foreach($photo['actions'] as $action) { ?>
+                <div class="row">
+                  <div class="span1">
+                    <img src="<?php $this->utility->safe($this->user->getAvatarFromEmail(70, $action['email'])); ?>" class="avatar">
+                  </div>
+                  <div class="span8">
+                    <strong><?php $this->utility->getEmailHandle($action['email']); ?></strong> <em>(<?php $this->utility->safe($this->utility->dateLong($action['datePosted'])); ?>)</em><br/>
+                    <?php if($action['type'] == 'comment') { ?>
+                      <i class="icon-heart orange"></i> <?php $this->utility->safe($action['value']); ?>
+                    <?php } else { ?>
+                      <i class="icon-heart orange"></i> Marked this photo as a favorite.
+                    <?php } ?>
+                  </div>
                 </div>
-                <div class="span8">
-                  <strong><?php $this->utility->getEmailHandle($action['email']); ?></strong> <em>(<?php $this->utility->safe($this->utility->dateLong($action['datePosted'])); ?>)</em><br/>
-                  <?php if($action['type'] == 'comment') { ?>
-                    <i class="icon-heart orange"></i> <?php $this->utility->safe($action['value']); ?>
-                  <?php } else { ?>
-                    <i class="icon-heart orange"></i> Marked this photo as a favorite.
-                  <?php } ?>
-                </div>
-              </div>
-              <hr />
-            <?php } ?>
-          <?php } ?>
-          <fieldset>
-            <div class="control-group">
-              <label class="control-label" for="textarea">Your comment</label>
-              <div class="controls">
-                <textarea rows="6" class="input-xlarge" name="value" class="comment" <?php if(!$this->user->isLoggedIn()) { ?>disabled="true"<?php } ?> ></textarea>
-                <input type="hidden" name="type" value="comment">
-                <input type="hidden" name="targetUrl" value="<?php $this->utility->safe(sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])); ?>">
-                <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
-              </div>
-            </div>
-            <div class="form-actions">
-              <?php if($this->user->isLoggedIn()) { ?>
-                <button type="submit" class="btn btn-primary"><i class="icon-comment"></i> Leave a comment</button>
-                <!--<button type="submit" class="btn btn-secondary"><i class="icon-heart"></i> Mark as favorite</button>-->
-              <?php } else { ?>
-                <button type="button" class="btn btn-primary login-modal-click"><i class="icon-signin"></i> Sign in to comment</button>
+                <hr />
               <?php } ?>
-            </div>
-          </fieldset>
-        </form>
+            <?php } ?>
+            <fieldset>
+              <div class="control-group">
+                <label class="control-label" for="textarea">Your comment</label>
+                <div class="controls">
+                  <textarea rows="6" class="input-xlarge" name="value" class="comment" <?php if(!$this->user->isLoggedIn()) { ?>disabled="true"<?php } ?> ></textarea>
+                  <input type="hidden" name="type" value="comment">
+                  <input type="hidden" name="targetUrl" value="<?php $this->utility->safe(sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])); ?>">
+                  <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
+                </div>
+              </div>
+              <div class="form-actions">
+                <?php if($this->user->isLoggedIn()) { ?>
+                  <button type="submit" class="btn btn-primary"><i class="icon-comment"></i> Leave a comment</button>
+                  <!--<button type="submit" class="btn btn-secondary"><i class="icon-heart"></i> Mark as favorite</button>-->
+                <?php } else { ?>
+                  <button type="button" class="btn btn-primary login-modal-click"><i class="icon-signin"></i> Sign in to comment</button>
+                <?php } ?>
+              </div>
+            </fieldset>
+          </form>
+        </div>
       </div>
       <div class="span3">
         <div class="morephotos">

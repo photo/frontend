@@ -4223,6 +4223,10 @@ body.tags div.tags .tag-list {
 	left:10px;
 }
 
+body.photos .comment-form {
+  display:none;
+}
+
 .photodetail .camera {
 	margin:10px 10px 0 0;
 }
