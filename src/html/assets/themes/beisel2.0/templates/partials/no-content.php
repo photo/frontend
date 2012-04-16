@@ -25,7 +25,7 @@
       <p>Start by click the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
     <?php } ?>
   <?php } else { // user is logged in ?>
-    <?php if($type == 'upload') { // message to upload folders ?>
+    <?php if($this->user->isOwner() && $type == 'upload') { // message to upload photos ?>
       <br/>
       <strong class="bigtext"><i class="icon-upload icon-large"></i></strong><br/>
       <h1>You haven't uploaded any photos to OpenPhoto yet.</h1>
