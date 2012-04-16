@@ -9,7 +9,7 @@
 						<strong>Sign in using BrowserID:</strong><br />
             <img src="<?php $this->theme->asset('image', 'browserid-login.png'); ?>" class="login-click browserid pointer"/>
 					</div>
-          <?php if($this->plugin->isActive('FacebookConnect')) { ?>
+          <?php if($this->plugin->isActive('FacebookConnect') || $this->plugin->isActive('FacebookConnectHosted')) { ?>
             <div class="span6">
               <strong>Sign in using Facebook:</strong><br />
               <img src="<?php $this->theme->asset('image', 'facebook-login.png'); ?>" class="login-click facebook pointer"/>
