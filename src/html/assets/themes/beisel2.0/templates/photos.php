@@ -15,9 +15,8 @@
   <?php } ?>
 <?php } ?>
 
-
-<div class="row hero-unit empty gallery">
-  <?php if($photos[0]['totalRows'] > 0) { ?>
+<?php if($photos[0]['totalRows'] > 0) { ?>
+  <div class="row hero-unit empty gallery">
     <ul class="photo-grid js-hide">
       <?php foreach($photos as $photo) { ?>
         <li>
@@ -33,12 +32,14 @@
         </li>
       <?php } ?>
     </ul>
-  <?php } ?>
-  <div class="photo-grid-justify"></div>
-  <br clear="all">
-  <?php if($photos[0]['totalPages'] > 1) { ?>
-    <div class="load-more">
-      <button type="button" class="span2 btn btn-primary photos-load-more-click"><i class="icon-plus icon-large"></i> Load more</button>
-    </div>
-  <?php } ?>
-</div>
+    <div class="photo-grid-justify"></div>
+    <br clear="all">
+    <?php if($photos[0]['totalPages'] > 1) { ?>
+      <div class="load-more">
+        <button type="button" class="span2 btn btn-primary photos-load-more-click"><i class="icon-plus icon-large"></i> Load more</button>
+      </div>
+    <?php } ?>
+  </div>
+<?php } else { ?>
+  <?php $this->theme->display('partials/no-content.php', array('type' => 'upload')); ?>
+<?php } ?>
