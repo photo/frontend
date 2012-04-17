@@ -340,6 +340,15 @@ class Utility
     return $this->returnValue("{$prefix} {$years} " . $this->plural($years, 'year', false) . " ago {$suffix}", $write);
   }
 
+  public function timeFormated($time)
+  {
+	if(empty($time))
+      return $this->returnValue("--");
+		
+	return $this->returnValue(date("m/d/Y H:i:s",$time));
+  }
+
+
   /**
    * Safe equivalent of getallheaders() the work more often.
    */
