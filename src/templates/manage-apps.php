@@ -13,12 +13,14 @@
     <thead>
       <tr>
         <th>Application Name</th>
+        <th>Date Created</th>
         <th></th>
       </tr>
     </thead>
     <?php foreach($credentials as $credential) { ?>
       <tr>
         <td><?php $this->utility->safe($credential['name']); ?></td>
+		<td><?php $this->utility->timeFormated($credential['dateCreated']); ?></td>
         <td><a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credential-delete-click">Revoke</a></td>
       </tr>
     <?php } ?>
