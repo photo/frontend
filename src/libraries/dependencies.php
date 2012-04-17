@@ -50,6 +50,7 @@ require $pathsObj->adapters . '/FileSystemS3.php';
 require $pathsObj->adapters . '/FileSystemS3Dropbox.php';
 require $pathsObj->adapters . '/FileSystemLocal.php';
 require $pathsObj->adapters . '/FileSystemLocalDropbox.php';
+require $pathsObj->adapters . '/FileSystemLocalRemoteStorage.php';
 require $pathsObj->adapters . '/FileSystemDropboxBase.php';
 require $pathsObj->adapters . '/Login.php';
 require $pathsObj->adapters . '/LoginBrowserId.php';
