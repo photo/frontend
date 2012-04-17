@@ -79,6 +79,13 @@ $routeObj->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenRequ
 $routeObj->get('/v[1]/oauth/test', array('OAuthController', 'test'));
 $routeObj->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
 
+/*
+ * Account endpoints
+ * All account endpoints follow the same convention.
+ * /account/{action}
+ */
+$routeObj->get('/account', array('AccountController', 'home'));
+
 if($runUpgrade)
   require $configObj->get('paths')->libraries . '/routes-upgrade.php';
 

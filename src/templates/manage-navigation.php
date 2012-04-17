@@ -8,10 +8,7 @@
     <li class="<?php if($page == 'apps') { ?> active<?php } ?>">
       <a href="/manage/apps">Apps</a>
     </li>
-    <!--<li>
-      <a href="https://openphoto.me/account">Account</a>
+    <li class="<?php if($page == 'account') { ?> active<?php } ?>">
+      <a href="/account">Account</a>
     </li>
-    <li>
-      <a href="/setup?edit">Rerun Setup</a>
-    </li> -->
   </ul>

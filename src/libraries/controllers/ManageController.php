@@ -67,7 +67,7 @@ class ManageController extends BaseController
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-groups'));
   }
 
-  private function getNavigation($page)
+  public function getNavigation($page)
   {
     $tpl = sprintf('%s/manage-navigation.php', $this->config->paths->templates);
     return $this->template->get($tpl, array('page' => $page));
