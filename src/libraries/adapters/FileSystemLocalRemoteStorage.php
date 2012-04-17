@@ -1,6 +1,6 @@
 <?php
 /**
- * Dropbox adapter that extends much of the FileSystemLocal logic
+ * RemoteStorage adapter that extends much of the FileSystemLocal logic
  *
  * This class defines the functionality defined by FileSystemInterface for a plain Filesystem.
  * @author Hub Figuiere <hub@figuiere.net>
@@ -65,7 +65,6 @@ class FileSystemLocalRemoteStorage extends FileSystemLocal implements FileSystem
 {
   private $root;
   private $urlBase;
-  private $dropbox;
   private $remoteStorage;
   public function __construct()
   {
@@ -74,7 +73,6 @@ class FileSystemLocalRemoteStorage extends FileSystemLocal implements FileSystem
     $fsConfig = getConfig()->get('localfs');
     $this->root = $fsConfig->fsRoot;
     $this->host = $fsConfig->fsHost;
-    $this->dropbox = new FileSystemDropboxBase($this);
   }
 
   public function deletePhoto($photo)
@@ -89,7 +87,7 @@ class FileSystemLocalRemoteStorage extends FileSystemLocal implements FileSystem
     */
   public function diagnostics()
   {
-    return array_merge($this->dropbox->diagnostics(), parent::diagnostics());
+    return parent::diagnostics();
   }
 
   /**
@@ -132,7 +130,7 @@ class FileSystemLocalRemoteStorage extends FileSystemLocal implements FileSystem
       if(strpos($remote, '/original/') === false)
         $parentFiles[] = $file;
     }
-    return $this->dropbox->putPhotos($files) && parent::putPhotos($parentFiles);
+    return parent::putPhotos($parentFiles);
   }
 
   /**
@@ -146,7 +144,7 @@ class FileSystemLocalRemoteStorage extends FileSystemLocal implements FileSystem
 
   public function initialize($isEditMode)
   {
-    return $this->dropbox->initialize($isEditMode) && parent::initialize($isEditMode);
+    return parent::initialize($isEditMode);
   }
 
   /**
@@ -156,7 +154,7 @@ class FileSystemLocalRemoteStorage extends FileSystemLocal implements FileSystem
     */
   public function identity()
   {
-    return array_merge(array('dropbox'), parent::identity());
+    return array_merge(array('remotestorage'), parent::identity());
   }
 
   public function normalizePath($path)
