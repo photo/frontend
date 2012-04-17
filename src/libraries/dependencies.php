@@ -11,6 +11,7 @@ require $pathsObj->controllers . '/ApiBaseController.php';
 require $pathsObj->controllers . '/BaseController.php';
 require $pathsObj->controllers . '/ApiController.php';
 require $pathsObj->controllers . '/GeneralController.php';
+require $pathsObj->controllers . '/AccountController.php';
 require $pathsObj->controllers . '/AssetsController.php';
 require $pathsObj->controllers . '/ApiActionController.php';
 require $pathsObj->controllers . '/ApiActivityController.php';

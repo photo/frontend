@@ -52,6 +52,7 @@ Index:
   09.03. Photos details
   09.04. Tags
   09.05. Manage
+  09.06. Account
 10. Responsive definitions
 	10.01. screen width max. 480px
 	10.02. screen width max. 767px
@@ -4111,6 +4112,10 @@ body.tags div.tags .tag-list {
        -ms-transition:opacity linear 0.2s;
        -o-transition:opacity linear 0.2s;
        transition:opacity linear 0.2s;
+}
+/* 09.06. Account ----------------------------------------------------------- */
+.account .inset {
+  margin:5px 0 0 20px;
 }
 
 
