@@ -1,3 +1,4 @@
+<?php if(!isset($type)) $type = null; ?>
 <div class="row hero-unit blurb middle">
   <?php if($type == '404') { // 404 error ?>
     <strong class="bigtext">:'(</strong><br/>
