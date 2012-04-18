@@ -294,6 +294,7 @@ class SetupController extends BaseController
     $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
+    $usesRemoteStorage = (stristr(getSession()->get('fileSystem'), 'remoteStorage') !== false) ? true : false;
     $usesS3 = (stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
@@ -366,7 +367,7 @@ class SetupController extends BaseController
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
     // copied to/from setup3Post()
     $body = $this->template->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
-      'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3,
+      'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesRemoteStorage' => $usesRemoteStorage, 'usesS3' => $usesS3,
       'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
       'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
       'mySqlPassword' => $mySqlPassword, 'mySqlTablePrefix' => $mySqlTablePrefix, 'fsRoot' => $fsRoot, 'fsHost' => $fsHost,
@@ -395,10 +396,12 @@ class SetupController extends BaseController
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
     $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
+    $usesRemoteStorage = (stristr(getSession()->get('fileSystem'), 'remoteStorage') !== false) ? true : false;
     $usesS3 = (stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
     $awsErrors = false;
     $mySqlErrors = false;
+    $remoteStorageErrors = false;
     $localFsErrors = false;
     $fsErrors = false;
     $dbErrors = false;
@@ -444,7 +447,14 @@ class SetupController extends BaseController
       );
       $mySqlErrors = getForm()->hasErrors($input);
     }
-
+    if($usesRemoteStorage)
+    {
+      $userAddress = $_POST['userAddress'];
+      $input = array(
+         array('remoteStorage user address', $userAddress, 'required')
+      );
+      $remoteStorageErrors = getForm()->hasErrors($input);
+    }
     if($usesLocalFs)
     {
       $fsRoot = $_POST['fsRoot'];
@@ -466,7 +476,7 @@ class SetupController extends BaseController
       $dropboxFolder = $_POST['dropboxFolder'];
     }
 
-    if($awsErrors === false && $mySqlErrors === false && $localFsErrors === false)
+    if($awsErrors === false && $mySqlErrors === false && $remoteStorageErrors === false && $localFsErrors === false)
     {
       $credentials = new stdClass;
       if($usesAws)
@@ -605,6 +615,8 @@ class SetupController extends BaseController
       $errors = array_merge($errors, $awsErrors);
     if(is_array($mySqlErrors))
       $errors = array_merge($errors, $mySqlErrors);
+    if(is_array($remoteStorageErrors))
+      $errors = array_merge($errors, $remoteStorageErrors);
     if(is_array($localFsErrors))
       $errors = array_merge($errors, $localFsErrors);
     if(is_array($fsErrors))

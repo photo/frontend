@@ -122,6 +122,11 @@
         <label for="mySqlTablePrefix">Table prefix <em>(optional)</em></label>
         <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
       <?php } ?>
+      <?php if((isset($usesRemoteStorage) && !empty($usesRemoteStorage))) { ?>
+        <h3>Enter your remoteStorage details <!--<em>(<a href="">what's this?</a>)</em>--></h3>
+        <label for="userAddress">User address</label>
+        <input type="text" name="userAddress" id="userAddress" size="50" placeholder="user@server" data-validation="required" value="<?php echo $userAddress; ?>">
+      <?php } ?>
       <?php if((isset($usesLocalFs) && !empty($usesLocalFs))) { ?>
         <h3>Enter your local file system credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
         <label for="fsRoot">File system root <em>(Must be writable by Apache user)</em></label>
