@@ -46,7 +46,8 @@ class RemoteStorage {
   function deleteItem($remotePath) {
     getLogger()->warn("deleteItem {$remotePath}");
     $result = $this->doCurl('DELETE', $remotePath);
-    return $result;
+    //return $result;
+    return true; 
   }
   function fetchItem($remotePath, $localPath) {
     getLogger()->warn("fetchItemSync {$remotePath} {$localPath}");

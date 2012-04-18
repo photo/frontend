@@ -23,7 +23,17 @@ class FileSystemLocalRemoteStorage extends FileSystemLocal implements FileSystem
 
   public function deletePhoto($photo)
   {
-    return $this->remoteStorage->deleteItem($photo) && parent::deletePhoto($photo);
+    foreach($photo as $key => $value)
+    {
+      if(strncmp($key, 'path', 4) === 0) {
+        if(!$this->remoteStorage->deleteItem($value))
+          return false;
+       }
+    }
+    getLogger()->warn("all deleted on remoteStorage, now deleting locally:");
+    $ret = parent::deletePhoto($photo);
+    getLogger()->warn(var_export($ret, true));
+    return $ret;
   }
 
   /**
