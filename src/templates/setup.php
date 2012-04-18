@@ -123,9 +123,19 @@
         <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
       <?php } ?>
       <?php if((isset($usesRemoteStorage) && !empty($usesRemoteStorage))) { ?>
-        <h3>Enter your remoteStorage details <!--<em>(<a href="">what's this?</a>)</em>--></h3>
-        <label for="userAddress">User address</label>
-        <input type="text" name="userAddress" id="userAddress" size="50" placeholder="user@server" data-validation="required" value="<?php echo $userAddress; ?>">
+        <h3>Discover your remoteStorage details <!--<em>(<a href="">what's this?</a>)</em>--></h3>
+        <span id="connect">
+          <link rel="stylesheet/css" href="/assets/stylesheets/remoteStorage.css">
+          <input id="connect-address" placeholder="user@server" autofocus />
+          <input type="submit" id="connect-button" class="btn btn-primary" value="connect" />
+          <script src="/assets/javascripts/remoteStorage.js"></script>
+        </span>
+        <label for="remoteStorageApi">API</label>
+        <input type="text" name="remoteStorageApi" id="remoteStorageApi" size="50" data-validation="required" value="<?php echo $remoteStorageApi; ?>">
+        <label for="remoteStorageBaseAddress">Base address</label>
+        <input type="text" name="remoteStorageBaseAddress" id="remoteStorageBaseAddress" size="50" data-validation="required" value="<?php echo $remoteStorageBaseAddress; ?>">
+        <label for="remoteStorageToken">Token</label>
+        <input type="text" name="remoteStorageToken" id="remoteStorageToken" size="50" data-validation="required" value="<?php echo $remoteStorageToken; ?>">
       <?php } ?>
       <?php if((isset($usesLocalFs) && !empty($usesLocalFs))) { ?>
         <h3>Enter your local file system credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
