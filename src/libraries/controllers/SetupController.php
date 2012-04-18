@@ -449,9 +449,13 @@ class SetupController extends BaseController
     }
     if($usesRemoteStorage)
     {
-      $userAddress = $_POST['userAddress'];
+      $remoteStorageApi = $_POST['remoteStorageApi'];
+      $remoteStorageBaseAddress = $_POST['remoteStorageBaseAddress'];
+      $remoteStorageToken = $_POST['remoteStorageToken'];
       $input = array(
-         array('remoteStorage user address', $userAddress, 'required')
+         array('remoteStorage API', $remoteStorageApi, 'required'),
+         array('remoteStorage base address', $remoteStorageBaseAddress, 'required'),
+         array('remoteStorage token', $remoteStorageToken, 'required')
       );
       $remoteStorageErrors = getForm()->hasErrors($input);
     }
@@ -514,6 +518,16 @@ class SetupController extends BaseController
         $mysql->mySqlDb = $mySqlDb;
         $mysql->mySqlTablePrefix = $mySqlTablePrefix;
       }
+      if($usesRemoteStorage)
+      {
+        getSession()->set('remoteStorageApi', $remoteStorageApi);
+        getSession()->set('remoteStorageBaseAddress', $remoteStorageBaseAddress);
+        getSession()->set('remoteStorageToken', $remoteStorageToken);
+        $remotestorage = new stdClass;
+        $remotestorage->api = $remoteStorageApi;
+        $remotestorage->baseAddress = $remoteStorageBaseAddress;
+        $remotestorage->token = $remoteStorageToken;
+      }
       if($usesLocalFs)
       {
         getSession()->set('fsRoot', $fsRoot);
@@ -553,6 +567,8 @@ class SetupController extends BaseController
         getConfig()->set('aws', $aws);
       if($usesMySql)
         getConfig()->set('mysql', $mysql);
+      if($usesRemoteStorage)
+        getConfig()->set('remotestorage', $remotestorage);
       if($usesLocalFs)
         getConfig()->set('localfs', $fs);
       if($usesDropbox)
