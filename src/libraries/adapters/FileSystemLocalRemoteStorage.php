@@ -75,7 +75,10 @@ class FileSystemLocalRemoteStorage extends FileSystemLocal implements FileSystem
       list($local, $remote) = each($file);
       if(strpos($remote, '/original/') === false)
         $parentFiles[] = $file;
+      if(!$this->remoteStorage->pushItem($local, $remote))
+        return false;
     }
+
     return parent::putPhotos($parentFiles);
   }
 
