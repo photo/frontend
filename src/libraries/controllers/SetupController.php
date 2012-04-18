@@ -344,6 +344,12 @@ class SetupController extends BaseController
       $mySqlTablePrefix = $mysql->mySqlTablePrefix;
     }
 
+    if(getConfig()->get('remotestorage') != null)
+    {
+      $remoteStorageApi = getConfig()->get('remotestorage')->api;
+      $remoteStorageBaseAddress = getConfig()->get('remotestorage')->baseAddress;
+      $remoteStorageToken = getConfig()->get('remotestorage')->token;
+    }
     if(getConfig()->get('localfs') != null)
     {
       $fsRoot = getConfig()->get('localfs')->fsRoot;
@@ -791,6 +797,9 @@ class SetupController extends BaseController
       '{mySqlPassword}' => "",
       '{mySqlDb}' => "",
       '{mySqlTablePrefix}' => "",
+      '{remoteStorageApi}' => "",
+      '{remoteStorageBaseAddress}' => "",
+      '{remoteStorageToken}' => "",
       '{dropboxKey}' => "",
       '{dropboxSecret}' => "",
       '{dropboxToken}' => "",
