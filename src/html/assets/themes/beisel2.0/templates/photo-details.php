@@ -1,6 +1,6 @@
     <div class="subnav photodetail-nav">
       <ul class="nav nav-pills">
-        <li><a href="#" class="action-post-click"><i class="icon-heart icon-large"></i> Mark as favorite</a></li>
+      <li><a href="#" class="<?php if($this->user->isLoggedIn()) { ?>action-post-click<?php } else { ?>login-modal-click<?php } ?>"><i class="icon-heart icon-large"></i> Mark as favorite</a></li>
         <li><a href="#comment-form"><i class="icon-comment icon-large"></i> Leave a comment</a></li>
         <!-- <li><a href="#"><i class="icon-envelope icon-large"></i> Share this photo</a></li> -->
         <li class="last"><a href="<?php $this->url->photoView($photo['next']['id'], $options); ?>">Next <i class="icon-arrow-right icon-large"></i></a></li>
