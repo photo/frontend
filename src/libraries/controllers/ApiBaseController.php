@@ -26,6 +26,7 @@ class ApiBaseController
     $this->plugin = getPlugin();
     $this->route = getRoute();
     $this->session = getSession();
+    $this->logger = getLogger();
     $this->template = getTemplate();
     $this->utility = new Utility;
     $this->url = new Url;

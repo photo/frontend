@@ -21,7 +21,7 @@ class Activity extends BaseModel
 
   public function create($attributes)
   {
-    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireAuthentication(false);
 
     $attributes = array_merge($this->getDefaultAttributes(), $attributes);
     $attributes = $this->whitelistParams($attributes);
