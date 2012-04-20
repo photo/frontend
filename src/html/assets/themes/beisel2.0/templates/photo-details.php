@@ -26,7 +26,7 @@
           <?php if($photo['permission'] == 0) { ?>
             <div class="private" title="private"><i class="icon-lock icon-large"></i></div>
           <?php } ?>
-          <img class="photo" style="width:<?php $this->utility->safe($photo['photo'.$this->config->photoSizes->detail][1]); ?>px; height:<?php $this->utility->safe($photo['photo'.$this->config->photoSizes->detail][2]); ?>px;" src="<?php $this->url->photoUrl($photo, $this->config->photoSizes->detail); ?>" alt="<?php $this->utility->safe($photo['title']); ?>">
+          <img class="photo" src="<?php $this->url->photoUrl($photo, $this->config->photoSizes->detail); ?>" alt="<?php $this->utility->safe($photo['title']); ?>">
         </div>
         <div class="comment-form">
           <a name="comment-form"></a>
