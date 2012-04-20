@@ -1,6 +1,6 @@
     <div class="subnav photodetail-nav">
       <ul class="nav nav-pills">
-        <li><a href="#" class="action-post-click"><i class="icon-heart icon-large"></i> Mark as favorite</a></li>
+      <li><a href="#" class="<?php if($this->user->isLoggedIn()) { ?>action-post-click<?php } else { ?>login-modal-click<?php } ?>"><i class="icon-heart icon-large"></i> Mark as favorite</a></li>
         <li><a href="#comment-form"><i class="icon-comment icon-large"></i> Leave a comment</a></li>
         <!-- <li><a href="#"><i class="icon-envelope icon-large"></i> Share this photo</a></li> -->
         <li class="last"><a href="<?php $this->url->photoView($photo['next']['id'], $options); ?>">Next <i class="icon-arrow-right icon-large"></i></a></li>
@@ -26,7 +26,7 @@
           <?php if($photo['permission'] == 0) { ?>
             <div class="private" title="private"><i class="icon-lock icon-large"></i></div>
           <?php } ?>
-          <img class="photo" style="width:<?php $this->utility->safe($photo['photo'.$this->config->photoSizes->detail][1]); ?>px; height:<?php $this->utility->safe($photo['photo'.$this->config->photoSizes->detail][2]); ?>px;" src="<?php $this->url->photoUrl($photo, $this->config->photoSizes->detail); ?>" alt="<?php $this->utility->safe($photo['title']); ?>">
+          <img class="photo" src="<?php $this->url->photoUrl($photo, $this->config->photoSizes->detail); ?>" alt="<?php $this->utility->safe($photo['title']); ?>">
         </div>
         <div class="comment-form">
           <a name="comment-form"></a>
@@ -122,6 +122,9 @@
         <div class="iconbox">
           <a href="#" class="invert"><i class="icon-comment"></i> <?php echo count($photo['actions']); ?> comments &amp; favorites</a>
           <a href="#" class="invert"><i class="icon-eye-open"></i> <?php $this->utility->licenseName($photo['license']); ?></a>
+          <?php if($this->config->site->allowOriginalDownload == 1) { ?>
+            <a href="<?php $this->utility->safe($photo['pathOriginal']); ?>" class="invert"><i class="icon-download"></i> Download original</a>
+          <?php } ?>
         </div>
         <?php if(count($photo['tags']) > 0) { ?>
           <div class="tags">
