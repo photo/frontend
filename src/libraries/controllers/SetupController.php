@@ -73,7 +73,7 @@ class SetupController extends BaseController
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
     $body = $this->template->get($template, array('filesystem' => $filesystem, 'database' => $database, 'themes' => $themes, 'theme' => $theme,
-      'imageLibs' => $imageLibs, 'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'qs' => $qs, 'errors' => $errors));
+      'imageLibs' => $imageLibs, 'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'password' => $password, 'qs' => $qs, 'errors' => $errors));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -182,6 +182,7 @@ class SetupController extends BaseController
     $step = 1;
     $appId = isset($_POST['appId']) ? $_POST['appId'] : '';
     $email = isset($_POST['email']) ? $_POST['email'] : '';
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
     $theme = isset($_POST['theme']) ? $_POST['theme'] : '';
     $input = array(
       array('Email', $email, 'required')
@@ -193,6 +194,7 @@ class SetupController extends BaseController
       getSession()->set('step', 2);
       getSession()->set('appId', $appId);
       getSession()->set('ownerEmail', $email);
+      getSession()->set('password', $password);
       getSession()->set('theme', $theme);
 
       $qs = '';
@@ -203,7 +205,7 @@ class SetupController extends BaseController
     }
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = $this->template->get($template, array('email' => $email, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
+    $body = $this->template->get($template, array('email' => $email, 'password' => $password, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -536,6 +538,7 @@ class SetupController extends BaseController
 
       $user = new stdClass;
       $user->email = getSession()->get('ownerEmail');
+      $user->password = getSession()->get('password');
 
       // save the config info
       getConfig()->set('credentials', $credentials);
@@ -575,6 +578,7 @@ class SetupController extends BaseController
 
         $dbErrors = array_merge($dbErrors, $dbObj->errors());
       }
+      $dbObj->putUser(array('password' => $this->utiilty->encrypt($password)));
 
       if($fsErrors === false && $dbErrors === false)
       {
@@ -779,6 +783,8 @@ class SetupController extends BaseController
     $session = getSession()->getAll();
     foreach($session as $key => $val)
     {
+      if($key == 'password')
+        $pReplace["{{$key}}"] = $this->utility->encrypt($val, $secret);
       if($key != 'email')
         $pReplace["{{$key}}"] = $val;
 
