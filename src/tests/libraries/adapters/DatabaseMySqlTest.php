@@ -1,10 +1,6 @@
 <?php
 $baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
 require_once sprintf('%s/tests/helpers/mysql.php', $baseDir);
-require_once sprintf('%s/libraries/adapters/Database.php', $baseDir);
-require_once sprintf('%s/libraries/adapters/DatabaseMySql.php', $baseDir);
-
 
 class DatabaseMySqlOverride extends DatabaseMySql
 {
