@@ -53,7 +53,8 @@ echo ""
 echo ""
 
 pecl install oauth
-echo "extension=oauth.so" >> /etc/php5/apache2/php.ini
+mkdir -p /etc/php5/apache2/conf.d/
+echo "extension=oauth.so" >> /etc/php5/apache2/conf.d/oauth.ini
 
 echo ""
 echo ""
