@@ -1,9 +1,4 @@
 <?php
-$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
-require_once sprintf('%s/libraries/models/BaseModel.php', $baseDir);
-require_once sprintf('%s/libraries/models/Credential.php', $baseDir);
-
 class CredentialTest extends PHPUnit_Framework_TestCase
 {
   public $headers = array('Authorization' => 'OAuth realm="http://sp.example.com/",
@@ -17,6 +12,10 @@ class CredentialTest extends PHPUnit_Framework_TestCase
 
   public function setUp()
   {
+    if (!extension_loaded('oauth')) {
+      $this->markTestSkipped("Test requires ext/oauth");
+      return;
+    }
     $utility = $this->getMock('Utility', array('getAllHeaders'));
     $utility->expects($this->any())
       ->method('getAllHeaders')
