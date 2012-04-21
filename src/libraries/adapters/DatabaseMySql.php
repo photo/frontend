@@ -1231,7 +1231,7 @@ class DatabaseMySql implements DatabaseInterface
     $from = "FROM `{$this->mySqlTablePrefix}{$table}` ";
     $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
     $groupBy = '';
-    $sortBy = 'ORDER BY CONCAT(dateTakenYear,LPAD(dateTakenMonth,2,"0"),LPAD(dateTakenDay,2,"0")) DESC, dateTaken ASC';
+    $sortBy = 'ORDER BY dateSortByDay DESC, dateTaken ASC';
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -1263,13 +1263,13 @@ class DatabaseMySql implements DatabaseInterface
             break;
           case 'sortBy':
             if($value === 'dateTaken,desc')
-              $sortBy = 'ORDER BY CONCAT(dateTakenYear,LPAD(dateTakenMonth,2,"0"),LPAD(dateTakenDay,2,"0")) DESC, dateTaken ASC';
+              $sortBy = 'ORDER BY dateSortByDay DESC, dateTaken ASC';
             elseif($value === 'dateTaken,asc')
-              $sortBy = 'ORDER BY CONCAT(dateTakenYear,LPAD(dateTakenMonth,2,"0"),LPAD(dateTakenDay,2,"0")) ASC, dateTaken ASC';
+              $sortBy = 'ORDER BY dateSortByDay ASC, dateTaken ASC';
             elseif($value === 'dateUploaded,desc')
-              $sortBy = 'ORDER BY CONCAT(dateUploadedYear,LPAD(dateUploadedMonth,2,"0"),LPAD(dateUploadedDay,2,"0")) DESC, dateUploaded ASC';
+              $sortBy = 'ORDER BY dateSortByDayy,2,"0")) DESC, dateUploaded ASC';
             elseif($value === 'dateUploaded,asc')
-              $sortBy = 'ORDER BY CONCAT(dateUploadedYear,LPAD(dateUploadedMonth,2,"0"),LPAD(dateUploadedDay,2,"0")) ASC, dateUploaded ASC';
+              $sortBy = 'ORDER BY dateSortByDayy,2,"0")) ASC, dateUploaded ASC';
             else
               $sortBy = 'ORDER BY ' . $this->_(str_replace(',', ' ', $value));
             $field = $this->_(substr($value, 0, strpos($value, ',')));
@@ -1599,13 +1599,18 @@ class DatabaseMySql implements DatabaseInterface
     }
     if(!empty($exif))
     {
-      $bindings[":exif"] = json_encode($exif);
+      $bindings[':exif'] = json_encode($exif);
       $paramsOut['exif'] = ':exif';
     }
     if(!empty($extra))
     {
-      $bindings[":extra"] = json_encode($extra);
+      $bindings[':extra'] = json_encode($extra);
       $paramsOut['extra'] = ':extra';
+    }
+    if(isset($params['dateTaken']))
+    {
+      $bindings[':dateSortByDay'] = date('Ymd', $params['dateTaken']);
+      $paramsOut['dateSortByDay'] = ':dateSortByDay';
     }
     $paramsOut['::bindings'] = $bindings;
     return $paramsOut;
