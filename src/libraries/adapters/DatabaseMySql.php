@@ -1267,9 +1267,9 @@ class DatabaseMySql implements DatabaseInterface
             elseif($value === 'dateTaken,asc')
               $sortBy = 'ORDER BY dateSortByDay ASC, dateTaken ASC';
             elseif($value === 'dateUploaded,desc')
-              $sortBy = 'ORDER BY dateSortByDayy,2,"0")) DESC, dateUploaded ASC';
+              $sortBy = 'ORDER BY dateSortByDay DESC, dateUploaded ASC';
             elseif($value === 'dateUploaded,asc')
-              $sortBy = 'ORDER BY dateSortByDayy,2,"0")) ASC, dateUploaded ASC';
+              $sortBy = 'ORDER BY dateSortByDay ASC, dateUploaded ASC';
             else
               $sortBy = 'ORDER BY ' . $this->_(str_replace(',', ' ', $value));
             $field = $this->_(substr($value, 0, strpos($value, ',')));
