@@ -40,7 +40,6 @@ echo ""
 echo ""
 
 apt-get install --assume-yes --quiet php5-dev php5-imagick exiftran
-pecl install oauth
 a2enmod deflate
 a2enmod expires
 a2enmod headers
@@ -54,7 +53,8 @@ echo ""
 echo ""
 
 pecl install oauth
-echo "extension=oauth.so" >> /etc/php5/apache2/php.ini
+mkdir -p /etc/php5/apache2/conf.d/
+echo "extension=oauth.so" >> /etc/php5/apache2/conf.d/oauth.ini
 
 echo ""
 echo ""
