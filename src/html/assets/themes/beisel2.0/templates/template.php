@@ -68,7 +68,7 @@
       <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
     <?php } else { ?>
       <script type="text/javascript" src="<?php echo getAssetPipeline(true)->addJs($this->theme->asset($this->config->dependencies->javascript, null, false))->
-                                                                        addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'd'); ?>"></script>
+                                                                        addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'e'); ?>"></script>
     <?php } ?>
     <script>
       OP.Util.init(jQuery, {
