@@ -104,7 +104,7 @@ var opTheme = (function() {
   util = (function() {
     return {
       fetchAndCache: function(src) {
-        $('<img />').attr('src', src).appendTo('body').css('display', 'none');
+        $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
       },
       fetchAndCacheNextPrevious: function() {
         var nextPhoto = $('img.next-photo'), prevPhoto = $('img.previous-photo');
