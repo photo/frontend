@@ -1280,7 +1280,7 @@ class DatabaseMySql implements DatabaseInterface
           case 'permission':
             $where = $this->buildWhere($where, "`permission`='1'");
             break;
-          /*case 'sortBy':
+          case 'sortBy':
             if($value === 'dateTaken,desc')
               $sortBy = 'ORDER BY dateSortByDay DESC';
             elseif($value === 'dateTaken,asc')
@@ -1293,7 +1293,6 @@ class DatabaseMySql implements DatabaseInterface
               $sortBy = 'ORDER BY ' . $this->_(str_replace(',', ' ', $value));
             $field = $this->_(substr($value, 0, strpos($value, ',')));
             $where = $this->buildWhere($where, "{$field} is not null");
-           */
             break;
           case 'tags':
             if(!is_array($value))
