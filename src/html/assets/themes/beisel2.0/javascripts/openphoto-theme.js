@@ -441,6 +441,7 @@ var opTheme = (function() {
             fields = $("form#batch-edit").find("*[name='value']"),
             value;
 
+        el.html('Submitting...').attr("disabled", "disabled");
         if(fields.length == 1) {
           value = fields.val();
         } else {
