@@ -104,7 +104,7 @@ var opTheme = (function() {
   util = (function() {
     return {
       fetchAndCache: function(src) {
-        $('<img />').attr('src', src).appendTo('body').css('display', 'none');
+        $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
       },
       fetchAndCacheNextPrevious: function() {
         var nextPhoto = $('img.next-photo'), prevPhoto = $('img.previous-photo');
@@ -187,13 +187,13 @@ var opTheme = (function() {
               'Batch edit your pinned photos',
               '<form id="batch-edit">' +
               '  <div class="clearfix">' +
-              '    <label>Property</label>' +
+              '    <label>What would you like to do?</label>' +
               '    <div class="input">' +
               '      <select id="batch-key" class="batch-field-change" name="property">' +
               '        <option value="tagsAdd">Add Tags</option>' +
               '        <option value="tagsRemove">Remove Tags</option>' +
-              '        <option value="groups">Groups</option>' +
-              '        <option value="permission">Permission</option>' +
+              '        <option value="groups">Update Groups</option>' +
+              '        <option value="permission">Update Permissions</option>' +
               '        <option value="delete">Delete</option>' +
               '      </select>' +
               '    </div>' +
@@ -441,6 +441,7 @@ var opTheme = (function() {
             fields = $("form#batch-edit").find("*[name='value']"),
             value;
 
+        el.html('Submitting...').attr("disabled", "disabled");
         if(fields.length == 1) {
           value = fields.val();
         } else {
@@ -865,32 +866,18 @@ var opTheme = (function() {
           return html;
         },
         permission: function() {
-          return '  <div class="clearfix">' +
-                 '    <label>Value</label>' +
-                 '    <div class="input">' +
-                 '      <ul class="inputs-list">' +
-                 '        <li>' +
-                 '          <label>' +
-                 '            <input type="radio" name="value" value="1" checked="checked">' +
-                 '            <span>Public</span>' +
-                 '          </label>' +
-                 '        </li>' +
-                 '        <li>' +
-                 '          <label>' +
-                 '            <input type="radio" name="value" value="0"> ' +
-                 '            <span>Private</span>' +
-                 '          </label>' +
-                 '        </li>' +
-                 '    </div>' +
-                 '  </div>';
+          return '  <label class="radio">' +
+                 '    <input type="radio" name="value" value="1" checked="checked">' +
+                 '    Public' +
+                 '  </label>' +
+                 '  <label class="radio">' +
+                 '    <input type="radio" name="value" value="0"> ' +
+                 '    Private' +
+                 '  </label>';
         },
         tags: function() {
-          return '  <div class="clearfix">' +
-                 '    <label>Tags</label>' +
-                 '    <div class="input">' +
-                 '      <input type="text" name="value" class="tags-autocomplete" placeholder="A comma separated list of tags" value="">' +
-                 '    </div>' +
-                 '  </div>';
+          return '  <label>Tags</label>' +
+                 '  <input type="text" name="value" class="tags-autocomplete" placeholder="A comma separated list of tags" value="">';
         }
       },
       batchMessage: function() {
