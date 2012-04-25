@@ -471,25 +471,44 @@ class DatabaseMySql implements DatabaseInterface
   {
     $buildQuery = $this->buildQuery($filterOpts, null, null, 'photo');
     $photo = $this->getPhoto($id);
-    if(!$photo)
+    if(!$photo || !isset($photo['dateSortByDay']) || empty($photo['dateSortByDay']))
       return false;
 
-    $sortKey = 'dateTaken';
-    if(isset($filterOpts['sortBy'])) {
-        $sortOptions = (array)explode(',', $filterOpts['sortBy']);
-        if(!empty($sortOptions)) {
-            $sortKey = $sortOptions[0];
-        }
-    }
     // owner is in buildQuery
-    $photo_prev = $this->db->one("SELECT `{$this->mySqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND {$sortKey}> :{$sortKey} AND {$sortKey} IS NOT NULL {$buildQuery['groupBy']} ORDER BY {$sortKey} ASC LIMIT 1", array(":{$sortKey}" => $photo[$sortKey]));
-    $photo_next = $this->db->one("SELECT `{$this->mySqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND {$sortKey}< :{$sortKey} AND {$sortKey} IS NOT NULL {$buildQuery['groupBy']} ORDER BY {$sortKey} DESC LIMIT 1", array(":{$sortKey}" => $photo[$sortKey]));
+    // TODO: paginating with random sorting is a pain - default for now
+    // determine where to start
+    // this should return the immediately adjacent photo prior to $photo
+    // if there are none we set it to the current photo and only get a next
+    $startResp = $this->db->one("SELECT `dateSortByDay` FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND `dateSortByDay` < :dateSortByDay {$buildQuery['groupBy']} ORDER BY `dateSortByDay` DESC", 
+      array(':dateSortByDay' => $photo['dateSortByDay']));
+    if(!empty($startResp))
+      $startValue = $startResp['dateSortByDay'];
+    else
+      $startValue = $photo['dateSortByDay'];
+
+    // remembering that the photos are sorted in descending order on dateSortByDay
+    // we reverse the sort so it's the oldest first then select everything after the 
+    // photo immediately older than this one
+    $photosNextPrev = $this->db->all(
+      $sql = " SELECT `{$this->mySqlTablePrefix}photo`.*
+        {$buildQuery['from']}
+        {$buildQuery['where']} AND `dateSortByDay` >= :startValue
+        {$buildQuery['groupBy']}
+        ORDER BY `dateSortByDay` ASC
+        LIMIT 3", 
+      array(':startValue' => $startValue)
+    );
 
     $ret = array();
-    if($photo_prev)
-      $ret['previous'] = $this->normalizePhoto($photo_prev);
-    if($photo_next)
-      $ret['next'] = $this->normalizePhoto($photo_next);
+    if(!empty($photosNextPrev))
+    {
+      if($photosNextPrev[0]['dateSortByDay'] < $photo['dateSortByDay'])
+        $ret['next'] = $this->normalizePhoto($photosNextPrev[0]);
+
+      $last = array_pop($photosNextPrev);
+      if($last && $last['dateSortByDay'] > $photo['dateSortByDay'])
+        $ret['previous'] = $this->normalizePhoto($last);
+    }
 
     return $ret;
   }
@@ -1231,7 +1250,7 @@ class DatabaseMySql implements DatabaseInterface
     $from = "FROM `{$this->mySqlTablePrefix}{$table}` ";
     $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
     $groupBy = '';
-    $sortBy = 'ORDER BY dateSortByDay DESC, dateTaken ASC';
+    $sortBy = 'ORDER BY dateSortByDay DESC';
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -1261,11 +1280,11 @@ class DatabaseMySql implements DatabaseInterface
           case 'permission':
             $where = $this->buildWhere($where, "`permission`='1'");
             break;
-          case 'sortBy':
+          /*case 'sortBy':
             if($value === 'dateTaken,desc')
-              $sortBy = 'ORDER BY dateSortByDay DESC, dateTaken ASC';
+              $sortBy = 'ORDER BY dateSortByDay DESC';
             elseif($value === 'dateTaken,asc')
-              $sortBy = 'ORDER BY dateSortByDay ASC, dateTaken ASC';
+              $sortBy = 'ORDER BY dateSortByDay ASC';
             elseif($value === 'dateUploaded,desc')
               $sortBy = 'ORDER BY dateSortByDay DESC, dateUploaded ASC';
             elseif($value === 'dateUploaded,asc')
@@ -1274,6 +1293,7 @@ class DatabaseMySql implements DatabaseInterface
               $sortBy = 'ORDER BY ' . $this->_(str_replace(',', ' ', $value));
             $field = $this->_(substr($value, 0, strpos($value, ',')));
             $where = $this->buildWhere($where, "{$field} is not null");
+           */
             break;
           case 'tags':
             if(!is_array($value))
@@ -1607,9 +1627,14 @@ class DatabaseMySql implements DatabaseInterface
       $bindings[':extra'] = json_encode($extra);
       $paramsOut['extra'] = ':extra';
     }
+
     if(isset($params['dateTaken']))
     {
-      $bindings[':dateSortByDay'] = date('Ymd', $params['dateTaken']);
+      // here we seed a field for the default sort order of day descending and time ascending
+      $invHours = str_pad(intval(23-date('H', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
+      $invMins = str_pad(intval(59-date('i', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
+      $invSecs = str_pad(intval(59-date('s', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
+      $bindings[':dateSortByDay'] = sprintf('%s%s%s%s', date('Ymd', $params['dateTaken']), $invHours, $invMins, $invSecs);
       $paramsOut['dateSortByDay'] = ':dateSortByDay';
     }
     $paramsOut['::bindings'] = $bindings;
