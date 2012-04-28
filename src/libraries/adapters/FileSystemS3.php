@@ -212,7 +212,7 @@ class FileSystemS3 implements FileSystemInterface
     if(count($buckets) == 0)
     {
       getLogger()->info("Bucket {$this->bucket} does not exist, creating it now");
-      $res = $this->fs->create_bucket($this->bucket, AmazonS3::REGION_US_E1, AmazonS3::ACL_PUBLIC);
+      $res = $this->fs->create_bucket($this->bucket, AmazonS3::REGION_US_E1, AmazonS3::ACL_PRIVATE);
       if(!$res->isOK())
       {
         getLogger()->crit('Could not create S3 bucket: ' . var_export($res, 1));
