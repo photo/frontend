@@ -32,9 +32,9 @@ $status = $status && mysql_2_0_1($sql);
 /* elementTag */
 $table = 'elementTag';
 $sql = <<<SQL
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `owner`
+    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `id`
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `owner` VARCHAR(127)
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `owner` (`owner`,`type`,`element`,`tag`)
+    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `id` (`owner`,`type`,`element`,`tag`)
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
