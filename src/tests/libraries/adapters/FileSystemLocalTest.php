@@ -1,15 +1,4 @@
 <?php
-$paths = (array)explode(PATH_SEPARATOR, ini_get('include_path'));
-foreach($paths as $path)
-{
-  if(file_exists("{$path}/vfsStream/vfsStream.php"))
-    require_once 'vfsStream/vfsStream.php';
-}
-$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
-require_once sprintf('%s/libraries/adapters/FileSystem.php', $baseDir);
-require_once sprintf('%s/libraries/adapters/FileSystemLocal.php', $baseDir);
-
 /*class FileSystemS3Override extends FileSystemS3
 {
   public function __construct($config = null, $params = null)

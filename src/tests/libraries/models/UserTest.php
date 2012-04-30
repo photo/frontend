@@ -1,11 +1,8 @@
 <?php
-$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
-require_once sprintf('%s/libraries/models/BaseModel.php', $baseDir);
-require_once sprintf('%s/libraries/models/User.php', $baseDir);
-
 class UserTest extends PHPUnit_Framework_TestCase
 {
+  protected $user;
+
   public function setUp()
   {
     // to test the write methods

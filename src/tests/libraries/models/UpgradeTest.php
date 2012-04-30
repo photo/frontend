@@ -1,17 +1,10 @@
 <?php
-$paths = (array)explode(PATH_SEPARATOR, ini_get('include_path'));
-foreach($paths as $path)
-{
-  if(file_exists("{$path}/vfsStream/vfsStream.php"))
-    require_once 'vfsStream/vfsStream.php';
-}
-$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
-require_once sprintf('%s/libraries/models/BaseModel.php', $baseDir);
-require_once sprintf('%s/libraries/models/Upgrade.php', $baseDir);
-
 class UpgradeTest extends PHPUnit_Framework_TestCase
 {
+  protected $config;
+  protected $scriptsDir;
+  protected $upgrade;
+
   public function setUp()
   {
     if(class_exists('vfsStream'))

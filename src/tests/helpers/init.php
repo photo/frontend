@@ -1,6 +1,10 @@
 <?php
 date_default_timezone_set('America/Los_Angeles');
-require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Autoload.php';
+require_once dirname(__FILE__) . '/mysql.php';
+require_once dirname(__FILE__) . '/aws.php';
+require_once dirname(__FILE__) . '/vfs.php';
+require_once dirname(__FILE__) . '/autoload.php';
 
 // stub out exceptions
 class OPException extends Exception
