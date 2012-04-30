@@ -1,14 +1,4 @@
 <?php
-$paths = (array)explode(PATH_SEPARATOR, ini_get('include_path'));
-foreach($paths as $path)
-{
-  if(file_exists("{$path}/vfsStream/vfsStream.php"))
-    require_once 'vfsStream/vfsStream.php';
-}
-$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
-require_once sprintf('%s/libraries/models/UserConfig.php', $baseDir);
-
 class UserConfigWrapper extends UserConfig
 {
   public function __construct($params = null)
@@ -24,6 +14,16 @@ class UserConfigWrapper extends UserConfig
 
 class UserConfigTest extends PHPUnit_Framework_TestCase
 {
+  /**
+   * @var UserConfigWrapper
+   */
+  protected $userConfig;
+
+  /**
+   * @var string
+   */
+  protected $userConfigDir;
+
   public function setUp()
   {
     if(class_exists('vfsStream'))

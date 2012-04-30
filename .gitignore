@@ -3,6 +3,7 @@
 *~
 *.swp
 *.graffle
+.idea
 
 # Useful files which should never be committed
 src/configs/override.ini
