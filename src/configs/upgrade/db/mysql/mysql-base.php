@@ -90,6 +90,7 @@ SQL;
     `verifier` varchar(255) DEFAULT NULL,
     `type` varchar(100) NOT NULL,
     `status` int(11) DEFAULT '0',
+ 	`dateCreated` INT(11) DEFAULT NULL,
     UNIQUE KEY `id` (`id`,`owner`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQL;
