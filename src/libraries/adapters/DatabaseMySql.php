@@ -369,7 +369,9 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getCredentials()
   {
-    $res = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE owner=:owner AND status=1", array(':owner' => $this->owner));
+    $res = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}credential` WHERE owner=:owner AND status=1
+						   ORDER BY `dateCreated` DESC", 
+						   array(':owner' => $this->owner));
     if($res === false)
     {
       return false;
