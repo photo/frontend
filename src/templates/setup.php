@@ -128,7 +128,7 @@
           <link rel="stylesheet/css" href="/assets/stylesheets/remoteStorage.css">
           <input id="connect-address" placeholder="user@server" autofocus />
           <input type="submit" id="connect-button" class="btn btn-primary" value="connect" />
-          <script src="/assets/javascripts/remoteStorage.js"></script>
+          <script src="/assets/javascripts/remoteStorageSetup.js"></script>
         </span>
         <label for="remoteStorageApi">API</label>
         <input type="text" name="remoteStorageApi" id="remoteStorageApi" size="50" data-validation="required" value="<?php echo $remoteStorageApi; ?>">

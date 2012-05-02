@@ -1,23 +1,25 @@
 <html>
 <head>
-  <script src="../javascripts/remoteStorage.min.0.6.2.js"></script>
+  <script src="../javascripts/require.js"></script>
   <script>
-    var bearerToken = remoteStorage.receiveToken();
-    if(bearerToken) {
-      localStorage.setItem('_unhosted/bearerToken', bearerToken);
-      window.close();
-    } else {
-      var userAddress = localStorage.getItem('_unhosted/userAddress');
-      remoteStorage.getStorageInfo(userAddress, function(err, storageInfo) {
-        if(err) {
-          document.write('no remoteStorage found for user address "'+userAddress+'". Error: '+err);
-        } else {
-          localStorage.setItem('remoteStorageApi', storageInfo.rel);
-	  localStorage.setItem('remoteStorageBaseAddress', storageInfo.href+'/pictures');
-          window.location = remoteStorage.createOAuthAddress(storageInfo, ['pictures:rw'], location.href);
-        }
-      });
-    }
+    require(['../javascripts/remoteStorage.js'], function(remoteStorage) {
+	    var bearerToken = remoteStorage.receiveToken();
+	    if(bearerToken) {
+	      localStorage.setItem('_unhosted/bearerToken', bearerToken);
+	      window.close();
+	    } else {
+	      var userAddress = localStorage.getItem('_unhosted/userAddress');
+	      remoteStorage.getStorageInfo(userAddress, function(err, storageInfo) {
+		if(err) {
+		  document.write('no remoteStorage found for user address "'+userAddress+'". Error: '+err);
+		} else {
+		  localStorage.setItem('remoteStorageApi', storageInfo.rel);
+		  localStorage.setItem('remoteStorageBaseAddress', storageInfo.href+'/pictures');
+		  window.location = remoteStorage.createOAuthAddress(storageInfo, ['pictures:rw'], location.href);
+		}
+	      });
+	    }
+    });
   </script>
 </head>
 <body>
