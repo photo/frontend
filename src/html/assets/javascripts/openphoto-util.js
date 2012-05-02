@@ -105,7 +105,6 @@
             // get the library plugin file that maps library functions to a normalized
             // naming so that we can use whatever library that is specified
             this.getLibraryPlugin();
-
         };
 
         /**
@@ -175,7 +174,6 @@
         * @method onkeydownevent
         */
         this.onkeydownevent = function(e) {
-            
             log('[Util] keydownevent: ' + e.target);
             
             var targ = e.target || e.srcElement,
