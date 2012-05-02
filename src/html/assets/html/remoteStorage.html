@@ -5,16 +5,16 @@
     require(['../javascripts/remoteStorage.js'], function(remoteStorage) {
 	    var bearerToken = remoteStorage.receiveToken();
 	    if(bearerToken) {
-	      localStorage.setItem('_unhosted/bearerToken', bearerToken);
+	      localStorage.setItem('_remoteStorage/token', bearerToken);
 	      window.close();
 	    } else {
-	      var userAddress = localStorage.getItem('_unhosted/userAddress');
+	      var userAddress = localStorage.getItem('_remoteStorage/userAddress');
 	      remoteStorage.getStorageInfo(userAddress, function(err, storageInfo) {
 		if(err) {
 		  document.write('no remoteStorage found for user address "'+userAddress+'". Error: '+err);
 		} else {
-		  localStorage.setItem('remoteStorageApi', storageInfo.rel);
-		  localStorage.setItem('remoteStorageBaseAddress', storageInfo.href+'/pictures');
+		  localStorage.setItem('_remoteStorage/api', storageInfo.rel);
+		  localStorage.setItem('_remoteStorage/baseAddress', storageInfo.href+'/pictures');
 		  window.location = remoteStorage.createOAuthAddress(storageInfo, ['pictures:rw'], location.href);
 		}
 	      });

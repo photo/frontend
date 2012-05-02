@@ -11,6 +11,7 @@ define(
                 cb(err2, data);
               });
             } else {
+              storageInfo.rel=storageInfo.type;//support both while we settle down the syntax
               cb(err, storageInfo);
             }
           });
