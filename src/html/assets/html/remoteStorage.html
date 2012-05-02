@@ -1,12 +1,26 @@
 <html>
 <head>
+  <script src="../javascripts/remoteStorage.min.0.6.2.js"></script>
   <script>
-    localStorage.setItem('remoteStorageApi', 'WebDAV');
-    localStorage.setItem('remoteStorageBaseAddress', 'https://owncube.com/apps/remoteStorage/WebDAV.php/michiel/remoteStorage/pictures');
-    localStorage.setItem('remoteStorageToken', 'cmVtb3RlU3RvcmFnZTo0ZjhiZjkxOWQwY2Vm');
+    var bearerToken = remoteStorage.receiveToken();
+    if(bearerToken) {
+      localStorage.setItem('_unhosted/bearerToken', bearerToken);
+      window.close();
+    } else {
+      var userAddress = localStorage.getItem('_unhosted/userAddress');
+      remoteStorage.getStorageInfo(userAddress, function(err, storageInfo) {
+        if(err) {
+          document.write('no remoteStorage found for user address "'+userAddress+'". Error: '+err);
+        } else {
+          localStorage.setItem('remoteStorageApi', storageInfo.rel);
+	  localStorage.setItem('remoteStorageBaseAddress', storageInfo.href);
+          window.location = remoteStorage.createOAuthAddress(storageInfo, ['pictures:rw'], location.href);
+        }
+      });
+    }
   </script>
 </head>
 <body>
-  Thanks
+  Please wait...
 </body>
 </html>
