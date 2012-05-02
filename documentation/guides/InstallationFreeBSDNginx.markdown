@@ -66,8 +66,6 @@ ICONV
 JSON
 MBSTRING
 MCRYPT
-MYSQL
-MYSQLI
 OPENSSL
 PDF
 PHAR
@@ -86,13 +84,13 @@ ZLIB
 
 
 
-And if you are going to use MySQL install `php5-mysql`.
+And if you are going to use MySQL compile `php5-extentions` with `MYSQL MYSQLI`.
 
 There are also a few optional but recommended packages and modules.
 
-    apt-get install php5-dev php5-imagick exiftran
-    pecl install oauth
-    sh -c "echo \"extension=oauth.so\" >> /etc/php5/conf.d/oauth.ini"
+    /usr/ports/net/pecl-oauth
+    /usr/ports/graphics/pecl-imagick
+    /usr/ports/graphics/exiftran
 
 ----------------------------------------
 
@@ -129,19 +127,19 @@ Assuming that this is a development machine you only need to make the config wri
 
 You'll need to copy the sample virtual host configuration file from the source to `/etc/nginx/sites-enabled`.
 
-    cp /usr/local/www/yourdomain.com/src/configs/openphoto-nginx.conf /etc/nginx/sites-enabled/openphoto
+    cp /usr/local/www/yourdomain.com/src/configs/openphoto-nginx.conf /usr/local/etc/nginx/sites-enabled/openphoto
 
 You'll need to replace:
-	* The host name (yourdomain.com)
-	* The path where OpenPhoto is installed (/usr/local/www/yourdomain.com/src/html/)
+    * The host name (yourdomain.com)
+    * The path where OpenPhoto is installed (/usr/local/www/yourdomain.com/src/html/)
 
-    /etc/nginx/sites-enabled/openphoto
+    /usr/local/etc/nginx/sites-enabled/openphoto
 
 ### PHP
 
 You should also verify that your `php.ini` file has a few important values set correctly.
 
-    vi etc/php5/fpm/php.ini
+    vi /usr/local/etc/php.ini
 
 Search for the following values and make sure they're correct.
 
@@ -151,8 +149,8 @@ Search for the following values and make sure they're correct.
 
 Now you're ready to restart apache and visit the site in your browser.
 
-    service php-fpm restart
-    service nginx restart
+    /usr/local/etc/rc.d/php-fpm restart
+    /usr/local/etc/rc.d/nginx restart
 
 ### Launching your OpenPhoto site
 
