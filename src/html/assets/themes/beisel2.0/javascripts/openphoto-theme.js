@@ -1,5 +1,5 @@
 var opTheme = (function() {
-  var crumb, log, markup, pushstate, tags, pathname;
+  var crumb, log, markup, pushstate, tags, pathname, util;
 
   crumb = (function() {
     var value = null;
@@ -101,25 +101,54 @@ var opTheme = (function() {
     };
   })();
 
+  util = (function() {
+    return {
+      fetchAndCache: function(src) {
+        $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
+      },
+      fetchAndCacheNextPrevious: function() {
+        var nextPhoto = $('img.next-photo'), prevPhoto = $('img.previous-photo');
+        if(prevPhoto.length > 0)
+          OP.Util.fire('preload:photo', {id: prevPhoto.attr('data-id'), sizes:'870x550'});
+        if(nextPhoto.length > 0)
+          OP.Util.fire('preload:photo', {id: nextPhoto.attr('data-id'), sizes:'870x550'});
+      }
+    };
+  })();
+
   return {
     callback: {
       actionDelete: function(ev) {
-      
         ev.preventDefault();
-      
         var el = $(ev.target),
           	url = el.attr('href')+'.json',
             id = el.attr('data-id');
-      
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 204)
             $(".action-container-"+id).hide('medium', function(){ $(this).remove(); });
           else
             opTheme.message.error('Could not delete the photo.');
         });
-        
         return false;
-        
+      },
+      actionPost: function(ev) {
+        ev.preventDefault();
+        var form = $('#favorite-form'),
+            url = form.attr('action')+'.json',
+            params = form.serialize();
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: params,
+            dataType: 'json',
+            success: function(data) {
+              if(data.code === 201)
+                location.href = location.pathname + '?c=favorited';
+              else
+                location.href = location.pathname + '?e=unknown';
+            }
+          }
+        );
       },
       batchAdd: function(photo) {
         var el = $(".pin.photo-"+photo.id);
@@ -158,13 +187,13 @@ var opTheme = (function() {
               'Batch edit your pinned photos',
               '<form id="batch-edit">' +
               '  <div class="clearfix">' +
-              '    <label>Property</label>' +
+              '    <label>What would you like to do?</label>' +
               '    <div class="input">' +
               '      <select id="batch-key" class="batch-field-change" name="property">' +
               '        <option value="tagsAdd">Add Tags</option>' +
               '        <option value="tagsRemove">Remove Tags</option>' +
-              '        <option value="groups">Groups</option>' +
-              '        <option value="permission">Permission</option>' +
+              '        <option value="groups">Update Groups</option>' +
+              '        <option value="permission">Update Permissions</option>' +
               '        <option value="delete">Delete</option>' +
               '      </select>' +
               '    </div>' +
@@ -270,13 +299,13 @@ var opTheme = (function() {
         if(ev.ctrlKey || ev.altKey || ev.metaKey)
           return;
         
-        $(".next-photo").click();
+        $("img.next-photo").click();
       },
       keyBrowsePrevious: function(ev) {
         if(ev.ctrlKey || ev.altKey || ev.metaKey)
           return;
 
-        $(".previous-photo").click();
+        $("img.previous-photo").click();
       },
       login: function(ev) {
         ev.preventDefault();
@@ -368,13 +397,10 @@ var opTheme = (function() {
           else
             urlAjax += '&modal=true';
 
-          photoContainer.fadeTo('fast', .25, function() {
-            modal.load(urlAjax + ' .photo-view', function(response) {
-              photoContainer.fadeTo('fast', 1, function() {
-                modal.scrollTo(this);
-              });
-              pushstate.insert(url, pushstate.parse(response));
-            });
+          modal.load(urlAjax + ' .photo-view', function(response) {
+            var nextPhoto = $('img.next-photo'), prevPhoto = $('img.previous-photo');
+            pushstate.insert(url, pushstate.parse(response));
+            util.fetchAndCacheNextPrevious();
           });
         }
         return false;
@@ -399,6 +425,7 @@ var opTheme = (function() {
         return false;
       },
       photoViewModalCb: function(response) {
+        util.fetchAndCacheNextPrevious();
         pushstate.insert(location.hash, pushstate.parse(response));
       },
       photoUpdate: function() {
@@ -414,6 +441,7 @@ var opTheme = (function() {
             fields = $("form#batch-edit").find("*[name='value']"),
             value;
 
+        el.html('Submitting...').attr("disabled", "disabled");
         if(fields.length == 1) {
           value = fields.val();
         } else {
@@ -500,6 +528,20 @@ var opTheme = (function() {
         }, 'json', 'post');
         return false;
       },
+      preloadPhoto: function(obj) {
+        OP.Util.makeRequest('/photo/'+obj.id+'/view.json', {returnSizes: obj.sizes, generate: 'true'}, opTheme.callback.preloadPhotoCb, 'json', 'get');
+      },
+      preloadPhotoCb: function(response) {
+        var result = response.result, code = response.code;
+        if(code !== 200)
+          return;
+
+        for(i in result) {
+          if(result.hasOwnProperty(i) && /^path[0-9]/.test(i) === true) {
+            util.fetchAndCache(result[i]);
+          }
+        }
+      },
       searchByTags: function(ev) {
         ev.preventDefault();
         var form = $(ev.target).parent().parent(),
@@ -583,10 +625,13 @@ var opTheme = (function() {
           opTheme.init.pages.manage();
         else if(location.pathname.search(/^\/photos(.*)\/list/) === 0)
           opTheme.init.pages.photos.init();
+        else if(location.pathname.search(/^\/p\/[a-z0-9]+/) === 0 || location.pathname.search(/^\/photo\/[a-z0-9]+\/?(.*)\/view/) === 0)
+          opTheme.init.pages.photo.init();
       },
       attach: function() {
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
+        OP.Util.on('click:action-post', opTheme.callback.actionPost);
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
         OP.Util.on('click:group-checkbox', opTheme.callback.groupCheckbox);
@@ -628,6 +673,8 @@ var opTheme = (function() {
         OP.Util.on('upload:complete-failure', opTheme.callback.uploadCompleteFailure);
 
         OP.Util.on('tags:autocomplete', opTheme.callback.tagsAutocomplete);
+
+        OP.Util.on('preload:photo', opTheme.callback.preloadPhoto);
       },
       pages: {
         front: function() {
@@ -678,6 +725,9 @@ var opTheme = (function() {
                 el.addClass("revealed pinned");
             }
           });
+        },
+        photo: {
+          init: function() { util.fetchAndCacheNextPrevious(); }
         },
         photos: {
           page: null,
@@ -816,32 +866,18 @@ var opTheme = (function() {
           return html;
         },
         permission: function() {
-          return '  <div class="clearfix">' +
-                 '    <label>Value</label>' +
-                 '    <div class="input">' +
-                 '      <ul class="inputs-list">' +
-                 '        <li>' +
-                 '          <label>' +
-                 '            <input type="radio" name="value" value="1" checked="checked">' +
-                 '            <span>Public</span>' +
-                 '          </label>' +
-                 '        </li>' +
-                 '        <li>' +
-                 '          <label>' +
-                 '            <input type="radio" name="value" value="0"> ' +
-                 '            <span>Private</span>' +
-                 '          </label>' +
-                 '        </li>' +
-                 '    </div>' +
-                 '  </div>';
+          return '  <label class="radio">' +
+                 '    <input type="radio" name="value" value="1" checked="checked">' +
+                 '    Public' +
+                 '  </label>' +
+                 '  <label class="radio">' +
+                 '    <input type="radio" name="value" value="0"> ' +
+                 '    Private' +
+                 '  </label>';
         },
         tags: function() {
-          return '  <div class="clearfix">' +
-                 '    <label>Tags</label>' +
-                 '    <div class="input">' +
-                 '      <input type="text" name="value" class="tags-autocomplete" placeholder="A comma separated list of tags" value="">' +
-                 '    </div>' +
-                 '  </div>';
+          return '  <label>Tags</label>' +
+                 '  <input type="text" name="value" class="tags-autocomplete" placeholder="A comma separated list of tags" value="">';
         }
       },
       batchMessage: function() {

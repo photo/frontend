@@ -109,6 +109,31 @@ $sql = <<<SQL
 SQL;
 $status = $status && mysql_2_0_1($sql, array(':key' => 'version', ':version' => '2.0.1'));
 
+// #649
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}photo` ADD INDEX ( `owner` ) 
+SQL;
+$status = $status && mysql_2_0_1($sql);
+
+// dateSortByDay
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}photo` ADD `dateSortByDay` VARCHAR( 14 ) NOT NULL AFTER `dateUploadedYear`;
+SQL;
+$status = $status && mysql_2_0_1($sql);
+
+$sql = <<<SQL
+  UPDATE `{$this->mySqlTablePrefix}photo` SET dateSortByDay= CONCAT(
+    CAST(dateTakenYear AS CHAR),
+    LPAD(CAST(dateTakenMonth AS CHAR),2,"0"),
+    LPAD(CAST(dateTakenDay AS CHAR),2,"0"),
+    LPAD(23-HOUR(FROM_UNIXTIME(dateTaken)),2,"0"),
+    LPAD(59-MINUTE(FROM_UNIXTIME(dateTaken)),2,"0"),
+    LPAD(59-SECOND(FROM_UNIXTIME(dateTaken)),2,"0")
+  );
+SQL;
+$status = $status && mysql_2_0_1($sql);
+
+
 function mysql_2_0_1($sql, $params = array())
 {
   try
