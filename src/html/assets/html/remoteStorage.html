@@ -13,7 +13,7 @@
           document.write('no remoteStorage found for user address "'+userAddress+'". Error: '+err);
         } else {
           localStorage.setItem('remoteStorageApi', storageInfo.rel);
-	  localStorage.setItem('remoteStorageBaseAddress', storageInfo.href);
+	  localStorage.setItem('remoteStorageBaseAddress', storageInfo.href+'/pictures');
           window.location = remoteStorage.createOAuthAddress(storageInfo, ['pictures:rw'], location.href);
         }
       });

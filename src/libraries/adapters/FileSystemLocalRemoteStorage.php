@@ -15,7 +15,8 @@ class FileSystemLocalRemoteStorage extends FileSystemLocal implements FileSystem
   public function __construct()
   {
     parent::__construct();
-    $this->remoteStorage = new RemoteStorage('https://owncube.com/apps/remoteStorage/WebDAV.php/michiel/remoteStorage/pictures', 'cmVtb3RlU3RvcmFnZTo0ZjhiZjkxOWQwY2Vm');
+    $rsConfig = getConfig()->get('remotestorage');
+    $this->remoteStorage = new RemoteStorage($rsConfig->baseAddress, $rsConfig->api, $rsConfig->token);
     $fsConfig = getConfig()->get('localfs');
     $this->root = $fsConfig->fsRoot;
     $this->host = $fsConfig->fsHost;

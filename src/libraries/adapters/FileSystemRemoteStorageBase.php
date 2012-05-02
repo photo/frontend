@@ -7,9 +7,11 @@
 
 class RemoteStorage {
   private $picturesBaseUrl;
+  private $api;
   private $token;
-  function __construct($setPicturesBaseUrl, $setToken) {
+  function __construct($setPicturesBaseUrl, $setApi, $setToken) {
     $this->picturesBaseUrl = $setPicturesBaseUrl;
+    $this->api = $setApi;
     $this->token = $setToken;
   }
   function doCurl($verb, $remotePath, $dataFile=null) {
