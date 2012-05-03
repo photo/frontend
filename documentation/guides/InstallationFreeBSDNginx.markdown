@@ -110,14 +110,14 @@ Download and install the source code. We recommend `/usr/local/www/yourdomain.co
     tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
 
-Assuming that this is a development machine you only need to make the config writable by the user Apache runs as. Most likely `www-data`.
+Assuming that this is a development machine you only need to make the config writable by the user Apache runs as. Most likely `www`.
 
     mkdir /usr/local/www/yourdomain.com/src/userdata
     mkdir /usr/local/www/yourdomain.com/src/html/photos
     mkdir /usr/local/www/yourdomain.com/src/html/assets/cache
-    chown www-data:www-data /usr/local/www/yourdomain.com/src/userdata
-    chown www-data:www-data /usr/local/www/yourdomain.com/src/html/photos
-    chown www-data:www-data /usr/local/www/yourdomain.com/src/html/assets/cache
+    chown www:www /usr/local/www/yourdomain.com/src/userdata
+    chown www:www /usr/local/www/yourdomain.com/src/html/photos
+    chown www:www /usr/local/www/yourdomain.com/src/html/assets/cache
 
 ----------------------------------------
 
