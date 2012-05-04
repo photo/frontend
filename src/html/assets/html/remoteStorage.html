@@ -11,7 +11,7 @@
 	      var userAddress = localStorage.getItem('_remoteStorage/userAddress');
 	      remoteStorage.getStorageInfo(userAddress, function(err, storageInfo) {
 		if(err) {
-		  document.write('no remoteStorage found for user address "'+userAddress+'". Error: '+err);
+		  document.write('no remoteStorage found for user address "'+userAddress+'". <a href="http://unhosted.org">register</a>');
 		} else {
 		  localStorage.setItem('_remoteStorage/api', storageInfo.rel);
 		  localStorage.setItem('_remoteStorage/baseAddress', storageInfo.href+'/pictures');

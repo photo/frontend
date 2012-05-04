@@ -45,18 +45,24 @@ class RemoteStorage {
     var_dump($resultCode);
     return $result;
   }
+  private function adaptForLegacyStorage($remotePath) {
+     return implode('_', explode('/', implode('__', explode('_', $remotePath))));
+  }
   function deleteItem($remotePath) {
+    $remotePath = adaptForLegacyStorage($remotePath);
     getLogger()->warn("deleteItem {$remotePath}");
     $result = $this->doCurl('DELETE', $remotePath);
     //return $result;
     return true; 
   }
   function fetchItem($remotePath, $localPath) {
+    $remotePath = adaptForLegacyStorage($remotePath);
     getLogger()->warn("fetchItemSync {$remotePath} {$localPath}");
     $result = $this->doCurl('GET', $remotePath, $localPath);
     return $result;
   }
   function pushItem($localPath, $remotePath) {
+    $remotePath = adaptForLegacyStorage($remotePath);
     getLogger()->warn("pushItemSync {$localPath} {$remotePath}");
     $result = $this->doCurl('PUT', $remotePath, $localPath);
     return $result;
