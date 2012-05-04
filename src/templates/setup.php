@@ -126,7 +126,7 @@
         <h3>Discover your remoteStorage details <!--<em>(<a href="">what's this?</a>)</em>--></h3>
         <span id="connect">
           <link rel="stylesheet/css" href="/assets/stylesheets/remoteStorage.css">
-          <input id="connect-address" placeholder="user@server" <?php if(isset($email)) { ?>value="<?php $this->utility->safe($email); ?>"<?php } ?> autofocus />
+          <input id="connect-address" placeholder="user@server" autofocus />
           <input type="submit" id="connect-button" class="btn btn-primary" value="connect" />
           <script src="/assets/javascripts/remoteStorageSetup.js"></script>
         </span>
