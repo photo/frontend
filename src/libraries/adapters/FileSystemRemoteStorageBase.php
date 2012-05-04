@@ -41,8 +41,7 @@ class RemoteStorage {
     }
     $result = curl_exec($ch);
     $resultCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    var_dump($result);
-    var_dump($resultCode);
+    getLogger()->warn('result '.var_export($resultCode, true).': '.var_export($result, true));
     return $result;
   }
   private function adaptForLegacyStorage($remotePath) {
