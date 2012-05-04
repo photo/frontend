@@ -15,7 +15,7 @@ class RemoteStorage {
     $this->token = $setToken;
   }
   function doCurl($verb, $remotePath, $dataFile=null) {
-    getLogger()->warn("doCurl {$verb} {$this->picturesBaseUrl}{$remotePath} {$dataFile}");
+    getLogger()->warn("doCurl {$verb} {$this->picturesBaseUrl} {$remotePath} {$dataFile}");
     $ch = curl_init($this->picturesBaseUrl.$remotePath);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer '.$this->token));
@@ -46,23 +46,23 @@ class RemoteStorage {
     return $result;
   }
   private function adaptForLegacyStorage($remotePath) {
-     return implode('_', explode('/', implode('__', explode('_', $remotePath))));
+     return '/'.implode('_', explode('/', implode('__', explode('_', substr($remotePath, 1)))));
   }
   function deleteItem($remotePath) {
-    $remotePath = adaptForLegacyStorage($remotePath);
+    $remotePath = $this->adaptForLegacyStorage($remotePath);
     getLogger()->warn("deleteItem {$remotePath}");
     $result = $this->doCurl('DELETE', $remotePath);
     //return $result;
     return true; 
   }
   function fetchItem($remotePath, $localPath) {
-    $remotePath = adaptForLegacyStorage($remotePath);
+    $remotePath = $this->adaptForLegacyStorage($remotePath);
     getLogger()->warn("fetchItemSync {$remotePath} {$localPath}");
     $result = $this->doCurl('GET', $remotePath, $localPath);
     return $result;
   }
   function pushItem($localPath, $remotePath) {
-    $remotePath = adaptForLegacyStorage($remotePath);
+    $remotePath = $this->adaptForLegacyStorage($remotePath);
     getLogger()->warn("pushItemSync {$localPath} {$remotePath}");
     $result = $this->doCurl('PUT', $remotePath, $localPath);
     return $result;
