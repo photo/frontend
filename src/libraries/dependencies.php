@@ -59,6 +59,9 @@ require $pathsObj->adapters . '/Image.php';
 require $pathsObj->adapters . '/ImageImageMagick.php';
 require $pathsObj->adapters . '/ImageGraphicsMagick.php';
 require $pathsObj->adapters . '/ImageGD.php';
+require $pathsObj->adapters . '/Maps.php';
+require $pathsObj->adapters . '/MapsGoogle.php';
+require $pathsObj->adapters . '/MapsOsm.php';
 
 // models
 require $pathsObj->models . '/BaseModel.php';
