@@ -73,7 +73,7 @@ class SetupController extends BaseController
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
     $body = $this->template->get($template, array('filesystem' => $filesystem, 'database' => $database, 'themes' => $themes, 'theme' => $theme,
-      'imageLibs' => $imageLibs, 'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'password' => $password, 'qs' => $qs, 'errors' => $errors));
+      'imageLibs' => $imageLibs, 'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'password' => '', 'qs' => $qs, 'errors' => $errors));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -290,6 +290,7 @@ class SetupController extends BaseController
     extract($this->getDefaultConfigParams());
     $secret = $this->getSecret();
     $step = 3;
+    $password = getSession()->get('password');
     $appId = getSession()->get('appId');
     $database = getSession()->get('database');
     $filesystem = getSession()->get('filesystem');
@@ -367,7 +368,7 @@ class SetupController extends BaseController
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
     // copied to/from setup3Post()
-    $body = $this->template->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
+    $body = $this->template->get($template, array('step' => $step, 'password' => $password,'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3,
       'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
       'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
@@ -393,6 +394,7 @@ class SetupController extends BaseController
     $database = getSession()->get('database');
     $filesystem = getSession()->get('filesystem');
     $appId = getSession()->get('appId');
+    $password = getSession()->get('password');
     $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
@@ -538,7 +540,6 @@ class SetupController extends BaseController
 
       $user = new stdClass;
       $user->email = getSession()->get('ownerEmail');
-      $user->password = getSession()->get('password');
 
       // save the config info
       getConfig()->set('credentials', $credentials);
@@ -578,7 +579,11 @@ class SetupController extends BaseController
 
         $dbErrors = array_merge($dbErrors, $dbObj->errors());
       }
-      $dbObj->putUser(array('password' => $this->utiilty->encrypt($password)));
+
+      if(getConfig()->get('site')->allowOpenPhotoLogin == 1)
+        $dbObj->putUser(array('password' => sha1(sprintf('%s-%s', $password, getConfig()->get('secrets')->passwordSalt))));
+      else
+        $dbObj->putUser(array('password' => ''));
 
       if($fsErrors === false && $dbErrors === false)
       {
@@ -624,7 +629,7 @@ class SetupController extends BaseController
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
     // copied to/from setup3()
-    $body = $this->template->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
+    $body = $this->template->get($template, array('step' => $step, 'password' => $password,'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3,
       'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
       'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
@@ -783,9 +788,7 @@ class SetupController extends BaseController
     $session = getSession()->getAll();
     foreach($session as $key => $val)
     {
-      if($key == 'password')
-        $pReplace["{{$key}}"] = $this->utility->encrypt($val, $secret);
-      if($key != 'email')
+      if($key != 'email' && $key != 'password')
         $pReplace["{{$key}}"] = $val;
 
       getLogger()->info(sprintf('Storing %s as %s', $key, $val));

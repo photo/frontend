@@ -23,7 +23,7 @@ class LoginOpenPhoto implements LoginInterface
     if($this->config->site->allowOpenPhotoLogin != 1 || $email == '' || $password == '')
       return false;
 
-    $passwordHashed = $this->utility->encrypt($password, $this->config->secrets->passwordSalt, $this->config->secrets->passwordSecret);
+    $passwordHashed = sha1(sprintf('%s-%s', $password, $this->config->secrets->passwordSalt));
     $user = $this->db->getUserByEmailAndPassword($email, $passwordHashed);
     if(!$user)
       return false;
