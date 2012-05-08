@@ -575,6 +575,24 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Get the user record entry by username and password.
+    *
+    * @return mixed Array on success, otherwise FALSE
+    */
+  public function getUserByEmailAndPassword($email = null, $password = null)
+  {
+    if($email == '' || $password == '')
+      return false;;
+
+    $res = $this->db->select("SELECT * FROM `{$this->domainUser}` WHERE itemName()='{$email}' AND `password`='{$password}", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeUser($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
     * Get a webhook specified by $id
     *
     * @param string $id ID of the webhook to retrieve
