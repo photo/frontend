@@ -105,7 +105,6 @@
             // get the library plugin file that maps library functions to a normalized
             // naming so that we can use whatever library that is specified
             this.getLibraryPlugin();
-
         };
 
         /**
@@ -150,7 +149,7 @@
         */
         this.onviewevent = function(e) {
 
-            log('[Util] onviewevent: ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -175,8 +174,7 @@
         * @method onkeydownevent
         */
         this.onkeydownevent = function(e) {
-            
-            log('[Util] keydownevent: ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
             
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -223,7 +221,7 @@
         */
         this.onmouseevent = function(e) {
             
-            log('[Util] mouseevent: ' + e.type + ' - ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),

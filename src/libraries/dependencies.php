@@ -54,10 +54,14 @@ require $pathsObj->adapters . '/FileSystemDropboxBase.php';
 require $pathsObj->adapters . '/Login.php';
 require $pathsObj->adapters . '/LoginBrowserId.php';
 require $pathsObj->adapters . '/LoginFacebook.php';
+require $pathsObj->adapters . '/LoginOpenPhoto.php';
 require $pathsObj->adapters . '/Image.php';
 require $pathsObj->adapters . '/ImageImageMagick.php';
 require $pathsObj->adapters . '/ImageGraphicsMagick.php';
 require $pathsObj->adapters . '/ImageGD.php';
+require $pathsObj->adapters . '/Maps.php';
+require $pathsObj->adapters . '/MapsGoogle.php';
+require $pathsObj->adapters . '/MapsOsm.php';
 
 // models
 require $pathsObj->models . '/BaseModel.php';

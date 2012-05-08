@@ -30,7 +30,7 @@
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'l'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'm'); ?>">
     <?php } ?>
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
@@ -68,13 +68,12 @@
       <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
     <?php } else { ?>
       <script type="text/javascript" src="<?php echo getAssetPipeline(true)->addJs($this->theme->asset($this->config->dependencies->javascript, null, false))->
-                                                                        addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'd'); ?>"></script>
+                                                                        addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'f'); ?>"></script>
     <?php } ?>
     <script>
       OP.Util.init(jQuery, {
         eventMap: {
           'click': {
-              'action-box-click':'click:action-box',
               'action-delete-click':'click:action-delete',
               'action-jump-click':'click:action-jump',
               'action-post-click':'click:action-post',
@@ -85,8 +84,9 @@
               'group-email-add-click':'click:group-email-add',
               'group-email-remove-click':'click:group-email-remove',
               'group-post-click':'click:group-post',
-              'login-modal-click':'click:login-modal',
               'login-click':'click:login',
+              'login-modal-click':'click:login-modal',
+              'login-openphoto-click':'click:login-openphoto',
               'map-jump-click':'click:map-jump',
               'modal-close-click':'click:modal-close',
               'nav-item-click':'click:nav-item',
@@ -118,7 +118,7 @@
           'keydown': {
               37: 'keydown:browse-previous',
               39: 'keydown:browse-next'
-          },
+          }
         },
         js: {
           assets: [
@@ -155,7 +155,7 @@
             '<?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 's'); ?>'
+                                                  getUrl(AssetPipeline::js, 'x'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 

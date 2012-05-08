@@ -74,7 +74,6 @@ $apiObj->get('/?v?1?/tags/list.json', array('ApiTagController', 'list_'), EpiApi
  * /user[/{provider}]/{action}.json
  */
 $apiObj->post('/?v?1?/user/([a-z0-9]+)/login.json', array('ApiUserController', 'login'), EpiApi::external);
-$apiObj->post('/?v?1?/user/login/mobile.json', array('ApiUserController', 'loginMobile'), EpiApi::external);
 $apiObj->get('/?v?1?/user/logout.json', array('ApiUserController', 'logout'), EpiApi::external);
 
 /*

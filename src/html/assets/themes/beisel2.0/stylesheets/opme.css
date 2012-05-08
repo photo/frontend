@@ -3216,6 +3216,7 @@ body.manage .navbar .nav .manage > a, body.manage .navbar .nav .manage > a:hover
   top:5%;
   left:2%;
   margin:0;
+  max-height:inherit;
 }
 .modal.photo-detail.fade.in .photo-view{
   padding:10px;
@@ -4220,6 +4221,10 @@ body.tags div.tags .tag-list {
 	padding:10px;
 	position:absolute;
 	left:10px;
+}
+
+body.photos .comment-form {
+  display:none;
 }
 
 .photodetail .camera {

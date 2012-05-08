@@ -471,25 +471,44 @@ class DatabaseMySql implements DatabaseInterface
   {
     $buildQuery = $this->buildQuery($filterOpts, null, null, 'photo');
     $photo = $this->getPhoto($id);
-    if(!$photo)
+    if(!$photo || !isset($photo['dateSortByDay']) || empty($photo['dateSortByDay']))
       return false;
 
-    $sortKey = 'dateTaken';
-    if(isset($filterOpts['sortBy'])) {
-        $sortOptions = (array)explode(',', $filterOpts['sortBy']);
-        if(!empty($sortOptions)) {
-            $sortKey = $sortOptions[0];
-        }
-    }
     // owner is in buildQuery
-    $photo_prev = $this->db->one("SELECT `{$this->mySqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND {$sortKey}> :{$sortKey} AND {$sortKey} IS NOT NULL {$buildQuery['groupBy']} ORDER BY {$sortKey} ASC LIMIT 1", array(":{$sortKey}" => $photo[$sortKey]));
-    $photo_next = $this->db->one("SELECT `{$this->mySqlTablePrefix}photo`.* {$buildQuery['from']} {$buildQuery['where']} AND {$sortKey}< :{$sortKey} AND {$sortKey} IS NOT NULL {$buildQuery['groupBy']} ORDER BY {$sortKey} DESC LIMIT 1", array(":{$sortKey}" => $photo[$sortKey]));
+    // TODO: paginating with random sorting is a pain - default for now
+    // determine where to start
+    // this should return the immediately adjacent photo prior to $photo
+    // if there are none we set it to the current photo and only get a next
+    $startResp = $this->db->one("SELECT `dateSortByDay` FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND `dateSortByDay` < :dateSortByDay {$buildQuery['groupBy']} ORDER BY `dateSortByDay` DESC", 
+      array(':dateSortByDay' => $photo['dateSortByDay']));
+    if(!empty($startResp))
+      $startValue = $startResp['dateSortByDay'];
+    else
+      $startValue = $photo['dateSortByDay'];
+
+    // remembering that the photos are sorted in descending order on dateSortByDay
+    // we reverse the sort so it's the oldest first then select everything after the 
+    // photo immediately older than this one
+    $photosNextPrev = $this->db->all(
+      $sql = " SELECT `{$this->mySqlTablePrefix}photo`.*
+        {$buildQuery['from']}
+        {$buildQuery['where']} AND `dateSortByDay` >= :startValue
+        {$buildQuery['groupBy']}
+        ORDER BY `dateSortByDay` ASC
+        LIMIT 3", 
+      array(':startValue' => $startValue)
+    );
 
     $ret = array();
-    if($photo_prev)
-      $ret['previous'] = $this->normalizePhoto($photo_prev);
-    if($photo_next)
-      $ret['next'] = $this->normalizePhoto($photo_next);
+    if(!empty($photosNextPrev))
+    {
+      if($photosNextPrev[0]['dateSortByDay'] < $photo['dateSortByDay'])
+        $ret['next'] = $this->normalizePhoto($photosNextPrev[0]);
+
+      $last = array_pop($photosNextPrev);
+      if($last && $last['dateSortByDay'] > $photo['dateSortByDay'])
+        $ret['previous'] = $this->normalizePhoto($last);
+    }
 
     return $ret;
   }
@@ -625,10 +644,24 @@ class DatabaseMySql implements DatabaseInterface
       $owner = $this->owner;
     $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
     if($res)
-    {
       return $this->normalizeUser($res);
-    }
     return null;
+  }
+
+  /**
+    * Get the user record entry by username and password.
+    *
+    * @return mixed Array on success, otherwise FALSE
+    */
+  public function getUserByEmailAndPassword($email = null, $password = null)
+  {
+    if($email == '' || $password == '')
+      return false;;
+
+    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:email AND `password`=:password", array(':email' => $email, ':password' => $password));
+    if($res)
+      return $this->normalizeUser($res);
+    return false;
   }
 
   /**
@@ -1231,7 +1264,7 @@ class DatabaseMySql implements DatabaseInterface
     $from = "FROM `{$this->mySqlTablePrefix}{$table}` ";
     $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
     $groupBy = '';
-    $sortBy = 'ORDER BY CONCAT(dateTakenYear,LPAD(dateTakenMonth,2,"0"),LPAD(dateTakenDay,2,"0")) DESC, dateTaken ASC';
+    $sortBy = 'ORDER BY dateSortByDay DESC';
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -1263,13 +1296,13 @@ class DatabaseMySql implements DatabaseInterface
             break;
           case 'sortBy':
             if($value === 'dateTaken,desc')
-              $sortBy = 'ORDER BY CONCAT(dateTakenYear,LPAD(dateTakenMonth,2,"0"),LPAD(dateTakenDay,2,"0")) DESC, dateTaken ASC';
+              $sortBy = 'ORDER BY dateSortByDay DESC';
             elseif($value === 'dateTaken,asc')
-              $sortBy = 'ORDER BY CONCAT(dateTakenYear,LPAD(dateTakenMonth,2,"0"),LPAD(dateTakenDay,2,"0")) ASC, dateTaken ASC';
+              $sortBy = 'ORDER BY dateSortByDay ASC';
             elseif($value === 'dateUploaded,desc')
-              $sortBy = 'ORDER BY CONCAT(dateUploadedYear,LPAD(dateUploadedMonth,2,"0"),LPAD(dateUploadedDay,2,"0")) DESC, dateUploaded ASC';
+              $sortBy = 'ORDER BY dateSortByDay DESC, dateUploaded ASC';
             elseif($value === 'dateUploaded,asc')
-              $sortBy = 'ORDER BY CONCAT(dateUploadedYear,LPAD(dateUploadedMonth,2,"0"),LPAD(dateUploadedDay,2,"0")) ASC, dateUploaded ASC';
+              $sortBy = 'ORDER BY dateSortByDay ASC, dateUploaded ASC';
             else
               $sortBy = 'ORDER BY ' . $this->_(str_replace(',', ' ', $value));
             $field = $this->_(substr($value, 0, strpos($value, ',')));
@@ -1509,7 +1542,7 @@ class DatabaseMySql implements DatabaseInterface
       foreach($jsonParsed as $key => $value)
         $raw[$key] = $value;
     }
-    unset($raw['extra']);
+    unset($raw['extra'], $raw['password']);
     return $raw;
   }
 
@@ -1599,13 +1632,23 @@ class DatabaseMySql implements DatabaseInterface
     }
     if(!empty($exif))
     {
-      $bindings[":exif"] = json_encode($exif);
+      $bindings[':exif'] = json_encode($exif);
       $paramsOut['exif'] = ':exif';
     }
     if(!empty($extra))
     {
-      $bindings[":extra"] = json_encode($extra);
+      $bindings[':extra'] = json_encode($extra);
       $paramsOut['extra'] = ':extra';
+    }
+
+    if(isset($params['dateTaken']))
+    {
+      // here we seed a field for the default sort order of day descending and time ascending
+      $invHours = str_pad(intval(23-date('H', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
+      $invMins = str_pad(intval(59-date('i', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
+      $invSecs = str_pad(intval(59-date('s', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
+      $bindings[':dateSortByDay'] = sprintf('%s%s%s%s', date('Ymd', $params['dateTaken']), $invHours, $invMins, $invSecs);
+      $paramsOut['dateSortByDay'] = ':dateSortByDay';
     }
     $paramsOut['::bindings'] = $bindings;
     return $paramsOut;
