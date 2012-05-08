@@ -10,8 +10,6 @@
   */
 class User extends BaseModel
 {
-  const mobilePassphraseExpiry = 900; // 15 minutes
-
   /**
     * A user object that caches the value once it's been fetched from the remote datasource.
     * @access private
@@ -54,23 +52,6 @@ class User extends BaseModel
       return $credential->getEmailFromOAuth();
     else
       return $this->session->get('email');
-  }
-
-  /**
-    * Get mobile passphrase key
-    * @return string
-    */
-  public function getMobilePassphrase()
-  {
-    $phrase = $this->cache->get($this->getMobilePassphraseKey());
-    if(empty($phrase))
-      return null;
-
-    $parts = explode('-', $phrase);
-    if($parts[1] < time())
-      return null;
-
-    return array('phrase' => $parts[0], 'expiresAt' => $parts[1]);
   }
 
   /**
@@ -217,23 +198,6 @@ class User extends BaseModel
   }
 
   /**
-    * Sets the mobile passphrase key
-    *
-    * @return string
-    */
-  public function setMobilePassphrase($destroy = false)
-  {
-    if($destroy === true)
-    {
-      $this->cache->set($this->getMobilePassphraseKey(), '');
-      return null;
-    }
-    $phrase = sprintf('%s-%s', substr(md5(uniqid()), 0, 6), time()+self::mobilePassphraseExpiry);
-    $this->cache->set($this->getMobilePassphraseKey(), $phrase, self::mobilePassphraseExpiry);
-    return $phrase;
-  }
-
-  /**
     * Creates and returns a credential object
     *
     * @return object
@@ -267,7 +231,7 @@ class User extends BaseModel
     */
   private function getDefaultAttributes()
   {
-    return array('lastPhotoId' => '', 'lastActionId' => '', 'lastGroupId' => '', 'lastWebhookId' => '');
+    return array('lastPhotoId' => '', 'lastActionId' => '', 'lastGroupId' => '', 'lastWebhookId' => '', 'password' => '');
   }
 
   /**

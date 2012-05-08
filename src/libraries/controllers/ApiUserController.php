@@ -24,7 +24,6 @@ class ApiUserController extends ApiBaseController
     */
   public function login($provider = null)
   {
-    error_log('wth');
     $wasUserLoggedIn = $this->user->login($provider, $_POST);
     if($wasUserLoggedIn)
       return $this->success('User was logged in successfully', array('email' => getSession()->get('email')));

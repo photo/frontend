@@ -15,6 +15,6 @@
 
 <p>
   <form action="/upgrade" method="post">
-    <button type="submit">Begin upgrade</button>
+    <button type="submit" class="btn btn-primary">Begin upgrade</button>
   </form>
 </p>
