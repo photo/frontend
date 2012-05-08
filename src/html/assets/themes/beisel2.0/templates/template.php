@@ -68,7 +68,7 @@
       <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
     <?php } else { ?>
       <script type="text/javascript" src="<?php echo getAssetPipeline(true)->addJs($this->theme->asset($this->config->dependencies->javascript, null, false))->
-                                                                        addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'e'); ?>"></script>
+                                                                        addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'f'); ?>"></script>
     <?php } ?>
     <script>
       OP.Util.init(jQuery, {
@@ -84,8 +84,9 @@
               'group-email-add-click':'click:group-email-add',
               'group-email-remove-click':'click:group-email-remove',
               'group-post-click':'click:group-post',
-              'login-modal-click':'click:login-modal',
               'login-click':'click:login',
+              'login-modal-click':'click:login-modal',
+              'login-openphoto-click':'click:login-openphoto',
               'map-jump-click':'click:map-jump',
               'modal-close-click':'click:modal-close',
               'nav-item-click':'click:nav-item',
@@ -117,7 +118,7 @@
           'keydown': {
               37: 'keydown:browse-previous',
               39: 'keydown:browse-next'
-          },
+          }
         },
         js: {
           assets: [
@@ -154,7 +155,7 @@
             '<?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'w'); ?>'
+                                                  getUrl(AssetPipeline::js, 'x'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
