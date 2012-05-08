@@ -132,6 +132,7 @@ class EpiDatabase
       $dsn = sprintf('%s:host=%s', $this->_type, $this->_host);
       if($this->_name != '')
         $dsn .= sprintf(';dbname=%s', $this->_name);
+      $dsn .= ';charset=utf8';
       $this->dbh = new PDO($dsn, $this->_user, $this->_pass);
       $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }

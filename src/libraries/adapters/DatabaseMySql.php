@@ -34,7 +34,6 @@ class DatabaseMySql implements DatabaseInterface
       EpiDatabase::employ('mysql', $mysql->mySqlDb,
                           $mysql->mySqlHost, $mysql->mySqlUser, $utilityObj->decrypt($mysql->mySqlPassword));
       $this->db = getDatabase();
-      $this->db->execute("SET NAMES 'utf8'");
     }
 
     foreach($mysql as $key => $value)
