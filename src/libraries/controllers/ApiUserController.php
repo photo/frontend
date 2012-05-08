@@ -24,32 +24,12 @@ class ApiUserController extends ApiBaseController
     */
   public function login($provider = null)
   {
+    error_log('wth');
     $wasUserLoggedIn = $this->user->login($provider, $_POST);
     if($wasUserLoggedIn)
       return $this->success('User was logged in successfully', array('email' => getSession()->get('email')));
     else
-      return $this->error('User was not able to be logged in', false);
-  }
-
-  /**
-    * Log a user in via mobilePassphrase
-    *
-    * @return string Standard JSON envelope
-    */
-  public function loginMobile()
-  {
-    $mobilePassphrase = $this->user->getMobilePassphrase();
-
-    if(empty($mobilePassphrase) || !isset($_POST['passphrase']) || $mobilePassphrase['phrase'] != $_POST['passphrase'])
-      return $this->forbidden('Unable to authenticate', false);
-
-    $email = $this->config->user->email;
-    $this->user->setEmail($email);
-    $this->user->setMobilePassphrase(true); // unset
-    if(isset($_POST['redirect']))
-      $this->route->redirect($_POST['redirect'], null, true);
-    else
-      return $this->success('User was logged in successfully', array('email' => getSession()->get('email')));
+      return $this->forbidden('User was not able to be logged in', false);
   }
 
   /**

@@ -319,6 +319,30 @@ var opTheme = (function() {
         ev.preventDefault();
         $('#loginBox').modal();
       },
+      loginOpenPhoto: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target).parent()
+            params = el.serialize();
+        params += '&httpCodes=403';
+        $.ajax(
+          {
+            url: '/user/openphoto/login.json',
+            dataType:'json',
+            data:params,
+            type:'POST',
+            success: opTheme.user.base.loginProcessed,
+            error: opTheme.callback.loginOpenPhotoFailedCb,
+            context: el
+          }
+        );
+        return false;
+      },
+      loginOpenPhotoFailedCb: function(response) {
+        var fields = $(this).find('.control-group');
+        fields.each(function(i, el) {
+          $(el).addClass('error');
+        });
+      },
       modalClose: function(ev) {
         ev.preventDefault();
         var el = $(ev.target).parent().parent();
@@ -611,6 +635,7 @@ var opTheme = (function() {
         OP.Util.on('click:group-post', opTheme.callback.groupPost);
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:login-modal', opTheme.callback.loginModal);
+        OP.Util.on('click:login-openphoto', opTheme.callback.loginOpenPhoto);
         OP.Util.on('click:modal-close', opTheme.callback.modalClose);
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
