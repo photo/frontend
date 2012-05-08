@@ -150,7 +150,7 @@
         */
         this.onviewevent = function(e) {
 
-            log('[Util] onviewevent: ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -176,7 +176,7 @@
         */
         this.onkeydownevent = function(e) {
             
-            log('[Util] keydownevent: ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
             
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -223,7 +223,7 @@
         */
         this.onmouseevent = function(e) {
             
-            log('[Util] mouseevent: ' + e.type + ' - ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),

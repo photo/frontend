@@ -36,6 +36,7 @@ interface DatabaseInterface
   public function getPhotoWithActions($id);
   public function getPhotos($filters = array(), $limit = null, $offset = null);
   public function getUser($owner = null);
+  public function getUserByEmailAndPassword($email = null, $password = null);
   public function getTag($tag);
   public function getTags($filters = array());
   public function getWebhook($id);
