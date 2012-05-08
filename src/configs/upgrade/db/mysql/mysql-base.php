@@ -224,9 +224,11 @@ SQL;
 
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}user` (
-    `id` varchar(255) NOT NULL COMMENT 'User''s email address',
-    `extra` text NOT NULL,
-    PRIMARY KEY (`id`)
+   `id` varchar(255) NOT NULL COMMENT 'User''s email address',
+   `password` varchar(64) NOT NULL,
+   `extra` text NOT NULL,
+   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQL;
   mysql_base($sql);
