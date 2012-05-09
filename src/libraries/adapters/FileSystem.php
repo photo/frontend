@@ -52,6 +52,9 @@ if(!function_exists('getFs'))
       case 'LocalDropbox':
         $filesystem = new FileSystemLocalDropbox();
         break;
+      case 'LocalRemoteStorage':
+        $filesystem = new FileSystemLocalRemoteStorage();
+        break;
       case 'S3':
         $filesystem = new FileSystemS3();
         break;

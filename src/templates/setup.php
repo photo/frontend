@@ -73,6 +73,7 @@
         <option value="S3Dropbox"<?php echo ($filesystem == 'S3Dropbox') ? ' selected="selected"' : '' ?>>Amazon S3 + Dropbox</option>
         <option value="Local"<?php echo ($filesystem == 'Local') ? ' selected="selected"' : '' ?>>Local filesystem</option>
         <option value="LocalDropbox"<?php echo ($filesystem == 'LocalDropbox') ? ' selected="selected"' : '' ?>>Local filesystem + Dropbox</option>
+        <option value="LocalRemoteStorage"<?php echo ($filesystem == 'LocalRemoteStorage') ? ' selected="selected"' : '' ?>>Local filesystem + remoteStorage</option>
       </select>
 
       <div class="btn-toolbar">
@@ -127,6 +128,21 @@
 
         <label for="mySqlTablePrefix">Table prefix <em>(optional)</em></label>
         <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
+      <?php } ?>
+      <?php if((isset($usesRemoteStorage) && !empty($usesRemoteStorage))) { ?>
+        <h3>Discover your remoteStorage details <!--<em>(<a href="">what's this?</a>)</em>--></h3>
+        <span id="connect">
+          <link rel="stylesheet/css" href="/assets/stylesheets/remoteStorage.css">
+          <input id="connect-address" placeholder="user@server" autofocus />
+          <input type="submit" id="connect-button" class="btn btn-primary" value="connect" />
+          <script src="/assets/javascripts/remoteStorageSetup.js"></script>
+        </span>
+        <label for="remoteStorageApi">API</label>
+        <input type="text" name="remoteStorageApi" id="remoteStorageApi" size="50" data-validation="required" value="<?php echo $remoteStorageApi; ?>">
+        <label for="remoteStorageBaseAddress">Base address</label>
+        <input type="text" name="remoteStorageBaseAddress" id="remoteStorageBaseAddress" size="50" data-validation="required" value="<?php echo $remoteStorageBaseAddress; ?>">
+        <label for="remoteStorageToken">Token</label>
+        <input type="text" name="remoteStorageToken" id="remoteStorageToken" size="50" data-validation="required" value="<?php echo $remoteStorageToken; ?>">
       <?php } ?>
       <?php if((isset($usesLocalFs) && !empty($usesLocalFs))) { ?>
         <h3>Enter your local file system credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
