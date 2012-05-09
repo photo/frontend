@@ -1,0 +1,28 @@
+<html>
+<head>
+  <script src="../javascripts/require.js"></script>
+  <script>
+    require(['../javascripts/remoteStorage.js'], function(remoteStorage) {
+	    var bearerToken = remoteStorage.receiveToken();
+	    if(bearerToken) {
+	      localStorage.setItem('_remoteStorage/token', bearerToken);
+	      window.close();
+	    } else {
+	      var userAddress = localStorage.getItem('_remoteStorage/userAddress');
+	      remoteStorage.getStorageInfo(userAddress, function(err, storageInfo) {
+		if(err) {
+		  document.write('no remoteStorage found for user address "'+userAddress+'". <a href="http://unhosted.org">register</a>');
+		} else {
+		  localStorage.setItem('_remoteStorage/api', storageInfo.rel);
+		  localStorage.setItem('_remoteStorage/baseAddress', storageInfo.href+'/pictures');
+		  window.location = remoteStorage.createOAuthAddress(storageInfo, ['pictures:rw'], location.href);
+		}
+	      });
+	    }
+    });
+  </script>
+</head>
+<body>
+  Please wait...
+</body>
+</html>
