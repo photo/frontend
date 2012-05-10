@@ -813,6 +813,8 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function postUser($params)
   {
     // make sure we don't overwrite an existing user record
+    if(isset($params['password']) && empty($params['password']))
+      unset($params['password']);
     $res = $this->db->put_attributes($this->domainUser, $this->owner, $params, true);
     $this->logErrors($res);
     return $res->isOK();
@@ -942,6 +944,8 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function putUser($params)
   {
+    if(isset($params['password']) && empty($params['password']))
+      unset($params['password']);
     $res = $this->db->put_attributes($this->domainUser, $this->owner, $params);
     $this->logErrors($res);
     return $res->isOK();

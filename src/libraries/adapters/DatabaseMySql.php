@@ -1154,8 +1154,18 @@ class DatabaseMySql implements DatabaseInterface
   public function putUser($params)
   {
     $params = $this->prepareUser($params);
-    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`password`,`extra`) VALUES (:id,:password,:extra)", 
-      array(':id' => $this->owner, ':password' => $params['password'], ':extra' => $params['extra']));
+    if(isset($params['password']))
+    {
+      $sql = "INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`password`,`extra`) VALUES (:id,:password,:extra)";
+      $params = array(':id' => $this->owner, ':password' => $params['password'], ':extra' => $params['extra']);
+    }
+    else
+    {
+      $sql = "INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`extra`) VALUES (:id,:extra)";
+      $params = array(':id' => $this->owner, ':extra' => $params['extra']);
+    }
+
+    $result = $this->db->execute($sql, $params);
     return $result !== false;
   }
 
