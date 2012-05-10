@@ -26,6 +26,16 @@ class User extends BaseModel
   }
 
   /**
+    * Encrypt user password
+    *
+    * @return string
+   */
+  public function encryptPassword($password)
+  {
+    return sha1(sprintf('%s-%s', $password, $this->config->secrets->passwordSalt));
+  }
+
+  /**
     * Get an avatar given an email address
     * See http://en.gravatar.com/site/implement/images/ and http://en.gravatar.com/site/implement/hash/
     *
@@ -257,6 +267,14 @@ class User extends BaseModel
   {
     $user = $this->getUserRecord();
     $params = array_merge($this->getDefaultAttributes(), $user, $params);
+    // encrypt the password if present, else remove it
+    if(isset($params['password']))
+    {
+      if(!empty($params['password']))
+        $params['password'] = $this->encryptPassword($params['password']);
+      else
+        unset($params['password']);
+    }
     return $this->db->postUser($params);
   }
 }
