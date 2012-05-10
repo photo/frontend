@@ -13,7 +13,7 @@
           In your S3 bucket (<?php $this->utility->safe($aws['bucket']); ?>)
         <?php } ?>
       <?php } elseif($systems['FileSystem'] === 'S3Dropbox') { ?>
-        Dropbox
+        Your Dropbox account
       <?php } ?>
       <div>
         <em>You'll be able to change this soon</em>
