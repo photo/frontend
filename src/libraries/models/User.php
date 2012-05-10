@@ -10,8 +10,6 @@
   */
 class User extends BaseModel
 {
-  const mobilePassphraseExpiry = 900; // 15 minutes
-
   /**
     * A user object that caches the value once it's been fetched from the remote datasource.
     * @access private
@@ -25,6 +23,16 @@ class User extends BaseModel
   public function __construct()
   {
     parent::__construct();
+  }
+
+  /**
+    * Encrypt user password
+    *
+    * @return string
+   */
+  public function encryptPassword($password)
+  {
+    return sha1(sprintf('%s-%s', $password, $this->config->secrets->passwordSalt));
   }
 
   /**
@@ -54,23 +62,6 @@ class User extends BaseModel
       return $credential->getEmailFromOAuth();
     else
       return $this->session->get('email');
-  }
-
-  /**
-    * Get mobile passphrase key
-    * @return string
-    */
-  public function getMobilePassphrase()
-  {
-    $phrase = $this->cache->get($this->getMobilePassphraseKey());
-    if(empty($phrase))
-      return null;
-
-    $parts = explode('-', $phrase);
-    if($parts[1] < time())
-      return null;
-
-    return array('phrase' => $parts[0], 'expiresAt' => $parts[1]);
   }
 
   /**
@@ -217,23 +208,6 @@ class User extends BaseModel
   }
 
   /**
-    * Sets the mobile passphrase key
-    *
-    * @return string
-    */
-  public function setMobilePassphrase($destroy = false)
-  {
-    if($destroy === true)
-    {
-      $this->cache->set($this->getMobilePassphraseKey(), '');
-      return null;
-    }
-    $phrase = sprintf('%s-%s', substr(md5(uniqid()), 0, 6), time()+self::mobilePassphraseExpiry);
-    $this->cache->set($this->getMobilePassphraseKey(), $phrase, self::mobilePassphraseExpiry);
-    return $phrase;
-  }
-
-  /**
     * Creates and returns a credential object
     *
     * @return object
@@ -267,7 +241,7 @@ class User extends BaseModel
     */
   private function getDefaultAttributes()
   {
-    return array('lastPhotoId' => '', 'lastActionId' => '', 'lastGroupId' => '', 'lastWebhookId' => '');
+    return array('lastPhotoId' => '', 'lastActionId' => '', 'lastGroupId' => '', 'lastWebhookId' => '', 'password' => '');
   }
 
   /**
@@ -293,6 +267,14 @@ class User extends BaseModel
   {
     $user = $this->getUserRecord();
     $params = array_merge($this->getDefaultAttributes(), $user, $params);
+    // encrypt the password if present, else remove it
+    if(isset($params['password']))
+    {
+      if(!empty($params['password']))
+        $params['password'] = $this->encryptPassword($params['password']);
+      else
+        unset($params['password']);
+    }
     return $this->db->postUser($params);
   }
 }

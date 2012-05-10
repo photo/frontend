@@ -34,7 +34,6 @@ class DatabaseMySql implements DatabaseInterface
       EpiDatabase::employ('mysql', $mysql->mySqlDb,
                           $mysql->mySqlHost, $mysql->mySqlUser, $utilityObj->decrypt($mysql->mySqlPassword));
       $this->db = getDatabase();
-      $this->db->execute("SET NAMES 'utf8'");
     }
 
     foreach($mysql as $key => $value)
@@ -644,10 +643,24 @@ class DatabaseMySql implements DatabaseInterface
       $owner = $this->owner;
     $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
     if($res)
-    {
       return $this->normalizeUser($res);
-    }
     return null;
+  }
+
+  /**
+    * Get the user record entry by username and password.
+    *
+    * @return mixed Array on success, otherwise FALSE
+    */
+  public function getUserByEmailAndPassword($email = null, $password = null)
+  {
+    if($email == '' || $password == '')
+      return false;;
+
+    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:email AND `password`=:password", array(':email' => $email, ':password' => $password));
+    if($res)
+      return $this->normalizeUser($res);
+    return false;
   }
 
   /**
@@ -973,7 +986,18 @@ class DatabaseMySql implements DatabaseInterface
   public function postUser($params)
   {
     $params = $this->prepareUser($params);
-    $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}user` SET `extra`=:extra WHERE `id`=:id", array(':id' => $this->owner, ':extra' => $params));
+    if(isset($params['password']) && !empty($params['password']))
+    {
+      $sql = "UPDATE `{$this->mySqlTablePrefix}user` SET `password`=:password,`extra`=:extra WHERE `id`=:id";
+      $params = array(':id' => $this->owner, ':password' => $params['password'], ':extra' => $params['extra']);
+    }
+    else
+    {
+      $sql = "UPDATE `{$this->mySqlTablePrefix}user` SET `extra`=:extra WHERE `id`=:id";
+      $params = array(':id' => $this->owner, ':extra' => $params['extra']);
+    }
+
+    $res = $this->db->execute($sql, $params); 
     return ($res == 1);
   }
 
@@ -1130,7 +1154,18 @@ class DatabaseMySql implements DatabaseInterface
   public function putUser($params)
   {
     $params = $this->prepareUser($params);
-    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`extra`) VALUES (:id,:extra)", array(':id' => $this->owner, ':extra' => $params['extra']));
+    if(isset($params['password']))
+    {
+      $sql = "INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`password`,`extra`) VALUES (:id,:password,:extra)";
+      $params = array(':id' => $this->owner, ':password' => $params['password'], ':extra' => $params['extra']);
+    }
+    else
+    {
+      $sql = "INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`extra`) VALUES (:id,:extra)";
+      $params = array(':id' => $this->owner, ':extra' => $params['extra']);
+    }
+
+    $result = $this->db->execute($sql, $params);
     return $result !== false;
   }
 
@@ -1528,7 +1563,7 @@ class DatabaseMySql implements DatabaseInterface
       foreach($jsonParsed as $key => $value)
         $raw[$key] = $value;
     }
-    unset($raw['extra']);
+    unset($raw['extra'], $raw['password']);
     return $raw;
   }
 
@@ -1662,13 +1697,20 @@ class DatabaseMySql implements DatabaseInterface
    */
   private function prepareUser($params)
   {
-    $ret = array();
+    $ret = $extra = array();
     if(isset($params) && is_array($params) && !empty($params))
     {
       foreach($params as $key => $val)
-        $ret[$key] = $val;
+      {
+        if($key !== 'password')
+          $extra[$key] = $val;
+      }
+      $ret['extra'] = json_encode($extra);
+      $ret['password'] = '';
+      if(isset($params['password']))
+        $ret['password'] = $params['password'];
     }
-    return json_encode($ret);
+    return $ret;
   }
 
   /**

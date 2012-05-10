@@ -56,8 +56,6 @@ $routeObj->get('/tags/list', array('TagController', 'list_')); // view tags
  */
 $routeObj->get('/user/logout', array('UserController', 'logout')); // logout
 $routeObj->get('/user/settings', array('UserController', 'settings'));
-$routeObj->post('/user/login/mobile', array('UserController', 'loginMobile'));
-$routeObj->post('/user/mobile/passphrase', array('UserController', 'mobilePassphrase'));
 
 /*
  * Webhook endpoints follow the same convention.

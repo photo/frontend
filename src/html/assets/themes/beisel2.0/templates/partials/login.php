@@ -16,5 +16,26 @@
             </div>
           <?php } ?>
 				</div>
+        <?php if($this->config->site->allowOpenPhotoLogin == 1) { ?>
+          <hr>
+          <div class="row">
+            <strong>Sign in with your email and password</strong>
+            <br>
+            <em>This only applies to the owner of this site</em>
+            <form>
+              <fieldset class="control-group">
+                <label>Email</label>
+                <input type="text" name="email">
+              </fieldset>
+              
+              <fieldset class="control-group">
+                <label>Password</label>
+                <input type="password" name="password">
+              </fieldset>
+        
+              <button type="button" class="btn btn-primary login-openphoto-click">Login</button>
+            </form>
+          <div>
+        <?php } ?>
 			</div>
 		</div>
