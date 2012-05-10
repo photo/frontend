@@ -55,6 +55,7 @@ require $pathsObj->adapters . '/FileSystemDropboxBase.php';
 require $pathsObj->adapters . '/Login.php';
 require $pathsObj->adapters . '/LoginBrowserId.php';
 require $pathsObj->adapters . '/LoginFacebook.php';
+require $pathsObj->adapters . '/LoginOpenPhoto.php';
 require $pathsObj->adapters . '/Image.php';
 require $pathsObj->adapters . '/ImageImageMagick.php';
 require $pathsObj->adapters . '/ImageGraphicsMagick.php';

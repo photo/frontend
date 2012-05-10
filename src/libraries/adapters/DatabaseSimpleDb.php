@@ -575,6 +575,24 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Get the user record entry by username and password.
+    *
+    * @return mixed Array on success, otherwise FALSE
+    */
+  public function getUserByEmailAndPassword($email = null, $password = null)
+  {
+    if($email == '' || $password == '')
+      return false;;
+
+    $res = $this->db->select("SELECT * FROM `{$this->domainUser}` WHERE itemName()='{$email}' AND `password`='{$password}", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeUser($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
     * Get a webhook specified by $id
     *
     * @param string $id ID of the webhook to retrieve
@@ -795,6 +813,8 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function postUser($params)
   {
     // make sure we don't overwrite an existing user record
+    if(isset($params['password']) && empty($params['password']))
+      unset($params['password']);
     $res = $this->db->put_attributes($this->domainUser, $this->owner, $params, true);
     $this->logErrors($res);
     return $res->isOK();
@@ -924,6 +944,8 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function putUser($params)
   {
+    if(isset($params['password']) && empty($params['password']))
+      unset($params['password']);
     $res = $this->db->put_attributes($this->domainUser, $this->owner, $params);
     $this->logErrors($res);
     return $res->isOK();

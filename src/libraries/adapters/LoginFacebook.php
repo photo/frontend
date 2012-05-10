@@ -1,8 +1,8 @@
 <?php
 /**
- * BrowserId implementation
+ * FacebookConnect implementation
  *
- * This class defines the functionality defined by LoginInterface for BrowserId.
+ * This class defines the functionality defined by LoginInterface for FacebookConnect.
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 
