@@ -62,6 +62,7 @@ require $pathsObj->adapters . '/ImageGD.php';
 
 // models
 require $pathsObj->models . '/BaseModel.php';
+require $pathsObj->models . '/Account.php';
 require $pathsObj->models . '/AssetPipeline.php';
 require $pathsObj->models . '/Utility.php';
 require $pathsObj->models . '/Url.php';
