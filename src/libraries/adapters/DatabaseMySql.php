@@ -986,8 +986,18 @@ class DatabaseMySql implements DatabaseInterface
   public function postUser($params)
   {
     $params = $this->prepareUser($params);
-    $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}user` SET `password`=:password,`extra`=:extra WHERE `id`=:id", 
-      array(':id' => $this->owner, ':password' => $params['password'], ':extra' => $params['extra']));
+    if(isset($params['password']) && !empty($params['password']))
+    {
+      $sql = "UPDATE `{$this->mySqlTablePrefix}user` SET `password`=:password,`extra`=:extra WHERE `id`=:id";
+      $params = array(':id' => $this->owner, ':password' => $params['password'], ':extra' => $params['extra']);
+    }
+    else
+    {
+      $sql = "UPDATE `{$this->mySqlTablePrefix}user` SET `extra`=:extra WHERE `id`=:id";
+      $params = array(':id' => $this->owner, ':extra' => $params['extra']);
+    }
+
+    $res = $this->db->execute($sql, $params); 
     return ($res == 1);
   }
 
