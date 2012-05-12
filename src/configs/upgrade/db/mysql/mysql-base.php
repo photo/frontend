@@ -189,6 +189,7 @@ SQL;
     `dateUploadedDay` int(11) DEFAULT NULL,
     `dateUploadedMonth` int(11) DEFAULT NULL,
     `dateUploadedYear` int(11) DEFAULT NULL,
+    `dateSortByDay` varchar(14) NOT NULL,
     `filenameOriginal` varchar(255) DEFAULT NULL,
     `pathOriginal` varchar(1000) DEFAULT NULL,
     `pathBase` varchar(1000) DEFAULT NULL,
