@@ -3210,15 +3210,14 @@ body.manage .navbar .nav .manage > a, body.manage .navbar .nav .manage > a:hover
  *  see here screenshots
  *  http://imgur.com/a/qatwW
  */
-.modal.photo-detail.fade.in {
+.modal.photo-detail.fade {
 	width:95%;
   height:95%;
   top:5%;
-  left:2%;
-  margin:0;
+  margin:0 0 0 -47%;
   max-height:inherit;
 }
-.modal.photo-detail.fade.in .photo-view{
+.modal.photo-detail.fade .photo-view{
   padding:10px;
 }
 
@@ -3259,6 +3258,12 @@ body.manage .navbar .nav .manage > a, body.manage .navbar .nav .manage > a:hover
 	float:right;
 	margin-left:5px;
 	margin-bottom:0;
+}
+#modal {
+  z-index:99999;
+}
+#modal-photo-detail {
+  z-index:99998;
 }
 
 /* 07.02. tooltip --------------------------------------------------------------------------- */
