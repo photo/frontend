@@ -5157,7 +5157,7 @@ header h1 {
 	border-top-color:#575759;
 	}
 	.navbar-form, .navbar-search {
-		position:fixed;
+		position:absolute;
 		top:-1px;
 		right:5px;
 		float:none;
@@ -5190,11 +5190,8 @@ header h1 {
 		overflow:hidden;
 		height:0;
 	}
-	.carousel-control {
-		display:none;
-	}
 	.activityfeed-startpage .carousel-control {
-		display:block;
+		display:none;
 	}
 	.morephotos ul li .btn {
 		height:70px;
