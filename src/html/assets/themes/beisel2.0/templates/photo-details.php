@@ -129,7 +129,7 @@
           <?php if($this->config->site->allowOriginalDownload == 1) { ?>
             <a href="<?php $this->utility->safe($photo['pathOriginal']); ?>" class="invert"><i class="icon-download"></i> Download original</a>
           <?php } ?>
-          <?php if($this->user->isOwner() && (!isset($_GET['modal']) || $_GET['modal'] !== 'true')) { ?>
+          <?php if($this->user->isOwner()) { ?>
             <a href="#" class="photo-edit-click invert" data-id="<?php $this->utility->safe($photo['id']); ?>"><i class="icon-edit"></i> Edit details</a>
           <?php } ?>
         </div>

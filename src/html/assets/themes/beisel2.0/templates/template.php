@@ -30,7 +30,7 @@
       <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'n'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'o'); ?>">
     <?php } ?>
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
@@ -52,7 +52,7 @@
       </div>
       
       <div class="modal hide fade" id="modal"></div>
-      <div class="modal photo-detail hide fade span12" id="modal-photo-detail"></div>
+      <div class="modal photo-detail hide fade" id="modal-photo-detail"></div>
       <?php if(!$this->user->isLoggedIn()) { ?>
         <?php $this->theme->display('partials/login.php'); ?>
       <?php } ?>
