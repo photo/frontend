@@ -1,11 +1,11 @@
 <?php
 /**
- * Interface for Maps.
+ * Interface for Map.
  *
  * This defines the interface Maps to allow using different providers
  * @author Hubert Figuiere <hub@figuiere.net>
  */
-interface MapsInterface
+interface MapInterface
 {
   public function __construct();
   public function linkUrl($latitude, $longitude, $zoom);
@@ -19,26 +19,26 @@ interface MapsInterface
   *
   * @return object A maps object that implements MapsInterface
   */
-function getMaps()
+function getMap()
 {
   static $type;
-  $maps = getConfig()->get('maps');
-  if(!$type && isset($maps->service))
-    $type = $maps->service;
+  $map = getConfig()->get('map');
+  if(!$type && isset($map->service))
+    $type = $map->service;
 
   try
   {
     switch($type)
     {
       case 'osm':
-        return new MapsOsm();
+        return new MapOsm();
         break;
       case 'google':
-        return new MapsGoogle();
+        return new MapGoogle();
         break;
     }
   }
-  catch(OPInvalidMapsException $e)
+  catch(OPInvalidMapException $e)
   {
     getLogger()->warn("Invalid mapping exception thrown for {$type}");
     return false;
