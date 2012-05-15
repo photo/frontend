@@ -21,7 +21,7 @@ class AccountController extends BaseController
     $params = array();
     $params['systems'] = array('FileSystem' => $this->config->systems->fileSystem);
     $params['aws'] = array('bucket' => $this->config->aws->s3BucketName);
-    $params['diagnostics'] = array('db' => $db->diagnostics(), 'fs' => $fs->diagnostics());
+    //$params['diagnostics'] = array('db' => $db->diagnostics(), 'fs' => $fs->diagnostics());
     $params['navigation'] = $this->manageController->getNavigation('account');
     $bodyTemplate = sprintf('%s/account.php', $this->config->paths->templates);
     $body = $this->template->get($bodyTemplate, $params);
