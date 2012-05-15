@@ -4,6 +4,16 @@
   <h2>Your Account</h2>
 
   <div class="row hero-unit blurb">
+    <br>
+    <p>
+      Soon your account page will allow you to update your email address, change storage providers and more.
+      For now, it's just an overview.
+    </p>
+    <h3>Your email address</h3>
+    <div class="inset">
+      <?php echo $email; ?>
+    </div>
+    <br>
     <h3>Where are your files stored?</h3>
     <div class="inset">
       <?php if($systems['FileSystem'] === 'S3') { ?>
