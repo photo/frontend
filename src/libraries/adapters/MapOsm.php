@@ -1,8 +1,6 @@
 <?php
-
-class MapsOsm implements MapsInterface
+class MapOsm implements MapInterface
 {
-
   /**
     * Constructor
     */
@@ -18,6 +16,4 @@ class MapsOsm implements MapsInterface
   {
     return "http://staticmap.openstreetmap.de/staticmap.php?center={$latitude},{$longitude}&zoom={$zoom}&size={$size}&markers={$latitude},{$longitude},ol-marker";
   }
-
-
 }

@@ -1,6 +1,5 @@
 <?php
-
-class MapsGoogle implements MapsInterface
+class MapGoogle implements MapInterface
 {
 
   /**

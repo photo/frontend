@@ -306,12 +306,12 @@ class Utility
 
   public function mapLinkUrl($latitude, $longitude, $zoom, $write = true)
   {
-    return $this->returnValue(getMaps()->linkUrl($latitude, $longitude, $zoom), $write);
+    return $this->returnValue(getMap()->linkUrl($latitude, $longitude, $zoom), $write);
   }
 
   public function staticMapUrl($latitude, $longitude, $zoom, $size, $type = 'roadmap', $write = true)
   {
-    return $this->returnValue(getMaps()->staticMap($latitude, $longitude, $zoom, $size, $type), $write);
+    return $this->returnValue(getMap()->staticMap($latitude, $longitude, $zoom, $size, $type), $write);
   }
 
   public function timeAsText($time, $prefix = null, $suffix = null, $write = true)
