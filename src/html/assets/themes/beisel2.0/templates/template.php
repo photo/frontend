@@ -87,6 +87,8 @@
               'login-click':'click:login',
               'login-modal-click':'click:login-modal',
               'login-openphoto-click':'click:login-openphoto',
+              'manage-password-request-click':'click:manage-password-request',
+              'manage-password-reset-click':'click:manage-password-reset',
               'map-jump-click':'click:map-jump',
               'modal-close-click':'click:modal-close',
               'nav-item-click':'click:nav-item',
@@ -155,7 +157,7 @@
             '<?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'x'); ?>'
+                                                  getUrl(AssetPipeline::js, 'y'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 

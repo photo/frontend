@@ -36,6 +36,7 @@ require $pathsObj->controllers . '/WebhookController.php';
 
 // libraries
 require $pathsObj->external . '/aws/sdk.class.php';
+require $pathsObj->external . '/swift-mailer/swift_required.php';
 require $pathsObj->external . '/Dropbox/autoload.php';
 require $pathsObj->external . '/Mobile_Detect/Mobile_Detect.php';
 require $pathsObj->external . '/JSMin/JSMin.php';
@@ -60,18 +61,20 @@ require $pathsObj->adapters . '/Image.php';
 require $pathsObj->adapters . '/ImageImageMagick.php';
 require $pathsObj->adapters . '/ImageGraphicsMagick.php';
 require $pathsObj->adapters . '/ImageGD.php';
+require $pathsObj->adapters . '/Map.php';
+require $pathsObj->adapters . '/MapGoogle.php';
+require $pathsObj->adapters . '/MapOsm.php';
 
 // models
 require $pathsObj->models . '/BaseModel.php';
 require $pathsObj->models . '/Account.php';
 require $pathsObj->models . '/AssetPipeline.php';
-require $pathsObj->models . '/Utility.php';
-require $pathsObj->models . '/Url.php';
-require $pathsObj->models . '/Authentication.php';
-require $pathsObj->models . '/Credential.php';
 require $pathsObj->models . '/Action.php';
 require $pathsObj->models . '/Activity.php';
 require $pathsObj->models . '/Album.php';
+require $pathsObj->models . '/Authentication.php';
+require $pathsObj->models . '/Credential.php';
+require $pathsObj->models . '/Emailer.php';
 require $pathsObj->models . '/Group.php';
 require $pathsObj->models . '/Photo.php';
 require $pathsObj->models . '/Tag.php';
@@ -83,3 +86,5 @@ require $pathsObj->models . '/Upgrade.php';
 require $pathsObj->models . '/PluginBase.php';
 require $pathsObj->models . '/Plugin.php';
 require $pathsObj->models . '/Request.php';
+require $pathsObj->models . '/Utility.php';
+require $pathsObj->models . '/Url.php';
