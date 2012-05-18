@@ -73,20 +73,20 @@ class User extends BaseModel
   {
     $type = ucwords($type);
     $key = "last{$type}Id";
-    /*$user = $this->getUserRecord();
+    $user = $this->getUserRecord();
     if($user === false)
       return false;
 
     if(!isset($user[$key]))
       $user[$key] = '';
     $nextIntId = base_convert($user[$key], 31, 10) + 1;
-    $nextId = base_convert($nextIntId, 10, 31);*/
+    $nextId = base_convert($nextIntId, 10, 31);
 
-    $nextId = $this->getAttribute($type);
+    /*$nextId = $this->getAttribute($type);
     if($nextId === false)
       $nextId = '';
     $nextIntId = base_convert($nextId, 31, 10) + 1;
-    $nextId = base_convert($nextIntId, 10, 31);
+    $nextId = base_convert($nextIntId, 10, 31);*/
     $this->update(array($key => $nextId));
     return $nextId;
   }
