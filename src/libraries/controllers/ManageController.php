@@ -16,7 +16,9 @@ class ManageController extends BaseController
     parent::__construct();
     $this->photo = new Photo;
     $this->theme->setTheme(); // defaults
-    if(stristr($_SERVER['REQUEST_URI'], '/manage/apps/callback') === false)
+    // TODO why?
+    if(stristr($_SERVER['REQUEST_URI'], '/manage/apps/callback') === false &&
+        stristr($_SERVER['REQUEST_URI'], '/manage/password/reset') === false)
       getAuthentication()->requireAuthentication();
   }
 
@@ -67,7 +69,23 @@ class ManageController extends BaseController
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-groups'));
   }
 
-  public function getNavigation($page)
+  public function passwordReset($token)
+  {
+    $user = new User;
+    $tokenFromDb = $user->getAttribute('passwordToken');
+    if($tokenFromDb != $token)
+    {
+      $this->route->run('/error/404');
+      die();
+    }
+
+    $navigation = $this->getNavigation(null);
+    $bodyTemplate = sprintf('%s/manage-password-reset.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('navigation' => $navigation, 'passwordToken' => $token));
+    $this->theme->display('template.php', array('body' => $body, 'page' => null));
+  }
+
+  private function getNavigation($page)
   {
     $tpl = sprintf('%s/manage-navigation.php', $this->config->paths->templates);
     return $this->template->get($tpl, array('page' => $page));
