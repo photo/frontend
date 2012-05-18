@@ -53,7 +53,7 @@ $status = $status && mysql_2_0_4($sql);
 /* photoVersion */
 $table = 'photoVersion';
 $sql = <<<SQL
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` ADD UNIQUE KEY `id` (`id`,`owner`);
+    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` ADD UNIQUE KEY `id` (`id`,`owner`,`key`);
 SQL;
 $status = $status && mysql_2_0_4($sql);
 
