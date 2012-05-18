@@ -364,8 +364,38 @@ var opTheme = (function() {
         el.slideUp('fast', function() { $(this).remove(); });
       },
       modalUnload: function(ev) {
+        ev.preventDefault();
         $('#modal-photo-detail').html('');
         pushstate.replace(pathname);
+      },
+      passwordRequest: function(ev) {
+        ev.preventDefault();
+        var form = $(ev.target).parent(),
+            email = $('#login-email', form).val();
+        OP.Util.makeRequest('/user/password/request.json', {email: email}, opTheme.callback.passwordRequestCb);
+      },
+      passwordRequestCb: function(response) {
+        $('#loginBox').modal('hide');
+        if(response.result) {
+          opTheme.message.confirm('An email has been sent with a link to reset your password.');
+        } else {
+          opTheme.message.error('We were unable to send you a password request. Make sure you entered your email address correctly and that you are the owner of this site.');
+        }
+      },
+      passwordReset: function(ev) {
+        ev.preventDefault();
+        var form = $(ev.target).parent(),
+            params = form.serializeArray();
+        if($('.input-password', form).val() != $('.input-password-confirm', form).val())
+          opTheme.message.error('Your passwords did not match.');
+        else
+          OP.Util.makeRequest('/user/password/reset.json', params, opTheme.callback.passwordResetCb);
+      },
+      passwordResetCb: function(response) {
+        if(response.result)
+          opTheme.message.confirm('Your password was updated successfully. You can now log in to your site.');
+        else
+          opTheme.message.error('We were unable to update your password. Try requesting a new reset link.');
       },
       photoDelete: function(ev) {
       
@@ -666,6 +696,8 @@ var opTheme = (function() {
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:login-modal', opTheme.callback.loginModal);
         OP.Util.on('click:login-openphoto', opTheme.callback.loginOpenPhoto);
+        OP.Util.on('click:manage-password-request', opTheme.callback.passwordRequest);
+        OP.Util.on('click:manage-password-reset', opTheme.callback.passwordReset);
         OP.Util.on('click:modal-close', opTheme.callback.modalClose);
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);

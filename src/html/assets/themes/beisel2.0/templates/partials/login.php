@@ -25,7 +25,7 @@
             <form>
               <fieldset class="control-group">
                 <label>Email</label>
-                <input type="text" name="email">
+                <input type="text" name="email" id="login-email">
               </fieldset>
               
               <fieldset class="control-group">
@@ -33,9 +33,9 @@
                 <input type="password" name="password">
               </fieldset>
         
-              <button type="button" class="btn btn-primary login-openphoto-click">Login</button>
+              <button type="button" class="btn btn-primary login-openphoto-click">Login</button> or <a href="#" class="manage-password-request-click">enter your email and click to reset</a>
             </form>
-          <div>
+          </div>
         <?php } ?>
 			</div>
 		</div>

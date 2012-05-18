@@ -24,6 +24,7 @@ $routeObj->get('/manage', array('ManageController', 'home'));
 $routeObj->get('/manage/groups', array('ManageController', 'groups'));
 $routeObj->get('/manage/apps', array('ManageController', 'apps'));
 $routeObj->get('/manage/apps/callback', array('ManageController', 'appsCallback'));
+$routeObj->get('/manage/password/reset/([a-z0-9]{32})', array('ManageController', 'passwordReset'));
 
 /*
  * Photo endpoints
