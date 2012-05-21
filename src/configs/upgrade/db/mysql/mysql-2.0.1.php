@@ -7,7 +7,6 @@ $table = 'action';
 $sql = <<<SQL
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `id`;
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `owner` VARCHAR(127);
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `id` (`id`,`owner`);
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
@@ -16,7 +15,6 @@ $table = 'credential';
 $sql = <<<SQL
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `id`;
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `owner` VARCHAR(127);
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `id` (`id`,`owner`);
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
@@ -25,7 +23,6 @@ $table = 'elementGroup';
 $sql = <<<SQL
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `owner`;
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `owner` VARCHAR(127);
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `owner` (`owner`,`type`,`element`,`group`);
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
@@ -34,7 +31,6 @@ $table = 'elementTag';
 $sql = <<<SQL
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `id`;
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `owner` VARCHAR(127);
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `id` (`owner`,`type`,`element`,`tag`);
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
@@ -43,7 +39,6 @@ $table = 'group';
 $sql = <<<SQL
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `id`;
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `owner` VARCHAR(127);
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `id` (`id`,`owner`);
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
@@ -53,7 +48,6 @@ $sql = <<<SQL
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `owner`;
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `owner` VARCHAR(127);
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `email` VARCHAR(127);
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `owner` (`owner`,`group`,`email`);
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
@@ -62,7 +56,6 @@ $table = 'photo';
 $sql = <<<SQL
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `id`;
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `owner` VARCHAR(127);
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `id` (`id`,`owner`);
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
@@ -71,7 +64,6 @@ $table = 'photoVersion';
 $sql = <<<SQL
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `id`;
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `owner` VARCHAR(127);
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `id` (`id`,`owner`);
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
@@ -81,7 +73,6 @@ $sql = <<<SQL
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `id`;
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `id` VARCHAR(127);
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `owner` VARCHAR(127);
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `id` (`id`,`owner`);
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
@@ -90,7 +81,6 @@ $table = 'user';
 $sql = <<<SQL
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP PRIMARY KEY;
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `id` VARCHAR(127);
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` PRIMARY KEY (`id`);
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
@@ -100,7 +90,6 @@ $sql = <<<SQL
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` DROP KEY `id`;
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `id` VARCHAR(127);
     ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UPDATE `owner` VARCHAR(127);
-    ALTER TABLE `{$this->mySqlTablePrefix}{$table}` UNIQUE KEY `id` (`id`,`owner`);
 SQL;
 $status = $status && mysql_2_0_1($sql);
 
