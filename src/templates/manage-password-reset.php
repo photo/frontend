@@ -9,7 +9,7 @@
     <label>New password</label>
     <input type="password" name="password" class="input-password">
 
-    <label>Configm new password</label>
+    <label>Confirm new password</label>
     <input type="password" name="password-confirm" class="input-password-confirm">
 
     <br>
