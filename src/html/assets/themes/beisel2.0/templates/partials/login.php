@@ -22,7 +22,7 @@
             <strong>Sign in with your email and password</strong>
             <br>
             <em>This only applies to the owner of this site</em>
-            <form>
+            <form class="login-openphoto-submit">
               <fieldset class="control-group">
                 <label>Email</label>
                 <input type="text" name="email" id="login-email">
@@ -33,7 +33,7 @@
                 <input type="password" name="password">
               </fieldset>
         
-              <button type="button" class="btn btn-primary login-openphoto-click">Login</button> or <a href="#" class="manage-password-request-click">enter your email and click to reset</a>
+              <button class="btn btn-primary">Login</button> or <a href="#" class="manage-password-request-click">enter your email and click to reset</a>
             </form>
           </div>
         <?php } ?>

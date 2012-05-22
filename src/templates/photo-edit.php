@@ -1,4 +1,4 @@
-<form method="post" action="<?php $this->url->photoUpdate($photo['id']); ?>" id="photo-edit-form">
+<form method="post" action="<?php $this->url->photoUpdate($photo['id']); ?>" id="photo-edit-form" class="photo-update-submit">
   <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
   <label for="title">Title</label>
   <input type="text" name="title" id="title" placeholder="A title to describe your photo" value="<?php $this->utility->safe($photo['title']); ?>">
@@ -50,5 +50,9 @@
         <option value="<?php $this->utility->safe($code); ?>"<?php if($license['selected']) { ?> selected="selected" <?php } ?>><?php $this->utility->licenseLong($code); ?></option>
       <?php } ?>
     </select>
+  </div>
+
+  <div>
+    <button class="btn btn-primary">Save</button>
   </div>
 </form>
