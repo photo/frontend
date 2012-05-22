@@ -35,10 +35,10 @@
             <li><a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> Sign in</a></li>
           </ul>
         <?php } ?>
-        <form class="navbar-search pull-right form-horizontal" action="<?php $this->utility->isActiveTab('manage') ? $this->url->manage() : $this->url->photosView(); ?>">
+        <form class="navbar-search pull-right form-horizontal search-submit" action="<?php $this->utility->isActiveTab('manage') ? $this->url->manage() : $this->url->photosView(); ?>">
           <div class="input-append">
             <input class="search-query span2 typeahead-tags tags-focus" autocomplete="off" id="navigation-search-input" name="tags" size="16" type="text">
-            <a href="#" class="add-on search-click"><i class="icon-search icon-large"></i></a>
+            <button class="btn add-on"><i class="icon-search icon-large"></i></button>
           </div>
         </form>
       </div>

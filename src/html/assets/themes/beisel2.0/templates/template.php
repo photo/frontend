@@ -30,7 +30,7 @@
       <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'o'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'p'); ?>">
     <?php } ?>
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
@@ -68,7 +68,7 @@
       <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
     <?php } else { ?>
       <script type="text/javascript" src="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs($this->theme->asset($this->config->dependencies->javascript, null, false))->
-                                                                        addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'f'); ?>"></script>
+                                                                        addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'g'); ?>"></script>
     <?php } ?>
     <script>
       OP.Util.init(jQuery, {
@@ -83,10 +83,8 @@
               'group-delete-click':'click:group-delete',
               'group-email-add-click':'click:group-email-add',
               'group-email-remove-click':'click:group-email-remove',
-              'group-post-click':'click:group-post',
               'login-click':'click:login',
               'login-modal-click':'click:login-modal',
-              'login-openphoto-click':'click:login-openphoto',
               'manage-password-request-click':'click:manage-password-request',
               'manage-password-reset-click':'click:manage-password-reset',
               'map-jump-click':'click:map-jump',
@@ -106,11 +104,17 @@
               'pin-clear-click':'click:pin-clear',
               'plugin-status-click':'click:plugin-status',
               'plugin-update-click':'click:plugin-update',
-              'search-click':'click:search',
               'settings-click':'click:settings',
               'tags-focus':'focus:tags',
               'upload-start-click':'click:upload-start',
               'webhook-delete-click':'click:webhook-delete'
+          },
+          'submit': {
+              'group-post-submit':'submit:group-post',
+              'login-openphoto-submit':'submit:login-openphoto',
+              'photo-update-submit':'submit:photo-update',
+              'photo-upload-submit':'submit:photo-upload',
+              'search-submit':'submit:search'
           },
           <?php if($this->user->isOwner()) { ?>
             'change': {
@@ -131,7 +135,7 @@
                 '/assets/javascripts/jquery.plupload.queue.js',
                 '/assets/javascripts/openphoto-upload.js',
               <?php } else { ?>
-                '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'g'); ?>',
+                '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'h'); ?>',
               <?php } ?>
             <?php } ?>
 
@@ -157,7 +161,7 @@
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'y'); ?>'
+                                                  getUrl(AssetPipeline::js, 'z'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 

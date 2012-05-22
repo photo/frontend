@@ -75,7 +75,7 @@ class ManageController extends BaseController
     $tokenFromDb = $user->getAttribute('passwordToken');
     if($tokenFromDb != $token)
     {
-      $this->route->run('/error/404');
+      $this->route->redirect('/?m=token-expired');
       die();
     }
 
