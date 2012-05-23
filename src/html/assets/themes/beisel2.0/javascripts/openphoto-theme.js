@@ -230,6 +230,23 @@ var opTheme = (function() {
         });
         return false;
       },
+      featuresPost: function(ev) {
+        ev.preventDefault();
+        var form = $(ev.target),
+            action = form.attr('action') + '.json',
+            params = {};
+
+        params = {'crumb':crumb.get()};
+        params['allowDuplicate'] = $('input[name="allowDuplicate"]:checked', form).length;
+        params['downloadOriginal'] = $('input[name="downloadOriginal"]:checked', form).length;
+        OP.Util.makeRequest(action, params, opTheme.callback.featuresPostCb);
+      },
+      featuresPostCb: function(response) {
+        if(response.code === 200)
+          opTheme.message.confirm('Your features were successfully saved.');
+        else
+          opTheme.message.error('We could not save your features.');
+      },
       groupCheckbox: function(ev) {
         var el = $(ev.target);
         if(el.hasClass("none") && el.is(":checked")) {
@@ -275,6 +292,8 @@ var opTheme = (function() {
             isCreate = (url.search('create') > -1),
             emails,
             params = {name: $('input[name="name"]', form).val()};
+
+        params['crumb'] = crumb.get();
         $('.group-email-add-click', form).trigger('click');
         emails = [];
         $('span.group-email-queue', form).each(function(i, el) {
@@ -492,7 +511,8 @@ var opTheme = (function() {
         var el = $(ev.target),
             key = $("#batch-key").val(),
             fields = $("form#batch-edit").find("*[name='value']"),
-            value;
+            value,
+            params;
 
         el.html('Submitting...').attr("disabled", "disabled");
         if(fields.length == 1) {
@@ -716,6 +736,7 @@ var opTheme = (function() {
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
 
+        OP.Util.on('submit:features-post', opTheme.callback.featuresPost);
         OP.Util.on('submit:group-post', opTheme.callback.groupPost);
         OP.Util.on('submit:login-openphoto', opTheme.callback.loginOpenPhoto);
         OP.Util.on('submit:photo-update', opTheme.callback.photoUpdate);

@@ -37,6 +37,17 @@ class ManageController extends BaseController
     $this->route->redirect('/manage/apps?m=app-created');
   }
 
+  public function features()
+  {
+    $params['downloadOriginal'] = $this->config->site->allowOriginalDownload == '1';
+    $params['allowDuplicate'] = $this->config->site->allowDuplicate == '1';
+    $params['crumb'] = $this->session->get('crumb');
+    $params['navigation'] = $this->getNavigation('features');
+    $bodyTemplate = sprintf('%s/manage-features.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, $params);
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-features'));
+  }
+
   public function home()
   {
     $photosApiParams = array('_GET' => array_merge($_GET, array('returnSizes' => '160x160xCR', 'pageSize' => 18)));

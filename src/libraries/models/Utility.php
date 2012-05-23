@@ -74,6 +74,14 @@ class Utility
     return dirname(dirname(dirname(__FILE__)));
   }
 
+  public function getConfigFile()
+  {
+    $configFile = sprintf('%s/userdata/configs/%s.ini', $this->getBaseDir(), $this->getHost());
+    if(!getConfig()->exists($configFile))
+      return false;
+    return $configFile;
+  }
+
   public function getHost()
   {
     return $_SERVER['HTTP_HOST'];
