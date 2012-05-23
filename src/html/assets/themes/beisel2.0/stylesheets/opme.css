@@ -4078,11 +4078,9 @@ body.tags div.tags .tag-list {
   background-color:#cdf2fd;
 }
 /* 09.05. Manage ----------------------------------------------------------- */
-.manage ul.thumbnails li div.thumbnail {
-  border:0px;
-  -webkit-box-shadow:0;
-  -mox-box-shadow:0;
-  box-shadow:0;
+.manage ul.thumbnails li img.thumbnail {
+  width:160px;
+  height:160px;
 }
 .manage ul.thumbnails img~.reveal.revealed, .manage ul.thumbnails img:hover+.reveal.revealed {
   opacity:1.0;
@@ -4118,14 +4116,6 @@ body.tags div.tags .tag-list {
        -o-transition:opacity linear 0.2s;
        transition:opacity linear 0.2s;
 }
-
-
-
-
-
-
-
-
 
 /* Where does this go? jmathai */
 #loginBox .form-horizontal {

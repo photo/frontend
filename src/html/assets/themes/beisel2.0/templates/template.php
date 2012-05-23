@@ -110,6 +110,7 @@
               'webhook-delete-click':'click:webhook-delete'
           },
           'submit': {
+              'features-post-submit':'submit:features-post',
               'group-post-submit':'submit:group-post',
               'login-openphoto-submit':'submit:login-openphoto',
               'photo-update-submit':'submit:photo-update',

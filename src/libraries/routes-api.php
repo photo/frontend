@@ -38,6 +38,13 @@ $apiObj->get('/?v?1?/albums/list.json', array('ApiAlbumController', 'list_'), Ep
 $apiObj->get('/?v?1?/album/([a-zA-Z0-9]+)/view.json', array('ApiAlbumController', 'view'), EpiApi::external); // retrieve activity (/activity/:id/view.json)
 
 /*
+ * Manage endpoints
+ * All manage endpoints follow the same convention.
+ * /manage/{action}.json
+ */
+$apiObj->post('/?v?1?/manage/features.json', array('ApiManageController', 'featuresPost'), EpiApi::external); // update features (/manage/features.json)
+
+/*
  * Photo endpoints
  * All photo endpoints follow the same convention.
  * Everything in []'s are optional
