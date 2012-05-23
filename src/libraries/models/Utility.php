@@ -74,6 +74,11 @@ class Utility
     return dirname(dirname(dirname(__FILE__)));
   }
 
+  public function getHost()
+  {
+    return $_SERVER['HTTP_HOST'];
+  }
+
   public function getLicenses($selected = null)
   {
     if(!$this->licenses)
