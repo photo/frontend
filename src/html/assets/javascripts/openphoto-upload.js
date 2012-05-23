@@ -87,12 +87,6 @@ OPU = (function() {
           ev.preventDefault();
           var uploader = $("#uploader").pluploadQueue();
           if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
-            // When all files are uploaded submit form
-            uploader.bind('StateChanged', function() {
-              if (uploader.files.length === (uploader.total.uploaded + uploader.total.failed)) {
-                $("form.upload")[0].submit();
-              }
-            }); 
             uploader.start();
           } else {
             // TODO something that doesn't suck
