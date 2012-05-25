@@ -33,7 +33,8 @@
     */
     OU.attachEvent = function(element, etype, callback, scope) {
         var scope = scope || window;
-        lib( element ).on(etype, lib.proxy(callback, scope) );
+        // TODO we should use .on() here but it isn't working for dynamically created elements (i.e. photo edit form)
+        lib( element ).live(etype, lib.proxy(callback, scope) );
     }
 
 

@@ -8,12 +8,13 @@
 
 class LoginOpenPhoto implements LoginInterface
 {
-  private $config, $db, $utility;
+  private $config, $db, $utility, $user;
   public function __construct()
   {
     $this->config = getConfig()->get();
     $this->db = getDb();
     $this->utility = new Utility;
+    $this->user = new User;
   }
 
   public function verifyEmail($args)
@@ -23,7 +24,7 @@ class LoginOpenPhoto implements LoginInterface
     if($this->config->site->allowOpenPhotoLogin != 1 || $email == '' || $password == '')
       return false;
 
-    $passwordHashed = sha1(sprintf('%s-%s', $password, $this->config->secrets->passwordSalt));
+    $passwordHashed = $this->user->encryptPassword($password);
     $user = $this->db->getUserByEmailAndPassword($email, $passwordHashed);
     if(!$user)
       return false;

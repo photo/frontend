@@ -35,6 +35,7 @@ class OPAuthorizationException extends OPException{}
 class OPAuthorizationOAuthException extends OPAuthorizationException{}
 class OPAuthorizationSessionException extends OPAuthorizationException{}
 class OPInvalidImageException extends OPException{}
+class OPInvalidMapException extends OPException{}
 
 function op_exception_handler($exception)
 {

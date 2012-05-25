@@ -38,6 +38,13 @@ $apiObj->get('/?v?1?/albums/list.json', array('ApiAlbumController', 'list_'), Ep
 $apiObj->get('/?v?1?/album/([a-zA-Z0-9]+)/view.json', array('ApiAlbumController', 'view'), EpiApi::external); // retrieve activity (/activity/:id/view.json)
 
 /*
+ * Manage endpoints
+ * All manage endpoints follow the same convention.
+ * /manage/{action}.json
+ */
+$apiObj->post('/?v?1?/manage/features.json', array('ApiManageController', 'featuresPost'), EpiApi::external); // update features (/manage/features.json)
+
+/*
  * Photo endpoints
  * All photo endpoints follow the same convention.
  * Everything in []'s are optional
@@ -75,6 +82,8 @@ $apiObj->get('/?v?1?/tags/list.json', array('ApiTagController', 'list_'), EpiApi
  */
 $apiObj->post('/?v?1?/user/([a-z0-9]+)/login.json', array('ApiUserController', 'login'), EpiApi::external);
 $apiObj->get('/?v?1?/user/logout.json', array('ApiUserController', 'logout'), EpiApi::external);
+$apiObj->post('/?v?1?/user/password/request.json', array('ApiUserController', 'passwordRequest'), EpiApi::external);
+$apiObj->post('/?v?1?/user/password/reset.json', array('ApiUserController', 'passwordReset'), EpiApi::external);
 
 /*
  * OAuth endpoints

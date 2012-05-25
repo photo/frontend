@@ -152,7 +152,10 @@ class Credential extends BaseModel
       $cache = array();
 
     list($lastTimestamp, $nonces) = each($cache);
-    if($provider->timestamp > (time()+300) || $provider->timestamp < $lastTimestamp)
+    // change logic to check for request order to include a 5 minute grace period
+    // see #628 for details
+    // 
+    if($provider->timestamp > (time()+300) || $provider->timestamp < ($lastTimestamp+300))
     {
       // timestamp can't be more then 30 seconds into the future
       // or prior to the last timestamp
