@@ -67,7 +67,7 @@ class ApiGroupController extends ApiBaseController
   public function update($id)
   {
     getAuthentication()->requireAuthentication();
-    // TODO add crumb check
+    getAuthentication()->requireCrumb();
     $res = $this->group->update($id, $_POST);
 
     if($res)

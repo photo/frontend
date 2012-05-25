@@ -24,6 +24,15 @@ class EpiConfig_File extends EpiConfig
     return file_exists($file);
   }
 
+  public function isAlias($file)
+  {
+    $file = $this->getFilePath($file);
+    if(!file_exists($file))
+      return null;
+
+    return is_link($file);
+  }
+
   public function load(/*$file, $file, $file, $file...*/)
   {
     $args = func_get_args();

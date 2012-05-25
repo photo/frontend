@@ -38,7 +38,7 @@ var opTheme = (function() {
              '<div class="modal-body">' +
              '  <p>'+body+'</p>' +
              '</div>' +
-             '<div class="modal-footer">' + footer + '</div>';
+             (footer ? '<div class="modal-footer">' + footer + '</div>' : '');
     }
   };
 
@@ -230,6 +230,23 @@ var opTheme = (function() {
         });
         return false;
       },
+      featuresPost: function(ev) {
+        ev.preventDefault();
+        var form = $(ev.target),
+            action = form.attr('action') + '.json',
+            params = {};
+
+        params = {'crumb':crumb.get()};
+        params['allowDuplicate'] = $('input[name="allowDuplicate"]:checked', form).length;
+        params['downloadOriginal'] = $('input[name="downloadOriginal"]:checked', form).length;
+        OP.Util.makeRequest(action, params, opTheme.callback.featuresPostCb);
+      },
+      featuresPostCb: function(response) {
+        if(response.code === 200)
+          opTheme.message.confirm('Your features were successfully saved.');
+        else
+          opTheme.message.error('We could not save your features.');
+      },
       groupCheckbox: function(ev) {
         var el = $(ev.target);
         if(el.hasClass("none") && el.is(":checked")) {
@@ -255,7 +272,7 @@ var opTheme = (function() {
       groupEmailAdd: function(ev) {
         ev.preventDefault();
         var el = $(ev.target).prev(),
-            tgt = $('ul.group-emails-add-list'),
+            tgt = $('ul.group-emails-add-list', el.parent()),
             val = el.val();
         if(val === '')
           return;
@@ -270,12 +287,13 @@ var opTheme = (function() {
       },
       groupPost: function(ev) {
         ev.preventDefault();
-        var el = $(ev.target),
-            form = el.parent(),
+        var form = $(ev.target),
             url = form.attr('action')+'.json',
             isCreate = (url.search('create') > -1),
             emails,
             params = {name: $('input[name="name"]', form).val()};
+
+        params['crumb'] = crumb.get();
         $('.group-email-add-click', form).trigger('click');
         emails = [];
         $('span.group-email-queue', form).each(function(i, el) {
@@ -293,7 +311,6 @@ var opTheme = (function() {
             opTheme.message.error('Could not update group.');
           }
         });
-        return false;
       },
       keyBrowseNext: function(ev) {
         if(ev.ctrlKey || ev.altKey || ev.metaKey)
@@ -336,8 +353,8 @@ var opTheme = (function() {
       },
       loginOpenPhoto: function(ev) {
         ev.preventDefault();
-        var el = $(ev.target).parent()
-            params = el.serialize();
+        var form = $(ev.target),
+            params = form.serialize();
         params += '&httpCodes=403';
         $.ajax(
           {
@@ -347,7 +364,7 @@ var opTheme = (function() {
             type:'POST',
             success: opTheme.user.base.loginProcessed,
             error: opTheme.callback.loginOpenPhotoFailedCb,
-            context: el
+            context: form
           }
         );
         return false;
@@ -364,8 +381,38 @@ var opTheme = (function() {
         el.slideUp('fast', function() { $(this).remove(); });
       },
       modalUnload: function(ev) {
+        ev.preventDefault();
         $('#modal-photo-detail').html('');
         pushstate.replace(pathname);
+      },
+      passwordRequest: function(ev) {
+        ev.preventDefault();
+        var form = $(ev.target).parent(),
+            email = $('#login-email', form).val();
+        OP.Util.makeRequest('/user/password/request.json', {email: email}, opTheme.callback.passwordRequestCb);
+      },
+      passwordRequestCb: function(response) {
+        $('#loginBox').modal('hide');
+        if(response.result) {
+          opTheme.message.confirm('An email has been sent with a link to reset your password.');
+        } else {
+          opTheme.message.error('We were unable to send you a password request. Make sure you entered your email address correctly and that you are the owner of this site.');
+        }
+      },
+      passwordReset: function(ev) {
+        ev.preventDefault();
+        var form = $(ev.target).parent(),
+            params = form.serializeArray();
+        if($('.input-password', form).val() != $('.input-password-confirm', form).val())
+          opTheme.message.error('Your passwords did not match.');
+        else
+          OP.Util.makeRequest('/user/password/reset.json', params, opTheme.callback.passwordResetCb);
+      },
+      passwordResetCb: function(response) {
+        if(response.result)
+          opTheme.message.confirm('Your password was updated successfully. You can now log in to your site.');
+        else
+          opTheme.message.error('We were unable to update your password. Try requesting a new reset link.');
       },
       photoDelete: function(ev) {
       
@@ -394,7 +441,7 @@ var opTheme = (function() {
                 html = markup.modal(
                   'Edit this photo',
                   response.result.markup,
-                  '<a href="#" class="btn btn-primary photo-update-click">Save</a>'
+                  null
                 );
             el.html(html).modal();  
           } else {
@@ -452,8 +499,9 @@ var opTheme = (function() {
         util.fetchAndCacheNextPrevious();
         pushstate.insert(location.hash, pushstate.parse(response));
       },
-      photoUpdate: function() {
-        var form = $("#photo-edit-form"),
+      photoUpdate: function(ev) {
+        ev.preventDefault();
+        var form = $(ev.target),
             action = form.attr('action') + '.json',
             params = form.serialize();
         OP.Util.makeRequest(action, params, opTheme.callback.photoUpdateCb, 'json', 'post');
@@ -463,7 +511,8 @@ var opTheme = (function() {
         var el = $(ev.target),
             key = $("#batch-key").val(),
             fields = $("form#batch-edit").find("*[name='value']"),
-            value;
+            value,
+            params;
 
         el.html('Submitting...').attr("disabled", "disabled");
         if(fields.length == 1) {
@@ -508,6 +557,12 @@ var opTheme = (function() {
           opTheme.message.error('We could not update your photo.');
         }
         $("#modal").modal('hide');
+      },
+      photoUpload: function(ev) {
+        ev.preventDefault();
+        var form = $(ev.target),
+            action = form.attr('action') + '.json',
+            params = form.serialize();
       },
       photosViewMore: function(ev) {
         ev.preventDefault();
@@ -568,7 +623,7 @@ var opTheme = (function() {
       },
       searchByTags: function(ev) {
         ev.preventDefault();
-        var form = $(ev.target).parent().parent(),
+        var form = $(ev.target),
           tags = $($('input[name=tags]', form)[0]).val(),
           url = form.attr('action');
 
@@ -662,26 +717,32 @@ var opTheme = (function() {
         OP.Util.on('click:group-delete', opTheme.callback.groupDelete);
         OP.Util.on('click:group-email-add', opTheme.callback.groupEmailAdd);
         OP.Util.on('click:group-email-remove', opTheme.callback.groupEmailRemove);
-        OP.Util.on('click:group-post', opTheme.callback.groupPost);
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:login-modal', opTheme.callback.loginModal);
-        OP.Util.on('click:login-openphoto', opTheme.callback.loginOpenPhoto);
+        OP.Util.on('click:manage-password-request', opTheme.callback.passwordRequest);
+        OP.Util.on('click:manage-password-reset', opTheme.callback.passwordReset);
         OP.Util.on('click:modal-close', opTheme.callback.modalClose);
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:photo-edit', opTheme.callback.photoEdit);
         OP.Util.on('click:plugin-status', opTheme.callback.pluginStatus);
         OP.Util.on('click:plugin-update', opTheme.callback.pluginUpdate);
-        OP.Util.on('click:photo-update', opTheme.callback.photoUpdate);
         OP.Util.on('click:photo-update-batch', opTheme.callback.photoUpdateBatch);
         OP.Util.on('click:photo-view', opTheme.callback.photoView);
         OP.Util.on('click:photo-view-modal', opTheme.callback.photoViewModal);
         OP.Util.on('click:photos-load-more', opTheme.callback.photosViewMore);
         OP.Util.on('click:pin', opTheme.callback.pinClick);
         OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
-        OP.Util.on('click:search', opTheme.callback.searchByTags);
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
+
+        OP.Util.on('submit:features-post', opTheme.callback.featuresPost);
+        OP.Util.on('submit:group-post', opTheme.callback.groupPost);
+        OP.Util.on('submit:login-openphoto', opTheme.callback.loginOpenPhoto);
+        OP.Util.on('submit:photo-update', opTheme.callback.photoUpdate);
+        // in openphoto-upload.js
+        // OP.Util.on('submit:photo-upload', opTheme.callback.photoUpload);
+        OP.Util.on('submit:search', opTheme.callback.searchByTags);
 
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);

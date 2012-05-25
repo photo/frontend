@@ -13,6 +13,11 @@ OPU = (function() {
         var uploaderEl = $("#uploader");
         if(uploaderEl.length == 0)
           return;
+     
+        if(typeof(uploaderEl.pluploadQueue) == 'undefined') {
+          $("#uploader .insufficient").show();
+          return;
+        }
 
         uploaderEl.pluploadQueue({
             // General settings
@@ -78,35 +83,16 @@ OPU = (function() {
             }
         });
 
-        OP.Util.on('click:upload-start', function() {
+        OP.Util.on('submit:photo-upload', function(ev) {
+          ev.preventDefault();
           var uploader = $("#uploader").pluploadQueue();
-          uploader.start();
-        });
-     
-        // Client side form validation
-        var uploadForm = $("form.upload");
-        uploadForm.submit(function(e) {
-          var uploader = $('#uploader').pluploadQueue({});
-          // Files in queue upload them first
-          if (uploader.files.length > 0) {
-            // When all files are uploaded submit form
-            uploader.bind('StateChanged', function() {
-              if (uploader.files.length === (uploader.total.uploaded + uploader.total.failed)) {
-                $("form.upload")[0].submit();
-              }
-            }); 
+          if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
             uploader.start();
           } else {
             // TODO something that doesn't suck
-            alert('Please select at least one photo to upload.');
+            opTheme.message.error('Please select at least one photo to upload.');
           }
-   
-          return false;
         });
-
-        var insufficient = $("#uploader .insufficient");
-        if(insufficient.length == 1)
-          insufficient.show();
       }
     };
 }());

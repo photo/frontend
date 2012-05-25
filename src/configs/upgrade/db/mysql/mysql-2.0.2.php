@@ -5,6 +5,11 @@ $status = true;
 $sql = <<<SQL
   ALTER TABLE  `{$this->mySqlTablePrefix}user` ADD  `password` VARCHAR( 64 ) NOT NULL AFTER  `id`;
 SQL;
+$status = $status && mysql_2_0_2($sql);
+
+$sql = <<<SQL
+  UPDATE `{$this->mySqlTablePrefix}admin` SET `value`=:version WHERE `key`=:key;
+SQL;
 $status = $status && mysql_2_0_2($sql, array(':key' => 'version', ':version' => '2.0.2'));
 
 function mysql_2_0_2($sql, $params = array())
@@ -23,4 +28,3 @@ function mysql_2_0_2($sql, $params = array())
 }
 
 return $status;
-

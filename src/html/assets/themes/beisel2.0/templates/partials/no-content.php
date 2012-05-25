@@ -14,16 +14,16 @@
     <?php if($type == 'oauth') { // oauth ?>
       <strong class="bigtext">\o/</strong><br/>
       <h1>You need to sign in to create an app.</h1>
-      <p>Start by click the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
+      <p>Start by clicking the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
     <?php } elseif($type == '403') { // requires user to be logged in ?>
       <strong class="bigtext"><i class="icon-lock icon-large"></i></strong><br/>
       <h1>You need to be logged in to view this page.</h1>
-      <p>Start by click the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
+      <p>Start by clicking the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
       <p>HTTP 403</p>
     <?php } else { // default with message appropriate for non logged in user ?>
       <strong class="bigtext">:-(</strong><br/>
       <h1>Sorry, nothing to see here. You might want to sign in.</h1>
-      <p>Start by click the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
+      <p>Start by clicking the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
     <?php } ?>
   <?php } else { // user is logged in ?>
     <?php if($this->user->isOwner() && $type == 'upload') { // message to upload photos ?>

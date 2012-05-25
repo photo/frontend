@@ -1200,9 +1200,9 @@ input:focus:required:invalid:focus, textarea:focus:required:invalid:focus, selec
 	display:block;
 	width:auto;
 	min-width:16px;
-	height:16px;
-	margin-right:-1px;
-	padding:4px 5px;
+	height:26px;
+	margin:0 0 0 -1px;
+	padding:4px 7px;
 	font-weight:normal;
 	line-height:16px;
 	color:black;
@@ -2371,6 +2371,7 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 	-webkit-border-radius:4px;
 	-moz-border-radius:4px;
 	border-radius:4px;
+  z-index:1040; /* 10 more than the fixed navbar */
 }
 
 /* 05.03. wells ----------------------------------------------------------------------------- */
@@ -3210,15 +3211,14 @@ body.manage .navbar .nav .manage > a, body.manage .navbar .nav .manage > a:hover
  *  see here screenshots
  *  http://imgur.com/a/qatwW
  */
-.modal.photo-detail.fade.in {
+.modal.photo-detail.fade {
 	width:95%;
   height:95%;
   top:5%;
-  left:2%;
-  margin:0;
+  margin:0 0 0 -47%;
   max-height:inherit;
 }
-.modal.photo-detail.fade.in .photo-view{
+.modal.photo-detail.fade .photo-view{
   padding:10px;
 }
 
@@ -3259,6 +3259,12 @@ body.manage .navbar .nav .manage > a, body.manage .navbar .nav .manage > a:hover
 	float:right;
 	margin-left:5px;
 	margin-bottom:0;
+}
+#modal {
+  z-index:99999;
+}
+#modal-photo-detail {
+  z-index:99998;
 }
 
 /* 07.02. tooltip --------------------------------------------------------------------------- */
@@ -4072,11 +4078,9 @@ body.tags div.tags .tag-list {
   background-color:#cdf2fd;
 }
 /* 09.05. Manage ----------------------------------------------------------- */
-.manage ul.thumbnails li div.thumbnail {
-  border:0px;
-  -webkit-box-shadow:0;
-  -mox-box-shadow:0;
-  box-shadow:0;
+.manage ul.thumbnails li img.thumbnail {
+  width:160px;
+  height:160px;
 }
 .manage ul.thumbnails img~.reveal.revealed, .manage ul.thumbnails img:hover+.reveal.revealed {
   opacity:1.0;
@@ -4112,14 +4116,6 @@ body.tags div.tags .tag-list {
        -o-transition:opacity linear 0.2s;
        transition:opacity linear 0.2s;
 }
-
-
-
-
-
-
-
-
 
 /* Where does this go? jmathai */
 #loginBox .form-horizontal {
@@ -5157,7 +5153,7 @@ header h1 {
 	border-top-color:#575759;
 	}
 	.navbar-form, .navbar-search {
-		position:fixed;
+		position:absolute;
 		top:-1px;
 		right:5px;
 		float:none;
@@ -5190,11 +5186,8 @@ header h1 {
 		overflow:hidden;
 		height:0;
 	}
-	.carousel-control {
-		display:none;
-	}
 	.activityfeed-startpage .carousel-control {
-		display:block;
+		display:none;
 	}
 	.morephotos ul li .btn {
 		height:70px;

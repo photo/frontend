@@ -986,8 +986,18 @@ class DatabaseMySql implements DatabaseInterface
   public function postUser($params)
   {
     $params = $this->prepareUser($params);
-    $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}user` SET `password`=:password,`extra`=:extra WHERE `id`=:id", 
-      array(':id' => $this->owner, ':password' => $params['password'], ':extra' => $params['extra']));
+    if(isset($params['password']) && !empty($params['password']))
+    {
+      $sql = "UPDATE `{$this->mySqlTablePrefix}user` SET `password`=:password,`extra`=:extra WHERE `id`=:id";
+      $params = array(':id' => $this->owner, ':password' => $params['password'], ':extra' => $params['extra']);
+    }
+    else
+    {
+      $sql = "UPDATE `{$this->mySqlTablePrefix}user` SET `extra`=:extra WHERE `id`=:id";
+      $params = array(':id' => $this->owner, ':extra' => $params['extra']);
+    }
+
+    $res = $this->db->execute($sql, $params); 
     return ($res == 1);
   }
 
@@ -1144,8 +1154,18 @@ class DatabaseMySql implements DatabaseInterface
   public function putUser($params)
   {
     $params = $this->prepareUser($params);
-    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`password`,`extra`) VALUES (:id,:password,:extra)", 
-      array(':id' => $this->owner, ':password' => $params['password'], ':extra' => $params['extra']));
+    if(isset($params['password']))
+    {
+      $sql = "INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`password`,`extra`) VALUES (:id,:password,:extra)";
+      $params = array(':id' => $this->owner, ':password' => $params['password'], ':extra' => $params['extra']);
+    }
+    else
+    {
+      $sql = "INSERT INTO `{$this->mySqlTablePrefix}user` (`id`,`extra`) VALUES (:id,:extra)";
+      $params = array(':id' => $this->owner, ':extra' => $params['extra']);
+    }
+
+    $result = $this->db->execute($sql, $params);
     return $result !== false;
   }
 
