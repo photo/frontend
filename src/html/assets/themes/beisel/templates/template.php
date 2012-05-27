@@ -9,6 +9,7 @@
     <meta name="keywords" content="<?php $this->theme->meta('keywords', $page); ?>">
     <meta name="author" content="openphoto.me">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="alternate" type="application/atom+xml" title="Feed (Atom 1.0)" href="/activities/list.atom" />
     <link rel="shortcut icon" href="<?php $this->theme->asset('image', 'favicon.png'); ?>">
     <link rel="apple-touch-icon" href="<?php $this->theme->asset('image', 'apple-touch-icon.png'); ?>">
     <?php if($this->config->site->mode === 'dev') { ?>

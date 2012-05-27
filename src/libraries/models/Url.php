@@ -84,6 +84,19 @@ class Url
     return $utilityObj->returnValue('/photos/upload', $write);
   }
 
+  public function photosFeed($options = null, $feed_format = 'atom', $write = true)
+  {
+    $utilityObj = new Utility;
+    if(empty($options))
+    {
+      return $utilityObj->returnValue(sprintf('/photos/list.%s', $feed_format), $write);
+    }
+    else
+    {
+      return $utilityObj->returnValue(sprintf('/photos/%s/list.%s', $options, $feed_format), $write);
+    }
+  }
+
   public function tagsView($write = true)
   {
     $utilityObj = new Utility;

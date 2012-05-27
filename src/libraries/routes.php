@@ -1,5 +1,6 @@
 <?php
 require $configObj->get('paths')->libraries . '/routes-api.php';
+require $configObj->get('paths')->libraries . '/routes-feed.php';
 
 /*
  * Home page, optionally redirects if the theme doesn't have a front.php
