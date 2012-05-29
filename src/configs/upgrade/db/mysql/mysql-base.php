@@ -98,10 +98,10 @@ SQL;
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}elementAlbum` (
     `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `owner` varchar(255) NOT NULL,
+    `owner` varchar(127) NOT NULL,
     `type` enum('photo') NOT NULL,
     `element` varchar(6) NOT NULL DEFAULT 'photo',
-    `album` varchar(255) NOT NULL,
+    `album` varchar(127) NOT NULL,
     `order` smallint(11) unsigned NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`owner`,`type`,`element`,`album`),
