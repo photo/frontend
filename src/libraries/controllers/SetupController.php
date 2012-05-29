@@ -447,7 +447,7 @@ class SetupController extends BaseController
       $input = array(
         array('MySQL Host', $mySqlHost, 'required'),
         array('MySQL Username', $mySqlUser, 'required'),
-        array('MySQL Password', $mySqlPassword, 'required'),
+        array('MySQL Password', $mySqlPassword),
         array('MySQL Database', $mySqlDb, 'required')
       );
       $mySqlErrors = getForm()->hasErrors($input);
