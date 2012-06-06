@@ -34,7 +34,7 @@
         <?php } ?>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
           <li class="location">
-            <?php $this->utility->safe($photo['latitude']); ?>, <?php $this->utility->safe($photo['longitude']); ?>
+            <a href="<?php $this->utility->mapLinkUrl($photo['latitude'], $photo['longitude'], 5); ?>"><?php $this->utility->safe($photo['latitude']); ?>, <?php $this->utility->safe($photo['longitude']); ?></a>
             <img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 5, '225x150'); ?>" class="map">
           </li>
         <?php } ?>
@@ -42,7 +42,7 @@
           <ul>
             <?php foreach(array('exifCameraMake' => 'Camera make: %s',
                                         'exifCameraModel' => 'Camera model: %s',
-                                        'exifFNumber' => 'Av: f/%1.0F',
+                                        'exifFNumber' => 'Av: f/%1.1F',
                                         'exifExposureTime' => 'Tv: %s',
                                         'exifISOSpeed' => 'ISO: %d',
                                         'exifFocalLength' => 'Focal Length: %1.0fmm') as $key => $value) { ?>

@@ -17,7 +17,7 @@ class SetupController extends BaseController
   public function __construct()
   {
     parent::__construct();
-    $this->theme->setTheme('beisel');
+    $this->theme->setTheme(); // defaults
     $this->user = new User;
   }
   
@@ -73,7 +73,7 @@ class SetupController extends BaseController
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
     $body = $this->template->get($template, array('filesystem' => $filesystem, 'database' => $database, 'themes' => $themes, 'theme' => $theme,
-      'imageLibs' => $imageLibs, 'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'qs' => $qs, 'errors' => $errors));
+      'imageLibs' => $imageLibs, 'imageLibrary' => $imageLibrary, 'appId' => $appId, 'step' => $step, 'email' => $email, 'password' => '', 'qs' => $qs, 'errors' => $errors));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -102,7 +102,7 @@ class SetupController extends BaseController
     if(isset($_GET['edit']))
       $qs = '?edit';
 
-    $template = sprintf('%s/setupDropbox.php', getConfig()->get('paths')->templates);
+    $template = sprintf('%s/setup-dropbox.php', getConfig()->get('paths')->templates);
     $body = $this->template->get($template, array('dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
@@ -182,6 +182,7 @@ class SetupController extends BaseController
     $step = 1;
     $appId = isset($_POST['appId']) ? $_POST['appId'] : '';
     $email = isset($_POST['email']) ? $_POST['email'] : '';
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
     $theme = isset($_POST['theme']) ? $_POST['theme'] : '';
     $input = array(
       array('Email', $email, 'required')
@@ -193,6 +194,7 @@ class SetupController extends BaseController
       getSession()->set('step', 2);
       getSession()->set('appId', $appId);
       getSession()->set('ownerEmail', $email);
+      getSession()->set('password', $password);
       getSession()->set('theme', $theme);
 
       $qs = '';
@@ -203,7 +205,7 @@ class SetupController extends BaseController
     }
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
-    $body = $this->template->get($template, array('email' => $email, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
+    $body = $this->template->get($template, array('email' => $email, 'password' => $password, 'appId' => $appId, 'step' => $step, 'errors' => $errors));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
 
@@ -288,6 +290,7 @@ class SetupController extends BaseController
     extract($this->getDefaultConfigParams());
     $secret = $this->getSecret();
     $step = 3;
+    $password = getSession()->get('password');
     $appId = getSession()->get('appId');
     $database = getSession()->get('database');
     $filesystem = getSession()->get('filesystem');
@@ -365,7 +368,7 @@ class SetupController extends BaseController
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
     // copied to/from setup3Post()
-    $body = $this->template->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
+    $body = $this->template->get($template, array('step' => $step, 'password' => $password,'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3,
       'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
       'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
@@ -391,6 +394,7 @@ class SetupController extends BaseController
     $database = getSession()->get('database');
     $filesystem = getSession()->get('filesystem');
     $appId = getSession()->get('appId');
+    $password = getSession()->get('password');
     $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
@@ -576,6 +580,11 @@ class SetupController extends BaseController
         $dbErrors = array_merge($dbErrors, $dbObj->errors());
       }
 
+      if(getConfig()->get('site')->allowOpenPhotoLogin == 1)
+        $dbObj->putUser(array('password' => sha1(sprintf('%s-%s', $password, getConfig()->get('secrets')->passwordSalt))));
+      else
+        $dbObj->putUser(array('password' => ''));
+
       if($fsErrors === false && $dbErrors === false)
       {
         $writeError = $this->writeConfigFile();
@@ -620,7 +629,7 @@ class SetupController extends BaseController
 
     $template = sprintf('%s/setup.php', getConfig()->get('paths')->templates);
     // copied to/from setup3()
-    $body = $this->template->get($template, array('step' => $step, 'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
+    $body = $this->template->get($template, array('step' => $step, 'password' => $password,'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3,
       'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
       'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
@@ -779,7 +788,7 @@ class SetupController extends BaseController
     $session = getSession()->getAll();
     foreach($session as $key => $val)
     {
-      if($key != 'email')
+      if($key != 'email' && $key != 'password')
         $pReplace["{{$key}}"] = $val;
 
       getLogger()->info(sprintf('Storing %s as %s', $key, $val));

@@ -1,1 +1,335 @@
-(function(c){var d={};function a(e){return plupload.translate(e)||e}function b(f,e){e.contents().each(function(g,h){h=c(h);if(!h.is(".plupload")){h.remove()}});e.prepend('<div class="plupload_wrapper plupload_scroll"><div id="'+f+'_container" class="plupload_container"><div class="plupload"><div class="plupload_header"><div class="plupload_header_content"><div class="plupload_header_title">'+a("Select photos")+'</div><div class="plupload_header_text">'+a("Add photos and click the start button.")+'</div></div></div><div class="plupload_content"><div class="plupload_filelist_footer"> <div class="plupload_file_name"> <div class="plupload_buttons"><a href="#" class="plupload_button plupload_add">'+a("Add photos")+'</a><a href="#" class="plupload_button plupload_start">'+a("Start upload")+'</a></div> <span class="plupload_upload_status"></span> </div> <div class="plupload_file_action"></div> <div class="plupload_file_status"><span class="plupload_total_status">0%</span></div> <div class="plupload_file_size"><span class="plupload_total_file_size">0 b</span></div> <div class="plupload_progress"> <div class="plupload_progress_container"> <div class="plupload_progress_bar"></div> </div> </div> <div class="plupload_clearer">&nbsp;</div> </div><div class="plupload_filelist_header"><div class="plupload_file_name">'+a("Filename")+'</div><div class="plupload_file_action">&nbsp;</div><div class="plupload_file_status"><span>'+a("Status")+'</span></div><div class="plupload_file_size">'+a("Size")+'</div><div class="plupload_clearer">&nbsp;</div></div><ul id="'+f+'_filelist" class="plupload_filelist"></ul></div></div></div><input type="hidden" id="'+f+'_count" name="'+f+'_count" value="0" /></div>')}c.fn.pluploadQueue=function(e){if(e){this.each(function(){var j,i,k;i=c(this);k=i.attr("id");if(!k){k=plupload.guid();i.attr("id",k)}j=new plupload.Uploader(c.extend({dragdrop:true,container:k},e));d[k]=j;function h(l){var n;if(l.status==plupload.DONE){n="plupload_done"}if(l.status==plupload.FAILED){n="plupload_failed"}if(l.status==plupload.QUEUED){n="plupload_delete"}if(l.status==plupload.UPLOADING){n="plupload_uploading"}var m=c("#"+l.id).attr("class",n).find("a").css("display","block");if(l.hint){m.attr("title",l.hint)}}function f(){c("span.plupload_total_status",i).html(j.total.percent+"%");c("div.plupload_progress_bar",i).css("width",j.total.percent+"%");c("span.plupload_upload_status",i).text(a("Uploaded %d/%d photos").replace(/%d\/%d/,j.total.uploaded+"/"+j.files.length))}function g(){var m=c("ul.plupload_filelist",i).html(""),n=0,l;c.each(j.files,function(p,o){l="";if(o.status==plupload.DONE){if(o.target_name){l+='<input type="hidden" name="'+k+"_"+n+'_tmpname" value="'+plupload.xmlEncode(o.target_name)+'" />'}l+='<input type="hidden" name="'+k+"_"+n+'_name" value="'+plupload.xmlEncode(o.name)+'" />';l+='<input type="hidden" name="'+k+"_"+n+'_status" value="'+(o.status==plupload.DONE?"done":"failed")+'" />';n++;c("#"+k+"_count").val(n)}m.append('<li id="'+o.id+'"><div class="plupload_file_name"><span>'+o.name+'</span></div><div class="plupload_file_action"><a href="#"></a></div><div class="plupload_file_status">'+o.percent+'%</div><div class="plupload_file_size">'+plupload.formatSize(o.size)+'</div><div class="plupload_clearer">&nbsp;</div>'+l+"</li>");h(o);c("#"+o.id+".plupload_delete a").click(function(q){c("#"+o.id).remove();j.removeFile(o);q.preventDefault()})});c("span.plupload_total_file_size",i).html(plupload.formatSize(j.total.size));if(j.total.queued===0){c("span.plupload_add_text",i).text(a("Add photos."))}else{c("span.plupload_add_text",i).text(j.total.queued+" photos queued.")}c("a.plupload_start",i).toggleClass("plupload_disabled",j.files.length==(j.total.uploaded+j.total.failed));m[0].scrollTop=m[0].scrollHeight;f();if(!j.files.length&&j.features.dragdrop&&j.settings.dragdrop){c("#"+k+"_filelist").append('<li class="plupload_droptext">'+a("Drag and drop photos here.")+"</li>")}}j.bind("UploadFile",function(l,m){c("#"+m.id).addClass("plupload_current_file")});j.bind("Init",function(l,m){b(k,i);if(!e.unique_names&&e.rename){c("#"+k+"_filelist div.plupload_file_name span",i).live("click",function(s){var q=c(s.target),o,r,n,p="";o=l.getFile(q.parents("li")[0].id);n=o.name;r=/^(.+)(\.[^.]+)$/.exec(n);if(r){n=r[1];p=r[2]}q.hide().after('<input type="text" />');q.next().val(n).focus().blur(function(){q.show().next().remove()}).keydown(function(u){var t=c(this);if(u.keyCode==13){u.preventDefault();o.name=t.val()+p;q.text(o.name);t.blur()}})})}c("a.plupload_add",i).attr("id",k+"_browse");l.settings.browse_button=k+"_browse";if(l.features.dragdrop&&l.settings.dragdrop){l.settings.drop_element=k+"_filelist";c("#"+k+"_filelist").append('<li class="plupload_droptext">'+a("Drag and drop photos here.")+"</li>")}c("#"+k+"_container").attr("title","Using runtime: "+m.runtime);c("a.plupload_start",i).click(function(n){if(!c(this).hasClass("plupload_disabled")){j.start()}n.preventDefault()});c("a.plupload_stop",i).click(function(n){n.preventDefault();j.stop()});c("a.plupload_start",i).addClass("plupload_disabled")});j.init();j.bind("Error",function(l,o){var m=o.file,n;if(m){n=o.message;if(o.details){n+=" ("+o.details+")"}if(o.code==plupload.FILE_SIZE_ERROR){alert(a("Error: File too large: ")+m.name)}if(o.code==plupload.FILE_EXTENSION_ERROR){alert(a("Error: Invalid file extension: ")+m.name)}m.hint=n;c("#"+m.id).attr("class","plupload_failed").find("a").css("display","block").attr("title",n)}});j.bind("StateChanged",function(){if(j.state===plupload.STARTED){c("li.plupload_delete a,div.plupload_buttons",i).hide();c("span.plupload_upload_status,div.plupload_progress,a.plupload_stop",i).css("display","block");c("span.plupload_upload_status",i).text("Uploaded "+j.total.uploaded+"/"+j.files.length+" photos");if(e.multiple_queues){c("span.plupload_total_status,span.plupload_total_file_size",i).show()}}else{g();c("a.plupload_stop,div.plupload_progress",i).hide();c("a.plupload_delete",i).css("display","block")}});j.bind("QueueChanged",g);j.bind("FileUploaded",function(l,m){h(m)});j.bind("UploadProgress",function(l,m){c("#"+m.id+" div.plupload_file_status",i).html(m.percent+"%");h(m);f();if(e.multiple_queues&&j.total.uploaded+j.total.failed==j.files.length){c(".plupload_buttons,.plupload_upload_status",i).css("display","inline");c(".plupload_start",i).addClass("plupload_disabled");c("span.plupload_total_status,span.plupload_total_file_size",i).hide()}});if(e.setup){e.setup(j)}});return this}else{return d[c(this[0]).attr("id")]}}})(jQuery);
+/**
+ * jquery.plupload.queue.js
+ *
+ * Copyright 2009, Moxiecode Systems AB
+ * Released under GPL License.
+ *
+ * License: http://www.plupload.com/license
+ * Contributing: http://www.plupload.com/contributing
+ */
+
+// JSLint defined globals
+/*global plupload:false, jQuery:false, alert:false */
+
+(function($) {
+	var uploaders = {};
+
+	function _(str) {
+		return plupload.translate(str) || str;
+	}
+
+	function renderUI(id, target) {
+		// Remove all existing non plupload items
+		target.contents().each(function(i, node) {
+			node = $(node);
+
+			if (!node.is('.plupload')) {
+				node.remove();
+			}
+		});
+
+		target.prepend(
+			'<div class="plupload_wrapper plupload_scroll">' +
+				'<div id="' + id + '_container" class="plupload_container">' +
+					'<div class="plupload">' +
+						'<div class="plupload_header">' +
+							'<div class="plupload_header_content">' +
+								'<div class="plupload_header_title">' + _('Select photos') + '</div>' +
+								'<div class="plupload_header_text">' + _('Add photos to the upload queue and click the start button.') + '</div>' +
+							'</div>' +
+						'</div>' +
+
+						'<div class="plupload_content">' +
+							'<div class="plupload_filelist_footer">' +
+								'<div class="plupload_file_name">' +
+									'<div class="plupload_buttons">' +
+										'<a href="#" class="plupload_button plupload_add">' + _('Add photos') + '</a>' +
+										'<a href="#" class="plupload_button plupload_start">' + _('Start upload') + '</a>' +
+									'</div>' +
+									'<span class="plupload_upload_status"></span>' +
+								'</div>' +
+								'<div class="plupload_file_action"></div>' +
+								'<div class="plupload_file_status"><span class="plupload_total_status">0%</span></div>' +
+								'<div class="plupload_file_size"><span class="plupload_total_file_size">0 b</span></div>' +
+								'<div class="plupload_progress">' +
+									'<div class="plupload_progress_container">' +
+										'<div class="plupload_progress_bar"></div>' +
+									'</div>' +
+								'</div>' +
+								'<div class="plupload_clearer">&nbsp;</div>' +
+							'</div>' +
+
+							'<div class="plupload_filelist_header">' +
+								'<div class="plupload_file_name">' + _('Filename') + '</div>' +
+								'<div class="plupload_file_action">&nbsp;</div>' +
+								'<div class="plupload_file_status"><span>' + _('Status') + '</span></div>' +
+								'<div class="plupload_file_size">' + _('Size') + '</div>' +
+								'<div class="plupload_clearer">&nbsp;</div>' +
+							'</div>' +
+
+							'<ul id="' + id + '_filelist" class="plupload_filelist"></ul>' +
+
+						'</div>' +
+					'</div>' +
+				'</div>' +
+				'<input type="hidden" id="' + id + '_count" name="' + id + '_count" value="0" />' +
+			'</div>'
+		);
+	}
+
+	$.fn.pluploadQueue = function(settings) {
+		if (settings) {
+			this.each(function() {
+				var uploader, target, id;
+
+				target = $(this);
+				id = target.attr('id');
+
+				if (!id) {
+					id = plupload.guid();
+					target.attr('id', id);
+				}
+
+				uploader = new plupload.Uploader($.extend({
+					dragdrop : true,
+					container : id
+				}, settings));
+
+				uploaders[id] = uploader;
+
+				function handleStatus(file) {
+					var actionClass;
+
+					if (file.status == plupload.DONE) {
+						actionClass = 'plupload_done';
+					}
+
+					if (file.status == plupload.FAILED) {
+						actionClass = 'plupload_failed';
+					}
+
+					if (file.status == plupload.QUEUED) {
+						actionClass = 'plupload_delete';
+					}
+
+					if (file.status == plupload.UPLOADING) {
+						actionClass = 'plupload_uploading';
+					}
+
+					var icon = $('#' + file.id).attr('class', actionClass).find('a').css('display', 'block');
+					if (file.hint) {
+						icon.attr('title', file.hint);	
+					}
+				}
+
+				function updateTotalProgress() {
+					$('span.plupload_total_status', target).html(uploader.total.percent + '%');
+					$('div.plupload_progress_bar', target).css('width', uploader.total.percent + '%');
+					$('span.plupload_upload_status', target).text(
+						_('Uploaded %d/%d files').replace(/%d\/%d/, uploader.total.uploaded+'/'+uploader.files.length)
+					);
+				}
+
+				function updateList() {
+					var fileList = $('ul.plupload_filelist', target).html(''), inputCount = 0, inputHTML;
+
+					$.each(uploader.files, function(i, file) {
+						inputHTML = '';
+
+						if (file.status == plupload.DONE) {
+							if (file.target_name) {
+								inputHTML += '<input type="hidden" name="' + id + '_' + inputCount + '_tmpname" value="' + plupload.xmlEncode(file.target_name) + '" />';
+							}
+
+							inputHTML += '<input type="hidden" name="' + id + '_' + inputCount + '_name" value="' + plupload.xmlEncode(file.name) + '" />';
+							inputHTML += '<input type="hidden" name="' + id + '_' + inputCount + '_status" value="' + (file.status == plupload.DONE ? 'done' : 'failed') + '" />';
+	
+							inputCount++;
+
+							$('#' + id + '_count').val(inputCount);
+						}
+
+						fileList.append(
+							'<li id="' + file.id + '">' +
+								'<div class="plupload_file_name"><span>' + file.name + '</span></div>' +
+								'<div class="plupload_file_action"><a href="#"></a></div>' +
+								'<div class="plupload_file_status">' + file.percent + '%</div>' +
+								'<div class="plupload_file_size">' + plupload.formatSize(file.size) + '</div>' +
+								'<div class="plupload_clearer">&nbsp;</div>' +
+								inputHTML +
+							'</li>'
+						);
+
+						handleStatus(file);
+
+						$('#' + file.id + '.plupload_delete a').click(function(e) {
+							$('#' + file.id).remove();
+							uploader.removeFile(file);
+
+							e.preventDefault();
+						});
+					});
+
+					$('span.plupload_total_file_size', target).html(plupload.formatSize(uploader.total.size));
+
+					if (uploader.total.queued === 0) {
+						$('span.plupload_add_text', target).text(_('Add photos.'));
+					} else {
+						$('span.plupload_add_text', target).text(uploader.total.queued + ' photos queued.');
+					}
+
+					$('a.plupload_start', target).toggleClass('plupload_disabled', uploader.files.length == (uploader.total.uploaded + uploader.total.failed));
+
+					// Scroll to end of file list
+					fileList[0].scrollTop = fileList[0].scrollHeight;
+
+					updateTotalProgress();
+
+					// Re-add drag message if there is no files
+					if (!uploader.files.length && uploader.features.dragdrop && uploader.settings.dragdrop) {
+						$('#' + id + '_filelist').append('<li class="plupload_droptext">' + _("Drag photos here.") + '</li>');
+					}
+				}
+
+				uploader.bind("UploadFile", function(up, file) {
+					$('#' + file.id).addClass('plupload_current_file');
+				});
+
+				uploader.bind('Init', function(up, res) {
+					renderUI(id, target);
+
+					// Enable rename support
+					if (!settings.unique_names && settings.rename) {
+						$('#' + id + '_filelist div.plupload_file_name span', target).live('click', function(e) {
+							var targetSpan = $(e.target), file, parts, name, ext = "";
+
+							// Get file name and split out name and extension
+							file = up.getFile(targetSpan.parents('li')[0].id);
+							name = file.name;
+							parts = /^(.+)(\.[^.]+)$/.exec(name);
+							if (parts) {
+								name = parts[1];
+								ext = parts[2];
+							}
+
+							// Display input element
+							targetSpan.hide().after('<input type="text" />');
+							targetSpan.next().val(name).focus().blur(function() {
+								targetSpan.show().next().remove();
+							}).keydown(function(e) {
+								var targetInput = $(this);
+
+								if (e.keyCode == 13) {
+									e.preventDefault();
+
+									// Rename file and glue extension back on
+									file.name = targetInput.val() + ext;
+									targetSpan.text(file.name);
+									targetInput.blur();
+								}
+							});
+						});
+					}
+
+					$('a.plupload_add', target).attr('id', id + '_browse');
+
+					up.settings.browse_button = id + '_browse';
+
+					// Enable drag/drop
+					if (up.features.dragdrop && up.settings.dragdrop) {
+						up.settings.drop_element = id + '_filelist';
+						$('#' + id + '_filelist').append('<li class="plupload_droptext">' + _("Drag photos here.") + '</li>');
+					}
+
+					$('#' + id + '_container').attr('title', 'Using runtime: ' + res.runtime);
+
+					$('a.plupload_start', target).click(function(e) {
+						if (!$(this).hasClass('plupload_disabled')) {
+							uploader.start();
+						}
+
+						e.preventDefault();
+					});
+
+					$('a.plupload_stop', target).click(function(e) {
+						e.preventDefault();
+						uploader.stop();
+					});
+
+					$('a.plupload_start', target).addClass('plupload_disabled');
+				});
+
+				uploader.init();
+
+				uploader.bind("Error", function(up, err) {
+					var file = err.file, message;
+
+					if (file) {
+						message = err.message;
+
+						if (err.details) {
+							message += " (" + err.details + ")";
+						}
+
+						if (err.code == plupload.FILE_SIZE_ERROR) {
+							alert(_("Error: File too large: ") + file.name);
+						}
+
+						if (err.code == plupload.FILE_EXTENSION_ERROR) {
+							alert(_("Error: Invalid file extension: ") + file.name);
+						}
+						
+						file.hint = message;
+						$('#' + file.id).attr('class', 'plupload_failed').find('a').css('display', 'block').attr('title', message);
+					}
+				});
+
+				uploader.bind('StateChanged', function() {
+					if (uploader.state === plupload.STARTED) {
+						$('li.plupload_delete a,div.plupload_buttons', target).hide();
+						$('span.plupload_upload_status,div.plupload_progress,a.plupload_stop', target).css('display', 'block');
+						$('span.plupload_upload_status', target).text('Uploaded ' + uploader.total.uploaded + '/' + uploader.files.length + ' files');
+
+						if (settings.multiple_queues) {
+							$('span.plupload_total_status,span.plupload_total_file_size', target).show();
+						}
+					} else {
+						updateList();
+						$('a.plupload_stop,div.plupload_progress', target).hide();
+						$('a.plupload_delete', target).css('display', 'block');
+					}
+				});
+
+				uploader.bind('QueueChanged', updateList);
+
+				uploader.bind('FileUploaded', function(up, file) {
+					handleStatus(file);
+				});
+
+				uploader.bind("UploadProgress", function(up, file) {
+					// Set file specific progress
+					$('#' + file.id + ' div.plupload_file_status', target).html(file.percent + '%');
+
+					handleStatus(file);
+					updateTotalProgress();
+
+					if (settings.multiple_queues && uploader.total.uploaded + uploader.total.failed == uploader.files.length) {
+						$(".plupload_buttons,.plupload_upload_status", target).css("display", "inline");
+						$(".plupload_start", target).addClass("plupload_disabled");
+						$('span.plupload_total_status,span.plupload_total_file_size', target).hide();
+					}
+				});
+
+				// Call setup function
+				if (settings.setup) {
+					settings.setup(uploader);
+				}
+			});
+
+			return this;
+		} else {
+			// Get uploader instance for specified element
+			return uploaders[$(this[0]).attr('id')];
+		}
+	};
+})(jQuery);

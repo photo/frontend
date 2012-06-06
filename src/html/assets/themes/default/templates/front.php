@@ -5,7 +5,7 @@
         <h1>Oh no, you haven't uploaded any photos yet. <a href="<?php $this->url->photoUpload(); ?>" class="button">Start Now</a>
         <img src="<?php $this->theme->asset('image', 'front.jpg'); ?>" class="front">
       <?php } else { ?>
-        <h1>Sorry, no photos. <a class="login-click button">Login</a> to upload some.</h1>
+        <h1>Sorry, no photos. <a class="login-click browserid button">Login</a> to upload some.</h1>
         <img src="<?php $this->theme->asset('image', 'front-general.jpg'); ?>" class="front">
       <?php } ?>
     <?php } else { ?>

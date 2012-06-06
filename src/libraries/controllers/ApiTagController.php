@@ -58,7 +58,7 @@ class ApiTagController extends ApiBaseController
     $res = getDb()->postTag($tag, $params);
     if($res)
     {
-      $tag = $this->api->invoke("/tag/{$tag}/view.json", EpiRoute::httpGet);
+      $tag = $this->api->invoke("/{$this->apiVersion}/tag/{$tag}/view.json", EpiRoute::httpGet);
       return $this->success('Tag created/updated successfully', $tag['result']);
     }
     else
@@ -82,7 +82,6 @@ class ApiTagController extends ApiBaseController
       $filters['permission'] = 0;
 
     $tagField = $userObj->isOwner() ? 'countPrivate' : 'countPublic';
-
     $tags = getDb()->getTags($filters);
     if(is_array($tags))
     {

@@ -31,21 +31,21 @@ abstract class Dropbox_OAuth {
      *
      * @var string
      */
-    const URI_REQUEST_TOKEN = 'http://api.dropbox.com/0/oauth/request_token';
+    const URI_REQUEST_TOKEN = 'https://api.dropbox.com/1/oauth/request_token';
 
     /**
      * Uri used to redirect the user to for authorization.
      *
      * @var string
      */
-    const URI_AUTHORIZE = 'http://www.dropbox.com/0/oauth/authorize';
+    const URI_AUTHORIZE = 'https://www.dropbox.com/1/oauth/authorize';
 
     /**
      * Uri used to
      *
      * @var string
      */
-    const URI_ACCESS_TOKEN = 'http://api.dropbox.com/0/oauth/access_token';
+    const URI_ACCESS_TOKEN = 'https://api.dropbox.com/1/oauth/access_token';
 
     /**
      * An OAuth request token.

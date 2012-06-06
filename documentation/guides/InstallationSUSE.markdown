@@ -26,6 +26,8 @@ Once you've confirmed that your cloud account is setup you can get started on yo
 
     zypper in apache2 php5 apache2-mod-php5 php5-curl php5-mcrypt
 
+And if you are going to use MySQL install `php5-mysql`.
+
 Ensure you have mod_rewrite enabled
 
     a2enmod rewrite

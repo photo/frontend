@@ -32,17 +32,9 @@
     * @method attachEvent
     */
     OU.attachEvent = function(element, etype, callback, scope) {
-
         var scope = scope || window;
-
+        // TODO we should use .on() here but it isn't working for dynamically created elements (i.e. photo edit form)
         lib( element ).live(etype, lib.proxy(callback, scope) );
-
-        //key events need to use bind, for some reason only gets triggered
-        //when you input in textareas or inputs with jQuery
-        if (etype === "keydown" || etype === "keypress" || etype === "keyup") {
-        	lib( element ).bind(etype, lib.proxy(callback, scope) );
-        }
-
     }
 
 
@@ -54,9 +46,7 @@
     * @method detachEvent
     */
     OU.detachEvent = function(element, type) {
-
         lib( element ).die( type );
-
     }
 
 

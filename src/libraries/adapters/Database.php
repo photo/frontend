@@ -16,11 +16,12 @@ interface DatabaseInterface
   public function deleteCredential($id);
   public function deleteGroup($id);
   public function deletePhoto($photo);
+  public function deletePhotoVersions($photo);
   public function deleteTag($id);
   public function deleteWebhook($id);
   // get methods read
   public function getAction($id);
-  public function getActivities();
+  public function getActivities($filters = array(), $limit = null);
   public function getActivity($id);
   public function getAlbum($id, $email);
   public function getAlbumElements($id);
@@ -33,16 +34,18 @@ interface DatabaseInterface
   public function getGroups($email = null);
   public function getPhoto($id);
   public function getPhotoWithActions($id);
-  public function getPhotos($filter = array(), $limit = null, $offset = null);
+  public function getPhotos($filters = array(), $limit = null, $offset = null);
   public function getUser($owner = null);
+  public function getUserByEmailAndPassword($email = null, $password = null);
   public function getTag($tag);
-  public function getTags($filter = array());
+  public function getTags($filters = array());
   public function getWebhook($id);
   public function getWebhooks($topic = null);
   // upgrade
   public function identity();
   public function executeScript($file, $database);
   // post methods update
+  public function postAlbum($id, $params);
   public function postAlbumAdd($albumId, $type, $elementIds);
   public function postAlbumRemove($albumId, $type, $elementIds);
   public function postCredential($id, $params);

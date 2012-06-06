@@ -10,16 +10,19 @@ body.upload .poweredby {
   padding-right:10px;
 }
 
-body.upload .message {
+body.upload .upload-message {
   font-size:30px;
   margin:10px 0 30px;
   text-align:center;
   display:none;
 }
-body.upload .message img {
+body.upload .upload-message img {
   position:relative;
   left:-5px;
   top:5px;
+}
+body.upload .insufficient {
+  display:none;
 }
 /* 
    Plupload
@@ -186,6 +189,9 @@ li.plupload_done a {
 
 .plupload_scroll .plupload_filelist_header .plupload_file_action, .plupload_scroll .plupload_filelist_footer .plupload_file_action {
 	margin-right: 17px;
+}
+a.plupload_button.plupload_start {
+  display:none !important;
 }
 
 /* Floats */

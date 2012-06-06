@@ -1,6 +1,6 @@
 <?php
 /**
- * Dropbox adapter that extends much of the FileSystemLocal logic
+ * Dropbox adapter that extends much of the FileSystemS3 logic
  *
  * This class defines the functionality defined by FileSystemInterface for a plain Filesystem.
  * @author Hub Figuiere <hub@figuiere.net>
@@ -81,12 +81,23 @@ class FileSystemS3Dropbox extends FileSystemS3 implements FileSystemInterface
 
   public function putPhoto($localFile, $remoteFile)
   {
-    return $this->dropbox->putPhoto($localFile, $remoteFile) && parent::putPhoto($localFile, $remoteFile);
+    $parentStatus = true;
+    if(strpos($remoteFile, '/original/') === false)
+      $parentStatus = parent::putPhoto($localFile, $remoteFile);
+
+    return $this->dropbox->putPhoto($localFile, $remoteFile) && $parentStatus;
   }
 
   public function putPhotos($files)
   {
-    return $this->dropbox->putPhotos($files) && parent::putPhotos($files);
+    $parentFiles = array();
+    foreach($files as $file)
+    {
+      list($local, $remote) = each($file);
+      if(strpos($remote, '/original/') === false)
+        $parentFiles[] = $file;
+    }
+    return $this->dropbox->putPhotos($files) && parent::putPhotos($parentFiles);
   }
 
   public function normalizePath($path)

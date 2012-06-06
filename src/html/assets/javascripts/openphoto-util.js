@@ -13,8 +13,7 @@
     //constants
     var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
         BROWSER_ID_SRC = 'https://browserid.org/include.js',
-        log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } };
-
+        log = function(msg) { if(typeof(console) !== 'undefined' && typeof(console.log) !== 'undefined') {  console.log(msg); } };
 
     /**
     * Class that contains all utility functions for OpenPhoto
@@ -106,7 +105,6 @@
             // get the library plugin file that maps library functions to a normalized
             // naming so that we can use whatever library that is specified
             this.getLibraryPlugin();
-
         };
 
         /**
@@ -125,10 +123,12 @@
 
             //attach events
             this.attachEvent( 'body', 'click', this.onviewevent, this);
+            this.attachEvent( 'body', 'focus', this.onviewevent, this);
             this.attachEvent( 'body', 'change', this.onviewevent, this);
             this.attachEvent( 'body', 'mouseover', this.onmouseevent, this);
             this.attachEvent( 'body', 'mouseout', this.onmouseevent, this);
             this.attachEvent( 'html', 'keydown', this.onkeydownevent, this);
+            this.attachEvent( 'form', 'submit', this.onviewevent, this);
             
             //load additional js in order specified
             for(i=0, j=js.length; i<j; i++) {
@@ -150,7 +150,7 @@
         */
         this.onviewevent = function(e) {
 
-            log('[Util] onviewevent: ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -166,8 +166,6 @@
                     this.fire( map[cls], e);
                 }
             }
-
-
         };
 
         /**
@@ -177,8 +175,7 @@
         * @method onkeydownevent
         */
         this.onkeydownevent = function(e) {
-            
-            log('[Util] keydownevent: ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
             
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -225,7 +222,7 @@
         */
         this.onmouseevent = function(e) {
             
-            log('[Util] mouseevent: ' + e.type + ' - ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),

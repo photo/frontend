@@ -6,7 +6,8 @@
  */
 class PluginBase extends BaseModel
 {
-  private $plugin, $pluginName, $pluginConf = null;
+  protected $plugin;
+  private $pluginName, $pluginConf = null;
   public function __construct($params = null)
   {
     parent::__construct();
@@ -17,10 +18,23 @@ class PluginBase extends BaseModel
       $this->plugin = getPlugin();
   }
 
+
   public function defineConf()
   {
     return null;
   }
+
+  // this logic is duplicated in Plugin::registerRoutes
+  public function getRouteUrl($name)
+  {
+    $routes = $this->defineRoutes();
+    if(isset($routes[$name]))
+      return sprintf('/plugin/%s%s', preg_replace('/Plugin$/', '', get_class($this)), $routes[$name][1]);
+
+    return null;
+  }
+
+  public function defineRoutes() { }
 
   public function getConf()
   {
@@ -35,27 +49,23 @@ class PluginBase extends BaseModel
     return $this->pluginConf;
   }
 
-  public function onAction($params)
-  {
-  }
+  public function onAction() { }
 
-  public function onBodyBegin($params = null)
-  {
-  }
+  public function onView() { }
 
-  public function onBodyEnd($params = null)
-  {
-  }
+  public function renderHead() { }
 
-  public function onHead($params = null)
-  {
-  }
+  public function renderBody() { }
 
-  public function onLoad($params = null)
-  {
-  }
+  public function renderPhotoDetail() { }
 
-  public function onView($params)
+  public function renderPhotoUploaded() {}
+  
+  public function renderFooter() { }
+
+  public function routeHandler($route)
   {
+    // require authentication for all route urls
+    getAuthentication()->requireAuthentication();
   }
 }

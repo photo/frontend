@@ -28,28 +28,7 @@ class ApiUserController extends ApiBaseController
     if($wasUserLoggedIn)
       return $this->success('User was logged in successfully', array('email' => getSession()->get('email')));
     else
-      return $this->error('User was not able to be logged in', false);
-  }
-
-  /**
-    * Log a user in via mobilePassphrase
-    *
-    * @return string Standard JSON envelope
-    */
-  public function loginMobile()
-  {
-    $mobilePassphrase = $this->user->getMobilePassphrase();
-
-    if(empty($mobilePassphrase) || !isset($_POST['passphrase']) || $mobilePassphrase['phrase'] != $_POST['passphrase'])
-      return $this->forbidden('Unable to authenticate', false);
-
-    $email = $this->config->user->email;
-    $this->user->setEmail($email);
-    $this->user->setMobilePassphrase(true); // unset
-    if(isset($_POST['redirect']))
-      $this->route->redirect($_POST['redirect'], null, true);
-    else
-      return $this->success('User was logged in successfully', array('email' => getSession()->get('email')));
+      return $this->forbidden('User was not able to be logged in', false);
   }
 
   /**
@@ -60,7 +39,65 @@ class ApiUserController extends ApiBaseController
   public function logout()
   {
     $this->user->logout();
-    return $this->success('User was logged out successfully');
+    return $this->success('User was logged out successfully', true);
+  }
+
+  /**
+    * Generate a password reset token and email a link to the user.
+    *
+    * @return string Standard JSON envelope
+    */
+  public function passwordRequest()
+  {
+    if(!isset($_POST['email']))
+      return $this->error('No email address provided.', false);
+
+    $email = $_POST['email'];
+    if($email == $this->config->user->email)
+    {
+      $token = md5(rand(10000,100000));
+      $tokenUrl = sprintf('%s://%s/manage/password/reset/%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], $token);
+      $this->user->update(array('passwordToken' => $token));
+      $templateObj = getTemplate();
+      $template = sprintf('%s/email/password-reset.php', $this->config->paths->templates);
+      $body = $this->template->get($template, array('tokenUrl' => $tokenUrl));
+      $emailer = new Emailer;
+      $emailer->setRecipients(array($this->config->user->email));
+      $emailer->setSubject('OpenPhoto password reset request');
+      $emailer->setBody($body);
+      $result = $emailer->send();
+      if($result > 0)
+      {
+        return $this->success('An email was sent to reset the password.', true);
+      }
+      else
+      {
+        $this->logger->info('Unable to send email. Confirm that your email settings are correct and the email addresses are valid.');
+        return $this->error('We were unable to send a password reset email.', false);
+      }
+    }
+    return $this->error('The email address provided does not match the registered email for this site.', false);
+  }
+
+  /**
+    * Resets a user's password after validating the password token
+    *
+    * @return string Standard JSON envelope
+    */
+  public function passwordReset()
+  {
+    $user = new User;
+    $token = $_POST['token'];
+    $password = $_POST['password'];
+    $passwordConfirm = $_POST['password-confirm'];
+    $tokenFromDb = $user->getAttribute('passwordToken');
+    if($tokenFromDb != $token)
+      return $this->error('Could not validate password reset token.', false);
+    elseif($password !== $passwordConfirm)
+      return $this->error('Password confirmation did not match.', false);
+
+    $this->user->update(array('password' => $password, 'passwordToken' => null));
+    return $this->success('Password was updated successfully.', true);
   }
 
   /**
