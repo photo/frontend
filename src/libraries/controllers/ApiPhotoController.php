@@ -30,7 +30,7 @@ class ApiPhotoController extends ApiBaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-    $res = $this->api->invoke("/photo/{$id}/view.json");
+    $res = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json");
     $status = $this->photo->delete($id);
     if($status)
     {
@@ -62,7 +62,7 @@ class ApiPhotoController extends ApiBaseController
     $retval = true;
     foreach($ids as $id)
     {
-      $response = $this->api->invoke("/photo/{$id}/delete.json", EpiRoute::httpPost, array('_POST' => $params));
+      $response = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/delete.json", EpiRoute::httpPost, array('_POST' => $params));
       $retval = $retval && $response['result'] !== false;
     }
 
@@ -81,8 +81,8 @@ class ApiPhotoController extends ApiBaseController
   public function edit($id)
   {
     getAuthentication()->requireAuthentication();
-    $photoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
-    $groupsResp = $this->api->invoke('/groups/list.json', EpiRoute::httpGet);
+    $photoResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
+    $groupsResp = $this->api->invoke("/{$this->apiVersion}/groups/list.json", EpiRoute::httpGet);
     $photo = $photoResp['result'];
     $groups = $groupsResp['result'];
     if(!$groups)
@@ -268,70 +268,39 @@ class ApiPhotoController extends ApiBaseController
     getAuthentication()->requireCrumb();
     $httpObj = new Http;
     $attributes = $_REQUEST;
+
+    // this determines where to get the photo from and populates $localFile and $name
+    extract($this->parsePhotoFromRequest());
+
     if(isset($attributes['__route__']))
       unset($attributes['__route__']);
-
+    if(isset($attributes['photo']))
+      unset($attributes['photo']);
+    if(isset($attributes['crumb']))
+      unset($attributes['crumb']);
     if(isset($attributes['returnSizes']))
     {
       $returnSizes = $attributes['returnSizes'];
       unset($attributes['returnSizes']);
     }
-    if(isset($attributes['crumb']))
-    {
-      unset($attributes['crumb']);
-    }
 
     $photoId = false;
-    // TODO call API
-    if(isset($_FILES) && isset($_FILES['photo']))
-    {
-      $localFile = $_FILES['photo']['tmp_name'];
-      $name = $_FILES['photo']['name'];
-    }
-    elseif(isset($_POST['photo']))
-    {
-      // if a filename is passed in we use it else it's the random temp name
-      $localFile = tempnam($this->config->paths->temp, 'opme');
-      if(isset($_POST['filename']))
-        $name = $_POST['filename'];
-      else
-        $name = basename($localFile).'.jpg';
 
-      // if we have a path to a photo we download it
-      // else we base64_decode it
-      if(preg_match('#https?://#', $_POST['photo']))
-      {
-        unset($attributes['photo']);
-        $fp = fopen($localFile, 'w');
-        $ch = curl_init($_POST['photo']);
-        curl_setopt($ch, CURLOPT_FILE, $fp);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        $data = curl_exec($ch);
-        curl_close($ch);
-        fclose($fp);
-      }
-      else
-      {
-        unset($attributes['photo']);
-        file_put_contents($localFile, base64_decode($_POST['photo']));
-      }
-    }
-
-    $exiftran = $this->config->modules->exiftran;
-    if(is_executable($exiftran))
-      exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
-
+    $attributes['hash'] = sha1_file($localFile);
     // set default to config and override with parameter
     $allowDuplicate = $this->config->site->allowDuplicate;
     if(isset($attributes['allowDuplicate']))
       $allowDuplicate = $attributes['allowDuplicate'];
     if($allowDuplicate == '0')
     {
-      $hash = sha1_file($localFile);
-      $hashResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('hash' => $hash)));
+      $hashResp = $this->api->invoke("/{$this->apiVersion}/photos/list.json", EpiRoute::httpGet, array('_GET' => array('hash' => $attributes['hash'])));
       if($hashResp['result'][0]['totalRows'] > 0)
-        return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates do not pass in allowDuplicates=false', false);
+        return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates do not pass in allowDuplicate=1', false);
     }
+
+    $exiftran = $this->config->modules->exiftran;
+    if(is_executable($exiftran))
+      exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
 
     $photoId = $this->photo->upload($localFile, $name, $attributes);
 
@@ -355,10 +324,10 @@ class ApiPhotoController extends ApiBaseController
         $this->photo->generate($photoId, $hash, $options['width'], $options['height'], $options['options']);
       }
 
-      $apiResp = $this->api->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => implode(',', $sizes))));
+      $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => implode(',', $sizes))));
       $photo = $apiResp['result'];
 
-      $webhookApi = $this->api->invoke('/webhooks/photo.upload/list.json', EpiRoute::httpGet);
+      $webhookApi = $this->api->invoke("/{$this->apiVersion}/webhooks/photo.upload/list.json", EpiRoute::httpGet);
       if(!empty($webhookApi['result']) && is_array($webhookApi['result']))
       {
         $photoAsArgs = $photo;
@@ -372,7 +341,7 @@ class ApiPhotoController extends ApiBaseController
 
       $permission = isset($attributes['permission']) ? $attributes['permission'] : 0;
       $this->api->invoke(
-        '/activity/create.json', 
+        "/{$this->apiVersion}/activity/create.json", 
         EpiRoute::httpPost, 
         array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
       );
@@ -380,6 +349,42 @@ class ApiPhotoController extends ApiBaseController
     }
 
     return $this->error('File upload failure', false);
+  }
+
+  /**
+    * Replace the binary image file and the associated hash
+    * This method does not take any additional parameters
+    *   call the update API to update meta data
+    *
+    * @param string $id ID of the photo to be updated.
+    * @return string Standard JSON envelope
+    */
+  public function replace($id)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+
+    $attributes = $_GET;
+    // this determines where to get the photo from and populates $localFile and $name
+    extract($this->parsePhotoFromRequest());
+
+    $hash = sha1_file($localFile);
+    $allowDuplicate = $this->config->site->allowDuplicate;
+    if(isset($attributes['allowDuplicate']))
+      $allowDuplicate = $attributes['allowDuplicate'];
+    if($allowDuplicate == '0')
+    {
+      $hashResp = $this->api->invoke("/{$this->apiVersion}/photos/list.json", EpiRoute::httpGet, array('_GET' => array('hash' => $hash)));
+      if($hashResp['result'][0]['totalRows'] > 0)
+        return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates do not pass in allowDuplicate=1', false);
+    }
+
+    $status = $this->photo->replace($id, $localFile, $name);
+    if(!$status)
+      return $this->error('Could not complete the replacement of the photo', false);
+
+    $photoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+    return $this->success('yes', $photoResp['result']);
   }
 
   /**
@@ -398,7 +403,7 @@ class ApiPhotoController extends ApiBaseController
     $params = $_POST;
     if(isset($params['tags']) || isset($params['tagsAdd']) || isset($params['tagsRemove']))
     {
-      $photoBefore = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+      $photoBefore = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
       $photoBefore = $photoBefore['result'];
       if($photoBefore)
       {
@@ -438,9 +443,9 @@ class ApiPhotoController extends ApiBaseController
 
     if($photoUpdatedId)
     {
-      $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
+      $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
       $photo = $apiResp['result'];
-      $this->api->invoke('/activity/create.json', EpiRoute::httpPost, array('_POST' => array('type' => 'photo-update', 'data' => $photo, 'permission' => $params['permission'])));
+      $this->api->invoke("/{$this->apiVersion}/activity/create.json", EpiRoute::httpPost, array('_POST' => array('type' => 'photo-update', 'data' => $photo, 'permission' => $params['permission'])));
       return $this->success("photo {$id} updated", $photo);
     }
 
@@ -468,7 +473,7 @@ class ApiPhotoController extends ApiBaseController
     $retval = true;
     foreach($ids as $id)
     {
-      $response = $this->api->invoke("/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $params));
+      $response = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $params));
       $retval = $retval && $response['result'] !== false;
     }
 
@@ -666,5 +671,44 @@ class ApiPhotoController extends ApiBaseController
       }
     }
     return $photo;
+  }
+
+  private function parsePhotoFromRequest()
+  {
+    $name = '';
+    if(isset($_FILES) && isset($_FILES['photo']))
+    {
+      $localFile = $_FILES['photo']['tmp_name'];
+      $name = $_FILES['photo']['name'];
+    }
+    elseif(isset($_POST['photo']))
+    {
+      // if a filename is passed in we use it else it's the random temp name
+      $localFile = tempnam($this->config->paths->temp, 'opme');
+      $name = basename($localFile).'.jpg';
+
+      // if we have a path to a photo we download it
+      // else we base64_decode it
+      if(preg_match('#https?://#', $_POST['photo']))
+      {
+        $fp = fopen($localFile, 'w');
+        $ch = curl_init($_POST['photo']);
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        fclose($fp);
+      }
+      else
+      {
+        file_put_contents($localFile, base64_decode($_POST['photo']));
+      }
+    }
+
+    if(isset($_POST['filename']))
+      $name = $_POST['filename'];
+
+    return array('localFile' => $localFile, 'name' => $name);
+
   }
 }

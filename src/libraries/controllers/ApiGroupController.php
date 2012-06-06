@@ -33,9 +33,9 @@ class ApiGroupController extends ApiBaseController
 
     if($groupId !== false)
     {
-      $res = $this->api->invoke(sprintf('/group/%s/view.json', $groupId), EpiRoute::httpGet);
+      $res = $this->api->invoke(sprintf('/%s/group/%s/view.json', $this->apiVersion, $groupId), EpiRoute::httpGet);
       if($res['code'] === 200)
-        return $this->success('Groups for this user', $res['result']);
+        return $this->created('Groups for this user', $res['result']);
     }
 
     return $this->error('Could not create a group', false);
@@ -67,12 +67,12 @@ class ApiGroupController extends ApiBaseController
   public function update($id)
   {
     getAuthentication()->requireAuthentication();
-    // TODO add crumb check
+    getAuthentication()->requireCrumb();
     $res = $this->group->update($id, $_POST);
 
     if($res)
     {
-      $group = $this->api->invoke("/group/{$id}/view.json", EpiRoute::httpGet);
+      $group = $this->api->invoke("/{$this->apiVersion}/group/{$id}/view.json", EpiRoute::httpGet);
       return $this->success("Updated group {$id}.", $group['result']);
     }
     else

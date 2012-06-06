@@ -31,6 +31,8 @@ Once you've confirmed that your cloud account is setup you can get started on yo
     apt-get upgrade
     apt-get install cherokee php5-fpm php5-curl php5-mcrypt php-apc build-essential libpcre3-dev
 
+And if you are going to use MySQL install `php5-mysql`.
+
 There are also a few optional but recommended packages and modules.
 
     apt-get install php5-imagick exiftran
@@ -88,6 +90,8 @@ Launch the administration web interface and connect to it
     cherokee-admin
     firefox http://localhost:9090
 
+Note that if you're not connecting from the same machine, you'll have to use the `-b[<IP>]` parameter to bind cherokee-admin to an externally accessible network interface.
+
 Go the sections "Vservers" and create a new vserver with the + button
 
 In the "Languages" sub-section, choose "PHP" and click "Add"
@@ -106,8 +110,8 @@ Now, go to the rules definition and add a "File Exists" rules, invert the rule w
 Go to the tab "Handler", set a "Redirection" handler with the following parameters:
 
 * Show: Internal
-* Regular Expression: `^/(.*)\?*$`
-* Substitution: `index.php?__route__=/$1`
+* Regular Expression: `^/([^?]*)(\?+([^?]*))*$`
+* Substitution: `index.php?__route__=/$1&$3`
 
 Click "Add".
 
@@ -121,5 +125,8 @@ Once you complete the 3 steps your site will be up and running and you'll be red
 
     rm /var/www/yourdomain.com/src/configs/generated/settings.ini
 
-**ENJOY!**
+FIXME: On some systems (?), this config file is in another spot:
 
+    /var/www/yourdomain.com/src/userdata/configs/yourdomain.com.ini
+
+**ENJOY!**

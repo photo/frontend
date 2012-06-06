@@ -26,7 +26,7 @@ class ApiAlbumController extends ApiBaseController
     $albumId = $this->album->create($_POST);
     if($albumId)
     {
-      $albumResp = $this->api->invoke("/album/{$albumId}/view.json", EpiRoute::httpGet);
+      $albumResp = $this->api->invoke("/{$this->apiVersion}/album/{$albumId}/view.json", EpiRoute::httpGet);
       if($albumResp['code'] == 200)
         return $this->success('Album created', $albumResp['result']);
     }
@@ -64,6 +64,18 @@ class ApiAlbumController extends ApiBaseController
       return $this->error('All items were not updated', false);
 
     return $this->success('All items updated', true);
+  }
+
+  public function update($id)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+
+    $status = $this->album->update($id, $_POST);
+    if(!$status)
+      return $this->error('Could not update album', false);
+
+    return $this->success('Album updated', true);
   }
 
   public function view($id)

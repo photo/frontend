@@ -71,9 +71,15 @@ class Album extends BaseModel
     return $this->db->postAlbumRemove($albumId, $type, $ids);
   }
 
+  public function update($id, $params)
+  {
+    $params = $this->whitelistParams($params);
+    return $this->db->postAlbum($id, $params);
+  }
+
   private function whitelistParams($params)
   {
-    $matches = array('id' => 1,'name' => 1,'extra' => 1,'count' => 1,'permission' => 1);
+    $matches = array('name' => 1,'groups' => 1, 'extra' => 1,'count' => 1,'permission' => 1);
     foreach($params as $key => $val)
     {
       if(!isset($matches[$key]))

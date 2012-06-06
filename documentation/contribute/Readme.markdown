@@ -43,9 +43,11 @@ Here's a full list of ways to contact us:
 * <a href="https://github.com/openphoto">Submit bugs on Github</a>
    * <a href="https://github.com/openphoto/frontend">Web or API</a>
    * <a href="https://github.com/openphoto/mobile-ios">iPhone app</a>
+   * <a href="https://github.com/openphoto/mobile-android">Android app</a>
    * <a href="https://github.com/openphoto/openphoto-php">PHP bindings</a>
    * <a href="https://github.com/openphoto/openphoto-ruby">Ruby bindings</a>
    * <a href="https://github.com/openphoto/openphoto-python">Python bindings</a>
+   * <a href="https://github.com/openphoto/openphoto-java">Java bindings</a>
 * <a href="http://twitter.com/openphoto">Follow us on Twitter</a>
 * <a href="http://www.facebook.com/OpenPhoto">Like us on Facebook</a>
 

@@ -3,17 +3,28 @@
 * Supports drag/drop with plupload
 */
 OPU = (function() {
+  var sortByFilename = function(a, b) {
+    var aName = a.name;
+    var bName = b.name;
+    return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
+  };
   return {
       init: function() {
         var uploaderEl = $("#uploader");
         if(uploaderEl.length == 0)
           return;
+     
+        if(typeof(uploaderEl.pluploadQueue) == 'undefined') {
+          $("#uploader .insufficient").show();
+          return;
+        }
 
         uploaderEl.pluploadQueue({
             // General settings
             runtimes : 'html5',
-            url : '/photo/upload.json?httpCodes=500,403,404',
+            url : '/photo/upload.json?httpCodes=500,403,404', // omit 409 since it's somewhat idempotent
             max_file_size : '32mb',
+            file_data_name : 'photo',
             //chunk_size : '1mb',
             unique_names : true,
      
@@ -34,6 +45,11 @@ OPU = (function() {
                 $(".upload-progress .completed").html(uploader.total.uploaded+1);
                 $(".upload-progress").slideDown('fast');
               },
+              FilesAdded: function(uploader, files) {
+                var queue = uploader.files.concat(files);
+                queue.sort(sortByFilename);
+                uploader.files = queue;
+              },
               UploadComplete: function(uploader, files) {
                 var i, file, failed = 0, total = 0;
                 for(i in files) {
@@ -44,50 +60,39 @@ OPU = (function() {
                       failed++;
                   }
                 }
-                if(failed === 0)
-                  $(".upload-progress").fadeOut('fast', function() { $(".upload-complete").fadeIn('fast'); });
-                else
-                  $(".upload-progress").fadeOut('fast', function() { $(".upload-warning .failed").html(failed); $(".upload-warning .total").html(total); $(".upload-warning").fadeIn('fast'); });
+                if(failed === 0) {
+                  OP.Util.fire('upload:complete-success');
+                } else {
+                  OP.Util.fire('upload:complete-error');
+                }
+
               },
               UploadFile: function() {
-                var uploader = $("#uploader").pluploadQueue(), license, permission, tags;
+                var uploader = $("#uploader").pluploadQueue(), license, permission, tags, groups;
                 license = $("form.upload select[name='license'] :selected").val();
-                if(license.length == 0)
-                  license = $("form.upload input[name='custom']").val();
                 tags = $("form.upload input[name='tags']").val();
                 permission = $("form.upload input[name='permission']:checked").val();
+                // http://stackoverflow.com/a/6116631
+                groups = $("form.upload input[name='groups[]']:checked").map(function () {return this.value;}).get().join(",");
                 
                 uploader.settings.multipart_params.license = license;
                 uploader.settings.multipart_params.tags = tags;
                 uploader.settings.multipart_params.permission = permission;
+                uploader.settings.multipart_params.groups = groups;
               }
             }
         });
-     
-        // Client side form validation
-        var uploadForm = $("form.upload");
-        uploadForm.submit(function(e) {
-          var uploader = $('#uploader').pluploadQueue({});
-          // Files in queue upload them first
-          if (uploader.files.length > 0) {
-            // When all files are uploaded submit form
-            uploader.bind('StateChanged', function() {
-              if (uploader.files.length === (uploader.total.uploaded + uploader.total.failed)) {
-                $("form.upload")[0].submit();
-              }
-            }); 
+
+        OP.Util.on('submit:photo-upload', function(ev) {
+          ev.preventDefault();
+          var uploader = $("#uploader").pluploadQueue();
+          if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
             uploader.start();
           } else {
             // TODO something that doesn't suck
-            alert('Please select at least one photo to upload.');
+            opTheme.message.error('Please select at least one photo to upload.');
           }
-   
-          return false;
         });
-
-        var insufficient = $("#uploader .insufficient");
-        if(insufficient.length == 1)
-          insufficient.show();
       }
     };
 }());

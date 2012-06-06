@@ -27,9 +27,11 @@ class ApiActivityController extends ApiBaseController
       return $this->error('Could not create activities', false);
   }
 
-  public function list_()
+  public function list_($filterOpts = null)
   {
-    $activities = $this->activity->list_();
+    // parse parameters in request
+    extract($this->parseFilters($filterOpts));
+    $activities = $this->activity->list_($filters, $pageSize);
     if(isset($_GET['groupBy']))
       $activities = $this->groupActivities($activities, $_GET['groupBy']);
 
@@ -70,5 +72,42 @@ class ApiActivityController extends ApiBaseController
     }
 
     return $return;
+  }
+
+  protected function parseFilters($filterOpts)
+  {
+    $pageSize = 10;
+    $filters = array('sortBy' => 'dateCreated,desc');
+    if($filterOpts !== null)
+    {
+      $filterOpts = (array)explode('/', $filterOpts);
+      foreach($filterOpts as $value)
+      {
+        $dashPosition = strpos($value, '-');
+        if(!$dashPosition)
+          continue;
+
+        $parameterKey = substr($value, 0, $dashPosition);
+        $parameterValue = substr($value, ($dashPosition+1));
+        switch($parameterKey)
+        {
+          case 'pageSize':
+            $pageSize = intval($parameterValue);
+            break;
+          case 'type':
+            $filters['type'] = $value;
+          default:
+            $filters[$parameterKey] = $parameterValue;
+            break;
+        }
+      }
+    }
+    // merge path parameters with GET parameters. GET parameters override
+    if(isset($_GET['pageSize']) && intval($_GET['pageSize']) == $_GET['pageSize'])
+      $pageSize = intval($_GET['pageSize']);
+    $filters = array_merge($filters, $_GET);
+
+    return array('filters' => $filters, 'pageSize' => $pageSize);
+
   }
 }

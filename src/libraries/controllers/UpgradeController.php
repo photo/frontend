@@ -48,12 +48,7 @@ class UpgradeController extends BaseController
     if(!file_exists($configFile))
       $configFile = sprintf('%s/generated/%s.ini', Epi::getPath('config'), getenv('HTTP_HOST'));
     $config = $configObj->getString($configFile);
-    // Backwards compatibility
-    // TODO remove in 2.0
-    if(strstr($config, 'lastCodeVersion="') !== false)
-      $config = preg_replace('/lastCodeVersion="\d+\.\d+\.\d+"/', sprintf('lastCodeVersion="%s"', getUpgrade()->getCurrentVersion()), $config);
-    else // Before the upgrade code the lastCodeVersion was not in the config template
-      $config = sprintf("[site]\nlastCodeVersion=\"%s\"\n\n", getUpgrade()->getCurrentVersion()) . $config;
+    $config = preg_replace('/lastCodeVersion *= *"\d+\.\d+\.\d+"/', sprintf('lastCodeVersion="%s"', getUpgrade()->getCurrentVersion()), $config);
     $configObj->write($configFile, $config);
     $this->route->redirect('/');
   }

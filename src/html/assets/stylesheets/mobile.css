@@ -33,6 +33,7 @@ label{
 input{
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
+  border-radius: 10px;
   padding:10px 0;
 }
 button {
@@ -41,6 +42,7 @@ button {
   background-color:#ddd;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
+  border-radius: 10px;
 }
 ol.steps{
   list-style-type:decimal;

@@ -35,6 +35,16 @@ class EpiConfig_MySql extends EpiConfig
     return $res !== false;
   }
 
+  public function isAlias($file)
+  {
+    $file = $this->getFilePath($file);
+    $res = $this->db->one("SELECT * FROM `{$this->table}` WHERE `id`=:file OR `aliasOf`=:aliasOf", array(':file' => $file, ':aliasOf' => $file));
+    if($res === false)
+      return null;
+
+    return $file == $res['aliasOf'];
+  }
+
   public function load(/*$file, $file, $file, $file...*/)
   {
     $args = func_get_args();
@@ -73,9 +83,9 @@ class EpiConfig_MySql extends EpiConfig
 
   public function write($file, $string, $aliasOf = null)
   {
-    $exists = $this->exists($file);
+    $isAlias = $this->isAlias($file);
     $file = $this->getFilePath($file);
-    if($exists)
+    if($isAlias !== null) // isAlias returns null if the record does not exist
     {
       $params = array(':value' => $string);
       $sql = "UPDATE `{$this->table}` SET `value`=:value ";
@@ -85,7 +95,10 @@ class EpiConfig_MySql extends EpiConfig
         $params[':aliasOf'] = $this->getFilePath($aliasOf);
       }
       $params[':file'] = $file;
-      $sql .= " WHERE `id`=:file";
+      if(!$isAlias)
+        $sql .= " WHERE `id`=:file";
+      else
+        $sql .= " WHERE `aliasOf`=:file";
       $res = $this->db->execute($sql, $params);
     }
     else

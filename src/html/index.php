@@ -8,26 +8,30 @@
 
 require sprintf('%s/libraries/initialize.php', dirname(dirname(__FILE__)));
 
-if($assetEndpoint || $loginEndpoint || (!$runUpgrade && !$runSetup && $hasConfig))
+if($configObj->get('site')->maintenance == 1)
+{
+  getRoute()->run('/maintenance', EpiRoute::httpGet);
+}
+elseif($assetEndpoint || $loginEndpoint || (!$runUpgrade && !$runSetup && $hasConfig))
 {
   // if we're not running setup, don't need an upgrade and the config file exists, proceed as normal
   // else no config file then load up the setup dependencies
-  getRoute()->run();
+  $routeObj->run();
 }
 elseif($runUpgrade)
 {
-  getRoute()->run('/upgrade', ($_SERVER['REQUEST_METHOD'] == 'GET' ? EpiRoute::httpGet : EpiRoute::httpPost));
+  $routeObj->run('/upgrade', ($_SERVER['REQUEST_METHOD'] == 'GET' ? EpiRoute::httpGet : EpiRoute::httpPost));
 }
 elseif($runSetup)
 {
   // if we're not in the setup path (anything other than /setup) then redirect to the setup
   // otherwise we're on one of the setup steps already, so just run it
   if(!isset($_GET['__route__']) || strpos($_GET['__route__'], '/setup') === false)
-    getRoute()->redirect('/setup');
+    $routeObj->redirect('/setup');
   else
-    getRoute()->run();
+    $routeObj->run();
 }
 else
 {
-  getRoute()->run('/error/500', EpiRoute::httpGet);
+  $routeObj->run('/error/500', EpiRoute::httpGet);
 }

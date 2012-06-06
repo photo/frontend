@@ -66,7 +66,7 @@ class UserConfig
     if(!$iniString || empty($iniString))
       return false;
 
-    return file_put_contents($configFile, $iniString);
+    return $this->config->write($configFile, $iniString);
   }
 
   public function load()
@@ -81,7 +81,7 @@ class UserConfig
     if($configFile)
     {
       $this->config->load($configFile);
-      if(file_exists(sprintf('%s/override.ini', $this->config->get('paths')->configs)))
+      if($this->config->exists(sprintf('%s/override.ini', $this->config->get('paths')->configs)))
         $this->config->load('override.ini');
 
       // we need to load the deps to get the theme modules
@@ -111,6 +111,12 @@ class UserConfig
     return $this->utility;
   }
 
+  /*
+   * This method is duplicated in Utility::getConfigFile
+   *  because the UserConfig class is a bootstrap class 
+   *  that is loaded before all of the dependencies.
+   *  Including the Utility class.
+   */
   private function getConfigFile()
   {
     $configFile = sprintf('%s/userdata/configs/%s.ini', $this->basePath, $this->host);

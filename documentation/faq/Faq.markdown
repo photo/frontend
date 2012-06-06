@@ -53,7 +53,7 @@ The hosted account may or may not be free depending on the service and what feat
 
 ### How much does the storage cost?
 
-It depends on who you use but here are some guidelines from Amazon.
+It depends on what you use but here are some base prices from Amazon.
 
 1. 20GB of storage on Amazon S3 costs ≈_$2/mo_
 1. A 250KB photo served up 4,000 times on Amazon S3 costs ≈_$.10/mo_

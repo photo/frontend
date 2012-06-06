@@ -161,6 +161,17 @@ var opTheme = (function() {
         $("div#settingsbar").slideToggle('medium');
         return false;
       },
+      uploadCompleteSuccess: function() {
+        $("form.upload").fadeOut('fast', function() {
+          $(".upload-progress").fadeOut('fast', function() { $(".upload-complete").fadeIn('fast'); });
+          $(".upload-share").fadeIn('fast');
+        });
+      },
+      uploadCompleteFailure: function() {
+        $("form.upload").fadeOut('fast', function() {
+          $(".upload-progress").fadeOut('fast', function() { $(".upload-warning .failed").html(failed); $(".upload-warning .total").html(total); $(".upload-warning").fadeIn('fast'); });
+        });
+      },
       keyBrowseNext: function(ev) {
           var ref;
           ref = $(".image-pagination .next a").attr("href");
@@ -366,6 +377,9 @@ var opTheme = (function() {
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
         OP.Util.on('keydown:browse-next', opTheme.callback.keyBrowseNext);
         OP.Util.on('keydown:browse-previous', opTheme.callback.keyBrowsePrevious);
+
+        OP.Util.on('upload:complete-success', opTheme.callback.uploadCompleteSuccess);
+        OP.Util.on('upload:complete-failure', opTheme.callback.uploadCompleteFailure);
 
         opTheme.front.init($('div.front-slideshow'));
         OPU.init();

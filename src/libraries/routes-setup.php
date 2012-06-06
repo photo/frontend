@@ -1,11 +1,11 @@
 <?php
-getRoute()->get('/setup', array('SetupController', 'setup'));
-getRoute()->post('/setup', array('SetupController', 'setupPost'));
-getRoute()->get('/setup/2', array('SetupController', 'setup2'));
-getRoute()->post('/setup/2', array('SetupController', 'setup2Post'));
-getRoute()->get('/setup/3', array('SetupController', 'setup3'));
-getRoute()->post('/setup/3', array('SetupController', 'setup3Post'));
-getRoute()->get('/setup/dropbox', array('SetupController', 'setupDropbox'));
-getRoute()->post('/setup/dropbox', array('SetupController', 'setupDropboxPost'));
-getRoute()->get('/setup/dropbox/callback', array('SetupController', 'setupDropboxCallback'));
-getRoute()->get('/setup/restart', array('SetupController', 'setupRestart'));
+$routeObj->get('/setup', array('SetupController', 'setup'));
+$routeObj->post('/setup', array('SetupController', 'setupPost'));
+$routeObj->get('/setup/2', array('SetupController', 'setup2'));
+$routeObj->post('/setup/2', array('SetupController', 'setup2Post'));
+$routeObj->get('/setup/3', array('SetupController', 'setup3'));
+$routeObj->post('/setup/3', array('SetupController', 'setup3Post'));
+$routeObj->get('/setup/dropbox', array('SetupController', 'setupDropbox'));
+$routeObj->post('/setup/dropbox', array('SetupController', 'setupDropboxPost'));
+$routeObj->get('/setup/dropbox/callback', array('SetupController', 'setupDropboxCallback'));
+$routeObj->get('/setup/restart', array('SetupController', 'setupRestart'));

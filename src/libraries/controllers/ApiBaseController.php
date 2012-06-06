@@ -6,6 +6,8 @@
  */
 class ApiBaseController
 {
+  protected $apiVersion;
+
   /**
    * Status constants
    */
@@ -24,9 +26,12 @@ class ApiBaseController
     $this->plugin = getPlugin();
     $this->route = getRoute();
     $this->session = getSession();
+    $this->logger = getLogger();
     $this->template = getTemplate();
     $this->utility = new Utility;
     $this->url = new Url;
+
+    $this->apiVersion = Request::getApiVersion();
   }
 
   /**
@@ -163,6 +168,9 @@ class ApiBaseController
         break;
       case '404':
         $header = 'HTTP/1.0 404 Not Found';
+        break;
+      case '409':
+        $header = 'HTTP/1.0 409 Conflict';
         break;
       case '500':
         $header = 'HTTP/1.0 500 Internal Server Error';

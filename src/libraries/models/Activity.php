@@ -21,7 +21,7 @@ class Activity extends BaseModel
 
   public function create($attributes)
   {
-    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireAuthentication(false);
 
     $attributes = array_merge($this->getDefaultAttributes(), $attributes);
     $attributes = $this->whitelistParams($attributes);
@@ -41,9 +41,12 @@ class Activity extends BaseModel
     return $this->db->putActivity($id, $attributes);
   }
 
-  public function list_()
+  public function list_($filters, $pageSize)
   {
-    return $this->db->getActivities();
+    $filters['pageSize'] = $pageSize;
+    if(!$this->user->isOwner())
+      $filters['permission'] = '1';
+    return $this->db->getActivities($filters);
   }
 
   public function view($id)
