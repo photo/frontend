@@ -657,7 +657,7 @@ var opTheme = (function() {
       searchByTags: function(ev) {
         ev.preventDefault();
         var form = $(ev.target),
-          tags = $($('input[name=tags]', form)[0]).val(),
+          tags = $($('select[name=tags]', form)[0]).val().join(','),
           url = form.attr('action');
 
         if(tags.length > 0) {
@@ -675,9 +675,13 @@ var opTheme = (function() {
         return false;
       },
       tagsInitialized: function() {
-        var tags = OP.Tag.getTags();
-        if(tags !== null  && tags.length > 0)
-          $(".typeahead-tags").typeahead({source: tags, mode: 'multiple'});
+        var tags = OP.Tag.getTags(),
+            markup = '';
+        if(tags !== null  && tags.length > 0) {
+          for(i in tags)
+            markup += '<option value="'+tags[i]+'">'+tags[i]+"</option>";  
+          $(".typeahead-tags").html(markup).chosen({});//$(".typeahead-tags").typeahead({source: tags, mode: 'multiple'});
+        }
       },
       uploadCompleteSuccess: function() {
         $("form.upload").fadeOut('fast', function() {

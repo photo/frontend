@@ -1196,11 +1196,13 @@ input:focus:required:invalid:focus, textarea:focus:required:invalid:focus, selec
 	border-radius:0 3px 3px 0;
 }
 .navbar-search .input-append .add-on {
-	float:left;
-	display:block;
+	/*float:left;
+	display:block;*/
+	float:right;
+	display:inline-block;
 	width:auto;
 	min-width:16px;
-	height:26px;
+	height:29px;
 	margin:0 0 0 -1px;
 	padding:4px 7px;
 	font-weight:normal;
@@ -1219,6 +1221,40 @@ input:focus:required:invalid:focus, textarea:focus:required:invalid:focus, selec
 }
 .navbar-search .input-append .add-on:hover {
 	color:#575759;
+}
+.chzn-container-multi .chzn-choices .search-field .default, .chzn-container-single .chzn-default {
+	color:#EFE8DA;
+  /*color: #000;*/
+}
+.chzn-container-multi .chzn-choices {
+  border:solid 1px rgb(200, 190, 160);
+	background-color:#fdf2da;
+  -webkit-border-radius: 3px;
+  -moz-border-radius   : 3px;
+  border-radius        : 3px;
+}
+.navbar-search .chzn-container-multi .chzn-choices {
+	border:1px solid black;
+  -webkit-border-radius: 3px 0 0 3px;
+  -moz-border-radius   : 3px 0 0 3px;
+  border-radius        : 3px 0 0 3px;
+	-webkit-box-shadow: inset -1px 1px 1px 0px rgba(66, 50, 18, 0.5);
+	-moz-box-shadow: inset -1px 1px 1px 0px rgba(66, 50, 18, 0.5);
+	box-shadow: inset -1px 1px 1px 0px rgba(66, 50, 18, 0.5);
+}
+.navbar-search .chzn-container .chzn-drop {
+	background-color:#fdf2da;
+}
+.chzn-container .chzn-results .highlighted {
+	background-color:#e6501e;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3875d7', endColorstr='#2a62bc', GradientType=0 );  
+  background-image:none;
+  /*background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
+  background-image: -webkit-linear-gradient(top, #3875d7 20%, #2a62bc 90%);
+  background-image: -moz-linear-gradient(top, #3875d7 20%, #2a62bc 90%);
+  background-image: -o-linear-gradient(top, #3875d7 20%, #2a62bc 90%);
+  background-image: -ms-linear-gradient(top, #3875d7 20%, #2a62bc 90%);
+  background-image: linear-gradient(top, #3875d7 20%, #2a62bc 90%);*/
 }
 .input-append input:first-child {
 	*margin-left:-160px;

@@ -24,11 +24,13 @@
 
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>" rel="stylesheet">
+      <link href="<?php $this->theme->asset('stylesheet', 'chosen.css'); ?>" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'opme.css'); ?>" rel="stylesheet">
       <link href="/assets/stylesheets/upload.css" rel="stylesheet">
     <?php } else { ?>
       <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                   addCss("/assets/stylesheets/upload.css")->
+                                                                  addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
                                                                   getUrl(AssetPipeline::css, 'p'); ?>">
     <?php } ?>
@@ -144,10 +146,10 @@
             <?php if($this->config->site->mode === 'dev') { ?>
               '/assets/javascripts/openphoto-helper.js',
               '<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>',
-
+              '<?php $this->theme->asset('javascript', 'chosen.jquery.js'); ?>',
               '<?php $this->theme->asset('javascript', 'jquery.history.js'); ?>',
               '<?php $this->theme->asset('javascript', 'jquery.scrollTo.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'touchSwipe.js'); ?>',
+              //'<?php $this->theme->asset('javascript', 'touchSwipe.js'); ?>',
               '<?php $this->theme->asset('javascript', 'browserupdate.js'); ?>',
               '<?php $this->theme->asset('javascript', 'gallery.js'); ?>',
               '<?php $this->theme->asset('javascript', 'phpjs.js'); ?>',
