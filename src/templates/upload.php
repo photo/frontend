@@ -22,7 +22,8 @@
       <div class="span4">
         <h2>Use these settings.</h2>
         <label for="tags">Tags</label>
-        <input type="text" name="tags" class="typeahead-tags tags tags-autocomplete" placeholder="Optional comma separated list">
+        <select class="typeahead-tags tags tags-autocomplete"  data-placeholder="Optional comma separated list" multiple  name="tags"></select>
+        <!--<input type="text" name="tags" class="typeahead-tags tags tags-autocomplete" placeholder="Optional comma separated list">-->
 
         <?php if(count($groups) > 0) { ?>
           <div class="control-group">
