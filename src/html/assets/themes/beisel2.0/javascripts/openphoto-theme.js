@@ -150,6 +150,15 @@ var opTheme = (function() {
           }
         );
       },
+      // copy of groupCheckbox
+      albumCheckbox: function(ev) {
+        var el = $(ev.target);
+        if(el.hasClass("none") && el.is(":checked")) {
+          $("input.album-checkbox:not(.none)").removeAttr("checked");
+        } else if(el.is(":checked")) {
+          $("input.album-checkbox.none").removeAttr("checked");
+        }
+      },
       albumPost: function(ev) {
         ev.preventDefault();
         var form = $(ev.target),
@@ -279,6 +288,7 @@ var opTheme = (function() {
         else
           opTheme.message.error('We could not save your features.');
       },
+      // copy of albumCheckbox
       groupCheckbox: function(ev) {
         var el = $(ev.target);
         if(el.hasClass("none") && el.is(":checked")) {
@@ -477,6 +487,7 @@ var opTheme = (function() {
                   null
                 );
             el.html(html).modal();  
+            $('.typeahead', el).chosen();
           } else {
             opTheme.message.error('Could not load the form to edit this photo.');
           }
@@ -537,6 +548,10 @@ var opTheme = (function() {
         var form = $(ev.target),
             action = form.attr('action') + '.json',
             params = form.serialize();
+        if($('select[name^="groups"] option:checked', form).length === 0)
+          params += '&groups=';
+        if($('select[name^="albums"] option:checked', form).length === 0)
+          params += '&albums=';
         OP.Util.makeRequest(action, params, opTheme.callback.photoUpdateCb, 'json', 'post');
       },
       photoUpdateBatch: function(ev) {
@@ -680,7 +695,7 @@ var opTheme = (function() {
         if(tags !== null  && tags.length > 0) {
           for(i in tags)
             markup += '<option value="'+tags[i]+'">'+tags[i]+"</option>";  
-          $(".typeahead-tags").html(markup).chosen({});//$(".typeahead-tags").typeahead({source: tags, mode: 'multiple'});
+          $(".typeahead-tags").html(markup).chosen();
         }
       },
       uploadCompleteSuccess: function() {
@@ -730,9 +745,6 @@ var opTheme = (function() {
           pushstate.render(State.data);
         });
 
-        if(typeof OPU === 'object')
-          OPU.init();
-
         $('.dropdown-toggle').dropdown();
 
         if(location.pathname === '/')
@@ -743,11 +755,14 @@ var opTheme = (function() {
           opTheme.init.pages.photos.init();
         else if(location.pathname.search(/^\/p\/[a-z0-9]+/) === 0 || location.pathname.search(/^\/photo\/[a-z0-9]+\/?(.*)\/view/) === 0)
           opTheme.init.pages.photo.init();
+        else if(location.pathname === '/photos/upload')
+          opTheme.init.pages.upload();
       },
       attach: function() {
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
         OP.Util.on('click:action-post', opTheme.callback.actionPost);
+        OP.Util.on('click:album-checkbox', opTheme.callback.albumCheckbox);
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
         OP.Util.on('click:group-checkbox', opTheme.callback.groupCheckbox);
@@ -762,12 +777,12 @@ var opTheme = (function() {
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:photo-edit', opTheme.callback.photoEdit);
-        OP.Util.on('click:plugin-status', opTheme.callback.pluginStatus);
-        OP.Util.on('click:plugin-update', opTheme.callback.pluginUpdate);
         OP.Util.on('click:photo-update-batch', opTheme.callback.photoUpdateBatch);
         OP.Util.on('click:photo-view', opTheme.callback.photoView);
         OP.Util.on('click:photo-view-modal', opTheme.callback.photoViewModal);
         OP.Util.on('click:photos-load-more', opTheme.callback.photosViewMore);
+        OP.Util.on('click:plugin-status', opTheme.callback.pluginStatus);
+        OP.Util.on('click:plugin-update', opTheme.callback.pluginUpdate);
         OP.Util.on('click:pin', opTheme.callback.pinClick);
         OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
         OP.Util.on('click:settings', opTheme.callback.settings);
@@ -941,6 +956,14 @@ var opTheme = (function() {
               _this.end = true;
             }
           }
+        },
+        upload: function() {
+          var form = $('form.upload');
+          if(typeof OPU === 'object')
+            OPU.init();
+
+          $("select.typeahead").chosen();
+          //$('select.typeahead-tags').chosen({create_option:true,persistent_create_option:true})
         }
       }
     }, // init
