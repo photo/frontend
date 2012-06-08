@@ -38,7 +38,7 @@
 
         <?php if(count($groups) > 0) { ?>
           <div class="control-group">
-            <label class="control-label">Groups <em>(<a href="/manage/groups" target="_blank">manage</a>)</em></label>
+            <label class="control-label">Groups <em>(<a href="/group/form" class="group-form-click" target="_blank">create a new one</a>)</em></label>
             <select data-placeholder="Select groups for these photos" multiple  name="groups" class="typeahead">
               <?php foreach($groups as $group) { ?>
                 <option value="<?php $this->utility->safe($group['id']); ?>"><?php $this->utility->safe($group['name']); ?></option>

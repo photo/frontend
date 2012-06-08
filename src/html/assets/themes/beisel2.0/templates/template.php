@@ -86,6 +86,7 @@
               'group-delete-click':'click:group-delete',
               'group-email-add-click':'click:group-email-add',
               'group-email-remove-click':'click:group-email-remove',
+              'group-form-click':'click:group-form',
               'login-click':'click:login',
               'login-modal-click':'click:login-modal',
               'manage-password-request-click':'click:manage-password-request',
@@ -140,7 +141,7 @@
                 '/assets/javascripts/jquery.plupload.queue.js',
                 '/assets/javascripts/openphoto-upload.js',
               <?php } else { ?>
-                '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'j'); ?>',
+                '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'k'); ?>',
               <?php } ?>
             <?php } ?>
 
@@ -166,7 +167,7 @@
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, '2'); ?>'
+                                                  getUrl(AssetPipeline::js, '3'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 

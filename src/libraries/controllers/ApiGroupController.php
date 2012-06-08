@@ -58,6 +58,12 @@ class ApiGroupController extends ApiBaseController
     return $this->noContent('Successfully deleted group', true);
   }
 
+  public function form()
+  {
+    $template = $this->template->get(sprintf('%s/manage-group-form.php', $this->config->paths->templates));;
+    return $this->success('Group form', array('markup' => $template));
+  }
+
   /**
     * Update an existing group
     * Returns the newly created group or false as the response data

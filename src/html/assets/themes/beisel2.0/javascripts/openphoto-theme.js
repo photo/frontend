@@ -190,7 +190,7 @@ var opTheme = (function() {
         var form = $(ev.target),
             url = form.attr('action')+'.json',
             isCreate = (url.search('create') > -1),
-            isDynamic = $('input[name="dynamic"]').val(),
+            isDynamic = $('input[name="dynamic"]', form).val(),
             groups = $("select[name='groups']", form).val(),
             params = {};
 
@@ -352,11 +352,31 @@ var opTheme = (function() {
         var el = $(ev.target).parent().parent();
         el.remove();
       },
+      groupForm: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href') + '.json';
+        OP.Util.makeRequest(url, {modal:'true',dynamic:'true'}, function(response){
+          if(response.code === 200) {
+            var el = $("#modal"),
+                html = markup.modal(
+                  'Create a group',
+                  response.result.markup,
+                  null
+                );
+            el.html(html).modal();  
+          } else {
+            opTheme.message.error('Could not load the form to create an album.');
+          }
+        }, 'json', 'get');
+        return false;
+      },
       groupPost: function(ev) {
         ev.preventDefault();
         var form = $(ev.target),
             url = form.attr('action')+'.json',
             isCreate = (url.search('create') > -1),
+            isDynamic = $('input[name="dynamic"]', form).val(),
             emails,
             params = {name: $('input[name="name"]', form).val()};
 
@@ -370,8 +390,11 @@ var opTheme = (function() {
 
         // TODO decide if this needs to be anonymous because of isCreate
         OP.Util.makeRequest(url, params, function(response) {
+          var form = form;
           if(response.code === 200 || response.code === 201) {
-            if(isCreate)
+            if(isDynamic)
+              opTheme.callback.groupPostDynamicCb(form, response.result);
+            else if(isCreate)
               location.href = '/manage/groups?m=group-created';
             else
               opTheme.message.confirm('Group updated successfully.');
@@ -379,6 +402,12 @@ var opTheme = (function() {
             opTheme.message.error('Could not update group.');
           }
         });
+      },
+      groupPostDynamicCb: function(form, group) {
+        var select = $('select[name="groups"]', form);
+        $('.modal').modal('hide');
+        $('<option value="'+group.id+'" selected="selected">'+group.name+'</option>').prependTo(select);
+        select.trigger("liszt:updated");
       },
       keyBrowseNext: function(ev) {
         if(ev.ctrlKey || ev.altKey || ev.metaKey)
@@ -796,6 +825,7 @@ var opTheme = (function() {
         OP.Util.on('click:group-delete', opTheme.callback.groupDelete);
         OP.Util.on('click:group-email-add', opTheme.callback.groupEmailAdd);
         OP.Util.on('click:group-email-remove', opTheme.callback.groupEmailRemove);
+        OP.Util.on('click:group-form', opTheme.callback.groupForm);
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:login-modal', opTheme.callback.loginModal);
         OP.Util.on('click:manage-password-request', opTheme.callback.passwordRequest);
