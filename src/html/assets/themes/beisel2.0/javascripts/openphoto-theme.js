@@ -932,6 +932,7 @@ var opTheme = (function() {
           init: function() { util.fetchAndCacheNextPrevious(); }
         },
         photos: {
+          initData: initData,
           page: null,
           pageCount: 0,
           end: false,
@@ -949,45 +950,53 @@ var opTheme = (function() {
           },
           load: function() {
             var _this = opTheme.init.pages.photos; loc = location;
-            if(_this.end || _this.running)
-              return;
+            // we define initData at runtime to avoid having to make an HTTP call on load
+            // all subsequent calls run through the http API
+            if(typeof(_this.initData) === 'undefined') {
+              if(_this.end || _this.running)
+                return;
 
-            _this.running = true;
+              _this.running = true;
 
-            if(_this.page === null) {
-              var qsMatch = loc.href.match('page=([0-9]+)');
-              if(qsMatch !== null) {
-                _this.page = qsMatch[1];
-              } else {
-                var uriMatch = loc.pathname.match(/\/page-([0-9]+)/);
-                if(uriMatch !== null) {
-                  _this.page = uriMatch[1];
+              if(_this.page === null) {
+                var qsMatch = loc.href.match('page=([0-9]+)');
+                if(qsMatch !== null) {
+                  _this.page = qsMatch[1];
+                } else {
+                  var uriMatch = loc.pathname.match(/\/page-([0-9]+)/);
+                  if(uriMatch !== null) {
+                    _this.page = uriMatch[1];
+                  }
                 }
+
+                if(_this.page === null)
+                  _this.page = 1;
               }
 
-              if(_this.page === null)
-                _this.page = 1;
-            }
-
-            var api = location.pathname+'.json';
-                params = {}, qs = window.location.search.replace('?', '');
-            
-            if(qs.length > 0) {
-              var qsKeyValueStrings = qs.split('&'), qsKeyAndValue;
-              for(i in qsKeyValueStrings) {
-                if(qsKeyValueStrings.hasOwnProperty(i)) {
-                  qsKeyAndValue = qsKeyValueStrings[i].split('=');
-                  if(qsKeyAndValue.length === 2) {
-                    params[qsKeyAndValue[0]] = qsKeyAndValue[1];
+              var api = location.pathname+'.json';
+                  params = {}, qs = window.location.search.replace('?', '');
+              
+              if(qs.length > 0) {
+                var qsKeyValueStrings = qs.split('&'), qsKeyAndValue;
+                for(i in qsKeyValueStrings) {
+                  if(qsKeyValueStrings.hasOwnProperty(i)) {
+                    qsKeyAndValue = qsKeyValueStrings[i].split('=');
+                    if(qsKeyAndValue.length === 2) {
+                      params[qsKeyAndValue[0]] = qsKeyAndValue[1];
+                    }
                   }
                 }
               }
+
+              params.returnSizes = '960x180';
+              params.page = _this.page;
+
+              $.getJSON(api, params, _this.loadCb);
+            } else {
+              delete _this.initData;
+              var response = {code:200, result:initData};
+              _this.loadCb(response);
             }
-
-            params.returnSizes = '960x180';
-            params.page = _this.page;
-
-            $.getJSON(api, params, _this.loadCb);
           },
           loadCb: function(response) {
             var items = response.result, _this = opTheme.init.pages.photos, infobar = $('.infobar'),
