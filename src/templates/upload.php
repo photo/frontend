@@ -22,18 +22,28 @@
       <div class="span4">
         <h2>Use these settings.</h2>
         <label for="tags">Tags</label>
-        <select class="typeahead-tags tags tags-autocomplete"  data-placeholder="Optional comma separated list" multiple  name="tags"></select>
-        <!--<input type="text" name="tags" class="typeahead-tags tags tags-autocomplete" placeholder="Optional comma separated list">-->
+        <!--<select class="typeahead-tags tags tags-autocomplete"  data-placeholder="Select tags for these photos" multiple  name="tags"></select>-->
+        <input type="text" name="tags" class="tags" placeholder="Optional comma separated list">
+
+        <?php if(count($albums) > 0) { ?>
+          <div class="control-group">
+            <label class="control-label">Albums <em>(<a href="/manage/albums" target="_blank">manage</a>)</em></label>
+            <select data-placeholder="Select albums for these photos" multiple  name="albums" class="typeahead">
+              <?php foreach($albums as $album) { ?>
+                <option value="<?php $this->utility->safe($album['id']); ?>"><?php $this->utility->safe($album['name']); ?></option>
+              <?php } ?>
+            </select>
+          </div>
+        <?php } ?>
 
         <?php if(count($groups) > 0) { ?>
           <div class="control-group">
-            <label class="control-label">Groups</label>
-            <?php foreach($groups as $group) { ?>
-              <label class="checkbox inline">
-                <input type="checkbox" name="groups[]" value="<?php $this->utility->safe($group['id']); ?>">
-                <?php $this->utility->safe($group['name']); ?>
-              </label>
-            <?php } ?>
+            <label class="control-label">Groups <em>(<a href="/manage/groups" target="_blank">manage</a>)</em></label>
+            <select data-placeholder="Select groups for these photos" multiple  name="groups" class="typeahead">
+              <?php foreach($groups as $group) { ?>
+                <option value="<?php $this->utility->safe($group['id']); ?>"><?php $this->utility->safe($group['name']); ?></option>
+              <?php } ?>
+            </select>
           </div>
         <?php } ?>
 

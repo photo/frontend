@@ -83,10 +83,14 @@ class ApiPhotoController extends ApiBaseController
     getAuthentication()->requireAuthentication();
     $photoResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
     $groupsResp = $this->api->invoke("/{$this->apiVersion}/groups/list.json", EpiRoute::httpGet);
+    $albumsResp = $this->api->invoke("/{$this->apiVersion}/albums/list.json", EpiRoute::httpGet);
     $photo = $photoResp['result'];
     $groups = $groupsResp['result'];
+    $albums = $albumsResp['result'];
     if(!$groups)
       $groups = array();
+    if(!$albums)
+      $albums = array();
     if($photo)
     {
       $template = sprintf('%s/photo-edit.php', $this->config->paths->templates);
@@ -95,7 +99,7 @@ class ApiPhotoController extends ApiBaseController
         $license = $photo['license'];
       $this->template->url = new Url;
       $this->template->utility = new Utility;
-      $markup = $this->template->get($template, array('photo' => $photo, 'groups' => $groups, 'licenses' => $this->utility->getLicenses($license), 'crumb' => getSession()->get('crumb')));
+      $markup = $this->template->get($template, array('photo' => $photo, 'albums' => $albums, 'groups' => $groups, 'licenses' => $this->utility->getLicenses($license), 'crumb' => getSession()->get('crumb')));
       return $this->success('Photo edit markup', array('markup' => $markup));
     }
 
@@ -438,6 +442,10 @@ class ApiPhotoController extends ApiBaseController
 
     if(isset($params['crumb']))
       unset($params['crumb']);
+    if(isset($params['albums']) && is_array($params['albums']))
+      $params['albums'] = implode(',', $params['albums']);
+    if(isset($params['groups']) && is_array($params['groups']))
+      $params['groups'] = implode(',', $params['groups']);
 
     $photoUpdatedId = $this->photo->update($id, $params);
 

@@ -68,16 +68,20 @@ OPU = (function() {
 
               },
               UploadFile: function() {
-                var uploader = $("#uploader").pluploadQueue(), license, permission, tags, groups;
-                license = $("form.upload select[name='license'] :selected").val();
-                tags = $("form.upload input[name='tags']").val();
-                permission = $("form.upload input[name='permission']:checked").val();
-                // http://stackoverflow.com/a/6116631
-                groups = $("form.upload input[name='groups[]']:checked").map(function () {return this.value;}).get().join(",");
+                var uploader = $("#uploader").pluploadQueue(), 
+                    form = $('form.upload'),
+                    license = $("select[name='license'] :selected", form).val(),
+                    permission = $("input[name='permission']:checked", form).val(),
+                    albums = $("select[name='albums']", form).val().join(','),
+                    tags = $("input[name='tags']", form).val(), 
+                    // http://stackoverflow.com/a/6116631
+                    // groups = $("input[name='groups[]']:checked", form).map(function () {return this.value;}).get().join(",");
+                    groups = $("select[name='groups']", form).val().join(',');
                 
                 uploader.settings.multipart_params.license = license;
                 uploader.settings.multipart_params.tags = tags;
                 uploader.settings.multipart_params.permission = permission;
+                uploader.settings.multipart_params.albums = albums;
                 uploader.settings.multipart_params.groups = groups;
               }
             }

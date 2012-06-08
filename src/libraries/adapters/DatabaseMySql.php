@@ -300,26 +300,7 @@ class DatabaseMySql implements DatabaseInterface
   {
     if($this->owner === $email)
     {
-      $result = $this->db->all("SELECT `alb`.*, `albgrp`.`group`
-        FROM `{$this->mySqlTablePrefix}album` AS `alb` LEFT JOIN  `{$this->mySqlTablePrefix}albumGroup` AS `albgrp` ON `alb`.`id`=`albgrp`.`album`
-        WHERE `alb`.`owner`=:owner", array(':owner' => $this->owner));
-      $albums = array();
-      foreach($result as $k => $v)
-      {
-        // store the group and remove it from $v
-        $group = $v['group'];
-        unset($v['group']);
-        // check if this we've seen this album else seed it w/o the group
-        if(!isset($albums[$v['id']]))
-        {
-          $albums[$v['id']] = $v;
-          $albums[$v['id']]['groups'] = array();
-        }
-
-        // append this group to the album group array
-        if(!empty($group))
-          $albums[$v['id']]['groups'][] = $group;
-      }
+      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner", array(':owner' => $this->owner));
     }
     else
     {
@@ -332,7 +313,7 @@ class DatabaseMySql implements DatabaseInterface
         $groupIds[] = $this->_($grp['id']);
 
       $groupIds = implode("','", $groupIds);
-      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` AS `alb` INNER JOIN `{$this->mySqlTablePrefix}elementGroup` AS `grp`
+      $albums = $this->db->all("SELECT `alb`.* FROM `{$this->mySqlTablePrefix}album` AS `alb` INNER JOIN `{$this->mySqlTablePrefix}elementGroup` AS `grp`
         ON `alb`.`id`=`grp`.`element` AND `grp`.`type`='album' WHERE `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
                                  array(':owner' => $this->owner));
     }
@@ -945,12 +926,15 @@ class DatabaseMySql implements DatabaseInterface
     {
       if(isset($params['groups']))
       {
-        if(!is_array($params['groups']))
-          $params['groups'] = (array)explode(',', $params['groups']);
-        $this->deleteGroupsFromElement($id, 'photo');
-        $this->addGroupsToElement($id, $params['groups'], 'photo');
+        $this->updateGroupToPhotoMapping($id, $params['groups']);
         // TODO: Generalize this and use for tags too -- @jmathai
-        $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), implode(',', $params['groups']));
+        $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['groups']);
+      }
+      if(isset($params['albums']))
+      {
+        $this->updateAlbumToPhotoMapping($id, $params['albums']);
+        // TODO: Generalize this and use for tags too -- @jmathai
+        $params['albums'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['albums']);
       }
       $params = $this->preparePhoto($id, $params);
       unset($params['id']);
@@ -1166,6 +1150,18 @@ class DatabaseMySql implements DatabaseInterface
     $tags = null;
     if(isset($params['tags']) && !empty($params['tags']))
       $tags = (array)explode(',', $params['tags']);
+    if(isset($params['groups']))
+    {
+      $this->updateGroupToPhotoMapping($id, $params['groups']);
+      // TODO: Generalize this and use for tags too -- @jmathai
+      $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['groups']);
+    }
+    if(isset($params['albums']))
+    {
+      $this->updateAlbumToPhotoMapping($id, $params['albums']);
+      // TODO: Generalize this and use for tags too -- @jmathai
+      $params['albums'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['albums']);
+    }
     $params = $this->preparePhoto($id, $params);
     $bindings = $params['::bindings'];
     $stmt = $this->sqlInsertExplode($params, $bindings);
@@ -1253,6 +1249,38 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Insert albums into the mapping table
+    *
+    * @param string $id Element id (id of the photo or video)
+    * @param string $albums Albums to be added
+    * @param string $type Element type (photo or video)
+    * @return boolean
+    */
+  private function addAlbumsToElement($id, $albums, $type)
+  {
+    if(empty($id) || empty($albums) || empty($type))
+      return false;
+
+    $hasAlbum = false;
+    $sql = "REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`, `type`, `element`, `album`) VALUES";
+    foreach($albums as $album)
+    {
+      if(strlen($album) > 0)
+      {
+        $sql .= sprintf("('%s', '%s', '%s', '%s'),", $this->_($this->owner), $this->_($type), $this->_($id), $this->_($album));
+        $hasAlbum = true;
+      }
+    }
+
+    if(!$hasAlbum)
+      return false;
+
+    $sql = substr($sql, 0, -1);
+    $res = $this->db->execute($sql);
+    return $res !== false;
+  }
+
+  /**
     * Add members to a group
     *
     * @param string $id Group id
@@ -1277,7 +1305,7 @@ class DatabaseMySql implements DatabaseInterface
     * Insert groups into the mapping table
     *
     * @param string $id Element id (id of the photo or video)
-    * @param string $tag Tag to be added
+    * @param string $groups Groups to be added
     * @param string $type Element type (photo or video)
     * @return boolean
     */
@@ -1458,9 +1486,21 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete albums for an element from the mapping table
+    *
+    * @param string $id Element id
+    * @return boolean
+    */
+  private function deleteAlbumsFromElement($id)
+  {
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `type`=:type AND `element`=:album", array(':owner' => $this->owner, ':type' => 'photo', ':album' => $id));
+    return $res !== false;
+  }
+
+  /**
     * Delete groups for an album from the mapping table
     *
-    * @param string $id Album id (id of the photo or video)
+    * @param string $id Album id
     * @return boolean
     */
   private function deleteGroupsFromAlbum($id)
@@ -1595,8 +1635,9 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
 
-    $photo['tags'] = strlen($photo['tags']) ? (array)explode(",", $photo['tags']) : array();
+    $photo['albums'] = strlen($photo['albums']) ? (array)explode(",", $photo['albums']) : array();
     $photo['groups'] = strlen($photo['groups']) ? (array)explode(",", $photo['groups']) : array();
+    $photo['tags'] = strlen($photo['tags']) ? (array)explode(",", $photo['tags']) : array();
 
     $exif = (array)json_decode($photo['exif']);
     $extra = (array)json_decode($photo['extra']);
@@ -1886,6 +1927,41 @@ class DatabaseMySql implements DatabaseInterface
     }
     return $stmt;
   }
+
+  /**
+   * Update the mapping table for albums<->photos
+   *
+   * @param string $id ID of the photo
+   * @param array $albums Albums
+   * @return string
+   */
+  private function updateAlbumToPhotoMapping($id, $albums)
+  {
+    if(!is_array($albums))
+      $albums = (array)explode(',', $albums);
+    $this->deleteAlbumsFromElement($id, 'photo');
+    if(!empty($albums))
+      $this->addAlbumsToElement($id, $albums, 'photo');
+  }
+
+
+  /**
+   * Update the mapping table for groups<->photos
+   *
+   * @param string $id ID of the photo
+   * @param array $groups Groups
+   * @return string
+   */
+  private function updateGroupToPhotoMapping($id, $groups)
+  {
+    if(!is_array($groups))
+      $groups = (array)explode(',', $groups);
+    $this->deleteGroupsFromElement($id, 'photo');
+    if(!empty($groups))
+      $this->addGroupsToElement($id, $groups, 'photo');
+
+  }
+
 
   /**
    * Wrapper function for escaping strings for queries

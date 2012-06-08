@@ -1256,6 +1256,9 @@ input:focus:required:invalid:focus, textarea:focus:required:invalid:focus, selec
   background-image: -ms-linear-gradient(top, #3875d7 20%, #2a62bc 90%);
   background-image: linear-gradient(top, #3875d7 20%, #2a62bc 90%);*/
 }
+select.typeahead, select.typeahead-tags {
+  height:29px;
+}
 .input-append input:first-child {
 	*margin-left:-160px;
 }
