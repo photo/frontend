@@ -17,17 +17,7 @@
     </p>
   </div>
 
-  <form class="well group-post-submit" action="/group/create">
-    <h3>Create a new group</h3>
-    <label>Name</label>
-    <input type="text" name="name">
-
-    <label>Add an email address</label>
-    <input type="text" class="group-email-input">&nbsp;&nbsp;&nbsp;<a href="#" class="group-email-add-click">Add</a>
-    <ul class="group-emails-add-list unstyled">
-    </ul>
-    <button class="btn btn-primary">Create</button>
-  </form>
+  <?php echo $groupAddForm; ?>
 
   <?php foreach($groups as $group) { ?>
     <form class="well group-post-submit" action="/group/<?php $this->utility->safe($group['id']); ?>/update">

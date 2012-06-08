@@ -104,6 +104,7 @@ $apiObj->post('/?v?1?/oauth/([a-zA-Z0-9]+)/delete.json', array('ApiOAuthControll
  */
 $apiObj->post('/?v?1?/group/create.json', array('ApiGroupController', 'create'), EpiApi::external);
 $apiObj->post('/?v?1?/group/([a-zA-Z0-9]+)/delete.json', array('ApiGroupController', 'delete'), EpiApi::external);
+$apiObj->get('/?v?1?/group/form.json', array('ApiGroupController', 'form'), EpiApi::external);
 $apiObj->post('/?v?1?/group/([a-zA-Z0-9]+)/update.json', array('ApiGroupController', 'update'), EpiApi::external);
 $apiObj->get('/?v?1?/group/([a-zA-Z0-9]+)/view.json', array('ApiGroupController', 'view'), EpiApi::external);
 $apiObj->get('/?v?1?/groups/list.json', array('ApiGroupController', 'list_'), EpiApi::external);
