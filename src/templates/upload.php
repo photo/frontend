@@ -27,7 +27,7 @@
 
         <?php if(count($albums) > 0) { ?>
           <div class="control-group">
-            <label class="control-label">Albums <em>(<a href="/manage/albums" target="_blank">manage</a>)</em></label>
+            <label class="control-label">Albums <em>(<a href="/album/form" class="album-form-click">create a new one</a>)</em></label>
             <select data-placeholder="Select albums for these photos" multiple  name="albums" class="typeahead">
               <?php foreach($albums as $album) { ?>
                 <option value="<?php $this->utility->safe($album['id']); ?>"><?php $this->utility->safe($album['name']); ?></option>

@@ -67,6 +67,17 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Delete an album from the database
+    *
+    * @param string $id ID of the action to delete
+    * @return boolean
+    */
+  public function deleteAlbum($id)
+  {
+    return false;
+  }
+
+  /**
     * Delete credential
     *
     * @return boolean

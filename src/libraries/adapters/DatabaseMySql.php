@@ -53,8 +53,28 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteAction($id)
   {
-    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}action` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}action` WHERE `id`=:id AND `owner`=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res !== false);
+  }
+
+  /**
+    * Delete an album from the database
+    *
+    * @param string $id ID of the action to delete
+    * @return boolean
+    */
+  public function deleteAlbum($id)
+  {
+    // if one fails then don't continue by using the second condition
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner", array(':id' => $id, ':owner' => $this->owner));
+    if(!$res)
+      return false;
+
+    // not terribly important if these fail once the album record is nixed
+    $this->deletePhotosFromAlbum($id);
+    $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}albumGroup` WHERE `owner`=:owner AND `album`=:album", array(':owner' => $this->owner, ':album' => $id));
+    $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `album`=:album", array(':owner' => $this->owner, ':album' => $id));
+    return true;
   }
 
   /**
@@ -279,8 +299,8 @@ class DatabaseMySql implements DatabaseInterface
   {
     $photos = $this->db->all("SELECT `pht`.* 
       FROM `{$this->mySqlTablePrefix}photo` AS `pht` INNER JOIN `{$this->mySqlTablePrefix}elementAlbum` AS `alb` ON `pht`.`id`=`alb`.`element`
-      WHERE `pht`.`owner`=:owner AND `alb`.`owner`=:owner AND `alb`.`type`=:type",
-      array(':owner' => $this->owner, ':type' => 'photo'));
+      WHERE `pht`.`owner`=:owner AND `alb`.`owner`=:owner",
+      array(':owner' => $this->owner));
 
     if($photos === false)
       return false;
@@ -779,10 +799,9 @@ class DatabaseMySql implements DatabaseInterface
     if(isset($params['groups']))
     {
       if(!is_array($params['groups']))
-        $params['groups'] = (array)explode(',', $params['groups']);
+        $groupArray = (array)explode(',', $params['groups']);
       $this->deleteGroupsFromAlbum($id);
-      $this->addGroupsToAlbum($id, $params['groups']);
-      unset($params['groups']);
+      $this->addGroupsToAlbum($id, $groupArray);
     }
     $params['owner'] = $this->owner;
     $bindings = array();
@@ -1087,6 +1106,13 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putAlbum($id, $params)
   {
+    if(isset($params['groups']))
+    {
+      if(!is_array($params['groups']))
+        $groupArray = (array)explode(',', $params['groups']);
+      $this->deleteGroupsFromAlbum($id);
+      $this->addGroupsToAlbum($id, $groupArray);
+    }
     $params['owner'] = $this->owner;
     $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute($sql = "INSERT INTO `{$this->mySqlTablePrefix}album` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
@@ -1535,6 +1561,33 @@ class DatabaseMySql implements DatabaseInterface
     return $res !== false;
   }
 
+
+  /**
+    * Delete members from a group
+    *
+    * @param string $id Element id (id of the photo or video)
+    * @return boolean
+    */
+  private function deletePhotosFromAlbum($id)
+  {
+    $photos = $this->db->all("SELECT `id`, `groups` 
+      FROM `{$this->mySqlTablePrefix}photo` 
+      WHERE `id` IN (
+        SELECT `element` FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:subowner AND `album`=:subalbum
+      ) AND `owner`=:owner", array(':subowner' => $this->owner, ':subalbum' => $id, ':owner' => $this->owner));
+    foreach($photos as $photo)
+    {
+      if(empty($photo['groups']))
+        continue;
+      $groups = (array)explode(',', $photo['groups']);
+      $groupsFilter = array_filter($groups, function ($val) use ($id) { return $id==$val; });
+      if(count($groups) === count($groupsFilter))
+        continue;
+      $groupsFilter = implode(',', $groupsFilter);
+      $this->postPhoto($photo['id'], array('groups' => $groupsFilter));
+    }
+  }
+
   /**
     * Delete tags for an element from the mapping table
     *
@@ -1608,6 +1661,10 @@ class DatabaseMySql implements DatabaseInterface
       if(isset($extra['coverPhoto']))
         $raw['coverPhoto'] = $extra['coverPhoto'];
     }
+    if(empty($raw['groups']))
+      $raw['groups'] = array();
+    else
+      $raw['groups'] = (array)explode(',', $raw['groups']);
     unset($raw['extra']);
     return $raw;
   }

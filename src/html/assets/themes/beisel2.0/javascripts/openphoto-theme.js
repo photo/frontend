@@ -150,29 +150,53 @@ var opTheme = (function() {
           }
         );
       },
-      // copy of groupCheckbox
-      albumCheckbox: function(ev) {
-        var el = $(ev.target);
-        if(el.hasClass("none") && el.is(":checked")) {
-          $("input.album-checkbox:not(.none)").removeAttr("checked");
-        } else if(el.is(":checked")) {
-          $("input.album-checkbox.none").removeAttr("checked");
-        }
+      albumDelete: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href')+'.json',
+            form = el.parent(),
+            params = {crumb:crumb.get()};
+
+        OP.Util.makeRequest(url, params, function(response) {
+          if(response.code === 204) {
+            form.slideUp('medium', function() { this.remove(); });
+          } else {
+            opTheme.message.error('We could not delete this group.');
+          }
+        });
+      },
+      albumForm: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href') + '.json';
+        OP.Util.makeRequest(url, {modal:'true',dynamic:'true'}, function(response){
+          if(response.code === 200) {
+            var el = $("#modal"),
+                html = markup.modal(
+                  'Create an album',
+                  response.result.markup,
+                  null
+                );
+            el.html(html).modal();  
+            $('.typeahead', el).chosen();
+          } else {
+            opTheme.message.error('Could not load the form to create an album.');
+          }
+        }, 'json', 'get');
+        return false;
       },
       albumPost: function(ev) {
         ev.preventDefault();
         var form = $(ev.target),
             url = form.attr('action')+'.json',
             isCreate = (url.search('create') > -1),
+            isDynamic = $('input[name="dynamic"]').val(),
+            groups = $("select[name='groups']", form).val(),
             params = {};
 
         params['name'] = $('input[name="name"]', form).val();
         params['permission'] = $('input[name="permission"]:checked', form).val();
-        params['groups'] = [];
-        $('input[name="groups[]"]:checked', form).each(function(i, el) {
-          params['groups'].push($(el).val());
-        });
-        params['groups'] = params['groups'].join(',');
+        params['groups'] = groups !== null ? groups.join(',') : '';
         params['crumb'] = crumb.get();
         if(params['name'].length == 0) {
           opTheme.message.error('Please enter a name for your album.');
@@ -181,8 +205,11 @@ var opTheme = (function() {
 
         // TODO decide if this needs to be anonymous because of isCreate
         OP.Util.makeRequest(url, params, function(response) {
+          var form = form;
           if(response.code === 200 || response.code === 201) {
-            if(isCreate)
+            if(isDynamic)
+              opTheme.callback.albumPostDynamicCb(form, response.result);
+            else if(isCreate)
               location.href = '/manage/albums?m=album-created';
             else
               opTheme.message.confirm('Album updated successfully.');
@@ -190,6 +217,12 @@ var opTheme = (function() {
             opTheme.message.error('Could not update album.');
           }
         });
+      },
+      albumPostDynamicCb: function(form, album) {
+        var select = $('select[name="albums"]', form);
+        $('.modal').modal('hide');
+        $('<option value="'+album.id+'" selected="selected">'+album.name+'</option>').prependTo(select);
+        select.trigger("liszt:updated");
       },
       batchAdd: function(photo) {
         var el = $(".pin.photo-"+photo.id);
@@ -288,22 +321,14 @@ var opTheme = (function() {
         else
           opTheme.message.error('We could not save your features.');
       },
-      // copy of albumCheckbox
-      groupCheckbox: function(ev) {
-        var el = $(ev.target);
-        if(el.hasClass("none") && el.is(":checked")) {
-          $("input.group-checkbox:not(.none)").removeAttr("checked");
-        } else if(el.is(":checked")) {
-          $("input.group-checkbox.none").removeAttr("checked");
-        }
-      },
       groupDelete: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
             url = el.attr('href')+'.json',
-            form = el.parent();
+            form = el.parent(),
+            params = {crumb:crumb.get()};
 
-        OP.Util.makeRequest(url, function(response) {
+        OP.Util.makeRequest(url, params, function(response) {
           if(response.code === 204) {
             form.slideUp('medium', function() { this.remove(); });
           } else {
@@ -757,15 +782,17 @@ var opTheme = (function() {
           opTheme.init.pages.photo.init();
         else if(location.pathname === '/photos/upload')
           opTheme.init.pages.upload();
+        else if(location.pathname === '/manage/albums')
+          opTheme.init.pages.manageAlbums();
       },
       attach: function() {
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
         OP.Util.on('click:action-post', opTheme.callback.actionPost);
-        OP.Util.on('click:album-checkbox', opTheme.callback.albumCheckbox);
+        OP.Util.on('click:album-delete', opTheme.callback.albumDelete);
+        OP.Util.on('click:album-form', opTheme.callback.albumForm);
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
-        OP.Util.on('click:group-checkbox', opTheme.callback.groupCheckbox);
         OP.Util.on('click:group-delete', opTheme.callback.groupDelete);
         OP.Util.on('click:group-email-add', opTheme.callback.groupEmailAdd);
         OP.Util.on('click:group-email-remove', opTheme.callback.groupEmailRemove);
@@ -864,6 +891,12 @@ var opTheme = (function() {
                 el.addClass("revealed pinned");
             }
           });
+        },
+        manageAlbums: function() {
+          $("select.typeahead").chosen();
+        },
+        manageGroups: function() {
+          $("select.typeahead").chosen();
         },
         photo: {
           init: function() { util.fetchAndCacheNextPrevious(); }

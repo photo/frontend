@@ -33,6 +33,25 @@ class ApiAlbumController extends ApiBaseController
     return $this->error('Could not add album', false);
   }
 
+  public function delete($id)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $status = $this->album->delete($id);
+    if($status)
+      return $this->noContent('Album was deleted', true);
+
+    return $this->error('Could not delete album', false);
+  }
+
+  public function form()
+  {
+    $groupsResp = $this->api->invoke('/groups/list.json', EpiRoute::httpGet);
+    $groups = $groupsResp['result'];
+    $template = $this->template->get(sprintf('%s/manage-album-form.php', $this->config->paths->templates), array('groups' => $groups));;
+    return $this->success('Album form', array('markup' => $template));
+  }
+
   public function list_()
   {
     $albums = $this->album->getAlbums();

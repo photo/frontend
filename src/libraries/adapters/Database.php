@@ -13,6 +13,7 @@ interface DatabaseInterface
   public function diagnostics();
   // delete methods can delete or toggle status
   public function deleteAction($id);
+  public function deleteAlbum($id);
   public function deleteCredential($id);
   public function deleteGroup($id);
   public function deletePhoto($photo);

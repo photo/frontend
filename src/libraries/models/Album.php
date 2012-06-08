@@ -43,6 +43,11 @@ class Album extends BaseModel
     return $id;
   }
 
+  public function delete($id)
+  {
+    return $this->db->deleteAlbum($id);
+  }
+
   public function getAlbum($id, $email = null)
   {
     if($email === null)

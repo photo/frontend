@@ -72,11 +72,16 @@ OPU = (function() {
                     form = $('form.upload'),
                     license = $("select[name='license'] :selected", form).val(),
                     permission = $("input[name='permission']:checked", form).val(),
-                    albums = $("select[name='albums']", form).val().join(','),
+                    albums = $("select[name='albums']", form).val(),
                     tags = $("input[name='tags']", form).val(), 
                     // http://stackoverflow.com/a/6116631
                     // groups = $("input[name='groups[]']:checked", form).map(function () {return this.value;}).get().join(",");
-                    groups = $("select[name='groups']", form).val().join(',');
+                    groups = $("select[name='groups']", form).val();
+
+                if(albums !== null)
+                  albums = albums.join(',');
+                if(groups !== null)
+                  groups = groups.join(',');
                 
                 uploader.settings.multipart_params.license = license;
                 uploader.settings.multipart_params.tags = tags;
