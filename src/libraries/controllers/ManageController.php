@@ -29,8 +29,9 @@ class ManageController extends BaseController
     $groupsResp = $this->api->invoke('/groups/list.json');
     $groups = $groupsResp['result'];
     $navigation = $this->getNavigation('albums');
+    $albumAddForm = $this->template->get(sprintf('%s/manage-album-add.php', $this->config->paths->templates), array('groups' => $groups));
     $bodyTemplate = sprintf('%s/manage-albums.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('albums' => $albums, 'groups' => $groups, 'navigation' => $navigation, 'crumb' => $this->session->get('crumb')));
+    $body = $this->template->get($bodyTemplate, array('albums' => $albums, 'albumAddForm' => $albumAddForm, 'groups' => $groups, 'navigation' => $navigation, 'crumb' => $this->session->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
   }
 

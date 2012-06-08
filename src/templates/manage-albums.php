@@ -16,47 +16,13 @@
     </p>
   </div>
 
-  <form class="well album-post-submit" action="/album/create">
-    <h3>Create a new album</h3>
-    <label>Name</label>
-    <input type="text" name="name">
-    <div class="control-group">
-      <label class="control-label">Permission</label>
-      <div class="controls">
-        <label class="radio inline">
-          <input type="radio" name="permission" id="public" value="1" checked="checked">
-          Public
-        </label>
-        <label class="radio inline">
-          <input type="radio" name="permission" id="private" value="0">
-          Private
-        </label>
-      </div>
-    </div>
-    <?php if(count($groups) > 0) { ?>
-      <div class="control-group">
-        <label class="control-label">Groups</label>
-        <div class="controls">
-          <label class="checkbox inline">
-            <input type="checkbox" id="group-none" name="groups[]" value="" <?php if(empty($album['groups'])) { ?> checked="checked" <?php } ?> class="group-checkbox-click group-checkbox none"> None
-          </label>
-          <?php foreach($groups as $group) { ?>
-            <label class="checkbox inline">
-              <input type="checkbox" name="groups[]" value="<?php $this->utility->safe($group['id']); ?>" <?php if(isset($album['groups']) && in_array($group['id'], $album['groups'])) { ?> checked="checked" <?php } ?> class="group-checkbox-click group-checkbox">
-              <?php $this->utility->safe($group['name']); ?>
-            </label>
-          <?php } ?>
-        </div>
-      </div>
-    <?php } ?>
-    <button class="btn btn-primary">Create</button>
-  </form>
-
+  <?php echo $albumAddForm; ?>
+  
   <?php foreach($albums as $album) { ?>
     <form class="well album-post-submit" action="/album/<?php $this->utility->safe($album['id']); ?>/update">
       <h3>Edit <?php $this->utility->safe($album['name']); ?></h3>
       <label>Name</label>
-      <input type="text" name="name" value="<?php $this->utility->safe($group['name']); ?>">
+      <input type="text" name="name" value="<?php $this->utility->safe($album['name']); ?>">
       <div class="control-group">
         <label class="control-label">Permission</label>
         <div class="controls">
@@ -73,19 +39,14 @@
       <?php if(count($groups) > 0) { ?>
         <div class="control-group">
           <label class="control-label">Groups</label>
-          <div class="controls">
-            <label class="checkbox inline">
-              <input type="checkbox" id="group-none" name="groups[]" value="" <?php if(empty($album['groups'])) { ?> checked="checked" <?php } ?> class="group-checkbox-click group-checkbox none"> None
-            </label>
+          <select data-placeholder="Select groups for these photos" multiple  name="groups" class="typeahead">
             <?php foreach($groups as $group) { ?>
-              <label class="checkbox inline">
-                <input type="checkbox" name="groups[]" value="<?php $this->utility->safe($group['id']); ?>" <?php if(isset($album['groups']) && in_array($group['id'], $album['groups'])) { ?> checked="checked" <?php } ?> class="group-checkbox-click group-checkbox">
-                <?php $this->utility->safe($group['name']); ?>
-              </label>
+              <option value="<?php $this->utility->safe($group['id']); ?>" <?php if(isset($album['groups']) && in_array($group['id'], $album['groups'])) { ?> selected="selected" <?php } ?>><?php $this->utility->safe($group['name']); ?></option>
             <?php } ?>
-          </div>
+          </select>
         </div>
       <?php } ?>
+      
       <button class="btn">Save</button>&nbsp;&nbsp;&nbsp;<a class="album-delete-click" href="/album/<?php $this->utility->safe($album['id']); ?>/delete">Or delete</a>
     </form>
   <?php } ?>
