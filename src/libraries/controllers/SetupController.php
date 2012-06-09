@@ -799,6 +799,13 @@ class SetupController extends BaseController
       '{theme}' => getSession()->get('theme'),
       '{email}' => getSession()->get('ownerEmail')
     );
+    // Session keys whose value it is ok to log.
+    // Other session keys available at this point are:
+    //   awsKey, awsSecret, dropboxKey, dropboxSecret, dropboxToken, dropboxTokenSecret,
+    //   flowDropboxKey, flowDropboxSecret, mySqlPassword, mySqlUser, password, secret, step
+    // It is safer to explicitly list keys that are ok to log, rather than exclude those that are
+    // sensitive, as one might forget to exclude new keys.
+    $settingsToLog = array('appId', 'ownerEmail', 'isEditMode', 'theme', 'imageLibrary', 'database', 'simpleDbDomain', 'mySqlDb', 'mySqlHost', 'mySqlTablePrefix', 'fileSystem', 'fsHost', 'fsRoot', 'dropboxFolder', 'flowDropboxFolder', 's3BucketName');
 
     $pReplace = array();
     $session = getSession()->getAll();
@@ -806,8 +813,8 @@ class SetupController extends BaseController
     {
       if($key != 'email' && $key != 'password')
         $pReplace["{{$key}}"] = $val;
-
-      getLogger()->info(sprintf('Storing %s as %s', $key, $val));
+      if(in_array($key, $settingsToLog))
+        getLogger()->info(sprintf('Storing %s as %s', $key, $val));
     }
 
     $replacements = array_merge($replacements, $pReplace);
