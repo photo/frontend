@@ -1278,7 +1278,7 @@ class DatabaseMySql implements DatabaseInterface
     * Insert albums into the mapping table
     *
     * @param string $id Element id (id of the photo or video)
-    * @param string $albums Albums to be added
+    * @param string $albums Album IDs to be added
     * @param string $type Element type (photo or video)
     * @return boolean
     */
@@ -1303,6 +1303,7 @@ class DatabaseMySql implements DatabaseInterface
 
     $sql = substr($sql, 0, -1);
     $res = $this->db->execute($sql);
+
     return $res !== false;
   }
 
