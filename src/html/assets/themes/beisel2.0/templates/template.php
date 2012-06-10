@@ -3,11 +3,11 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-
 		<meta name="language" content="english,en" />
+
 		<meta name="distribution" content="global" />
-		<meta name="robots" content="index,follow" />
 		<meta name="revisit-after" content="7 days" />
+    <meta name="robots" content="<?php if($this->config->site->hideFromSearchEngines == 1) { ?>noindex, nofollow<?php } else { ?>index,follow<?php } ?>">
     <meta name="description" content="<?php $this->theme->meta('descriptions', $page); ?>">
     <meta name="keywords" content="<?php $this->theme->meta('keywords', $page); ?>">
     <meta name="author" content="The OpenPhoto Project (http://theopenphotoproject.org)">

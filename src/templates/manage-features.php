@@ -24,6 +24,12 @@
         Let visitors download my original hi-res photos
       </label>
     </div>
+    <div class="controls">
+      <label class="checkbox inline">
+        <input type="checkbox" name="hideFromSearchEngines" value="1" <?php if($hideFromSearchEngines) { ?>checked="checked"<?php } ?>>
+        Hide my site from search engines
+      </label>
+    </div>
     
     <div class="btn-toolbar"><button class="btn btn-primary">Save</button></div>
   </form>
