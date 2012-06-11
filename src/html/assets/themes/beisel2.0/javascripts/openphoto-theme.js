@@ -932,7 +932,7 @@ var opTheme = (function() {
           init: function() { util.fetchAndCacheNextPrevious(); }
         },
         photos: {
-          initData: typeof(initData) === "undefined" ? null : initData,
+          initData: typeof(initData) === "undefined" ? undefined : initData,
           page: null,
           pageCount: 0,
           end: false,
@@ -952,7 +952,7 @@ var opTheme = (function() {
             var _this = opTheme.init.pages.photos; loc = location;
             // we define initData at runtime to avoid having to make an HTTP call on load
             // all subsequent calls run through the http API
-            if(_this.initData === null) {
+            if(typeof(_this.initData) === "undefined") {
               if(_this.end || _this.running)
                 return;
 
