@@ -167,7 +167,7 @@
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, '4'); ?>'
+                                                  getUrl(AssetPipeline::js, '5'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
