@@ -4078,8 +4078,119 @@ body.photos .infobar .date {
   font-style:italic;
 	color:#e6501e;
 }
+/*.gallery:not(.emtpy) {
+  margin-top:30px;
+}*/
+.photo-grid-justify {
+	padding:10px 0;
+}
+
+.photo-grid-justify > div {
+  float:left;
+  height:180px;
+  margin:10px 3px;
+}
+.photo-grid-justify p.page-hr {
+  clear:both;
+  content:".";
+  width:100%;
+}
+.photo-grid-justify .imageContainer > div {
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;
+	border-radius:3px;
+}
+.photo-grid-justify > div img {
+  max-width:none;
+}
+
+.photo-grid {
+	margin:0;
+	padding:0;
+	line-height: 0;
+	/*-webkit-column-count:4;
+	-webkit-column-gap:20px;
+	-moz-column-count:4;
+	-moz-column-gap:20px;
+	column-count:4;
+	column-gap:20px;*/
+}
+
+.photo-grid li {
+  overflow:hidden;
+  margin:0 3px 20px;
+}
+
+.photo-grid li img.thumb {
+  max-width:none;
+}
+
+.photo-grid li {
+	border-top:20px solid white;
+	float:left;
+	list-style-type:none;
+	margin:0;
+	position:relative;
+	vertical-align:top;
+}
+
+.photo-grid li a {
+	display:block;
+}
+
+.photo-grid li a img {
+	-webkit-border-radius:2px;
+	-moz-border-radius:2px;
+	border-radius:2px;
+}
+
+.photo-grid li .meta {
+	background-color:#EFE8DA;
+	-webkit-border-bottom-left-radius:2px;
+	-moz-border-bottom-left-radius:2px;
+	border-bottom-left-radius:2px;
+	-webkit-border-bottom-right-radius:2px;
+	-moz-border-bottom-right-radius:2px;
+	border-bottom-right-radius:2px;
+	display:inline-block;
+	float:left;
+	height:auto;
+	margin:10px 0 0 0;
+	padding:5px;
+	position:absolute;
+	opacity:0.5;
+	bottom:0;
+	left:0;
+	width:100%;
+}
+
+.photo-grid li .meta:hover {
+	opacity:1;
+}
+
+.photo-grid li .meta a {
+	display:inline-block !important;
+	float:left !important;
+}
 .load-more {
   text-align:center;
+}
+.gallery .album-name {
+  margin-top:4px;
+}
+.album-row {
+  margin-top:30px;
+}
+.album-list {
+  height:175px;
+  overflow:hidden;
+}
+.album-list h5 {
+  text-align:center;
+  padding-top:3px;
+}
+.album-list .show-all {
+  display:none;
 }
 /* 09.03. Photos details ----------------------------------------------------------- */
 /* 09.04. Tags ----------------------------------------------------------- */
@@ -4473,101 +4584,6 @@ header h1 {
 /*.gallery {
 	padding:0 20px 20px 20px;
 }*/
-.gallery:not(.emtpy) {
-  margin-top:30px;
-}
-
-.photo-grid-justify {
-	padding:10px 0;
-}
-
-.photo-grid-justify > div {
-  float:left;
-  height:180px;
-  margin:10px 3px;
-}
-.photo-grid-justify p.page-hr {
-  clear:both;
-  content:".";
-  width:100%;
-}
-.photo-grid-justify .imageContainer > div {
-	-webkit-border-radius:3px;
-	-moz-border-radius:3px;
-	border-radius:3px;
-}
-.photo-grid-justify > div img {
-  max-width:none;
-}
-
-.photo-grid {
-	margin:0;
-	padding:0;
-	line-height: 0;
-	/*-webkit-column-count:4;
-	-webkit-column-gap:20px;
-	-moz-column-count:4;
-	-moz-column-gap:20px;
-	column-count:4;
-	column-gap:20px;*/
-}
-
-.photo-grid li {
-  overflow:hidden;
-  margin:0 3px 20px;
-}
-
-.photo-grid li img.thumb {
-  max-width:none;
-}
-
-.photo-grid li {
-	border-top:20px solid white;
-	float:left;
-	list-style-type:none;
-	margin:0;
-	position:relative;
-	vertical-align:top;
-}
-
-.photo-grid li a {
-	display:block;
-}
-
-.photo-grid li a img {
-	-webkit-border-radius:2px;
-	-moz-border-radius:2px;
-	border-radius:2px;
-}
-
-.photo-grid li .meta {
-	background-color:#EFE8DA;
-	-webkit-border-bottom-left-radius:2px;
-	-moz-border-bottom-left-radius:2px;
-	border-bottom-left-radius:2px;
-	-webkit-border-bottom-right-radius:2px;
-	-moz-border-bottom-right-radius:2px;
-	border-bottom-right-radius:2px;
-	display:inline-block;
-	float:left;
-	height:auto;
-	margin:10px 0 0 0;
-	padding:5px;
-	position:absolute;
-	opacity:0.5;
-	bottom:0;
-	left:0;
-	width:100%;
-}
-
-.photo-grid li .meta:hover {
-	opacity:1;
-}
-
-.photo-grid li .meta a {
-	display:inline-block !important;
-	float:left !important;
-}
 
 /* 10. Responsive definitions ############################################################### */
 

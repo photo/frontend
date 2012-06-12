@@ -333,8 +333,8 @@ class DatabaseMySql implements DatabaseInterface
         $groupIds[] = $this->_($grp['id']);
 
       $groupIds = implode("','", $groupIds);
-      $albums = $this->db->all("SELECT `alb`.* FROM `{$this->mySqlTablePrefix}album` AS `alb` INNER JOIN `{$this->mySqlTablePrefix}elementGroup` AS `grp`
-        ON `alb`.`id`=`grp`.`element` AND `grp`.`type`='album' WHERE `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
+      $albums = $this->db->all("SELECT `alb`.* FROM `{$this->mySqlTablePrefix}album` AS `alb` LEFT JOIN `{$this->mySqlTablePrefix}albumGroup` AS `grp`
+        ON `alb`.`id`=`grp`.`album` WHERE `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
                                  array(':owner' => $this->owner));
     }
 
@@ -1410,6 +1410,11 @@ class DatabaseMySql implements DatabaseInterface
       {
         switch($name)
         {
+          case 'album':
+            $subquery = sprintf("`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `{$this->mySqlTablePrefix}elementAlbum`.`owner`='%s' AND `type`='%s' AND `album`='%s')",
+              $this->_($this->owner), 'photo', $value);
+            $where = $this->buildWhere($where, $subquery);
+            break;
           case 'hash':
             $hash = $this->_($value);
             $where = $this->buildWhere($where, "hash='{$hash}'");
@@ -1419,7 +1424,7 @@ class DatabaseMySql implements DatabaseInterface
               $value = (array)explode(',', $value);
             foreach($value as $k => $v)
               $value[$k] = $this->_($v);
-            $subquery = sprintf("(id IN (SELECT element FROM `{$this->mySqlTablePrefix}elementGroup` WHERE `{$this->mySqlTablePrefix}elementGroup`.`owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
+            $subquery = sprintf("(`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementGroup` WHERE `{$this->mySqlTablePrefix}elementGroup`.`owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
               $this->_($this->owner), 'photo', implode("','", $value));
             $where = $this->buildWhere($where, $subquery);
             break;

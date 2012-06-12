@@ -190,7 +190,7 @@ var opTheme = (function() {
         var form = $(ev.target),
             url = form.attr('action')+'.json',
             isCreate = (url.search('create') > -1),
-            isDynamic = $('input[name="dynamic"]', form).val(),
+            isDynamic = parseInt($('input[name="dynamic"]', form).val()),
             groups = $("select[name='groups']", form).val(),
             params = {};
 
@@ -203,14 +203,14 @@ var opTheme = (function() {
           return;
         }
 
-        // TODO decide if this needs to be anonymous because of isCreate
+        // TODO decide if this needs to be anonymous because of form
         OP.Util.makeRequest(url, params, function(response) {
           var form = form;
           if(response.code === 200 || response.code === 201) {
             if(isDynamic)
               opTheme.callback.albumPostDynamicCb(form, response.result);
             else if(isCreate)
-              location.href = '/manage/albums?m=album-created';
+              location.href = '/manage/albums?m=album-created#album-' + response.result.id;
             else
               opTheme.message.confirm('Album updated successfully.');
           } else {
@@ -223,6 +223,19 @@ var opTheme = (function() {
         $('.modal').modal('hide');
         $('<option value="'+album.id+'" selected="selected">'+album.name+'</option>').prependTo(select);
         select.trigger("liszt:updated");
+      },
+      albumShowAll: function(ev) {
+        ev.preventDefault();
+        var container = $('.album-list'),
+            currentHeight = container.outerHeight(),
+            shrunk = opTheme.init.pages.photos.albumContainerHeight[1],
+            expanded = opTheme.init.pages.photos.albumContainerHeight[0],
+            animObj = {height:0};
+        if(currentHeight == shrunk)
+          animObj.height = expanded+'px';
+        else
+          animObj.height = shrunk+'px';
+        container.animate(animObj);
       },
       batchAdd: function(photo) {
         var el = $(".pin.photo-"+photo.id);
@@ -239,11 +252,16 @@ var opTheme = (function() {
             val = el.val(),
             tgt = $("form#batch-edit .form-fields");
         switch(val) {
+          case 'albumsAdd':
+            tgt.html(opTheme.ui.batchFormFields.albums());
+            $('select', tgt).chosen();
+            break;
           case 'delete':
             tgt.html(opTheme.ui.batchFormFields.empty());
             break;
           case 'groups':
             tgt.html(opTheme.ui.batchFormFields.groups());
+            $('select', tgt).chosen();
             break;
           case 'permission':
             tgt.html(opTheme.ui.batchFormFields.permission());
@@ -266,6 +284,7 @@ var opTheme = (function() {
               '      <select id="batch-key" class="batch-field-change" name="property">' +
               '        <option value="tagsAdd">Add Tags</option>' +
               '        <option value="tagsRemove">Remove Tags</option>' +
+              '        <option value="albumsAdd">Add Albums</option>' +
               '        <option value="groups">Update Groups</option>' +
               '        <option value="permission">Update Permissions</option>' +
               '        <option value="delete">Delete</option>' +
@@ -820,6 +839,7 @@ var opTheme = (function() {
         OP.Util.on('click:action-post', opTheme.callback.actionPost);
         OP.Util.on('click:album-delete', opTheme.callback.albumDelete);
         OP.Util.on('click:album-form', opTheme.callback.albumForm);
+        OP.Util.on('click:album-show-all', opTheme.callback.albumShowAll);
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
         OP.Util.on('click:group-delete', opTheme.callback.groupDelete);
@@ -933,6 +953,7 @@ var opTheme = (function() {
         },
         photos: {
           initData: typeof(initData) === "undefined" ? undefined : initData,
+          albumContainerHeight: 0,
           page: null,
           pageCount: 0,
           end: false,
@@ -949,7 +970,7 @@ var opTheme = (function() {
             }
           },
           load: function() {
-            var _this = opTheme.init.pages.photos; loc = location;
+            var _this = opTheme.init.pages.photos; loc = location, albumContainer = $(".album-list");
             // we define initData at runtime to avoid having to make an HTTP call on load
             // all subsequent calls run through the http API
             if(typeof(_this.initData) === "undefined") {
@@ -997,6 +1018,21 @@ var opTheme = (function() {
               _this.page = 1;
               var response = {code:200, result:initData};
               _this.loadCb(response);
+            }
+            // optionally display album "view all" link
+            if(albumContainer.length === 1) {
+              //$(albumContainer).css({ overflow: "hidden", display: "block" });
+              var h1 = $(albumContainer).outerHeight();
+
+              $(albumContainer).css({ overflow: "auto", display: "table" });
+              var h2 = $(albumContainer).outerHeight();
+
+              $(albumContainer).css({ overflow: "hidden", display: "block" });
+
+              _this.albumContainerHeight = [h1, h2];
+
+              if(h2 >= (h1+100)) // random buffer
+                $('.show-all', albumContainer).show();
             }
           },
           loadCb: function(response) {
@@ -1061,6 +1097,26 @@ var opTheme = (function() {
     }, // message
     ui: {
       batchFormFields: {
+        albums: function() {
+          var albumsArr, album, html = '';
+          $.ajax({
+            url: '/albums/list.json',
+            async: false,
+            success: function(response) {
+              if(response.code === 200) {
+                html += '<label>Select albums</label><select name="value" multiple>';
+                for(i in response.result) {
+                  if(response.result.hasOwnProperty(i)) {
+                    album = response.result[i];
+                    html += '<option value="' + album.id + '">' + album.name + '</option>';
+                  }
+                }
+                html += '</select>';
+              }
+            }
+          });
+          return html;
+        },
         empty: function() {
           return '';
         },
@@ -1071,15 +1127,14 @@ var opTheme = (function() {
             async: false,
             success: function(response) {
               if(response.code === 200) {
+                html += '<label>Select groups</label><select name="value" multiple>';
                 for(i in response.result) {
                   if(response.result.hasOwnProperty(i)) {
                     group = response.result[i];
-                    html += '<label class="checkbox inline">' +
-                        '<input type="checkbox" name="value" value="'+group.id+'" class="group-checkbox-click group-checkbox">' +
-                        group.name + 
-                      '</label>';
+                    html += '<option value="' + group.id + '">' + group.name + '</option>';
                   }
                 }
+                html += '</select>';
               }
             }
           });

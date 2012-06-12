@@ -32,7 +32,7 @@
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'r'); ?>">
+                                                                  getUrl(AssetPipeline::css, 's'); ?>">
     <?php } ?>
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
@@ -81,6 +81,7 @@
               'action-post-click':'click:action-post',
               'album-delete-click':'click:album-delete',
               'album-form-click':'click:album-form',
+              'album-show-all-click':'click:album-show-all',
               'batch-modal-click':'click:batch-modal',
               'credential-delete-click':'click:credential-delete',
               'group-delete-click':'click:group-delete',
@@ -167,7 +168,7 @@
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, '5'); ?>'
+                                                  getUrl(AssetPipeline::js, '6'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 

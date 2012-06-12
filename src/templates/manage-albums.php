@@ -19,8 +19,9 @@
   <?php echo $albumAddForm; ?>
   
   <?php foreach($albums as $album) { ?>
+    <a name="album-<?php $this->utility->safe($album['id']); ?>"></a>
     <form class="well album-post-submit" action="/album/<?php $this->utility->safe($album['id']); ?>/update">
-      <h3>Edit <?php $this->utility->safe($album['name']); ?></h3>
+      <h3>Edit <?php $this->utility->safe($album['name']); ?> <small>(<a href="/manage?album=<?php $this->utility->safe($album['id']); ?>">view photos</a>)</small></h3>
       <label>Name</label>
       <input type="text" name="name" value="<?php $this->utility->safe($album['name']); ?>">
       <div class="control-group">
