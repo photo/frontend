@@ -405,10 +405,10 @@ class ApiPhotoController extends ApiBaseController
     getAuthentication()->requireCrumb();
     // diff/manage tag counts - not critical
     $params = $_POST;
+    $photoBefore = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
+    $photoBefore = $photoBefore['result'];
     if(isset($params['tags']) || isset($params['tagsAdd']) || isset($params['tagsRemove']))
     {
-      $photoBefore = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
-      $photoBefore = $photoBefore['result'];
       if($photoBefore)
       {
         $existingTags = $photoBefore['tags'];
@@ -438,6 +438,11 @@ class ApiPhotoController extends ApiBaseController
           $permission = $params['permission'];
         $this->tag->updateTagCounts($existingTags, $updatedTags, $permission, $photoBefore['permission']);
       }
+    }
+
+    if(isset($params['albumsAdd']))
+    {
+      $params['albums'] = implode(',', array_merge($photoBefore['albums'], $params['albumsAdd']));
     }
 
     if(isset($params['crumb']))
@@ -702,6 +707,7 @@ class ApiPhotoController extends ApiBaseController
         $fp = fopen($localFile, 'w');
         $ch = curl_init($_POST['photo']);
         curl_setopt($ch, CURLOPT_FILE, $fp);
+        // TODO configurable timeout
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         $data = curl_exec($ch);
         curl_close($ch);
