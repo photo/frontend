@@ -287,12 +287,3 @@ class Upgrade extends BaseModel
     include $file;
   }
 }
-
-function getUpgrade()
-{
-  static $upgrade;
-  if(!$upgrade)
-    $upgrade = new Upgrade;
-
-  return $upgrade;
-}

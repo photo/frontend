@@ -278,15 +278,3 @@ class Credential extends BaseModel
     self::$requestStatus = null;
   }
 }
-
-if(!function_exists('getCredential'))
-{
-  function getCredential()
-  {
-    static $credential;
-    if(!$credential)
-      $credential = new Credential;
-
-    return $credential;
-  }
-}
