@@ -1,8 +1,19 @@
 <?php
-echo 'HI';
+define('IS_UNIT_TEST', 1);
 date_default_timezone_set('America/Los_Angeles');
 require_once 'PHPUnit/Autoload.php';
-require_once dirname(__FILE__) . '/autoload.php';
+
+// set paths
+$libraryDir = sprintf('%s/libraries', dirname(dirname(dirname(__FILE__))));
+$pathsObj = new stdClass;
+$pathsObj->adapters = sprintf('%s/adapters', $libraryDir);
+$pathsObj->controllers = sprintf('%s/controllers', $libraryDir);
+$pathsObj->external = sprintf('%s/external', $libraryDir);
+$pathsObj->models = sprintf('%s/models', $libraryDir);
+
+require_once dirname(dirname(dirname(__FILE__))) . '/libraries/functions.php';
+spl_autoload_register('openphoto_autoloader');
+
 require_once dirname(__FILE__) . '/mysql.php';
 require_once dirname(__FILE__) . '/aws.php';
 require_once dirname(__FILE__) . '/vfs.php';
@@ -26,7 +37,6 @@ function arrayToObject($array)
   return json_decode(json_encode($array));
 }
 
-// framework stubs for Epiphany
 if(!function_exists('getCache'))
 {
   function getCache() { return new FauxObject; }
@@ -59,6 +69,7 @@ if(!function_exists('getFs'))
 {
   function getFs() { return new FauxObject; }
 }
+
 
 class FauxObject
 {

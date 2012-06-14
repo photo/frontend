@@ -388,13 +388,3 @@ class Utility
     return $headers;
   }
 }
-
-function getUtility()
-{
-  static $utility;
-  if($utility)
-    return $utility;
-
-  $utility = new Utility;
-  return $utility;
-}
