@@ -13,6 +13,7 @@ interface DatabaseInterface
   public function diagnostics();
   // delete methods can delete or toggle status
   public function deleteAction($id);
+  public function deleteAlbum($id);
   public function deleteCredential($id);
   public function deleteGroup($id);
   public function deletePhoto($photo);
@@ -36,6 +37,7 @@ interface DatabaseInterface
   public function getPhotoWithActions($id);
   public function getPhotos($filters = array(), $limit = null, $offset = null);
   public function getUser($owner = null);
+  public function getUserByEmailAndPassword($email = null, $password = null);
   public function getTag($tag);
   public function getTags($filters = array());
   public function getWebhook($id);
@@ -44,6 +46,7 @@ interface DatabaseInterface
   public function identity();
   public function executeScript($file, $database);
   // post methods update
+  public function postAlbum($id, $params);
   public function postAlbumAdd($albumId, $type, $elementIds);
   public function postAlbumRemove($albumId, $type, $elementIds);
   public function postCredential($id, $params);

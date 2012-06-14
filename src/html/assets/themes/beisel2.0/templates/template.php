@@ -17,20 +17,22 @@
 		<!--[if lt IE 9]>
 		  <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
-    <link rel="shortcut icon" href="<?php $this->theme->asset('image', 'favicon.ico'); ?>">
-    <link rel="apple-touch-icon" href="<?php $this->theme->asset('image', 'apple-touch-icon.png'); ?>">
-    <link rel="apple-touch-icon" sizes="72x72" href="<?php $this->theme->asset('image', 'apple-touch-icon-72x72.png'); ?>">
-    <link rel="apple-touch-icon" sizes="114x114" href="<?php $this->theme->asset('image', 'apple-touch-icon-114x114.png'); ?>">
+    <link rel="shortcut icon" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php $this->theme->asset('image', 'favicon.ico'); ?>">
+    <link rel="apple-touch-icon" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php $this->theme->asset('image', 'apple-touch-icon.png'); ?>">
+    <link rel="apple-touch-icon" sizes="72x72" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php $this->theme->asset('image', 'apple-touch-icon-72x72.png'); ?>">
+    <link rel="apple-touch-icon" sizes="114x114" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php $this->theme->asset('image', 'apple-touch-icon-114x114.png'); ?>">
 
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>" rel="stylesheet">
+      <link href="<?php $this->theme->asset('stylesheet', 'chosen.css'); ?>" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'opme.css'); ?>" rel="stylesheet">
       <link href="/assets/stylesheets/upload.css" rel="stylesheet">
     <?php } else { ?>
-      <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
+      <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                   addCss("/assets/stylesheets/upload.css")->
+                                                                  addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'm'); ?>">
+                                                                  getUrl(AssetPipeline::css, 's'); ?>">
     <?php } ?>
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
@@ -52,7 +54,7 @@
       </div>
       
       <div class="modal hide fade" id="modal"></div>
-      <div class="modal photo-detail hide fade span12" id="modal-photo-detail"></div>
+      <div class="modal photo-detail hide fade" id="modal-photo-detail"></div>
       <?php if(!$this->user->isLoggedIn()) { ?>
         <?php $this->theme->display('partials/login.php'); ?>
       <?php } ?>
@@ -67,8 +69,8 @@
       <script type="text/javascript" src="<?php $this->theme->asset($this->config->dependencies->javascript); ?>"></script>
       <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
     <?php } else { ?>
-      <script type="text/javascript" src="<?php echo getAssetPipeline(true)->addJs($this->theme->asset($this->config->dependencies->javascript, null, false))->
-                                                                        addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'e'); ?>"></script>
+      <script type="text/javascript" src="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs($this->theme->asset($this->config->dependencies->javascript, null, false))->
+                                                                        addJs($this->theme->asset('util', null, false))->getUrl(AssetPipeline::js, 'g'); ?>"></script>
     <?php } ?>
     <script>
       OP.Util.init(jQuery, {
@@ -77,15 +79,19 @@
               'action-delete-click':'click:action-delete',
               'action-jump-click':'click:action-jump',
               'action-post-click':'click:action-post',
+              'album-delete-click':'click:album-delete',
+              'album-form-click':'click:album-form',
+              'album-show-all-click':'click:album-show-all',
               'batch-modal-click':'click:batch-modal',
               'credential-delete-click':'click:credential-delete',
-              'group-checkbox-click':'click:group-checkbox',
               'group-delete-click':'click:group-delete',
               'group-email-add-click':'click:group-email-add',
               'group-email-remove-click':'click:group-email-remove',
-              'group-post-click':'click:group-post',
-              'login-modal-click':'click:login-modal',
+              'group-form-click':'click:group-form',
               'login-click':'click:login',
+              'login-modal-click':'click:login-modal',
+              'manage-password-request-click':'click:manage-password-request',
+              'manage-password-reset-click':'click:manage-password-reset',
               'map-jump-click':'click:map-jump',
               'modal-close-click':'click:modal-close',
               'nav-item-click':'click:nav-item',
@@ -103,11 +109,19 @@
               'pin-clear-click':'click:pin-clear',
               'plugin-status-click':'click:plugin-status',
               'plugin-update-click':'click:plugin-update',
-              'search-click':'click:search',
               'settings-click':'click:settings',
               'tags-focus':'focus:tags',
               'upload-start-click':'click:upload-start',
               'webhook-delete-click':'click:webhook-delete'
+          },
+          'submit': {
+              'album-post-submit':'submit:album-post',
+              'features-post-submit':'submit:features-post',
+              'group-post-submit':'submit:group-post',
+              'login-openphoto-submit':'submit:login-openphoto',
+              'photo-update-submit':'submit:photo-update',
+              'photo-upload-submit':'submit:photo-upload',
+              'search-submit':'submit:search'
           },
           <?php if($this->user->isOwner()) { ?>
             'change': {
@@ -117,7 +131,7 @@
           'keydown': {
               37: 'keydown:browse-previous',
               39: 'keydown:browse-next'
-          },
+          }
         },
         js: {
           assets: [
@@ -128,17 +142,17 @@
                 '/assets/javascripts/jquery.plupload.queue.js',
                 '/assets/javascripts/openphoto-upload.js',
               <?php } else { ?>
-                '<?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'g'); ?>',
+                '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'k'); ?>',
               <?php } ?>
             <?php } ?>
 
             <?php if($this->config->site->mode === 'dev') { ?>
               '/assets/javascripts/openphoto-helper.js',
               '<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>',
-
+              '<?php $this->theme->asset('javascript', 'chosen.jquery.js'); ?>',
               '<?php $this->theme->asset('javascript', 'jquery.history.js'); ?>',
               '<?php $this->theme->asset('javascript', 'jquery.scrollTo.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'touchSwipe.js'); ?>',
+              //'<?php $this->theme->asset('javascript', 'touchSwipe.js'); ?>',
               '<?php $this->theme->asset('javascript', 'browserupdate.js'); ?>',
               '<?php $this->theme->asset('javascript', 'gallery.js'); ?>',
               '<?php $this->theme->asset('javascript', 'phpjs.js'); ?>',
@@ -151,10 +165,10 @@
               '<?php $this->theme->asset('javascript', 'min/phpjs.min.js'); ?>',
               '<?php $this->theme->asset('javascript', 'min/openphoto-theme.min.js'); ?>'*/
             <?php } else { ?>
-            '<?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
+            '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'w'); ?>'
+                                                  getUrl(AssetPipeline::js, '6'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 

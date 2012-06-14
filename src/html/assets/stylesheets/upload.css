@@ -10,16 +10,19 @@ body.upload .poweredby {
   padding-right:10px;
 }
 
-body.upload .message {
+body.upload .upload-message {
   font-size:30px;
   margin:10px 0 30px;
   text-align:center;
   display:none;
 }
-body.upload .message img {
+body.upload .upload-message img {
   position:relative;
   left:-5px;
   top:5px;
+}
+body.upload .insufficient {
+  display:none;
 }
 /* 
    Plupload

@@ -119,8 +119,8 @@
         </div>
         <?php if(isset($photo['latitude']) && !empty($photo['latitude'])) { ?>
           <div class="map">
-            <i class="icon-map-marker"></i>	<?php $this->utility->safe($photo['latitude']); ?>, <?php $this->utility->safe($photo['longitude']); ?>
-            <img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 5, '250x100'); ?>">
+            <a href="<?php $this->utility->mapLinkUrl($photo['latitude'], $photo['longitude'], 5); ?>"><i class="icon-map-marker"></i>	<?php $this->utility->safe($photo['latitude']); ?>, <?php $this->utility->safe($photo['longitude']); ?>
+            <img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 5, '250x100'); ?>"></a>
           </div>
         <?php } ?>
         <div class="iconbox">
@@ -129,7 +129,7 @@
           <?php if($this->config->site->allowOriginalDownload == 1) { ?>
             <a href="<?php $this->utility->safe($photo['pathOriginal']); ?>" class="invert"><i class="icon-download"></i> Download original</a>
           <?php } ?>
-          <?php if($this->user->isOwner() && (!isset($_GET['modal']) || $_GET['modal'] !== 'true')) { ?>
+          <?php if($this->user->isOwner()) { ?>
             <a href="#" class="photo-edit-click invert" data-id="<?php $this->utility->safe($photo['id']); ?>"><i class="icon-edit"></i> Edit details</a>
           <?php } ?>
         </div>

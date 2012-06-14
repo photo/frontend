@@ -1196,13 +1196,15 @@ input:focus:required:invalid:focus, textarea:focus:required:invalid:focus, selec
 	border-radius:0 3px 3px 0;
 }
 .navbar-search .input-append .add-on {
-	float:left;
-	display:block;
+	/*float:left;
+	display:block;*/
+	float:right;
+	display:inline-block;
 	width:auto;
 	min-width:16px;
-	height:16px;
-	margin-right:-1px;
-	padding:4px 5px;
+	height:29px;
+	margin:0 0 0 -1px;
+	padding:4px 7px;
 	font-weight:normal;
 	line-height:16px;
 	color:black;
@@ -1219,6 +1221,43 @@ input:focus:required:invalid:focus, textarea:focus:required:invalid:focus, selec
 }
 .navbar-search .input-append .add-on:hover {
 	color:#575759;
+}
+.chzn-container-multi .chzn-choices .search-field .default, .chzn-container-single .chzn-default {
+	color:#EFE8DA;
+  /*color: #000;*/
+}
+.chzn-container-multi .chzn-choices {
+  border:solid 1px rgb(200, 190, 160);
+	background-color:#fdf2da;
+  -webkit-border-radius: 3px;
+  -moz-border-radius   : 3px;
+  border-radius        : 3px;
+}
+.navbar-search .chzn-container-multi .chzn-choices {
+	border:1px solid black;
+  -webkit-border-radius: 3px 0 0 3px;
+  -moz-border-radius   : 3px 0 0 3px;
+  border-radius        : 3px 0 0 3px;
+	-webkit-box-shadow: inset -1px 1px 1px 0px rgba(66, 50, 18, 0.5);
+	-moz-box-shadow: inset -1px 1px 1px 0px rgba(66, 50, 18, 0.5);
+	box-shadow: inset -1px 1px 1px 0px rgba(66, 50, 18, 0.5);
+}
+.navbar-search .chzn-container .chzn-drop {
+	background-color:#fdf2da;
+}
+.chzn-container .chzn-results .highlighted {
+	background-color:#e6501e;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3875d7', endColorstr='#2a62bc', GradientType=0 );  
+  background-image:none;
+  /*background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(20%, #3875d7), color-stop(90%, #2a62bc));
+  background-image: -webkit-linear-gradient(top, #3875d7 20%, #2a62bc 90%);
+  background-image: -moz-linear-gradient(top, #3875d7 20%, #2a62bc 90%);
+  background-image: -o-linear-gradient(top, #3875d7 20%, #2a62bc 90%);
+  background-image: -ms-linear-gradient(top, #3875d7 20%, #2a62bc 90%);
+  background-image: linear-gradient(top, #3875d7 20%, #2a62bc 90%);*/
+}
+select.typeahead, select.typeahead-tags {
+  height:29px;
 }
 .input-append input:first-child {
 	*margin-left:-160px;
@@ -2371,6 +2410,7 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 	-webkit-border-radius:4px;
 	-moz-border-radius:4px;
 	border-radius:4px;
+  z-index:1040; /* 10 more than the fixed navbar */
 }
 
 /* 05.03. wells ----------------------------------------------------------------------------- */
@@ -3210,15 +3250,14 @@ body.manage .navbar .nav .manage > a, body.manage .navbar .nav .manage > a:hover
  *  see here screenshots
  *  http://imgur.com/a/qatwW
  */
-.modal.photo-detail.fade.in {
+.modal.photo-detail.fade {
 	width:95%;
   height:95%;
   top:5%;
-  left:2%;
-  margin:0;
+  margin:0 0 0 -47%;
   max-height:inherit;
 }
-.modal.photo-detail.fade.in .photo-view{
+.modal.photo-detail.fade .photo-view{
   padding:10px;
 }
 
@@ -3259,6 +3298,12 @@ body.manage .navbar .nav .manage > a, body.manage .navbar .nav .manage > a:hover
 	float:right;
 	margin-left:5px;
 	margin-bottom:0;
+}
+#modal {
+  z-index:99999;
+}
+#modal-photo-detail {
+  z-index:99998;
 }
 
 /* 07.02. tooltip --------------------------------------------------------------------------- */
@@ -4008,7 +4053,7 @@ a.invert:hover i {
 }
 .iconbox a {
 	display:block;
-	margin:0 0 10px 0;
+	margin:0 0 10px 10px;
 }
 .social {
 	display:block;
@@ -4033,8 +4078,119 @@ body.photos .infobar .date {
   font-style:italic;
 	color:#e6501e;
 }
+/*.gallery:not(.emtpy) {
+  margin-top:30px;
+}*/
+.photo-grid-justify {
+	padding:10px 0;
+}
+
+.photo-grid-justify > div {
+  float:left;
+  height:180px;
+  margin:10px 3px;
+}
+.photo-grid-justify p.page-hr {
+  clear:both;
+  content:".";
+  width:100%;
+}
+.photo-grid-justify .imageContainer > div {
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;
+	border-radius:3px;
+}
+.photo-grid-justify > div img {
+  max-width:none;
+}
+
+.photo-grid {
+	margin:0;
+	padding:0;
+	line-height: 0;
+	/*-webkit-column-count:4;
+	-webkit-column-gap:20px;
+	-moz-column-count:4;
+	-moz-column-gap:20px;
+	column-count:4;
+	column-gap:20px;*/
+}
+
+.photo-grid li {
+  overflow:hidden;
+  margin:0 3px 20px;
+}
+
+.photo-grid li img.thumb {
+  max-width:none;
+}
+
+.photo-grid li {
+	border-top:20px solid white;
+	float:left;
+	list-style-type:none;
+	margin:0;
+	position:relative;
+	vertical-align:top;
+}
+
+.photo-grid li a {
+	display:block;
+}
+
+.photo-grid li a img {
+	-webkit-border-radius:2px;
+	-moz-border-radius:2px;
+	border-radius:2px;
+}
+
+.photo-grid li .meta {
+	background-color:#EFE8DA;
+	-webkit-border-bottom-left-radius:2px;
+	-moz-border-bottom-left-radius:2px;
+	border-bottom-left-radius:2px;
+	-webkit-border-bottom-right-radius:2px;
+	-moz-border-bottom-right-radius:2px;
+	border-bottom-right-radius:2px;
+	display:inline-block;
+	float:left;
+	height:auto;
+	margin:10px 0 0 0;
+	padding:5px;
+	position:absolute;
+	opacity:0.5;
+	bottom:0;
+	left:0;
+	width:100%;
+}
+
+.photo-grid li .meta:hover {
+	opacity:1;
+}
+
+.photo-grid li .meta a {
+	display:inline-block !important;
+	float:left !important;
+}
 .load-more {
   text-align:center;
+}
+.gallery .album-name {
+  margin-top:4px;
+}
+.album-row {
+  margin-top:30px;
+}
+.album-list {
+  height:175px;
+  overflow:hidden;
+}
+.album-list h5 {
+  text-align:center;
+  padding-top:3px;
+}
+.album-list .show-all {
+  display:none;
 }
 /* 09.03. Photos details ----------------------------------------------------------- */
 /* 09.04. Tags ----------------------------------------------------------- */
@@ -4072,11 +4228,9 @@ body.tags div.tags .tag-list {
   background-color:#cdf2fd;
 }
 /* 09.05. Manage ----------------------------------------------------------- */
-.manage ul.thumbnails li div.thumbnail {
-  border:0px;
-  -webkit-box-shadow:0;
-  -mox-box-shadow:0;
-  box-shadow:0;
+.manage ul.thumbnails li img.thumbnail {
+  width:160px;
+  height:160px;
 }
 .manage ul.thumbnails img~.reveal.revealed, .manage ul.thumbnails img:hover+.reveal.revealed {
   opacity:1.0;
@@ -4112,14 +4266,6 @@ body.tags div.tags .tag-list {
        -o-transition:opacity linear 0.2s;
        transition:opacity linear 0.2s;
 }
-
-
-
-
-
-
-
-
 
 /* Where does this go? jmathai */
 #loginBox .form-horizontal {
@@ -4438,101 +4584,6 @@ header h1 {
 /*.gallery {
 	padding:0 20px 20px 20px;
 }*/
-.gallery:not(.emtpy) {
-  margin-top:30px;
-}
-
-.photo-grid-justify {
-	padding:10px 0;
-}
-
-.photo-grid-justify > div {
-  float:left;
-  height:180px;
-  margin:10px 3px;
-}
-.photo-grid-justify p.page-hr {
-  clear:both;
-  content:".";
-  width:100%;
-}
-.photo-grid-justify .imageContainer > div {
-	-webkit-border-radius:3px;
-	-moz-border-radius:3px;
-	border-radius:3px;
-}
-.photo-grid-justify > div img {
-  max-width:none;
-}
-
-.photo-grid {
-	margin:0;
-	padding:0;
-	line-height: 0;
-	/*-webkit-column-count:4;
-	-webkit-column-gap:20px;
-	-moz-column-count:4;
-	-moz-column-gap:20px;
-	column-count:4;
-	column-gap:20px;*/
-}
-
-.photo-grid li {
-  overflow:hidden;
-  margin:0 3px 20px;
-}
-
-.photo-grid li img.thumb {
-  max-width:none;
-}
-
-.photo-grid li {
-	border-top:20px solid white;
-	float:left;
-	list-style-type:none;
-	margin:0;
-	position:relative;
-	vertical-align:top;
-}
-
-.photo-grid li a {
-	display:block;
-}
-
-.photo-grid li a img {
-	-webkit-border-radius:2px;
-	-moz-border-radius:2px;
-	border-radius:2px;
-}
-
-.photo-grid li .meta {
-	background-color:#EFE8DA;
-	-webkit-border-bottom-left-radius:2px;
-	-moz-border-bottom-left-radius:2px;
-	border-bottom-left-radius:2px;
-	-webkit-border-bottom-right-radius:2px;
-	-moz-border-bottom-right-radius:2px;
-	border-bottom-right-radius:2px;
-	display:inline-block;
-	float:left;
-	height:auto;
-	margin:10px 0 0 0;
-	padding:5px;
-	position:absolute;
-	opacity:0.5;
-	bottom:0;
-	left:0;
-	width:100%;
-}
-
-.photo-grid li .meta:hover {
-	opacity:1;
-}
-
-.photo-grid li .meta a {
-	display:inline-block !important;
-	float:left !important;
-}
 
 /* 10. Responsive definitions ############################################################### */
 
@@ -5157,7 +5208,7 @@ header h1 {
 	border-top-color:#575759;
 	}
 	.navbar-form, .navbar-search {
-		position:fixed;
+		position:absolute;
 		top:-1px;
 		right:5px;
 		float:none;
@@ -5190,11 +5241,8 @@ header h1 {
 		overflow:hidden;
 		height:0;
 	}
-	.carousel-control {
-		display:none;
-	}
 	.activityfeed-startpage .carousel-control {
-		display:block;
+		display:none;
 	}
 	.morephotos ul li .btn {
 		height:70px;

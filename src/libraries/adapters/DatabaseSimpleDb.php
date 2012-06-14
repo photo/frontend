@@ -67,6 +67,17 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Delete an album from the database
+    *
+    * @param string $id ID of the action to delete
+    * @return boolean
+    */
+  public function deleteAlbum($id)
+  {
+    return false;
+  }
+
+  /**
     * Delete credential
     *
     * @return boolean
@@ -575,6 +586,24 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Get the user record entry by username and password.
+    *
+    * @return mixed Array on success, otherwise FALSE
+    */
+  public function getUserByEmailAndPassword($email = null, $password = null)
+  {
+    if($email == '' || $password == '')
+      return false;;
+
+    $res = $this->db->select("SELECT * FROM `{$this->domainUser}` WHERE itemName()='{$email}' AND `password`='{$password}", array('ConsistentRead' => 'true'));
+    $this->logErrors($res);
+    if(isset($res->body->SelectResult->Item))
+      return self::normalizeUser($res->body->SelectResult->Item);
+    else
+      return false;
+  }
+
+  /**
     * Get a webhook specified by $id
     *
     * @param string $id ID of the webhook to retrieve
@@ -660,6 +689,19 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function inject($name, $value)
   {
     $this->$name = $value;
+  }
+
+  /**
+    * Add an album
+    *
+    * @param string $albumId ID of the album to update.
+    * @param string $type Type of element
+    * @param array $elementIds IDs of the elements to update.
+    * @return boolean
+    */
+  public function postAlbum($id, $params)
+  {
+    return false;
   }
 
   /**
@@ -795,6 +837,8 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function postUser($params)
   {
     // make sure we don't overwrite an existing user record
+    if(isset($params['password']) && empty($params['password']))
+      unset($params['password']);
     $res = $this->db->put_attributes($this->domainUser, $this->owner, $params, true);
     $this->logErrors($res);
     return $res->isOK();
@@ -924,6 +968,8 @@ class DatabaseSimpleDb implements DatabaseInterface
     */
   public function putUser($params)
   {
+    if(isset($params['password']) && empty($params['password']))
+      unset($params['password']);
     $res = $this->db->put_attributes($this->domainUser, $this->owner, $params);
     $this->logErrors($res);
     return $res->isOK();

@@ -128,6 +128,7 @@
             this.attachEvent( 'body', 'mouseover', this.onmouseevent, this);
             this.attachEvent( 'body', 'mouseout', this.onmouseevent, this);
             this.attachEvent( 'html', 'keydown', this.onkeydownevent, this);
+            this.attachEvent( 'form', 'submit', this.onviewevent, this);
             
             //load additional js in order specified
             for(i=0, j=js.length; i<j; i++) {
@@ -149,7 +150,7 @@
         */
         this.onviewevent = function(e) {
 
-            log('[Util] onviewevent: ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -174,7 +175,7 @@
         * @method onkeydownevent
         */
         this.onkeydownevent = function(e) {
-            log('[Util] keydownevent: ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
             
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -221,7 +222,7 @@
         */
         this.onmouseevent = function(e) {
             
-            log('[Util] mouseevent: ' + e.type + ' - ' + e.target);
+            log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),

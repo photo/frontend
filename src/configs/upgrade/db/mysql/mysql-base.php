@@ -189,6 +189,7 @@ SQL;
     `dateUploadedDay` int(11) DEFAULT NULL,
     `dateUploadedMonth` int(11) DEFAULT NULL,
     `dateUploadedYear` int(11) DEFAULT NULL,
+    `dateSortByDay` varchar(14) NOT NULL,
     `filenameOriginal` varchar(255) DEFAULT NULL,
     `pathOriginal` varchar(1000) DEFAULT NULL,
     `pathBase` varchar(1000) DEFAULT NULL,
@@ -224,9 +225,11 @@ SQL;
 
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}user` (
-    `id` varchar(255) NOT NULL COMMENT 'User''s email address',
-    `extra` text NOT NULL,
-    PRIMARY KEY (`id`)
+   `id` varchar(255) NOT NULL COMMENT 'User''s email address',
+   `password` varchar(64) NOT NULL,
+   `extra` text NOT NULL,
+   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQL;
   mysql_base($sql);
@@ -247,7 +250,7 @@ SQL;
     INSERT INTO `{$this->mySqlTablePrefix}admin` (`key`,`value`) 
     VALUES (:key, :value)
 SQL;
-  mysql_base($sql, array(':key' => 'version', ':value' => '1.3.1'));
+  mysql_base($sql, array(':key' => 'version', ':value' => '2.0.4'));
 
   return true;
 }

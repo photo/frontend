@@ -38,8 +38,8 @@
         <?php } ?>
         <?php if(!empty($photo['latitude']) && !empty($photo['latitude'])) { ?>
           <li class="location">
-            <?php $this->utility->safe($photo['latitude']); ?>, <?php $this->utility->safe($photo['longitude']); ?>
-            <img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 5, '225x150'); ?>" class="map">
+            <a href="<?php $this->utility->mapLinkUrl($photo['latitude'], $photo['longitude'], 5); ?>"><?php $this->utility->safe($photo['latitude']); ?>, <?php $this->utility->safe($photo['longitude']); ?>
+            <img src="<?php $this->utility->staticMapUrl($photo['latitude'], $photo['longitude'], 5, '225x150'); ?>" class="map"></a>
           </li>
         <?php } ?>
         <li class="exif">

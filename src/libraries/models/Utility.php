@@ -74,6 +74,19 @@ class Utility
     return dirname(dirname(dirname(__FILE__)));
   }
 
+  public function getConfigFile()
+  {
+    $configFile = sprintf('%s/userdata/configs/%s.ini', $this->getBaseDir(), $this->getHost());
+    if(!getConfig()->exists($configFile))
+      return false;
+    return $configFile;
+  }
+
+  public function getHost()
+  {
+    return $_SERVER['HTTP_HOST'];
+  }
+
   public function getLicenses($selected = null)
   {
     if(!$this->licenses)
@@ -185,6 +198,11 @@ class Utility
     $route = $_GET['__route__'];
     switch($label)
     {
+      case 'album':
+      case 'albums':
+        if(!empty($route) && preg_match('#^/album#', $route))
+          return true;
+        break;
       case 'home':
         if(preg_match('#^/$#', $route))
           return true;
@@ -304,10 +322,14 @@ class Utility
     return $this->returnValue(htmlspecialchars($string), $write);
   }
 
+  public function mapLinkUrl($latitude, $longitude, $zoom, $write = true)
+  {
+    return $this->returnValue(getMap()->linkUrl($latitude, $longitude, $zoom), $write);
+  }
+
   public function staticMapUrl($latitude, $longitude, $zoom, $size, $type = 'roadmap', $write = true)
   {
-    //http://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=14&size=512x512&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Ccolor:red%7Clabel:C%7C40.718217,-73.998284&sensor=false
-    return $this->returnValue("http://maps.googleapis.com/maps/api/staticmap?center={$latitude},{$longitude}&zoom={$zoom}&size={$size}&maptype={$type}&markers=color:gray%7C{$latitude},{$longitude}&sensor=false", $write);
+    return $this->returnValue(getMap()->staticMap($latitude, $longitude, $zoom, $size, $type), $write);
   }
 
   public function timeAsText($time, $prefix = null, $suffix = null, $write = true)
