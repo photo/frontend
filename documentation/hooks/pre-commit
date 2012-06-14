@@ -4,11 +4,11 @@
  * Git pre-commit hook
  *   To use this just symlink it to .git/hooks/pre-commit or copy it there and make modifications as needed.
  */
-$baseDir = dirname(dirname(dirname(__FILE__)));
+$baseDir = sprintf('%s/src/tests', dirname(dirname(dirname(__FILE__))));
 chdir($baseDir);
 printf("%sGit pre-commit hook %1\$s", PHP_EOL);
 $projectName = basename(getcwd());
-exec('phpunit src/tests/', $output, $returnCode); // Assuming cwd here
+exec('phpunit --configuration phpunit.xml ./', $output, $returnCode); // Assuming cwd here
 if ($returnCode !== 0) {
     $minimalTestSummary = array_pop($output);
     printf("Test suite for %s failed: ", $projectName);
