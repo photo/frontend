@@ -6,7 +6,7 @@ SQL;
 $status = $status && mysql_2_0_5($sql);
 
 $sql = <<<SQL
-  CREATE TABLE `{$this->mySqlTablePrefix}`.`albumGroup` (
+  CREATE TABLE `{$this->mySqlTablePrefix}albumGroup` (
     `owner` VARCHAR( 127 ) NOT NULL ,
     `album` VARCHAR( 127 ) NOT NULL ,
     `group` VARCHAR( 127 ) NOT NULL ,
