@@ -1,0 +1,8 @@
+<phpunit bootstrap="./helpers/init.php" colors="true" debug="true">
+    <testsuite name="adapters">
+        <directory>./libraries/adapters/</directory>
+    </testsuite>
+    <testsuite name="models">
+        <directory>./libraries/models</directory>
+    </testsuite>
+</phpunit>
