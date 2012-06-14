@@ -1698,9 +1698,20 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
 
-    $photo['albums'] = strlen($photo['albums']) ? (array)explode(",", $photo['albums']) : array();
-    $photo['groups'] = strlen($photo['groups']) ? (array)explode(",", $photo['groups']) : array();
-    $photo['tags'] = strlen($photo['tags']) ? (array)explode(",", $photo['tags']) : array();
+    if(isset($photo['albums']) && strlen($photo['albums']) === 0)
+      $photo['albums'] = (array)explode(",", $photo['albums']);
+    else
+      $photo['albums'] = array();
+
+    if(isset($photo['groups']) && strlen($photo['groups']) === 0)
+      $photo['groups'] = (array)explode(",", $photo['groups']);
+    else
+      $photo['groups'] = array();
+
+    if(isset($photo['tags']) && strlen($photo['tags']) === 0)
+      $photo['tags'] = (array)explode(",", $photo['tags']);
+    else
+      $photo['tags'] = array();
 
     $exif = (array)json_decode($photo['exif']);
     $extra = (array)json_decode($photo['extra']);
@@ -1883,7 +1894,8 @@ class DatabaseMySql implements DatabaseInterface
    */
   private function prepareUser($params)
   {
-    $ret = $extra = array();
+    $ret = array('extra' => '', 'password' => '');
+    $extra = array();
     if(isset($params) && is_array($params) && !empty($params))
     {
       foreach($params as $key => $val)
