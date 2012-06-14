@@ -23,6 +23,9 @@ class ApiManageController extends ApiBaseController
         case 'downloadOriginal':
           $configArray['site']['allowOriginalDownload'] = (string)intval($value);
           break;
+        case 'hideFromSearchEngines':
+          $configArray['site']['hideFromSearchEngines'] = (string)intval($value);
+          break;
       }
     }
     $res = getConfig()->write($configFile, $this->utility->generateIniString($configArray, true));
