@@ -1698,18 +1698,18 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
 
-    if(isset($photo['albums']) && strlen($photo['albums']) === 0)
-      $photo['albums'] = (array)explode(",", $photo['albums']);
+    if(isset($photo['albums']) && strlen($photo['albums']) > 0)
+      $photo['albums'] = (array)explode(',', $photo['albums']);
     else
       $photo['albums'] = array();
 
-    if(isset($photo['groups']) && strlen($photo['groups']) === 0)
-      $photo['groups'] = (array)explode(",", $photo['groups']);
+    if(isset($photo['groups']) && strlen($photo['groups']) > 0)
+      $photo['groups'] = (array)explode(',', $photo['groups']);
     else
       $photo['groups'] = array();
 
-    if(isset($photo['tags']) && strlen($photo['tags']) === 0)
-      $photo['tags'] = (array)explode(",", $photo['tags']);
+    if(isset($photo['tags']) && strlen($photo['tags']) > 0)
+      $photo['tags'] = (array)explode(',', $photo['tags']);
     else
       $photo['tags'] = array();
 
