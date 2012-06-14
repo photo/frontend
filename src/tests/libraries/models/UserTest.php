@@ -8,11 +8,6 @@ class UserTest extends PHPUnit_Framework_TestCase
     // to test the write methods
     $this->user = new User();
   }
-  
-  public function testExpiryConst()
-  {
-    $this->assertEquals(900, User::mobilePassphraseExpiry);
-  }
 
   public function testGetAvatarFromEmail()
   {
@@ -41,42 +36,6 @@ class UserTest extends PHPUnit_Framework_TestCase
     $this->user->inject('session', $session);
     
     $res = $this->user->getEmailAddress();
-    $this->assertNull($res);
-  }
-
-  public function testGetMobilePassphrase()
-  {
-    $cache = $this->getMock('cache', array('get'));
-    $cache->expects($this->any())
-      ->method('get')
-      ->will($this->returnValue('abcdef-'.(time()+100)));
-    $this->user->inject('cache', $cache);
-
-    $res = $this->user->getMobilePassphrase();
-    $this->assertEquals('abcdef', $res['phrase']);
-  }
-
-  public function testGetMobilePassphraseExpired()
-  {
-    $cache = $this->getMock('cache', array('get'));
-    $cache->expects($this->any())
-      ->method('get')
-      ->will($this->returnValue('abcdef-1'));
-    $this->user->inject('cache', $cache);
-
-    $res = $this->user->getMobilePassphrase();
-    $this->assertNull($res);
-  }
-
-  public function testGetMobilePassphraseDNE()
-  {
-    $cache = $this->getMock('cache', array('get'));
-    $cache->expects($this->any())
-      ->method('get')
-      ->will($this->returnValue(null));
-    $this->user->inject('cache', $cache);
-
-    $res = $this->user->getMobilePassphrase();
     $this->assertNull($res);
   }
 
@@ -400,20 +359,5 @@ class UserTest extends PHPUnit_Framework_TestCase
 
     $res = $this->user->setEmail('foo');
     $this->assertNull($res);
-  }
-
-  public function testSetMobilePassphrase()
-  {
-    $cache = $this->getMock('cache', array('set'));
-    $cache->expects($this->any())
-      ->method('set')
-      ->will($this->returnValue(true));
-    $this->user->inject('cache', $cache);
-    
-    $res = $this->user->setMobilePassphrase();
-    $parts = (array)explode('-', $res);
-    $this->assertTrue(count($parts) === 2, 'passphrase should be abcdef-1234567');
-    $this->assertTrue(!empty($parts[0]), 'passphrase should not be empty');
-    $this->assertEquals($parts[1], (time()+User::mobilePassphraseExpiry), 'expiration of passphrase is wrong');
   }
 }

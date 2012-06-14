@@ -188,10 +188,36 @@ class CredentialTest extends PHPUnit_Framework_TestCase
     $res = $this->credential->checkTimestampAndNonce($provider);
     $this->assertEquals(OAUTH_BAD_TIMESTAMP, $res, 'Future timestamp should return OAUTH_BAD_TIMESTAMP');
 
-    $provider->timestamp = time()-5;
+    $provider->timestamp = time()-301;
     
     $res = $this->credential->checkTimestampAndNonce($provider);
     $this->assertEquals(OAUTH_BAD_TIMESTAMP, $res, 'Old timestamp should return OAUTH_BAD_TIMESTAMP');
+  }
+
+  /**
+   * see #628 and #738 for details
+   * @depends testValidateOAuthLibraryExists
+   */
+  public function testCheckTimestampAndNonceGracePeriod()
+  {
+    $provider = new stdClass;
+    $provider->timestamp = time()+299;
+    $provider->nonce = 'nonce';
+
+    $lastTimestamp = time();
+    $cache = $this->getMock('Cache', array('get'));
+    $cache->expects($this->any())
+      ->method('get')
+      ->will($this->returnValue(array($lastTimestamp => array())));
+    $this->credential->inject('cache', $cache);
+    
+    $res = $this->credential->checkTimestampAndNonce($provider);
+    $this->assertEquals(OAUTH_OK, $res, 'Timestamps can be up to 300 seconds into the future (grace period)');
+
+    $provider->timestamp = time()-299;
+    
+    $res = $this->credential->checkTimestampAndNonce($provider);
+    $this->assertEquals(OAUTH_OK, $res, 'Timestamps can be up to 300 seconds in he past (grace period)');
   }
 
   /**

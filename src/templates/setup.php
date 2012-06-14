@@ -24,9 +24,16 @@
   <?php } ?>
   <div id="setup-step-1"<?php echo ($step != 1) ? ' class="hidden"' : ''?>>
     <form class="validate" action="/setup<?php echo $qs ?>" method="post">
-      <h2>User Settings</h2>
+      <h2><?php if(isset($_GET['edit'])) { ?>Create Account<?php } else { ?>Account Settings<?php } ?></h2>
       <label for="email">Email address</label>
       <input type="text" name="email" id="email" placeholder="user@example.com" <?php if(isset($email)) { ?>value="<?php $this->utility->safe($email); ?>"<?php } ?> data-validation="required email">
+
+      <?php if($this->config->site->allowOpenPhotoLogin == 1) { ?>
+        <label for="email">Password</label>
+        <input type="password" name="password" id="password" placeholder="password" <?php if(isset($password)) { ?>value="<?php $this->utility->safe($password); ?>"<?php } ?> data-validation="required">
+      <?php } else { ?>
+        <input type="hidden" name="password" value="">
+      <?php } ?>
 
       <label for="theme">Select a theme</label>
       <select name="theme">
@@ -45,7 +52,7 @@
   <div id="setup-step-2"<?php echo ($step != 2) ? ' class="hidden"' : ''?>>
     <form action="/setup/2<?php echo $qs; ?>" method="post">
       <h2>Site Settings <em>(the defaults work just fine<!--<a href="">what's this?</a>-->)</em></h2>
-      <label for="imageLibrary">Select Image Library</label>
+      <label for="imageLibrary">Select Image Library (see <a href="https://github.com/openphoto/frontend/issues/662" target="_blank">#662</a> if using GD)</label>
       <?php if(isset($imageLibs)) { ?>
         <select name="imageLibrary" id="imageLibrary">
           <?php foreach($imageLibs as $key => $val) { ?>

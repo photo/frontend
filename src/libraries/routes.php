@@ -21,9 +21,20 @@ $routeObj->post('/action/([a-zA-Z0-9]+)/(photo)/create', array('ActionController
  * /manage
  */
 $routeObj->get('/manage', array('ManageController', 'home'));
-$routeObj->get('/manage/groups', array('ManageController', 'groups'));
+$routeObj->get('/manage/albums', array('ManageController', 'albums'));
 $routeObj->get('/manage/apps', array('ManageController', 'apps'));
 $routeObj->get('/manage/apps/callback', array('ManageController', 'appsCallback'));
+$routeObj->get('/manage/features', array('ManageController', 'features'));
+$routeObj->get('/manage/groups', array('ManageController', 'groups'));
+$routeObj->get('/manage/password/reset/([a-z0-9]{32})', array('ManageController', 'passwordReset'));
+
+/*
+ * Album endpoints
+ * All album endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /album[s][/:id]/{action}
+ */
+getRoute()->get('/albums/list', array('AlbumController', 'list_')); // retrieve activities (/albums/list)
 
 /*
  * Photo endpoints
@@ -56,8 +67,6 @@ $routeObj->get('/tags/list', array('TagController', 'list_')); // view tags
  */
 $routeObj->get('/user/logout', array('UserController', 'logout')); // logout
 $routeObj->get('/user/settings', array('UserController', 'settings'));
-$routeObj->post('/user/login/mobile', array('UserController', 'loginMobile'));
-$routeObj->post('/user/mobile/passphrase', array('UserController', 'mobilePassphrase'));
 
 /*
  * Webhook endpoints follow the same convention.

@@ -28,9 +28,28 @@ class ApiAlbumController extends ApiBaseController
     {
       $albumResp = $this->api->invoke("/{$this->apiVersion}/album/{$albumId}/view.json", EpiRoute::httpGet);
       if($albumResp['code'] == 200)
-        return $this->success('Album created', $albumResp['result']);
+        return $this->created('Album created', $albumResp['result']);
     }
     return $this->error('Could not add album', false);
+  }
+
+  public function delete($id)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $status = $this->album->delete($id);
+    if($status)
+      return $this->noContent('Album was deleted', true);
+
+    return $this->error('Could not delete album', false);
+  }
+
+  public function form()
+  {
+    $groupsResp = $this->api->invoke('/groups/list.json', EpiRoute::httpGet);
+    $groups = $groupsResp['result'];
+    $template = $this->template->get(sprintf('%s/manage-album-form.php', $this->config->paths->templates), array('groups' => $groups));;
+    return $this->success('Album form', array('markup' => $template));
   }
 
   public function list_()
@@ -64,6 +83,18 @@ class ApiAlbumController extends ApiBaseController
       return $this->error('All items were not updated', false);
 
     return $this->success('All items updated', true);
+  }
+
+  public function update($id)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+
+    $status = $this->album->update($id, $_POST);
+    if(!$status)
+      return $this->error('Could not update album', false);
+
+    return $this->success('Album updated', true);
   }
 
   public function view($id)

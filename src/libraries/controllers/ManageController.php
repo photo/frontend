@@ -16,8 +16,23 @@ class ManageController extends BaseController
     parent::__construct();
     $this->photo = new Photo;
     $this->theme->setTheme(); // defaults
-    if(stristr($_SERVER['REQUEST_URI'], '/manage/apps/callback') === false)
+    // TODO why?
+    if(stristr($_SERVER['REQUEST_URI'], '/manage/apps/callback') === false &&
+        stristr($_SERVER['REQUEST_URI'], '/manage/password/reset') === false)
       getAuthentication()->requireAuthentication();
+  }
+
+  public function albums()
+  {
+    $albumsResp = $this->api->invoke('/albums/list.json');
+    $albums = $albumsResp['result'];
+    $groupsResp = $this->api->invoke('/groups/list.json');
+    $groups = $groupsResp['result'];
+    $navigation = $this->getNavigation('albums');
+    $albumAddForm = $this->template->get(sprintf('%s/manage-album-form.php', $this->config->paths->templates), array('groups' => $groups));
+    $bodyTemplate = sprintf('%s/manage-albums.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('albums' => $albums, 'albumAddForm' => $albumAddForm, 'groups' => $groups, 'navigation' => $navigation, 'crumb' => $this->session->get('crumb')));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
   }
 
   public function apps()
@@ -26,13 +41,24 @@ class ManageController extends BaseController
     $credentials = $credentialsResp['result'];
     $navigation = $this->getNavigation('apps');
     $bodyTemplate = sprintf('%s/manage-apps.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
+    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'navigation' => $navigation, 'crumb' => $this->session->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
   }
 
   public function appsCallback()
   {
     $this->route->redirect('/manage/apps?m=app-created');
+  }
+
+  public function features()
+  {
+    $params['downloadOriginal'] = $this->config->site->allowOriginalDownload == '1';
+    $params['allowDuplicate'] = $this->config->site->allowDuplicate == '1';
+    $params['crumb'] = $this->session->get('crumb');
+    $params['navigation'] = $this->getNavigation('features');
+    $bodyTemplate = sprintf('%s/manage-features.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, $params);
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-features'));
   }
 
   public function home()
@@ -62,9 +88,26 @@ class ManageController extends BaseController
     $groupsResp = $this->api->invoke('/groups/list.json');
     $groups = $groupsResp['result'];
     $navigation = $this->getNavigation('groups');
+    $groupAddForm = $this->template->get(sprintf('%s/manage-group-form.php', $this->config->paths->templates), array('groups' => $groups));
     $bodyTemplate = sprintf('%s/manage-groups.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('groups' => $groups, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
+    $body = $this->template->get($bodyTemplate, array('groupAddForm' => $groupAddForm, 'groups' => $groups, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-groups'));
+  }
+
+  public function passwordReset($token)
+  {
+    $user = new User;
+    $tokenFromDb = $user->getAttribute('passwordToken');
+    if($tokenFromDb != $token)
+    {
+      $this->route->redirect('/?m=token-expired');
+      die();
+    }
+
+    $navigation = $this->getNavigation(null);
+    $bodyTemplate = sprintf('%s/manage-password-reset.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('navigation' => $navigation, 'passwordToken' => $token));
+    $this->theme->display('template.php', array('body' => $body, 'page' => null));
   }
 
   private function getNavigation($page)
