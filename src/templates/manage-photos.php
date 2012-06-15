@@ -1,7 +1,4 @@
 <div class="manage home">
-
-  <?php echo $navigation; ?>
-
   <div class="row hero-unit blurb">
     <h2>Tips on updating your photos</h2>
     <p>

@@ -1,7 +1,4 @@
 <div class="manage features">
-
-  <?php echo $navigation; ?>
-
   <div class="row hero-unit blurb">
     <h2>Configure your OpenPhoto site</h2>
     
