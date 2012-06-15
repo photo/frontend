@@ -171,12 +171,12 @@ SQL;
 
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}group` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `id` varchar(6) NOT NULL,
     `owner` varchar(127) NOT NULL,
-    `group` varchar(6) NOT NULL,
-    `email` varchar(127) NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `owner` (`owner`,`group`,`email`)
+    `appId` varchar(255) DEFAULT NULL,
+    `name` varchar(255) DEFAULT NULL,
+    `permission` tinyint(4) NOT NULL COMMENT 'Bitmask of permissions',
+    UNIQUE KEY `id` (`id`,`owner`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQL;
   mysql_base($sql);
