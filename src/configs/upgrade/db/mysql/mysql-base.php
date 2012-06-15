@@ -59,11 +59,22 @@ SQL;
     `id` varchar(6) NOT NULL,
     `owner` varchar(255) NOT NULL,
     `name` varchar(255) NOT NULL,
+    `groups` text,
     `extra` text,
     `count` int(10) unsigned NOT NULL DEFAULT '0',
     `permission` tinyint(1) NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`,`owner`)
   ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+SQL;
+  mysql_base($sql);
+
+  $sql = <<<SQL
+  CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}albumGroup` (
+    `owner` varchar(127) NOT NULL,
+    `album` varchar(127) NOT NULL,
+    `group` varchar(127) NOT NULL,
+    UNIQUE KEY `owner` (`owner`,`album`,`group`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQL;
   mysql_base($sql);
 
@@ -96,17 +107,39 @@ SQL;
   mysql_base($sql);
 
   $sql = <<<SQL
-  CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}elementAlbum` (
-    `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-    `owner` varchar(255) NOT NULL,
-    `type` enum('photo') NOT NULL,
-    `element` varchar(6) NOT NULL DEFAULT 'photo',
-    `album` varchar(255) NOT NULL,
-    `order` smallint(11) unsigned NOT NULL DEFAULT '0',
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `id` (`owner`,`type`,`element`,`album`),
-    KEY `element` (`element`)
-  ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+    CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}elementAlbum` (
+      `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+      `owner` varchar(255) NOT NULL,
+      `type` enum('photo') NOT NULL,
+      `element` varchar(6) NOT NULL DEFAULT 'photo',
+      `album` varchar(6) NOT NULL,
+      `order` smallint(11) unsigned NOT NULL DEFAULT '0',
+      PRIMARY KEY (`id`),
+      UNIQUE KEY `id` (`owner`,`type`,`element`,`album`),
+      KEY `element` (`element`)
+    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+SQL;
+  mysql_base($sql);
+
+  $sql = <<<SQL
+    DROP TRIGGER IF EXISTS `{$this->mySqlTablePrefix}increment_album_photo_count`;
+SQL;
+  mysql_base($sql);
+
+  $sql = <<<SQL
+    CREATE TRIGGER `{$this->mySqlTablePrefix}increment_album_photo_count` AFTER INSERT ON `{$this->mySqlTablePrefix}elementAlbum`
+     FOR EACH ROW UPDATE `{$this->mySqlTablePrefix}album` SET `count` = `count`+1 WHERE `id` = NEW.`album` AND `owner` = NEW.`owner`;
+SQL;
+  mysql_base($sql);
+
+  $sql = <<<SQL
+    DROP TRIGGER IF EXISTS `{$this->mySqlTablePrefix}decrement_album_photo_count`;
+SQL;
+  mysql_base($sql);
+
+  $sql = <<<SQL
+    CREATE TRIGGER `{$this->mySqlTablePrefix}decrement_album_photo_count` AFTER DELETE ON `{$this->mySqlTablePrefix}elementAlbum`
+     FOR EACH ROW UPDATE `{$this->mySqlTablePrefix}album` SET `count` = `count`-1 WHERE `id` = OLD.`album` AND `owner` = OLD.`owner`;
 SQL;
   mysql_base($sql);
 
@@ -193,6 +226,7 @@ SQL;
     `filenameOriginal` varchar(255) DEFAULT NULL,
     `pathOriginal` varchar(1000) DEFAULT NULL,
     `pathBase` varchar(1000) DEFAULT NULL,
+    `albums` text,
     `groups` text,
     `tags` text,
     UNIQUE KEY `id` (`id`,`owner`)
@@ -250,7 +284,7 @@ SQL;
     INSERT INTO `{$this->mySqlTablePrefix}admin` (`key`,`value`) 
     VALUES (:key, :value)
 SQL;
-  mysql_base($sql, array(':key' => 'version', ':value' => '2.0.4'));
+  mysql_base($sql, array(':key' => 'version', ':value' => '2.0.7'));
 
   return true;
 }
