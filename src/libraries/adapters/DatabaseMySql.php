@@ -435,13 +435,13 @@ class DatabaseMySql implements DatabaseInterface
     if(empty($email))
       $res = $this->db->all("SELECT `grp`.*, `memb`.`email` 
         FROM `{$this->mySqlTablePrefix}group` AS `grp` 
-        INNER JOIN `{$this->mySqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
+        LEFT JOIN `{$this->mySqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
         WHERE `grp`.`id` IS NOT NULL AND `grp`.`owner`=:owner 
         ORDER BY `grp`.`name`", array(':owner' => $this->owner));
     else
       $res = $this->db->all("SELECT `grp`.*, `memb`.`email` 
         FROM `{$this->mySqlTablePrefix}group` AS `grp` 
-        INNER JOIN `{$this->mySqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
+        LEFT JOIN `{$this->mySqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
         WHERE `memb`.`email`=:email AND `grp`.`id` IS NOT NULL AND `grp`.`owner`=:owner 
         ORDER BY `grp`.`name`", array(':email' => $email, ':owner' => $this->owner));
 
