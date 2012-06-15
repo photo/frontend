@@ -191,12 +191,9 @@ var opTheme = (function() {
             url = form.attr('action')+'.json',
             isCreate = (url.search('create') > -1),
             isDynamic = parseInt($('input[name="dynamic"]', form).val()),
-            groups = $("select[name='groups']", form).val(),
             params = {};
 
         params['name'] = $('input[name="name"]', form).val();
-        params['permission'] = $('input[name="permission"]:checked', form).val();
-        params['groups'] = groups !== null ? groups.join(',') : '';
         params['crumb'] = crumb.get();
         if(params['name'].length == 0) {
           opTheme.message.error('Please enter a name for your album.');
@@ -210,7 +207,7 @@ var opTheme = (function() {
             if(isDynamic)
               opTheme.callback.albumPostDynamicCb(form, response.result);
             else if(isCreate)
-              location.href = '/manage/albums?m=album-created#album-' + response.result.id;
+              location.href = '/manage/albums?m=album-created&rand='+parseInt(Math.random()*100000)+'#album-' + response.result.id;
             else
               opTheme.message.confirm('Album updated successfully.');
           } else {
