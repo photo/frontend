@@ -73,8 +73,24 @@ class ApiAlbumController extends ApiBaseController
     {
       case 'add':
         $resp = $this->album->addElement($albumId, $type, $_POST['ids']);
+        if($resp)
+        {
+          $album = $this->album->getAlbum($albumId);
+          $ids = (array)explode(',', $_POST['ids']);
+          $id = array_pop($ids);
+          if($id)
+          {
+            $lastPhotoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('generate' => 'true', 'returnSizes' => '100x100,100x100xCR,200x200,200x200xCR')));
+            if($lastPhotoResp['code'] === 200)
+            {
+              // TODO: this clobbers anything that was in `extra` (currently nothing)
+              $this->album->update($albumId, array('extra' => array('cover' => $lastPhotoResp['result'])));
+            }
+          }
+        }
         break;
       case 'remove':
+        // TODO: check if the cover photo is one of the photos being removed and reset it. See #757
         $resp = $this->album->removeElement($albumId, $type, $_POST['ids']);
         break;
     }

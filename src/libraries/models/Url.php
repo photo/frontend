@@ -33,6 +33,12 @@ class Url
     return $utilityObj->returnValue('/manage', $write);
   }
 
+  public function manageAlbums($write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue('/manage/albums', $write);
+  }
+
   public function photoDelete($id, $write = true)
   {
     $utilityObj = new Utility;

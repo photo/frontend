@@ -445,12 +445,35 @@ class ApiPhotoController extends ApiBaseController
       $params['albums'] = implode(',', array_merge($photoBefore['albums'], $params['albumsAdd']));
     }
 
-    if(isset($params['crumb']))
-      unset($params['crumb']);
-    if(isset($params['albums']) && is_array($params['albums']))
-      $params['albums'] = implode(',', $params['albums']);
+    // TODO: move this out to a smaller function
+    if(isset($params['albums']))
+    {
+      $albumsArr = $params['albums'];
+      if(!is_array($params['albums']))
+        $albumsArr = (array)explode(',', $params['albums']);
+
+      $albumsToRemove = array_diff($photoBefore['albums'], $albumsArr);
+      $albumsToAdd = array_diff($albumsArr, $photoBefore['albums']);
+      if(!empty($albumsToRemove))
+      {
+        foreach($albumsToRemove as $aId)
+          $this->api->invoke("/album/{$aId}/photo/remove.json", EpiRoute::httpPost, array('_POST' => array('ids' => $id)));
+      }
+      if(!empty($albumsToAdd))
+      {
+        foreach($albumsToAdd as $aId)
+          $this->api->invoke("/album/{$aId}/photo/add.json", EpiRoute::httpPost, array('_POST' => array('ids' => $id)));
+      }
+
+      if(is_array($params['albums']))
+        $params['albums'] = implode(',', $params['albums']);
+    }
+
     if(isset($params['groups']) && is_array($params['groups']))
       $params['groups'] = implode(',', $params['groups']);
+
+    if(isset($params['crumb']))
+      unset($params['crumb']);
 
     $photoUpdatedId = $this->photo->update($id, $params);
 

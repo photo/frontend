@@ -1658,14 +1658,12 @@ class DatabaseMySql implements DatabaseInterface
     if(empty($raw))
       return $raw;
 
-    $raw['coverId'] = $raw['coverPhoto'] = null;
+    $raw['cover'] = null;
     if(!empty($raw['extra']))
     {
       $extra = json_decode($raw['extra'], 1);
-      if(isset($extra['coverId']))
-        $raw['coverId'] = $extra['coverId'];
-      if(isset($extra['coverPhoto']))
-        $raw['coverPhoto'] = $extra['coverPhoto'];
+      if(isset($extra['cover']))
+        $raw['cover'] = $extra['cover'];
     }
     if(empty($raw['groups']))
       $raw['groups'] = array();
@@ -1793,6 +1791,9 @@ class DatabaseMySql implements DatabaseInterface
    */
   private function prepareAlbum($params)
   {
+    if(isset($params['extra']))
+      $params['extra'] = json_encode($params['extra']);
+
     return $params;
   }
 

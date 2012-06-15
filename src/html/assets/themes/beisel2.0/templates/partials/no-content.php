@@ -23,7 +23,7 @@
     <?php } else { // default with message appropriate for non logged in user ?>
       <strong class="bigtext">:-(</strong><br/>
       <h1>Sorry, nothing to see here. You might want to sign in.</h1>
-      <p>Start by clicking the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> button.</p>
+      <p>Start by clicking the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> or <a href="https://openphoto.me"><i class="icon-plus icon-large"></i> register</a> button.</p>
     <?php } ?>
   <?php } else { // user is logged in ?>
     <?php if($this->user->isOwner() && $type == 'upload') { // message to upload photos ?>
@@ -31,6 +31,11 @@
       <strong class="bigtext"><i class="icon-upload icon-large"></i></strong><br/>
       <h1>You haven't uploaded any photos to OpenPhoto yet.</h1>
       <p>Start now by clicking the <a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload icon-large"></i> upload button</a>!</p>
+    <?php } else if($this->user->isOwner() && $type == 'albums') { // message to upload photos ?>
+      <br/>
+      <strong class="bigtext"><i class="icon-th icon-large"></i></strong><br/>
+      <h1>You haven't created an albums on OpenPhoto yet.</h1>
+      <p>Start now by clicking the <a href="<?php $this->url->manageAlbums(); ?>"><i class="icon-th icon-large"></i> manage albums button</a>!</p>
     <?php } elseif($type == '403') { // logged in but no access ?>
       <strong class="bigtext">?</strong><br/>
       <h1>The page you are looking for is restricted.</h1>

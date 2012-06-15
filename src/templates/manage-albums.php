@@ -12,6 +12,7 @@
         <li><strong class="label label-important">IMPORTANT</strong> Each album is public or private. Public albums and the photos in them are visible to anyone regardless of the privacy setting on the photo itself.</li>
         <li>Private albums can be made visible to your groups.</li>
         <li>Albums are fixed unless you explicitly add a photo to it.</li>
+        <li>Add photos to an album using the edit form or on the <a href="<?php $this->url->manage(); ?>">manage photos</a> page.</li>
       </ol>
     </p>
   </div>

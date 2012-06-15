@@ -6,29 +6,15 @@
       <li class="plain"><a>Showing photos between <i class="icon-calendar icon-large"></i> <span class="startdate date" data-time="<?php $this->utility->safe($minDate); ?>"><?php $this->utility->safe(date('l F jS, Y', $minDate)); ?></span> and <i class="icon-calendar icon-large"></i> <span class="enddate date" data-time="<?php $this->utility->safe($maxDate); ?>"><?php $this->utility->safe(date('l F jS, Y', $maxDate)); ?></span></a></li>
     </ul>
   </div>
-  
-  <div class="album-row">
-    <?php if(!empty($albums)) { ?>
-      <div class="album-list">
-        <h3>Albums <small class="show-all">(<a href="#" class="album-show-all-click">show all</a>)</small></h3>
-        <ul class="thumbnails">
-          <?php foreach($albums as $alb) { ?>
-            <?php if($alb['count'] > 0) { ?>
-              <li>
-                <a href="<?php $this->url->photosView(sprintf('album-%s', $alb['id'])); ?>"><img src="<?php $this->theme->asset('image', 'album-placeholder.png'); ?>"></a>
-                <h5><?php $this->utility->safe($alb['name']); ?></h5>
-              </li>
-            <?php } ?>
-          <?php } ?>
-        </ul>
-      </div>
-    <?php } ?>
-  </div>
+
+  <?php if(!empty($albums)) { ?>
+    <?php $this->theme->display('albums.php', array('albums' => $albums, 'included' => true)); ?>
+  <?php } ?>
 
   <div class="row hero-unit empty gallery">
     <?php if(!empty($album)) { ?>
       <p class="album-name">
-        <h4>Photos from <?php $this->utility->safe($album['name']); ?></h4>
+        <h4><i class="icon-picture icon-large"></i> Photos from <?php $this->utility->safe($album['name']); ?></h4>
       </p>
     <?php } ?>
     <div class="photo-grid-justify"></div>
