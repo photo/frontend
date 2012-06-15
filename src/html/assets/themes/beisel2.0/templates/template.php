@@ -24,15 +24,24 @@
 
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>" rel="stylesheet">
+      <link href="<?php $this->theme->asset('stylesheet', 'font-awesome.css'); ?>" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'chosen.css'); ?>" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'opme.css'); ?>" rel="stylesheet">
       <link href="/assets/stylesheets/upload.css" rel="stylesheet">
+      <!--[if IE 7]>
+        <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'font-awesome-ie7.css'); ?>">
+      <![endif]-->
     <?php } else { ?>
-      <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
+      <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnprefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
+                                                                  addCss($this->theme->asset('stylesheet', 'font-awesome.css', false))->
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'u'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'v'); ?>">
+      <!--[if IE 7]>
+        <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnprefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'font-awesome-ie7.css', false))->
+                                                                  getUrl(AssetPipeline::css, 'a'); ?>">
+      <![endif]-->
     <?php } ?>
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>

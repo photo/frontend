@@ -1224,8 +1224,12 @@ input:focus:required:invalid:focus, textarea:focus:required:invalid:focus, selec
 .navbar-search .input-append .add-on:hover {
 	color:#575759;
 }
-.navbar-search .chzn-container-multi .chzn-choices, .navbar-search .chzn-container-multi .chzn-results, .navbar-search .chzn-container-multi .chzn-drop {
+.navbar-search .chzn-container-multi .chzn-choices {
   width:170px !important;
+}
+.navbar-search .chzn-container-multi .chzn-drop, .navbar-search .chzn-container-multi .chzn-results {
+  top:2px;
+  width:194px !important;
 }
 .chzn-container-multi .chzn-choices .search-field .default, .chzn-container-single .chzn-default {
 	color:#EFE8DA;
