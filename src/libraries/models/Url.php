@@ -21,7 +21,7 @@ class Url
     return $utilityObj->returnValue(sprintf('/album/%s', $utilityObj->safe($id, false)), $write);
   }
 
-  public function albumsView($id, $write = true)
+  public function albumsView($write = true)
   {
     $utilityObj = new Utility;
     return $utilityObj->returnValue('/albums/list', $write);
