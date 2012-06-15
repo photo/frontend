@@ -1195,11 +1195,13 @@ input:focus:required:invalid:focus, textarea:focus:required:invalid:focus, selec
 	-moz-border-radius:0 3px 3px 0;
 	border-radius:0 3px 3px 0;
 }
+.navbar-search .input-append {
+  width:201px;
+}
 .navbar-search .input-append .add-on {
-	/*float:left;
-	display:block;*/
-	float:right;
-	display:inline-block;
+  position: absolute;
+  top:0;
+  left:170px;
 	width:auto;
 	min-width:16px;
 	height:29px;
@@ -1221,6 +1223,9 @@ input:focus:required:invalid:focus, textarea:focus:required:invalid:focus, selec
 }
 .navbar-search .input-append .add-on:hover {
 	color:#575759;
+}
+.navbar-search .chzn-container-multi .chzn-choices, .navbar-search .chzn-container-multi .chzn-results, .navbar-search .chzn-container-multi .chzn-drop {
+  width:170px !important;
 }
 .chzn-container-multi .chzn-choices .search-field .default, .chzn-container-single .chzn-default {
 	color:#EFE8DA;
