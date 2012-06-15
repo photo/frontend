@@ -78,9 +78,14 @@ OPU = (function() {
                     // groups = $("input[name='groups[]']:checked", form).map(function () {return this.value;}).get().join(",");
                     groups = $("select[name='groups']", form).val();
 
-                if(albums !== null)
+                if(typeof(albums) === "undefined")
+                  albums = '';
+                else if(albums !== null)
                   albums = albums.join(',');
-                if(groups !== null)
+
+                if(typeof(groups) === "undefined")
+                  greoups = '';
+                else if(groups !== null)
                   groups = groups.join(',');
                 
                 uploader.settings.multipart_params.license = license;
