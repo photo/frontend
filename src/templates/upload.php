@@ -25,27 +25,23 @@
         <!--<select class="typeahead-tags tags tags-autocomplete"  data-placeholder="Select tags for these photos" multiple  name="tags"></select>-->
         <input type="text" name="tags" class="tags" placeholder="Optional comma separated list">
 
-        <?php if(count($albums) > 0) { ?>
-          <div class="control-group">
-            <label class="control-label">Albums <em>(<a href="/album/form" class="album-form-click">create a new one</a>)</em></label>
-            <select data-placeholder="Select albums for these photos" multiple  name="albums" class="typeahead">
-              <?php foreach($albums as $album) { ?>
-                <option value="<?php $this->utility->safe($album['id']); ?>"><?php $this->utility->safe($album['name']); ?></option>
-              <?php } ?>
-            </select>
-          </div>
-        <?php } ?>
+        <div class="control-group">
+          <label class="control-label">Albums <em>(<a href="/album/form" class="album-form-click">create a new one</a>)</em></label>
+          <select data-placeholder="Select albums for these photos" multiple  name="albums" class="typeahead">
+            <?php foreach($albums as $album) { ?>
+              <option value="<?php $this->utility->safe($album['id']); ?>"><?php $this->utility->safe($album['name']); ?></option>
+            <?php } ?>
+          </select>
+        </div>
 
-        <?php if(count($groups) > 0) { ?>
-          <div class="control-group">
-            <label class="control-label">Groups <em>(<a href="/group/form" class="group-form-click" target="_blank">create a new one</a>)</em></label>
-            <select data-placeholder="Select groups for these photos" multiple  name="groups" class="typeahead">
-              <?php foreach($groups as $group) { ?>
-                <option value="<?php $this->utility->safe($group['id']); ?>"><?php $this->utility->safe($group['name']); ?></option>
-              <?php } ?>
-            </select>
-          </div>
-        <?php } ?>
+        <div class="control-group">
+          <label class="control-label">Groups <em>(<a href="/group/form" class="group-form-click" target="_blank">create a new one</a>)</em></label>
+          <select data-placeholder="Select groups for these photos" multiple  name="groups" class="typeahead">
+            <?php foreach($groups as $group) { ?>
+              <option value="<?php $this->utility->safe($group['id']); ?>"><?php $this->utility->safe($group['name']); ?></option>
+            <?php } ?>
+          </select>
+        </div>
 
         <div class="control-group">
           <label for="tags">Permission</label>
