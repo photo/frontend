@@ -1,7 +1,5 @@
 <div class="manage albums">
 
-  <?php echo $navigation; ?>
-  
   <div class="row hero-unit blurb">
     <h2>What are albums?</h2>
     <p>
@@ -9,10 +7,9 @@
       <br>
       They're similar to tags but have a few key differences.
       <ol>
-        <li><strong class="label label-important">IMPORTANT</strong> Each album is public or private. Public albums and the photos in them are visible to anyone regardless of the privacy setting on the photo itself.</li>
-        <li>Private albums can be made visible to your groups.</li>
+        <li>The permission for who can view a photo applies even when it's in an album. If your photo is private then only you'll be able to see them in your album.</li>
         <li>Albums are fixed unless you explicitly add a photo to it.</li>
-        <li>Add photos to an album using the edit form or on the <a href="<?php $this->url->manage(); ?>">manage photos</a> page.</li>
+        <li>Add photos to an album using the edit form or on the <a href="<?php $this->url->managePhotos(); ?>">manage photos</a> page.</li>
       </ol>
     </p>
   </div>

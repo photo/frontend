@@ -1,7 +1,5 @@
 <div class="manage groups">
 
-  <?php echo $navigation; ?>
-  
   <div class="row hero-unit blurb">
     <h2>What are groups?</h2>
     <p>
@@ -32,7 +30,7 @@
           <li><span class="group-email-queue"><?php $this->utility->safe($member); ?></span> <a href="#" class="group-email-remove-click"><i class="group-email-remove-click icon-minus-sign"></i></a></li>
         <?php } ?>
       </ul>
-      <button class="btn">Save</button>&nbsp;&nbsp;&nbsp;<a class="group-delete-click" href="/group/<?php $this->utility->safe($group['id']); ?>/delete">Or delete</a>
+      <button class="btn"><i class="icon-save icon-large"></i> Save</button>&nbsp;&nbsp;&nbsp;<a class="group-delete-click" href="/group/<?php $this->utility->safe($group['id']); ?>/delete">Or delete</a>
     </form>
   <?php } ?>
 </div>

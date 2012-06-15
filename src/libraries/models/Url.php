@@ -39,6 +39,30 @@ class Url
     return $utilityObj->returnValue('/manage/albums', $write);
   }
 
+  public function manageApps($write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue('/manage/apps', $write);
+  }
+
+  public function manageGroups($write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue('/manage/groups', $write);
+  }
+
+  public function managePhotos($write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue('/manage/photos', $write);
+  }
+
+  public function manageSettings($write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue('/manage/settings', $write);
+  }
+
   public function photoDelete($id, $write = true)
   {
     $utilityObj = new Utility;
@@ -100,6 +124,12 @@ class Url
   {
     $utilityObj = new Utility;
     return $utilityObj->returnValue('/photos/upload', $write);
+  }
+
+  public function setup($write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue('/setup', $write);
   }
 
   public function tagsView($write = true)

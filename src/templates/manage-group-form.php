@@ -8,6 +8,6 @@
     <ul class="group-emails-add-list unstyled">
     </ul>
     <input type="hidden" name="dynamic" value="<?php if(isset($_GET['dynamic'])) { ?>1<?php } else { ?>0<?php } ?>">
-    <button class="btn btn-primary">Create</button>
+    <button class="btn btn-primary"><i class="icon-save icon-large"></i> Create</button>
   </form>
 
