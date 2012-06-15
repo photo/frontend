@@ -4181,13 +4181,41 @@ body.photos .infobar .date {
 .album-row {
   margin-top:30px;
 }
-.album-list {
-  height:175px;
+/* on photos page limit height */
+body.photos .album-list {
+  height:185px;
   overflow:hidden;
+}
+.album-list {
+  margin:auto;
+}
+.album-list .thumbnails li {
+  background-color:#fff;
+  padding:2px;
+	-webkit-border-radius:3px;
+	-moz-border-radius:3px;
+	border-radius:3px;
+  border:solid 1px #eee;
+}
+.album-list .thumbnails a, .album-list .thumbnails a div {
+  line-height:120px;
+  width:160px;
+  height:120px;
+  background-color: #ddd;
+  display:block;
+  text-align:center;
+  font-size:60px;
+}
+.album-list .thumbnails a div {
+  background-size:160px auto;
 }
 .album-list h5 {
   text-align:center;
   padding-top:3px;
+  width:160px;
+  white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .album-list .show-all {
   display:none;
@@ -4239,6 +4267,8 @@ body.tags div.tags .tag-list {
   display:block;
   float:left;
   opacity:0;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
   border-radius:5px;
   background:#ddd;
   width:22px;

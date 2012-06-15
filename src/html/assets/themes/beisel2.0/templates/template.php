@@ -32,7 +32,7 @@
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 's'); ?>">
+                                                                  getUrl(AssetPipeline::css, 't'); ?>">
     <?php } ?>
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
