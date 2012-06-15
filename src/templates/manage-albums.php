@@ -19,34 +19,23 @@
   <?php foreach($albums as $album) { ?>
     <a name="album-<?php $this->utility->safe($album['id']); ?>"></a>
     <form class="well album-post-submit" action="/album/<?php $this->utility->safe($album['id']); ?>/update">
-      <h3>Edit <?php $this->utility->safe($album['name']); ?> <small>(<a href="/manage?album=<?php $this->utility->safe($album['id']); ?>">view photos</a>)</small></h3>
+      <h3>
+        Edit <?php $this->utility->safe($album['name']); ?>
+        <small>
+          (
+            <?php if($album['count'] > 0) { ?>
+              <a href="<?php $this->url->managePhotos(); ?>?album=<?php $this->utility->safe($album['id']); ?>"><?php $this->utility->safe($album['count']); ?> photos</a>
+            <?php } else{ ?>
+              No photos in this album
+            <?php } ?>
+          )
+        </small>
+      </h3>
       <label>Name</label>
       <input type="text" name="name" value="<?php $this->utility->safe($album['name']); ?>">
-      <div class="control-group">
-        <label class="control-label">Permission</label>
-        <div class="controls">
-          <label class="radio inline">
-            <input type="radio" name="permission" id="public" value="1" <?php if($album['permission'] == 1) { ?> checked="checked" <?php } ?>>
-            Public
-          </label>
-          <label class="radio inline">
-            <input type="radio" name="permission" id="private" value="0" <?php if($album['permission'] == 0) { ?> checked="checked" <?php } ?>>
-            Private
-          </label>
-        </div>
-      </div>
-      <?php if(count($groups) > 0) { ?>
-        <div class="control-group">
-          <label class="control-label">Groups</label>
-          <select data-placeholder="Select groups for these photos" multiple  name="groups" class="typeahead">
-            <?php foreach($groups as $group) { ?>
-              <option value="<?php $this->utility->safe($group['id']); ?>" <?php if(isset($album['groups']) && in_array($group['id'], $album['groups'])) { ?> selected="selected" <?php } ?>><?php $this->utility->safe($group['name']); ?></option>
-            <?php } ?>
-          </select>
-        </div>
-      <?php } ?>
       
-      <button class="btn">Save</button>&nbsp;&nbsp;&nbsp;<a class="album-delete-click" href="/album/<?php $this->utility->safe($album['id']); ?>/delete">Or delete</a>
+      <br>
+      <button class="btn"><i class="icon-save icon-large"></i> Save</button>&nbsp;&nbsp;&nbsp;<a class="album-delete-click" href="/album/<?php $this->utility->safe($album['id']); ?>/delete">Or delete</a>
     </form>
   <?php } ?>
 </div>
