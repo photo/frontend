@@ -17,22 +17,34 @@ define(
       //  templateSuffix: '/{category}/'
       //},
       'iriscouch.com': {
-        api: 'couchdb',
+        type: 'https://www.w3.org/community/unhosted/wiki/remotestorage-2011.10#couchdb',
         authPrefix: 'http://proxy.unhosted.org/OAuth.html?userAddress=',
-        templatePrefix: 'http://proxy.unhosted.org/IrisCouch/'
+        hrefPrefix: 'http://proxy.unhosted.org/CouchDb',
+        pathFormat: 'host/user'
       }
     };
     (function() {
-      var surfnet= {
-        api: 'simple',
-        authPrefix: 'http://surf.unhosted.org:4000/_oauth/',
-        templatePrefix: 'http://surf.unhosted.org:4000/'
+      var surfnetSaml= {
+        type: 'https://www.w3.org/community/unhosted/wiki/remotestorage-2011.10#simple',
+        authPrefix: 'https://storage.surfnetlabs.nl/saml/oauth/authorize?user_address=',
+        hrefPrefix: 'https://storage.surfnetlabs.nl/saml',
+        pathFormat: 'user@host'
       };
-      var dutchUniversities= ['leidenuniv.nl', 'leiden.edu', 'uva.nl', 'vu.nl', 'eur.nl', 'maastrichtuniversity.nl',
-        'ru.nl', 'rug.nl', 'uu.nl', 'tudelft.nl', 'utwente.nl', 'tue.nl', 'tilburguniversity.edu', 'wur.nl',
+      var surfnetBrowserId= {
+        type: 'https://www.w3.org/community/unhosted/wiki/remotestorage-2011.10#simple',
+        authPrefix: 'https://storage.surfnetlabs.nl/browserid/oauth/authorize?user_address=',
+        hrefPrefix: 'https://storage.surfnetlabs.nl/browserid',
+        pathFormat: 'user@host'
+      };
+      var dutchUniversitiesNoSaml= ['leidenuniv.nl', 'leiden.edu', 'uva.nl', 'vu.nl', 'eur.nl', 'maastrichtuniversity.nl',
+        'ru.nl', 'rug.nl', 'uu.nl', 'tudelft.nl', 'utwente.nl', 'tue.nl', 'tilburguniversity.edu', 'uvt.nl', 'wur.nl',
         'wageningenuniversity.nl', 'ou.nl', 'lumc.nl', 'amc.nl'];
-      for(var i=0;i<dutchUniversities.length;i++) {
-        guesses[dutchUniversities[i]]=surfnet;
+      var dutchUniversitiesSaml= ['surfnet.nl', 'fontys.nl'];
+      for(var i=0;i<dutchUniversitiesSaml.length;i++) {
+        guesses[dutchUniversitiesSaml[i]]=surfnetSaml;
+      }
+      for(var i=0;i<dutchUniversitiesNoSaml.length;i++) {
+        guesses[dutchUniversitiesNoSaml[i]]=surfnetBrowserId;
       }
     })();
 
@@ -83,12 +95,14 @@ define(
             if(guesses[parts[1]]) {
               blueprint=guesses[parts[1]];
               cb(null, {
-                type: 'pds-remotestorage-00#'+blueprint.api,
-                auth: {
-                  type: 'pds-oauth2-00',
-                  href: blueprint.authPrefix+userAddress
-                },
-                href: blueprint.templatePrefix+userAddress
+                rel: 'https://www.w3.org/community/unhosted/wiki/personal-data-service-00',
+                type: blueprint.type,
+                href: blueprint.hrefPrefix+'/'+(blueprint.pathFormat=='user@host'?userAddress:parts[1]+'/'+parts[0]),
+                properties: {
+                  'access-methods': ['http://oauth.net/core/1.0/parameters/auth-header'],
+                  'auth-methods': ['http://oauth.net/discovery/1.0/consumer-identity/static'],
+                  'http://oauth.net/core/1.0/endpoint/request': blueprint.authPrefix+userAddress
+                }
               });
               return;
             }

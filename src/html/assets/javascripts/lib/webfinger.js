@@ -90,10 +90,10 @@ define(
         return;
       }
       var links = {};
-      for(var rel in obj.links) {
+      for(var i=0; i<obj.links.length; i++) {
         //just take the first one of each rel:
-        if(obj.links[rel].length >= 1) {
-          links[rel]=obj.links[rel][0];
+        if(obj.links[i].rel) {
+          links[obj.links[i].rel]=obj.links[i];
         }
       }
       cb(null, links);
@@ -101,7 +101,7 @@ define(
     function getStorageInfo(userAddress, options, cb) {
       userAddress2hostMetas(userAddress, function(err1, hostMetaAddresses) {
         if(err1) {
-          cb(err);
+          cb(err1);
         } else {
           fetchXrd(hostMetaAddresses, options.timeout, function(err2, hostMetaLinks) {
             if(err2) {
@@ -122,22 +122,23 @@ define(
                     //}
                     //TO:
                     //{
-                    //  type: 'pds-remotestorage-00#webdav',
+                    //  type: 'https://www.w3.org/community/unhosted/wiki/remotestorage-2011.10#webdav',
                     //  href: 'http://host/foo/',
                     //  legacySuffix: '/bar'
-                    //  auth: {
-                    //    type: 'pds-oauth2-00',
-                    //    href: 'http://host/auth'
+                    //  properties: {
+                    //    'access-methods': ['http://oauth.net/core/1.0/parameters/auth-header'],
+                    //    'auth-methods': ['http://oauth.net/discovery/1.0/consumer-identity/static'],
+                    //    'http://oauth.net/core/1.0/endpoint/request': 'http://host/auth'
                     //  }
                     //}
                     if(lrddLinks['remoteStorage'] && lrddLinks['remoteStorage']['auth'] && lrddLinks['remoteStorage']['api'] && lrddLinks['remoteStorage']['template']) {
                       var storageInfo = {};
                       if(lrddLinks['remoteStorage']['api'] == 'simple') {
-                        storageInfo['type'] = 'pds-remotestorage-00#simple';
+                        storageInfo['type'] = 'https://www.w3.org/community/unhosted/wiki/remotestorage-2011.10#simple';
                       } else if(lrddLinks['remoteStorage']['api'] == 'WebDAV') {
-                        storageInfo['type'] = 'pds-remotestorage-00#webdav';
+                        storageInfo['type'] = 'https://www.w3.org/community/unhosted/wiki/remotestorage-2011.10#webdav';
                       } else if(lrddLinks['remoteStorage']['api'] == 'CouchDB') {
-                        storageInfo['type'] = 'pds-remotestorage-00#couchdb';
+                        storageInfo['type'] = 'https://www.w3.org/community/unhosted/wiki/remotestorage-2011.10#couchdb';
                       } else {
                         cb('api not recognized');
                         return;
@@ -149,26 +150,21 @@ define(
                       } else {
                         storageInfo['href'] = templateParts[0];
                       }
-                      if(templateParts.length == 2 && templateParts[1] != '/') {
-                        storageInfo['legacySuffix'] = templateParts[1];
-                      }
-                      storageInfo['auth'] = {
-                        type: 'pds-oauth2-00',
-                        href: lrddLinks['remoteStorage']['auth']
+                      storageInfo.properties = {
+                        "access-methods": ["http://oauth.net/core/1.0/parameters/auth-header"],
+                        "auth-methods": ["http://oauth.net/discovery/1.0/consumer-identity/static"],
+                        "http://oauth.net/core/1.0/endpoint/request": lrddLinks['remoteStorage']['auth']
                       };
+                      if(templateParts.length == 2 && templateParts[1] != '/') {
+                        storageInfo.properties['legacySuffix'] = templateParts[1];
+                      }
                       cb(null, storageInfo);
                     } else if(lrddLinks['remotestorage']
                         && lrddLinks['remotestorage']['href']
                         && lrddLinks['remotestorage']['type']
-                        && lrddLinks['remotestorage']['links']
-                        && lrddLinks['remotestorage']['links']['auth']
-                        && lrddLinks['remotestorage']['links']['auth'][0]//although parseAsJrd takes out the first link of each rel, it leaves nested links in a list
-                        && lrddLinks['remotestorage']['links']['auth'][0]['href']
-                        && lrddLinks['remotestorage']['links']['auth'][0]['type']
-                        && lrddLinks['remotestorage']['links']['auth'][0]['type'] == 'oauth2-ig'
+                        && lrddLinks['remotestorage']['properties']
+                        && lrddLinks['remotestorage']['properties']['http://oauth.net/core/1.0/endpoint/request']
                         ) {
-                      lrddLinks['remotestorage']['auth']= lrddLinks['remotestorage']['links']['auth'][0];
-                      delete lrddLinks['remotestorage']['links'];
                       cb(null, lrddLinks['remotestorage']);
                     } else {
                       cb('could not extract storageInfo from lrdd');
