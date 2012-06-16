@@ -4482,6 +4482,11 @@ body.photos .comment-form {
 	padding-top:30px;
 	padding-bottom:0;
 }
+.bigtext i {
+	font-size:200px;
+	line-height:300px;
+  margin-bottom:-100px;
+}
 header,
 header h1 {
 	display:block;
