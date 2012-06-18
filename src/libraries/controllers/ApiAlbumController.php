@@ -90,8 +90,14 @@ class ApiAlbumController extends ApiBaseController
         }
         break;
       case 'remove':
-        // TODO: check if the cover photo is one of the photos being removed and reset it. See #757
         $resp = $this->album->removeElement($albumId, $type, $_POST['ids']);
+        $album = $this->album->getAlbum($albumId);
+        $photoIdsArr = (array)explode(',', $_POST['ids']);
+        if(isset($album['cover']['id']) && in_array($album['cover']['id'], $photoIdsArr))
+        {
+          // TODO: this clobbers anything that was in `extra` (currently nothing)
+          $this->album->update($albumId, array('extra' => array('cover' => null)));
+        }
         break;
     }
 
