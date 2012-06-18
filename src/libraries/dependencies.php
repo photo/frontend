@@ -33,6 +33,7 @@ require $pathsObj->controllers . '/ApiOAuthController.php';
 require $pathsObj->controllers . '/OAuthController.php';
 require $pathsObj->controllers . '/ApiWebhookController.php';
 require $pathsObj->controllers . '/WebhookController.php';
+require $pathsObj->controllers . '/FeedActivityController.php';
 
 // libraries
 require $pathsObj->external . '/aws/sdk.class.php';

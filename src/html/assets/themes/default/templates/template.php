@@ -15,6 +15,7 @@
     <meta name="author" content="">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="alternate" type="application/atom+xml" title="Feed (Atom 1.0)" href="/activities/list.atom" />
     <link rel="shortcut icon" href="<?php $this->theme->asset('image', 'favicon.png'); ?>">
     <link rel="apple-touch-icon" href="<?php $this->theme->asset('image', 'apple-touch-icon.png'); ?>">
     <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'html5_boilerplate_style.css'); ?>">
