@@ -78,7 +78,7 @@ class ApiAlbumController extends ApiBaseController
           $album = $this->album->getAlbum($albumId);
           $ids = (array)explode(',', $_POST['ids']);
           $id = array_pop($ids);
-          if($id)
+          if($id && empty($album['cover']))
           {
             $lastPhotoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('generate' => 'true', 'returnSizes' => '100x100,100x100xCR,200x200,200x200xCR')));
             if($lastPhotoResp['code'] === 200)

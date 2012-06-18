@@ -306,10 +306,15 @@ class ApiPhotoController extends ApiBaseController
     if(is_executable($exiftran))
       exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
 
+
+
     $photoId = $this->photo->upload($localFile, $name, $attributes);
 
     if($photoId)
     {
+      if(isset($attributes['albums']))
+        $this->updateAlbums($attributes['albums'], $photoId);
+
       if(isset($returnSizes))
       {
         $sizes = (array)explode(',', $returnSizes);
@@ -445,26 +450,9 @@ class ApiPhotoController extends ApiBaseController
       $params['albums'] = implode(',', array_merge($photoBefore['albums'], $params['albumsAdd']));
     }
 
-    // TODO: move this out to a smaller function
     if(isset($params['albums']))
     {
-      $albumsArr = $params['albums'];
-      if(!is_array($params['albums']))
-        $albumsArr = (array)explode(',', $params['albums']);
-
-      $albumsToRemove = array_diff($photoBefore['albums'], $albumsArr);
-      $albumsToAdd = array_diff($albumsArr, $photoBefore['albums']);
-      if(!empty($albumsToRemove))
-      {
-        foreach($albumsToRemove as $aId)
-          $this->api->invoke("/album/{$aId}/photo/remove.json", EpiRoute::httpPost, array('_POST' => array('ids' => $id)));
-      }
-      if(!empty($albumsToAdd))
-      {
-        foreach($albumsToAdd as $aId)
-          $this->api->invoke("/album/{$aId}/photo/add.json", EpiRoute::httpPost, array('_POST' => array('ids' => $id)));
-      }
-
+      $this->updateAlbums($params['albums'], $id, $photoBefore);
       if(is_array($params['albums']))
         $params['albums'] = implode(',', $params['albums']);
     }
@@ -606,6 +594,35 @@ class ApiPhotoController extends ApiBaseController
 
     $photo = $this->photo->addApiUrls($photo, $sizes);
     return $this->success("Photo {$id}", $photo);
+  }
+
+  // To do multiple photoIds we have to have corresponding photoBefores and map them accordingly
+  private function updateAlbums($albumIds, $photoId, $photoBefore = array())
+  {
+    $albumsArr = $albumIds;
+    if(!is_array($albumIds))
+      $albumsArr = (array)explode(',', $albumIds);
+
+    if(!isset($photoBefore['albums']))
+      $photoBefore['albums'] = array();
+    $albumsToRemove = array_diff($photoBefore['albums'], $albumsArr);
+    $albumsToAdd = array_diff($albumsArr, $photoBefore['albums']);
+    if(!empty($albumsToRemove))
+    {
+      foreach($albumsToRemove as $aId)
+      {
+        if(!empty($aId))
+          $this->api->invoke("/album/{$aId}/photo/remove.json", EpiRoute::httpPost, array('_POST' => array('ids' => $photoId)));
+      }
+    }
+    if(!empty($albumsToAdd))
+    {
+      foreach($albumsToAdd as $aId)
+      {
+        if(!empty($aId))
+          $this->api->invoke("/album/{$aId}/photo/add.json", EpiRoute::httpPost, array('_POST' => array('ids' => $photoId)));
+      }
+    }
   }
 
   private function parseFilters($filterOpts)
