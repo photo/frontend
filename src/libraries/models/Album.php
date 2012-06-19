@@ -48,7 +48,7 @@ class Album extends BaseModel
     return $this->db->deleteAlbum($id);
   }
 
-  public function getAlbum($id, $email = null)
+  public function getAlbum($id, $includeElements = true, $email = null)
   {
     if($email === null)
       $email = $this->user->getEmailAddress();
@@ -56,7 +56,9 @@ class Album extends BaseModel
     if(!$album)
       return false;
 
-    $album['photos'] = $this->db->getAlbumElements($id);
+    if($includeElements)
+      $album['photos'] = $this->db->getAlbumElements($id);
+
     return $album;
   } 
 

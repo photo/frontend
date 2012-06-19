@@ -66,14 +66,11 @@ class DatabaseMySql implements DatabaseInterface
   public function deleteAlbum($id)
   {
     // if one fails then don't continue by using the second condition
-    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner", array(':id' => $id, ':owner' => $this->owner));
-    if(!$res)
+    $res1 = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $res2 = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `album`=:album", array(':owner' => $this->owner, ':album' => $id));
+    if(!$res1 || !$res2)
       return false;
 
-    // not terribly important if these fail once the album record is nixed
-    $this->deletePhotosFromAlbum($id);
-    $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}albumGroup` WHERE `owner`=:owner AND `album`=:album", array(':owner' => $this->owner, ':album' => $id));
-    $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `album`=:album", array(':owner' => $this->owner, ':album' => $id));
     return true;
   }
 
@@ -268,18 +265,7 @@ class DatabaseMySql implements DatabaseInterface
     }
     else
     {
-      $groups = $this->getGroups($email);
-      if($groups === false)
-        return false;
-
-      $groupIds = array();
-      foreach($groups as $grp)
-        $groupIds[] = $this->_($grp['id']);
-
-      $groupIds = implode("','", $groupIds);
-      $album = $this->db->one("SELECT `alb`.* FROM `{$this->mySqlTablePrefix}album` AS `alb` INNER JOIN `{$this->mySqlTablePrefix}elementGroup` AS `grp`
-        ON `alb`.`id`=`grp`.`element` AND `grp`.`type`='album' WHERE `alb`.`id`=:id AND `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
-                                 array(':id' => $id, ':owner' => $this->owner));
+      // figure this out
     }
 
     if($album === false)
@@ -324,18 +310,7 @@ class DatabaseMySql implements DatabaseInterface
     }
     else
     {
-      $groups = $this->getGroups($email);
-      if($groups === false)
-        return false;
-
-      $groupIds = array();
-      foreach($groups as $grp)
-        $groupIds[] = $this->_($grp['id']);
-
-      $groupIds = implode("','", $groupIds);
-      $albums = $this->db->all("SELECT `alb`.* FROM `{$this->mySqlTablePrefix}album` AS `alb` LEFT JOIN `{$this->mySqlTablePrefix}albumGroup` AS `grp`
-        ON `alb`.`id`=`grp`.`album` WHERE `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
-                                 array(':owner' => $this->owner));
+      // TODO figure this out
     }
 
     if(empty($albums))
@@ -796,13 +771,6 @@ class DatabaseMySql implements DatabaseInterface
   public function postAlbum($id, $params)
   {
     $params = $this->prepareAlbum($params);
-    if(isset($params['groups']))
-    {
-      if(!is_array($params['groups']))
-        $groupArray = (array)explode(',', $params['groups']);
-      $this->deleteGroupsFromAlbum($id);
-      $this->addGroupsToAlbum($id, $groupArray);
-    }
     $params['owner'] = $this->owner;
     $bindings = array();
     if(isset($params['::bindings']))
@@ -828,8 +796,9 @@ class DatabaseMySql implements DatabaseInterface
     $res = true;
     foreach($elementIds as $elementId)
     {
-      $res = $res && $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`,`type`,`element`,`album`) VALUES(:owner,:type,:elementId,:albumId)",
+      $tmpRes = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`,`type`,`element`,`album`) VALUES(:owner,:type,:elementId,:albumId)",
         array(':owner' => $this->owner, ':type' => $type, ':elementId' => $elementId, ':albumId' => $albumId));
+      $res = $res && $tmpRes !== 0;
     }
     return $res !== false;
   }
@@ -1106,13 +1075,6 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putAlbum($id, $params)
   {
-    if(isset($params['groups']))
-    {
-      if(!is_array($params['groups']))
-        $groupArray = (array)explode(',', $params['groups']);
-      $this->deleteGroupsFromAlbum($id);
-      $this->addGroupsToAlbum($id, $groupArray);
-    }
     $params['owner'] = $this->owner;
     $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute($sql = "INSERT INTO `{$this->mySqlTablePrefix}album` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
@@ -1361,21 +1323,6 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Insert groups into the album mapping table
-    *
-    * @param string $album Album id
-    * @param array  $groups Groups to be added
-    * @return boolean
-    */
-  private function addGroupsToAlbum($album, $groups)
-  {
-    $res = true;
-    foreach($groups as $group)
-      $res = $res && $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}albumGroup`(`owner`, `album`, `group`) VALUES(:owner, :album, :group)", array(':owner' => $this->owner, ':album' => $album, ':group' => $group));
-    return $res !== false;
-  }
-
-  /**
     * Insert tags into the mapping table
     *
     * @param string $id Element id (id of the photo or video)
@@ -1530,18 +1477,6 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Delete groups for an album from the mapping table
-    *
-    * @param string $id Album id
-    * @return boolean
-    */
-  private function deleteGroupsFromAlbum($id)
-  {
-    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}albumGroup` WHERE `owner`=:owner AND `album`=:album", array(':owner' => $this->owner, ':album' => $id));
-    return $res !== false;
-  }
-
-  /**
     * Delete groups for an element from the mapping table
     *
     * @param string $id Element id (id of the photo or video)
@@ -1565,33 +1500,6 @@ class DatabaseMySql implements DatabaseInterface
   {
     $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}groupMember` WHERE `owner`=:owner AND `group`=:group", array(':owner' => $this->owner, ':group' => $id));
     return $res !== false;
-  }
-
-
-  /**
-    * Delete members from a group
-    *
-    * @param string $id Element id (id of the photo or video)
-    * @return boolean
-    */
-  private function deletePhotosFromAlbum($id)
-  {
-    $photos = $this->db->all("SELECT `id`, `groups` 
-      FROM `{$this->mySqlTablePrefix}photo` 
-      WHERE `id` IN (
-        SELECT `element` FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:subowner AND `album`=:subalbum
-      ) AND `owner`=:owner", array(':subowner' => $this->owner, ':subalbum' => $id, ':owner' => $this->owner));
-    foreach($photos as $photo)
-    {
-      if(empty($photo['groups']))
-        continue;
-      $groups = (array)explode(',', $photo['groups']);
-      $groupsFilter = array_filter($groups, function ($val) use ($id) { return $id==$val; });
-      if(count($groups) === count($groupsFilter))
-        continue;
-      $groupsFilter = implode(',', $groupsFilter);
-      $this->postPhoto($photo['id'], array('groups' => $groupsFilter));
-    }
   }
 
   /**

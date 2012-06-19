@@ -406,8 +406,10 @@ class ApiPhotoController extends ApiBaseController
     */
   public function update($id)
   {
+    $this->logger->info(sprintf('Calling ApiPhotoController::update with %s', $id));
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
+
     // diff/manage tag counts - not critical
     $params = $_POST;
     $photoBefore = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);

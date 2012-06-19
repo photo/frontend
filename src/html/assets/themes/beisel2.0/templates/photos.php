@@ -9,6 +9,9 @@
 
   <?php if(!empty($albums)) { ?>
     <?php $this->theme->display('albums.php', array('albums' => $albums, 'included' => true)); ?>
+  <?php } else { ?>
+    <!-- spacing -->
+    <div class="album-row"></div>
   <?php } ?>
 
   <div class="row hero-unit empty gallery">
