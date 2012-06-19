@@ -111,7 +111,7 @@ SQL;
       `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
       `owner` varchar(255) NOT NULL,
       `type` enum('photo') NOT NULL,
-      `element` varchar(6) NOT NULL DEFAULT 'photo',
+      `element` varchar(6) NOT NULL,
       `album` varchar(6) NOT NULL,
       `order` smallint(11) unsigned NOT NULL DEFAULT '0',
       PRIMARY KEY (`id`),

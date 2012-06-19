@@ -1,14 +1,14 @@
 <?php
 $status = true;
 $sql = <<<SQL
-  CREATE TRIGGER decrement_album_photo_count AFTER DELETE ON `{$this->mySqlTablePrefix}elementAlbum`
+  CREATE TRIGGER `{$this->mySqlTablePrefix}decrement_album_photo_count` AFTER DELETE ON `{$this->mySqlTablePrefix}elementAlbum`
   FOR EACH ROW
     UPDATE `{$this->mySqlTablePrefix}album` SET `count` = `count`-1 WHERE `id` = OLD.`album` AND `owner` = OLD.`owner`;
 SQL;
 $status = $status && mysql_2_0_7($sql);
 
 $sql = <<<SQL
-  CREATE TRIGGER increment_album_photo_count AFTER INSERT ON `{$this->mySqlTablePrefix}elementAlbum`
+  CREATE TRIGGER `{$this->mySqlTablePrefix}increment_album_photo_count` AFTER INSERT ON `{$this->mySqlTablePrefix}elementAlbum`
   FOR EACH ROW
     UPDATE `{$this->mySqlTablePrefix}album` SET `count` = `count`+1 WHERE `id` = NEW.`album` AND `owner` = NEW.`owner`;
 SQL;
