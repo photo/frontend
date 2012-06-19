@@ -131,7 +131,10 @@ class EpiDatabase
     {
       // eventually split host to use a different
       //  sql port
-      list($host,$port) = split(':', $this->_host);
+      $host = $this->_host;
+      $host = strtok($host,":");
+      $port = strtok(":");
+
 
       $dsn = sprintf('%s:host=%s', $this->_type, $host);
       if ($port != '') 
