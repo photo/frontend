@@ -114,8 +114,9 @@ class ApiPhotoController extends ApiBaseController
     */
   public function nextPrevious($id, $filterOpts = null)
   {
+    $db = getDb();
     extract($this->parseFilters($filterOpts));
-    $nextPrevious = getDb()->getPhotoNextPrevious($id, $filters);
+    $nextPrevious = $db->getPhotoNextPrevious($id, $filters);
     if(!$nextPrevious)
       return $this->error('Could not get next/previous photo', false);
 
@@ -154,7 +155,7 @@ class ApiPhotoController extends ApiBaseController
       // requery to get generated paths
       if($requery)
       {
-        $nextPrevious = getDb()->getPhotoNextPrevious($id, $filters);
+        $nextPrevious = $db->getPhotoNextPrevious($id, $filters);
         foreach($nextPrevious as $key => $photo)
           $nextPrevious[$key] = $this->pruneSizes($photo, $sizes);
       }
@@ -517,11 +518,12 @@ class ApiPhotoController extends ApiBaseController
     */
   public function view($id)
   {
+    $db = getDb();
     $getActions = isset($_GET['actions']) && $_GET['actions'] == 'true';
     if($getActions)
-      $photo = getDb()->getPhotoWithActions($id);
+      $photo = $db->getPhotoWithActions($id);
     else
-      $photo = getDb()->getPhoto($id);
+      $photo = $db->getPhoto($id);
 
     // check permissions
     if(!isset($photo['id']))
@@ -536,7 +538,7 @@ class ApiPhotoController extends ApiBaseController
           return $this->notFound("Photo {$id} not found", false);
 
         // can't call API since we're not the owner
-        $userGroups = getDb()->getGroups($this->user->getEmailAddress());
+        $userGroups = $db->getGroups($this->user->getEmailAddress());
         $isInGroup = false;
         foreach($userGroups as $group)
         {
@@ -586,9 +588,9 @@ class ApiPhotoController extends ApiBaseController
       if($requery)
       {
         if($getActions)
-          $photo = getDb()->getPhotoWithActions($id);
+          $photo = $db->getPhotoWithActions($id);
         else
-          $photo = getDb()->getPhoto($id);
+          $photo = $db->getPhoto($id);
 
         $photo = $this->pruneSizes($photo, $sizes);
       }

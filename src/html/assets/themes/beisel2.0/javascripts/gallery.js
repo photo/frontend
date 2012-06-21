@@ -140,6 +140,9 @@ var Gallery = (function($) {
 	 * to the image. 
 	 */
 	var createImageElement = function(parent, item) {
+    var pageObject = opTheme.init.pages.photos;
+    var qsRe = /(page|returnSizes)=[^&?]+\&?/g;
+    var qs = pageObject.pageLocation.search.replace(qsRe, '');
 		var imageContainer = $('<div class="imageContainer"/>');
 
 		var overflow = $("<div/>");
@@ -148,8 +151,14 @@ var Gallery = (function($) {
 		overflow.css("overflow", "hidden");
 
     var urlParts = parseURL(item.url);
+    if(pageObject.filterOpts !== null && pageObject.filterOpts.length > 0) {
+      if(qs.length === 0)
+        urlParts.pathname = urlParts.pathname+'/'+pageObject.filterOpts;
+      else
+        urlParts.pathname = urlParts.pathname.replace('?', '/'+pageObject.filterOpts+'?');
+    }
 		var link = $('<a/>');
-    link.attr('href', urlParts.pathname);
+    link.attr('href', urlParts.pathname+qs);
 		
 		var img = $("<img/>");
 		img.attr("src", item.path960x180);
@@ -167,7 +176,7 @@ var Gallery = (function($) {
 
 		// fade in the image after load
 		img.bind("load", function () { 
-			$(this).fadeIn(500); 
+			$(this).fadeIn(400); 
 		});
 
 		//parent.find("p.page-hr:last").after(imageContainer);
