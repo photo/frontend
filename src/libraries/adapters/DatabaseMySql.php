@@ -262,7 +262,7 @@ class DatabaseMySql implements DatabaseInterface
       array(':id' => $id, ':owner' => $this->owner));
 
     // check if the user has access to this album
-    if($this->owner !== $email && !$this->hasAlbumPermission($id))
+    if($this->owner !== $email)
         return false;
 
     if($album === false)
@@ -302,15 +302,6 @@ class DatabaseMySql implements DatabaseInterface
   public function getAlbums($email)
   {
     $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner", array(':owner' => $this->owner));
-    // if not owner prune any albums this user can't access
-    if($this->owner !== $email)
-    {
-      foreach($albums as $key => $val)
-      {
-        if(!$this->hasAlbumPermission($val['id']))
-          unset($albums[$key]);
-      }
-    }
 
     if(empty($albums))
       return false;
@@ -1529,28 +1520,6 @@ class DatabaseMySql implements DatabaseInterface
     if(empty($versions))
       return false;
     return $versions;
-  }
-
-  /**
-    * Checks if the current user has access to this album
-    *   Permission is based on # of photos available to the user
-    *
-    * @param string $id Element id
-    * @return boolean
-    */
-  private function hasAlbumPermission($albumId, $groupIds = null)
-  {
-    if($groupIds === null)
-    {
-      $groupIds = array();
-      $groups = $this->getGroups();
-      foreach($groups as $group)
-        $groupIds[] = $group['id'];
-    }
-
-    $query = $this->buildQuery(array('groups' => $groupIds, 'album' => $albumId), 1, 0, 'photo');
-    $res = $this->db->one($sql = "SELECT COUNT(*) AS _cnt {$query['from']} {$query['where']}");
-    return $res['_cnt'] > 0;
   }
 
   /**
