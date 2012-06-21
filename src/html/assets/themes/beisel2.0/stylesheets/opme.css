@@ -3804,6 +3804,11 @@ a.thumbnail:hover {
 	-o-transition:0.6s ease-in-out left;
 	transition:0.6s ease-in-out left;
 }
+.carousel .item h1, .photo-view h1 {
+  clear:both;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .carousel .map img {
   -webkit-border-radius:5px;
   -moz-border-radius:5px;
