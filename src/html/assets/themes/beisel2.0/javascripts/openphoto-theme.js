@@ -496,6 +496,11 @@ var opTheme = (function() {
         var el = $(ev.target).parent().parent();
         el.slideUp('fast', function() { $(this).remove(); });
       },
+      modalShown: function(ev) {
+        var inputs = $('input[type="text"]', ev.target);
+        if(inputs.length > 0)
+          inputs[0].focus();
+      },
       modalUnload: function(ev) {
         ev.preventDefault();
         $('#modal-photo-detail').html('');
@@ -822,6 +827,7 @@ var opTheme = (function() {
         });
 
         $('.dropdown-toggle').dropdown();
+        $('.modal').on('shown', opTheme.callback.modalShown);
 
         if(location.pathname === '/')
           opTheme.init.pages.front();
