@@ -961,10 +961,13 @@ var opTheme = (function() {
           init: function() { util.fetchAndCacheNextPrevious(); }
         },
         photos: {
+          // TODO have a better way of sending data into the JS framework. See #780
           initData: typeof(initData) === "undefined" ? undefined : initData,
+          filterOpts: typeof(filterOpts) === "undefined" ? undefined : filterOpts,
           albumContainerHeight: 0,
           page: null,
           pageCount: 0,
+          pageLocation: window.location,
           maxMobilePageCount: 5,
           end: false,
           running: false,
@@ -1010,8 +1013,8 @@ var opTheme = (function() {
                   _this.page = 1;
               }
 
-              var api = location.pathname+'.json';
-                  params = {}, qs = window.location.search.replace('?', '');
+              var api = _this.pageLocation.pathname+'.json';
+                  params = {}, qs = _this.pageLocation.search.replace('?', '');
               
               if(qs.length > 0) {
                 var qsKeyValueStrings = qs.split('&'), qsKeyAndValue;
@@ -1030,7 +1033,7 @@ var opTheme = (function() {
 
               // for mobile devices limit the number pages before a full page refresh. See #778
               if(_this.pageCount > _this.maxMobilePageCount && util.getDeviceWidth() < 900) {
-                location.href = location.pathname + '?' + decodeURIComponent($.param(params));
+                location.href = _this.pageLocation.pathname + '?' + decodeURIComponent($.param(params));
               } else {
                 $.getJSON(api, params, _this.loadCb);
               }

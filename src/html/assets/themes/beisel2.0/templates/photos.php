@@ -28,7 +28,7 @@
       </div>
     <?php } ?>
   </div>
-  <script> var initData = <?php echo json_encode($photos); ?>;</script>
+  <script> var initData = <?php echo json_encode($photos); ?>; var filterOpts = <?php echo json_encode($options); ?>;</script>
 <?php } else { ?>
   <?php $this->theme->display('partials/no-content.php', array('type' => 'upload')); ?>
 <?php } ?>

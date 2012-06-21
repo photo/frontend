@@ -195,10 +195,11 @@ class PhotoController extends BaseController
     if($apiResp['code'] === 200)
     {
       $detailDimensions = explode('x', $this->config->photoSizes->detail);
+      $nextPreviousParams = array_merge($_GET, array('returnSizes' => $this->config->photoSizes->nextPrevious));
       if(empty($options))
-        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => $nextPreviousParams));
       else
-        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => $nextPreviousParams));
       $photo = $apiResp['result'];
       $this->plugin->setData('photo', $photo);
       $this->plugin->setData('page', 'photo-detail');
