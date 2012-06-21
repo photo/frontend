@@ -959,6 +959,7 @@ var opTheme = (function() {
           albumContainerHeight: 0,
           page: null,
           pageCount: 0,
+          maxMobilePageCount: 5,
           end: false,
           running: false,
           init: function() {
@@ -968,6 +969,12 @@ var opTheme = (function() {
           },
           scrollCb: function(){
             var _this = opTheme.init.pages.photos;
+            // don't autoload if the width is narrow
+            //  crude way to check if we're on a mobile device
+            //  See #778
+            if(util.getDeviceWidth() < 900)
+              return;
+
             if($(window).scrollTop() > $(document).height() - $(window).height() - 200){
               _this.load();
             }
@@ -1015,7 +1022,12 @@ var opTheme = (function() {
               params.returnSizes = '960x180';
               params.page = _this.page;
 
-              $.getJSON(api, params, _this.loadCb);
+              // for mobile devices limit the number pages before a full page refresh. See #778
+              if(_this.pageCount > _this.maxMobilePageCount && util.getDeviceWidth() < 900) {
+                location.href = location.pathname + '?' + decodeURIComponent($.param(params));
+              } else {
+                $.getJSON(api, params, _this.loadCb);
+              }
             } else {
               delete _this.initData;
               _this.page = 1;
@@ -1024,7 +1036,6 @@ var opTheme = (function() {
             }
             // optionally display album "view all" link
             if(albumContainer.length === 1) {
-              //$(albumContainer).css({ overflow: "hidden", display: "block" });
               var h1 = $(albumContainer).outerHeight();
 
               $(albumContainer).css({ overflow: "auto", display: "table" });
