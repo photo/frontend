@@ -103,6 +103,9 @@ var opTheme = (function() {
 
   util = (function() {
     return {
+      getDeviceWidth: function() {
+        return $(window).width();
+      },
       fetchAndCache: function(src) {
         $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
       },
@@ -591,6 +594,9 @@ var opTheme = (function() {
         return false;
       },
       photoViewModal: function(ev) {
+        if(util.getDeviceWidth() < 900)
+          return;
+
         ev.preventDefault();
         var el = $(ev.target).parent(),
             photoEl = $('.photo-view'),
