@@ -11,6 +11,7 @@ branches:
     - development
 
 before_install:
+  - sudo apt-get update
   - sudo apt-get install build-essential libpcre3-dev php-pear php5-curl php5-imagick
   - sudo pecl install oauth
   - sudo pear channel-discover pear.bovigo.org
