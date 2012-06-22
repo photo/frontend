@@ -12,6 +12,7 @@ $pathsObj->external = sprintf('%s/external', $libraryDir);
 $pathsObj->models = sprintf('%s/models', $libraryDir);
 
 require_once dirname(dirname(dirname(__FILE__))) . '/libraries/functions.php';
+require_once dirname(dirname(dirname(__FILE__))) . '/libraries/compatability.php';
 spl_autoload_register('openphoto_autoloader');
 
 require_once dirname(__FILE__) . '/mysql.php';
