@@ -1367,10 +1367,7 @@ class DatabaseMySql implements DatabaseInterface
             break;
           case 'page':
             if($value > 1)
-            {
-              $value = min($value, 40); // 40 pages at max of 2,500 recursion limit means 100k photos
               $offset = intval(($limit * $value) - $limit);
-            }
             break;
           case 'permission':
             $where = $this->buildWhere($where, "`permission`='1'");
