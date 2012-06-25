@@ -117,9 +117,6 @@ class PhotoController extends BaseController
       $photos = $this->api->invoke("/photos/list.json", EpiRoute::httpGet, $params);
     $photos = $photos['result'];
 
-    $albums = $this->api->invoke("/albums/list.json", EpiRoute::httpGet);
-    $albums = $albums['result'];
-
     $this->plugin->setData('photos', $photos);
     $this->plugin->setData('page', 'photos');
 
@@ -133,14 +130,18 @@ class PhotoController extends BaseController
     }
 
     // TODO we should clean this up somehow
-    $album = null;
-    if(preg_match('/album-([a-z0-9]+)/', $filterOpts, $filterMatches))
+    $album = $tags = null;
+    if(preg_match('/album-([^\/]+)/', $filterOpts, $filterMatches))
     {
       $albumObj = new Album;
       $album = $albumObj->getAlbum($filterMatches[1]);
     }
+    if(preg_match('/tags-([^\/]+)/', $filterOpts, $filterMatches))
+    {
+      $tags = (array)explode(',', $filterMatches[1]);
+    }
 
-    $body = $this->theme->get($this->utility->getTemplate('photos.php'), array('albums' => $albums, 'album' => $album, 'photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
+    $body = $this->theme->get($this->utility->getTemplate('photos.php'), array('album' => $album, 'tags' => $tags, 'photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
     $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'photos'));
   }
 
