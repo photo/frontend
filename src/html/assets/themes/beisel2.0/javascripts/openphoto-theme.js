@@ -224,19 +224,6 @@ var opTheme = (function() {
         $('<option value="'+album.id+'" selected="selected">'+album.name+'</option>').prependTo(select);
         select.trigger("liszt:updated");
       },
-      albumShowAll: function(ev) {
-        ev.preventDefault();
-        var container = $('.album-list'),
-            currentHeight = container.outerHeight(),
-            shrunk = opTheme.init.pages.photos.albumContainerHeight[1],
-            expanded = opTheme.init.pages.photos.albumContainerHeight[0],
-            animObj = {height:0};
-        if(currentHeight == shrunk)
-          animObj.height = expanded+'px';
-        else
-          animObj.height = shrunk+'px';
-        container.animate(animObj);
-      },
       batchAdd: function(photo) {
         var el = $(".pin.photo-"+photo.id);
         el.addClass("revealed pinned");
@@ -848,7 +835,6 @@ var opTheme = (function() {
         OP.Util.on('click:action-post', opTheme.callback.actionPost);
         OP.Util.on('click:album-delete', opTheme.callback.albumDelete);
         OP.Util.on('click:album-form', opTheme.callback.albumForm);
-        OP.Util.on('click:album-show-all', opTheme.callback.albumShowAll);
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
         OP.Util.on('click:group-delete', opTheme.callback.groupDelete);
@@ -964,7 +950,6 @@ var opTheme = (function() {
           // TODO have a better way of sending data into the JS framework. See #780
           initData: typeof(initData) === "undefined" ? undefined : initData,
           filterOpts: typeof(filterOpts) === "undefined" ? undefined : filterOpts,
-          albumContainerHeight: 0,
           page: null,
           pageCount: 0,
           pageLocation: window.location,
@@ -989,7 +974,7 @@ var opTheme = (function() {
             }
           },
           load: function() {
-            var _this = opTheme.init.pages.photos; loc = location, albumContainer = $(".album-list");
+            var _this = opTheme.init.pages.photos; loc = location;
             // we define initData at runtime to avoid having to make an HTTP call on load
             // all subsequent calls run through the http API
             if(typeof(_this.initData) === "undefined") {
@@ -1042,20 +1027,6 @@ var opTheme = (function() {
               _this.page = 1;
               var response = {code:200, result:initData};
               _this.loadCb(response);
-            }
-            // optionally display album "view all" link
-            if(albumContainer.length === 1) {
-              var h1 = $(albumContainer).outerHeight();
-
-              $(albumContainer).css({ overflow: "auto", display: "table" });
-              var h2 = $(albumContainer).outerHeight();
-
-              $(albumContainer).css({ overflow: "hidden", display: "block" });
-
-              _this.albumContainerHeight = [h1, h2];
-
-              if(h2 >= (h1+100)) // random buffer
-                $('.show-all', albumContainer).show();
             }
           },
           loadCb: function(response) {
