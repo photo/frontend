@@ -7,6 +7,8 @@
   */
 class ApiTagController extends ApiBaseController
 {
+  private $tag;
+
   /**
     * Call the parent constructor
     *
@@ -14,6 +16,7 @@ class ApiTagController extends ApiBaseController
     */
   public function __construct()
   {
+    $this->tag = new Tag;
     parent::__construct();
   }
 
@@ -25,7 +28,7 @@ class ApiTagController extends ApiBaseController
   public function delete($tag)
   {
     getAuthentication()->requireAuthentication();
-    $res = Tag::delete($tag);
+    $res = $this->tag->delete($tag);
     if($res)
       return $this->noContent('Tag deleted successfully', true);
     else
@@ -53,8 +56,8 @@ class ApiTagController extends ApiBaseController
   public function update($tag)
   {
     getAuthentication()->requireAuthentication();
-    $tag = Tag::sanitize($tag);
-    $params = Tag::validateParams($_POST);
+    $tag = $this->tag->sanitize($tag);
+    $params = $this->tag->validateParams($_POST);
     $res = getDb()->postTag($tag, $params);
     if($res)
     {
@@ -82,7 +85,7 @@ class ApiTagController extends ApiBaseController
       $filters['permission'] = 0;
 
     $tagField = $userObj->isOwner() ? 'countPrivate' : 'countPublic';
-    $tags = getDb()->getTags($filters);
+    $tags = $this->tag->getTags($filters);
     if(is_array($tags))
     {
       foreach($tags as $key => $tag)
