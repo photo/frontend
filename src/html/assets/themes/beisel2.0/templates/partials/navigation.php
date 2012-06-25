@@ -19,18 +19,15 @@
                 <li class="dropdown">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cogs icon-large"></i> Manage <b class="caret"></b></a>
                   <ul class="dropdown-menu">
-                    <?php if($this->user->isLoggedIn()) { ?>
-                      <li><a href="<?php $this->url->managePhotos(); ?>"><i class="icon-picture icon-large"></i> Photos</a></li>
-                      <li><a href="<?php $this->url->manageAlbums(); ?>"><i class="icon-th icon-large"></i> Albums</a></li>
-                      <li><a href="<?php $this->url->manageGroups(); ?>"><i class="icon-group icon-large"></i> Groups</a></li>
-                      <li><a href="<?php $this->url->manageApps(); ?>"><i class="icon-sitemap icon-large"></i> Applications</a></li>
-                      <li><a href="<?php $this->url->manageSettings(); ?>"><i class="icon-wrench icon-large"></i> Settings</a></li>
-                      <li><a href="<?php $this->url->setup(); ?>"><i class="icon-repeat icon-large"></i> Rerun setup</a></li>
-                    <?php } ?>
+                    <li><a href="<?php $this->url->managePhotos(); ?>"><i class="icon-picture icon-large"></i> Photos</a></li>
+                    <li><a href="<?php $this->url->manageAlbums(); ?>"><i class="icon-th icon-large"></i> Albums</a></li>
+                    <li><a href="<?php $this->url->manageGroups(); ?>"><i class="icon-group icon-large"></i> Groups</a></li>
+                    <li><a href="<?php $this->url->manageApps(); ?>"><i class="icon-sitemap icon-large"></i> Applications</a></li>
+                    <li><a href="<?php $this->url->manageSettings(); ?>"><i class="icon-wrench icon-large"></i> Settings</a></li>
+                    <li><a href="<?php $this->url->setup(); ?>"><i class="icon-repeat icon-large"></i> Rerun setup</a></li>
                   </ul>
                 </li>
               </ul>
-              <!---->
             </li>
           <?php } ?>
         </ul>

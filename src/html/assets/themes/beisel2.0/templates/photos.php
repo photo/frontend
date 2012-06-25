@@ -7,18 +7,16 @@
     </ul>
   </div>
 
-  <?php if(!empty($albums)) { ?>
-    <?php $this->theme->display('albums.php', array('albums' => $albums, 'included' => true)); ?>
-  <?php } else { ?>
-    <!-- spacing -->
-    <div class="album-row"></div>
-  <?php } ?>
-
   <div class="row hero-unit empty gallery">
     <?php if(!empty($album)) { ?>
-      <p class="album-name">
-        <h4><i class="icon-picture icon-large"></i> Photos from <?php $this->utility->safe($album['name']); ?></h4>
-      </p>
+      <div class="header">Photos from <i class="icon-th icon-large"></i> <?php $this->utility->safe($album['name']); ?></div>
+    <?php } elseif(!empty($tags)) { ?>
+      <div class="header">
+        <i class="icon-tags icon-large"></i>
+        Photos tagged with
+        <?php foreach($tags as $cnt => $tag) { ?><?php $this->utility->safe($tag); ?><?php if(count($tags) > 1 && $cnt < (count($tags)-1)) { ?><?php if($cnt < (count($tags)-2)) { ?>, <?php } else { ?> and <?php } ?><?php } ?>
+        <?php } ?>
+      </div>
     <?php } ?>
     <div class="photo-grid-justify"></div>
     <br clear="all">

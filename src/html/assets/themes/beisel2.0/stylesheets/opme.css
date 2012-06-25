@@ -4092,9 +4092,9 @@ body.photos .infobar .date {
   font-style:italic;
 	color:#e6501e;
 }
-/*.gallery:not(.emtpy) {
+.gallery:not(.emtpy) {
   margin-top:30px;
-}*/
+}
 .photo-grid-justify {
 	padding:10px 0;
 }
@@ -4189,11 +4189,11 @@ body.photos .infobar .date {
 .load-more {
   text-align:center;
 }
-.gallery .album-name {
-  margin-top:4px;
-}
-.album-row {
-  margin-top:30px;
+.gallery .header {
+  margin-top:10px;
+  font-weight:bold;
+  font-size:16px;
+  text-align:center;
 }
 /* on photos page limit height */
 body.photos .album-list {
@@ -4205,23 +4205,27 @@ body.photos .album-list {
 }
 .album-list .thumbnails li {
   background-color:#fff;
-  padding:2px;
+  padding:8px;
 	-webkit-border-radius:3px;
 	-moz-border-radius:3px;
 	border-radius:3px;
-  border:solid 1px #eee;
+  border:solid 1px #ccc;
+  margin-left:35px;
+  margin-right:35px;
+  margin-bottom:20px;
+  margin-top:20px;
 }
 .album-list .thumbnails a, .album-list .thumbnails a div {
-  line-height:120px;
-  width:160px;
-  height:120px;
+  line-height:150px;
+  width:200px;
+  height:150px;
   background-color: #ddd;
   display:block;
   text-align:center;
   font-size:60px;
 }
 .album-list .thumbnails a div {
-  background-size:160px auto;
+  background-size:200px auto;
 }
 .album-list h5 {
   text-align:center;
@@ -4760,6 +4764,12 @@ header h1 {
 	.photo-grid li .meta {
 		width:270px;
 	}
+  .album-list .thumbnails li {
+    margin-left:25px;
+    margin-right:10px;
+    margin-bottom:20px;
+    margin-top:20px;
+  }
 }
 
 /* 10.02. screen width max. 767px ----------------------------------------------------------- */

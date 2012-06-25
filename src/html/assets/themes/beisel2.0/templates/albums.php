@@ -1,5 +1,5 @@
 <?php if(!empty($albums)) { ?>
-  <div class="row album-row <?php if(!isset($included) || $included === false) { ?>hero-unit empty<?php } ?>">
+  <div class="row album-row hero-unit empty">
     <div class="album-list span12">
       <h3>Albums <small class="show-all">(<a href="#" class="album-show-all-click">show all</a>)</small></h3>
       <ul class="thumbnails">
