@@ -87,6 +87,11 @@ class ApiTagController extends ApiBaseController
     {
       foreach($tags as $key => $tag)
       {
+        if(strlen($tag['id']) === 0)
+        {
+          unset($tags[$key]);
+          continue;
+        }
         $tags[$key]['count'] = $tag[$tagField];
         unset($tags[$key]['countPublic'], $tags[$key]['countPrivate'], $tags[$key]['owner']);
       }
