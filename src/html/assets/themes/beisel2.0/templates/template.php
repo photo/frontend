@@ -37,7 +37,7 @@
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'aa'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'ab'); ?>">
       <!--[if IE 7]>
         <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnprefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'font-awesome-ie7.css', false))->
                                                                   getUrl(AssetPipeline::css, 'a'); ?>">
@@ -90,7 +90,6 @@
               'action-post-click':'click:action-post',
               'album-delete-click':'click:album-delete',
               'album-form-click':'click:album-form',
-              'album-show-all-click':'click:album-show-all',
               'batch-modal-click':'click:batch-modal',
               'credential-delete-click':'click:credential-delete',
               'group-delete-click':'click:group-delete',
@@ -177,7 +176,7 @@
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'ab'); ?>'
+                                                  getUrl(AssetPipeline::js, 'ac'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
