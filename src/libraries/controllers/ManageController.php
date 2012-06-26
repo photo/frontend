@@ -41,6 +41,7 @@ class ManageController extends BaseController
   {
     $params['downloadOriginal'] = $this->config->site->allowOriginalDownload == '1';
     $params['allowDuplicate'] = $this->config->site->allowDuplicate == '1';
+    $params['hideFromSearchEngines'] = $this->config->site->hideFromSearchEngines == '1';
     $params['crumb'] = $this->session->get('crumb');
     $params['navigation'] = $this->getNavigation('features');
     $bodyTemplate = sprintf('%s/manage-features.php', $this->config->paths->templates);
