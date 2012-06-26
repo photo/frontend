@@ -4275,18 +4275,37 @@ body.tags div.tags .tag-list {
   background-color:#cdf2fd;
 }
 /* 09.05. Manage ----------------------------------------------------------- */
-.manage ul.thumbnails li {
-  width:160px;
-  height:160px;
+.pagination .pin-select-all {
+  margin-right:20px;
 }
-.manage ul.thumbnails li img.thumbnail {
+.manage.photos ul.thumbnails {
+  margin-top:10px;
+}
+.manage.photos ul.thumbnails li {
+  width:160px;
+}
+.manage.photos ul.thumbnails li img+div {
+  display:block;
+  height:20px;
+  margin:10px 0 15px;
+  padding:5px 0;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+  border-radius:5px;
+  border:solid 1px #fff;
+}
+.manage.photos ul.thumbnails li:hover img+div {
+  border-color:#ddd;
+}
+.manage.photos ul.thumbnails li img {
+  display:block;
   height:160px;
   margin:auto;
 }
-.manage ul.thumbnails img~.reveal.revealed, .manage ul.thumbnails img:hover+.reveal.revealed {
+.manage.photos ul.thumbnails .reveal.revealed, .manage ul.thumbnails li:hover .reveal.revealed {
   opacity:1.0;
 }
-.manage ul.thumbnails img~.reveal {
+.manage.photos ul.thumbnails img+div .reveal {
   display:block;
   float:left;
   opacity:0;
@@ -4300,18 +4319,17 @@ body.tags div.tags .tag-list {
   margin:0px;
   border:solid 1px #aaa;
   cursor:pointer;
-  top:-30px;
 }
-.manage ul.thumbnails img~.reveal.pin {
+.manage.photos ul.thumbnails img+div .reveal.pin {
   left:5px;
 }
-.manage ul.thumbnails img~.reveal.edit {
+.manage.photos ul.thumbnails img+div .reveal.edit {
   left:10px;
 }
-.manage ul.thumbnails img~.reveal.edit:hover {
+.manage.photos ul.thumbnails img+div .reveal.edit:hover {
   opacity:1.0;
 }
-.manage ul.thumbnails img:hover~.reveal, .manage ul.thumbnails .reveal:hover {
+.manage.photos ul.thumbnails li:hover .reveal:not(.revealed), .manage ul.thumbnails .reveal:hover:not(.revealed) {
   opacity:.5;
        -webkit-transition:opacity linear 0.2s;
        -moz-transition:opacity linear 0.2s;
