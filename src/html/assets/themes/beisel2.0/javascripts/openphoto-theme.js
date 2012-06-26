@@ -818,16 +818,14 @@ var opTheme = (function() {
 
         if(location.pathname === '/')
           opTheme.init.pages.front();
-        else if(location.pathname === '/manage')
-          opTheme.init.pages.manage();
+        else if(location.pathname === '/manage/photos')
+          opTheme.init.pages.manage.photos();
         else if(location.pathname.search(/^\/photos(.*)\/list/) === 0)
           opTheme.init.pages.photos.init();
         else if(location.pathname.search(/^\/p\/[a-z0-9]+/) === 0 || location.pathname.search(/^\/photo\/[a-z0-9]+\/?(.*)\/view/) === 0)
           opTheme.init.pages.photo.init();
         else if(location.pathname === '/photos/upload')
           opTheme.init.pages.upload();
-        else if(location.pathname === '/manage/albums')
-          opTheme.init.pages.manageAlbums();
       },
       attach: function() {
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
@@ -916,32 +914,29 @@ var opTheme = (function() {
           $('.carousel.feed').carousel();
           $('.carousel.feed').carousel('pause');
         },
-        manage: function() {
-          var ids = OP.Batch.collection.getAll(),
-              idsLength = OP.Batch.collection.getLength(),
-              els = $(".pin"),
-              cls,
-              el,
-              parts;
+        manage: {
+          photos: function() {
+            var ids = OP.Batch.collection.getAll(),
+                idsLength = OP.Batch.collection.getLength(),
+                els = $(".pin"),
+                cls,
+                el,
+                parts;
 
-          if(idsLength > 0)
-            opTheme.ui.batchMessage();
+            if(idsLength > 0)
+              opTheme.ui.batchMessage();
 
-          els.each(function(i, el) {
-            el = $(el);
-            cls = el.attr('class');
-            parts = cls.match(/ photo-([a-z0-9]+)/);
-            if(parts.length == 2) {
-              if(ids[parts[1]] !== undefined)
-                el.addClass("revealed pinned");
-            }
-          });
-        },
-        manageAlbums: function() {
-          $("select.typeahead").chosen();
-        },
-        manageGroups: function() {
-          $("select.typeahead").chosen();
+            els.each(function(i, el) {
+              el = $(el);
+              cls = el.attr('class');
+              console.log(cls);
+              parts = cls.match(/ photo-([a-z0-9]+)/);
+              if(parts.length == 2) {
+                if(ids[parts[1]] !== undefined)
+                  el.addClass("revealed pinned");
+              }
+            });
+          }
         },
         photo: {
           init: function() { util.fetchAndCacheNextPrevious(); }

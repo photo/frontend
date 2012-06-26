@@ -1,4 +1,4 @@
-<div class="manage home">
+<div class="manage photos">
   <div class="row hero-unit blurb">
     <h2>Tips on updating your photos</h2>
     <p>
@@ -18,9 +18,11 @@
       <ul class="thumbnails">
         <?php foreach($photos as $photo) { ?>
           <li class="span2">
-            <img src="<?php $this->utility->safe($photo['path160x160']); ?>" style="width:<?php $this->utility->safe($photo['photo160x160'][1]); ?>px;" alt="<?php $this->utility->safe($photo['title']); ?>" class="thumbnail">
+            <img src="<?php $this->utility->safe($photo['path160x160']); ?>" style="width:<?php $this->utility->safe($photo['photo160x160'][1]); ?>px;" alt="<?php $this->utility->safe($photo['title']); ?>">
+<div>
             <i class="icon-ok icon-large photo-<?php $this->utility->safe($photo['id']); ?> pin-click pin reveal" data-id="<?php $this->utility->safe($photo['id']); ?>"></i>
             <i class="icon-edit icon-large photo-<?php $this->utility->safe($photo['id']); ?> photo-edit-click edit reveal" data-id="<?php $this->utility->safe($photo['id']); ?>"></i>
+</div>
           </li>
         <?php } ?>
     </ul>
