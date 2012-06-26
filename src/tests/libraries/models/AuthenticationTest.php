@@ -1,9 +1,4 @@
 <?php
-$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
-require_once sprintf('%s/libraries/models/BaseModel.php', $baseDir);
-require_once sprintf('%s/libraries/models/Authentication.php', $baseDir);
-
 $_REQUEST['oauth_consumer_key'] = 'foo';
 class AuthenticationWrapper extends Authentication
 {

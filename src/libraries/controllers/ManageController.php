@@ -22,13 +22,24 @@ class ManageController extends BaseController
       getAuthentication()->requireAuthentication();
   }
 
+  public function albums()
+  {
+    $albumsResp = $this->api->invoke('/albums/list.json');
+    $albums = $albumsResp['result'];
+    $groupsResp = $this->api->invoke('/groups/list.json');
+    $groups = $groupsResp['result'];
+    $albumAddForm = $this->template->get(sprintf('%s/manage-album-form.php', $this->config->paths->templates), array('groups' => $groups));
+    $bodyTemplate = sprintf('%s/manage-albums.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('albums' => $albums, 'albumAddForm' => $albumAddForm, 'groups' => $groups, 'crumb' => $this->session->get('crumb')));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
+  }
+
   public function apps()
   {
     $credentialsResp = $this->api->invoke('/oauth/list.json');
     $credentials = $credentialsResp['result'];
-    $navigation = $this->getNavigation('apps');
     $bodyTemplate = sprintf('%s/manage-apps.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
+    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'crumb' => $this->session->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
   }
 
@@ -37,7 +48,42 @@ class ManageController extends BaseController
     $this->route->redirect('/manage/apps?m=app-created');
   }
 
+  public function features()
+  {
+    $this->route->redirect('/manage/settings');
+  }
+
   public function home()
+  {
+    $this->route->redirect('/manage/photos');
+  }
+
+  public function groups()
+  {
+    $groupsResp = $this->api->invoke('/groups/list.json');
+    $groups = $groupsResp['result'];
+    $groupAddForm = $this->template->get(sprintf('%s/manage-group-form.php', $this->config->paths->templates), array('groups' => $groups));
+    $bodyTemplate = sprintf('%s/manage-groups.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('groupAddForm' => $groupAddForm, 'groups' => $groups, 'crumb' => getSession()->get('crumb')));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-groups'));
+  }
+
+  public function passwordReset($token)
+  {
+    $user = new User;
+    $tokenFromDb = $user->getAttribute('passwordToken');
+    if($tokenFromDb != $token)
+    {
+      $this->route->redirect('/?m=token-expired');
+      die();
+    }
+
+    $bodyTemplate = sprintf('%s/manage-password-reset.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('passwordToken' => $token));
+    $this->theme->display('template.php', array('body' => $body, 'page' => null));
+  }
+
+  public function photos()
   {
     $photosApiParams = array('_GET' => array_merge($_GET, array('returnSizes' => '160x160xCR', 'pageSize' => 18)));
     $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, $photosApiParams);
@@ -52,42 +98,20 @@ class ManageController extends BaseController
       $pages['requestUri'] = $_SERVER['REQUEST_URI'];
     }
     $pagination = $this->theme->get('partials/pagination.php', $pages);
-    $navigation = $this->getNavigation('home');
 
-    $bodyTemplate = sprintf('%s/manage.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('photos' => $photos, 'pagination' => $pagination, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
+    $bodyTemplate = sprintf('%s/manage-photos.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('photos' => $photos, 'pagination' => $pagination, 'crumb' => getSession()->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage'));
   }
 
-  public function groups()
+  public function settings()
   {
-    $groupsResp = $this->api->invoke('/groups/list.json');
-    $groups = $groupsResp['result'];
-    $navigation = $this->getNavigation('groups');
-    $bodyTemplate = sprintf('%s/manage-groups.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('groups' => $groups, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
-    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-groups'));
-  }
-
-  public function passwordReset($token)
-  {
-    $user = new User;
-    $tokenFromDb = $user->getAttribute('passwordToken');
-    if($tokenFromDb != $token)
-    {
-      $this->route->redirect('/?m=token-expired');
-      die();
-    }
-
-    $navigation = $this->getNavigation(null);
-    $bodyTemplate = sprintf('%s/manage-password-reset.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('navigation' => $navigation, 'passwordToken' => $token));
-    $this->theme->display('template.php', array('body' => $body, 'page' => null));
-  }
-
-  public function getNavigation($page)
-  {
-    $tpl = sprintf('%s/manage-navigation.php', $this->config->paths->templates);
-    return $this->template->get($tpl, array('page' => $page));
+    $params['downloadOriginal'] = $this->config->site->allowOriginalDownload == '1';
+    $params['allowDuplicate'] = $this->config->site->allowDuplicate == '1';
+    $params['hideFromSearchEngines'] = $this->config->site->hideFromSearchEngines == '1';
+    $params['crumb'] = $this->session->get('crumb');
+    $bodyTemplate = sprintf('%s/manage-settings.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, $params);
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-settings'));
   }
 }

@@ -49,13 +49,19 @@ class ApiGroupController extends ApiBaseController
   public function delete($id)
   {
     getAuthentication()->requireAuthentication();
-    // TODO add crumb check
+    getAuthentication()->requireCrumb();
     $res = $this->group->delete($id);
 
     if($res === false)
       return $this->error('Could not delete group', false);
 
     return $this->noContent('Successfully deleted group', true);
+  }
+
+  public function form()
+  {
+    $template = $this->template->get(sprintf('%s/manage-group-form.php', $this->config->paths->templates));;
+    return $this->success('Group form', array('markup' => $template));
   }
 
   /**
@@ -67,7 +73,7 @@ class ApiGroupController extends ApiBaseController
   public function update($id)
   {
     getAuthentication()->requireAuthentication();
-    // TODO add crumb check
+    getAuthentication()->requireCrumb();
     $res = $this->group->update($id, $_POST);
 
     if($res)

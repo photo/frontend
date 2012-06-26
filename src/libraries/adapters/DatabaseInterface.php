@@ -13,6 +13,7 @@ interface DatabaseInterface
   public function diagnostics();
   // delete methods can delete or toggle status
   public function deleteAction($id);
+  public function deleteAlbum($id);
   public function deleteCredential($id);
   public function deleteGroup($id);
   public function deletePhoto($photo);
@@ -45,6 +46,7 @@ interface DatabaseInterface
   public function identity();
   public function executeScript($file, $database);
   // post methods update
+  public function postAlbum($id, $params);
   public function postAlbumAdd($albumId, $type, $elementIds);
   public function postAlbumRemove($albumId, $type, $elementIds);
   public function postCredential($id, $params);
@@ -66,45 +68,4 @@ interface DatabaseInterface
   public function putWebhook($id, $params);
   // general methods
   public function initialize($isEditMode);
-}
-
-if(!function_exists('getDb'))
-{
-  /**
-    * The public interface for instantiating a database obect.
-    * This returns the appropriate type of object by reading the config.
-    * Accepts a set of params that must include a type and targetType
-    *
-    * @param string $type Optional type parameter which defines the type of database.
-    * @return object A database object that implements DatabaseInterface
-    */
-  function getDb(/*$type*/)
-  {
-    static $database, $type;
-    if($database)
-      return $database;
-
-    if(func_num_args() == 1)
-      $type = func_get_arg(0);
-
-    $systems = getConfig()->get('systems');
-    // load configs only once
-    if($systems !== null)
-      $type = $systems->database;
-
-    switch($type)
-    {
-      case 'SimpleDb':
-        $database = new DatabaseSimpleDb();
-        break;
-      case 'MySql':
-        $database = new DatabaseMySql();
-        break;
-    }
-
-    if($database)
-      return $database;
-
-    throw new Exception("DataProvider {$type} does not exist", 404);
-  }
 }

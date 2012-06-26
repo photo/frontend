@@ -115,8 +115,11 @@ class PhotoController extends BaseController
       $photos = $this->api->invoke("/photos/{$filterOpts}/list.json", EpiRoute::httpGet, $params);
     else
       $photos = $this->api->invoke("/photos/list.json", EpiRoute::httpGet, $params);
-
     $photos = $photos['result'];
+
+    $albums = $this->api->invoke("/albums/list.json", EpiRoute::httpGet);
+    $albums = $albums['result'];
+
     $this->plugin->setData('photos', $photos);
     $this->plugin->setData('page', 'photos');
 
@@ -129,7 +132,15 @@ class PhotoController extends BaseController
       $pages['requestUri'] = $_SERVER['REQUEST_URI'];
     }
 
-    $body = $this->theme->get($this->utility->getTemplate('photos.php'), array('photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
+    // TODO we should clean this up somehow
+    $album = null;
+    if(preg_match('/album-([a-z0-9]+)/', $filterOpts, $filterMatches))
+    {
+      $albumObj = new Album;
+      $album = $albumObj->getAlbum($filterMatches[1]);
+    }
+
+    $body = $this->theme->get($this->utility->getTemplate('photos.php'), array('albums' => $albums, 'album' => $album, 'photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
     $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'photos'));
   }
 
@@ -165,7 +176,8 @@ class PhotoController extends BaseController
     $crumb = $this->session->get('crumb');
     $template = sprintf('%s/upload.php', $this->config->paths->templates);
     $groupsResp = $this->api->invoke('/groups/list.json');
-    $body = $this->template->get($template, array('crumb' => $crumb, 'groups' => $groupsResp['result'], 'licenses' => $this->utility->getLicenses()));
+    $albumsResp = $this->api->invoke('/albums/list.json');
+    $body = $this->template->get($template, array('crumb' => $crumb, 'groups' => $groupsResp['result'], 'albums' => $albumsResp['result'], 'licenses' => $this->utility->getLicenses()));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'upload'));
   }
 
@@ -183,10 +195,11 @@ class PhotoController extends BaseController
     if($apiResp['code'] === 200)
     {
       $detailDimensions = explode('x', $this->config->photoSizes->detail);
+      $nextPreviousParams = array_merge($_GET, array('returnSizes' => $this->config->photoSizes->nextPrevious));
       if(empty($options))
-        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => $nextPreviousParams));
       else
-        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => $nextPreviousParams));
       $photo = $apiResp['result'];
       $this->plugin->setData('photo', $photo);
       $this->plugin->setData('page', 'photo-detail');

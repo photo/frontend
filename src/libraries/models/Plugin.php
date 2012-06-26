@@ -211,13 +211,3 @@ class Plugin extends BaseModel
     }
   }
 }
-
-function getPlugin()
-{
-  static $plugin;
-  if($plugin)
-    return $plugin;
-
-  $plugin = new Plugin;
-  return $plugin;
-}

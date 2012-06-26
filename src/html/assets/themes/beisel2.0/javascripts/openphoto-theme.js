@@ -103,6 +103,9 @@ var opTheme = (function() {
 
   util = (function() {
     return {
+      getDeviceWidth: function() {
+        return $(window).width();
+      },
       fetchAndCache: function(src) {
         $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
       },
@@ -150,6 +153,90 @@ var opTheme = (function() {
           }
         );
       },
+      albumDelete: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href')+'.json',
+            form = el.parent(),
+            params = {crumb:crumb.get()};
+
+        OP.Util.makeRequest(url, params, function(response) {
+          if(response.code === 204) {
+            form.slideUp('medium', function() { this.remove(); });
+          } else {
+            opTheme.message.error('We could not delete this group.');
+          }
+        });
+      },
+      albumForm: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href') + '.json';
+        OP.Util.makeRequest(url, {modal:'true',dynamic:'true'}, function(response){
+          if(response.code === 200) {
+            var el = $("#modal"),
+                html = markup.modal(
+                  'Create an album',
+                  response.result.markup,
+                  null
+                );
+            el.html(html).modal();  
+            $('.typeahead', el).chosen();
+          } else {
+            opTheme.message.error('Could not load the form to create an album.');
+          }
+        }, 'json', 'get');
+        return false;
+      },
+      albumPost: function(ev) {
+        ev.preventDefault();
+        var form = $(ev.target),
+            url = form.attr('action')+'.json',
+            isCreate = (url.search('create') > -1),
+            isDynamic = parseInt($('input[name="dynamic"]', form).val()),
+            params = {};
+
+        params['name'] = $('input[name="name"]', form).val();
+        params['crumb'] = crumb.get();
+        if(params['name'].length == 0) {
+          opTheme.message.error('Please enter a name for your album.');
+          return;
+        }
+
+        // TODO decide if this needs to be anonymous because of form
+        OP.Util.makeRequest(url, params, function(response) {
+          var form = form;
+          if(response.code === 200 || response.code === 201) {
+            if(isDynamic)
+              opTheme.callback.albumPostDynamicCb(form, response.result);
+            else if(isCreate)
+              location.href = '/manage/albums?m=album-created&rand='+parseInt(Math.random()*100000)+'#album-' + response.result.id;
+            else
+              opTheme.message.confirm('Album updated successfully.');
+          } else {
+            opTheme.message.error('Could not update album.');
+          }
+        });
+      },
+      albumPostDynamicCb: function(form, album) {
+        var select = $('select[name="albums"]', form);
+        $('.modal').modal('hide');
+        $('<option value="'+album.id+'" selected="selected">'+album.name+'</option>').prependTo(select);
+        select.trigger("liszt:updated");
+      },
+      albumShowAll: function(ev) {
+        ev.preventDefault();
+        var container = $('.album-list'),
+            currentHeight = container.outerHeight(),
+            shrunk = opTheme.init.pages.photos.albumContainerHeight[1],
+            expanded = opTheme.init.pages.photos.albumContainerHeight[0],
+            animObj = {height:0};
+        if(currentHeight == shrunk)
+          animObj.height = expanded+'px';
+        else
+          animObj.height = shrunk+'px';
+        container.animate(animObj);
+      },
       batchAdd: function(photo) {
         var el = $(".pin.photo-"+photo.id);
         el.addClass("revealed pinned");
@@ -165,11 +252,16 @@ var opTheme = (function() {
             val = el.val(),
             tgt = $("form#batch-edit .form-fields");
         switch(val) {
+          case 'albumsAdd':
+            tgt.html(opTheme.ui.batchFormFields.albums());
+            $('select', tgt).chosen();
+            break;
           case 'delete':
             tgt.html(opTheme.ui.batchFormFields.empty());
             break;
           case 'groups':
             tgt.html(opTheme.ui.batchFormFields.groups());
+            $('select', tgt).chosen();
             break;
           case 'permission':
             tgt.html(opTheme.ui.batchFormFields.permission());
@@ -192,6 +284,7 @@ var opTheme = (function() {
               '      <select id="batch-key" class="batch-field-change" name="property">' +
               '        <option value="tagsAdd">Add Tags</option>' +
               '        <option value="tagsRemove">Remove Tags</option>' +
+              '        <option value="albumsAdd">Add Albums</option>' +
               '        <option value="groups">Update Groups</option>' +
               '        <option value="permission">Update Permissions</option>' +
               '        <option value="delete">Delete</option>' +
@@ -230,21 +323,31 @@ var opTheme = (function() {
         });
         return false;
       },
-      groupCheckbox: function(ev) {
-        var el = $(ev.target);
-        if(el.hasClass("none") && el.is(":checked")) {
-          $("input.group-checkbox:not(.none)").removeAttr("checked");
-        } else if(el.is(":checked")) {
-          $("input.group-checkbox.none").removeAttr("checked");
-        }
+      featuresPost: function(ev) {
+        ev.preventDefault();
+        var form = $(ev.target),
+            action = form.attr('action') + '.json',
+            params = {};
+
+        params = {'crumb':crumb.get()};
+        params['allowDuplicate'] = $('input[name="allowDuplicate"]:checked', form).length;
+        params['downloadOriginal'] = $('input[name="downloadOriginal"]:checked', form).length;
+        OP.Util.makeRequest(action, params, opTheme.callback.featuresPostCb);
+      },
+      featuresPostCb: function(response) {
+        if(response.code === 200)
+          opTheme.message.confirm('Your features were successfully saved.');
+        else
+          opTheme.message.error('We could not save your features.');
       },
       groupDelete: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
             url = el.attr('href')+'.json',
-            form = el.parent();
+            form = el.parent(),
+            params = {crumb:crumb.get()};
 
-        OP.Util.makeRequest(url, function(response) {
+        OP.Util.makeRequest(url, params, function(response) {
           if(response.code === 204) {
             form.slideUp('medium', function() { this.remove(); });
           } else {
@@ -268,13 +371,35 @@ var opTheme = (function() {
         var el = $(ev.target).parent().parent();
         el.remove();
       },
+      groupForm: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href') + '.json';
+        OP.Util.makeRequest(url, {modal:'true',dynamic:'true'}, function(response){
+          if(response.code === 200) {
+            var el = $("#modal"),
+                html = markup.modal(
+                  'Create a group',
+                  response.result.markup,
+                  null
+                );
+            el.html(html).modal();  
+          } else {
+            opTheme.message.error('Could not load the form to create an album.');
+          }
+        }, 'json', 'get');
+        return false;
+      },
       groupPost: function(ev) {
         ev.preventDefault();
         var form = $(ev.target),
             url = form.attr('action')+'.json',
             isCreate = (url.search('create') > -1),
+            isDynamic = $('input[name="dynamic"]', form).val(),
             emails,
             params = {name: $('input[name="name"]', form).val()};
+
+        params['crumb'] = crumb.get();
         $('.group-email-add-click', form).trigger('click');
         emails = [];
         $('span.group-email-queue', form).each(function(i, el) {
@@ -282,9 +407,13 @@ var opTheme = (function() {
         });
         params.members = emails.join(',');
 
+        // TODO decide if this needs to be anonymous because of isCreate
         OP.Util.makeRequest(url, params, function(response) {
+          var form = form;
           if(response.code === 200 || response.code === 201) {
-            if(isCreate)
+            if(isDynamic)
+              opTheme.callback.groupPostDynamicCb(form, response.result);
+            else if(isCreate)
               location.href = '/manage/groups?m=group-created';
             else
               opTheme.message.confirm('Group updated successfully.');
@@ -292,6 +421,12 @@ var opTheme = (function() {
             opTheme.message.error('Could not update group.');
           }
         });
+      },
+      groupPostDynamicCb: function(form, group) {
+        var select = $('select[name="groups"]', form);
+        $('.modal').modal('hide');
+        $('<option value="'+group.id+'" selected="selected">'+group.name+'</option>').prependTo(select);
+        select.trigger("liszt:updated");
       },
       keyBrowseNext: function(ev) {
         if(ev.ctrlKey || ev.altKey || ev.metaKey)
@@ -361,6 +496,11 @@ var opTheme = (function() {
         var el = $(ev.target).parent().parent();
         el.slideUp('fast', function() { $(this).remove(); });
       },
+      modalShown: function(ev) {
+        var inputs = $('input[type="text"]', ev.target);
+        if(inputs.length > 0)
+          inputs[0].focus();
+      },
       modalUnload: function(ev) {
         ev.preventDefault();
         $('#modal-photo-detail').html('');
@@ -425,6 +565,7 @@ var opTheme = (function() {
                   null
                 );
             el.html(html).modal();  
+            $('.typeahead', el).chosen();
           } else {
             opTheme.message.error('Could not load the form to edit this photo.');
           }
@@ -458,6 +599,9 @@ var opTheme = (function() {
         return false;
       },
       photoViewModal: function(ev) {
+        if(util.getDeviceWidth() < 900)
+          return;
+
         ev.preventDefault();
         var el = $(ev.target).parent(),
             photoEl = $('.photo-view'),
@@ -485,6 +629,10 @@ var opTheme = (function() {
         var form = $(ev.target),
             action = form.attr('action') + '.json',
             params = form.serialize();
+        if($('select[name^="groups"] option:checked', form).length === 0)
+          params += '&groups=';
+        if($('select[name^="albums"] option:checked', form).length === 0)
+          params += '&albums=';
         OP.Util.makeRequest(action, params, opTheme.callback.photoUpdateCb, 'json', 'post');
       },
       photoUpdateBatch: function(ev) {
@@ -492,7 +640,8 @@ var opTheme = (function() {
         var el = $(ev.target),
             key = $("#batch-key").val(),
             fields = $("form#batch-edit").find("*[name='value']"),
-            value;
+            value,
+            params;
 
         el.html('Submitting...').attr("disabled", "disabled");
         if(fields.length == 1) {
@@ -604,7 +753,7 @@ var opTheme = (function() {
       searchByTags: function(ev) {
         ev.preventDefault();
         var form = $(ev.target),
-          tags = $($('input[name=tags]', form)[0]).val(),
+          tags = $($('select[name=tags]', form)[0]).val().join(','),
           url = form.attr('action');
 
         if(tags.length > 0) {
@@ -622,9 +771,13 @@ var opTheme = (function() {
         return false;
       },
       tagsInitialized: function() {
-        var tags = OP.Tag.getTags();
-        if(tags !== null  && tags.length > 0)
-          $(".typeahead-tags").typeahead({source: tags, mode: 'multiple'});
+        var tags = OP.Tag.getTags(),
+            markup = '';
+        if(tags !== null  && tags.length > 0) {
+          for(i in tags)
+            markup += '<option value="'+tags[i]+'">'+tags[i]+"</option>";  
+          $(".typeahead-tags").html(markup).chosen();
+        }
       },
       uploadCompleteSuccess: function() {
         $("form.upload").fadeOut('fast', function() {
@@ -673,10 +826,8 @@ var opTheme = (function() {
           pushstate.render(State.data);
         });
 
-        if(typeof OPU === 'object')
-          OPU.init();
-
         $('.dropdown-toggle').dropdown();
+        $('.modal').on('shown', opTheme.callback.modalShown);
 
         if(location.pathname === '/')
           opTheme.init.pages.front();
@@ -686,17 +837,24 @@ var opTheme = (function() {
           opTheme.init.pages.photos.init();
         else if(location.pathname.search(/^\/p\/[a-z0-9]+/) === 0 || location.pathname.search(/^\/photo\/[a-z0-9]+\/?(.*)\/view/) === 0)
           opTheme.init.pages.photo.init();
+        else if(location.pathname === '/photos/upload')
+          opTheme.init.pages.upload();
+        else if(location.pathname === '/manage/albums')
+          opTheme.init.pages.manageAlbums();
       },
       attach: function() {
         OP.Util.on('click:action-delete', opTheme.callback.actionDelete);
         OP.Util.on('click:action-jump', opTheme.callback.commentJump);
         OP.Util.on('click:action-post', opTheme.callback.actionPost);
+        OP.Util.on('click:album-delete', opTheme.callback.albumDelete);
+        OP.Util.on('click:album-form', opTheme.callback.albumForm);
+        OP.Util.on('click:album-show-all', opTheme.callback.albumShowAll);
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
         OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
-        OP.Util.on('click:group-checkbox', opTheme.callback.groupCheckbox);
         OP.Util.on('click:group-delete', opTheme.callback.groupDelete);
         OP.Util.on('click:group-email-add', opTheme.callback.groupEmailAdd);
         OP.Util.on('click:group-email-remove', opTheme.callback.groupEmailRemove);
+        OP.Util.on('click:group-form', opTheme.callback.groupForm);
         OP.Util.on('click:login', opTheme.callback.login);
         OP.Util.on('click:login-modal', opTheme.callback.loginModal);
         OP.Util.on('click:manage-password-request', opTheme.callback.passwordRequest);
@@ -705,17 +863,19 @@ var opTheme = (function() {
         OP.Util.on('click:nav-item', opTheme.callback.searchBarToggle);
         OP.Util.on('click:photo-delete', opTheme.callback.photoDelete);
         OP.Util.on('click:photo-edit', opTheme.callback.photoEdit);
-        OP.Util.on('click:plugin-status', opTheme.callback.pluginStatus);
-        OP.Util.on('click:plugin-update', opTheme.callback.pluginUpdate);
         OP.Util.on('click:photo-update-batch', opTheme.callback.photoUpdateBatch);
         OP.Util.on('click:photo-view', opTheme.callback.photoView);
         OP.Util.on('click:photo-view-modal', opTheme.callback.photoViewModal);
         OP.Util.on('click:photos-load-more', opTheme.callback.photosViewMore);
+        OP.Util.on('click:plugin-status', opTheme.callback.pluginStatus);
+        OP.Util.on('click:plugin-update', opTheme.callback.pluginUpdate);
         OP.Util.on('click:pin', opTheme.callback.pinClick);
         OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
 
+        OP.Util.on('submit:album-post', opTheme.callback.albumPost);
+        OP.Util.on('submit:features-post', opTheme.callback.featuresPost);
         OP.Util.on('submit:group-post', opTheme.callback.groupPost);
         OP.Util.on('submit:login-openphoto', opTheme.callback.loginOpenPhoto);
         OP.Util.on('submit:photo-update', opTheme.callback.photoUpdate);
@@ -791,12 +951,24 @@ var opTheme = (function() {
             }
           });
         },
+        manageAlbums: function() {
+          $("select.typeahead").chosen();
+        },
+        manageGroups: function() {
+          $("select.typeahead").chosen();
+        },
         photo: {
           init: function() { util.fetchAndCacheNextPrevious(); }
         },
         photos: {
+          // TODO have a better way of sending data into the JS framework. See #780
+          initData: typeof(initData) === "undefined" ? undefined : initData,
+          filterOpts: typeof(filterOpts) === "undefined" ? undefined : filterOpts,
+          albumContainerHeight: 0,
           page: null,
           pageCount: 0,
+          pageLocation: window.location,
+          maxMobilePageCount: 5,
           end: false,
           running: false,
           init: function() {
@@ -806,51 +978,85 @@ var opTheme = (function() {
           },
           scrollCb: function(){
             var _this = opTheme.init.pages.photos;
+            // don't autoload if the width is narrow
+            //  crude way to check if we're on a mobile device
+            //  See #778
+            if(util.getDeviceWidth() < 900)
+              return;
+
             if($(window).scrollTop() > $(document).height() - $(window).height() - 200){
               _this.load();
             }
           },
           load: function() {
-            var _this = opTheme.init.pages.photos; loc = location;
-            if(_this.end || _this.running)
-              return;
+            var _this = opTheme.init.pages.photos; loc = location, albumContainer = $(".album-list");
+            // we define initData at runtime to avoid having to make an HTTP call on load
+            // all subsequent calls run through the http API
+            if(typeof(_this.initData) === "undefined") {
+              if(_this.end || _this.running)
+                return;
 
-            _this.running = true;
+              _this.running = true;
 
-            if(_this.page === null) {
-              var qsMatch = loc.href.match('page=([0-9]+)');
-              if(qsMatch !== null) {
-                _this.page = qsMatch[1];
-              } else {
-                var uriMatch = loc.pathname.match(/\/page-([0-9]+)/);
-                if(uriMatch !== null) {
-                  _this.page = uriMatch[1];
+              if(_this.page === null) {
+                var qsMatch = loc.href.match('page=([0-9]+)');
+                if(qsMatch !== null) {
+                  _this.page = qsMatch[1];
+                } else {
+                  var uriMatch = loc.pathname.match(/\/page-([0-9]+)/);
+                  if(uriMatch !== null) {
+                    _this.page = uriMatch[1];
+                  }
                 }
+
+                if(_this.page === null)
+                  _this.page = 1;
               }
 
-              if(_this.page === null)
-                _this.page = 1;
-            }
-
-            var api = location.pathname+'.json';
-                params = {}, qs = window.location.search.replace('?', '');
-            
-            if(qs.length > 0) {
-              var qsKeyValueStrings = qs.split('&'), qsKeyAndValue;
-              for(i in qsKeyValueStrings) {
-                if(qsKeyValueStrings.hasOwnProperty(i)) {
-                  qsKeyAndValue = qsKeyValueStrings[i].split('=');
-                  if(qsKeyAndValue.length === 2) {
-                    params[qsKeyAndValue[0]] = qsKeyAndValue[1];
+              var api = _this.pageLocation.pathname+'.json';
+                  params = {}, qs = _this.pageLocation.search.replace('?', '');
+              
+              if(qs.length > 0) {
+                var qsKeyValueStrings = qs.split('&'), qsKeyAndValue;
+                for(i in qsKeyValueStrings) {
+                  if(qsKeyValueStrings.hasOwnProperty(i)) {
+                    qsKeyAndValue = qsKeyValueStrings[i].split('=');
+                    if(qsKeyAndValue.length === 2) {
+                      params[qsKeyAndValue[0]] = qsKeyAndValue[1];
+                    }
                   }
                 }
               }
+
+              params.returnSizes = '960x180';
+              params.page = _this.page;
+
+              // for mobile devices limit the number pages before a full page refresh. See #778
+              if(_this.pageCount > _this.maxMobilePageCount && util.getDeviceWidth() < 900) {
+                location.href = _this.pageLocation.pathname + '?' + decodeURIComponent($.param(params));
+              } else {
+                $.getJSON(api, params, _this.loadCb);
+              }
+            } else {
+              delete _this.initData;
+              _this.page = 1;
+              var response = {code:200, result:initData};
+              _this.loadCb(response);
             }
+            // optionally display album "view all" link
+            if(albumContainer.length === 1) {
+              var h1 = $(albumContainer).outerHeight();
 
-            params.returnSizes = '960x180';
-            params.page = _this.page;
+              $(albumContainer).css({ overflow: "auto", display: "table" });
+              var h2 = $(albumContainer).outerHeight();
 
-            $.getJSON(api, params, _this.loadCb);
+              $(albumContainer).css({ overflow: "hidden", display: "block" });
+
+              _this.albumContainerHeight = [h1, h2];
+
+              if(h2 >= (h1+100)) // random buffer
+                $('.show-all', albumContainer).show();
+            }
           },
           loadCb: function(response) {
             var items = response.result, _this = opTheme.init.pages.photos, infobar = $('.infobar'),
@@ -882,6 +1088,14 @@ var opTheme = (function() {
               _this.end = true;
             }
           }
+        },
+        upload: function() {
+          var form = $('form.upload');
+          if(typeof OPU === 'object')
+            OPU.init();
+
+          $("select.typeahead").chosen();
+          //$('select.typeahead-tags').chosen({create_option:true,persistent_create_option:true})
         }
       }
     }, // init
@@ -906,6 +1120,26 @@ var opTheme = (function() {
     }, // message
     ui: {
       batchFormFields: {
+        albums: function() {
+          var albumsArr, album, html = '';
+          $.ajax({
+            url: '/albums/list.json',
+            async: false,
+            success: function(response) {
+              if(response.code === 200) {
+                html += '<label>Select albums</label><select name="value" multiple>';
+                for(i in response.result) {
+                  if(response.result.hasOwnProperty(i)) {
+                    album = response.result[i];
+                    html += '<option value="' + album.id + '">' + album.name + '</option>';
+                  }
+                }
+                html += '</select>';
+              }
+            }
+          });
+          return html;
+        },
         empty: function() {
           return '';
         },
@@ -916,15 +1150,14 @@ var opTheme = (function() {
             async: false,
             success: function(response) {
               if(response.code === 200) {
+                html += '<label>Select groups</label><select name="value" multiple>';
                 for(i in response.result) {
                   if(response.result.hasOwnProperty(i)) {
                     group = response.result[i];
-                    html += '<label class="checkbox inline">' +
-                        '<input type="checkbox" name="value" value="'+group.id+'" class="group-checkbox-click group-checkbox">' +
-                        group.name + 
-                      '</label>';
+                    html += '<option value="' + group.id + '">' + group.name + '</option>';
                   }
                 }
+                html += '</select>';
               }
             }
           });

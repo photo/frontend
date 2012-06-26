@@ -67,6 +67,17 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Delete an album from the database
+    *
+    * @param string $id ID of the action to delete
+    * @return boolean
+    */
+  public function deleteAlbum($id)
+  {
+    return false;
+  }
+
+  /**
     * Delete credential
     *
     * @return boolean
@@ -678,6 +689,19 @@ class DatabaseSimpleDb implements DatabaseInterface
   public function inject($name, $value)
   {
     $this->$name = $value;
+  }
+
+  /**
+    * Add an album
+    *
+    * @param string $albumId ID of the album to update.
+    * @param string $type Type of element
+    * @param array $elementIds IDs of the elements to update.
+    * @return boolean
+    */
+  public function postAlbum($id, $params)
+  {
+    return false;
   }
 
   /**
