@@ -1,5 +1,6 @@
 <?php if(!empty($pages)) { ?>
   <div class="pagination">
+    <a href="#" class="pin-select-all-click pin-select-all"><i class="icon-ok icon-large"></i> Select all</a>
     <ul role="navigation">
       <li><a href="">&larr; First</a></li>
       <?php foreach($pages as $page) { ?>
