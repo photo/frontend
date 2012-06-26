@@ -4230,7 +4230,7 @@ body.photos .album-list {
 .album-list h5 {
   text-align:center;
   padding-top:3px;
-  width:160px;
+  width:200px;
   white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
