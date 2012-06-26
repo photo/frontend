@@ -85,7 +85,7 @@ class ManageController extends BaseController
 
   public function photos()
   {
-    $photosApiParams = array('_GET' => array_merge($_GET, array('returnSizes' => '160x160xCR', 'pageSize' => 18)));
+    $photosApiParams = array('_GET' => array_merge($_GET, array('returnSizes' => '160x160', 'pageSize' => 18)));
     $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, $photosApiParams);
     $photos = $photosResp['result'];
 

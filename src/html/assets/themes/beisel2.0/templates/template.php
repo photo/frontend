@@ -1,3 +1,4 @@
+<?php $this->theme->setTheme(); // force this as the default theme ?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -37,7 +38,7 @@
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'aa'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'ad'); ?>">
       <!--[if IE 7]>
         <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnprefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'font-awesome-ie7.css', false))->
                                                                   getUrl(AssetPipeline::css, 'a'); ?>">
@@ -90,7 +91,6 @@
               'action-post-click':'click:action-post',
               'album-delete-click':'click:album-delete',
               'album-form-click':'click:album-form',
-              'album-show-all-click':'click:album-show-all',
               'batch-modal-click':'click:batch-modal',
               'credential-delete-click':'click:credential-delete',
               'group-delete-click':'click:group-delete',
@@ -116,6 +116,7 @@
               'photos-load-more-click':'click:photos-load-more',
               'pin-click':'click:pin',
               'pin-clear-click':'click:pin-clear',
+              'pin-select-all-click':'click:pin-select-all',
               'plugin-status-click':'click:plugin-status',
               'plugin-update-click':'click:plugin-update',
               'settings-click':'click:settings',
@@ -177,7 +178,7 @@
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'ab'); ?>'
+                                                  getUrl(AssetPipeline::js, 'ad'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
