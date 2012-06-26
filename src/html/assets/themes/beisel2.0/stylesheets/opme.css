@@ -4283,6 +4283,7 @@ body.tags div.tags .tag-list {
 }
 .manage.photos ul.thumbnails li {
   width:160px;
+  height:220px;
 }
 .manage.photos ul.thumbnails li img+div {
   display:block;
@@ -4299,8 +4300,15 @@ body.tags div.tags .tag-list {
 }
 .manage.photos ul.thumbnails li img {
   display:block;
-  height:160px;
+  border:solid 1px #ccc;
+	-webkit-border-radius:5px;
+	-moz-border-radius:5px;
+  border-radius:5px;
   margin:auto;
+  max-height:160px;
+  -moz-box-shadow: 0 0 5px #ccc;
+  -webkit-box-shadow: 0 0 5px #ccc;
+  box-shadow: 0 0 5px #ccc;
 }
 .manage.photos ul.thumbnails .reveal.revealed, .manage ul.thumbnails li:hover .reveal.revealed {
   opacity:1.0;
