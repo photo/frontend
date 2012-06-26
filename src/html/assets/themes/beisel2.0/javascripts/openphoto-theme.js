@@ -319,6 +319,7 @@ var opTheme = (function() {
         params = {'crumb':crumb.get()};
         params['allowDuplicate'] = $('input[name="allowDuplicate"]:checked', form).length;
         params['downloadOriginal'] = $('input[name="downloadOriginal"]:checked', form).length;
+        params['hideFromSearchEngines'] = $('input[name="hideFromSearchEngines"]:checked', form).length;
         OP.Util.makeRequest(action, params, opTheme.callback.featuresPostCb);
       },
       featuresPostCb: function(response) {
