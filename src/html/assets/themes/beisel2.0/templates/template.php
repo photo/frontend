@@ -1,3 +1,4 @@
+<?php $this->theme->setTheme(); // force this as the default theme ?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -115,6 +116,7 @@
               'photos-load-more-click':'click:photos-load-more',
               'pin-click':'click:pin',
               'pin-clear-click':'click:pin-clear',
+              'pin-select-all-click':'click:pin-select-all',
               'plugin-status-click':'click:plugin-status',
               'plugin-update-click':'click:plugin-update',
               'settings-click':'click:settings',
