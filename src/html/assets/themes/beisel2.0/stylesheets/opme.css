@@ -3114,6 +3114,7 @@ body.manage .navbar .nav .manage > a, body.manage .navbar .nav .manage > a:hover
 	text-decoration:none;
 	border:1px solid #ddd;
 	border-left-width:0;
+	background-color:#efe8da;
 }
 .pagination a:hover, .pagination .active a {
 	background-color:#f5f5f5;
@@ -4274,9 +4275,13 @@ body.tags div.tags .tag-list {
   background-color:#cdf2fd;
 }
 /* 09.05. Manage ----------------------------------------------------------- */
-.manage ul.thumbnails li img.thumbnail {
+.manage ul.thumbnails li {
   width:160px;
   height:160px;
+}
+.manage ul.thumbnails li img.thumbnail {
+  height:160px;
+  margin:auto;
 }
 .manage ul.thumbnails img~.reveal.revealed, .manage ul.thumbnails img:hover+.reveal.revealed {
   opacity:1.0;

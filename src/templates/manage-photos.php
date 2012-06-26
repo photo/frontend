@@ -11,17 +11,20 @@
     </p>
   </div>
 
-  <?php if($photos[0]['totalRows'] > 0) { ?>
-    <?php echo $pagination; ?>
-    <ul class="thumbnails">
-      <?php foreach($photos as $photo) { ?>
-        <li class="span2">
-          <img src="<?php $this->utility->safe($photo['path160x160xCR']); ?>" alt="<?php $this->utility->safe($photo['title']); ?>" class="thumbnail">
-          <i class="icon-ok icon-large photo-<?php $this->utility->safe($photo['id']); ?> pin-click pin reveal" data-id="<?php $this->utility->safe($photo['id']); ?>"></i>
-          <i class="icon-edit icon-large photo-<?php $this->utility->safe($photo['id']); ?> photo-edit-click edit reveal" data-id="<?php $this->utility->safe($photo['id']); ?>"></i>
-        </li>
-      <?php } ?>
+  <?php echo $pagination; ?>
+
+  <div class="row hero-unit empty">
+    <?php if($photos[0]['totalRows'] > 0) { ?>
+      <ul class="thumbnails">
+        <?php foreach($photos as $photo) { ?>
+          <li class="span2">
+            <img src="<?php $this->utility->safe($photo['path160x160']); ?>" style="width:<?php $this->utility->safe($photo['photo160x160'][1]); ?>px;" alt="<?php $this->utility->safe($photo['title']); ?>" class="thumbnail">
+            <i class="icon-ok icon-large photo-<?php $this->utility->safe($photo['id']); ?> pin-click pin reveal" data-id="<?php $this->utility->safe($photo['id']); ?>"></i>
+            <i class="icon-edit icon-large photo-<?php $this->utility->safe($photo['id']); ?> photo-edit-click edit reveal" data-id="<?php $this->utility->safe($photo['id']); ?>"></i>
+          </li>
+        <?php } ?>
     </ul>
+  </div>
   <?php } else { ?>
     <?php $this->theme->display('partials/no-content.php'); ?>
   <?php } ?>
