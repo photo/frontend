@@ -1,6 +1,7 @@
 <?php if(!empty($pages)) { ?>
   <div class="pagination">
     <ul role="navigation">
+      <li><a href="">&larr; First</a></li>
       <?php foreach($pages as $page) { ?>
         <li <?php if($page == $currentPage) { ?>class="active"<?php } ?>>
           <?php if(strstr($requestUri, '?') === false) { ?>
@@ -15,6 +16,7 @@
           </a>
         </li>
       <?php } ?>
+      <li><a href="">&rarr; Last</a></li>
     </ul>
   </div>
 <?php } ?>
