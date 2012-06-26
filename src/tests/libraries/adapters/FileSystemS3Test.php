@@ -1,10 +1,4 @@
 <?php
-$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
-require_once sprintf('%s/tests/helpers/aws.php', $baseDir);
-require_once sprintf('%s/libraries/adapters/FileSystem.php', $baseDir);
-require_once sprintf('%s/libraries/adapters/FileSystemS3.php', $baseDir);
-
 class FileSystemS3Override extends FileSystemS3
 {
   public function __construct($config = null, $params = null)

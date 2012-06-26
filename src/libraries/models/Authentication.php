@@ -80,12 +80,3 @@ class Authentication
       OPException::raise(new OPAuthorizationException('Crumb does not match'));
   }
 }
-
-function getAuthentication()
-{
-  static $authentication;
-  if(!$authentication)
-    $authentication = new Authentication;
-
-  return $authentication;
-}

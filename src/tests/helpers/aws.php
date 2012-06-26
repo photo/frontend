@@ -2,6 +2,7 @@
 class AmazonS3
 {
   const ACL_PUBLIC = 1;
+  const ACL_PRIVATE = 1;
   const REGION_US_E1 = 1;
 }
 

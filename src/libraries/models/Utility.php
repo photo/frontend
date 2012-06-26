@@ -74,6 +74,19 @@ class Utility
     return dirname(dirname(dirname(__FILE__)));
   }
 
+  public function getConfigFile()
+  {
+    $configFile = sprintf('%s/userdata/configs/%s.ini', $this->getBaseDir(), $this->getHost());
+    if(!getConfig()->exists($configFile))
+      return false;
+    return $configFile;
+  }
+
+  public function getHost()
+  {
+    return $_SERVER['HTTP_HOST'];
+  }
+
   public function getLicenses($selected = null)
   {
     if(!$this->licenses)
@@ -185,6 +198,11 @@ class Utility
     $route = $_GET['__route__'];
     switch($label)
     {
+      case 'album':
+      case 'albums':
+        if(!empty($route) && preg_match('#^/album#', $route))
+          return true;
+        break;
       case 'home':
         if(preg_match('#^/$#', $route))
           return true;
@@ -369,14 +387,4 @@ class Utility
     }
     return $headers;
   }
-}
-
-function getUtility()
-{
-  static $utility;
-  if($utility)
-    return $utility;
-
-  $utility = new Utility;
-  return $utility;
 }

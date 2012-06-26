@@ -1,11 +1,4 @@
 <?php
-$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
-require_once sprintf('%s/tests/helpers/mysql.php', $baseDir);
-require_once sprintf('%s/libraries/adapters/Database.php', $baseDir);
-require_once sprintf('%s/libraries/adapters/DatabaseSimpleDb.php', $baseDir);
-require_once sprintf('%s/libraries/models/Utility.php', $baseDir);
-
 class DatabaseSimpleDbOverride extends DatabaseSimpleDb
 {
   public function __construct($config = null, $params = null)

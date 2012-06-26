@@ -43,7 +43,12 @@ class Album extends BaseModel
     return $id;
   }
 
-  public function getAlbum($id, $email = null)
+  public function delete($id)
+  {
+    return $this->db->deleteAlbum($id);
+  }
+
+  public function getAlbum($id, $includeElements = true, $email = null)
   {
     if($email === null)
       $email = $this->user->getEmailAddress();
@@ -51,7 +56,18 @@ class Album extends BaseModel
     if(!$album)
       return false;
 
-    $album['photos'] = $this->db->getAlbumElements($id);
+    if(!$this->user->isOwner())
+    {
+      if($this->isAlbumEmpty($album))
+        return false;
+
+      if(!$this->isAlbumCoverVisible($album))
+        $album['cover'] = null;
+    }
+
+    if($includeElements)
+      $album['photos'] = $this->db->getAlbumElements($id);
+
     return $album;
   } 
 
@@ -60,7 +76,23 @@ class Album extends BaseModel
     if($email === null)
       $email = $this->user->getEmailAddress();
 
-    return $this->db->getAlbums($email);
+    $albums = $this->db->getAlbums($email);
+    if(empty($albums))
+      return $albums;
+
+    if(!$this->user->isOwner())
+    {
+      foreach($albums as $key => $alb)
+      {
+        // first check if album is empty, else check cover visibility
+        if($this->isAlbumEmpty($alb))
+          unset($albums[$key]);
+        elseif(!$this->isAlbumCoverVisible($alb))
+          $albums[$key]['cover'] = null;
+      }
+    }
+
+    return $albums;
   } 
 
   public function removeElement($albumId, $type, $ids)
@@ -71,9 +103,37 @@ class Album extends BaseModel
     return $this->db->postAlbumRemove($albumId, $type, $ids);
   }
 
+  public function update($id, $params)
+  {
+    $params = $this->whitelistParams($params);
+    return $this->db->postAlbum($id, $params);
+  }
+
+  private function isAlbumCoverVisible($album)
+  {
+    // check permission on the cover photo
+    if(isset($album['cover']) && !empty($album['cover']))
+    {
+      // get photo permission via API call
+      $photoResp = $this->api->invoke("/photo/{$album['cover']['id']}/view.json", EpiRoute::httpGet);
+      if($photoResp['code'] === 200)
+        return true;
+    }
+    return false;
+  }
+
+  private function isAlbumEmpty($album)
+  {
+    $photoResp = $this->api->invoke("/photos/album-{$album['id']}/list.json", EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
+    if($photoResp['result'][0]['totalRows'] > 0)
+      return false;
+
+    return true;
+  }
+
   private function whitelistParams($params)
   {
-    $matches = array('id' => 1,'name' => 1,'extra' => 1,'count' => 1,'permission' => 1);
+    $matches = array('name' => 1,'groups' => 1, 'extra' => 1,'count' => 1,'permission' => 1);
     foreach($params as $key => $val)
     {
       if(!isset($matches[$key]))

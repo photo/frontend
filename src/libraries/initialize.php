@@ -23,8 +23,13 @@ $apiObj = getApi();
 // loads configs and dependencies
 $userConfigObj = new UserConfig;
 $hasConfig = $userConfigObj->load();
-
 $configObj = getConfig();
+
+// set log level
+$levels = (array)explode(',', $configObj->get('epi')->logLevels);
+call_user_func_array('EpiLogger::employ', $levels);
+
+// initialize session
 EpiCache::employ($configObj->get('epi')->cache);
 $sessionParams = array($configObj->get('epi')->session);
 if($configObj->get('epiSessionParams')) {

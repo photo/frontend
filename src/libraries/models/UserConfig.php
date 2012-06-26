@@ -111,6 +111,12 @@ class UserConfig
     return $this->utility;
   }
 
+  /*
+   * This method is duplicated in Utility::getConfigFile
+   *  because the UserConfig class is a bootstrap class 
+   *  that is loaded before all of the dependencies.
+   *  Including the Utility class.
+   */
   private function getConfigFile()
   {
     $configFile = sprintf('%s/userdata/configs/%s.ini', $this->basePath, $this->host);
@@ -118,14 +124,4 @@ class UserConfig
       return false;
     return $configFile;
   }
-}
-
-function getUserConfig()
-{
-  static $userConfig;
-  if($userConfig)
-    return $userConfig;
-
-  $userConfig = new UserConfig;
-  return $userConfig;
 }
