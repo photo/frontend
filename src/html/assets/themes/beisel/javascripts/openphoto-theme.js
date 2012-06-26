@@ -752,7 +752,7 @@ var opTheme = (function() {
           opTheme.message.append(
             messageMarkup(
               '  <a id="batch-message"></a>You have <span id="batch-count">'+idsLength+'</span> photos pinned.' +
-              '  <div class="alert-actions"><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a><a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
+              '  <div class="alert-actions"><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a><a href="#" class="btn small pin-selectall-click">Select all pins</a><a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
             )
           );
         }

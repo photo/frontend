@@ -698,6 +698,16 @@ var opTheme = (function() {
         ev.preventDefault();
         OP.Batch.clear();
       },
+      pinSelectAll: function(ev) {
+        ev.preventDefault();
+        $(".pin").each(function(index){
+          id=$(this).attr('data-id');
+          container=$(this).parent();
+          if(!container.hasClass("pinned")) {
+            OP.Batch.add(id);
+          }
+        });
+      },
       pluginStatus: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
@@ -855,6 +865,7 @@ var opTheme = (function() {
         OP.Util.on('click:plugin-update', opTheme.callback.pluginUpdate);
         OP.Util.on('click:pin', opTheme.callback.pinClick);
         OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
+        OP.Util.on('click:pin-select-all', opTheme.callback.pinSelectAll);
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
 
