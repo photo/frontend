@@ -187,6 +187,7 @@ class Plugin extends BaseModel
       require sprintf('%s/%sPlugin.php', $this->pluginDir, $plugin);
       $classname = "{$plugin}Plugin";
       $this->pluginInstances[] = new $classname;
+      $this->logger->info(sprintf('Registering plugin %s', $plugin));
     }
   }
 
