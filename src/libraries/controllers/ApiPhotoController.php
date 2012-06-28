@@ -348,6 +348,8 @@ class ApiPhotoController extends ApiBaseController
           $this->logger->info(sprintf('Webhook callback executing for photo.upload: %s', $hook['callback']));
         }
       }
+      $this->plugin->setData('photo', $photo);
+      $this->plugin->invoke('onPhotoUploaded');
 
       $permission = isset($attributes['permission']) ? $attributes['permission'] : 0;
       $this->api->invoke(
