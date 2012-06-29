@@ -51,7 +51,7 @@
       var force = arguments[0] || false;
       tags = localStorage.getObject(namespace) || null;
       lastModified = parseInt(localStorage.getItem(namespace+'-lastModified')) || 0;
-      if(force || tags === null || lastModified < (getTime()-1800))
+      if(force || tags === null || tags.length === 0 || lastModified < (getTime()-1800))
         OP.Util.makeRequest('/tags/list.json', {}, initCb, 'json', 'get');
       else
         OP.Util.fire('callback:tags-initialized');
