@@ -85,18 +85,17 @@ class ApiTagController extends ApiBaseController
       $filters['permission'] = 0;
 
     $tagField = $userObj->isOwner() ? 'countPrivate' : 'countPublic';
-    $tags = $this->tag->getTags($filters);
-    if(is_array($tags))
+    $tagsFromDb = $this->tag->getTags($filters);
+    $tags = array(); // see issue #795 why we don't operate directly on $tagsFromDb
+
+    if(is_array($tagsFromDb))
     {
-      foreach($tags as $key => $tag)
+      foreach($tagsFromDb as $key => $tag)
       {
         if(strlen($tag['id']) === 0)
-        {
-          unset($tags[$key]);
           continue;
-        }
-        $tags[$key]['count'] = $tag[$tagField];
-        unset($tags[$key]['countPublic'], $tags[$key]['countPrivate'], $tags[$key]['owner']);
+        $tag['count'] = $tag[$tagField];
+        $tags[] = $tag;
       }
     }
     return $this->success('Tags for the user', $tags);
