@@ -133,8 +133,8 @@ class PhotoController extends BaseController
     $album = $tags = null;
     if(preg_match('/album-([^\/]+)/', $filterOpts, $filterMatches))
     {
-      $albumObj = new Album;
-      $album = $albumObj->getAlbum($filterMatches[1]);
+      $albumResp = $this->api->invoke("/album/{$filterMatches[1]}/view.json", EpiRoute::httpGet);
+      $album = $albumResp['result'];
     }
     if(preg_match('/tags-([^\/]+)/', $filterOpts, $filterMatches))
     {
