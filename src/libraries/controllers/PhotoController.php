@@ -183,6 +183,23 @@ class PhotoController extends BaseController
   }
 
   /**
+    * Update a photo's data in the datastore.
+    * Attributes to update are in _POST.
+    *
+    * @param string $id ID of the photo to update.
+    * @return void HTTP redirect
+    */
+  public function uploadPost()
+  {
+    getAuthentication()->requireAuthentication();
+    $upload = $this->api->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
+    if($upload['result'])
+      $this->route->redirect('/photos?uploadSuccess');
+    else
+      $this->route->redirect('/photos?uploadFailure');
+  }
+
+  /**
     * Render the photo page for a photo with ID $id.
     * If $options are present then it will render that photo.
     *
@@ -214,22 +231,5 @@ class PhotoController extends BaseController
     {
       $this->route->run('/error/404');
     }
-  }
-
-  /**
-    * Update a photo's data in the datastore.
-    * Attributes to update are in _POST.
-    *
-    * @param string $id ID of the photo to update.
-    * @return void HTTP redirect
-    */
-  public function uploadPost()
-  {
-    getAuthentication()->requireAuthentication();
-    $upload = $this->api->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
-    if($upload['result'])
-      $this->route->redirect('/photos?uploadSuccess');
-    else
-      $this->route->redirect('/photos?uploadFailure');
   }
 }
