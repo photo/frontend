@@ -261,10 +261,6 @@ class DatabaseMySql implements DatabaseInterface
     $album = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner",
       array(':id' => $id, ':owner' => $this->owner));
 
-    // check if the user has access to this album
-    if($this->owner !== $email)
-        return false;
-
     if($album === false)
       return false;
 
