@@ -38,7 +38,7 @@
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'ad'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'ae'); ?>">
       <!--[if IE 7]>
         <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'font-awesome-ie7.css', false))->
                                                                   getUrl(AssetPipeline::css, 'a'); ?>">
@@ -178,7 +178,7 @@
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'ad'); ?>'
+                                                  getUrl(AssetPipeline::js, 'ae'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
