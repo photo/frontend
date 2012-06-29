@@ -774,8 +774,8 @@ var opTheme = (function() {
         if(tags !== null  && tags.length > 0) {
           for(i in tags)
             markup += '<option value="'+tags[i]+'">'+tags[i]+"</option>";  
-          $(".typeahead-tags").html(markup).chosen();
         }
+        $(".typeahead-tags").html(markup).chosen();
       },
       uploadCompleteSuccess: function() {
         $("form.upload").fadeOut('fast', function() {

@@ -2969,6 +2969,7 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 body.photos .navbar .nav .photos > a, body.photos .navbar .nav .photos > a:hover,
 body.tags .navbar .nav .tags > a, body.tags .navbar .nav .tags > a:hover,
 body.upload .navbar .nav .upload > a, body.upload .navbar .nav .upload > a:hover,
+body.albums .navbar .nav .albums > a, body.albums .navbar .nav .albums > a:hover,
 body.manage .navbar .nav .manage > a, body.manage .navbar .nav .manage > a:hover {
 	background-color:#e6501e;
 	color:white;
