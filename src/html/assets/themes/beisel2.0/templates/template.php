@@ -33,14 +33,14 @@
         <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'font-awesome-ie7.css'); ?>">
       <![endif]-->
     <?php } else { ?>
-      <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnprefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
+      <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'font-awesome.css', false))->
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
                                                                   getUrl(AssetPipeline::css, 'ad'); ?>">
       <!--[if IE 7]>
-        <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnprefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'font-awesome-ie7.css', false))->
+        <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'font-awesome-ie7.css', false))->
                                                                   getUrl(AssetPipeline::css, 'a'); ?>">
       <![endif]-->
     <?php } ?>
