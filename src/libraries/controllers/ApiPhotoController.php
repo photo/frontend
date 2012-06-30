@@ -269,7 +269,11 @@ class ApiPhotoController extends ApiBaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-    $this->photo->transform($id, $_POST);
+    $res = $this->photo->transform($id, $_POST);
+    if(!$res)
+      return $this->error('Could not transform the photo', false);
+
+    return $this->success('Successfully transformed the photo', true);
   }
 
 
