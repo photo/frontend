@@ -65,6 +65,7 @@ $apiObj->post('/?v?1?/photo/upload.json', array('ApiPhotoController', 'upload'),
 $apiObj->get('/?v?1?/photo/([a-zA-Z0-9]+)/url/(\d+)x(\d+)x?([A-Zx]*)?.json', array('ApiPhotoController', 'dynamicUrl'), EpiApi::external); // generate a dynamic photo url (/photo/{id}/url/{options}.json) TODO, make internal for now
 $apiObj->get('/?v?1?/photo/([a-zA-Z0-9]+)/nextprevious/?(.+)?.json', array('ApiPhotoController', 'nextPrevious'), EpiApi::external); // get a photo's next/previous (/photo/{id}/nextprevious[/{options}].json)
 //$apiObj->post('/photo/([a-zA-Z0-9]+)/create/([a-z0-9]+)/([0-9]+)x([0-9]+)x?(.*).json', array('ApiPhotoController', 'dynamic'), EpiApi::external);
+$apiObj->post('/?v?1?/photo/([a-zA-Z0-9]+)/transform.json', array('ApiPhotoController', 'transform'), EpiApi::external); // transform a photo
 
 /*
  * Tag endpoints

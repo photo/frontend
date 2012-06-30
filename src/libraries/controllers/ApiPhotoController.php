@@ -259,6 +259,25 @@ class ApiPhotoController extends ApiBaseController
   }
 
   /**
+    * Transform a photo.
+    * Modifies a photo by rotating/BW/etc.
+    *
+    * @param $id string ID of the photo to transform
+    * @return string standard json envelope
+    */
+  public function transform($id)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $res = $this->photo->transform($id, $_POST);
+    if(!$res)
+      return $this->error('Could not transform the photo', false);
+
+    return $this->success('Successfully transformed the photo', true);
+  }
+
+
+  /**
     * Upload a photo.
     * This stores the original photo plus a base version used for future manipulations.
     * If a returnoptions value is present then a version using that value is also generated.

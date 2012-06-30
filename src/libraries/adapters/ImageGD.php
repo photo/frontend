@@ -8,7 +8,7 @@
   * The file is not written to disk until explicitly called.
   * @author Kevin Hornschemeier <khornschemeier@gmail.com>
   */
-class ImageGD implements ImageInterface
+class ImageGD extends ImageAbstract
 {
   /**
     * Private instance variable that holds a GD object
@@ -26,11 +26,10 @@ class ImageGD implements ImageInterface
 	private $width;
 	private $height;
 
-
   /**
-    * Constructor
+    * Quasi constructor
     */
-  public function __construct() {}
+  public function init() {}
 
   /**
     * Loads an image from a file path
@@ -65,6 +64,8 @@ class ImageGD implements ImageInterface
 
     if(!$this->image)
       OPException::raise(new OPInvalidImageException('Could not create image with GD library'));
+
+    $this->filename = $filename;
 		$this->width = imagesx($this->image);
 		$this->height = imagesy($this->image);
     return $this;
