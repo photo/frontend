@@ -7,7 +7,7 @@
   * The file is not written to disk until explicitly called.
   * @author Jaisen Mathai <jaisen@jmathai.com>
   */
-class ImageGraphicsMagick implements ImageInterface
+class ImageGraphicsMagick extends ImageAbstract
 {
   /**
     * Private instance variable that holds an Gmagick object
@@ -17,9 +17,9 @@ class ImageGraphicsMagick implements ImageInterface
   private $image;
 
   /**
-    * Constructor
+    * Quasi constructor
     */
-  public function __construct() {}
+  public function init() {}
 
   /**
     * Loads an image from a file path
@@ -31,6 +31,7 @@ class ImageGraphicsMagick implements ImageInterface
   {
     try
     {
+      $this->filename = $filename;
       $this->image = new Gmagick($filename);
       return $this;
     }

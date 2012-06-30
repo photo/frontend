@@ -397,14 +397,14 @@ class Photo extends BaseModel
     $parsedDate = $this->parseExifDate($exif, 'DateTimeOriginal');
     if($parsedDate === false) 
     {
-        $parsedDate = $this->parseExifDate($exif, 'DateTime');    
-	if($parsedDate === false)
-	{
-	    if(array_key_exists('FileDateTime', $exif))
-	        $parsedDate = $exif['FileDateTime'];
-            else
-                $parsedDate = time();
-        }
+      $parsedDate = $this->parseExifDate($exif, 'DateTime');    
+      if($parsedDate === false)
+      {
+        if(array_key_exists('FileDateTime', $exif))
+          $parsedDate = $exif['FileDateTime'];
+        else
+          $parsedDate = time();
+      }
     }
     $dateTaken = $parsedDate;    
 
@@ -426,6 +426,57 @@ class Photo extends BaseModel
     $exif_array['focalLength'] = $this->frac2Num(@$exif['FocalLength']);
 
     return $exif_array;
+  }
+
+  public function transform($id, $transformations)
+  {
+    $photo = $this->db->getPhoto($id);
+    if(!$photo)
+    {
+      $this->logger->crit('Could not get photo from db in transform method');
+      return false;
+    }
+
+    $filename = $this->fs->getPhoto($photo['pathBase']);
+    if(!$filename)
+    {
+      $this->logger->crit('Could not get photo from fs in transform method');
+      return false;
+    }
+
+    try
+    {
+      $this->image->load($filename);
+    }
+    catch(OPInvalidImageException $e)
+    {
+      $this->logger->crit('Could not get image from image adapter in transform method', $e);
+      return false;
+    }
+
+    foreach($transformations as $trans => $value)
+    {
+      switch($trans)
+      {
+        case 'rotate':
+          $this->image->rotate($value);
+          break;
+      }
+    }
+
+    // update the file on the file system and update the db with the path
+    $paths = $this->generatePaths($photo['filenameOriginal']);
+    $updateFs = $this->fs->putPhoto($filename, $paths['pathBase']);
+    $updateDb = $this->db->postPhoto($id, array('pathBase' => $paths['pathBase']));
+
+    unlink($filename);
+
+    // purge photoVersions
+    $delVersionsResp = $this->db->deletePhotoVersions($photo);
+    if(!$delVersionsResp)
+      return false;
+    
+    return true;
   }
 
   /**
