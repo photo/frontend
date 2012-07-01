@@ -206,6 +206,7 @@ SQL;
     `size` int(11) DEFAULT NULL,
     `width` int(11) DEFAULT NULL,
     `height` int(11) DEFAULT NULL,
+    `rotation` enum('0','90','180','270') NOT NULL DEFAULT '0',
     `extra` text,
     `exif` text,
     `latitude` float(10,6) DEFAULT NULL,
