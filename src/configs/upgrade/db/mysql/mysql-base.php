@@ -284,7 +284,7 @@ SQL;
     INSERT INTO `{$this->mySqlTablePrefix}admin` (`key`,`value`) 
     VALUES (:key, :value)
 SQL;
-  mysql_base($sql, array(':key' => 'version', ':value' => '2.0.7'));
+  mysql_base($sql, array(':key' => 'version', ':value' => '3.0.0'));
 
   return true;
 }
