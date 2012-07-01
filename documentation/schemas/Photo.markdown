@@ -25,6 +25,7 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
       size: (int), // in kb
       width: (int),
       height: (int),
+      rotation: (int),
       exifOrientation: (int), // degrees
       exifCameraMake: (string),
       exifCameraModel: (string),
@@ -75,6 +76,7 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
   * size, Size of the photo rounded to the nearest Kilobyte
   * width, Width of the photo in pixels
   * height, Height of the photo in pixels
+  * rotation, Degress the user has rotated the photo (0, 90, 180, 270)
   * exifOrientation, Rotation of the camera in degrees
   * exifCameraMake, Camera make, i.e. Canon
   * exifCcameraModel, Camera model, i.e. EOS Rebel

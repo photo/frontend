@@ -454,20 +454,22 @@ class Photo extends BaseModel
       return false;
     }
 
+    // update the file on the file system and update the db with the path
+    $paths = $this->generatePaths($photo['filenameOriginal']);
+    $updateFields = array('pathBase' => $paths['pathBase']);
     foreach($transformations as $trans => $value)
     {
       switch($trans)
       {
         case 'rotate':
           $this->image->rotate($value);
+          $updateFields['rotation'] = intval(($photo['rotation'] + $value) % 360);
           break;
       }
     }
 
-    // update the file on the file system and update the db with the path
-    $paths = $this->generatePaths($photo['filenameOriginal']);
     $updateFs = $this->fs->putPhoto($filename, $paths['pathBase']);
-    $updateDb = $this->db->postPhoto($id, array('pathBase' => $paths['pathBase']));
+    $updateDb = $this->db->postPhoto($id, $updateFields);
 
     unlink($filename);
 
@@ -860,8 +862,8 @@ class Photo extends BaseModel
   private function whitelistParams($attributes)
   {
     $returnAttrs = array();
-    $matches = array('id' => 1,'host' => 1,'appId' => 1,'title' => 1,'description' => 1,'key' => 1,'hash' => 1,'tags' => 1,'size' => 1,'width' => 1,'photo'=>1,
-      'height' => 1,'altitude' => 1, 'latitude' => 1,'longitude' => 1,'views' => 1,'status' => 1,'permission' => 1,'albums'=>1,'groups' => 1,'license' => 1,
+    $matches = array('id' => 1,'host' => 1,'appId' => 1,'title' => 1,'description' => 1,'key' => 1,'hash' => 1,'tags' => 1,'size' => 1,'photo'=>1,'height' => 1,
+      'rotation'=>1,'altitude' => 1, 'latitude' => 1,'longitude' => 1,'views' => 1,'status' => 1,'permission' => 1,'albums'=>1,'groups' => 1,'license' => 1,
       'dateTaken' => 1, 'dateUploaded' => 1, 'filenameOriginal' => 1 /* TODO remove in 1.5.0, only used for upgrade */);
     $patterns = array('exif.*','date.*','path.*','extra.*');
     foreach($attributes as $key => $val)
