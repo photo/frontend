@@ -295,9 +295,13 @@ class DatabaseMySql implements DatabaseInterface
     * @param string $email email of viewer to determine which albums they have access to
     * @return mixed Array on success, FALSE on failure
     */
-  public function getAlbums($email)
+  public function getAlbums($email, $limit = null, $offset = null)
   {
-    $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner", array(':owner' => $this->owner));
+    $limit = (int)$limit;
+    if($limit === 0)
+      $limit = 10;
+    $offset = (int)$offset;
+    $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
 
     if(empty($albums))
       return false;
