@@ -6,6 +6,8 @@
   */
 class ApiAlbumController extends ApiBaseController
 {
+  private $pageSize = 8;
+
   /**
     * Call the parent constructor
     *
@@ -54,7 +56,13 @@ class ApiAlbumController extends ApiBaseController
 
   public function list_()
   {
-    $albums = $this->album->getAlbums();
+    $limit = $this->pageSize;
+    $offset = null;
+    if(isset($_GET['pageSize']))
+      $limit = (int)$_GET['pageSize'];
+    if(isset($_GET['page']))
+      $offset = intval($limit * (int)$_GET['page'] - $limit);
+    $albums = $this->album->getAlbums(null, $limit, $offset);
     if($albums === false)
       return $this->error('Could not retrieve albums', false);
     return $this->success('List of albums', $albums);

@@ -24,7 +24,8 @@ class ManageController extends BaseController
 
   public function albums()
   {
-    $albumsResp = $this->api->invoke('/albums/list.json');
+    // TODO add pagination to albums
+    $albumsResp = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => PHP_INT_MAX)));
     $albums = $albumsResp['result'];
     $groupsResp = $this->api->invoke('/groups/list.json');
     $groups = $groupsResp['result'];

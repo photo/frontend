@@ -297,8 +297,9 @@ class DatabaseSimpleDb implements DatabaseInterface
     * @param string $email email of viewer to determine which albums they have access to
     * @return mixed Array on success, FALSE on failure
     */
-  public function getAlbums($email)
+  public function getAlbums($email, $limit = null, $offset = null)
   {
+    return false;
   }
 
   /**
