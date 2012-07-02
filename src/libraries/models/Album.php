@@ -71,12 +71,12 @@ class Album extends BaseModel
     return $album;
   } 
 
-  public function getAlbums($email = null)
+  public function getAlbums($email = null, $limit = null, $offset = null)
   {
     if($email === null)
       $email = $this->user->getEmailAddress();
 
-    $albums = $this->db->getAlbums($email);
+    $albums = $this->db->getAlbums($email, $limit, $offset);
     if(empty($albums))
       return $albums;
 

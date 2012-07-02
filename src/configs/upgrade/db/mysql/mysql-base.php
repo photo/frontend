@@ -206,6 +206,7 @@ SQL;
     `size` int(11) DEFAULT NULL,
     `width` int(11) DEFAULT NULL,
     `height` int(11) DEFAULT NULL,
+    `rotation` enum('0','90','180','270') NOT NULL DEFAULT '0',
     `extra` text,
     `exif` text,
     `latitude` float(10,6) DEFAULT NULL,
@@ -284,7 +285,7 @@ SQL;
     INSERT INTO `{$this->mySqlTablePrefix}admin` (`key`,`value`) 
     VALUES (:key, :value)
 SQL;
-  mysql_base($sql, array(':key' => 'version', ':value' => '2.0.7'));
+  mysql_base($sql, array(':key' => 'version', ':value' => '3.0.0'));
 
   return true;
 }
