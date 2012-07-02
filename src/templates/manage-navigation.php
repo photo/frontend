@@ -15,6 +15,6 @@
       <a href="/manage/apps">Apps</a>
     </li>
     <li>
-      <a href="/setup?edit">Rerun Setup</a>
+      <a href="/setup?edit">Restart Setup</a>
     </li>
   </ul>
