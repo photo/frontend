@@ -22,13 +22,25 @@ class ManageController extends BaseController
       getAuthentication()->requireAuthentication();
   }
 
+  public function albums()
+  {
+    // TODO add pagination to albums
+    $albumsResp = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => PHP_INT_MAX)));
+    $albums = $albumsResp['result'];
+    $groupsResp = $this->api->invoke('/groups/list.json');
+    $groups = $groupsResp['result'];
+    $albumAddForm = $this->template->get(sprintf('%s/manage-album-form.php', $this->config->paths->templates), array('groups' => $groups));
+    $bodyTemplate = sprintf('%s/manage-albums.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('albums' => $albums, 'albumAddForm' => $albumAddForm, 'groups' => $groups, 'crumb' => $this->session->get('crumb')));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
+  }
+
   public function apps()
   {
     $credentialsResp = $this->api->invoke('/oauth/list.json');
     $credentials = $credentialsResp['result'];
-    $navigation = $this->getNavigation('apps');
     $bodyTemplate = sprintf('%s/manage-apps.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
+    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'crumb' => $this->session->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
   }
 
@@ -39,44 +51,21 @@ class ManageController extends BaseController
 
   public function features()
   {
-    $params['downloadOriginal'] = $this->config->site->allowOriginalDownload == '1';
-    $params['allowDuplicate'] = $this->config->site->allowDuplicate == '1';
-    $params['crumb'] = $this->session->get('crumb');
-    $params['navigation'] = $this->getNavigation('features');
-    $bodyTemplate = sprintf('%s/manage-features.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, $params);
-    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-features'));
+    $this->route->redirect('/manage/settings');
   }
 
   public function home()
   {
-    $photosApiParams = array('_GET' => array_merge($_GET, array('returnSizes' => '160x160xCR', 'pageSize' => 18)));
-    $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, $photosApiParams);
-    $photos = $photosResp['result'];
-
-    $pages = array('pages' => array());
-    if(!empty($photos))
-    {
-      $pages['pages'] = $this->utility->getPaginationParams($photos[0]['currentPage'], $photos[0]['totalPages'], $this->config->pagination->pagesToDisplay);
-      $pages['currentPage'] = $photos[0]['currentPage'];
-      $pages['totalPages'] = $photos[0]['totalPages'];
-      $pages['requestUri'] = $_SERVER['REQUEST_URI'];
-    }
-    $pagination = $this->theme->get('partials/pagination.php', $pages);
-    $navigation = $this->getNavigation('home');
-
-    $bodyTemplate = sprintf('%s/manage.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('photos' => $photos, 'pagination' => $pagination, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
-    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage'));
+    $this->route->redirect('/manage/photos');
   }
 
   public function groups()
   {
     $groupsResp = $this->api->invoke('/groups/list.json');
     $groups = $groupsResp['result'];
-    $navigation = $this->getNavigation('groups');
+    $groupAddForm = $this->template->get(sprintf('%s/manage-group-form.php', $this->config->paths->templates), array('groups' => $groups));
     $bodyTemplate = sprintf('%s/manage-groups.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('groups' => $groups, 'navigation' => $navigation, 'crumb' => getSession()->get('crumb')));
+    $body = $this->template->get($bodyTemplate, array('groupAddForm' => $groupAddForm, 'groups' => $groups, 'crumb' => getSession()->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-groups'));
   }
 
@@ -90,15 +79,40 @@ class ManageController extends BaseController
       die();
     }
 
-    $navigation = $this->getNavigation(null);
     $bodyTemplate = sprintf('%s/manage-password-reset.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('navigation' => $navigation, 'passwordToken' => $token));
+    $body = $this->template->get($bodyTemplate, array('passwordToken' => $token));
     $this->theme->display('template.php', array('body' => $body, 'page' => null));
   }
 
-  private function getNavigation($page)
+  public function photos()
   {
-    $tpl = sprintf('%s/manage-navigation.php', $this->config->paths->templates);
-    return $this->template->get($tpl, array('page' => $page));
+    $photosApiParams = array('_GET' => array_merge($_GET, array('returnSizes' => '160x160', 'pageSize' => 18)));
+    $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, $photosApiParams);
+    $photos = $photosResp['result'];
+
+    $pages = array('pages' => array());
+    if(!empty($photos))
+    {
+      $pages['pages'] = $this->utility->getPaginationParams($photos[0]['currentPage'], $photos[0]['totalPages'], $this->config->pagination->pagesToDisplay);
+      $pages['currentPage'] = $photos[0]['currentPage'];
+      $pages['totalPages'] = $photos[0]['totalPages'];
+      $pages['requestUri'] = $_SERVER['REQUEST_URI'];
+    }
+    $pagination = $this->theme->get('partials/pagination.php', $pages);
+
+    $bodyTemplate = sprintf('%s/manage-photos.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, array('photos' => $photos, 'pagination' => $pagination, 'crumb' => getSession()->get('crumb')));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage'));
+  }
+
+  public function settings()
+  {
+    $params['downloadOriginal'] = $this->config->site->allowOriginalDownload == '1';
+    $params['allowDuplicate'] = $this->config->site->allowDuplicate == '1';
+    $params['hideFromSearchEngines'] = $this->config->site->hideFromSearchEngines == '1';
+    $params['crumb'] = $this->session->get('crumb');
+    $bodyTemplate = sprintf('%s/manage-settings.php', $this->config->paths->templates);
+    $body = $this->template->get($bodyTemplate, $params);
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-settings'));
   }
 }

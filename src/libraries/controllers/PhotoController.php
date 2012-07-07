@@ -115,8 +115,8 @@ class PhotoController extends BaseController
       $photos = $this->api->invoke("/photos/{$filterOpts}/list.json", EpiRoute::httpGet, $params);
     else
       $photos = $this->api->invoke("/photos/list.json", EpiRoute::httpGet, $params);
-
     $photos = $photos['result'];
+
     $this->plugin->setData('photos', $photos);
     $this->plugin->setData('page', 'photos');
 
@@ -129,7 +129,19 @@ class PhotoController extends BaseController
       $pages['requestUri'] = $_SERVER['REQUEST_URI'];
     }
 
-    $body = $this->theme->get($this->utility->getTemplate('photos.php'), array('photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
+    // TODO we should clean this up somehow
+    $album = $tags = null;
+    if(preg_match('/album-([^\/]+)/', $filterOpts, $filterMatches))
+    {
+      $albumResp = $this->api->invoke("/album/{$filterMatches[1]}/view.json", EpiRoute::httpGet);
+      $album = $albumResp['result'];
+    }
+    if(preg_match('/tags-([^\/]+)/', $filterOpts, $filterMatches))
+    {
+      $tags = (array)explode(',', $filterMatches[1]);
+    }
+
+    $body = $this->theme->get($this->utility->getTemplate('photos.php'), array('album' => $album, 'tags' => $tags, 'photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
     $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'photos'));
   }
 
@@ -165,41 +177,9 @@ class PhotoController extends BaseController
     $crumb = $this->session->get('crumb');
     $template = sprintf('%s/upload.php', $this->config->paths->templates);
     $groupsResp = $this->api->invoke('/groups/list.json');
-    $body = $this->template->get($template, array('crumb' => $crumb, 'groups' => $groupsResp['result'], 'licenses' => $this->utility->getLicenses()));
+    $albumsResp = $this->api->invoke('/albums/list.json');
+    $body = $this->template->get($template, array('crumb' => $crumb, 'groups' => $groupsResp['result'], 'albums' => $albumsResp['result'], 'licenses' => $this->utility->getLicenses()));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'upload'));
-  }
-
-  /**
-    * Render the photo page for a photo with ID $id.
-    * If $options are present then it will render that photo.
-    *
-    * @param string $id ID of the photo to be deleted.
-    * @param string $options Optional options for rendering this photo.
-    * @return string HTML
-    */
-  public function view($id, $options = null)
-  {
-    $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
-    if($apiResp['code'] === 200)
-    {
-      $detailDimensions = explode('x', $this->config->photoSizes->detail);
-      if(empty($options))
-        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
-      else
-        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => $this->config->photoSizes->nextPrevious)));
-      $photo = $apiResp['result'];
-      $this->plugin->setData('photo', $photo);
-      $this->plugin->setData('page', 'photo-detail');
-      $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
-      $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
-      $crumb = $this->session->get('crumb');
-      $body = $this->theme->get($this->utility->getTemplate('photo-details.php'), array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
-      $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'photo-details'));
-    }
-    else
-    {
-      $this->route->run('/error/404');
-    }
   }
 
   /**
@@ -217,5 +197,39 @@ class PhotoController extends BaseController
       $this->route->redirect('/photos?uploadSuccess');
     else
       $this->route->redirect('/photos?uploadFailure');
+  }
+
+  /**
+    * Render the photo page for a photo with ID $id.
+    * If $options are present then it will render that photo.
+    *
+    * @param string $id ID of the photo to be deleted.
+    * @param string $options Optional options for rendering this photo.
+    * @return string HTML
+    */
+  public function view($id, $options = null)
+  {
+    $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
+    if($apiResp['code'] === 200)
+    {
+      $detailDimensions = explode('x', $this->config->photoSizes->detail);
+      $nextPreviousParams = array_merge($_GET, array('returnSizes' => $this->config->photoSizes->nextPrevious));
+      if(empty($options))
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet, array('_GET' => $nextPreviousParams));
+      else
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet, array('_GET' => $nextPreviousParams));
+      $photo = $apiResp['result'];
+      $this->plugin->setData('photo', $photo);
+      $this->plugin->setData('page', 'photo-detail');
+      $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
+      $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
+      $crumb = $this->session->get('crumb');
+      $body = $this->theme->get($this->utility->getTemplate('photo-details.php'), array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
+      $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'photo-details'));
+    }
+    else
+    {
+      $this->route->run('/error/404');
+    }
   }
 }

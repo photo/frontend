@@ -1,7 +1,4 @@
 <div class="manage features">
-
-  <?php echo $navigation; ?>
-
   <div class="row hero-unit blurb">
     <h2>Configure your OpenPhoto site</h2>
     
@@ -22,6 +19,12 @@
       <label class="checkbox inline">
         <input type="checkbox" name="downloadOriginal" value="1" <?php if($downloadOriginal) { ?>checked="checked"<?php } ?>>
         Let visitors download my original hi-res photos
+      </label>
+    </div>
+    <div class="controls">
+      <label class="checkbox inline">
+        <input type="checkbox" name="hideFromSearchEngines" value="1" <?php if($hideFromSearchEngines) { ?>checked="checked"<?php } ?>>
+        Hide my site from search engines
       </label>
     </div>
     

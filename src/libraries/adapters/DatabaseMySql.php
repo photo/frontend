@@ -53,8 +53,25 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteAction($id)
   {
-    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}action` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}action` WHERE `id`=:id AND `owner`=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res !== false);
+  }
+
+  /**
+    * Delete an album from the database
+    *
+    * @param string $id ID of the action to delete
+    * @return boolean
+    */
+  public function deleteAlbum($id)
+  {
+    // if one fails then don't continue by using the second condition
+    $res1 = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner", array(':id' => $id, ':owner' => $this->owner));
+    $res2 = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `album`=:album", array(':owner' => $this->owner, ':album' => $id));
+    if(!$res1 || !$res2)
+      return false;
+
+    return true;
   }
 
   /**
@@ -241,26 +258,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getAlbum($id, $email)
   {
-    if($this->owner === $email)
-    {
-      $album = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner",
-        array(':id' => $id, ':owner' => $this->owner));
-    }
-    else
-    {
-      $groups = $this->getGroups($email);
-      if($groups === false)
-        return false;
-
-      $groupIds = array();
-      foreach($groups as $grp)
-        $groupIds[] = $this->_($grp['id']);
-
-      $groupIds = implode("','", $groupIds);
-      $album = $this->db->one("SELECT `alb`.* FROM `{$this->mySqlTablePrefix}album` AS `alb` INNER JOIN `{$this->mySqlTablePrefix}elementGroup` AS `grp`
-        ON `alb`.`id`=`grp`.`element` AND `grp`.`type`='album' WHERE `alb`.`id`=:id AND `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
-                                 array(':id' => $id, ':owner' => $this->owner));
-    }
+    $album = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner",
+      array(':id' => $id, ':owner' => $this->owner));
 
     if($album === false)
       return false;
@@ -279,8 +278,8 @@ class DatabaseMySql implements DatabaseInterface
   {
     $photos = $this->db->all("SELECT `pht`.* 
       FROM `{$this->mySqlTablePrefix}photo` AS `pht` INNER JOIN `{$this->mySqlTablePrefix}elementAlbum` AS `alb` ON `pht`.`id`=`alb`.`element`
-      WHERE `pht`.`owner`=:owner AND `alb`.`owner`=:owner AND `alb`.`type`=:type",
-      array(':owner' => $this->owner, ':type' => 'photo'));
+      WHERE `pht`.`owner`=:owner AND `alb`.`owner`=:owner",
+      array(':owner' => $this->owner));
 
     if($photos === false)
       return false;
@@ -296,27 +295,13 @@ class DatabaseMySql implements DatabaseInterface
     * @param string $email email of viewer to determine which albums they have access to
     * @return mixed Array on success, FALSE on failure
     */
-  public function getAlbums($email)
+  public function getAlbums($email, $limit = null, $offset = null)
   {
-    if($this->owner === $email)
-    {
-      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner", array(':owner' => $this->owner));
-    }
-    else
-    {
-      $groups = $this->getGroups($email);
-      if($groups === false)
-        return false;
-
-      $groupIds = array();
-      foreach($groups as $grp)
-        $groupIds[] = $this->_($grp['id']);
-
-      $groupIds = implode("','", $groupIds);
-      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` AS `alb` INNER JOIN `{$this->mySqlTablePrefix}elementGroup` AS `grp`
-        ON `alb`.`id`=`grp`.`element` AND `grp`.`type`='album' WHERE `alb`.`owner`=:owner AND (`alb`.`permission`='1' OR `alb`.`id` IN ('{$groupIds}'))",
-                                 array(':owner' => $this->owner));
-    }
+    $limit = (int)$limit;
+    if($limit === 0)
+      $limit = 10;
+    $offset = (int)$offset;
+    $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
 
     if(empty($albums))
       return false;
@@ -415,13 +400,13 @@ class DatabaseMySql implements DatabaseInterface
     if(empty($email))
       $res = $this->db->all("SELECT `grp`.*, `memb`.`email` 
         FROM `{$this->mySqlTablePrefix}group` AS `grp` 
-        INNER JOIN `{$this->mySqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
+        LEFT JOIN `{$this->mySqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
         WHERE `grp`.`id` IS NOT NULL AND `grp`.`owner`=:owner 
         ORDER BY `grp`.`name`", array(':owner' => $this->owner));
     else
       $res = $this->db->all("SELECT `grp`.*, `memb`.`email` 
         FROM `{$this->mySqlTablePrefix}group` AS `grp` 
-        INNER JOIN `{$this->mySqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
+        LEFT JOIN `{$this->mySqlTablePrefix}groupMember` AS `memb` ON `grp`.`owner`=`memb`.`owner` AND `grp`.`id`=`memb`.`group` 
         WHERE `memb`.`email`=:email AND `grp`.`id` IS NOT NULL AND `grp`.`owner`=:owner 
         ORDER BY `grp`.`name`", array(':email' => $email, ':owner' => $this->owner));
 
@@ -766,6 +751,29 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Update an existing album in the database
+    * This method does not overwrite existing values present in $params - hence "new action".
+    *
+    * @param string $id ID of the action to update which is always 1.
+    * @param array $params Attributes to update.
+    * @return boolean
+    */
+  public function postAlbum($id, $params)
+  {
+    $params = $this->prepareAlbum($params);
+    $params['owner'] = $this->owner;
+    $bindings = array();
+    if(isset($params['::bindings']))
+      $bindings = $params['::bindings'];
+    $stmt = $this->sqlUpdateExplode($params, $bindings);
+    $bindings[':id'] = $id;
+    $bindings[':owner'] = $this->owner;
+
+    $result = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}album` SET {$stmt} WHERE `id`=:id AND owner=:owner", $bindings);
+    return ($result !== false);
+  }
+
+  /**
     * Add an element to an album
     *
     * @param string $albumId ID of the album to update.
@@ -778,8 +786,9 @@ class DatabaseMySql implements DatabaseInterface
     $res = true;
     foreach($elementIds as $elementId)
     {
-      $res = $res && $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`,`type`,`element`,`album`) VALUES(:owner,:type,:elementId,:albumId)",
+      $tmpRes = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`,`type`,`element`,`album`) VALUES(:owner,:type,:elementId,:albumId)",
         array(':owner' => $this->owner, ':type' => $type, ':elementId' => $elementId, ':albumId' => $albumId));
+      $res = $res && $tmpRes !== 0;
     }
     return $res !== false;
   }
@@ -816,9 +825,7 @@ class DatabaseMySql implements DatabaseInterface
     $params = $this->prepareCredential($params);
     $bindings = array();
     if(isset($params['::bindings']))
-    {
       $bindings = $params['::bindings'];
-    }
     $stmt = $this->sqlUpdateExplode($params, $bindings);
     $bindings[':id'] = $id;
     $bindings[':owner'] = $this->owner;
@@ -897,12 +904,15 @@ class DatabaseMySql implements DatabaseInterface
     {
       if(isset($params['groups']))
       {
-        if(!is_array($params['groups']))
-          $params['groups'] = (array)explode(',', $params['groups']);
-        $this->deleteGroupsFromElement($id, 'photo');
-        $this->addGroupsToElement($id, $params['groups'], 'photo');
+        $this->updateGroupToPhotoMapping($id, $params['groups']);
         // TODO: Generalize this and use for tags too -- @jmathai
-        $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), implode(',', $params['groups']));
+        $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['groups']);
+      }
+      if(isset($params['albums']))
+      {
+        $this->updateAlbumToPhotoMapping($id, $params['albums']);
+        // TODO: Generalize this and use for tags too -- @jmathai
+        $params['albums'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['albums']);
       }
       $params = $this->preparePhoto($id, $params);
       unset($params['id']);
@@ -1118,6 +1128,18 @@ class DatabaseMySql implements DatabaseInterface
     $tags = null;
     if(isset($params['tags']) && !empty($params['tags']))
       $tags = (array)explode(',', $params['tags']);
+    if(isset($params['groups']))
+    {
+      $this->updateGroupToPhotoMapping($id, $params['groups']);
+      // TODO: Generalize this and use for tags too -- @jmathai
+      $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['groups']);
+    }
+    if(isset($params['albums']))
+    {
+      $this->updateAlbumToPhotoMapping($id, $params['albums']);
+      // TODO: Generalize this and use for tags too -- @jmathai
+      $params['albums'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['albums']);
+    }
     $params = $this->preparePhoto($id, $params);
     $bindings = $params['::bindings'];
     $stmt = $this->sqlInsertExplode($params, $bindings);
@@ -1205,6 +1227,39 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Insert albums into the mapping table
+    *
+    * @param string $id Element id (id of the photo or video)
+    * @param string $albums Album IDs to be added
+    * @param string $type Element type (photo or video)
+    * @return boolean
+    */
+  private function addAlbumsToElement($id, $albums, $type)
+  {
+    if(empty($id) || empty($albums) || empty($type))
+      return false;
+
+    $hasAlbum = false;
+    $sql = "REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`, `type`, `element`, `album`) VALUES";
+    foreach($albums as $album)
+    {
+      if(strlen($album) > 0)
+      {
+        $sql .= sprintf("('%s', '%s', '%s', '%s'),", $this->_($this->owner), $this->_($type), $this->_($id), $this->_($album));
+        $hasAlbum = true;
+      }
+    }
+
+    if(!$hasAlbum)
+      return false;
+
+    $sql = substr($sql, 0, -1);
+    $res = $this->db->execute($sql);
+
+    return $res !== false;
+  }
+
+  /**
     * Add members to a group
     *
     * @param string $id Group id
@@ -1229,7 +1284,7 @@ class DatabaseMySql implements DatabaseInterface
     * Insert groups into the mapping table
     *
     * @param string $id Element id (id of the photo or video)
-    * @param string $tag Tag to be added
+    * @param string $groups Groups to be added
     * @param string $type Element type (photo or video)
     * @return boolean
     */
@@ -1292,6 +1347,11 @@ class DatabaseMySql implements DatabaseInterface
       {
         switch($name)
         {
+          case 'album':
+            $subquery = sprintf("`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `{$this->mySqlTablePrefix}elementAlbum`.`owner`='%s' AND `type`='%s' AND `album`='%s')",
+              $this->_($this->owner), 'photo', $value);
+            $where = $this->buildWhere($where, $subquery);
+            break;
           case 'hash':
             $hash = $this->_($value);
             $where = $this->buildWhere($where, "hash='{$hash}'");
@@ -1301,16 +1361,13 @@ class DatabaseMySql implements DatabaseInterface
               $value = (array)explode(',', $value);
             foreach($value as $k => $v)
               $value[$k] = $this->_($v);
-            $subquery = sprintf("(id IN (SELECT element FROM `{$this->mySqlTablePrefix}elementGroup` WHERE `{$this->mySqlTablePrefix}elementGroup`.`owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
+            $subquery = sprintf("(`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementGroup` WHERE `{$this->mySqlTablePrefix}elementGroup`.`owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
               $this->_($this->owner), 'photo', implode("','", $value));
             $where = $this->buildWhere($where, $subquery);
             break;
           case 'page':
             if($value > 1)
-            {
-              $value = min($value, 40); // 40 pages at max of 2,500 recursion limit means 100k photos
               $offset = intval(($limit * $value) - $limit);
-            }
             break;
           case 'permission':
             $where = $this->buildWhere($where, "`permission`='1'");
@@ -1392,6 +1449,18 @@ class DatabaseMySql implements DatabaseInterface
       return "where {$add} ";
     else
       return "{$existing} and {$add} ";
+  }
+
+  /**
+    * Delete albums for an element from the mapping table
+    *
+    * @param string $id Element id
+    * @return boolean
+    */
+  private function deleteAlbumsFromElement($id)
+  {
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `type`=:type AND `element`=:album", array(':owner' => $this->owner, ':type' => 'photo', ':album' => $id));
+    return $res !== false;
   }
 
   /**
@@ -1484,15 +1553,17 @@ class DatabaseMySql implements DatabaseInterface
     if(empty($raw))
       return $raw;
 
-    $raw['coverId'] = $raw['coverPhoto'] = null;
+    $raw['cover'] = null;
     if(!empty($raw['extra']))
     {
       $extra = json_decode($raw['extra'], 1);
-      if(isset($extra['coverId']))
-        $raw['coverId'] = $extra['coverId'];
-      if(isset($extra['coverPhoto']))
-        $raw['coverPhoto'] = $extra['coverPhoto'];
+      if(isset($extra['cover']))
+        $raw['cover'] = $extra['cover'];
     }
+    if(empty($raw['groups']))
+      $raw['groups'] = array();
+    else
+      $raw['groups'] = (array)explode(',', $raw['groups']);
     unset($raw['extra']);
     return $raw;
   }
@@ -1520,8 +1591,20 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
 
-    $photo['tags'] = strlen($photo['tags']) ? (array)explode(",", $photo['tags']) : array();
-    $photo['groups'] = strlen($photo['groups']) ? (array)explode(",", $photo['groups']) : array();
+    if(isset($photo['albums']) && strlen($photo['albums']) > 0)
+      $photo['albums'] = (array)explode(',', $photo['albums']);
+    else
+      $photo['albums'] = array();
+
+    if(isset($photo['groups']) && strlen($photo['groups']) > 0)
+      $photo['groups'] = (array)explode(',', $photo['groups']);
+    else
+      $photo['groups'] = array();
+
+    if(isset($photo['tags']) && strlen($photo['tags']) > 0)
+      $photo['tags'] = (array)explode(',', $photo['tags']);
+    else
+      $photo['tags'] = array();
 
     $exif = (array)json_decode($photo['exif']);
     $extra = (array)json_decode($photo['extra']);
@@ -1595,6 +1678,16 @@ class DatabaseMySql implements DatabaseInterface
   {
     if(isset($params['data']))
       $params['data'] = json_encode($params['data']);
+
+    return $params;
+  }
+
+  /** Prepare album to store in the database
+   */
+  private function prepareAlbum($params)
+  {
+    if(isset($params['extra']))
+      $params['extra'] = json_encode($params['extra']);
 
     return $params;
   }
@@ -1697,7 +1790,8 @@ class DatabaseMySql implements DatabaseInterface
    */
   private function prepareUser($params)
   {
-    $ret = $extra = array();
+    $ret = array('extra' => '', 'password' => '');
+    $extra = array();
     if(isset($params) && is_array($params) && !empty($params))
     {
       foreach($params as $key => $val)
@@ -1740,7 +1834,7 @@ class DatabaseMySql implements DatabaseInterface
     {
       // TODO this is gonna fail if we already have the version -- hfiguiere
       // Possibly use REPLACE INTO? -- jmathai
-      $result = $this->db->execute("INSERT INTO {$this->mySqlTablePrefix}photoVersion (`id`, `owner`, `key`, `path`) VALUES(:id, :owner, :key, :value)",
+      $result = $this->db->execute("REPLACE INTO {$this->mySqlTablePrefix}photoVersion (`id`, `owner`, `key`, `path`) VALUES(:id, :owner, :key, :value)",
         array(':id' => $id, ':owner' => $this->owner, ':key' => $key, ':value' => $value));
     }
     // TODO, what type of return value should we have here -- jmathai
@@ -1804,6 +1898,41 @@ class DatabaseMySql implements DatabaseInterface
     }
     return $stmt;
   }
+
+  /**
+   * Update the mapping table for albums<->photos
+   *
+   * @param string $id ID of the photo
+   * @param array $albums Albums
+   * @return string
+   */
+  private function updateAlbumToPhotoMapping($id, $albums)
+  {
+    if(!is_array($albums))
+      $albums = (array)explode(',', $albums);
+    $this->deleteAlbumsFromElement($id, 'photo');
+    if(!empty($albums))
+      $this->addAlbumsToElement($id, $albums, 'photo');
+  }
+
+
+  /**
+   * Update the mapping table for groups<->photos
+   *
+   * @param string $id ID of the photo
+   * @param array $groups Groups
+   * @return string
+   */
+  private function updateGroupToPhotoMapping($id, $groups)
+  {
+    if(!is_array($groups))
+      $groups = (array)explode(',', $groups);
+    $this->deleteGroupsFromElement($id, 'photo');
+    if(!empty($groups))
+      $this->addGroupsToElement($id, $groups, 'photo');
+
+  }
+
 
   /**
    * Wrapper function for escaping strings for queries

@@ -1,7 +1,5 @@
 <div class="manage groups">
 
-  <?php echo $navigation; ?>
-  
   <div class="row hero-unit blurb">
     <h2>What are groups?</h2>
     <p>
@@ -17,17 +15,7 @@
     </p>
   </div>
 
-  <form class="well group-post-submit" action="/group/create">
-    <h3>Create a new group</h3>
-    <label>Name</label>
-    <input type="text" name="name">
-
-    <label>Add an email address</label>
-    <input type="text" class="group-email-input">&nbsp;&nbsp;&nbsp;<a href="#" class="group-email-add-click">Add</a>
-    <ul class="group-emails-add-list unstyled">
-    </ul>
-    <button class="btn btn-primary">Create</button>
-  </form>
+  <?php echo $groupAddForm; ?>
 
   <?php foreach($groups as $group) { ?>
     <form class="well group-post-submit" action="/group/<?php $this->utility->safe($group['id']); ?>/update">
@@ -42,7 +30,7 @@
           <li><span class="group-email-queue"><?php $this->utility->safe($member); ?></span> <a href="#" class="group-email-remove-click"><i class="group-email-remove-click icon-minus-sign"></i></a></li>
         <?php } ?>
       </ul>
-      <button class="btn">Save</button>&nbsp;&nbsp;&nbsp;<a class="group-delete-click" href="/group/<?php $this->utility->safe($group['id']); ?>/delete">Or delete</a>
+      <button class="btn"><i class="icon-save icon-large"></i> Save</button>&nbsp;&nbsp;&nbsp;<a class="group-delete-click" href="/group/<?php $this->utility->safe($group['id']); ?>/delete">Or delete</a>
     </form>
   <?php } ?>
 </div>

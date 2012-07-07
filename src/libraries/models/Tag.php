@@ -26,6 +26,11 @@ class Tag extends BaseModel
     return $this->db->deleteTag($id);
   }
 
+  public function getTags($filters = null)
+  {
+    return $this->db->getTags($filters);
+  }
+
   /**
     * Updates count values in tags when an object is updates.
     * Keeps track of # of objects tagged in the Tag object itself.

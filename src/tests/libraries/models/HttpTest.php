@@ -1,14 +1,14 @@
 <?php
-$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
-require_once sprintf('%s/libraries/models/BaseModel.php', $baseDir);
-require_once sprintf('%s/libraries/models/Http.php', $baseDir);
-
 class HttpWrapper extends Http
 {
   protected function generateCommand($method, $paramsAsString, $url)
   {
-    return 'pwd';
+    return sprintf('%s.%s.%s', $method, $paramsAsString, $url);
+  }
+
+  protected function executeCommand($command)
+  {
+    return array($command);
   }
 }
 
@@ -21,9 +21,24 @@ class HttpTest extends PHPUnit_Framework_TestCase
 
   public function testFireAndForget()
   {
-    exec('pwd', $cwd);
-    $cwd = $cwd[0];
-    $res = $this->http->fireAndForget('http://google.com/fake');
-    $this->assertEquals($cwd, $res[0], 'The return for the fireAndForget test should be current working directory');
+    $url = 'http://google.com/fake';
+    $res = $this->http->fireAndForget($url);
+    $this->assertEquals("'GET'..'{$url}'", $res[0], 'The return for the fireAndForget test should be current working directory');
+  }
+
+  public function testFireAndForgetWithParams()
+  {
+    $url = 'http://google.com/fake';
+    $params = array('key' => 'value');
+    $res = $this->http->fireAndForget($url, 'GET', $params);
+    $this->assertEquals("'GET'.-F 'key=value' .'{$url}'", $res[0], 'The return for the fireAndForget test should be current working directory');
+  }
+
+  public function testFireAndForgetWithUserPass()
+  {
+    $url = 'http://google.com/fake';
+    $params = array('key' => 'value', '-u' => 'user:pass');
+    $res = $this->http->fireAndForget($url, 'GET', $params);
+    $this->assertEquals("'GET'.-F 'key=value' -u 'user:pass' .'{$url}'", $res[0], 'The return for the fireAndForget test should be current working directory');
   }
 }

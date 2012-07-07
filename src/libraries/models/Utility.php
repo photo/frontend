@@ -198,6 +198,11 @@ class Utility
     $route = $_GET['__route__'];
     switch($label)
     {
+      case 'album':
+      case 'albums':
+        if(!empty($route) && preg_match('#^/album#', $route))
+          return true;
+        break;
       case 'home':
         if(preg_match('#^/$#', $route))
           return true;
@@ -382,14 +387,4 @@ class Utility
     }
     return $headers;
   }
-}
-
-function getUtility()
-{
-  static $utility;
-  if($utility)
-    return $utility;
-
-  $utility = new Utility;
-  return $utility;
 }

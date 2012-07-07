@@ -107,16 +107,3 @@ class AssetPipeline
     return str_replace('../', "{$pathToFile}/../", $contents);
   }
 }
-
-function getAssetPipeline($new = false)
-{
-  if($new)
-    return new AssetPipeline;
-
-  static $assetPipeline;
-  if($assetPipeline)
-    return $assetPipeline;
-
-  $assetPipeline = new AssetPipeline;
-  return $assetPipeline;
-}

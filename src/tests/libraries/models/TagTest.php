@@ -1,9 +1,4 @@
 <?php
-$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
-require_once sprintf('%s/libraries/models/BaseModel.php', $baseDir);
-require_once sprintf('%s/libraries/models/Tag.php', $baseDir);
-
 class TagTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()
@@ -184,6 +179,19 @@ class TagTest extends PHPUnit_Framework_TestCase
     $this->assertEquals(10, $res[3]['weight']);
   }
 
+  public function testRemoveEmptyTags()
+  {
+    $db = $this->getMock('Db', array('getTags'));
+    $tags = array(
+      array('id' => '', 'count' => 1)
+    );
+    $db->expects($this->any())
+      ->method('getTags')
+      ->will($this->returnValue(array()));
+    $this->tag->inject('db', $db);
+    $res = $this->tag->getTags();
+    $this->assertEquals(array(), $res, 'Empty tags should be removed');
+  }
   public function testSanitize()
   {
     $res = $this->tag->sanitize('foo,bar');

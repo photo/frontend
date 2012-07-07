@@ -1,8 +1,4 @@
 <?php
-$baseDir = dirname(dirname(dirname(dirname(__FILE__))));
-require_once sprintf('%s/tests/helpers/init.php', $baseDir);
-require_once sprintf('%s/libraries/models/Utility.php', $baseDir);
-
 class EpiRoute
 {
   const httpGet = 'GET';
@@ -58,6 +54,10 @@ class UtilityTest extends PHPUnit_Framework_TestCase
 
   public function testDecrypt()
   {
+    if (!extension_loaded('mcrypt')) {
+      $this->markTestSkipped("Test requires ext/mcrypt");
+      return;
+    }
     $res = $this->utility->decrypt('string', 'secret', 'salt');
     $this->assertEquals('lOHFbOH4AD+cpcRh1FcDte9DAapMDzqIHrwFz5DvxD4=', base64_encode($res), 'decrypted string is not correct');
   }
@@ -79,6 +79,10 @@ class UtilityTest extends PHPUnit_Framework_TestCase
 
   public function testEncrypt()
   {
+    if (!extension_loaded('mcrypt')) {
+      $this->markTestSkipped("Test requires ext/mcrypt");
+      return;
+    }
     $res = $this->utility->encrypt('string', 'secret', 'salt');
     $this->assertEquals('b2ljK3AzRVE3Tk56N0FNd3dlUFRLMWRHaHh3QnVReG8wdFRHdktYczRFWT0=', base64_encode($res), 'encrypted string is not correct');
   }

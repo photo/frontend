@@ -109,6 +109,10 @@ Search for the following values and make sure they're correct.
     file_uploads = On
     upload_max_filesize = 16M
     post_max_size = 16M
+    
+Search for, and if needed add the following line to load the Oauth Extention.
+
+    extension=oauth.so
 
 Now you're ready to restart apache and visit the site in your browser.
 

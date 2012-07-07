@@ -33,8 +33,11 @@ $apiObj->post('/?v?1?/activity/create.json', array('ApiActivityController', 'cre
  * /album[s][/:id]/{action}.json
  */
 $apiObj->post('/?v?1?/album/create.json', array('ApiAlbumController', 'create'), EpiApi::external); // post an activity (/activity/create.json)
+$apiObj->post('/?v?1?/album/([a-zA-Z0-9]+)/delete.json', array('ApiAlbumController', 'delete'), EpiApi::external); // post an activity (/activity/create.json)
+$apiObj->get('/?v?1?/album/form.json', array('ApiAlbumController', 'form'), EpiApi::external); // post an activity (/activity/create.json)
 $apiObj->post('/?v?1?/album/([a-zA-Z0-9]+)/(photo)/(add|remove).json', array('ApiAlbumController', 'updateIndex'), EpiApi::external); // post an action (/action/{id}/{type}/{action}.json)
 $apiObj->get('/?v?1?/albums/list.json', array('ApiAlbumController', 'list_'), EpiApi::external); // retrieve activities (/albums/list.json)
+$apiObj->post('/?v?1?/album/([a-zA-Z0-9]+)/update.json', array('ApiAlbumController', 'update'), EpiApi::external); // update an album (/album/{id}/update.json)
 $apiObj->get('/?v?1?/album/([a-zA-Z0-9]+)/view.json', array('ApiAlbumController', 'view'), EpiApi::external); // retrieve activity (/activity/:id/view.json)
 
 /*
@@ -62,6 +65,7 @@ $apiObj->post('/?v?1?/photo/upload.json', array('ApiPhotoController', 'upload'),
 $apiObj->get('/?v?1?/photo/([a-zA-Z0-9]+)/url/(\d+)x(\d+)x?([A-Zx]*)?.json', array('ApiPhotoController', 'dynamicUrl'), EpiApi::external); // generate a dynamic photo url (/photo/{id}/url/{options}.json) TODO, make internal for now
 $apiObj->get('/?v?1?/photo/([a-zA-Z0-9]+)/nextprevious/?(.+)?.json', array('ApiPhotoController', 'nextPrevious'), EpiApi::external); // get a photo's next/previous (/photo/{id}/nextprevious[/{options}].json)
 //$apiObj->post('/photo/([a-zA-Z0-9]+)/create/([a-z0-9]+)/([0-9]+)x([0-9]+)x?(.*).json', array('ApiPhotoController', 'dynamic'), EpiApi::external);
+$apiObj->post('/?v?1?/photo/([a-zA-Z0-9]+)/transform.json', array('ApiPhotoController', 'transform'), EpiApi::external); // transform a photo
 
 /*
  * Tag endpoints
@@ -101,6 +105,7 @@ $apiObj->post('/?v?1?/oauth/([a-zA-Z0-9]+)/delete.json', array('ApiOAuthControll
  */
 $apiObj->post('/?v?1?/group/create.json', array('ApiGroupController', 'create'), EpiApi::external);
 $apiObj->post('/?v?1?/group/([a-zA-Z0-9]+)/delete.json', array('ApiGroupController', 'delete'), EpiApi::external);
+$apiObj->get('/?v?1?/group/form.json', array('ApiGroupController', 'form'), EpiApi::external);
 $apiObj->post('/?v?1?/group/([a-zA-Z0-9]+)/update.json', array('ApiGroupController', 'update'), EpiApi::external);
 $apiObj->get('/?v?1?/group/([a-zA-Z0-9]+)/view.json', array('ApiGroupController', 'view'), EpiApi::external);
 $apiObj->get('/?v?1?/groups/list.json', array('ApiGroupController', 'list_'), EpiApi::external);

@@ -26,20 +26,30 @@
       </label>
     </div>
   </div>
+
+  <?php if(count($albums) > 0) { ?>
+    <div class="control-group">
+      <label class="control-label">Albums</label>
+      <select class="typeahead" data-placeholder="Select albums for these photos" multiple  name="albums[]" id="upload-albums">
+        <?php foreach($albums as $album) { ?>
+          <option value="<?php $this->utility->safe($album['id']); ?>" <?php if(isset($photo['albums']) && in_array($album['id'], $photo['albums'])) { ?> selected="selected" <?php } ?>>
+            <?php $this->utility->safe($album['name']); ?>
+          </option>
+        <?php } ?>
+      </select>
+    </div>
+  <?php } ?>
+
   <?php if(count($groups) > 0) { ?>
     <div class="control-group">
       <label class="control-label">Groups</label>
-      <div class="controls">
-        <label class="checkbox inline">
-          <input type="checkbox" id="group-none" name="groups[]" value="" <?php if(empty($photo['groups'])) { ?> checked="checked" <?php } ?> class="group-checkbox-click group-checkbox none"> None
-        </label>
+      <select class="typeahead" data-placeholder="Select groups for these photos" multiple  name="groups[]" id="upload-groups">
         <?php foreach($groups as $group) { ?>
-          <label class="checkbox inline">
-            <input type="checkbox" name="groups[]" value="<?php $this->utility->safe($group['id']); ?>" <?php if(isset($photo['groups']) && in_array($group['id'], $photo['groups'])) { ?> checked="checked" <?php } ?> class="group-checkbox-click group-checkbox">
+          <option value="<?php $this->utility->safe($group['id']); ?>" <?php if(isset($photo['groups']) && in_array($group['id'], $photo['groups'])) { ?> selected="selected" <?php } ?>>
             <?php $this->utility->safe($group['name']); ?>
-          </label>
+          </option>
         <?php } ?>
-      </div>
+      </select>
     </div>
   <?php } ?>
 

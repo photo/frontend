@@ -125,13 +125,3 @@ class UserConfig
     return $configFile;
   }
 }
-
-function getUserConfig()
-{
-  static $userConfig;
-  if($userConfig)
-    return $userConfig;
-
-  $userConfig = new UserConfig;
-  return $userConfig;
-}

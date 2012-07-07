@@ -28,8 +28,18 @@ class ApiBaseController
     $this->session = getSession();
     $this->logger = getLogger();
     $this->template = getTemplate();
+    $this->theme = getTheme();
     $this->utility = new Utility;
     $this->url = new Url;
+
+    $this->template->template = $this->template;
+    $this->template->config = $this->config;
+    $this->template->plugin = $this->plugin;
+    $this->template->session = $this->session;
+    $this->template->theme = $this->theme;
+    $this->template->utility = $this->utility;
+    $this->template->url = $this->url;
+    $this->template->user = new User;
 
     $this->apiVersion = Request::getApiVersion();
   }
