@@ -301,7 +301,11 @@ class DatabaseMySql implements DatabaseInterface
     if($limit === 0)
       $limit = 10;
     $offset = (int)$offset;
-    $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+    if($this->owner === $email)
+      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+    else
+      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `visible`=1 LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+
 
     if(empty($albums))
       return false;
