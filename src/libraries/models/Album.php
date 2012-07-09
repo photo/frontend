@@ -58,9 +58,6 @@ class Album extends BaseModel
 
     if(!$this->user->isOwner())
     {
-      if($this->isAlbumEmpty($album))
-        return false;
-
       if(!$this->isAlbumCoverVisible($album))
         $album['cover'] = null;
     }
@@ -75,23 +72,21 @@ class Album extends BaseModel
   {
     if($email === null)
       $email = $this->user->getEmailAddress();
-
+    
     $albums = $this->db->getAlbums($email, $limit, $offset);
     if(empty($albums))
-      return $albums;
-
+      return false;
+    
     if(!$this->user->isOwner())
     {
       foreach($albums as $key => $alb)
       {
         // first check if album is empty, else check cover visibility
-        if($this->isAlbumEmpty($alb))
-          unset($albums[$key]);
-        elseif(!$this->isAlbumCoverVisible($alb))
+        if(!$this->isAlbumCoverVisible($alb))
           $albums[$key]['cover'] = null;
       }
     }
-
+    
     return $albums;
   } 
 
@@ -122,18 +117,9 @@ class Album extends BaseModel
     return false;
   }
 
-  private function isAlbumEmpty($album)
-  {
-    $photoResp = $this->api->invoke("/photos/album-{$album['id']}/list.json", EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
-    if($photoResp['result'][0]['totalRows'] > 0)
-      return false;
-
-    return true;
-  }
-
   private function whitelistParams($params)
   {
-    $matches = array('name' => 1,'groups' => 1, 'extra' => 1,'count' => 1,'permission' => 1);
+    $matches = array('name' => 1,'groups' => 1, 'extra' => 1,'count' => 1,'visible' => 1);
     foreach($params as $key => $val)
     {
       if(!isset($matches[$key]))
