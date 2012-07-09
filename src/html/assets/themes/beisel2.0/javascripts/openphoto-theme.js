@@ -197,6 +197,7 @@ var opTheme = (function() {
             params = {};
 
         params['name'] = $('input[name="name"]', form).val();
+        params['visible'] = $('input[name="visible"]:checked', form).val();
         params['crumb'] = crumb.get();
         if(params['name'].length == 0) {
           opTheme.message.error('Please enter a name for your album.');
