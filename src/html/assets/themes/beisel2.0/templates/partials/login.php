@@ -6,7 +6,7 @@
 			<div class="modal-body">
 				<div class="row-fluid">
 					<div class="span6">
-						<strong>Sign in using BrowserID:</strong><br />
+						<strong>Sign in using Mozilla Persona:</strong><br />
             <img src="<?php $this->theme->asset('image', 'browserid-login.png'); ?>" class="login-click browserid pointer"/>
 					</div>
           <?php if($this->plugin->isActive('FacebookConnect') || $this->plugin->isActive('FacebookConnectHosted')) { ?>
