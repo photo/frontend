@@ -9,7 +9,7 @@ class Emailer extends BaseModel
     $this->message->setFrom($this->config->emailer->from);
     if(isset($this->config->emailer->host))
     {
-      $this->transport = Swift_SmtpTransport::newInstance($this->config->emailer->host, $this->config->emailer->port);
+      $this->transport = Swift_SmtpTransport::newInstance($this->config->emailer->host, $this->config->emailer->port, $this->config->emailer->security);
       if(isset($this->config->emailer->username))
         $this->transport->setUsername($this->config->emailer->username);
       if(isset($this->config->emailer->password))
