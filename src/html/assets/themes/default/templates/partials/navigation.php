@@ -2,6 +2,9 @@
   <li id="nav-photos" <?php if($this->utility->isActiveTab('photos')) { ?> class="on" <?php } ?>>
     <a href="<?php $this->url->photosView(); ?>">Photos</a>
   </li>
+  <li id="nav-albums" <?php if($this->utility->isActiveTab('albums')) { ?> class="on" <?php } ?>>
+    <a href="<?php $this->url->albumsView(); ?>">Albums</a></li>
+  </li>
   <li id="nav-tags" <?php if($this->utility->isActiveTab('tags')) { ?> class="on" <?php } ?>>
     <a href="<?php $this->url->tagsView(); ?>">Tags</a>
   </li>
