@@ -594,7 +594,7 @@ class SetupController extends BaseController
 	}
       }
       catch(Exception $e) {
-	// TODO deal with the error
+	getLogger()->warn($e->getMessage());
       }
 
       if($fsErrors === false && $dbErrors === false)
