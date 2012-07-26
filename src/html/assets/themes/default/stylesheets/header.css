@@ -53,6 +53,10 @@ nav .on {
     background: url(../images/header-navigation-tags.png) 0 .2em no-repeat;
 }
 
+#nav-albums a {
+    background: url(../images/header-navigation-albums.png) 0 .2em no-repeat;
+}
+
 #nav-search a {
     background: url(../images/header-navigation-search.png) 0 .2em no-repeat;
 }
