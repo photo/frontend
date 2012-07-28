@@ -25,7 +25,7 @@
 
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>" rel="stylesheet">
-      <link href="<?php $this->theme->asset('stylesheet', 'font-awesome.css'); ?>" rel="stylesheet">
+      <link href="/assets/stylesheets/font-awesome.css" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'chosen.css'); ?>" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'opme.css'); ?>" rel="stylesheet">
       <link href="/assets/stylesheets/upload.css" rel="stylesheet">

@@ -28,12 +28,11 @@ nav li {
     line-height: 49px;
     
     width: 7em;
-    min-width: 108px;
+    min-width: 88px;
     text-align: center;
 }
 
 nav li a {
-    padding-left: 23px;
     text-decoration: none;
     color: #8A8A8A;
     font-size: 1.1em;
@@ -45,28 +44,6 @@ nav .on {
     background-color: #F8F8F8;
 }
 
-#nav-photos a {
-    background: url(../images/header-navigation-photos.png) 0 .2em no-repeat;
-}
-
-#nav-tags a {
-    background: url(../images/header-navigation-tags.png) 0 .2em no-repeat;
-}
-
-#nav-albums a {
-    background: url(../images/header-navigation-albums.png) 0 .2em no-repeat;
-}
-
-#nav-search a {
-    background: url(../images/header-navigation-search.png) 0 .2em no-repeat;
-}
-
-#nav-upload a {
-    background: url(../images/header-navigation-upload.png) 0 .2em no-repeat;
-}
-#nav-manage a {
-    background: url(../images/header-navigation-login.png) 0 .2em no-repeat;
-}
 #searchbar, #settingsbar {
     display:none;
     background-color: #EFEFEF;
@@ -131,3 +108,22 @@ nav .on {
     border: none;
 }
 
+/// icons
+.icon-picture:before {
+        content:"\f03e";
+}
+.icon-search:before {
+        content:"\f002";
+}
+.icon-th:before {
+        content:"\f00a";
+}
+.icon-tags:before {
+        content:"\f02c";
+}
+.icon-upload-alt:before {
+        content:"\f093";
+}
+.icon-cogs:before {
+        content:"\f085";
+}
