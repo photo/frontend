@@ -258,7 +258,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getAlbum($id, $email)
   {
-    $album = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner",
+    $album = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `id`=:id ",
       array(':id' => $id, ':owner' => $this->owner));
 
     if($album === false)
@@ -297,14 +297,19 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getAlbums($email, $limit = null, $offset = null)
   {
-    $limit = (int)$limit;
-    if($limit === 0)
+    // TODO jmathai, confirm MySql is optimized for a high LIMIT
+    if($limit === null)
       $limit = 10;
+    elseif($limit === 0)
+      $limit = PHP_INT_MAX;
+
+    $limit = (int)$limit;
     $offset = (int)$offset;
+
     if($this->owner === $email)
-      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
     else
-      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `visible`=1 LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `visible`=1 ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
 
 
     if(empty($albums))
