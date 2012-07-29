@@ -1103,6 +1103,7 @@ var opTheme = (function() {
           var albumsArr, album, html = '';
           $.ajax({
             url: '/albums/list.json',
+            data: {pageSize: '0'},
             async: false,
             success: function(response) {
               if(response.code === 200) {
