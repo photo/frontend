@@ -32,7 +32,7 @@ Variables:
 		chmod 775 OpenPhotoRoot/src/html/photos
 		
 		mkdir OpenPhotoRoot/src/userdata
-		chmod 775 OpenPhotoRoot/src/userdata_
+		chmod 775 OpenPhotoRoot/src/userdata
 	
 1. Configure the subdomain or domain.
 Go to the [Dreamhost control panel for managing domains](https://panel.dreamhost.com/index.cgi?tree=domain.manage)
