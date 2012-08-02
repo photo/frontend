@@ -62,6 +62,7 @@ class ApiAlbumController extends ApiBaseController
       $limit = (int)$_GET['pageSize'];
     if(isset($_GET['page']))
       $offset = intval($limit * (int)$_GET['page'] - $limit);
+    // model passes on the email
     $albums = $this->album->getAlbums(null, $limit, $offset);
     if($albums === false)
       return $this->error('Could not retrieve albums', false);

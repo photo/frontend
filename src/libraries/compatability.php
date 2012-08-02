@@ -17,7 +17,7 @@ if(!function_exists('parse_ini_string')){
                 continue;
             
             $tmp = explode("=", $line, 2);
-            $tmp[1] = preg_replace(array('/^"/', '/"$/'), '', $tmp[1]);
+            $tmp[1] = preg_replace(array('/^ ?"/', '/"$/'), '', $tmp[1]);
             if($ProcessSections && $inSect)
                 $return[$inSect][trim($tmp[0])] = ltrim($tmp[1]);
             else

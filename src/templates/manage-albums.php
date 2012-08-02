@@ -8,6 +8,7 @@
       They're similar to tags but have a few key differences.
       <ol>
         <li>The permission for who can view a photo applies even when it's in an album. If your photo is private then only you'll be able to see them in your album.</li>
+        <li>You can specify if an album shows up on the <em>Albums</em> page.</li>
         <li>Albums are fixed unless you explicitly add a photo to it.</li>
         <li>Add photos to an album using the edit form or on the <a href="<?php $this->url->managePhotos(); ?>">manage photos</a> page.</li>
       </ol>
@@ -33,6 +34,20 @@
       </h3>
       <label>Name</label>
       <input type="text" name="name" value="<?php $this->utility->safe($album['name']); ?>">
+
+      <div class="control-group">
+        <label class="control-label">Include on Albums page</label>
+        <div class="controls">
+          <label class="radio inline">
+            <input type="radio" name="visible" value="1" <?php if($album['visible'] == 1 || $album['visible'] == '') { ?> checked="checked" <?php } ?>>
+            Public
+          </label>
+          <label class="radio inline">
+            <input type="radio" name="visible" value="0" <?php if($album['visible'] == 0) { ?> checked="checked" <?php } ?>>
+            Private
+          </label>
+        </div>
+      </div>
       
       <br>
       <button class="btn"><i class="icon-save icon-large"></i> Save</button>&nbsp;&nbsp;&nbsp;<a class="album-delete-click" href="/album/<?php $this->utility->safe($album['id']); ?>/delete">Or delete</a>
