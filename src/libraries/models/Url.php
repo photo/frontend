@@ -129,7 +129,7 @@ class Url
   public function setup($write = true)
   {
     $utilityObj = new Utility;
-    return $utilityObj->returnValue('/setup', $write);
+    return $utilityObj->returnValue('/setup?edit', $write);
   }
 
   public function tagsView($write = true)
