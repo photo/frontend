@@ -189,7 +189,6 @@ class Photo extends BaseModel
     }
 
     $this->image->scale($width, $height, $maintainAspectRatio);
-
     $this->image->write($filename);
     $customPath = $this->generateCustomUrl($photo['pathBase'], $width, $height, $options);
     $key = $this->generateCustomKey($width, $height, $options);

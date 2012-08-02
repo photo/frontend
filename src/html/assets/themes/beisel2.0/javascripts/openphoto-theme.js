@@ -197,6 +197,7 @@ var opTheme = (function() {
             params = {};
 
         params['name'] = $('input[name="name"]', form).val();
+        params['visible'] = $('input[name="visible"]:checked', form).val();
         params['crumb'] = crumb.get();
         if(params['name'].length == 0) {
           opTheme.message.error('Please enter a name for your album.');
@@ -1102,6 +1103,7 @@ var opTheme = (function() {
           var albumsArr, album, html = '';
           $.ajax({
             url: '/albums/list.json',
+            data: {pageSize: '0'},
             async: false,
             success: function(response) {
               if(response.code === 200) {
