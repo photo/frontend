@@ -579,11 +579,23 @@ class SetupController extends BaseController
 
         $dbErrors = array_merge($dbErrors, $dbObj->errors());
       }
-
-      if(getConfig()->get('site')->allowOpenPhotoLogin == 1)
-        $dbObj->putUser(array('password' => sha1(sprintf('%s-%s', $password, getConfig()->get('secrets')->passwordSalt))));
-      else
-        $dbObj->putUser(array('password' => ''));
+      try {
+        if(getConfig()->get('site')->allowOpenPhotoLogin == 1) {
+          if($isEditMode)
+            $dbObj->postUser(array('password' => sha1(sprintf('%s-%s', $password, getConfig()->get('secrets')->passwordSalt))));
+          else
+            $dbObj->putUser(array('password' => sha1(sprintf('%s-%s', $password, getConfig()->get('secrets')->passwordSalt))));
+        }
+        else {
+          if($isEditMode)
+            $dbObj->postUser(array('password' => ''));
+          else
+            $dbObj->putUser(array('password' => ''));
+	}
+      }
+      catch(Exception $e) {
+	getLogger()->warn($e->getMessage());
+      }
 
       if($fsErrors === false && $dbErrors === false)
       {

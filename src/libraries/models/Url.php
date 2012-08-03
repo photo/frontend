@@ -69,6 +69,12 @@ class Url
     return $utilityObj->returnValue(sprintf('/photo/%s/delete', $utilityObj->safe($id, false)), $write);
   }
 
+  public function photoDownload($photo, $write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue(sprintf('/photo/%s/download', $photo['id']), $write);
+  }
+
   public function photoEdit($id, $write = true)
   {
     $utilityObj = new Utility;
@@ -129,7 +135,7 @@ class Url
   public function setup($write = true)
   {
     $utilityObj = new Utility;
-    return $utilityObj->returnValue('/setup', $write);
+    return $utilityObj->returnValue('/setup?edit', $write);
   }
 
   public function tagsView($write = true)

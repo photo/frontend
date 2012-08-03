@@ -43,6 +43,20 @@ class FileSystemDropboxBase
     return true;
   }
 
+  public function getFileUrl($photo)
+  {
+    $directory = urlencode(date($this->directoryMask, $photo['dateTaken']));
+    try
+    {
+      return $this->dropbox->getFileUrl(sprintf('%s/%s/%s', $this->dropboxFolder, $directory, basename($photo['pathOriginal'])));
+    }
+    catch(Exception $e)
+    {
+      getLogger()->crit(sprintf('Could not get Dropbox file URL (%s). Message: %s', $photo['id'], $e->getMessage()));
+      return false;
+    }
+  }
+
   public function diagnostics()
   {
     $diagnostics = array();

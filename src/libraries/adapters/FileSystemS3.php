@@ -55,6 +55,12 @@ class FileSystemS3 implements FileSystemInterface
     return $responses->areOK();
   }
 
+  public function downloadPhoto($photo)
+  {
+    $fp = fopen($photo['pathOriginal'], 'r');
+    return $fp;
+  }
+
   /**
     * Gets diagnostic information for debugging.
     *

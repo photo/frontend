@@ -54,7 +54,7 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
     tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
 
-Assuming that this is a development machine you only need to make the config writable by the user Apache runs as. Most likely `www-data`.
+Assuming that this is a development machine you only need to make the config writable by the user Nginx runs as. Most likely `www-data`.
 
     mkdir /var/www/yourdomain.com/src/userdata
     mkdir /var/www/yourdomain.com/src/html/photos
@@ -74,10 +74,18 @@ You'll need to copy the sample virtual host configuration file from the source t
     cp /var/www/yourdomain.com/src/configs/openphoto-nginx.conf /etc/nginx/sites-enabled/openphoto
 
 You'll need to replace:
-	* The host name (yourdomain.com)
-	* The path where OpenPhoto is installed (/var/www/yourdomain.com/src/html/) 
 
-    /etc/nginx/sites-enabled/openphoto
+* The host name (yourdomain.com)
+* The path where OpenPhoto is installed (/var/www/yourdomain.com/src/html/) 
+
+    `/etc/nginx/sites-enabled/openphoto`
+
+You also need to change the port on which nginx talks to PHP. Change the
+comments in the fastcgi_pass section to look like this:
+
+    #fastcgi_pass 127.0.0.1:9000;
+    # Unix socket is faster and default on Ubuntu/Debian:
+    fastcgi_pass fastcgi_pass unix:/var/run/php5-fpm.sock;
 
 ### PHP
 
