@@ -30,10 +30,10 @@ class ApiPhotoController extends ApiBaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-    $res = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json");
     $status = $this->photo->delete($id);
     if($status)
     {
+      $res = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json");
       $this->tag->updateTagCounts($res['result']['tags'], array(), 1, 1);
       return $this->noContent('Photo deleted successfully', true);
     }
