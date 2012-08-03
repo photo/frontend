@@ -22,9 +22,9 @@
           <li class="grid-item id-<?php $this->utility->safe($alb['id']); ?>">
             <a href="<?php $this->url->photosView(sprintf('album-%s', $alb['id'])); ?>">
               <?php if(empty($alb['cover'])) { ?>
-                <i ></i>
+                <div class="empty-item icon-picture icon-large"></div>
               <?php } else { ?>
-                <img src="<?php $this->utility->safe($alb['cover']['path200x200xCR']); ?>">
+                <div style="background-image:url('<?php $this->utility->safe($alb['cover']['path200x200xCR']); ?>');"></div>
               <?php } ?>
             </a>
             <h5><?php $this->utility->safe($alb['name']); ?></h5>

@@ -16,9 +16,13 @@
 .photo-grid .grid-item {
     float: left;
 }
-.photo-grid .grid-item a img{
+
+.photo-grid .grid-item a div{
     width:200px;
     height:200px;
+    line-height: 200px;
+    font-size: 60px;
+    text-decoration: none;
 }
 
 .grid-200 .grid-item {
@@ -28,13 +32,23 @@
 
 .photo {
 }
-.photo-grid .grid-item a img, .photo {
+.photo-grid .grid-item a div, .grid-item a img, .photo {
   -webkit-box-shadow: 2px 2px 2px #888;
   -moz-box-shadow: 2px 2px 2px #888;
   box-shadow: 2px 2px 2px #888;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
+}
+
+.photo-grid .grid-item .empty-item {
+    width:198px;
+    height:198px;
+    border: 1px solid rgb(204, 204, 204);
+}
+
+.photo-grid .grid-item a:hover {
+    color: rgb(96, 120, 144);
 }
 
 .meta {
