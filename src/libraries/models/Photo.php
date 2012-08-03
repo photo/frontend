@@ -99,6 +99,28 @@ class Photo extends BaseModel
   }
 
   /**
+    * Output the contents of the original photo
+    * Gets a file pointer from the adapter
+    *   which can be a local or remote file
+    *
+    * @param array $photo photo object as returned from the API (not the DB)
+    * @return 
+    */
+  public function download($photo)
+  {
+    $fp = $this->fs->downloadPhoto($photo);
+    if(!$fp)
+      return false;
+
+    header('Content-Description: File Transfer');
+    header('Content-Disposition: attachment; filename='.$photo['filenameOriginal']);
+    while($buffer = fgets($fp, 4096))
+      echo $buffer;
+
+    fclose($fp);
+  }
+
+  /**
     * Versions of a photo are stored by a deterministic key in the database.
     * Given $width, $height and $options this method returns that key.
     *
