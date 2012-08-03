@@ -23,6 +23,13 @@ class FileSystemS3Dropbox extends FileSystemS3 implements FileSystemInterface
     return $this->dropbox->deletePhoto($photo) && parent::deletePhoto($photo);
   }
 
+  public function downloadPhoto($photo)
+  {
+    $url = $this->dropbox->getFileUrl($photo);
+    $fp = fopen($url, 'r');
+    return $fp;
+  }
+
   /**
     * Gets diagnostic information for debugging.
     *

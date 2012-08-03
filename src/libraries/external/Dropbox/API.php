@@ -156,6 +156,21 @@ class Dropbox_API {
     }
 
     /**
+     * Returns a file's signed URL
+     *
+     * @param string $path path
+     * @param string $root Use this to override the default root path (sandbox/dropbox)
+     * @return string
+     */
+    public function getFileUrl($path = '', $root = null) {
+
+        if (is_null($root)) $root = $this->root;
+        $path = str_replace(array('%2F','~'), array('/','%7E'), rawurlencode($path));
+        $url = $this->oauth->fetchUrl($this->api_content_url . 'files/' . $root . '/' . ltrim($path,'/'));
+        return $url;
+    }
+
+    /**
      * Uploads a new file
      *
      * @param string $path Target path (including filename)
