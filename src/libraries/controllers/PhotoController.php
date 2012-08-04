@@ -78,6 +78,33 @@ class PhotoController extends BaseController
   }
 
   /**
+    * Download and output the original source photo
+    * Calls the photo model which writes the data to stdout
+    *
+    * @param string $id ID of the photo to be edited.
+    * @return string Standard JSON envelope
+    */
+  public function download($id)
+  {
+    $userObj = new User;
+    // the API enforces permissions, we just have to check for download privileges
+    if($userObj->isOwner() || $this->config->site->allowOriginalDownload == 1)
+    {
+      $photoResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
+      $photo = $photoResp['result'];
+      if($photoResp['code'] === 200)
+      {
+        // Photo::download returns false on failure
+        // If no failure assume success and die()
+        if($this->photo->download($photo))
+          die();
+      }
+    }
+
+    $this->route->run('/error/404');
+  }
+
+  /**
     * Return makrup for the edit form for the photo by the ID.
     *
     * @param string $id ID of the photo to be edited.
