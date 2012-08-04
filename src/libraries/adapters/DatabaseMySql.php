@@ -1653,7 +1653,10 @@ class DatabaseMySql implements DatabaseInterface
     if(!empty($jsonParsed))
     {
       foreach($jsonParsed as $key => $value)
-        $raw[$key] = $value;
+      {
+        if(!isset($raw[$key]))
+          $raw[$key] = $value;
+      }
     }
     unset($raw['extra'], $raw['password']);
     return $raw;
