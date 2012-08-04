@@ -62,7 +62,7 @@ SQL;
     `groups` text,
     `extra` text,
     `count` int(10) unsigned NOT NULL DEFAULT '0',
-    `permission` tinyint(1) NOT NULL DEFAULT '1',
+    `visible` tinyint(1) NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`,`owner`)
   ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SQL;

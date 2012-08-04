@@ -1,6 +1,9 @@
 /* Author: Florian Maul */
 /* http://www.techbits.de/2011/10/25/building-a-google-plus-inspired-image-gallery/ */
 var Gallery = (function($) {
+	/* ------------ PRIVATE variables ------------ */
+  // Keep track of remaining width on last row
+  var lastRowWidthRemaining = 0;
 
 	/* ------------ PRIVATE functions ------------ */
 
@@ -94,6 +97,14 @@ var Gallery = (function($) {
 	 */
 	var buildImageRow = function(maxwidth, items) {
 		var row = [], len = 0;
+
+    // if the last row has pixels left just fill them
+    if(lastRowWidthRemaining > 0)
+      maxwidth = lastRowWidthRemaining;
+
+    // once adjusted the last row always has maxwidth left
+    lastRowWidthRemaining = maxwidth;
+
 		
 		// each image a has a 3px margin, i.e. it takes 6px additional space
 		var marginsOfImage = 6;
@@ -122,6 +133,7 @@ var Gallery = (function($) {
 
 				// shrink the width of the image by pixelsToRemove
 				item.vwidth = item['photo960x180'][1] - pixelsToRemove;
+        lastRowWidthRemaining -= (item.vwidth+marginsOfImage);
 			}
 		} else {
 			// all images fit in the row, set vx and vwidth
@@ -129,9 +141,9 @@ var Gallery = (function($) {
 				item = row[i];
 				item.vx = 0;
 				item.vwidth = item['photo960x180'][1];
+        lastRowWidthRemaining -= (item.vwidth+marginsOfImage);
 			}
 		}
-
 		return row;
 	};
 	
@@ -181,8 +193,7 @@ var Gallery = (function($) {
 
 		//parent.find("p.page-hr:last").after(imageContainer);
 		parent.append(imageContainer);
-		item.el = imageContainer;
-		return imageContainer;
+    return parseInt(imageContainer.width());
 	};
 	
 	/**
@@ -202,34 +213,29 @@ var Gallery = (function($) {
 	/* ------------ PUBLIC functions ------------ */
 	return {
 		
-		showImages : function(imageContainer, realItems) {
+		showImages : function(photosContainer, realItems) {
 
 			// reduce width by 1px due to layout problem in IE
-			var containerWidth = imageContainer.width() - 1;
+      var containerWidth = photosContainer.width() - 1;
 			
 			// Make a copy of the array
 			var items = realItems.slice();
+
 		
 			// calculate rows of images which each row fitting into
 			// the specified windowWidth.
 			var rows = [];
 			while(items.length > 0) {
+        // set private var to track last row remaining width
 				rows.push(buildImageRow(containerWidth, items));
 			}  
 
 			for(var r in rows) {
 				for(var i in rows[r]) {
 					var item = rows[r][i];
-					if(item.el) {
-						// this image is already on the screen, update it
-						updateImageElement(item);
-					} else {
-						// create this image
-						createImageElement(imageContainer, item);
-					}
+          createImageElement(photosContainer, item);
 				}
 			}
-      imageContainer.append('<br clear="all"/>');
 		}
 	}
 })(jQuery);

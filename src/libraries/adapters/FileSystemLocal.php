@@ -27,6 +27,13 @@ class FileSystemLocal implements FileSystemInterface
     $this->host = $this->config->localfs->fsHost;
   }
 
+  /**
+    * Deletes a photo (and all generated versions) from the file system.
+    * To get a list of all the files to delete we first have to query the database and find out what versions exist.
+    *
+    * @param string $id ID of the photo to delete
+    * @return boolean
+    */
   public function deletePhoto($photo)
   {
     foreach($photo as $key => $value)
@@ -38,6 +45,12 @@ class FileSystemLocal implements FileSystemInterface
       }
     }
     return true;
+  }
+
+  public function downloadPhoto($photo)
+  {
+    $fp = fopen($photo['pathOriginal'], 'r');
+    return $fp;
   }
 
   /**

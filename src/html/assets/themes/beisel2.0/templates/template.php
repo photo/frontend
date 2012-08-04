@@ -25,7 +25,7 @@
 
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>" rel="stylesheet">
-      <link href="<?php $this->theme->asset('stylesheet', 'font-awesome.css'); ?>" rel="stylesheet">
+      <link href="/assets/stylesheets/font-awesome.css" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'chosen.css'); ?>" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'opme.css'); ?>" rel="stylesheet">
       <link href="/assets/stylesheets/upload.css" rel="stylesheet">
@@ -34,11 +34,11 @@
       <![endif]-->
     <?php } else { ?>
       <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
-                                                                  addCss($this->theme->asset('stylesheet', 'font-awesome.css', false))->
+                                                                  addCss("/assets/stylesheets/font-awesome.css")->
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'ae'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'af'); ?>">
       <!--[if IE 7]>
         <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'font-awesome-ie7.css', false))->
                                                                   getUrl(AssetPipeline::css, 'a'); ?>">
@@ -178,7 +178,7 @@
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'ag'); ?>'
+                                                  getUrl(AssetPipeline::js, 'ah'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
