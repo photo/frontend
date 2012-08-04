@@ -68,7 +68,8 @@ class DatabaseMySql implements DatabaseInterface
     // if one fails then don't continue by using the second condition
     $res1 = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner", array(':id' => $id, ':owner' => $this->owner));
     $res2 = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `album`=:album", array(':owner' => $this->owner, ':album' => $id));
-    if(!$res1 || !$res2)
+
+    if($res1 === false || $res2 === false)
       return false;
 
     return true;
