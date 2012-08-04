@@ -9,6 +9,9 @@
   */
 class SetupController extends BaseController
 {
+
+  private $actualTheme;
+
   /**
     * Call the parent constructor
     *
@@ -17,6 +20,7 @@ class SetupController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->actualTheme = $this->theme->getThemeName();
     $this->theme->setTheme(); // defaults
     $this->user = new User;
   }
@@ -51,7 +55,7 @@ class SetupController extends BaseController
       $database = getConfig()->get('systems')->database;
       $filesystem = getConfig()->get('systems')->fileSystem;
     }
-    $theme = $this->theme->getThemeName();
+    $theme = $this->actualTheme;
     $themes = $this->theme->getThemes();
 
     $errors = $this->verifyRequirements($imageLibs);
