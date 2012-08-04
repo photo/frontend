@@ -30,6 +30,7 @@
     <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'settings.css'); ?>">
     <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'setup.css'); ?>">
     <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'message-box.css'); ?>">
+    <link rel="stylesheet" href="/assets/stylesheets/font-awesome.css">
     <link rel="stylesheet" href="/assets/stylesheets/upload.css">
     <?php $this->plugin->invoke('renderHead'); ?>
 </head>
