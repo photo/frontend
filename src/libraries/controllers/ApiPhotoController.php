@@ -506,7 +506,8 @@ class ApiPhotoController extends ApiBaseController
     {
       $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
       $photo = $apiResp['result'];
-      $this->api->invoke("/{$this->apiVersion}/activity/create.json", EpiRoute::httpPost, array('_POST' => array('type' => 'photo-update', 'data' => $photo, 'permission' => $params['permission'])));
+      $permission = isset($params['permission']) ? $params['permission'] : 0;
+      $this->api->invoke("/{$this->apiVersion}/activity/create.json", EpiRoute::httpPost, array('_POST' => array('type' => 'photo-update', 'data' => $photo, 'permission' => $permission)));
       return $this->success("photo {$id} updated", $photo);
     }
 
