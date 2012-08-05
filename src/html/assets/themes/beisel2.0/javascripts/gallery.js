@@ -226,7 +226,6 @@ var Gallery = (function($) {
 			// the specified windowWidth.
 			var rows = [];
 			while(items.length > 0) {
-        // set private var to track last row remaining width
 				rows.push(buildImageRow(containerWidth, items));
 			}  
 
