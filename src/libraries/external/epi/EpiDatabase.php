@@ -135,10 +135,9 @@ class EpiDatabase
       $host = strtok($host,":");
       $port = strtok(":");
 
-
       $dsn = sprintf('%s:host=%s', $this->_type, $host);
       if ($port != '') 
-	$dsn .= sprintf(';port=%s', $port);
+        $dsn .= sprintf(';port=%s', $port);
       if($this->_name != '')
         $dsn .= sprintf(';dbname=%s', $this->_name);
       $dsn .= ';charset=utf8';
