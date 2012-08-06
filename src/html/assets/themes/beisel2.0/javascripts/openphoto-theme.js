@@ -583,6 +583,7 @@ var opTheme = (function() {
             var nextPhoto = $('img.next-photo'), prevPhoto = $('img.previous-photo');
             pushstate.insert(url, pushstate.parse(response));
             util.fetchAndCacheNextPrevious();
+            OP.Util.fire('photo:viewed', {url: location.href});
           });
         }
         return false;
@@ -612,6 +613,7 @@ var opTheme = (function() {
       photoViewModalCb: function(response) {
         util.fetchAndCacheNextPrevious();
         pushstate.insert(location.hash, pushstate.parse(response));
+        OP.Util.fire('photo:viewed', {url: location.href});
       },
       photoUpdate: function(ev) {
         ev.preventDefault();
@@ -952,7 +954,10 @@ var opTheme = (function() {
           }
         },
         photo: {
-          init: function() { util.fetchAndCacheNextPrevious(); }
+          init: function() { 
+            util.fetchAndCacheNextPrevious(); 
+            OP.Util.fire('photo:viewed', {url: location.href});
+          }
         },
         photos: {
           // TODO have a better way of sending data into the JS framework. See #780
