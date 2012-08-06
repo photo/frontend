@@ -28,8 +28,19 @@ class PiwikPlugin extends PluginBase
   {
     parent::renderHead();
     $conf = $this->getConf();
-    return <<<MKP
 
+    // Include the trackPageView code for all pages EXCEPT photo-detail
+    //  photo-detail pages are tracked via the code in renderFooter since
+    //  it can be full page loads or AJAX.
+    $trackInHead = null;
+    if($this->plugin->getData('page') !== 'photo-detail')
+    {
+      $trackInHead = <<<MKP
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+MKP;
+    }
+    return <<<MKP
   <!-- Piwik -->
   <script type="text/javascript">
     var _paq = _paq || [];
@@ -37,8 +48,7 @@ class PiwikPlugin extends PluginBase
       var u=(("https:" == document.location.protocol) ? "https://{$conf->baseUrl}/" : "http://{$conf->baseUrl}/");
       _paq.push(['setSiteId', {$conf->siteId}]);
       _paq.push(['setTrackerUrl', u+'piwik.php']);
-      _paq.push(['trackPageView']);
-      _paq.push(['enableLinkTracking']);
+      {$trackInHead}
       var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript'; g.defer=true; g.async=true; g.src=u+'piwik.js';
       s.parentNode.insertBefore(g,s);
     })();
@@ -53,9 +63,7 @@ MKP;
     return <<<MKP
   <!-- Piwik modal code -->
   <script type="text/javascript">
-  OP.Util.on("click:photo-view-modal", function(){
-    // Wait for modal action to complete. TODO: This can be more elegant.
-    window.setTimeout(function(){
+    OP.Util.on("photo:viewed", function(params){
       // Get the existing tracker instance
       var piwikTracker = Piwik.getAsyncTracker();
       // Get URL and title that were changed by modal
@@ -64,9 +72,8 @@ MKP;
       // Track page view and enable link tracking
       piwikTracker.trackPageView();
       piwikTracker.enableLinkTracking();
-    }, 1000);
-  }, window);
-   </script>
+    });
+  </script>
   <!-- End modal Piwik Code -->
 MKP;
   }
