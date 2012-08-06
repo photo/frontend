@@ -668,7 +668,7 @@ class SetupController extends BaseController
 
   public function getSecret()
   {
-    if(getConfig()->get('secrets') !== null)
+    if(getConfig()->get('secrets') !== null && isset(getConfig()->get('secrets')->secret))
     {
       $secret = getConfig()->get('secrets')->secret;
       getSession()->set('secret', $secret);
