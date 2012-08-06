@@ -129,7 +129,16 @@ class EpiDatabase
 
     try
     {
-      $dsn = sprintf('%s:host=%s', $this->_type, $this->_host);
+      // eventually split host to use a different
+      //  sql port
+      $host = $this->_host;
+      $host = strtok($host,":");
+      $port = strtok(":");
+
+
+      $dsn = sprintf('%s:host=%s', $this->_type, $host);
+      if ($port != '') 
+	$dsn .= sprintf(';port=%s', $port);
       if($this->_name != '')
         $dsn .= sprintf(';dbname=%s', $this->_name);
       $dsn .= ';charset=utf8';
