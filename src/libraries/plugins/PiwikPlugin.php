@@ -42,9 +42,32 @@ class PiwikPlugin extends PluginBase
       var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0]; g.type='text/javascript'; g.defer=true; g.async=true; g.src=u+'piwik.js';
       s.parentNode.insertBefore(g,s);
     })();
-   </script>
+  </script>
   <!-- End Piwik Code -->
-
+MKP;
+  }
+  
+  public function renderFooter()
+  {
+    parent::renderFooter();
+    return <<<MKP
+  <!-- Piwik modal code -->
+  <script type="text/javascript">
+  OP.Util.on("click:photo-view-modal", function(){
+    // Wait for modal action to complete. TODO: This can be more elegant.
+    window.setTimeout(function(){
+      // Get the existing tracker instance
+      var piwikTracker = Piwik.getAsyncTracker();
+      // Get URL and title that were changed by modal
+      piwikTracker.setCustomUrl(window.location);
+      piwikTracker.setDocumentTitle(document.title);
+      // Track page view and enable link tracking
+      piwikTracker.trackPageView();
+      piwikTracker.enableLinkTracking();
+    }, 1000);
+  }, window);
+   </script>
+  <!-- End modal Piwik Code -->
 MKP;
   }
 }
