@@ -1045,7 +1045,7 @@ class DatabaseMySql implements DatabaseInterface
   public function putActivity($id, $params)
   {
     $stmt = $this->sqlInsertExplode($this->prepareActivity($params));
-    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}activity` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $result = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}activity` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return ($result !== false);
   }
 
