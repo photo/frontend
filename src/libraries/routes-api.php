@@ -62,6 +62,7 @@ $apiObj->get('/?v?1?/photos/?(.+)?/list.json', array('ApiPhotoController', 'list
 $apiObj->post('/?v?1?/photos/update.json', array('ApiPhotoController', 'updateBatch'), EpiApi::external); // update multiple photos (/photos/update.json)
 $apiObj->post('/?v?1?/photos/delete.json', array('ApiPhotoController', 'deleteBatch'), EpiApi::external); // delete multiple photos (/photos/delete.json)
 $apiObj->post('/?v?1?/photo/upload.json', array('ApiPhotoController', 'upload'), EpiApi::external); // upload a photo
+$apiObj->post('/?v?1?/photos/upload/confirm.json', array('ApiPhotoController', 'uploadConfirm'), EpiApi::external); // upload a photo
 $apiObj->get('/?v?1?/photo/([a-zA-Z0-9]+)/url/(\d+)x(\d+)x?([A-Zx]*)?.json', array('ApiPhotoController', 'dynamicUrl'), EpiApi::external); // generate a dynamic photo url (/photo/{id}/url/{options}.json) TODO, make internal for now
 $apiObj->get('/?v?1?/photo/([a-zA-Z0-9]+)/nextprevious/?(.+)?.json', array('ApiPhotoController', 'nextPrevious'), EpiApi::external); // get a photo's next/previous (/photo/{id}/nextprevious[/{options}].json)
 //$apiObj->post('/photo/([a-zA-Z0-9]+)/create/([a-z0-9]+)/([0-9]+)x([0-9]+)x?(.*).json', array('ApiPhotoController', 'dynamic'), EpiApi::external);

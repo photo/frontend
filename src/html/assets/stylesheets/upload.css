@@ -21,6 +21,16 @@ body.upload .upload-message img {
   left:-5px;
   top:5px;
 }
+body #modal .upload-preview {
+  padding:5px 0 0;
+  height:110px;
+  overflow:auto;
+}
+body #modal .upload-share .btn {
+  display:block;
+  margin-bottom:5px;
+  width:175px;
+}
 body.upload .insufficient {
   display:none;
 }
