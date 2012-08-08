@@ -1365,6 +1365,12 @@ class DatabaseMySql implements DatabaseInterface
             $hash = $this->_($value);
             $where = $this->buildWhere($where, "hash='{$hash}'");
             break;
+          case 'ids':
+            $ids = (array)explode(',', $value);
+            foreach($ids as $k => $v)
+              $ids[$k] = $this->_($v);
+            $where = $this->buildWhere($where, sprintf("`id` IN ('%s')", implode("','", $ids)));
+            break;
           case 'groups':
             if(!is_array($value))
               $value = (array)explode(',', $value);
