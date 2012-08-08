@@ -1,10 +1,6 @@
-<div class="row hero-unit">
-  <div class="upload-message upload-complete"><img src="/assets/images/checkmark-big.gif" align="absmiddle">All done! Go have a <a href="<?php $this->url->photosView('sortBy-dateUploaded,desc'); ?>">look at your photos</a>.</div>
-  <div class="upload-message upload-warning"><img src="/assets/images/warning-big.png" align="absmiddle">Uh oh! <span class="failed"></span> of <span class="total"></span> photos failed to upload.</div>
+<div class="hide upload-confirm"><?php $this->theme->display('partials/no-content.php', array('type' => 'upload-confirm')); ?></div>
+<div class="row hero-unit upload-container">
   <div class="upload-message upload-progress"><img src="/assets/images/upload-big.gif" align="absmiddle">Currently uploading <span class="completed">0</span> of <span class="total">0</span> photos.</div>
-  <div class="upload-share row">
-    <?php $this->plugin->invoke('renderPhotoUploaded', null); ?>
-  </div>
 
   <form class="upload form-stacked photo-upload-submit" method="post" action="/photo/upload">
     <div class="row">

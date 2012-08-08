@@ -45,6 +45,9 @@ class Tag extends BaseModel
     */
   public function getUpdateTagCountValues($existingTags, $updatedTags, $permission, $priorPermission)
   {
+    // make sure tags are in array form
+    $existingTags = (array)$existingTags;
+    $updatedTags = (array)$updatedTags;
     // we increment public photos by 1 only if they are public
     // if the privacy changes then we add or remove from the increment value
     $publicIncrement = ($permission == 1) ? 1 : 0;

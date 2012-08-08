@@ -69,6 +69,11 @@ class Utility
     return base64_encode($encryptedString);
   }
 
+  public function getAbsoluteUrl($path = '/', $write = true)
+  {
+    return $this->returnValue(sprintf('%s://%s%s', $this->getProtocol(false), $this->getHost(false), $path), $write);
+  }
+
   public function getBaseDir()
   {
     return dirname(dirname(dirname(__FILE__)));
