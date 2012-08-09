@@ -297,7 +297,7 @@ class SetupController extends BaseController
     $password = getSession()->get('password');
     $appId = getSession()->get('appId');
     $database = getSession()->get('database');
-    $filesystem = getSession()->get('filesystem');
+    $filesystem = getSession()->get('fileSystem');
     $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
@@ -396,7 +396,7 @@ class SetupController extends BaseController
     $step = 3;
     $secret = $this->getSecret();
     $database = getSession()->get('database');
-    $filesystem = getSession()->get('filesystem');
+    $filesystem = getSession()->get('fileSystem');
     $appId = getSession()->get('appId');
     $password = getSession()->get('password');
     $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
