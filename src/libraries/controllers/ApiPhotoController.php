@@ -296,6 +296,15 @@ class ApiPhotoController extends ApiBaseController
     // this determines where to get the photo from and populates $localFile and $name
     extract($this->parsePhotoFromRequest());
 
+    // check if file type is valid
+    $utility = new Utility;
+    if(!$utility->isValidMimeType($localFile))
+    {
+      $this->logger->warn(sprintf('Invalid mime type for %s', $localFile));
+      unlink($localFile);
+      return $this->error('Invalid mime type', false);;
+    }
+
     if(isset($attributes['__route__']))
       unset($attributes['__route__']);
     if(isset($attributes['photo']))
