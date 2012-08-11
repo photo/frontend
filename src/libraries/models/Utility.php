@@ -247,6 +247,15 @@ class Utility
     return $this->isMobile;
   }
 
+
+  public function isValidMimeType($filename)
+  {
+    $type = get_mime_type($filename);
+    if(preg_match('/jpg|jpeg|gif|png$/', $type))
+      return true;
+    return false;
+  }
+
   public function getTemplate($template)
   {
     if(!$this->isMobile())
