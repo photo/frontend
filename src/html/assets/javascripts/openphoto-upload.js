@@ -28,7 +28,7 @@ OPU = (function() {
         uploaderEl.pluploadQueue({
             // General settings
             runtimes : 'html5',
-            url : '/photo/upload.json?httpCodes=500,403,404', // omit 409 since it's somewhat idempotent
+            url : '/photo/upload.json', // omit 409 since it's somewhat idempotent
             max_file_size : '32mb',
             file_data_name : 'photo',
             //chunk_size : '1mb',
@@ -68,7 +68,7 @@ OPU = (function() {
                   photosUploaded.duplicate.push(result);
                 } else {
                   log('Unable to upload ' + file.name);
-                  photosUploaded.failure.push(result);
+                  photosUploaded.failure.push(file.name);
                 }
               },
               UploadComplete: function(uploader, files) {

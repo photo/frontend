@@ -224,6 +224,9 @@ RES;
 
   public function testPlural()
   {
+    $res = $this->utility->plural(0, 'word', false);
+    $this->assertEquals('words', $res, 'plural for word with 0 incorrect');
+
     $res = $this->utility->plural(1, 'word', false);
     $this->assertEquals('word', $res, 'plural for word with 1 incorrect');
 
