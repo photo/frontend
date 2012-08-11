@@ -797,8 +797,8 @@ var opTheme = (function() {
         });
       },
       uploadConfirm: function(response) {
-        $(".upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
-        $("#modal").html(markup.modal('Your photos were uploaded successfully', response.result, null)).modal();
+        $("body.upload .upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
+        $("body.upload .upload-confirm").html(response.result).show('fast');
       },
       webhookDelete: function(ev) {
         ev.preventDefault();

@@ -299,9 +299,9 @@ class Utility
   {
     $word = $this->safe($word, false);
     if(empty($word))
-      return $this->returnValue(($int > 1 ? 's' : ''), $write);
+      return $this->returnValue(($int != 1 ? 's' : ''), $write);
     else
-      return $this->returnValue(($int > 1 ? "{$word}s" : $word), $write);
+      return $this->returnValue(($int != 1 ? "{$word}s" : $word), $write);
   }
 
   public function posessive($noun, $write = true)
