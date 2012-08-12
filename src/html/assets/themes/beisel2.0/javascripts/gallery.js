@@ -2,8 +2,10 @@
 /* http://www.techbits.de/2011/10/25/building-a-google-plus-inspired-image-gallery/ */
 var Gallery = (function($) {
 	/* ------------ PRIVATE variables ------------ */
-  // Keep track of remaining width on last row
+  // Keep track of remaining width on last row and date
   var lastRowWidthRemaining = 0;
+  var lastDate = null;
+
 
 	/* ------------ PRIVATE functions ------------ */
 
@@ -14,6 +16,15 @@ var Gallery = (function($) {
 		}
 		return value;
 	};
+
+  var dateSeparator = function(ts) {
+  var calendarContainer = $('<div/>'),
+      a = $('<a/>');
+    calendarContainer.attr('class', 'date-placeholder');
+    a.html('<i class="icon-calendar icon-large""></i> '+phpjs.date('M jS, Y', ts));
+    calendarContainer.append(a);
+    return calendarContainer;
+  };
 
   var parseURL = function(url) {
       //save the unmodified url to href property
@@ -156,6 +167,7 @@ var Gallery = (function($) {
     var qsRe = /(page|returnSizes)=[^&?]+\&?/g;
     var qs = pageObject.pageLocation.search.replace(qsRe, '');
 		var imageContainer = $('<div class="imageContainer"/>');
+    var d = new Date(item.dateTaken*1000);
 
 		var overflow = $("<div/>");
 		overflow.css("width", ""+$nz(item.vwidth, 120)+"px");
@@ -186,12 +198,17 @@ var Gallery = (function($) {
 		overflow.append(link);
 		imageContainer.append(overflow);
 
+    // insert calendar icon
+    currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
+    if(currentDate !== lastDate)
+      imageContainer.prepend(dateSeparator(item.dateTaken));
+    lastDate = currentDate;
+
 		// fade in the image after load
 		img.bind("load", function () { 
 			$(this).fadeIn(400); 
 		});
 
-		//parent.find("p.page-hr:last").after(imageContainer);
 		parent.append(imageContainer);
     return parseInt(imageContainer.width());
 	};

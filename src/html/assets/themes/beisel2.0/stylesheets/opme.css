@@ -4128,6 +4128,14 @@ body.photos .infobar .date {
 .photo-grid-justify > div img {
   max-width:none;
 }
+.photo-grid-justify .imageContainer .date-placeholder {
+  padding:5px;
+  background-color:#fff;
+  font-size:8px;
+}
+.photo-grid-justify .date-placeholder {
+  position:absolute;
+}
 
 .photo-grid {
 	margin:0;
@@ -4161,6 +4169,7 @@ body.photos .infobar .date {
 
 .photo-grid li a {
 	display:block;
+  height:180px;
 }
 
 .photo-grid li a img {
