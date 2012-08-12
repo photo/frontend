@@ -8,6 +8,12 @@ OPU = (function() {
     var bName = b.name;
     return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
   };
+  var photosUploaded = {success: [], failure: [], duplicate: []};
+  var log = function(msg) {
+    if(typeof(console) !== 'undefined' && typeof(console.log) !== 'undefined')
+      console.log(msg);
+  };
+
   return {
       init: function() {
         var uploaderEl = $("#uploader");
@@ -50,6 +56,21 @@ OPU = (function() {
                 queue.sort(sortByFilename);
                 uploader.files = queue;
               },
+              FileUploaded: function(uploader, file, response) {
+                var apiResponse = $.parseJSON(response.response),
+                    code = apiResponse.code,
+                    result = apiResponse.result;
+                if(code === 201) {
+                  log('Successfully uploaded ' + file.name + ' at ' + result.url);
+                  photosUploaded.success.push(result);
+                } else if(code === 409) {
+                  log('Detected a duplicate of ' + file.name);
+                  photosUploaded.duplicate.push(result);
+                } else {
+                  log('Unable to upload ' + file.name);
+                  photosUploaded.failure.push(result);
+                }
+              },
               UploadComplete: function(uploader, files) {
                 var i, file, failed = 0, total = 0;
                 for(i in files) {
@@ -61,9 +82,9 @@ OPU = (function() {
                   }
                 }
                 if(failed === 0) {
-                  OP.Util.fire('upload:complete-success');
+                  OP.Util.fire('upload:complete-success', photosUploaded);
                 } else {
-                  OP.Util.fire('upload:complete-error');
+                  OP.Util.fire('upload:complete-error', photosUploaded);
                 }
 
               },

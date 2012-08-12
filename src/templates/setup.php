@@ -113,8 +113,8 @@
       <?php if(isset($usesMySql) && !empty($usesMySql)) { ?>
         <h3>Enter your MySQL credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
 
-        <label for="mySqlHost">MySQL Host</label>
-        <input type="text" name="mySqlHost" id="mySqlHost" placeholder="Your MySql host (i.e. 127.0.0.1)" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlHost; ?>">
+        <label for="mySqlHost">MySQL Host <em>(port is optional)</em></label>
+        <input type="text" name="mySqlHost" id="mySqlHost" placeholder="Your MySql host (i.e. 127.0.0.1:3306)" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlHost; ?>">
 
         <label for="mySqlUser">MySQL Username</label>
         <input type="text" name="mySqlUser" id="mySqlUser" placeholder="Your MySql username" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlUser; ?>">

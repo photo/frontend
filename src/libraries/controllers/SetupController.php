@@ -447,7 +447,7 @@ class SetupController extends BaseController
       $input = array(
         array('MySQL Host', $mySqlHost, 'required'),
         array('MySQL Username', $mySqlUser, 'required'),
-        array('MySQL Password', $mySqlPassword, 'required'),
+        array('MySQL Password', $mySqlPassword),
         array('MySQL Database', $mySqlDb, 'required')
       );
       $mySqlErrors = getForm()->hasErrors($input);
@@ -565,7 +565,7 @@ class SetupController extends BaseController
       $serverUser = exec("whoami");
       if(!$fsObj->initialize($isEditMode))
       {
-        if($usesAws)
+        if($usesS3)
           $fsErrors[] = 'We were unable to initialize your S3 bucket.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/s3/">signed up for AWS S3</a>.</li><li>Double check your AWS credentials.</li><li>S3 bucket names are globally unique, make sure yours isn\'t already in use by someone else.</li><li>S3 bucket names can\'t have certain special characters. Try using just alpha-numeric characters and periods.</li></ul>';
         else if($usesLocalFs)
           $fsErrors[] = "We were unable to set up your local file system using <em>{$fsObj->getRoot()}</em>. Make sure that the following user has proper permissions ({$serverUser}).";
@@ -574,7 +574,7 @@ class SetupController extends BaseController
       }
       if(!$dbObj->initialize($isEditMode))
       {
-        if($usesAws)
+        if($usesSimpleDb)
           $dbErrors[] = 'We were unable to initialize your SimpleDb domains.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/simpledb/">signed up for AWS SimpleDb</a>.</li><li>Double check your AWS credentials.</li><li>SimpleDb domains cannot contain special characters such as periods.</li><li>Sometimes the SimpleDb create domain API is unstable. Try again later or check the error log if you have access to it.</li></ul>';
         else if($usesMySql)
           $dbErrors[] = 'We were unable to initialize your account in MySql. <ul><li>Please verify that the host, username and password are correct and have proper permissions to create a database.</li><li>Make sure your email address is not already in use.</li></ul>';
@@ -668,7 +668,7 @@ class SetupController extends BaseController
 
   public function getSecret()
   {
-    if(getConfig()->get('secrets') !== null)
+    if(getConfig()->get('secrets') !== null && isset(getConfig()->get('secrets')->secret))
     {
       $secret = getConfig()->get('secrets')->secret;
       getSession()->set('secret', $secret);
