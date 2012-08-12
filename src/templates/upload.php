@@ -1,10 +1,6 @@
-<div class="row hero-unit">
-  <div class="upload-message upload-complete"><img src="/assets/images/checkmark-big.gif" align="absmiddle">All done! Go have a <a href="<?php $this->url->photosView('sortBy-dateUploaded,desc'); ?>">look at your photos</a>.</div>
-  <div class="upload-message upload-warning"><img src="/assets/images/warning-big.png" align="absmiddle">Uh oh! <span class="failed"></span> of <span class="total"></span> photos failed to upload.</div>
+<div class="hide upload-confirm"><?php $this->theme->display('partials/no-content.php', array('type' => 'upload-confirm')); ?></div>
+<div class="row hero-unit upload-container">
   <div class="upload-message upload-progress"><img src="/assets/images/upload-big.gif" align="absmiddle">Currently uploading <span class="completed">0</span> of <span class="total">0</span> photos.</div>
-  <div class="upload-share row">
-    <?php $this->plugin->invoke('renderPhotoUploaded', null); ?>
-  </div>
 
   <form class="upload form-stacked photo-upload-submit" method="post" action="/photo/upload">
     <div class="row">
@@ -28,8 +24,10 @@
         <div class="control-group">
           <label class="control-label">Albums <em>(<a href="/album/form" class="album-form-click">create a new one</a>)</em></label>
           <select data-placeholder="Select albums for these photos" multiple  name="albums" class="typeahead">
-            <?php foreach($albums as $album) { ?>
-              <option value="<?php $this->utility->safe($album['id']); ?>"><?php $this->utility->safe($album['name']); ?></option>
+            <?php if(!empty($albums)) { ?>
+              <?php foreach($albums as $album) { ?>
+                <option value="<?php $this->utility->safe($album['id']); ?>"><?php $this->utility->safe($album['name']); ?></option>
+              <?php } ?>
             <?php } ?>
           </select>
         </div>
@@ -37,8 +35,10 @@
         <div class="control-group">
           <label class="control-label">Groups <em>(<a href="/group/form" class="group-form-click" target="_blank">create a new one</a>)</em></label>
           <select data-placeholder="Select groups for these photos" multiple  name="groups" class="typeahead">
-            <?php foreach($groups as $group) { ?>
-              <option value="<?php $this->utility->safe($group['id']); ?>"><?php $this->utility->safe($group['name']); ?></option>
+            <?php if(!empty($groups)) { ?>
+              <?php foreach($groups as $group) { ?>
+                <option value="<?php $this->utility->safe($group['id']); ?>"><?php $this->utility->safe($group['name']); ?></option>
+              <?php } ?>
             <?php } ?>
           </select>
         </div>

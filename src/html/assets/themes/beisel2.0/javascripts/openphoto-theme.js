@@ -749,6 +749,14 @@ var opTheme = (function() {
           }
         }
       },
+      popup: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            w = el.attr('data-width'),
+            h = el.attr('data-height'),
+            url = el.attr('href');
+        window.open(url, 'openphoto', 'toolbar=0,menubar=0,location=1,directories=0,channelmode=0,width='+w+',height='+h);
+      },
       searchByTags: function(ev) {
         ev.preventDefault();
         var form = $(ev.target),
@@ -778,16 +786,19 @@ var opTheme = (function() {
         }
         $(".typeahead-tags").html(markup).chosen();
       },
-      uploadCompleteSuccess: function() {
+      uploadCompleteSuccess: function(photoResponse) {
         $("form.upload").fadeOut('fast', function() {
-          $(".upload-progress").fadeOut('fast', function() { $(".upload-complete").fadeIn('fast'); });
-          $(".upload-share").fadeIn('fast');
+          OP.Util.makeRequest('/photos/upload/confirm.json', photoResponse, opTheme.callback.uploadConfirm, 'json', 'post');
         });
       },
       uploadCompleteFailure: function() {
         $("form.upload").fadeOut('fast', function() {
           $(".upload-progress").fadeOut('fast', function() { $(".upload-warning .failed").html(failed); $(".upload-warning .total").html(total); $(".upload-warning").fadeIn('fast'); });
         });
+      },
+      uploadConfirm: function(response) {
+        $(".upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
+        $("#modal").html(markup.modal('Your photos were uploaded successfully', response.result, null)).modal();
       },
       webhookDelete: function(ev) {
         ev.preventDefault();
@@ -868,6 +879,7 @@ var opTheme = (function() {
         OP.Util.on('click:pin', opTheme.callback.pinClick);
         OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
         OP.Util.on('click:pin-select-all', opTheme.callback.pinSelectAll);
+        OP.Util.on('click:popup', opTheme.callback.popup);
         OP.Util.on('click:settings', opTheme.callback.settings);
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
 

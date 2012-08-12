@@ -1045,7 +1045,7 @@ class DatabaseMySql implements DatabaseInterface
   public function putActivity($id, $params)
   {
     $stmt = $this->sqlInsertExplode($this->prepareActivity($params));
-    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}activity` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $result = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}activity` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return ($result !== false);
   }
 
@@ -1364,6 +1364,12 @@ class DatabaseMySql implements DatabaseInterface
           case 'hash':
             $hash = $this->_($value);
             $where = $this->buildWhere($where, "hash='{$hash}'");
+            break;
+          case 'ids':
+            $ids = (array)explode(',', $value);
+            foreach($ids as $k => $v)
+              $ids[$k] = $this->_($v);
+            $where = $this->buildWhere($where, sprintf("`id` IN ('%s')", implode("','", $ids)));
             break;
           case 'groups':
             if(!is_array($value))

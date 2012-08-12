@@ -321,7 +321,7 @@ class ApiPhotoController extends ApiBaseController
       if($hashResp['result'][0]['totalRows'] > 0)
       {
         unlink($localFile);
-        return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates pass in allowDuplicate=1', false);
+        return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates pass in allowDuplicate=1', $hashResp['result'][0]);
       }
     }
 
@@ -340,6 +340,7 @@ class ApiPhotoController extends ApiBaseController
       if(isset($attributes['albums']))
         $this->updateAlbums($attributes['albums'], $photoId);
 
+      // jmathai - check where this gets set
       if(isset($returnSizes))
       {
         $sizes = (array)explode(',', $returnSizes);
@@ -385,6 +386,29 @@ class ApiPhotoController extends ApiBaseController
     }
 
     return $this->error('File upload failure', false);
+  }
+
+  /**
+    * Display a confirmation page for the upload
+    *
+    * @return string Standard JSON envelope
+    */
+  public function uploadConfirm()
+  {
+    $params = $_POST;
+    $params['ids'] = array();
+    foreach($params['success'] as $p)
+      $params['ids'][] = $p['id'];
+    $params['ids'] = implode(',', $params['ids']);
+
+    $params['photos'] = array();
+    $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('ids' => $params['ids'], 'returnSizes' => '100x100xCR')));
+    if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
+      $params['photos'] = $photosResp['result'];
+
+    $template = sprintf('%s/uploadConfirm.php', $this->config->paths->templates);
+    $body = $this->template->get($template, $params);
+    return $this->success('Photos uploaded successfully', $body);
   }
 
   /**
@@ -506,7 +530,8 @@ class ApiPhotoController extends ApiBaseController
     {
       $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
       $photo = $apiResp['result'];
-      $this->api->invoke("/{$this->apiVersion}/activity/create.json", EpiRoute::httpPost, array('_POST' => array('type' => 'photo-update', 'data' => $photo, 'permission' => $params['permission'])));
+      $permission = isset($params['permission']) ? $params['permission'] : 0;
+      $this->api->invoke("/{$this->apiVersion}/activity/create.json", EpiRoute::httpPost, array('_POST' => array('type' => 'photo-update', 'data' => $photo, 'permission' => $permission)));
       return $this->success("photo {$id} updated", $photo);
     }
 
