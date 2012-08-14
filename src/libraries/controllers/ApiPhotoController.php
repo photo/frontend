@@ -296,6 +296,15 @@ class ApiPhotoController extends ApiBaseController
     // this determines where to get the photo from and populates $localFile and $name
     extract($this->parsePhotoFromRequest());
 
+    // check if file type is valid
+    $utility = new Utility;
+    if(!$utility->isValidMimeType($localFile))
+    {
+      $this->logger->warn(sprintf('Invalid mime type for %s', $localFile));
+      unlink($localFile);
+      return $this->error('Invalid mime type', false);;
+    }
+
     if(isset($attributes['__route__']))
       unset($attributes['__route__']);
     if(isset($attributes['photo']))
@@ -396,15 +405,28 @@ class ApiPhotoController extends ApiBaseController
   public function uploadConfirm()
   {
     $params = $_POST;
-    $params['ids'] = array();
+    $params['successIds'] = $params['duplicateIds'] = array();
     foreach($params['success'] as $p)
-      $params['ids'][] = $p['id'];
-    $params['ids'] = implode(',', $params['ids']);
+      $params['successIds'][] = $p['id'];
+    foreach($params['duplicate'] as $p)
+      $params['duplicateIds'][] = $params['successIds'][] = $p['id'];
 
-    $params['photos'] = array();
-    $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('ids' => $params['ids'], 'returnSizes' => '100x100xCR')));
-    if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
-      $params['photos'] = $photosResp['result'];
+    $params['successIds'] = implode(',', $params['successIds']);
+    $params['duplicateIds'] = implode(',', $params['duplicateIds']);
+
+    $params['successPhotos'] = $params['duplicatePhotos'] = array();
+    if(count($params['successIds']) > 0)
+    {
+      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('ids' => $params['successIds'], 'returnSizes' => '100x100xCR')));
+      if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
+        $params['successPhotos'] = $photosResp['result'];
+    }
+    if(count($params['duplicateIds']) > 0)
+    {
+      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('ids' => $params['duplicateIds'], 'returnSizes' => '100x100xCR')));
+      if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
+        $params['duplicatePhotos'] = $photosResp['result'];
+    }
 
     $template = sprintf('%s/uploadConfirm.php', $this->config->paths->templates);
     $body = $this->template->get($template, $params);

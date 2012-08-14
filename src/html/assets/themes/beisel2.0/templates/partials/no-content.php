@@ -28,12 +28,8 @@
   <?php } else { // user is logged in ?>
     <?php if($this->user->isOwner() && $type == 'upload') { // message to upload photos ?>
       <strong class="bigtext"><i class="icon-upload-alt icon-large"></i></strong><br/>
-      <h1>You haven't uploaded any photos to OpenPhoto yet.</h1>
+      <h1>Either you haven't uploaded photos yet or none matched your search.</h1>
       <p>Start now by clicking the <a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload-alt icon-large"></i> upload button</a>!</p>
-    <?php } elseif($type == 'upload-confirm') { // logged in but no access ?>
-      <strong class="bigtext"><i class="icon-thumbs-up icon-large"></i></strong><br/>
-      <h1>Yay! Your photos were uploaded successfully.</h1>
-      <p>Go have a <a href="<?php $this->url->photosView(); ?>" class="preview-url"><i class="icon-picture icon-large"></i> look at your photos</a>!</p>
     <?php } else if($this->user->isOwner() && $type == 'albums') { // message to create albums ?>
       <strong class="bigtext"><i class="icon-th icon-large"></i></strong><br/>
       <h1>You haven't created an albums on OpenPhoto yet.</h1>
