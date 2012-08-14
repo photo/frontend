@@ -26,3 +26,27 @@ if(!function_exists('parse_ini_string')){
         return $return;
     }
 }
+
+// finfo_open is >= 5.3
+function get_mime_type($filename)
+{
+  $type = null;
+  if(function_exists("finfo_open"))
+  {
+      // not supported everywhere https://github.com/openphoto/frontend/issues/368
+      $finfo = finfo_open(FILEINFO_MIME_TYPE);
+      $type = finfo_file($finfo, $filename);
+  }
+  else if(function_exists("mime_content_type"))
+  {
+      $type = mime_content_type($filename);
+  }
+  else if(function_exists('exec'))
+  {
+      $type = exec('/usr/bin/file --mime-type -b ' .escapeshellarg($filename));
+      if(!empty($this->type))
+          $type = null;
+  }
+
+  return $type;
+}
