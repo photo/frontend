@@ -17,7 +17,12 @@
     </thead>
     <?php foreach($credentials as $credential) { ?>
       <tr>
-        <td><?php $this->utility->safe($credential['name']); ?></td>
+        <td>
+          <?php $this->utility->safe($credential['name']); ?>
+          <?php if(!empty($credential['dateCreated'])) { ?>
+            <em class="credential-date"> created at <?php $this->utility->dateLong($credential['dateCreated']); ?></em>
+          <?php } ?>
+        </td>
         <td><a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credential-delete-click"><i class="icon-remove icon-large"></i> Revoke</a></td>
       </tr>
     <?php } ?>

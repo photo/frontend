@@ -4366,6 +4366,9 @@ body.tags div.tags .tag-list {
 .account .inset {
   margin:5px 0 0 20px;
 }
+.manage.applications .credential-date {
+  font-size:smaller;
+}
 
 /* Where does this go? jmathai */
 #loginBox .form-horizontal {
@@ -4982,6 +4985,10 @@ header h1 {
 	.photodetail .camera {
 		margin-bottom:20px;
 	}
+
+  .manage.applications .credential-date {
+    display:none;
+  }
 }
 
 /* 10.03. screen width between 768px and 979px ---------------------------------------------- */

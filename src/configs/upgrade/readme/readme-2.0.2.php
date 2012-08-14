@@ -1,0 +1,1 @@
+This upgrade adds a new column (dateCreated) on table Credentials.
