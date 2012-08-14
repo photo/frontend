@@ -124,7 +124,7 @@ var opTheme = (function() {
       actionDelete: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
-          	url = el.attr('href')+'.json',
+            url = el.attr('href')+'.json',
             id = el.attr('data-id');
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 204)
@@ -296,7 +296,7 @@ var opTheme = (function() {
         $.scrollTo($('div.comment-form'), 200);
         return false;
       },
-      credentailDelete: function(ev) {
+      credentialDelete: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
             url = el.attr('href')+'.json';
@@ -528,7 +528,7 @@ var opTheme = (function() {
       
         ev.preventDefault();
         var el = $(ev.target),
-          	url = el.parent().attr('action')+'.json';
+            url = el.parent().attr('action')+'.json';
       
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 204) {
@@ -543,7 +543,7 @@ var opTheme = (function() {
       photoEdit: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
-          	id = el.attr('data-id'),
+            id = el.attr('data-id'),
             url = '/photo/'+id+'/edit.json';
         OP.Util.makeRequest(url, {}, function(response){
           if(response.code === 200) {
@@ -895,7 +895,7 @@ var opTheme = (function() {
         OP.Util.on('click:album-delete', opTheme.callback.albumDelete);
         OP.Util.on('click:album-form', opTheme.callback.albumForm);
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
-        OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
+        OP.Util.on('click:credential-delete', opTheme.callback.credentialDelete);
         OP.Util.on('click:group-delete', opTheme.callback.groupDelete);
         OP.Util.on('click:group-email-add', opTheme.callback.groupEmailAdd);
         OP.Util.on('click:group-email-remove', opTheme.callback.groupEmailRemove);
