@@ -39,8 +39,10 @@ class ManageController extends BaseController
   {
     $credentialsResp = $this->api->invoke('/oauth/list.json');
     $credentials = $credentialsResp['result'];
+    $pluginsResp = $this->api->invoke('/plugins/list.json');
+    $plugins = $pluginsResp['result'];
     $bodyTemplate = sprintf('%s/manage-apps.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'crumb' => $this->session->get('crumb')));
+    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'plugins' => $plugins, 'crumb' => $this->session->get('crumb')));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
   }
 

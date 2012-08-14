@@ -118,7 +118,7 @@ $apiObj->get('/?v?1?/groups/list.json', array('ApiGroupController', 'list_'), Ep
  */
 $apiObj->post('/?v?1?/plugin/([a-zA-Z0-9]+)/update.json', array('ApiPluginController', 'update'), EpiApi::external);
 $apiObj->post('/?v?1?/plugin/([a-zA-Z0-9]+)/(activate|deactivate).json', array('ApiPluginController', 'updateStatus'), EpiApi::external);
-//$apiObj->get('/?v?1?/plugin/([a-zA-Z0-9]+)/view.json', array('ApiPluginController', 'view'), EpiApi::external);
+$apiObj->get('/?v?1?/plugin/([a-zA-Z0-9]+)/view.json', array('ApiPluginController', 'view'), EpiApi::external);
 $apiObj->get('/?v?1?/plugins/list.json', array('ApiPluginController', 'list_'), EpiApi::external);
 
 /*

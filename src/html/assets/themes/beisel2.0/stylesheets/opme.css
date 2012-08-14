@@ -4348,6 +4348,10 @@ body.tags div.tags .tag-list {
        -o-transition:opacity linear 0.2s;
        transition:opacity linear 0.2s;
 }
+.manage.applications table td {
+  width: 50%;
+
+}
 
 /* Where does this go? jmathai */
 #loginBox .form-horizontal {
