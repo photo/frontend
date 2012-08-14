@@ -21,14 +21,15 @@ body.upload .upload-message img {
   left:-5px;
   top:5px;
 }
-body #modal .upload-preview {
-  padding:5px 0 0;
-  height:110px;
-  overflow:auto;
-}
-body #modal .upload-share .btn {
+body.upload .upload-preview {
   display:block;
-  margin-bottom:5px;
+  margin:5px 0 5px;
+}
+body.upload .upload-preview ul.duplicates img {
+  width:50px;
+  height:50px;
+}
+body.upload .upload-share .btn {
   width:175px;
 }
 body.upload .insufficient {

@@ -710,28 +710,52 @@ var opTheme = (function() {
           }
         });
       },
-      pluginStatus: function(ev) {
+      pluginView: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href')+'.json',
+            params = {crumb: crumb.get()},
+            urlParts = url.match(/\/plugin\/(.*)\/view.json$/);
+        OP.Util.makeRequest('/plugin/'+urlParts[1]+'/view.json', params, function(response){
+          if(response.code === 200) {
+            $("#modal").html(markup.modal(
+                'Update ' + urlParts[1],
+                response.result.markup,
+                null
+            )).modal();
+          } else {
+            opTheme.message.error('Unable to load this plugin for editing.');
+          }
+        }, 'json', 'get');
+      },
+      pluginStatusToggle: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
             url = el.attr('href')+'.json';
         OP.Util.makeRequest(url, {}, function(response){
-          if(response.code === 200)
-            window.location.reload();
-          else
+          var a = $(el),
+              div = a.parent(),
+              container = div.parent();
+          if(response.code === 200) {
+            $('div', container).removeClass('hide');
+            div.addClass('hide');
+          } else {
             opTheme.message.error('Could not update the status of this plugin.');
+          }
         }, 'json', 'post');
         return false;
       },
       pluginUpdate: function(ev) {
         ev.preventDefault();
-        var el = $(ev.target),
-            form = el.parent(),
+        var form = $(ev.target),
             url = form.attr('action')+'.json';
         OP.Util.makeRequest(url, form.serializeArray(), function(response){
-          if(response.code === 200)
+          if(response.code === 200) {
             opTheme.message.confirm('Your plugin was successfully updated.');
-          else
+          } else {
             opTheme.message.error('Could not update the status of this plugin.');
+          }
+          $("#modal").modal('hide');
         }, 'json', 'post');
         return false;
       },
@@ -797,8 +821,8 @@ var opTheme = (function() {
         });
       },
       uploadConfirm: function(response) {
-        $(".upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
-        $("#modal").html(markup.modal('Your photos were uploaded successfully', response.result, null)).modal();
+        $("body.upload .upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
+        $("body.upload .upload-confirm").html(response.result).show('fast');
       },
       webhookDelete: function(ev) {
         ev.preventDefault();
@@ -874,8 +898,8 @@ var opTheme = (function() {
         OP.Util.on('click:photo-view', opTheme.callback.photoView);
         OP.Util.on('click:photo-view-modal', opTheme.callback.photoViewModal);
         OP.Util.on('click:photos-load-more', opTheme.callback.photosViewMore);
-        OP.Util.on('click:plugin-status', opTheme.callback.pluginStatus);
-        OP.Util.on('click:plugin-update', opTheme.callback.pluginUpdate);
+        OP.Util.on('click:plugin-view', opTheme.callback.pluginView);
+        OP.Util.on('click:plugin-status-toggle', opTheme.callback.pluginStatusToggle);
         OP.Util.on('click:pin', opTheme.callback.pinClick);
         OP.Util.on('click:pin-clear', opTheme.callback.pinClearClick);
         OP.Util.on('click:pin-select-all', opTheme.callback.pinSelectAll);
@@ -888,6 +912,7 @@ var opTheme = (function() {
         OP.Util.on('submit:group-post', opTheme.callback.groupPost);
         OP.Util.on('submit:login-openphoto', opTheme.callback.loginOpenPhoto);
         OP.Util.on('submit:photo-update', opTheme.callback.photoUpdate);
+        OP.Util.on('submit:plugin-update', opTheme.callback.pluginUpdate);
         // in openphoto-upload.js
         // OP.Util.on('submit:photo-upload', opTheme.callback.photoUpload);
         OP.Util.on('submit:search', opTheme.callback.searchByTags);

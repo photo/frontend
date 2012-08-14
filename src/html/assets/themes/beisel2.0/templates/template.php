@@ -25,22 +25,22 @@
 
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>" rel="stylesheet">
-      <link href="/assets/stylesheets/font-awesome.css" rel="stylesheet">
+      <link href="/assets/stylesheets/font-awesome-2.css" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'chosen.css'); ?>" rel="stylesheet">
       <link href="<?php $this->theme->asset('stylesheet', 'opme.css'); ?>" rel="stylesheet">
       <link href="/assets/stylesheets/upload.css" rel="stylesheet">
       <!--[if IE 7]>
-        <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'font-awesome-ie7.css'); ?>">
+        <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'font-awesome-2-ie7.css'); ?>">
       <![endif]-->
     <?php } else { ?>
       <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'bootstrap.min.css', false))->
-                                                                  addCss("/assets/stylesheets/font-awesome.css")->
+                                                                  addCss("/assets/stylesheets/font-awesome-2.css")->
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'ah'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'aj'); ?>">
       <!--[if IE 7]>
-        <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'font-awesome-ie7.css', false))->
+        <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'font-awesome-2-ie7.css', false))->
                                                                   getUrl(AssetPipeline::css, 'a'); ?>">
       <![endif]-->
     <?php } ?>
@@ -117,8 +117,8 @@
               'pin-click':'click:pin',
               'pin-clear-click':'click:pin-clear',
               'pin-select-all-click':'click:pin-select-all',
-              'plugin-status-click':'click:plugin-status',
-              'plugin-update-click':'click:plugin-update',
+              'plugin-view-click':'click:plugin-view',
+              'plugin-status-toggle-click':'click:plugin-status-toggle',
               'popup-click':'click:popup',
               'settings-click':'click:settings',
               'tags-focus':'focus:tags',
@@ -132,6 +132,7 @@
               'login-openphoto-submit':'submit:login-openphoto',
               'photo-update-submit':'submit:photo-update',
               'photo-upload-submit':'submit:photo-upload',
+              'plugin-update-submit':'submit:plugin-update',
               'search-submit':'submit:search'
           },
           <?php if($this->user->isOwner()) { ?>
@@ -179,7 +180,7 @@
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'aj'); ?>'
+                                                  getUrl(AssetPipeline::js, 'ak'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
