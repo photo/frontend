@@ -247,6 +247,15 @@ class Utility
     return $this->isMobile;
   }
 
+
+  public function isValidMimeType($filename)
+  {
+    $type = get_mime_type($filename);
+    if(preg_match('/jpg|jpeg|gif|png$/', $type))
+      return true;
+    return false;
+  }
+
   public function getTemplate($template)
   {
     if(!$this->isMobile())
@@ -299,9 +308,9 @@ class Utility
   {
     $word = $this->safe($word, false);
     if(empty($word))
-      return $this->returnValue(($int > 1 ? 's' : ''), $write);
+      return $this->returnValue(($int != 1 ? 's' : ''), $write);
     else
-      return $this->returnValue(($int > 1 ? "{$word}s" : $word), $write);
+      return $this->returnValue(($int != 1 ? "{$word}s" : $word), $write);
   }
 
   public function posessive($noun, $write = true)

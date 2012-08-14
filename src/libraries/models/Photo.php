@@ -604,6 +604,13 @@ class Photo extends BaseModel
     */
   public function upload($localFile, $name, $attributes = array())
   {
+    // check if file type is valid
+    if(!$this->utility->isValidMimeType($localFile))
+    {
+      $this->logger->warn(sprintf('Invalid mime type for %s', $localFile));
+      return false;
+    }
+
     $id = $this->user->getNextId('photo');
     if($id === false)
     {

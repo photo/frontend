@@ -39,22 +39,7 @@ class ImageGD extends ImageAbstract
     */
   public function load($filename)
   {
-    if(function_exists("finfo_open"))
-    {
-        // not supported everywhere https://github.com/openphoto/frontend/issues/368
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $this->type = finfo_file($finfo, $filename);
-    }
-    else if(function_exists("mime_content_type"))
-    {
-        $this->type = mime_content_type($filename);
-    }
-    else if(function_exists('exec'))
-    {
-        $this->type = exec('/usr/bin/file --mime-type -b ' .escapeshellarg($filename));
-        if(!empty($this->type))
-            $this->type = "";
-    }
+    $this->type = get_mime_type($filename);
     if(preg_match('/png$/', $this->type))
       $this->image = imagecreatefrompng($filename);
     elseif(preg_match('/gif$/', $this->type))
