@@ -312,7 +312,7 @@ class DatabaseMySql implements DatabaseInterface
       $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `visible`=1 ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
 
 
-    if(empty($albums))
+    if($albums === false)
       return false;
 
     foreach($albums as $key => $album)
