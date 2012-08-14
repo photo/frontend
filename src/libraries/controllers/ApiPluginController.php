@@ -22,10 +22,16 @@ class ApiPluginController extends ApiBaseController
     $pluginObj = getPlugin();
     $pluginsAll = $pluginObj->getAll();
     $pluginsActive = $pluginObj->getActive();
-    $plugins = array();
+    $pluginWhitelist = getConfig()->get('site')->pluginWhitelist;
+    if($pluginWhitelist)
+      $pluginWhitelist = (array)explode(',', $pluginWhitelist);
 
+    $plugins = array();
     foreach($pluginsAll as $p)
-      $plugins[] = array('name' => $p, 'conf' => $pluginObj->loadConf($p), 'status' => in_array($p, $pluginsActive) ? 'active' : 'inactive');
+    {
+      if(!$pluginWhitelist || in_array($p, $pluginWhitelist))
+        $plugins[] = array('name' => $p, 'conf' => $pluginObj->loadConf($p), 'status' => in_array($p, $pluginsActive) ? 'active' : 'inactive');
+    }
 
     return $this->success('Plugins', $plugins);
   }
