@@ -53,7 +53,8 @@ class Credential extends BaseModel
       'permissions' => $permissions,
       'verifier' => substr($randomConsumer, 30, 10),
       'type' => self::typeUnauthorizedRequest,
-      'status' => self::statusActive
+      'status' => self::statusActive,
+	  'dateCreated' => time()
     );
     $res = $this->db->putCredential($id, $params);
     if($res)
