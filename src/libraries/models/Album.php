@@ -74,7 +74,7 @@ class Album extends BaseModel
       $email = $this->user->getEmailAddress();
     
     $albums = $this->db->getAlbums($email, $limit, $offset);
-    if(empty($albums))
+    if($albums === false)
       return false;
     
     if(!$this->user->isOwner())
