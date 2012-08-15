@@ -63,6 +63,12 @@ class Url
     return $utilityObj->returnValue('/manage/settings', $write);
   }
 
+  public function resourceMap($id, $write = true)
+  {
+    $utilityObj = new Utility;
+    return $utilityObj->returnValue(sprintf('/s/%s', $id), $write);
+  }
+
   public function photoDelete($id, $write = true)
   {
     $utilityObj = new Utility;

@@ -66,9 +66,9 @@
             oMethod = method || "post";
         
         if (oMethod === "post") {
-            lib.post(url, data, callback, oFormat);
+            lib.post(url, data, callback, oFormat).error(function(response) { callback(response); });
         } else {
-            lib.get(url, data, callback, oFormat);
+            lib.get(url, data, callback, oFormat).error(function(response) { callback(response); });
         }
 
     }

@@ -247,6 +247,18 @@ SQL;
 SQL;
   mysql_base($sql);
 
+
+  $sql = <<<SQL
+  CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}resourceMap` (
+    `id` varchar(6) NOT NULL,
+    `owner` varchar(255) NOT NULL,
+    `resource` text NOT NULL,
+    `dateCreated` int(11) NOT NULL,
+    PRIMARY KEY (`owner`,`id`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+  mysql_base($sql);
+
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}tag` (
     `id` varchar(127) NOT NULL,
@@ -286,7 +298,7 @@ SQL;
     INSERT INTO `{$this->mySqlTablePrefix}admin` (`key`,`value`) 
     VALUES (:key, :value)
 SQL;
-  mysql_base($sql, array(':key' => 'version', ':value' => '3.0.4'));
+  mysql_base($sql, array(':key' => 'version', ':value' => '3.0.6'));
 
   return true;
 }

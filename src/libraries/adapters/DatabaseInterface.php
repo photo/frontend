@@ -36,6 +36,7 @@ interface DatabaseInterface
   public function getPhoto($id);
   public function getPhotoWithActions($id);
   public function getPhotos($filters = array(), $limit = null, $offset = null);
+  public function getResourceMap($id);
   public function getUser($owner = null);
   public function getUserByEmailAndPassword($email = null, $password = null);
   public function getTag($tag);
@@ -63,6 +64,7 @@ interface DatabaseInterface
   public function putAlbum($id, $params);
   public function putCredential($id, $params);
   public function putPhoto($id, $params);
+  public function putResourceMap($id, $params);
   public function putUser($params);
   public function putTag($id, $params);
   public function putWebhook($id, $params);

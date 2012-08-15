@@ -68,7 +68,8 @@ class DatabaseMySql implements DatabaseInterface
     // if one fails then don't continue by using the second condition
     $res1 = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}album` WHERE `id`=:id AND `owner`=:owner", array(':id' => $id, ':owner' => $this->owner));
     $res2 = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `album`=:album", array(':owner' => $this->owner, ':album' => $id));
-    if(!$res1 || !$res2)
+
+    if($res1 === false || $res2 === false)
       return false;
 
     return true;
@@ -559,6 +560,22 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Get a resource map
+    *
+    * @param string $id tag to be retrieved
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getResourceMap($id)
+  {
+    $resourceMap = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}resourceMap` WHERE `owner`=:owner AND `id`=:id", array(':owner' => $this->owner, ':id' => $id));
+    if(!$resourceMap)
+      return false;
+
+    $resourceMap = $this->normalizeResourceMap($resourceMap);
+    return $resourceMap;
+  }
+
+  /**
     * Get a tag
     * Consistent read set to false
     *
@@ -567,7 +584,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getTag($tag)
   {
-    $tag = $this->db->one('SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND owner=:owner', array(':id' => $tag));
+    $tag = $this->db->one('SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND `owner`=:owner', array(':id' => $tag));
     // TODO this should be in the normalize method
     if($tag['params'])
       $tag = array_merge($tag, json_decode($tag['params'], 1));
@@ -1164,6 +1181,24 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Create a resource map
+    *
+    * @param string $id resource map to be retrieved
+    * @param array $params Attributes to create
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function putResourceMap($id, $params)
+  {
+    if(!isset($params['id']))
+      $params['id'] = $id;
+    $params['owner'] = $this->owner;
+    $params = $this->prepareResourceMap($params);
+    $stmt = $this->sqlInsertExplode($params);
+    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}resourceMap` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
+    return  ($result !== false);
+  }
+
+  /**
     * Add a new tag to the database
     * This method does not overwrite existing values present in $params - hence "new tag".
     *
@@ -1630,6 +1665,27 @@ class DatabaseMySql implements DatabaseInterface
 
     return $photo;
   }
+  /**
+    * Normalizes data from simpleDb into schema definition
+    * TODO this should eventually translate the json field
+    *
+    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @return array
+    */
+  private function normalizeResourceMap($raw)
+  {
+    if(!empty($raw['resource']))
+    {
+      $resource = json_decode($raw['resource'], 1);
+      foreach($resource as $key => $value)
+      {
+        if(!isset($raw[$key]))
+          $raw[$key] = $value;
+      }
+    }
+    unset($raw['resource']);
+    return $raw;
+  }
 
   /**
     * Normalizes data from simpleDb into schema definition
@@ -1787,6 +1843,31 @@ class DatabaseMySql implements DatabaseInterface
     }
     $paramsOut['::bindings'] = $bindings;
     return $paramsOut;
+  }
+
+  /** Prepare resource map to store in the database
+   */
+  private function prepareResourceMap($params)
+  {
+    $resource = array();
+    if(isset($params['uri']))
+    {
+      $resource['uri'] = $params['uri'];
+      unset($params['uri']);
+    }
+
+    if(isset($params['method']))
+    {
+      $resource['method'] = $params['method'];
+      unset($params['method']);
+    }
+
+    if(empty($resource))
+      $params['resource'] = '';
+    else
+      $params['resource'] = json_encode($resource);
+
+    return $params;
   }
 
   /** Prepare tags to store in the database

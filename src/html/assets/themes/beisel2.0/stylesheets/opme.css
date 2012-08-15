@@ -2007,15 +2007,6 @@ li[class^="icon-"].icon-large:before, li[class*=" icon-"].icon-large:before {
 .icon-tags:before {
 	content:"\f02c";
 }
-.icon-sitemap:before {
-	content:"\f0e8";
-}
-.icon-wrench:before {
-	content: "\f0ad";
-}
-.icon-group:before {
-	content: "\f0c0";
-}
 .icon-book:before {
 	content:"\f02d";
 }
