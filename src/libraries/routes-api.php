@@ -80,6 +80,15 @@ $apiObj->post('/?v?1?/tag/(.+)/update.json', array('ApiTagController', 'update')
 $apiObj->get('/?v?1?/tags/list.json', array('ApiTagController', 'list_'), EpiApi::external); // retrieve tags
 
 /*
+ * Resource mapping endpoints
+ * All shortener endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /s[/{id}]/{action}.json
+ */
+$apiObj->post('/?v?1?/s/create.json', array('ApiResourceMapController', 'create'), EpiApi::external); // create a resource map (/s/create.json)
+$apiObj->get('/?v?1?/s/([a-z0-9]+)/view.json', array('ApiResourceMapController', 'view'), EpiApi::external); // create a resource map (/s/{id}/view.json)
+
+/*
  * User endpoints
  * All user endpoints follow the same convention.
  * Everything in []'s are optional
