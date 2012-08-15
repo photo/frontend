@@ -307,13 +307,13 @@ var opTheme = (function() {
               response.result.name,
               '<div class="clearfix">' +
               '  <label>Consumer Key</label>' +
-              '  <div class="input">' + response.result.id + '</div>' + // Credential.php l. 125
+              '  <p>' + response.result.id + '</p>' + // Credential.php l. 125
               '  <label>Consumer Secret</label>' +
-              '  <div class="input">' + response.result.clientSecret + '</div>' + // Credential.php l. 137
+              '  <p>' + response.result.clientSecret + '</p>' + // Credential.php l. 137
               '  <label>Access Token</label>' +
-              '  <div class="input">' + response.result.userToken + '</div>' + // by elimination
+              '  <p>' + response.result.userToken + '</p>' + // by elimination
               '  <label>Access Token Secret</label>' +
-              '  <div class="input">' + response.result.userSecret + '</div>' + // Credential.php l. 207
+              '  <p>' + response.result.userSecret + '</p>' + // Credential.php l. 207
               '</div>',
               '<a href="#" class="btn credential-view-dialogue-ok-click">OK</a>'
             );
