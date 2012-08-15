@@ -1,11 +1,11 @@
 <?php if(count($successPhotos) > 0) { ?>
-  <h2>What would you like to do next?</h2>
+  <h2>Your photos are finished uploading! Now what?</h2>
 
   <p>
     Post your photos to <!--Facebook or--> Twitter.
     <ul class="unstyled upload-share">
       <!--<li><a href="<?php $this->url->photosView(sprintf('ids-%s', $successIds)); ?>" class="btn btn-primary"><i class="icon-facebook icon-large"></i> Share on Facebook</a></li>-->
-      <li><a href="http://twitter.com/home?status=<?php echo urlencode(sprintf('I just uploaded some photos at @OpenPhoto. %s', $this->utility->getAbsoluteUrl($this->url->photosView(sprintf('ids-%s', $successIds), false), false))); ?>" class="btn btn-primary popup-click" data-width="575" data-height="400"><i class="icon-twitter icon-large"></i> Share on Twitter</a></li>
+      <li><a href="http://twitter.com/home?status=<?php echo urlencode(sprintf('I just uploaded some photos on @OpenPhoto. %s', $this->utility->getAbsoluteUrl($url, false))); ?>" class="btn btn-primary popup-click" data-width="575" data-height="400"><i class="icon-twitter icon-large"></i> Share on Twitter</a></li>
     </ul>
   </p>
 

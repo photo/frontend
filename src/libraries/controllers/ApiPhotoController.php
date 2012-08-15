@@ -406,10 +406,16 @@ class ApiPhotoController extends ApiBaseController
   {
     $params = $_POST;
     $params['successIds'] = $params['duplicateIds'] = array();
-    foreach($params['success'] as $p)
-      $params['successIds'][] = $p['id'];
-    foreach($params['duplicate'] as $p)
-      $params['duplicateIds'][] = $params['successIds'][] = $p['id'];
+    if(isset($params['success']) && !empty($params['success']))
+    {
+      foreach($params['success'] as $p)
+        $params['successIds'][] = $p['id'];
+    }
+    if(isset($params['duplicates']) && !empty($params['duplicates']))
+    {
+      foreach($params['duplicate'] as $p)
+        $params['duplicateIds'][] = $params['successIds'][] = $p['id'];
+    }
 
     $params['successIds'] = implode(',', $params['successIds']);
     $params['duplicateIds'] = implode(',', $params['duplicateIds']);
@@ -426,6 +432,15 @@ class ApiPhotoController extends ApiBaseController
       $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('ids' => $params['duplicateIds'], 'returnSizes' => '100x100xCR')));
       if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
         $params['duplicatePhotos'] = $photosResp['result'];
+    }
+
+    if(count($params['ids']) > 0)
+    {
+      $ids = implode(',', $params['ids']);
+      $params['url'] = $this->url->photosView("ids-{$ids}", false);
+      $resourceMapResp = $this->api->invoke('/s/create.json', EpiRoute::httpPost, array('_POST' => array('uri' => $params['url'], 'method' => 'GET')));
+      if($resourceMapResp['code'] === 201)
+        $params['url'] = $this->url->resourceMap($resourceMapResp['result']['id'], false);
     }
 
     $template = sprintf('%s/uploadConfirm.php', $this->config->paths->templates);

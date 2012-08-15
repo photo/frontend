@@ -8,7 +8,7 @@ OPU = (function() {
     var bName = b.name;
     return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
   };
-  var photosUploaded = {success: [], failure: [], duplicate: []};
+  var photosUploaded = {success: [], failure: [], duplicate: [], ids: []};
   var log = function(msg) {
     if(typeof(console) !== 'undefined' && typeof(console.log) !== 'undefined')
       console.log(msg);
@@ -63,9 +63,11 @@ OPU = (function() {
                 if(code === 201) {
                   log('Successfully uploaded ' + file.name + ' at ' + result.url);
                   photosUploaded.success.push(result);
+                  photosUploaded.ids.push(result.id);
                 } else if(code === 409) {
                   log('Detected a duplicate of ' + file.name);
                   photosUploaded.duplicate.push(result);
+                  photosUploaded.ids.push(result.id);
                 } else {
                   log('Unable to upload ' + file.name);
                   photosUploaded.failure.push(file.name);
@@ -81,6 +83,7 @@ OPU = (function() {
                       failed++;
                   }
                 }
+
                 if(failed === 0) {
                   OP.Util.fire('upload:complete-success', photosUploaded);
                 } else {
