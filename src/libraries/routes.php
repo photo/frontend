@@ -55,6 +55,14 @@ $routeObj->get('/photos/upload', array('PhotoController', 'upload')); // view th
 $routeObj->get('/photos/?(.+)?/list', array('PhotoController', 'list_')); // view all photos / optionally filter (/photos[/{options})]/list
 
 /*
+ * Resource mapping endpoints
+ * All shortener endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /s[/{id}]/{action}
+ */
+$routeObj->get('/?v?1?/s/([a-z0-9]+)', array('ResourceMapController', 'render'), EpiApi::external); // create a resource map (/s/{id}/view.json)
+
+/*
  * Tag endpoints
  * All tag endpoints follow the same convention.
  * Everything in []'s are optional

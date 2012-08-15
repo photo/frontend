@@ -505,6 +505,18 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Get a resource map
+    * NOT IMPLEMENTED
+    *
+    * @param string $id tag to be retrieved
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getResourceMap($id)
+  {
+    return false;
+  }
+
+  /**
     * Get a tag
     * Consistent read set to false
     *
@@ -940,6 +952,19 @@ class DatabaseSimpleDb implements DatabaseInterface
     $res = $this->db->put_attributes($this->domainPhoto, $id, $params);
     $this->logErrors($res);
     return $res->isOK();
+  }
+
+  /**
+    * Create a resource map
+    * NOT IMPLEMENTED
+    *
+    * @param string $id resource map to be retrieved
+    * @param array $params Attributes to create
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function putResourceMap($id, $params)
+  {
+    return false;
   }
 
   /**
