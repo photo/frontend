@@ -811,7 +811,6 @@ var opTheme = (function() {
           params.link = el.attr('data-link');
           params.picture = el.attr('data-picture');
           params.name = el.attr('data-name');
-          params.caption = el.attr('data-caption');
           params.description = el.attr('data-description');
           FB.ui(params, function() { window.close(); });
         }
