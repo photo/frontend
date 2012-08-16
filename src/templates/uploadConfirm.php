@@ -9,8 +9,8 @@
       </li>
       <?php if($facebookId) { ?>
         <li>
-          <a href="https://www.facebook.com/dialog/feed?app_id=<?php $this->utility->safe($facebookId); ?>&link=<?php $this->utility->getAbsoluteUrl($url); ?>&picture=<?php $this->utility->safe($successPhotos[0]['path100x100xCR']); ?>&name=Share+on+Facebook&caption=My+photos+on+OpenPhoto&description=I+uploaded+some+photos+on+OpenPhoto.&display=popup" class="btn btn-primary share-facebook-click"
-             data-link="<?php $this->utility->getAbsoluteUrl($url); ?>" data-picture="<?php $this->utility->safe($successPhotos[0]['path100x100xCR']); ?>" data-name="Share on Facebook" data-caption="My photos on OpenPhoto" data-description="I uploaded some photos on OpenPhoto." data-display=popup" data-width="450" data-height="300"><i class="icon-facebook icon-large"></i> Share on Facebook</a>
+          <a href="https://www.facebook.com/dialog/feed?app_id=<?php $this->utility->safe($facebookId); ?>&link=<?php $this->utility->getAbsoluteUrl($url); ?>&picture=<?php $this->utility->safe($successPhotos[0]['path100x100xCR']); ?>&name=My+photos+on+OpenPhoto&description=I+uploaded+some+photos+on+OpenPhoto.&display=popup" class="btn btn-primary share-facebook-click"
+             data-link="<?php $this->utility->getAbsoluteUrl($url); ?>" data-picture="<?php $this->utility->safe($successPhotos[0]['path100x100xCR']); ?>" data-name="My photos on OpenPhoto" data-description="I uploaded some photos on OpenPhoto." data-display=popup" data-width="450" data-height="300"><i class="icon-facebook icon-large"></i> Share on Facebook</a>
         </li>
       <?php } ?>
     </ul>
