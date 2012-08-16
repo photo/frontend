@@ -423,13 +423,13 @@ class ApiPhotoController extends ApiBaseController
     $params['successPhotos'] = $params['duplicatePhotos'] = array();
     if(count($params['successIds']) > 0)
     {
-      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('ids' => $params['successIds'], 'returnSizes' => '100x100xCR')));
+      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => '0', 'ids' => $params['successIds'], 'returnSizes' => '100x100xCR')));
       if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
         $params['successPhotos'] = $photosResp['result'];
     }
     if(count($params['duplicateIds']) > 0)
     {
-      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('ids' => $params['duplicateIds'], 'returnSizes' => '100x100xCR')));
+      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => '0', 'ids' => $params['duplicateIds'], 'returnSizes' => '100x100xCR')));
       if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
         $params['duplicatePhotos'] = $photosResp['result'];
     }
