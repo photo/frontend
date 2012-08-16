@@ -435,9 +435,9 @@ class ApiPhotoController extends ApiBaseController
     }
 
     $params['facebookId'] = false;
-    if($this->plugin->isActive('FacebookConnect'))
+    if($this->plugin->isActive('FacebookConnectHosted'))
     {
-      $fbConf = $this->plugin->loadConf('FacebookConnect');
+      $fbConf = $this->plugin->loadConf('FacebookConnectHosted');
       $params['facebookId'] = $fbConf['id'];
     }
 
