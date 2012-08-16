@@ -801,6 +801,21 @@ var opTheme = (function() {
         $("li#nav-signin").toggleClass('active');
         return false;
       },
+      share: {
+        facebook: function(ev) {
+          ev.preventDefault();
+          var el = $(ev.target),
+              params = {};
+          params.method = 'feed';
+          params.display = 'popup';
+          params.link = el.attr('data-link');
+          params.picture = el.attr('data-picture');
+          params.name = el.attr('data-name');
+          params.caption = el.attr('data-caption');
+          params.description = el.attr('data-description');
+          FB.ui(params, function() { window.close(); });
+        }
+      },
       tagsInitialized: function() {
         var tags = OP.Tag.getTags(),
             markup = '';
@@ -905,6 +920,7 @@ var opTheme = (function() {
         OP.Util.on('click:pin-select-all', opTheme.callback.pinSelectAll);
         OP.Util.on('click:popup', opTheme.callback.popup);
         OP.Util.on('click:settings', opTheme.callback.settings);
+        OP.Util.on('click:share-facebook', opTheme.callback.share.facebook);
         OP.Util.on('click:webhook-delete', opTheme.callback.webhookDelete);
 
         OP.Util.on('submit:album-post', opTheme.callback.albumPost);
