@@ -2,10 +2,16 @@
   <h2>Your photos are finished uploading! Now what?</h2>
 
   <p>
-    Post your photos to <!--Facebook or--> Twitter.
+    Post your photos to <?php if($facebookId) { ?>Facebook or <?php } ?>Twitter.
     <ul class="unstyled upload-share">
-      <!--<li><a href="<?php $this->url->photosView(sprintf('ids-%s', $successIds)); ?>" class="btn btn-primary"><i class="icon-facebook icon-large"></i> Share on Facebook</a></li>-->
-      <li><a href="http://twitter.com/home?status=<?php echo urlencode(sprintf('I just uploaded some photos on @OpenPhoto. %s', $this->utility->getAbsoluteUrl($url, false))); ?>" class="btn btn-primary popup-click" data-width="575" data-height="400"><i class="icon-twitter icon-large"></i> Share on Twitter</a></li>
+      <li>
+        <a href="http://twitter.com/home?status=<?php echo urlencode(sprintf('I just uploaded some photos on @OpenPhoto. %s', $this->utility->getAbsoluteUrl($url, false))); ?>" class="btn btn-primary popup-click" data-width="575" data-height="400"><i class="icon-twitter icon-large"></i> Share on Twitter</a>
+      </li>
+      <?php if($facebookId) { ?>
+        <li>
+          <a href="https://www.facebook.com/dialog/feed?app_id=<?php $this->utility->safe($facebookId); ?>&link=<?php $this->utility->getAbsoluteUrl($url); ?>&picture=<?php $this->utility->safe($successPhotos[0]['path100x100xCR']); ?>&name=Share+on+Facebook&caption=My+photos+on+OpenPhoto&description=I+uploaded+some+photos+on+OpenPhoto.&redirect_uri=<?php $this->utility->getAbsoluteUrl($url); ?>" class="btn btn-primary"><i class="icon-facebook icon-large"></i> Share on Facebook</a>
+        </li>
+      <?php } ?>
     </ul>
   </p>
 

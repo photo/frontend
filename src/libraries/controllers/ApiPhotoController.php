@@ -434,6 +434,13 @@ class ApiPhotoController extends ApiBaseController
         $params['duplicatePhotos'] = $photosResp['result'];
     }
 
+    $params['facebookId'] = false;
+    if($this->plugin->isActive('FacebookConnect'))
+    {
+      $fbConf = $this->plugin->loadConf('FacebookConnect');
+      $params['facebookId'] = $fbConf['id'];
+    }
+
     if(count($params['ids']) > 0)
     {
       $ids = implode(',', $params['ids']);
