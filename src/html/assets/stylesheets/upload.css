@@ -30,6 +30,7 @@ body.upload .upload-preview ul.duplicates img {
   height:50px;
 }
 body.upload .upload-share .btn {
+  margin-top:5px;
   width:175px;
 }
 body.upload .insufficient {
