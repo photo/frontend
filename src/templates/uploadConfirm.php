@@ -5,7 +5,7 @@
     Post your photos to <?php if($facebookId) { ?>Facebook or <?php } ?>Twitter.
     <ul class="unstyled upload-share">
       <li>
-        <a href="http://twitter.com/home?status=<?php echo urlencode(sprintf('I just uploaded some photos on @OpenPhoto. %s', $this->utility->getAbsoluteUrl($url, false))); ?>" class="btn btn-primary popup-click" data-width="575" data-height="400"><i class="icon-twitter icon-large"></i> Share on Twitter</a>
+        <a href="https://twitter.com/intent/tweet?original_referer=<?php $this->utility->getAbsoluteUrl(''); ?>&text=<?php echo urlencode('I just uploaded some photos on @OpenPhoto.'); ?>&url=<?php echo urlencode($this->utility->getAbsoluteUrl($url, false)); ?>" class="btn btn-primary popup-click" data-width="575" data-height="400"><i class="icon-twitter icon-large"></i> Share on Twitter</a>
       </li>
       <?php if($facebookId) { ?>
         <li>
