@@ -121,6 +121,7 @@
               'plugin-status-toggle-click':'click:plugin-status-toggle',
               'popup-click':'click:popup',
               'settings-click':'click:settings',
+              'share-facebook-click':'click:share-facebook',
               'tags-focus':'focus:tags',
               'upload-start-click':'click:upload-start',
               'webhook-delete-click':'click:webhook-delete'
