@@ -13,7 +13,7 @@ var Gallery = (function($) {
   	'marginsOfImage':6,
   	'defaultWidthValue':120,
   	'defaultHeightValue':120
-  }
+  };
 
 	/* ------------ PRIVATE functions ------------ */
 
