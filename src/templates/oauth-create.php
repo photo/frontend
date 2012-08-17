@@ -23,7 +23,7 @@
       </ul>-->
 
       <div>
-        <button type="submit" class="btn btn-primary"><i class="icon-save icon-large"></i> Create and approve</button>
+        <button type="submit" class="btn btn-primary"><i class="icon-save icon-large"></i> Create and Approve</button>
       </div>
       <input type="hidden" name="oauth_callback" value="<?php $this->utility->safe($callback); ?>">
     </form>
