@@ -64,7 +64,7 @@ echo "===================================================="
 echo ""
 echo ""
 
-wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
+wget https://github.com/photo/frontend/tarball/master -O openphoto.tar.gz
 tar -zxvf openphoto.tar.gz > /dev/null 2>&1
 mv openphoto-frontend-* /var/www/openphoto
 sudo rm openphoto.tar.gz

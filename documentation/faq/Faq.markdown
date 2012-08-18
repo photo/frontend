@@ -2,7 +2,7 @@ Frequently asked questions
 =======================
 
 This is a list of common questions that people have about The OpenPhoto Project.
-If you have one which is not on this list send us a message via <a href="http://twitter.com/openphoto">Twitter</a> or <a href="mailto:hello@openphoto.me">email</a>.
+If you have one which is not on this list send us a message via <a href="http://twitter.com/photo">Twitter</a> or <a href="mailto:hello@openphoto.me">email</a>.
 
 ### What exactly is OpenPhoto?
 
@@ -42,7 +42,7 @@ With OpenPhoto you can switch between services, use more than one at a time or s
 
 ### If OpenPhoto is open sourced then why isn't it free?
 
-All of the <a href="https://github.com/openphoto">source for OpenPhoto</a> is available on Github.
+All of the <a href="https://github.com/photo">source for OpenPhoto</a> is available on Github.
 This includes the web application, mobile apps and plugins for Wordpress just to name a few.
 We've also got <a href="http://theopenphotoproject.org/documentation">lots of guides</a> to help you get started.
 

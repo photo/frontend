@@ -19,7 +19,7 @@ Variables:
 
 1. Download and install OpenPhoto
 
-		wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
+		wget https://github.com/photo/frontend/tarball/master -O openphoto.tar.gz
 		tar -zxvf openphoto.tar.gz
 		mv openphoto-frontend-* OpenPhotoRoot
 

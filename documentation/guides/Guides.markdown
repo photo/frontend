@@ -17,7 +17,7 @@ Follow these step by step guides to get OpenPhoto installed on your server or la
 
 You'll probably want to follow one of the guides above but setting up OpenPhoto is as easy as one command.
 
-    curl https://raw.github.com/openphoto/frontend/master/documentation/guides/InstallationUbuntuApache.sh | /bin/bash
+    curl https://raw.github.com/photo/frontend/master/documentation/guides/InstallationUbuntuApache.sh | /bin/bash
 
 That's it. View the [source of the installer][guideinstallcli] or [watch a screencast][screencast] of it.
 

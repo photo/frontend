@@ -25,10 +25,10 @@ Now that you've got the following we can continue.
 
 We've added a _Beginner_ label to issues that don't touch some of the more sensitive parts of the code. We've additionally added _CSS_, _JavaScript_, and _PHP_ labels so you can narrow it down to exactly what you're interested in.
 
-* <a href="https://github.com/openphoto/frontend/issues?labels=Beginner&sort=created&direction=desc&state=open&page=1">All Beginner issues</a>
-* <a href="https://github.com/openphoto/frontend/issues?labels=Beginner%2CCSS&sort=created&direction=desc&state=open&page=1">Beginner + CSS issues</a>
-* <a href="https://github.com/openphoto/frontend/issues?labels=Beginner%2CJavaScript&sort=created&direction=desc&state=open&page=1">Beginner + JavaScript issues</a>
-* <a href="https://github.com/openphoto/frontend/issues?labels=Beginner%2CPHP&sort=created&direction=desc&state=open&page=1">Beginner + PHP issues</a>
+* <a href="https://github.com/photo/frontend/issues?labels=Beginner&sort=created&direction=desc&state=open&page=1">All Beginner issues</a>
+* <a href="https://github.com/photo/frontend/issues?labels=Beginner%2CCSS&sort=created&direction=desc&state=open&page=1">Beginner + CSS issues</a>
+* <a href="https://github.com/photo/frontend/issues?labels=Beginner%2CJavaScript&sort=created&direction=desc&state=open&page=1">Beginner + JavaScript issues</a>
+* <a href="https://github.com/photo/frontend/issues?labels=Beginner%2CPHP&sort=created&direction=desc&state=open&page=1">Beginner + PHP issues</a>
 
 ## Testing that your change didn't break anything
 
@@ -49,9 +49,9 @@ Once you've made your change and verified it does what it should it's time to ma
 
 Those `I`s are okay but you shouldn't see any `E`s or `F`s and definitely look for the _OK_ message at the end. If all the tests pass then you're good to go and can commit it.
 
-You can also automate this by adding a pre-commit hook. Just copy <a href="https://github.com/openphoto/frontend/blob/master/documentation/hooks/pre-commit">this file</a> into your `.git/hooks` directory or run the command below.
+You can also automate this by adding a pre-commit hook. Just copy <a href="https://github.com/photo/frontend/blob/master/documentation/hooks/pre-commit">this file</a> into your `.git/hooks` directory or run the command below.
 
-    wget --no-check-certificate https://raw.github.com/openphoto/frontend/master/documentation/hooks/pre-commit -O .git/hooks/pre-commit
+    wget --no-check-certificate https://raw.github.com/photo/frontend/master/documentation/hooks/pre-commit -O .git/hooks/pre-commit
     chmod u+x .git/hooks/pre-commit
 
 Now everytime you make a commit it will first run the unit tests, automatically.

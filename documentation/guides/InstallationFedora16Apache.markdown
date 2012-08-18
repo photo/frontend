@@ -43,7 +43,7 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
 The _Apache 2_ user in Fedora 16 is `apache` so run the following commands to take ownership of the web files.
 
     yum install git
-    git clone git://github.com/openphoto/frontend.git /var/www/yourdomain.com
+    git clone git://github.com/photo/frontend.git /var/www/yourdomain.com
     chown -R apache: /var/www/yourdomain.com
 
 Assuming that this is a development machine you only need to make the config writable by the user Apache runs as. Most likely `apache`.
