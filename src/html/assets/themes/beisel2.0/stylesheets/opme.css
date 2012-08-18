@@ -4355,6 +4355,9 @@ body.tags div.tags .tag-list {
 .manage.applications .credential-date {
   font-size:smaller;
 }
+.manage.applications .credential-action-button {
+	margin-right: 16px;
+}
 
 /* Where does this go? jmathai */
 #loginBox .form-horizontal {

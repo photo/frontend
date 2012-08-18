@@ -92,6 +92,8 @@
               'album-delete-click':'click:album-delete',
               'album-form-click':'click:album-form',
               'batch-modal-click':'click:batch-modal',
+              'credential-view-click':'click:credential-view',
+              'credential-view-dialogue-ok-click':'click:credential-view-dialogue-ok',
               'credential-delete-click':'click:credential-delete',
               'group-delete-click':'click:group-delete',
               'group-email-add-click':'click:group-email-add',
