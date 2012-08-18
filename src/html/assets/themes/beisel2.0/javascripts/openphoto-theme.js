@@ -124,7 +124,7 @@ var opTheme = (function() {
       actionDelete: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
-          	url = el.attr('href')+'.json',
+            url = el.attr('href')+'.json',
             id = el.attr('data-id');
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 204)
@@ -296,7 +296,39 @@ var opTheme = (function() {
         $.scrollTo($('div.comment-form'), 200);
         return false;
       },
-      credentailDelete: function(ev) {
+      credentialView: function(ev) {
+        ev.preventDefault();
+        var el = $(ev.target),
+            url = el.attr('href')+'.json';
+        OP.Util.makeRequest(url, {}, function(response) {
+          if(response.code === 200) {
+            var el = $("#modal"),
+            html = markup.modal(
+              response.result.name,
+              '<div class="clearfix">' +
+              '  <label>Consumer Key</label>' +
+              '  <p>' + response.result.id + '</p>' + // Credential.php l. 125
+              '  <label>Consumer Secret</label>' +
+              '  <p>' + response.result.clientSecret + '</p>' + // Credential.php l. 137
+              '  <label>Access Token</label>' +
+              '  <p>' + response.result.userToken + '</p>' + // by elimination
+              '  <label>Access Token Secret</label>' +
+              '  <p>' + response.result.userSecret + '</p>' + // Credential.php l. 207
+              '</div>',
+              '<a href="#" class="btn credential-view-dialogue-ok-click">OK</a>'
+            );
+            el.html(html).modal();
+          } else {
+            opTheme.message.error('Could not load Application crendentials.');
+          }
+        }, 'json', 'get');
+        return false;
+      },
+      credentialViewDialogueOk: function(ev) {
+        ev.preventDefault();
+        $('.modal').modal('hide');
+      },
+      credentialDelete: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
             url = el.attr('href')+'.json';
@@ -528,7 +560,7 @@ var opTheme = (function() {
       
         ev.preventDefault();
         var el = $(ev.target),
-          	url = el.parent().attr('action')+'.json';
+            url = el.parent().attr('action')+'.json';
       
         OP.Util.makeRequest(url, el.parent().serializeArray(), function(response) {
           if(response.code === 204) {
@@ -543,7 +575,7 @@ var opTheme = (function() {
       photoEdit: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
-          	id = el.attr('data-id'),
+            id = el.attr('data-id'),
             url = '/photo/'+id+'/edit.json';
         OP.Util.makeRequest(url, {}, function(response){
           if(response.code === 200) {
@@ -895,7 +927,9 @@ var opTheme = (function() {
         OP.Util.on('click:album-delete', opTheme.callback.albumDelete);
         OP.Util.on('click:album-form', opTheme.callback.albumForm);
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
-        OP.Util.on('click:credential-delete', opTheme.callback.credentailDelete);
+        OP.Util.on('click:credential-view', opTheme.callback.credentialView);
+        OP.Util.on('click:credential-view-dialogue-ok', opTheme.callback.credentialViewDialogueOk);
+        OP.Util.on('click:credential-delete', opTheme.callback.credentialDelete);
         OP.Util.on('click:group-delete', opTheme.callback.groupDelete);
         OP.Util.on('click:group-email-add', opTheme.callback.groupEmailAdd);
         OP.Util.on('click:group-email-remove', opTheme.callback.groupEmailRemove);
