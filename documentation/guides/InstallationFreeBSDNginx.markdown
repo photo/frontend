@@ -101,12 +101,12 @@ Download and install the source code. We recommend `/usr/local/www/yourdomain.co
 #### Using git clone
 
     pkg_add -r git-core
-    git clone git://github.com/openphoto/frontend.git /usr/local/www/yourdomain.com
+    git clone git://github.com/photo/frontend.git /usr/local/www/yourdomain.com
 
 #### Using tar
 
     cd /usr/local/www
-    wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
+    wget https://github.com/photo/frontend/tarball/master -O openphoto.tar.gz
     tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
 

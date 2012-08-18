@@ -156,4 +156,4 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
 [sample]: #sample
 [photogeneration]: http://theopenphotoproject.org/documentation/faq/PhotoGeneration
 [ReturnSizes]: http://theopenphotoproject.org/documentation/faq/ReturnSizes
-[openphoto-php]: https://github.com/openphoto/openphoto-php
+[openphoto-php]: https://github.com/photo/openphoto-php
