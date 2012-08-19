@@ -315,7 +315,7 @@ var opTheme = (function() {
               '  <label>Access Token Secret</label>' +
               '  <p>' + response.result.userSecret + '</p>' + // Credential.php l. 207
               '</div>',
-              '<a href="#" class="btn credential-view-dialogue-ok-click">OK</a>'
+              '<a href="#" class="btn" data-dismiss="modal">OK</a>'
             );
             el.html(html).modal();
           } else {
@@ -323,10 +323,6 @@ var opTheme = (function() {
           }
         }, 'json', 'get');
         return false;
-      },
-      credentialViewDialogueOk: function(ev) {
-        ev.preventDefault();
-        $('.modal').modal('hide');
       },
       credentialDelete: function(ev) {
         ev.preventDefault();
@@ -928,7 +924,6 @@ var opTheme = (function() {
         OP.Util.on('click:album-form', opTheme.callback.albumForm);
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
         OP.Util.on('click:credential-view', opTheme.callback.credentialView);
-        OP.Util.on('click:credential-view-dialogue-ok', opTheme.callback.credentialViewDialogueOk);
         OP.Util.on('click:credential-delete', opTheme.callback.credentialDelete);
         OP.Util.on('click:group-delete', opTheme.callback.groupDelete);
         OP.Util.on('click:group-email-add', opTheme.callback.groupEmailAdd);
