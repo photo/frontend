@@ -41,12 +41,12 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
 #### Using git clone
 
     apt-get install git-core
-    git clone git://github.com/openphoto/frontend.git /var/www/yourdomain.com
+    git clone git://github.com/photo/frontend.git /var/www/yourdomain.com
 
 #### Using tar
 
     cd /var/www
-    wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
+    wget https://github.com/photo/frontend/tarball/master -O openphoto.tar.gz
     tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
 
@@ -73,7 +73,7 @@ The `99` in the prefix of the destination filename above is so that Lighttpd loa
 
 Next open the configuration you just copied and edit it to match your site. Edit the `$HTTP["host"]` line and replace the variable contents with the subdomain where you are installing OpenPhoto. The value is a regular expression, so keep the `\.` which matches a period instead of any character as well as the `^` `$` to direct matching the beginning and end of the hostname respectively.
 
-Now replace the path on the `server.document-root` line with the path to the `src` sub-directory where you downloaded/copied OpenPhoto. This path would be `/var/www/yourdomain.com/src` if you followed the directions in the last section exactly.
+Now replace the path on the `server.document-root` line with the path to the `src/html` sub-directory where you downloaded/copied OpenPhoto. This path would be `/var/www/yourdomain.com/src/html` if you followed the directions in the last section exactly.
 
 A few modules must be enabled for use by Lighty for our OpenPhoto install. First edit `/etc/lighttpd/lighttpd.conf` and uncomment the line for `mod_rewrite` under the `server.modules` section. Next enable PHP through the FastCGI module from the command line.
 

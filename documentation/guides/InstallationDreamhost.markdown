@@ -19,7 +19,7 @@ Variables:
 
 1. Download and install OpenPhoto
 
-		wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
+		wget https://github.com/photo/frontend/tarball/master -O openphoto.tar.gz
 		tar -zxvf openphoto.tar.gz
 		mv openphoto-frontend-* OpenPhotoRoot
 
@@ -32,7 +32,7 @@ Variables:
 		chmod 775 OpenPhotoRoot/src/html/photos
 		
 		mkdir OpenPhotoRoot/src/userdata
-		chmod 775 OpenPhotoRoot/src/userdata_
+		chmod 775 OpenPhotoRoot/src/userdata
 	
 1. Configure the subdomain or domain.
 Go to the [Dreamhost control panel for managing domains](https://panel.dreamhost.com/index.cgi?tree=domain.manage)

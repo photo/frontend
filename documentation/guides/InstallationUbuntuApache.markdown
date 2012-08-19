@@ -48,12 +48,12 @@ Download and install the source code. We recommend `/var/www/yourdomain.com` but
 #### Using git clone
 
     apt-get install git-core
-    git clone git://github.com/openphoto/frontend.git /var/www/yourdomain.com
+    git clone git://github.com/photo/frontend.git /var/www/yourdomain.com
 
 #### Using tar
 
     cd /var/www
-    wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
+    wget https://github.com/photo/frontend/tarball/master -O openphoto.tar.gz
     tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
 
@@ -109,6 +109,10 @@ Search for the following values and make sure they're correct.
     file_uploads = On
     upload_max_filesize = 16M
     post_max_size = 16M
+    
+Search for, and if needed add the following line to load the Oauth Extention.
+
+    extension=oauth.so
 
 Now you're ready to restart apache and visit the site in your browser.
 

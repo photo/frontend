@@ -23,7 +23,10 @@
             <em class="credential-date"> created on <?php $this->utility->dateLong($credential['dateCreated']); ?></em>
           <?php } ?>
         </td>
-        <td><a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credential-delete-click"><i class="icon-remove icon-large"></i> Revoke</a></td>
+        <td>
+          <a href="/v1/oauth/<?php $this->utility->safe($credential['id']); ?>/view" class="credential-action-button credential-view-click" data-controls-modal="modal"><i class="icon-eye-open icon-large"></i> View</a>
+          <a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credential-action-button credential-delete-click"><i class="icon-remove icon-large"></i> Revoke</a>
+        </td>
       </tr>
     <?php } ?>
   </table>

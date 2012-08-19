@@ -32,7 +32,7 @@ _Authentication: required_
 <a name="parameters"></a>
 ### Parameters
 
-(Due to a [bug in PHP's PECL OAuth extension](https://github.com/openphoto/frontend/issues/289) all parameters except for the photo must be passed urlencoded in the query string. This only applies for multipart and not application/x-www-form-urlencoded requests).
+(Due to a [bug in PHP's PECL OAuth extension](https://github.com/photo/frontend/issues/289) all parameters except for the photo must be passed urlencoded in the query string. This only applies for multipart and not application/x-www-form-urlencoded requests).
 
 1.  photo (required), The photo to be uploaded.
     * This can be the binary photo in multipart/formdata
@@ -136,4 +136,4 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
 [example-php]: #example-php
 [response]: #response
 [sample]: #sample
-[openphoto-php]: https://github.com/openphoto/openphoto-php
+[openphoto-php]: https://github.com/photo/openphoto-php
