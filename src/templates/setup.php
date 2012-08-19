@@ -35,7 +35,7 @@
         <input type="hidden" name="password" value="">
       <?php } ?>
 
-      <label for="theme">Select a theme</label>
+      <label for="theme">Select a Theme</label>
       <select name="theme">
         <?php foreach($themes as $thisTheme) { ?>
           <option value="<?php $this->utility->safe($thisTheme); ?>" <?php if($theme == $thisTheme){ ?> selected="selected" <?php } ?>><?php echo ucwords($this->utility->safe($thisTheme, false)); ?></option>

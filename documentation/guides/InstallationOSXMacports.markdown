@@ -50,12 +50,12 @@ Download and install the source code. We recommend `~/Sites/yourdomain.com` but 
 
     # OSX should have git already installed. If not:
     sudo port install git-core
-    git clone git://github.com/openphoto/frontend.git ~/Sites/yourdomain.com
+    git clone git://github.com/photo/frontend.git ~/Sites/yourdomain.com
 
 #### Using tar
 
     cd ~/Sites
-    wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
+    wget https://github.com/photo/frontend/tarball/master -O openphoto.tar.gz
     tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
 

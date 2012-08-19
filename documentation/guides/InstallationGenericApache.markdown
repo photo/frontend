@@ -100,12 +100,12 @@ Download and install the source code. We recommend the default apache root (Ofte
 #### Using git clone
 
     apt-get install git-core
-    git clone git://github.com/openphoto/frontend.git <install location>/yourdomain.com
+    git clone git://github.com/photo/frontend.git <install location>/yourdomain.com
 
 #### Using tar
 
     cd <install location>
-    wget https://github.com/openphoto/frontend/tarball/master -O openphoto.tar.gz
+    wget https://github.com/photo/frontend/tarball/master -O openphoto.tar.gz
     tar -zxvf openphoto.tar.gz
     mv openphoto-frontend-* yourdomain.com
 

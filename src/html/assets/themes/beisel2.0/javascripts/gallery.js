@@ -7,6 +7,14 @@ var Gallery = (function($) {
   var lastDate = null;
 
 
+  // defaults
+  var configuration = {
+  	'thumbnailSize':'960x180',
+  	'marginsOfImage':6,
+  	'defaultWidthValue':120,
+  	'defaultHeightValue':120
+  };
+
 	/* ------------ PRIVATE functions ------------ */
 
 	/** Utility function that returns a value or the defaultvalue if the value is null */
@@ -76,12 +84,13 @@ var Gallery = (function($) {
 		// resulting distribution
 		var cutoff = [];
 		var cutsum = 0;
+        var photoKey = 'photo' + configuration['thumbnailSize'];
 
 		// distribute the delta based on the proportion of
 		// thumbnail size to length of all thumbnails.
 		for(var i in items) {
 			var item = items[i];
-			var fractOfLen = item['photo960x180'][1] / len;
+			var fractOfLen = item[photoKey][1] / len;
 			cutoff[i] = Math.floor(fractOfLen * delta);
 			cutsum += cutoff[i];
 		}
@@ -109,22 +118,23 @@ var Gallery = (function($) {
 	var buildImageRow = function(maxwidth, items) {
 		var row = [], len = 0;
 
+		var photoKey = 'photo' + configuration['thumbnailSize'];
+
     // if the last row has pixels left just fill them
     if(lastRowWidthRemaining > 0)
       maxwidth = lastRowWidthRemaining;
 
     // once adjusted the last row always has maxwidth left
     lastRowWidthRemaining = maxwidth;
-
 		
 		// each image a has a 3px margin, i.e. it takes 6px additional space
-		var marginsOfImage = 6;
+		var marginsOfImage = configuration['marginsOfImage'];
 
 		// Build a row of images until longer than maxwidth
 		while(items.length > 0 && len < maxwidth) {
 			var item = items.shift();
 			row.push(item);
-			len += (item['photo960x180'][1] + marginsOfImage);
+			len += (item[photoKey][1] + marginsOfImage);
 		}
 
 		// calculate by how many pixels too long?
@@ -143,7 +153,7 @@ var Gallery = (function($) {
 				item.vx = Math.floor(pixelsToRemove / 2);
 
 				// shrink the width of the image by pixelsToRemove
-				item.vwidth = item['photo960x180'][1] - pixelsToRemove;
+				item.vwidth = item[photoKey][1] - pixelsToRemove;
         lastRowWidthRemaining -= (item.vwidth+marginsOfImage);
 			}
 		} else {
@@ -151,7 +161,7 @@ var Gallery = (function($) {
 			for(var i in row) {
 				item = row[i];
 				item.vx = 0;
-				item.vwidth = item['photo960x180'][1];
+				item.vwidth = item[photoKey][1];
         lastRowWidthRemaining -= (item.vwidth+marginsOfImage);
 			}
 		}
@@ -169,9 +179,13 @@ var Gallery = (function($) {
 		var imageContainer = $('<div class="imageContainer"/>');
     var d = new Date(item.dateTaken*1000);
 
+		var pathKey = 'path' + configuration['thumbnailSize'];
+		var defaultWidthValue = configuration['defaultWidthValue'];
+		var defaultHeightValue = configuration['defaultHeightValue'];
+
 		var overflow = $("<div/>");
-		overflow.css("width", ""+$nz(item.vwidth, 120)+"px");
-		overflow.css("height", ""+$nz(item['path960x180'][1], 120)+"px");
+		overflow.css("width", ""+$nz(item.vwidth, defaultWidthValue)+"px");
+		overflow.css("height", ""+$nz(item[pathKey][1], defaultHeightValue)+"px");
 		overflow.css("overflow", "hidden");
 
     var urlParts = parseURL(item.url);
@@ -185,11 +199,11 @@ var Gallery = (function($) {
     link.attr('href', urlParts.pathname+qs);
 		
 		var img = $("<img/>");
-		img.attr("src", item.path960x180);
+		img.attr("src", item[pathKey]);
     img.attr('class', 'photo-view-modal-click');
 		img.attr("title", item.title);
-		img.css("width", "" + $nz(item['path960x180'][1], 120) + "px");
-		img.css("height", "" + $nz(item['path960x180'][2], 120) + "px");
+		img.css("width", "" + $nz(item[pathKey][1], defaultWidthValue) + "px");
+		img.css("height", "" + $nz(item[pathKey][2], defaultHeightValue) + "px");
 		img.css("margin-left", "" + (item.vx ? (-item.vx) : 0) + "px");
 		img.css("margin-top", "" + 0 + "px");
 		img.hide();
@@ -220,8 +234,11 @@ var Gallery = (function($) {
 		var overflow = item.el.find("div:first");
 		var img = overflow.find("img:first");
 
-		overflow.css("width", "" + $nz(item.vwidth, 120) + "px");
-		overflow.css("height", "" + $nz(item.theight, 120) + "px");
+		var defaultWidthValue = configuration['defaultWidthValue'];
+		var defaultHeightValue = configuration['defaultHeightValue'];
+
+		overflow.css("width", "" + $nz(item.vwidth, defaultWidthValue) + "px");
+		overflow.css("height", "" + $nz(item.theight, defaultHeightValue) + "px");
 
 		img.css("margin-left", "" + (item.vx ? (-item.vx) : 0) + "px");
 		img.css("margin-top", "" + 0 + "px");
@@ -229,7 +246,10 @@ var Gallery = (function($) {
 		
 	/* ------------ PUBLIC functions ------------ */
 	return {
-		
+		setConfig : function(key, value) {
+			configuration[key] = value;
+		},
+
 		showImages : function(photosContainer, realItems) {
 
 			// reduce width by 1px due to layout problem in IE
