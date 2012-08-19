@@ -93,7 +93,6 @@
               'album-form-click':'click:album-form',
               'batch-modal-click':'click:batch-modal',
               'credential-view-click':'click:credential-view',
-              'credential-view-dialogue-ok-click':'click:credential-view-dialogue-ok',
               'credential-delete-click':'click:credential-delete',
               'group-delete-click':'click:group-delete',
               'group-email-add-click':'click:group-email-add',
@@ -183,7 +182,7 @@
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'an'); ?>'
+                                                  getUrl(AssetPipeline::js, 'ao'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
