@@ -64,14 +64,12 @@ MKP;
   <!-- Piwik modal code -->
   <script type="text/javascript">
     OP.Util.on("photo:viewed", function(params){
-      // Get the existing tracker instance
-      var piwikTracker = Piwik.getAsyncTracker();
       // Get URL and title that were changed by modal
-      piwikTracker.setCustomUrl(window.location);
-      piwikTracker.setDocumentTitle(document.title);
+      _paq.push(['setCustomUrl', window.location]);
+      _paq.push(['setDocumentTitle', document.title]);
       // Track page view and enable link tracking
-      piwikTracker.trackPageView();
-      piwikTracker.enableLinkTracking();
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
     });
   </script>
   <!-- End modal Piwik Code -->
