@@ -813,16 +813,13 @@ class SetupController extends BaseController
     {
       if($key != 'email' && $key != 'password')
         $pReplace["{{$key}}"] = $val;
+
+      // Write keys to the log file. If key is in whitelist then log the value as well.
       if(in_array($key, $settingsToLog))
-      {
-        // In the whitelist of safe to log values
         $logMessage = sprintf("Storing `%s` as '%s'", $key, $val);
-      }
       else
-      {
-        // Not in the whitelist of safe to log values
         $logMessage = sprintf("Storing `%s`", $key);
-      }
+
       getLogger()->info($logMessage);
     }
 
