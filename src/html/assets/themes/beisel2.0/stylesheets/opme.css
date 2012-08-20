@@ -4247,6 +4247,9 @@ body.photos .album-list {
 body.tags div.tags .tag-list {
   padding:20px;
 }
+.tag-list a {
+  color: #e6501e;
+}
 .tag-1 {
   background-color:#f4bfde;
 }
