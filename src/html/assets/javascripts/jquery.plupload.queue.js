@@ -185,8 +185,8 @@
 
 					updateTotalProgress();
 
-					// Re-add drag message if there is no files
-					if (!uploader.files.length && uploader.features.dragdrop && uploader.settings.dragdrop) {
+					// Re-add drag message if there is no files or droptext is configured to be permanent
+					if (settings.keep_droptext || (!uploader.files.length && uploader.features.dragdrop && uploader.settings.dragdrop)) {
 						$('#' + id + '_filelist').append('<li class="plupload_droptext">' + _("Drag photos here.") + '</li>');
 					}
 				}
