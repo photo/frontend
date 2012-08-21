@@ -1249,10 +1249,12 @@ var opTheme = (function() {
           return;
         } else {
           opTheme.message.append(
-            markup.message(
-              '  <a id="batch-message"></a>You have <span id="batch-count">'+idsLength+'</span> photos pinned.' +
-              '  <div><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a>&nbsp;<a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
-            )
+            '<div class="batch-message-container">' +
+              markup.message(
+                '  <a id="batch-message"></a>You have <span id="batch-count">'+idsLength+'</span> photos pinned.' +
+                '  <div><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a>&nbsp;<a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
+              ) +
+            '</div>'
           );
         }
       },

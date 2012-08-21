@@ -4351,6 +4351,9 @@ body.tags div.tags .tag-list {
        -o-transition:opacity linear 0.2s;
        transition:opacity linear 0.2s;
 }
+.batch-message-container .close {
+  display: none;
+}
 .manage.applications table td {
   width: 50%;
 
