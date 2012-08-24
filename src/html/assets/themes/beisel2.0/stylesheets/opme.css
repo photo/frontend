@@ -4408,11 +4408,8 @@ body.tags div.tags .tag-list {
 }
 
 .photodetail .span9 img {
-	-webkit-border-top-left-radius: 5px;
-	-moz-border-top-left-radius: 5px;
-	border-top-left-radius: 5px;
-  display:block;
-  margin:auto;
+	display:block;
+	margin:auto;
 }
 
 .photodetail .span9 .form-horizontal {
@@ -4445,7 +4442,10 @@ body.tags div.tags .tag-list {
 }
 
 .photodetailpos {
-	position:relative;
+	border-top-left-radius: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-moz-border-top-left-radius: 5px;
+	overflow: hidden;
 }
 
 .photodetailpos:hover .private {
@@ -4980,6 +4980,11 @@ header h1 {
 	.photodetail .camera {
 		margin-bottom:20px;
 	}
+	.photodetailpos {
+		border-top-right-radius: 5px;
+		-webkit-border-top-right-radius: 5px;
+		-moz-border-top-right-radius: 5px;
+}
 
   .manage.applications .credential-date {
     display:none;
