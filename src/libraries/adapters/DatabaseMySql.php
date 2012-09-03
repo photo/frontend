@@ -126,7 +126,7 @@ class DatabaseMySql implements DatabaseInterface
     if(!isset($photo['id']))
       return false;
 
-    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `owner`=:owner AND `id`=:id", array(':id' => $photo['id'], ':owner' => $this->owner));
     return $res !== false;
   }
 
@@ -1564,7 +1564,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function getPhotoVersions($id)
   {
-    $versions = $this->db->all("SELECT `key`,path FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `id`=:id AND owner=:owner",
+    $versions = $this->db->all("SELECT `key`,path FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `owner`=:owner AND `id`=:id ",
                  array(':id' => $id, ':owner' => $this->owner));
     if(empty($versions))
       return false;

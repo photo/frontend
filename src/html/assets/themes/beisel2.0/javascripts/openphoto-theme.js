@@ -315,7 +315,7 @@ var opTheme = (function() {
               '  <label>Access Token Secret</label>' +
               '  <p>' + response.result.userSecret + '</p>' + // Credential.php l. 207
               '</div>',
-              '<a href="#" class="btn credential-view-dialogue-ok-click">OK</a>'
+              '<a href="#" class="btn" data-dismiss="modal">OK</a>'
             );
             el.html(html).modal();
           } else {
@@ -323,10 +323,6 @@ var opTheme = (function() {
           }
         }, 'json', 'get');
         return false;
-      },
-      credentialViewDialogueOk: function(ev) {
-        ev.preventDefault();
-        $('.modal').modal('hide');
       },
       credentialDelete: function(ev) {
         ev.preventDefault();
@@ -615,6 +611,7 @@ var opTheme = (function() {
             var nextPhoto = $('img.next-photo'), prevPhoto = $('img.previous-photo');
             pushstate.insert(url, pushstate.parse(response));
             util.fetchAndCacheNextPrevious();
+            OP.Util.fire('photo:viewed', {url: location.href});
           });
         }
         return false;
@@ -644,6 +641,7 @@ var opTheme = (function() {
       photoViewModalCb: function(response) {
         util.fetchAndCacheNextPrevious();
         pushstate.insert(location.hash, pushstate.parse(response));
+        OP.Util.fire('photo:viewed', {url: location.href});
       },
       photoUpdate: function(ev) {
         ev.preventDefault();
@@ -928,7 +926,6 @@ var opTheme = (function() {
         OP.Util.on('click:album-form', opTheme.callback.albumForm);
         OP.Util.on('click:batch-modal', opTheme.callback.batchModal);
         OP.Util.on('click:credential-view', opTheme.callback.credentialView);
-        OP.Util.on('click:credential-view-dialogue-ok', opTheme.callback.credentialViewDialogueOk);
         OP.Util.on('click:credential-delete', opTheme.callback.credentialDelete);
         OP.Util.on('click:group-delete', opTheme.callback.groupDelete);
         OP.Util.on('click:group-email-add', opTheme.callback.groupEmailAdd);
@@ -1038,7 +1035,10 @@ var opTheme = (function() {
           }
         },
         photo: {
-          init: function() { util.fetchAndCacheNextPrevious(); }
+          init: function() { 
+            util.fetchAndCacheNextPrevious(); 
+            OP.Util.fire('photo:viewed', {url: location.href});
+          }
         },
         photos: {
           // TODO have a better way of sending data into the JS framework. See #780
@@ -1254,10 +1254,12 @@ var opTheme = (function() {
           return;
         } else {
           opTheme.message.append(
-            markup.message(
-              '  <a id="batch-message"></a>You have <span id="batch-count">'+idsLength+'</span> photos pinned.' +
-              '  <div><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a>&nbsp;<a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
-            )
+            '<div class="batch-message-container">' +
+              markup.message(
+                '  <a id="batch-message"></a>You have <span id="batch-count">'+idsLength+'</span> photos pinned.' +
+                '  <div><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a>&nbsp;<a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
+              ) +
+            '</div>'
           );
         }
       },
