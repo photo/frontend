@@ -49,7 +49,7 @@
         <td><?php $this->utility->safe($plugin['name']); ?></td>
         <td>
           <div class="<?php if($plugin['status'] === 'inactive') { ?>hide <?php } ?>active"><i class="icon-check icon-large"></i> Active (<a href="/plugin/<?php $this->utility->safe($plugin['name']); ?>/view" class="plugin-view-click">Configure</a> or <a href="/plugin/<?php $this->utility->safe($plugin['name']); ?>/deactivate" class="plugin-status-toggle-click">Deactivate</a>)</div>
-          <div class="<?php if($plugin['status'] === 'active') { ?>hide <?php } ?>inactive"><i class="icon-check-empty icon-large"></i> Inactive (<a href="/plugin/<?php $this->utility->safe($plugin['name']); ?>/activate" class="plugin-status-toggle-click">Activiate</a>)</div>
+          <div class="<?php if($plugin['status'] === 'active') { ?>hide <?php } ?>inactive"><i class="icon-check-empty icon-large"></i> Inactive (<a href="/plugin/<?php $this->utility->safe($plugin['name']); ?>/activate" class="plugin-status-toggle-click">Activate</a>)</div>
         </td>
       </tr>
     <?php } ?>

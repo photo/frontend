@@ -4248,6 +4248,9 @@ body.photos .album-list {
 body.tags div.tags .tag-list {
   padding:20px;
 }
+.tag-list a {
+  color: #e6501e;
+}
 .tag-1 {
   background-color:#f4bfde;
 }
@@ -4348,6 +4351,9 @@ body.tags div.tags .tag-list {
        -ms-transition:opacity linear 0.2s;
        -o-transition:opacity linear 0.2s;
        transition:opacity linear 0.2s;
+}
+.batch-message-container .close {
+  display: none;
 }
 .manage.applications table td {
   width: 50%;

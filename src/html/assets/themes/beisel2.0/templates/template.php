@@ -38,7 +38,7 @@
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'chosen.css', false))->
                                                                   addCss($this->theme->asset('stylesheet', 'opme.css', false))->
-                                                                  getUrl(AssetPipeline::css, 'am'); ?>">
+                                                                  getUrl(AssetPipeline::css, 'ao'); ?>">
       <!--[if IE 7]>
         <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'font-awesome-2-ie7.css', false))->
                                                                   getUrl(AssetPipeline::css, 'a'); ?>">
@@ -93,7 +93,6 @@
               'album-form-click':'click:album-form',
               'batch-modal-click':'click:batch-modal',
               'credential-view-click':'click:credential-view',
-              'credential-view-dialogue-ok-click':'click:credential-view-dialogue-ok',
               'credential-delete-click':'click:credential-delete',
               'group-delete-click':'click:group-delete',
               'group-email-add-click':'click:group-email-add',
@@ -157,7 +156,7 @@
                 '/assets/javascripts/jquery.plupload.queue.js',
                 '/assets/javascripts/openphoto-upload.js',
               <?php } else { ?>
-                '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'n'); ?>',
+                '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'o'); ?>',
               <?php } ?>
             <?php } ?>
 
@@ -183,7 +182,7 @@
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'an'); ?>'
+                                                  getUrl(AssetPipeline::js, 'ap'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 

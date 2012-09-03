@@ -297,7 +297,7 @@ class SetupController extends BaseController
     $password = getSession()->get('password');
     $appId = getSession()->get('appId');
     $database = getSession()->get('database');
-    $filesystem = getSession()->get('filesystem');
+    $filesystem = getSession()->get('fileSystem');
     $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
@@ -396,7 +396,7 @@ class SetupController extends BaseController
     $step = 3;
     $secret = $this->getSecret();
     $database = getSession()->get('database');
-    $filesystem = getSession()->get('filesystem');
+    $filesystem = getSession()->get('fileSystem');
     $appId = getSession()->get('appId');
     $password = getSession()->get('password');
     $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
@@ -595,10 +595,10 @@ class SetupController extends BaseController
             $dbObj->postUser(array('password' => ''));
           else
             $dbObj->putUser(array('password' => ''));
-	}
+        }
       }
       catch(Exception $e) {
-	getLogger()->warn($e->getMessage());
+        getLogger()->warn($e->getMessage());
       }
 
       if($fsErrors === false && $dbErrors === false)
@@ -799,6 +799,13 @@ class SetupController extends BaseController
       '{theme}' => getSession()->get('theme'),
       '{email}' => getSession()->get('ownerEmail')
     );
+    // Session keys whose value it is ok to log.
+    // Other session keys available at this point are:
+    //   awsKey, awsSecret, dropboxKey, dropboxSecret, dropboxToken, dropboxTokenSecret,
+    //   flowDropboxKey, flowDropboxSecret, mySqlPassword, mySqlUser, password, secret, step
+    // It is safer to explicitly list keys that are ok to log, rather than exclude those that are
+    // sensitive, as one might forget to exclude new keys.
+    $settingsToLog = array('step', 'appId', 'ownerEmail', 'isEditMode', 'theme', 'imageLibrary', 'database', 'simpleDbDomain', 'mySqlDb', 'mySqlHost', 'mySqlTablePrefix', 'fileSystem', 'fsHost', 'fsRoot', 'dropboxFolder', 'flowDropboxFolder', 's3BucketName');
 
     $pReplace = array();
     $session = getSession()->getAll();
@@ -807,7 +814,13 @@ class SetupController extends BaseController
       if($key != 'email' && $key != 'password')
         $pReplace["{{$key}}"] = $val;
 
-      getLogger()->info(sprintf('Storing %s as %s', $key, $val));
+      // Write keys to the log file. If key is in whitelist then log the value as well.
+      if(in_array($key, $settingsToLog))
+        $logMessage = sprintf("Storing `%s` as '%s'", $key, $val);
+      else
+        $logMessage = sprintf("Storing `%s`", $key);
+
+      getLogger()->info($logMessage);
     }
 
     $replacements = array_merge($replacements, $pReplace);
