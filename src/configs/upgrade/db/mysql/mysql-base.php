@@ -242,7 +242,7 @@ SQL;
     `owner` varchar(127) NOT NULL,
     `key` varchar(127) NOT NULL DEFAULT '',
     `path` varchar(1000) DEFAULT NULL,
-    UNIQUE KEY `id` (`id`,`owner`,`key`)
+    UNIQUE KEY `id` (`owner`,`id`,`key`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQL;
   mysql_base($sql);
@@ -298,7 +298,7 @@ SQL;
     INSERT INTO `{$this->mySqlTablePrefix}admin` (`key`,`value`) 
     VALUES (:key, :value)
 SQL;
-  mysql_base($sql, array(':key' => 'version', ':value' => '3.0.6'));
+  mysql_base($sql, array(':key' => 'version', ':value' => '3.0.7'));
 
   return true;
 }
