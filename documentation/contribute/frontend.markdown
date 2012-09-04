@@ -8,7 +8,9 @@ So what do you need to start contributing?
 A computer! Once you've secured one of those all you need is a Github account. It helps to have a locally installed version of the frontend repository to test your changes. We've got <a href="http://theopenphotoproject.org/documentation">lots of guides</a> to help you get started. If you're updating any of the PHP code you should get PHPUnit as well.
 
     pear channel-discover pear.phpunit.de
+    pear channel-discover pear.bovigo.org
     pear install pear.phpunit.de/PHPUnit
+    pear install bovigo/vfsStream-beta
     
     # problems? check the links below
     # http://www.phpunit.de/manual/3.6/en/installation.html
@@ -34,7 +36,7 @@ We've added a _Beginner_ label to issues that don't touch some of the more sensi
 
 Once you've made your change and verified it does what it should it's time to make sure it's not doing something it shouldn't. This is as easy as a single command.
 
-    phpunit src/tests
+    phpunit -c src/tests/phpunit.xml
     ............................................................  60 / 311
     ............................................................ 120 / 311
     ............................................................ 180 / 311
