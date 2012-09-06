@@ -73,7 +73,7 @@
               </div>
             </fieldset>
           </form>
-          <form method="post" action="<?php $this->url->actionCreate($photo['id'], 'photo'); ?>" id="favorite-form">
+          <form method="post" action="<?php $this->url->actionCreate($photo['id'], 'photo'); ?>" id="favorite-form" class="hidden">
             <input type="hidden" name="type" value="favorite">
             <input type="hidden" name="targetUrl" value="<?php $this->utility->safe(sprintf('http://%s%s', $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_URI'])); ?>">
             <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
