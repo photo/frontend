@@ -86,7 +86,7 @@ Now enable openphoto and disable Apache's default virtual host.
     a2ensite openphoto
 
 
-By default, any access to ini files is denied with a "Not Found" 404 HTTP code.  To enable a 404, or Forbidden return code, change the following lines in the virtual host file.
+By default, any access to ini files is denied with a "Not Found" 404 HTTP code.  To enable a 403, or Forbidden return code, change the following lines in the virtual host file.
 
 Uncomment:
 
@@ -95,8 +95,8 @@ Uncomment:
 
 Comment:
 
-  # 404 Not Found for ini files
-  AliasMatch \.ini$	/404
+    # 404 Not Found for ini files
+    AliasMatch \.ini$	/404
 
 ### PHP
 
