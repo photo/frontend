@@ -385,8 +385,10 @@ var opTheme = (function() {
       },
       groupEmailRemove: function(ev) {
         ev.preventDefault();
-        var el = $(ev.target).parent().parent();
+        var el = $(ev.target).parent().parent(),
+            form = el.closest('form');
         el.remove();
+        form.submit();
       },
       groupForm: function(ev) {
         ev.preventDefault();
@@ -412,7 +414,7 @@ var opTheme = (function() {
         var form = $(ev.target),
             url = form.attr('action')+'.json',
             isCreate = (url.search('create') > -1),
-            isDynamic = $('input[name="dynamic"]', form).val(),
+            isDynamic = $('input[name="dynamic"]', form).val() == "1",
             emails,
             params = {name: $('input[name="name"]', form).val()};
 
@@ -428,12 +430,13 @@ var opTheme = (function() {
         OP.Util.makeRequest(url, params, function(response) {
           var form = form;
           if(response.code === 200 || response.code === 201) {
-            if(isDynamic)
+            if(isDynamic) {
               opTheme.callback.groupPostDynamicCb(form, response.result);
-            else if(isCreate)
-              location.href = '/manage/groups?m=group-created';
-            else
+            } else if(isCreate) {
+              window.location.href = '/manage/groups?m=group-created&rnd='+Math.random()+'#group-'+response.result.id;
+            } else {
               opTheme.message.confirm('Group updated successfully.');
+            }
           } else {
             opTheme.message.error('Could not update group.');
           }
