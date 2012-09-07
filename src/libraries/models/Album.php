@@ -21,7 +21,7 @@ class Album extends BaseModel
   public function addElement($albumId, $type, $ids)
   {
     if(!is_array($ids))
-      $ids = (array)explode(',', $_POST['ids']);
+      $ids = (array)explode(',', $ids);
 
     return $this->db->postAlbumAdd($albumId, $type, $ids);
   }
@@ -93,7 +93,7 @@ class Album extends BaseModel
   public function removeElement($albumId, $type, $ids)
   {
     if(!is_array($ids))
-      $ids = (array)explode(',', $_POST['ids']);
+      $ids = (array)explode(',', $ids);
 
     return $this->db->postAlbumRemove($albumId, $type, $ids);
   }
