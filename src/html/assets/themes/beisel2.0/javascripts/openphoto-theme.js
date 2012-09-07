@@ -1172,6 +1172,7 @@ var opTheme = (function() {
 
         el.addClass('alert alert-info').html(html);
         last.after(el).slideDown();
+        el.delay(5000).slideUp(function(){ $(this).remove(); });
       },
       confirm: function(messageHtml) {
         opTheme.message.show(messageHtml, 'confirm');
