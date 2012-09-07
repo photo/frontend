@@ -23,6 +23,8 @@ class AlbumController extends BaseController
       $page = (int)$_GET['page'];
     $albumsResp = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => $pageSize, 'page' => $page)));
     $albums = $albumsResp['result'];
+    $this->plugin->setData('albums', $albums);
+    $this->plugin->setData('page', 'albums');
     $body = $this->theme->get($this->utility->getTemplate('albums.php'), array('albums' => $albums));
     $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'albums'));
   }
