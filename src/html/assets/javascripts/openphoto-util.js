@@ -12,7 +12,7 @@
 
     //constants
     var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
-        BROWSER_ID_SRC = 'https://browserid.org/include.js',
+        BROWSER_ID_SRC = 'https://login.persona.org/include.js',
         log = function(msg) { if(typeof(console) !== 'undefined' && typeof(console.log) !== 'undefined') {  console.log(msg); } };
 
     /**
