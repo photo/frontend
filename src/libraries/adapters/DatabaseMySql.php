@@ -584,11 +584,15 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getTag($tag)
   {
-    $tag = $this->db->one('SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND `owner`=:owner', array(':id' => $tag));
-    // TODO this should be in the normalize method
-    if($tag['params'])
-      $tag = array_merge($tag, json_decode($tag['params'], 1));
-    unset($tag['params']);
+    $tag = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND `owner`=:owner", array(':id' => $tag, ':owner' => $this->owner));
+
+    if(!$tag )
+      return false;
+
+    // TODO this should be in the normalize method #943
+    if($tag['extra'])
+      $tag = array_merge($tag, json_decode($tag['extra'], 1));
+    unset($tag['extra']);
     return $tag;
   }
 

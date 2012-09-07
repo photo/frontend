@@ -26,6 +26,25 @@ class Tag extends BaseModel
     return $this->db->deleteTag($id);
   }
 
+  /**
+    * Get a single tag.
+    *
+    * @param tag $tag An string of the tag
+    * @return array Tag object augmented with a "weight" property.
+    */
+  public function getTag($tag = null)
+  {
+    $userObj = new User;
+    $tagField = $userObj->isOwner() ? 'countPrivate' : 'countPublic';
+    $tag = $this->db->getTag($tag);
+    if(!$tag || $tag[$tagField] == 0)
+      return false;
+
+    $tag['count'] = intval($tag[$tagField]);
+    unset($tag['countPrivate'], $tag['countPublic']);
+    return $tag;
+  }
+
   public function getTags($filters = null)
   {
     return $this->db->getTags($filters);
