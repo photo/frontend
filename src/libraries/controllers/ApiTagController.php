@@ -45,7 +45,10 @@ class ApiTagController extends ApiBaseController
     getAuthentication()->requireAuthentication();
     $tag = $_POST['tag'];
     unset($_POST['tag']);
-    return $this->update($tag);
+    $res = $this->update($tag);
+    if($res['code'] !== 200)
+      return $this->error(sprintf('Could not create tag %s', $tag), false);
+    return $this->created(sprintf('Tag %s created successfully.', $tag), true);
   }
 
   /**
@@ -68,6 +71,20 @@ class ApiTagController extends ApiBaseController
     {
       return $this->error('Tag could not be created/updated', false);
     }
+  }
+
+  /**
+    * Return a single tag tags.
+    *
+    * @return string Standard JSON envelope
+    */
+  public function view($tag)
+  {
+    $tagFromDb = $this->tag->getTag($tag);
+    if($tagFromDb === false)
+      return $this->notFound(sprintf('Could not find tag %s', $tag), false);
+
+    return $this->success(sprintf('Successfully returned tag %s', $tag), $tagFromDb);
   }
 
   /**
@@ -94,7 +111,8 @@ class ApiTagController extends ApiBaseController
       {
         if(strlen($tag['id']) === 0)
           continue;
-        $tag['count'] = $tag[$tagField];
+        $tag['count'] = intval($tag[$tagField]);
+        unset($tag['countPrivate'], $tag['countPublic']);
         $tags[] = $tag;
       }
     }

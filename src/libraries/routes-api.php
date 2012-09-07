@@ -77,6 +77,7 @@ $apiObj->post('/?v?1?/photo/([a-zA-Z0-9]+)/transform.json', array('ApiPhotoContr
 $apiObj->post('/?v?1?/tag/create.json', array('ApiTagController', 'create'), EpiApi::external); // post a tag (/tag/{id}/update.json)
 $apiObj->post('/?v?1?/tag/(.+)/delete.json', array('ApiTagController', 'delete'), EpiApi::external); // post a tag (/tag/{id}/update.json)
 $apiObj->post('/?v?1?/tag/(.+)/update.json', array('ApiTagController', 'update'), EpiApi::external); // post a tag (/tag/{id}/update.json)
+$apiObj->get('/?v?1?/tag/(.+)/view.json', array('ApiTagController', 'view'), EpiApi::external); // retrieve tags
 $apiObj->get('/?v?1?/tags/list.json', array('ApiTagController', 'list_'), EpiApi::external); // retrieve tags
 
 /*
