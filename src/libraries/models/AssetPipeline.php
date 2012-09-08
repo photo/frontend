@@ -13,7 +13,8 @@ class AssetPipeline
   const js = 'js';
   const minified = 'm';
   const combined = 'c';
-  protected $assets, $assetsRel, $docroot, $cacheDir, $mode;
+  protected $assets, $assetsRel, $docroot, $cacheDir, $mode, $types;
+  public $returnAsHeader = true;
 
   public function __construct($params = null)
   {
@@ -29,6 +30,18 @@ class AssetPipeline
       $this->mode = self::minified;
     else
       $this->mode = self::combined;
+
+    $this->types = array(
+      'css' => 'text/css',
+      'gif' => 'image/gif',
+      'jpg' => 'image/jpeg',
+      'jpeg' => 'image/jpeg',
+      'js' => 'text/javascript',
+      'ico' => 'image/vnd.microsoft.icon',
+      'png' => 'image/png',
+      'tiff' => 'image/tiff',
+    );
+
   }
 
   public function addCss($src)
@@ -54,6 +67,15 @@ class AssetPipeline
       $retval .= ($type === self::css ? $this->normalizeUrls($file) : file_get_contents($file)) . "\n";
 
     return $retval;
+  }
+
+  public function getContentType($file)
+  {
+    $ext = pathinfo($file, PATHINFO_EXTENSION);
+    if(isset($this->types[$ext]))
+      return $this->types[$ext];
+
+    return 'text/plain';
   }
 
   public function getMinified($type)
@@ -82,6 +104,15 @@ class AssetPipeline
     }
     
     return $url;
+  }
+
+  public function returnHeader($file)
+  {
+    $header = sprintf('Content-Type: %s', $this->getContentType($file));
+    if($this->returnAsHeader)
+      header($header);
+    else
+      return $header;
   }
 
   public function setMode($mode)
