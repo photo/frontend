@@ -16,8 +16,6 @@ if($configObj->get('site')->maintenance == 1)
  */
 $routeObj->post('/action/([a-zA-Z0-9]+)/(photo)/create', array('ActionController', 'create')); // post an action (/action/{id}/{type}/create)
 
-$routeObj->get('/assets/[^/]+/(.+)', array('AssetsController', 'staticAsset'));
-
 /*
  * Manage endpoints
  * /manage

@@ -22,8 +22,14 @@ class AssetPipeline
       $config = $params['config'];
     else
       $config = getConfig()->get();
+
+    $mediaVersion = $config->defaults->mediaVersion;
+    if(isset($config->site->mediaVersion))
+      $mediaVersion = $config->site->mediaVersion;
+    $this->cdnPrefix = $config->site->cdnPrefix;
     $this->docroot = $config->paths->docroot;
-    $this->cacheDir = sprintf('%s/assets/cache', $this->docroot);;
+    $this->cacheDir = sprintf('%s/assets/cache', $this->docroot);
+    $this->cacheDirVersioned = sprintf('/assets/versioned/%s/', $mediaVersion); // trailing slash because it's used in a str_replace
     $this->assets = $this->assetsRel = array('js' => array(), 'css' => array());
     $siteMode = $config->site->mode;
     if($siteMode === 'prod')
@@ -59,12 +65,12 @@ class AssetPipeline
     return $this;
   }
 
-  public function getCombined($type)
+  public function getCombined($type, $version = null)
   {
     $retval = '';
     $files = $this->assets[$type];
     foreach($files as $file)
-      $retval .= ($type === self::css ? $this->normalizeUrls($file) : file_get_contents($file)) . "\n";
+      $retval .= ($type === self::css ? $this->normalizeUrls($file, $version) : file_get_contents($file)) . "\n";
 
     return $retval;
   }
@@ -89,20 +95,20 @@ class AssetPipeline
 
   }
 
-  public function getUrl($type, $version = 'a')
+  public function getUrl($type, $version = null)
   {
+    // generate the hash and see if the file is on disk
     $url = sprintf('/assets/cache/%s/%s/%s%s', $version, $type, $this->mode, implode(',', $this->assetsRel[$type]));
     $hash = sha1($url);
     if(is_dir($this->cacheDir) && file_exists($assetPath = sprintf('%s/%s.%s', $this->cacheDir, $hash, $type)))
       return str_replace($this->docroot, '', $assetPath);
 
-    
+    // else we generate the URL which comebines all the URLs together
     if(is_dir($this->cacheDir) && is_writable($this->cacheDir))
     {
       $contents = $this->mode === self::minified ? $this->getMinified($type) : $this->getCombined($type);
       file_put_contents($assetPath, $contents);
     }
-    
     return $url;
   }
 
@@ -134,7 +140,12 @@ class AssetPipeline
   private function normalizeUrls($file)
   {
     $contents = file_get_contents($file);
-    $pathToFile = str_replace($this->docroot, '', dirname($file));
+    // we only version assets if they are being served from a CDN
+    if(!empty($this->cdnPrefix))
+      $pathToFile = str_replace(array($this->docroot, '/assets/'), array('', $this->cacheDirVersioned), dirname($file));
+    else
+      $pathToFile = str_replace($this->docroot, '', dirname($file));
+
     return str_replace('../', "{$pathToFile}/../", $contents);
   }
 }

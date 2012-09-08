@@ -9,6 +9,10 @@ class AssetPipelineOverride extends AssetPipeline
     $config->paths->docroot = null;
     $config->site = new stdClass;
     $config->site->mode = 'prod';
+    $config->site->cdnPrefix = 'a';
+    $config->defaults = new stdClass;
+    $config->defaults->cdnPrefix = '';
+    $config->defaults->mediaVersion = 'a';
     parent::__construct(array('config' => $config));
 
     if(class_exists('vfsStream'))
