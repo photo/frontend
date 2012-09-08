@@ -20,7 +20,7 @@ class AssetsController extends BaseController
     $this->pipeline = getAssetPipeline();
   }
 
-  public function get($type, $compression, $files)
+  public function get($version, $type, $compression, $files)
   {
     $files = (array)explode(',', $files);
     foreach($files as $file)
@@ -33,9 +33,9 @@ class AssetsController extends BaseController
 
     $this->pipeline->returnHeader($files[0]);
     if($compression === 'm')
-      echo $this->pipeline->getMinified($type);
+      echo $this->pipeline->getMinified($type, $version);
     elseif($compression === 'c')
-      echo $this->pipeline->getCombined($type);
+      echo $this->pipeline->getCombined($type, $version);
   }
 
   public function staticAsset($file)
