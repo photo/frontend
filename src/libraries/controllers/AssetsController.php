@@ -7,6 +7,9 @@
   */
 class AssetsController extends BaseController
 {
+  private $types;
+  public $returnAsHeader = true;
+
   /**
     * Call the parent constructor
     *
@@ -15,6 +18,16 @@ class AssetsController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->types = array(
+      'css' => 'text/css',
+      'gif' => 'image/gif',
+      'jpg' => 'image/jpeg',
+      'jpeg' => 'image/jpeg',
+      'js' => 'text/javascript',
+      'ico' => 'image/vnd.microsoft.icon',
+      'png' => 'image/png',
+      'tiff' => 'image/tiff',
+    );
   }
 
   public function get($type, $compression, $files)
@@ -38,5 +51,30 @@ class AssetsController extends BaseController
       echo $pipeline->getMinified($type);
     elseif($compression === 'c')
       echo $pipeline->getCombined($type);
+  }
+
+  public function staticAsset($file)
+  {
+    $this->returnHeader($file);
+    readfile(sprintf('%s/assets/%s', $this->config->paths->docroot, $file));
+    die();
+  }
+
+  private function getContentType($file)
+  {
+    $ext = pathinfo($file, PATHINFO_EXTENSION);
+    if(isset($this->types[$ext]))
+      return $this->types[$ext];
+
+    return 'text/plain';
+  }
+
+  private function returnHeader($file)
+  {
+    $header = sprintf('Content-Type: %s', $this->getContentType($file));
+    if($this->returnAsHeader)
+      header($header);
+    else
+      return $header;
   }
 }
