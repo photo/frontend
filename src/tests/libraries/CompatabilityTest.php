@@ -39,7 +39,8 @@ foo="bar"', true);
   public function testGetMimeTypeSuccess()
   {
     $type = get_mime_type($this->file);
-    $this->assertEquals('image/jpeg', $type);
+    $this->assertTrue(file_exists($this->file), "File does not exist at {$this->file}");
+    $this->assertEquals('image/jpeg', $type, "Failed to load file and get proper mime type for {$this->file}");
   }
 
   public function testGetMimeTypeFileDoesNotExistFailure()
