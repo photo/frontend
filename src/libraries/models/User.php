@@ -266,6 +266,12 @@ class User extends BaseModel
       return $this->credential;
 
     $this->credential = new Credential;
+    if($this->credential->isOAuthRequest()) {
+      // Process the OAuth request
+      if (!$this->credential->checkRequest()) {
+	$this->logger->warn($this->credential->getErrorAsString());
+      }
+    }
     return $this->credential;
   }
 
