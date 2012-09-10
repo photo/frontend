@@ -389,13 +389,16 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getGroup($id = null)
   {
-    $res = $this->db->all("SELECT grp.*, memb.* FROM `{$this->mySqlTablePrefix}group` AS grp INNER JOIN `{$this->mySqlTablePrefix}groupMember` AS memb ON `grp`.`owner`=`memb`.`owner` WHERE `grp`.`id`=:id AND `grp`.`owner`=:owner", array(':id' => $id ,':owner' => $this->owner));
+    $res = $this->db->all("SELECT grp.*, memb.email FROM `{$this->mySqlTablePrefix}group` AS grp LEFT JOIN `{$this->mySqlTablePrefix}groupMember` AS memb ON `grp`.`owner`=`memb`.`owner` WHERE `grp`.`id`=:id AND `grp`.`owner`=:owner", array(':id' => $id ,':owner' => $this->owner));
     if($res === false || empty($res))
       return false;
 
     $group = array('id' => $res[0]['id'], 'owner' => $res[0]['owner'], 'name' => $res[0]['name'], 'permission' => $res[0]['permission'], 'members' => array());
     foreach($res as $r)
-      $group['members'][] = $r['email'];
+    {
+      if(!empty($r['email']))
+        $group['members'][] = $r['email'];
+    }
 
     return $this->normalizeGroup($group);
   }
@@ -432,7 +435,9 @@ class DatabaseMySql implements DatabaseInterface
         {
           if(!isset($tempGroups[$group['id']]))
             $tempGroups[$group['id']] = array('id' => $group['id'], 'name' => $group['name'], 'owner' => $group['owner'], 'permission' => $group['permission'], 'members' => array());
-          $tempGroups[$group['id']]['members'][] = $group['email'];
+
+          if(!empty($group['email']))
+            $tempGroups[$group['id']]['members'][] = $group['email'];
         }
         foreach($tempGroups as $g)
           $groups[] = $this->normalizeGroup($g);
@@ -584,11 +589,15 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getTag($tag)
   {
-    $tag = $this->db->one('SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND `owner`=:owner', array(':id' => $tag));
-    // TODO this should be in the normalize method
-    if($tag['params'])
-      $tag = array_merge($tag, json_decode($tag['params'], 1));
-    unset($tag['params']);
+    $tag = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND `owner`=:owner", array(':id' => $tag, ':owner' => $this->owner));
+
+    if(!$tag )
+      return false;
+
+    // TODO this should be in the normalize method #943
+    if($tag['extra'])
+      $tag = array_merge($tag, json_decode($tag['extra'], 1));
+    unset($tag['extra']);
     return $tag;
   }
 

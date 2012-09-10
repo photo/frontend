@@ -9,6 +9,11 @@ class AssetPipelineOverride extends AssetPipeline
     $config->paths->docroot = null;
     $config->site = new stdClass;
     $config->site->mode = 'prod';
+    $config->site->cdnPrefix = 'a';
+    $config->defaults = new stdClass;
+    $config->defaults->cdnPrefix = '';
+    $config->defaults->mediaVersion = 'a';
+    parent::__construct(array('config' => $config));
 
     if(class_exists('vfsStream'))
     {
@@ -25,6 +30,7 @@ class AssetPipelineOverride extends AssetPipeline
       $this->mode = self::minified;
     else
       $this->mode = self::combined;
+    $this->returnAsHeader = false;
   }
 }
 
@@ -40,7 +46,7 @@ class AssetPipelineTest extends PHPUnit_Framework_TestCase
   {
     if(!class_exists('vfsStream'))
     {
-      $this->fail('The vfsStream package was not found. Skipping tests in FileSysemLocalTest. Install using `sudo pear channel-discover pear.php-tools.net && sudo pear install pat/vfsStream-beta`');
+      $this->fail('The vfsStream package was not found. Skipping tests in FileSysemLocalTest. Install using `sudo pear channel-discover pear.bovigo.org && sudo pear install bovigo/vfsStream-beta`');
       return false;
     }
     return true;
@@ -123,5 +129,29 @@ class AssetPipelineTest extends PHPUnit_Framework_TestCase
     $this->assetPipeline->addJs('/JS');
     $url = $this->assetPipeline->getUrl(AssetPipeline::js);
     $this->assertTrue(strstr($url, 'JS') !== false, 'When file exists it should NOT be omitted');
+  }
+
+  public function testReturnHeader()
+  {
+    $header = $this->assetPipeline->returnHeader('/path/to/file.js');
+    $this->assertEquals('Content-Type: text/javascript', $header);
+    $header = $this->assetPipeline->returnHeader('/path/to/file.css');
+    $this->assertEquals('Content-Type: text/css', $header);
+    $header = $this->assetPipeline->returnHeader('/path/to/file.png');
+    $this->assertEquals('Content-Type: image/png', $header);
+    $header = $this->assetPipeline->returnHeader('/path/to/file.jpeg');
+    $this->assertEquals('Content-Type: image/jpeg', $header);
+    $header = $this->assetPipeline->returnHeader('/path/to/file.jpg');
+    $this->assertEquals('Content-Type: image/jpeg', $header);
+    $header = $this->assetPipeline->returnHeader('/path/to/file.gif');
+    $this->assertEquals('Content-Type: image/gif', $header);
+    $header = $this->assetPipeline->returnHeader('/path/to/file.docx');
+    $this->assertEquals('Content-Type: text/plain', $header);
+  }
+
+  public function testReturnHeaderJs()
+  {
+    $header = $this->assetPipeline->returnHeader('/path/to/javascript.js');
+    $this->assertEquals('Content-Type: text/javascript', $header);
   }
 }
