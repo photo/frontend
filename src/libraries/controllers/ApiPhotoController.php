@@ -270,10 +270,17 @@ class ApiPhotoController extends ApiBaseController
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
     $res = $this->photo->transform($id, $_POST);
-    if(!$res)
-      return $this->error('Could not transform the photo', false);
 
-    return $this->success('Successfully transformed the photo', true);
+    if($res) 
+    {
+      $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
+      $photo = $apiResp['result'];
+      return $this->success('Successfully transformed the photo', $photo);
+    }
+    else
+    {
+      return $this->error('Could not transform the photo', false);
+    }
   }
 
 
