@@ -40,7 +40,7 @@ class PluginTest extends PHPUnit_Framework_TestCase
   {
     if(!class_exists('vfsStream'))
     {
-      $this->fail('The vfsStream package was not found. Skipping tests in FileSysemLocalTest. Install using `sudo pear channel-discover pear.php-tools.net && sudo pear install pat/vfsStream-beta`');
+      $this->fail('The vfsStream package was not found. Skipping tests in FileSysemLocalTest. Install using `sudo pear channel-discover pear.bovigo.org && sudo pear install bovigo/vfsStream-beta`');
       return false;
     }
 

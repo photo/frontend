@@ -71,6 +71,11 @@ if(!function_exists('getFs'))
   function getFs() { return new FauxObject; }
 }
 
+class EpiRoute
+{
+  const httpGet = 'GET';
+  const httpPost = 'POST';
+}
 
 class FauxObject
 {

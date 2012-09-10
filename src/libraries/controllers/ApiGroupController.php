@@ -35,7 +35,7 @@ class ApiGroupController extends ApiBaseController
     {
       $res = $this->api->invoke(sprintf('/%s/group/%s/view.json', $this->apiVersion, $groupId), EpiRoute::httpGet);
       if($res['code'] === 200)
-        return $this->created('Groups for this user', $res['result']);
+        return $this->created('Group successfully created', $res['result']);
     }
 
     return $this->error('Could not create a group', false);
