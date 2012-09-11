@@ -817,14 +817,14 @@ var opTheme = (function() {
       searchByTags: function(ev) {
         ev.preventDefault();
         var form = $(ev.target),
-          tags = $($('select[name=tags]', form)[0]).val().join(','),
+          tags = $('select[name=tags]', form).val().join(','), // TODO do we need the nested jquery objects?
           url = form.attr('action');
 
         if(tags.length > 0) {
           if(url.search('/list') > 0) {
             location.href = url.replace('/list', '')+'/tags-'+tags+'/list';
           } else {
-            form.submit();
+            location.href = url + '?tags=' + tags;
           }
         }
         return false;
