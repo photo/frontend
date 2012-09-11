@@ -537,15 +537,15 @@ class ApiPhotoController extends ApiBaseController
         else
         {
           $updatedTags = $existingTags;
-          if(isset($params['tagsAdd']))
-          {
-            $updatedTags = array_merge($updatedTags, (array)explode(',', $params['tagsAdd']));
-            unset($params['tagsAdd']);
-          }
           if(isset($params['tagsRemove']))
           {
             $updatedTags = array_diff($updatedTags, (array)explode(',', $params['tagsRemove']));
             unset($params['tagsRemove']);
+          }
+          if(isset($params['tagsAdd']))
+          {
+            $updatedTags = array_merge($updatedTags, (array)explode(',', $params['tagsAdd']));
+            unset($params['tagsAdd']);
           }
           $params['tags'] = implode(',', $updatedTags);
         }
