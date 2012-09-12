@@ -133,7 +133,10 @@ class ApiAlbumController extends ApiBaseController
 
   public function view($id)
   {
-    $album = $this->album->getAlbum($id);
+    $includeElements = false;
+    if(isset($_GET['includeElements']) && $_GET['includeElements'] == '1')
+      $includeElements = true;
+    $album = $this->album->getAlbum($id, $includeElements);
     if($album === false)
       return $this->error('Could not retrieve album', false);
     return $this->success('Album', $album);
