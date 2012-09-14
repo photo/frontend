@@ -891,7 +891,8 @@ var opTheme = (function() {
     init: {
       load: function(_crumb) {
         // http://stackoverflow.com/a/6974186
-        var popped = ('state' in window.history), initialURL = location.href;
+        // http://stackoverflow.com/questions/6421769/popstate-on-pages-load-in-chrome/10651028#10651028
+        var popped = ('state' in window.history && window.history.state !== null), initialURL = location.href;
 
         crumb.set(_crumb);
         OP.Tag.init();
@@ -1028,7 +1029,6 @@ var opTheme = (function() {
             els.each(function(i, el) {
               el = $(el);
               cls = el.attr('class');
-              console.log(cls);
               parts = cls.match(/ photo-([a-z0-9]+)/);
               if(parts.length == 2) {
                 if(ids[parts[1]] !== undefined)
