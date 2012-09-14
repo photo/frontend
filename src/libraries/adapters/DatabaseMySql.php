@@ -1907,11 +1907,11 @@ class DatabaseMySql implements DatabaseInterface
     {
       foreach($params as $key => $val)
       {
-        if($key !== 'password')
+        $prefix = substr($key, 0, 4);
+        if($val !== null && ($prefix === 'last' ||  $prefix === 'attr'))
           $extra[$key] = $val;
       }
       $ret['extra'] = json_encode($extra);
-      $ret['password'] = '';
       if(isset($params['password']))
         $ret['password'] = $params['password'];
     }
