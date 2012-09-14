@@ -167,22 +167,32 @@
               '<?php $this->theme->asset('javascript', 'jquery.history.js'); ?>',
               '<?php $this->theme->asset('javascript', 'jquery.scrollTo.js'); ?>',
               '<?php $this->theme->asset('javascript', 'touchSwipe.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'browserupdate.js'); ?>',
               '<?php $this->theme->asset('javascript', 'gallery.js'); ?>',
               '<?php $this->theme->asset('javascript', 'phpjs.js'); ?>',
               '<?php $this->theme->asset('javascript', 'openphoto-theme.js'); ?>'
-              /*'<?php $this->theme->asset('javascript', 'min/jquery.history.min.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'min/jquery.scrollTo.min.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'min/touchSwipe.min.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'min/browserupdate.min.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'min/gallery.min.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'min/phpjs.min.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'min/openphoto-theme.min.js'); ?>'*/
             <?php } else { ?>
             '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                                                   addJs('/assets/javascripts/openphoto-helper.min.js')->
                                                   addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  getUrl(AssetPipeline::js, 'as'); ?>'
+                                                  // debugging
+                                                  /*addJs($this->theme->asset('javascript', 'min/01-bootstrap.min.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'min/01a-chosen.jquery.min.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'min/06-jquery.history.min.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'min/07-jquery.scrollTo.min.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'min/10-touchSwipe.min.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'min/05-gallery.min.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'min/09-phpjs.min.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'openphoto-theme.js', false))->*/
+                                                  /*addJs($this->theme->asset('javascript', 'bootstrap.min.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'chosen.jquery.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'jquery.history.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'jquery.scrollTo.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'touchSwipe.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'browserupdate.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'gallery.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'phpjs.js', false))->
+                                                  addJs($this->theme->asset('javascript', 'openphoto-theme.js', false))->*/
+                                                  getUrl(AssetPipeline::js, 'at'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
