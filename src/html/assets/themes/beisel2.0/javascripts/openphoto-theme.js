@@ -862,14 +862,17 @@ var opTheme = (function() {
           OP.Util.makeRequest('/photos/upload/confirm.json', photoResponse, opTheme.callback.uploadConfirm, 'json', 'post');
         });
       },
-      uploadCompleteFailure: function() {
-        $("form.upload").fadeOut('fast', function() {
-          $(".upload-progress").fadeOut('fast', function() { $(".upload-warning .failed").html(failed); $(".upload-warning .total").html(total); $(".upload-warning").fadeIn('fast'); });
-        });
-      },
       uploadConfirm: function(response) {
         $("body.upload .upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
         $("body.upload .upload-confirm").html(response.result).show('fast');
+      },
+      uploaderReady: function() {
+        var form = $('form.upload');
+        if(typeof OPU === 'object')
+          OPU.init();
+
+        $("select.typeahead").chosen();
+        //$('select.typeahead-tags').chosen({create_option:true,persistent_create_option:true})
       },
       webhookDelete: function(ev) {
         ev.preventDefault();
@@ -980,6 +983,7 @@ var opTheme = (function() {
 
         OP.Util.on('upload:complete-success', opTheme.callback.uploadCompleteSuccess);
         OP.Util.on('upload:complete-failure', opTheme.callback.uploadCompleteFailure);
+        OP.Util.on('upload:uploader-ready', opTheme.callback.uploaderReady);
 
         OP.Util.on('tags:autocomplete', opTheme.callback.tagsAutocomplete);
 
@@ -1158,12 +1162,7 @@ var opTheme = (function() {
           }
         },
         upload: function() {
-          var form = $('form.upload');
-          if(typeof OPU === 'object')
-            OPU.init();
-
-          $("select.typeahead").chosen();
-          //$('select.typeahead-tags').chosen({create_option:true,persistent_create_option:true})
+          OP.Util.fire('upload:uploader-ready');
         }
       }
     }, // init
