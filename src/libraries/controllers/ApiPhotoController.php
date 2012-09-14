@@ -398,6 +398,8 @@ class ApiPhotoController extends ApiBaseController
         EpiRoute::httpPost, 
         array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
       );
+      $this->user->setAttribute('stickyPermission', $permission);
+      $this->user->setAttribute('stickyLicense', $photo['license']);
       return $this->created("Photo {$photoId} uploaded successfully", $photo);
     }
 
