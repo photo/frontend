@@ -39,7 +39,7 @@ foo="bar"', true);
   public function testGetMimeTypeSuccess()
   {
     // see #956
-    $this->markTestSkipped('Skipping because of failure on Travis CI')
+    $this->markTestSkipped('Skipping because of failure on Travis CI');
     /*$type = get_mime_type($this->file);
     $this->assertTrue(file_exists($this->file), "File does not exist at {$this->file}");
     $this->assertEquals('image/jpeg', $type, "Failed to load file and get proper mime type for {$this->file}");*/
@@ -48,7 +48,7 @@ foo="bar"', true);
   public function testGetMimeTypeFileDoesNotExistFailure()
   {
     // see #956
-    $this->markTestSkipped('Skipping because of failure on Travis CI')
+    $this->markTestSkipped('Skipping because of failure on Travis CI');
     /*$type = get_mime_type('does_not_exist.jpg');
     $this->assertFalse($type);*/
   }
