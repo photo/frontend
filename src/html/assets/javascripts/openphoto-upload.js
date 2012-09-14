@@ -16,6 +16,9 @@ OPU = (function() {
 
   return {
       init: function() {
+        if(typeof plupload === "undefined")
+          return;
+
         var uploaderEl = $("#uploader");
         if(uploaderEl.length == 0)
           return;
@@ -52,6 +55,10 @@ OPU = (function() {
                 $(".upload-progress .completed").html(uploader.total.uploaded+1);
                 $(".upload-progress").slideDown('fast');
               },
+              Error: function(uploader, error) {
+                opTheme.message.error('Uh oh, we encountered a problem. ('+error.message+')');
+                return false;
+              },
               FilesAdded: function(uploader, files) {
                 var queue = uploader.files.concat(files);
                 queue.sort(sortByFilename);
@@ -85,12 +92,7 @@ OPU = (function() {
                   }
                 }
 
-                if(failed === 0) {
-                  OP.Util.fire('upload:complete-success', photosUploaded);
-                } else {
-                  OP.Util.fire('upload:complete-error', photosUploaded);
-                }
-
+                OP.Util.fire('upload:complete-success', photosUploaded);
               },
               UploadFile: function() {
                 var uploader = $("#uploader").pluploadQueue(), 
