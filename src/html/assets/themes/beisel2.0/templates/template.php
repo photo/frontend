@@ -156,7 +156,7 @@
                 '/assets/javascripts/jquery.plupload.queue.js',
                 '/assets/javascripts/openphoto-upload.js',
               <?php } else { ?>
-                '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'o'); ?>',
+                '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'p'); ?>',
               <?php } ?>
             <?php } ?>
 
@@ -192,7 +192,7 @@
                                                   addJs($this->theme->asset('javascript', 'gallery.js', false))->
                                                   addJs($this->theme->asset('javascript', 'phpjs.js', false))->
                                                   addJs($this->theme->asset('javascript', 'openphoto-theme.js', false))->*/
-                                                  getUrl(AssetPipeline::js, 'at'); ?>'
+                                                  getUrl(AssetPipeline::js, 'au'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
