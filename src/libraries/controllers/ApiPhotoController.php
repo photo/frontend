@@ -252,9 +252,9 @@ class ApiPhotoController extends ApiBaseController
         $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
     }
 
-    $photos[0]['pageSize'] = intval($pageSize);
     $photos[0]['currentPage'] = intval($page);
-    $photos[0]['totalPages'] = ceil($photos[0]['totalRows'] / $pageSize);
+    $photos[0]['pageSize'] = intval($pageSize);
+    $photos[0]['totalPages'] = !empty($pageSize) ? ceil($photos[0]['totalRows'] / $pageSize) : 0;
     return $this->success("Successfully retrieved user's photos", $photos);
   }
 
@@ -767,7 +767,7 @@ class ApiPhotoController extends ApiBaseController
     }
 
     // This section enables in path parameters which are normally GET
-    $pageSize = getConfig()->get('pagination')->pageSize;
+    $pageSize = $this->config->pagination->pageSize;
     $filters = array('sortBy' => 'dateTaken,desc');
     if($filterOpts !== null)
     {
