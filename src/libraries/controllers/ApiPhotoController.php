@@ -425,6 +425,8 @@ class ApiPhotoController extends ApiBaseController
       foreach($params['duplicate'] as $p)
         $params['duplicateIds'][] = $params['successIds'][] = $p['id'];
     }
+    if(!isset($params['failure']))
+      $params['failure'] = array();
 
     $params['successIds'] = implode(',', $params['successIds']);
     $params['duplicateIds'] = implode(',', $params['duplicateIds']);
