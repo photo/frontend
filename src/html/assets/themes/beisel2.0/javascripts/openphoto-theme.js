@@ -1168,22 +1168,28 @@ var opTheme = (function() {
     }, // init
     
     message: {
-      append: function(html) {
+      append: function(html/*, isStatic*/) {
         var el = $(".message:first").clone(false),
-            last = $(".message:last");
+            last = $(".message:last"),
+            isStatic = arguments[1] || false;
 
+        // TODO differentiate on type #962
         el.addClass('alert alert-info').html(html);
         last.after(el).slideDown();
-        el.delay(5000).slideUp(function(){ $(this).remove(); });
+        if(!isStatic)
+          el.delay(5000).slideUp(function(){ $(this).remove(); });
       },
-      confirm: function(messageHtml) {
-        opTheme.message.show(messageHtml, 'confirm');
+      confirm: function(messageHtml/*, isStatic*/) {
+        var isStatic = arguments[1] || false;
+        opTheme.message.show(messageHtml, 'confirm', isStatic);
       },
-      error: function(messageHtml) {
-        opTheme.message.show(messageHtml, 'error');
+      error: function(messageHtml/*, isStatic*/) {
+        var isStatic = arguments[1] || false;
+        opTheme.message.show(messageHtml, 'error', isStatic);
       },
-      show: function(messageHtml, type) {
-        opTheme.message.append(markup.message(messageHtml, type));
+      show: function(messageHtml, type/*, isStatic*/) {
+        var isStatic = arguments[2] || false;
+        opTheme.message.append(markup.message(messageHtml, type), isStatic);
       }
     }, // message
     ui: {
@@ -1263,7 +1269,7 @@ var opTheme = (function() {
                 '  <div><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a>&nbsp;<a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
               ) +
             '</div>'
-          );
+          , true);
         }
       },
       fadeAndSet: function(el, html) {
