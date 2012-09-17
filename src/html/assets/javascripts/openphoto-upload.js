@@ -101,6 +101,7 @@ OPU = (function() {
                     permission = $("input[name='permission']:checked", form).val(),
                     albums = $("select[name='albums']", form).val(),
                     tags = $("input[name='tags']", form).val(), 
+                    crumb = $("input[name='crumb']", form).val(), 
                     // http://stackoverflow.com/a/6116631
                     // groups = $("input[name='groups[]']:checked", form).map(function () {return this.value;}).get().join(",");
                     groups = $("select[name='groups']", form).val();
@@ -120,6 +121,7 @@ OPU = (function() {
                 uploader.settings.multipart_params.permission = permission;
                 uploader.settings.multipart_params.albums = albums;
                 uploader.settings.multipart_params.groups = groups;
+                uploader.settings.multipart_params.crumb = crumb;
               }
             }
         });
