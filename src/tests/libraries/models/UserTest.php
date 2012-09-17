@@ -69,11 +69,40 @@ class UserTest extends PHPUnit_Framework_TestCase
     $this->assertEquals('1', $res);
   }
 
+  public function testGetAttributeSuccess()
+  {
+    $this->user->inject('user', array('attrfoobar' => '1234'));
+    $res = $this->user->getAttribute('foobar');
+    $this->assertEquals('1234', $res);
+  }
+
+  public function testGetAttributeFailure()
+  {
+    $this->user->inject('user', array('attrfoobar' => '1234'));
+    $res = $this->user->getAttribute('foobarx');
+    $this->assertEquals(false, $res);
+  }
+
   public function testGetUserRecordFromRuntimeCache()
   {
     $this->user->inject('user', '1');
     $res = $this->user->getUserRecord();
     $this->assertEquals('1', $res);
+  }
+
+  public function testGetUserRecordOverridingRuntimeCache()
+  {
+    $this->user->inject('user', '1');
+
+    $db = $this->getMock('Db', array('getUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->returnValue('2'));
+    $this->user->inject('db', $db);
+
+    $this->user->getUserRecord(false);
+    $res = $this->user->getUserRecord();
+    $this->assertEquals('2', $res);
   }
 
   public function testGetUserRecordWhenNullAndFailsToCreate()
@@ -359,5 +388,53 @@ class UserTest extends PHPUnit_Framework_TestCase
 
     $res = $this->user->setEmail('foo');
     $this->assertNull($res);
+  }
+
+  public function testUpdateSuccess()
+  {
+    $db = $this->getMock('Db', array('getUser', 'postUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->returnValue(array('id' => 'test@example.com', 'lastPhotoId' => 'abc', 'lastActionId' => 'def')));
+    $db->expects($this->any())
+      ->method('postUser')
+      ->will($this->returnValue(true));
+    $this->user->inject('db', $db);
+
+    $res = $this->user->update(array('id' => '123'));
+    $this->assertTrue($res);
+  }
+
+  public function testUpdateCacheIsUpdatedSuccess()
+  {
+    $db = $this->getMock('Db', array('getUser', 'postUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->onConsecutiveCalls(array(),2));
+    $db->expects($this->any())
+      ->method('postUser')
+      ->will($this->returnValue(true));
+    $this->user->inject('db', $db);
+
+    $res = $this->user->update(array('id' => '123'));
+    $this->assertTrue($res);
+
+    $user = $this->user->getUserRecord();
+    $this->assertEquals(2, $user);
+  }
+
+  public function testUpdateFailure()
+  {
+    $db = $this->getMock('Db', array('getUser', 'postUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->returnValue(array('id' => 'test@example.com', 'lastPhotoId' => 'abc', 'lastActionId' => 'def')));
+    $db->expects($this->any())
+      ->method('postUser')
+      ->will($this->returnValue(false));
+    $this->user->inject('db', $db);
+
+    $res = $this->user->update(array('id' => '123'));
+    $this->assertFalse($res);
   }
 }
