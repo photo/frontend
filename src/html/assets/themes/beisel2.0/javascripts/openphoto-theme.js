@@ -327,9 +327,10 @@ var opTheme = (function() {
       credentialDelete: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
-            url = el.attr('href')+'.json';
+            url = el.attr('href')+'.json',
+            params = {crumb: crumb.get()};
 
-        OP.Util.makeRequest(url, {}, function(response) {
+        OP.Util.makeRequest(url, params, function(response) {
           if(response.code === 204) {
             el.parent().parent().slideUp('medium', function() { this.remove(); });
             opTheme.message.confirm('Application successfully deleted.');
@@ -764,8 +765,9 @@ var opTheme = (function() {
       pluginStatusToggle: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
-            url = el.attr('href')+'.json';
-        OP.Util.makeRequest(url, {}, function(response){
+            url = el.attr('href')+'.json',
+            params = {crumb: crumb.get()};
+        OP.Util.makeRequest(url, params, function(response){
           var a = $(el),
               div = a.parent(),
               container = div.parent();

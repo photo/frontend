@@ -24,7 +24,6 @@ class ApiAlbumController extends ApiBaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-
     $albumId = $this->album->create($_POST);
     if($albumId)
     {
@@ -71,9 +70,9 @@ class ApiAlbumController extends ApiBaseController
 
   public function updateIndex($albumId, $type, $action)
   {
-    $this->logger->info(sprintf('Calling ApiAlbumController::updateIndex with %s, %s, %s', $albumId, $type, $action));
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
+    $this->logger->info(sprintf('Calling ApiAlbumController::updateIndex with %s, %s, %s', $albumId, $type, $action));
 
     if(!isset($_POST['ids']) || empty($_POST['ids']))
       return $this->error('Please provide ids', false);

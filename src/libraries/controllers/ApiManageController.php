@@ -9,6 +9,7 @@ class ApiManageController extends ApiBaseController
 
   public function featuresPost()
   {
+    getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
     $configFile = $this->utility->getConfigFile();
     $configString = getConfig()->getString($configFile);
