@@ -862,14 +862,17 @@ var opTheme = (function() {
           OP.Util.makeRequest('/photos/upload/confirm.json', photoResponse, opTheme.callback.uploadConfirm, 'json', 'post');
         });
       },
-      uploadCompleteFailure: function() {
-        $("form.upload").fadeOut('fast', function() {
-          $(".upload-progress").fadeOut('fast', function() { $(".upload-warning .failed").html(failed); $(".upload-warning .total").html(total); $(".upload-warning").fadeIn('fast'); });
-        });
-      },
       uploadConfirm: function(response) {
         $("body.upload .upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
         $("body.upload .upload-confirm").html(response.result).show('fast');
+      },
+      uploaderReady: function() {
+        var form = $('form.upload');
+        if(typeof OPU === 'object')
+          OPU.init();
+
+        $("select.typeahead").chosen();
+        //$('select.typeahead-tags').chosen({create_option:true,persistent_create_option:true})
       },
       webhookDelete: function(ev) {
         ev.preventDefault();
@@ -891,7 +894,8 @@ var opTheme = (function() {
     init: {
       load: function(_crumb) {
         // http://stackoverflow.com/a/6974186
-        var popped = ('state' in window.history), initialURL = location.href;
+        // http://stackoverflow.com/questions/6421769/popstate-on-pages-load-in-chrome/10651028#10651028
+        var popped = ('state' in window.history && window.history.state !== null), initialURL = location.href;
 
         crumb.set(_crumb);
         OP.Tag.init();
@@ -979,6 +983,7 @@ var opTheme = (function() {
 
         OP.Util.on('upload:complete-success', opTheme.callback.uploadCompleteSuccess);
         OP.Util.on('upload:complete-failure', opTheme.callback.uploadCompleteFailure);
+        OP.Util.on('upload:uploader-ready', opTheme.callback.uploaderReady);
 
         OP.Util.on('tags:autocomplete', opTheme.callback.tagsAutocomplete);
 
@@ -1028,7 +1033,6 @@ var opTheme = (function() {
             els.each(function(i, el) {
               el = $(el);
               cls = el.attr('class');
-              console.log(cls);
               parts = cls.match(/ photo-([a-z0-9]+)/);
               if(parts.length == 2) {
                 if(ids[parts[1]] !== undefined)
@@ -1158,12 +1162,7 @@ var opTheme = (function() {
           }
         },
         upload: function() {
-          var form = $('form.upload');
-          if(typeof OPU === 'object')
-            OPU.init();
-
-          $("select.typeahead").chosen();
-          //$('select.typeahead-tags').chosen({create_option:true,persistent_create_option:true})
+          OP.Util.fire('upload:uploader-ready');
         }
       }
     }, // init

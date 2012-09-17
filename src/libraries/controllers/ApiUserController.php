@@ -57,7 +57,7 @@ class ApiUserController extends ApiBaseController
     {
       $token = md5(rand(10000,100000));
       $tokenUrl = sprintf('%s://%s/manage/password/reset/%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], $token);
-      $this->user->update(array('passwordToken' => $token));
+      $this->user->setAttribute('passwordToken', $token);
       $templateObj = getTemplate();
       $template = sprintf('%s/email/password-reset.php', $this->config->paths->templates);
       $body = $this->template->get($template, array('tokenUrl' => $tokenUrl));
@@ -96,7 +96,8 @@ class ApiUserController extends ApiBaseController
     elseif($password !== $passwordConfirm)
       return $this->error('Password confirmation did not match.', false);
 
-    $this->user->update(array('password' => $password, 'passwordToken' => null));
+    $this->user->update(array('password' => $password));
+    $this->user->setAttribute('passwordToken', null);
     return $this->success('Password was updated successfully.', true);
   }
 

@@ -398,6 +398,8 @@ class ApiPhotoController extends ApiBaseController
         EpiRoute::httpPost, 
         array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
       );
+      $this->user->setAttribute('stickyPermission', $permission);
+      $this->user->setAttribute('stickyLicense', $photo['license']);
       return $this->created("Photo {$photoId} uploaded successfully", $photo);
     }
 
@@ -418,7 +420,7 @@ class ApiPhotoController extends ApiBaseController
       foreach($params['success'] as $p)
         $params['successIds'][] = $p['id'];
     }
-    if(isset($params['duplicates']) && !empty($params['duplicates']))
+    if(isset($params['duplicate']) && !empty($params['duplicate']))
     {
       foreach($params['duplicate'] as $p)
         $params['duplicateIds'][] = $params['successIds'][] = $p['id'];
