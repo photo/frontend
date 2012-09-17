@@ -128,7 +128,8 @@ class ApiAlbumController extends ApiBaseController
     if(!$status)
       return $this->error('Could not update album', false);
 
-    return $this->success('Album updated', true);
+    $albumResp = $this->api->invoke("/{$this->apiVersion}/album/{$id}/view.json", EpiRoute::httpGet);
+    return $this->success('Album {$id} updated', $albumResp['result']);
   }
 
   public function view($id)
