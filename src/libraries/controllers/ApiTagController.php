@@ -28,6 +28,7 @@ class ApiTagController extends ApiBaseController
   public function delete($tag)
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
     $res = $this->tag->delete($tag);
     if($res)
       return $this->noContent('Tag deleted successfully', true);
@@ -43,6 +44,7 @@ class ApiTagController extends ApiBaseController
   public function create()
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
     $tag = $_POST['tag'];
     unset($_POST['tag']);
     $res = $this->update($tag);
@@ -59,6 +61,7 @@ class ApiTagController extends ApiBaseController
   public function update($tag)
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
     $tag = $this->tag->sanitize($tag);
     $params = $this->tag->validateParams($_POST);
     $res = getDb()->postTag($tag, $params);

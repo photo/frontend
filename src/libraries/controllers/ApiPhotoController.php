@@ -454,7 +454,7 @@ class ApiPhotoController extends ApiBaseController
     {
       $ids = implode(',', $params['ids']);
       $params['url'] = $this->url->photosView("ids-{$ids}", false);
-      $resourceMapResp = $this->api->invoke('/s/create.json', EpiRoute::httpPost, array('_POST' => array('uri' => $params['url'], 'method' => 'GET')));
+      $resourceMapResp = $this->api->invoke('/s/create.json', EpiRoute::httpPost, array('_POST' => array('uri' => $params['url'], 'method' => 'GET', 'crumb' => $this->session->get('crumb'))));
       if($resourceMapResp['code'] === 201)
         $params['url'] = $this->url->resourceMap($resourceMapResp['result']['id'], false);
     }
