@@ -860,6 +860,7 @@ var opTheme = (function() {
         $(".typeahead-tags").html(markup).chosen();
       },
       uploadCompleteSuccess: function(photoResponse) {
+        photoResponse.crumb = crumb.get();
         $("form.upload").fadeOut('fast', function() {
           OP.Util.makeRequest('/photos/upload/confirm.json', photoResponse, opTheme.callback.uploadConfirm, 'json', 'post');
         });
