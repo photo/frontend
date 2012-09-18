@@ -64,7 +64,7 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
 
 ### Scema description
 
-  * id, Base 36 value of a base 10 auto-incremented value
+  * id, [Base 32](http://en.wikipedia.org/wiki/Base32#base32hex) value of a base 10 auto-incremented value
   * appId, A string identifing the application creating this entry
   * url, Url to view this photo on the user's OpenPhoto site
   * host, Host on which this photo resides
