@@ -23,8 +23,9 @@
       </ul>-->
 
       <div>
-        <button type="submit" class="btn btn-primary"><i class="icon-save icon-large"></i> Create and Approve</button>
+        <button type="submit" class="btn btn-primary"><i class="icon-save icon-large"></i> <?php if($tokenType === 'access') { ?>Create and Approve<?php } else { ?>Create<?php } ?></button>
       </div>
+      <input type="hidden" name="tokenType" value="<?php $this->utility->safe($tokenType); ?>">
       <input type="hidden" name="oauth_callback" value="<?php $this->utility->safe($callback); ?>">
     </form>
   </div>

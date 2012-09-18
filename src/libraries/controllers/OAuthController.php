@@ -29,6 +29,9 @@ class OAuthController extends BaseController
     $params = array('callback' => $callback, 'redirect' => $_SERVER['REQUEST_URI']);
     $params['error'] = isset($_GET['error']) && $_GET['error'] == 1;
     $params['name'] = isset($_GET['name']) ? $_GET['name'] : '';
+    $params['tokenType'] = 'request';
+    if(isset($_GET['tokenType']) && $_GET['tokenType'] === 'access')
+      $params['tokenType'] = 'access';
     $body = $this->template->get($bodyTemplate, $params);
     $params = array('body' => $body, 'page' => 'oauth-create');
     $this->theme->display('template.php', $params);
@@ -61,7 +64,11 @@ class OAuthController extends BaseController
     $consumer = getDb()->getCredential($consumerKey);
     $token = $consumer['userToken'];
 
-    $res = getCredential()->convertToken($consumer['id'], Credential::typeRequest);
+    $tokenType = Credential::typeRequest;
+    if(isset($_POST['tokenType']) && $_POST['tokenType'] === 'access')
+      $tokenType = Credential::typeAccess;
+
+    $res = getCredential()->convertToken($consumer['id'], $tokenType);
     if(!$res)
     {
       getLogger()->warn(sprintf('Could not convert credential for: %s', json_encode($token)));
@@ -82,8 +89,6 @@ class OAuthController extends BaseController
     }
     $callback .= "{$separator}oauth_consumer_key={$consumer['id']}&oauth_consumer_secret={$consumer['clientSecret']}&oauth_token={$consumer['userToken']}&oauth_token_secret={$consumer['userSecret']}&oauth_verifier={$consumer['verifier']}";
     $this->route->redirect($callback, null, true);
-    /*$callback = urlencode($_GET['oauth_callback']);
-    $this->route->redirect("/v1/oauth/authorize?oauth_token={$consumer['userToken']}&oauth_callback={$callback}");*/
   }
 
   public function flow()
