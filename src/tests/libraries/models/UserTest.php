@@ -41,20 +41,57 @@ class UserTest extends PHPUnit_Framework_TestCase
 
   public function testGetNextIdPhoto()
   {
+    $db = $this->getMock('Db', array('getUser', 'postUser', 'putUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->onConsecutiveCalls(
+        array('id' => 'test@example.com', 'lastPhotoId' => 'abc'),
+        array('id' => 'test@example.com', 'lastPhotoId' => '0'),
+        array('id' => 'test@example.com', 'lastPhotoId' => 'a1'),
+        array('id' => 'test@example.com', 'lastPhotoId' => '9'),
+        array('id' => 'test@example.com', 'lastPhotoId' => 'u')
+      ));
+    $db->expects($this->any())
+      ->method('postUser')
+      ->will($this->returnValue(true));
+    $db->expects($this->any())
+      ->method('putUser')
+      ->will($this->returnValue(true));
+    $this->user->inject('db', $db);
+
+    // abc
+    $res = $this->user->getNextId('photo');
+    $this->assertEquals('abd', $res);
+    // 0
+    $res = $this->user->getNextId('photo');
+    $this->assertEquals('1', $res);
+    // a1
+    $res = $this->user->getNextId('photo');
+    $this->assertEquals('a2', $res);
+    // 9
+    $res = $this->user->getNextId('photo');
+    $this->assertEquals('a', $res);
+    // u
+    $res = $this->user->getNextId('photo');
+    $this->assertEquals('10', $res);
+  }
+
+  public function testGetNextIdPhotoFirstId()
+  {
     $db = $this->getMock('Db', array('getUser', 'postUser'));
     $db->expects($this->any())
       ->method('getUser')
-      ->will($this->returnValue(array('id' => 'test@example.com', 'lastPhotoId' => 'abc', 'lastActionId' => 'def')));
+      ->will($this->returnValue(array('id' => 'test@example.com')));
     $db->expects($this->any())
       ->method('postUser')
       ->will($this->returnValue(true));
     $this->user->inject('db', $db);
 
     $res = $this->user->getNextId('photo');
-    $this->assertEquals('abd', $res);
+    $this->assertEquals('1', $res);
   }
 
-  public function testGetNextIdPhotoFirstTime()
+  public function testGetNextIdPhotoKeyNotExistYet()
   {
     $db = $this->getMock('Db', array('getUser', 'postUser'));
     $db->expects($this->any())
@@ -67,6 +104,18 @@ class UserTest extends PHPUnit_Framework_TestCase
 
     $res = $this->user->getNextId('photo');
     $this->assertEquals('1', $res);
+  }
+
+  public function testGetNextIdFailure()
+  {
+    $db = $this->getMock('Db', array('getUser', 'postUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->returnValue(false));
+    $this->user->inject('db', $db);
+
+    $res = $this->user->getNextId('photo');
+    $this->assertFalse($res);
   }
 
   public function testGetAttributeSuccess()
