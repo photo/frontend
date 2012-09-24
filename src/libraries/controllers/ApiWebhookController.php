@@ -90,7 +90,7 @@ class ApiWebhookController extends ApiBaseController
     */
   public function list_($topic = null)
   {
-    //getAuthentication()->requireAuthentication();
+    getAuthentication()->requireAuthentication();
     $webhooks = $this->webhook->getAll($topic);
     if($webhooks)
       return $this->success("Successfully retrieved webhooks", $webhooks);

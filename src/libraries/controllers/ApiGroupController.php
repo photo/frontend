@@ -28,7 +28,7 @@ class ApiGroupController extends ApiBaseController
   public function create()
   {
     getAuthentication()->requireAuthentication();
-    // TODO add crumb check
+    getAuthentication()->requireCrumb();
     $groupId = $this->group->create($_POST);
 
     if($groupId !== false)

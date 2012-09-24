@@ -194,6 +194,7 @@ class PhotoController extends BaseController
     */
   public function upload()
   {
+    getAuthentication()->requireAuthentication();
     $userObj = new User;
     if(!$userObj->isOwner())
     {
@@ -220,6 +221,7 @@ class PhotoController extends BaseController
   public function uploadPost()
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
     $upload = $this->api->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
     if($upload['result'])
       $this->route->redirect('/photos?uploadSuccess');

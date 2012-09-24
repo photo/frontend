@@ -252,9 +252,9 @@ class ApiPhotoController extends ApiBaseController
         $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
     }
 
-    $photos[0]['pageSize'] = intval($pageSize);
     $photos[0]['currentPage'] = intval($page);
-    $photos[0]['totalPages'] = ceil($photos[0]['totalRows'] / $pageSize);
+    $photos[0]['pageSize'] = intval($pageSize);
+    $photos[0]['totalPages'] = !empty($pageSize) ? ceil($photos[0]['totalRows'] / $pageSize) : 0;
     return $this->success("Successfully retrieved user's photos", $photos);
   }
 
@@ -425,6 +425,8 @@ class ApiPhotoController extends ApiBaseController
       foreach($params['duplicate'] as $p)
         $params['duplicateIds'][] = $params['successIds'][] = $p['id'];
     }
+    if(!isset($params['failure']))
+      $params['failure'] = array();
 
     $params['successIds'] = implode(',', $params['successIds']);
     $params['duplicateIds'] = implode(',', $params['duplicateIds']);
@@ -454,7 +456,7 @@ class ApiPhotoController extends ApiBaseController
     {
       $ids = implode(',', $params['ids']);
       $params['url'] = $this->url->photosView("ids-{$ids}", false);
-      $resourceMapResp = $this->api->invoke('/s/create.json', EpiRoute::httpPost, array('_POST' => array('uri' => $params['url'], 'method' => 'GET')));
+      $resourceMapResp = $this->api->invoke('/s/create.json', EpiRoute::httpPost, array('_POST' => array('uri' => $params['url'], 'method' => 'GET', 'crumb' => $this->session->get('crumb'))));
       if($resourceMapResp['code'] === 201)
         $params['url'] = $this->url->resourceMap($resourceMapResp['result']['id'], false);
     }
@@ -767,7 +769,7 @@ class ApiPhotoController extends ApiBaseController
     }
 
     // This section enables in path parameters which are normally GET
-    $pageSize = getConfig()->get('pagination')->pageSize;
+    $pageSize = $this->config->pagination->pageSize;
     $filters = array('sortBy' => 'dateTaken,desc');
     if($filterOpts !== null)
     {
