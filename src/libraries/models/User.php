@@ -32,7 +32,7 @@ class User extends BaseModel
    */
   public function encryptPassword($password)
   {
-    return sha1(sprintf('%s-%s', $password, $this->config->secrets->passwordSalt));
+    return getPasswordHasher()->hashPassword($password);
   }
 
   /**
