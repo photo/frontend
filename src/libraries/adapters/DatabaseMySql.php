@@ -679,8 +679,8 @@ class DatabaseMySql implements DatabaseInterface
     if($email == '' || $password == '')
       return false;;
 
-    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:email AND `password`=:password", array(':email' => $email, ':password' => $password));
-    if($res)
+    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:email", array(':email' => $email));
+    if($res && getPasswordHasher()->CheckPassword($password, $res['password']))
       return $this->normalizeUser($res);
     return false;
   }
