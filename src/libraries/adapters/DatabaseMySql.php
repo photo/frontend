@@ -680,7 +680,7 @@ class DatabaseMySql implements DatabaseInterface
       return false;;
 
     $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:email", array(':email' => $email));
-    if($res && getPasswordHasher()->CheckPassword($password, $res['password']))
+    if($res && User::checkPassword($password, $res['password']))
       return $this->normalizeUser($res);
     return false;
   }
