@@ -321,7 +321,7 @@ function getPasswordHasher()
 {
   static $password_hasher;
   if(!$password_hasher)
-    $password_hasher = new PasswordHash( 8, false );
+    $password_hasher = new PasswordHash( getConfig()->get('secrets')->phpassIterations, false );
 
   return $password_hasher;
 }
