@@ -312,3 +312,16 @@ function getUtility()
   $utility = new Utility;
   return $utility;
 }
+
+/**
+  * The password hasher object.
+  * @return object A password hasher object.
+  */
+function getPasswordHasher()
+{
+  static $password_hasher;
+  if(!$password_hasher)
+    $password_hasher = new PasswordHash( 8, false );
+
+  return $password_hasher;
+}
