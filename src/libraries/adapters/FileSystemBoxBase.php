@@ -3,21 +3,21 @@
  * Box adapter that extends much of the FileSystemLocal logic
  *
  * This class defines the functionality defined by FileSystemInterface for a plain Filesystem.
- * @author Hub Figuiere <hub@figuiere.net>
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 class FileSystemBoxBase
 {
-  const statusCreated = 'create_ok';
+  const statusCreatedOk = 'create_ok';
   const statusFolderExists = 's_folder_exists';
   const statusUploadOk = 'upload_ok';
   const statusFileInfoOk = 's_get_file_info';
+  const statusDeleteOk = 's_delete_node';
+  const statusGetAccountInfoOk = 'get_account_info_ok';
 
   private $config, $parent, $box, $boxFolderId, $metaDataMap = array();
   public function __construct($parent, $config = null, $params = null)
   {
     $this->config = !is_null($config) ? $config : getConfig()->get();
-    $this->directoryMask = 'Y_m_F';
     $utilityObj = new Utility;
     // TODO encrypt
     $this->box = new Box_Rest_Client($this->config->credentials->boxKey);
@@ -28,21 +28,29 @@ class FileSystemBoxBase
 
   public function deletePhoto($photo)
   {
-    $directory = urlencode(date($this->directoryMask, $photo['dateTaken']));
+    $fileId = null;
+    if(isset($photo['extraFileSystem']['boxFileId']) && !empty($photo['extraFileSystem']['boxFileId']))
+      $fileId = $photo['extraFileSystem']['boxFileId'];
+    else
+      return false;
+
     try
     {
-      $this->dropbox->delete(sprintf('%s/%s/%s', $this->dropboxFolder, $directory, basename($photo['pathOriginal'])));
+
+      $resp = $this->box->post('delete',array('target' => 'file', 'target_id' => $fileId));
+      if($resp['status'] !== self::statusDeleteOk)
+      {
+        getLogger()->crit(sprintf('Could not delete photo (%s).', $photo['id']));
+        return false;
+      }
+
+      return true;
     }
-    catch(Dropbox_Exception_NotFound $e)
-    {
-      getLogger()->info('Photo does not exist on dropbox. Skipping delete operation.');
-    }
-    catch(Dropbox_Exception $e)
+    catch(Box_Rest_Client_Exception $e)
     {
       getLogger()->crit(sprintf('Could not delete photo (%s). Message: %s', $id, $e->getMessage()));
       return false;
     }
-    return true;
   }
 
   public function getFileUrl($photo)
@@ -85,66 +93,63 @@ class FileSystemBoxBase
     $utilityObj = new Utility;
     try
     {
-      $queryDropboxFolder = $this->dropbox->getMetaData($this->dropboxFolder);
-      if(isset($queryDropboxFolder['is_deleted']) && $queryDropboxFolder['is_deleted'] == 1)
-        $diagnostics[] = $utilityObj->diagnosticLine(false, 'The specified Dropbox directory has been deleted.');
+      $queryBoxAccount = $this->box->get('get_account_info');
+      if($queryBoxAccount['status'] === self::statusGetAccountInfoOk)
+      {
+        $queryBoxFolder = $this->box->folder($this->boxFolderId);
+        $diagnostics[] = $utilityObj->diagnosticLine(true, 'The Box was connected to successfully.');
+        $diagnostics[] = $utilityObj->diagnosticLine(true, sprintf('Total space available: %s.', $queryBoxAccount['user']['space_amount']));
+        $diagnostics[] = $utilityObj->diagnosticLine(true, sprintf('Total space used: %s.', $queryBoxAccount['user']['space_used']));
+        if($queryBoxFolder->attr('id') !== null)
+          $diagnostics[] = $utilityObj->diagnosticLine(true, 'The default folder for uploads is okay.');
+        else
+          $diagnostics[] = $utilityObj->diagnosticLine(false, 'The default folder for uploads encountered a problem. Uploads may not work.');
+      }
       else
-        $diagnostics[] = $utilityObj->diagnosticLine(true, 'The Dropbox directory exists and looks okay.');
+      {
+        $diagnostics[] = $utilityObj->diagnosticLine(false, 'Could not connect to the box account.');
+      }
     }
-    catch(Dropbox_Exception_NotFound $e)
+    catch(Box_Rest_Client_Exception $e)
     {
-      $diagnostics[] = $utilityObj->diagnosticLine(false, 'Could not get meta data for your Dropbox Directory.');
-    }
-    catch(Dropbox_Exception $e)
-    {
-      $diagnostics[] = $utilityObj->diagnosticLine(false, 'An unknown error occured when trying to connect to Dropbox.');
+      $diagnostics[] = $utilityObj->diagnosticLine(false, 'An unexpected error occurred when accessing your Box account.');
     }
     return $diagnostics;
   }
 
   public function initialize($isEditMode)
   {
-    $dropboxStatus = false;
-    $folderDoesNotExist = false;
+    // TODO have to implement the initialization flow
+    return false;
+    /*
     try
     {
-      $queryDropboxFolder = $this->dropbox->getMetaData($this->dropboxFolder);
-      if(isset($queryDropboxFolder['is_deleted']) && $queryDropboxFolder['is_deleted'] == 1)
-        $folderDoesNotExist = true;
-      else
-        $dropboxStatus = true;
+      // create a folder named Photo[-n]
+      $cnt = 0;
+      while(true)
+      {
+        $newFolder = new Box_Client_Folder();
+        if($cnt === 0)
+          $newFolder->attr('name','Photos');
+        else
+          $newFolder->attr('name',sprintf('Photos-%s', $cnt));
+        $newFolder->attr('parent_id', 0);
+        $newFolder->attr('share',0);
+        $resp = $this->box->create($newFolder);
+        if($resp['status'] === self::statusCreatedOk)
+          break;
+        $cnt++;
+      }
     }
-    catch(Dropbox_Exception_NotFound $e)
+    catch(Box_Rest_Client_Exception $e)
     {
-      $folderDoesNotExist = true;
-    }
-    catch(Exception $e)
-    {
-      getLogger()->crit('Call to getMetaData failed during initialize.', $e);
       return false;
     }
-
-    if($folderDoesNotExist)
-    {
-      try
-      {
-        $createFolderResponse = $this->dropbox->createFolder($this->dropboxFolder);
-        $dropboxStatus = true;
-      }
-      catch(Dropbox_Exception $e)
-      {
-        getLogger()->crit('Could not create folder.', $e);
-      }
-    }
-
-    return $dropboxStatus;
+    */
   }
 
   public function putPhoto($localFile, $remoteFile)
   {
-    if(isset($_POST['uploadSource']) && $_POST['uploadSource'] === 'dropbox')
-      return true;
-
     if(!file_exists($localFile))
     {
       getLogger()->warn("The photo {$localFile} does not exist so putPhoto failed");
@@ -164,9 +169,6 @@ class FileSystemBoxBase
 
   public function putPhotos($files)
   {
-    if(isset($_POST['uploadSource']) && $_POST['uploadSource'] === 'dropbox')
-      return true;
-
     foreach($files as $file)
     {
       list($localFile, $remoteFile) = each($file);
@@ -194,7 +196,7 @@ class FileSystemBoxBase
       $newFolder->attr('parent_id', $this->boxFolderId);
       $newFolder->attr('share',0);
       $status = $this->box->create($newFolder);
-      if($status !== self::statusCreated && $status !== self::statusFolderExists)
+      if($status !== self::statusCreatedOk && $status !== self::statusFolderExists)
       {
         getLogger()->warn(sprintf('Box API returned an unexpected response of (%s) from folder create call', $status));
         return false;
