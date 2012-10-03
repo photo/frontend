@@ -1667,8 +1667,8 @@ class DatabaseMySql implements DatabaseInterface
     else
       $photo['tags'] = array();
 
-    $exif = (array)json_decode($photo['exif']);
-    $extra = (array)json_decode($photo['extra']);
+    $exif = (array)json_decode($photo['exif'], 1);
+    $extra = (array)json_decode($photo['extra'], 1);
     $photo = array_merge($photo, $exif, $extra);
     unset($photo['exif'], $photo['extra']);
 
@@ -1819,6 +1819,8 @@ class DatabaseMySql implements DatabaseInterface
           break;
         case 'extra':
         case 'extraDropboxSource':
+        case 'extraFilesystem':
+        case 'extraDatabase':
           $extra[$key] = $value;
           break;
         default:
