@@ -1817,9 +1817,8 @@ class DatabaseMySql implements DatabaseInterface
         case 'gpsAltitude':
           $exif[$key] = $value;
           break;
-        case 'extra':
         case 'extraDropboxSource':
-        case 'extraFilesystem':
+        case 'extraFileSystem':
         case 'extraDatabase':
           $extra[$key] = $value;
           break;
