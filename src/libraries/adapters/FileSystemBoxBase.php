@@ -17,11 +17,12 @@ class FileSystemBoxBase
   private $config, $parent, $box, $boxFolderId, $metaDataMap = array();
   public function __construct($parent, $config = null, $params = null)
   {
+    $this->directoryMask = 'Y-m-F';
     $this->config = !is_null($config) ? $config : getConfig()->get();
     $utilityObj = new Utility;
     // TODO encrypt
-    $this->box = new Box_Rest_Client($this->config->credentials->boxKey);
-    $this->box->auth_token = $this->config->credentials->boxToken;
+    $this->box = new Box_Rest_Client($utilityObj->decrypt($this->config->credentials->boxKey));
+    $this->box->auth_token = $utilityObj->decrypt($this->config->credentials->boxToken);
     $this->boxFolderId = $this->config->box->boxFolderId;
     $this->parent = $parent;
   }
