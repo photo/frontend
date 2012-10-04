@@ -113,7 +113,7 @@ class Photo extends BaseModel
       return false;
 
     header('Content-Description: File Transfer');
-    header('Content-Disposition: attachment; filename='.$photo['filenameOriginal']);
+    header('Content-Disposition: attachment; filename="'.$photo['filenameOriginal'].'"');
     while($buffer = fgets($fp, 4096))
       echo $buffer;
 
@@ -626,6 +626,9 @@ class Photo extends BaseModel
     if($resp['status'])
     {
       $this->logger->info("Photo ({$id}) successfully stored on the file system");
+      $fsExtras = $this->fs->getMetaData($localFile);
+      if(!empty($fsExtras))
+        $attributes['extraFileSystem'] = $fsExtras;
       $exif = $this->readExif($localFile);
       $iptc = $this->readIptc($localFile);
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');

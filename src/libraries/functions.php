@@ -134,15 +134,18 @@ function getFs(/*$type*/)
     case 'S3':
       $filesystem = new FileSystemS3();
       break;
+    case 'S3Box':
+      $filesystem = new FileSystemS3Box();
+      break;
     case 'S3Dropbox':
       $filesystem = new FileSystemS3Dropbox();
       break;
+    default:
+      throw new Exception("FileSystem Provider {$type} does not exist", 404);
+      break;
   }
 
-  if($filesystem)
-    return $filesystem;
-
-  throw new Exception("FileSystem Provider {$type} does not exist", 404);
+  return $filesystem;
 }
 
 /**
