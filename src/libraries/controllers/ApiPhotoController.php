@@ -73,6 +73,27 @@ class ApiPhotoController extends ApiBaseController
   }
 
   /**
+    * Delete the source files for a photo specified by the ID.
+    *
+    * @param string $id ID of the photo to be deleted.
+    * @return string Standard JSON envelope
+    */
+  public function deleteSource($id)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $status = $this->photo->deleteSourceFiles($id);
+    if($status)
+    {
+      return $this->success('Photo source files deleted successfully', true);
+    }
+    else
+    {
+      return $this->error('Photo source file deletion failure', false);
+    }
+  }
+
+  /**
     * Get a form to edit a photo specified by the ID.
     *
     * @param string $id ID of the photo to be edited.
