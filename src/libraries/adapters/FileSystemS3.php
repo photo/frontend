@@ -201,6 +201,15 @@ class FileSystemS3 implements FileSystemInterface
   }
 
   /**
+    * Return any meta data which needs to be stored in the photo record
+    * @return array
+    */
+  public function getMetaData($localFile)
+  {
+    return array();
+  }
+
+  /**
     * Initialize the remote file system by creating buckets and setting permissions and settings.
     * This is called from the Setup controller.
     * @return boolean

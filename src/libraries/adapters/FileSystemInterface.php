@@ -13,6 +13,7 @@ interface FileSystemInterface
   public function putPhoto($localFile, $remoteFile);
   public function putPhotos($files);
   public function getHost();
+  public function getMetaData($localFile);
   public function initialize($isEditMode);
   public function identity();
   public function executeScript($file, $filesysem);
