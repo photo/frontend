@@ -99,6 +99,26 @@ class Photo extends BaseModel
   }
 
   /**
+    * Delete the source files of a photo from the remote filesystem.
+    * This deletes the original photo and all versions.
+    * Database entries are left in tact.
+    * Typically used for migration.
+    *
+    * @param string $id ID of the photo
+    * @return boolean
+    */
+  public function deleteSourceFiles($id)
+  {
+    // TODO, validation
+    $photo = $this->db->getPhoto($id);
+    if(!$photo)
+      return false;
+
+    $fileStatus = $this->fs->deletePhoto($photo);
+    return $fileStatus;
+  }
+
+  /**
     * Output the contents of the original photo
     * Gets a file pointer from the adapter
     *   which can be a local or remote file
@@ -118,6 +138,7 @@ class Photo extends BaseModel
       echo $buffer;
 
     fclose($fp);
+    return true;
   }
 
   /**
@@ -529,6 +550,13 @@ class Photo extends BaseModel
 
   public function replace($id, $localFile, $name)
   {
+    // check if file type is valid
+    if(!$this->utility->isValidMimeType($localFile))
+    {
+      $this->logger->warn(sprintf('Invalid mime type for %s', $localFile));
+      return false;
+    }
+
     $attributes = array();
     $resp = $this->createAndStoreBaseAndOriginal($name, $localFile);
     $paths = $resp['paths'];
@@ -576,7 +604,7 @@ class Photo extends BaseModel
       $delVersionsResp = $this->db->deletePhotoVersions($photo);
       if(!$delVersionsResp)
         return false;
-      // delete all photos
+      // delete all photos from the original photo object (includes paths to existing photos)
       $delFilesResp = $this->fs->deletePhoto($photo);
       if(!$delFilesResp)
         return false;

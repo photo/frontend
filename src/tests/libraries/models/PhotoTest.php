@@ -203,6 +203,52 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $this->assertTrue($res, 'delete should return TRUE on success');
   }
 
+  public function testDeleteSourceSuccess()
+  {
+    $db = $this->getMock('db', array('getPhoto'));
+    $db->expects($this->any())
+      ->method('getPhoto')
+      ->will($this->returnValue(true));
+    $fs = $this->getMock('fs', array('deletePhoto'));
+    $fs->expects($this->any())
+      ->method('deletePhoto')
+      ->will($this->returnValue(true));
+    $this->photo->inject('db', $db);
+    $this->photo->inject('fs', $fs);
+
+    $res = $this->photo->deleteSourceFiles('foo');
+    $this->assertTrue($res);
+  }
+
+  public function testDeleteSourceCouldNotGetPhoto()
+  {
+    $db = $this->getMock('db', array('getPhoto'));
+    $db->expects($this->any())
+      ->method('getPhoto')
+      ->will($this->returnValue(false));
+    $this->photo->inject('db', $db);
+
+    $res = $this->photo->deleteSourceFiles('foo');
+    $this->assertFalse($res);
+  }
+
+  public function testDeleteSourceCouldNotDeletePhoto()
+  {
+    $db = $this->getMock('db', array('getPhoto'));
+    $db->expects($this->any())
+      ->method('getPhoto')
+      ->will($this->returnValue(true));
+    $fs = $this->getMock('fs', array('deletePhoto'));
+    $fs->expects($this->any())
+      ->method('deletePhoto')
+      ->will($this->returnValue(false));
+    $this->photo->inject('db', $db);
+    $this->photo->inject('fs', $fs);
+
+    $res = $this->photo->deleteSourceFiles('foo');
+    $this->assertFalse($res);
+  }
+
   public function testGenerateCustomKey()
   {
     $res = $this->photo->generateCustomKey(10, 15, 'CR');
