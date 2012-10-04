@@ -62,6 +62,15 @@ class FileSystemS3Dropbox extends FileSystemS3 implements FileSystemInterface
     return $this->host;
   }*/
 
+  /**
+    * Return any meta data which needs to be stored in the photo record
+    * @return array
+    */
+  public function getMetaData($localFile)
+  {
+    return array();
+  }
+
   public function initialize($isEditMode)
   {
     return $this->dropbox->initialize($isEditMode) && parent::initialize($isEditMode);
