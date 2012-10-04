@@ -192,7 +192,7 @@
                                                   addJs($this->theme->asset('javascript', 'gallery.js', false))->
                                                   addJs($this->theme->asset('javascript', 'phpjs.js', false))->
                                                   addJs($this->theme->asset('javascript', 'openphoto-theme.js', false))->*/
-                                                  getUrl(AssetPipeline::js, 'av'); ?>'
+                                                  getUrl(AssetPipeline::js, 'aw'); ?>'
             <?php } ?>
           ],
           onComplete: function(){ 
