@@ -55,7 +55,7 @@ class FileSystemS3Box extends FileSystemS3 implements FileSystemInterface
   /**
     * Gets meta data for a file
     *
-    * @return void
+    * @return array
     */
   public function getMetaData($localFile)
   {
