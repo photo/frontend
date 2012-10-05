@@ -132,6 +132,7 @@ class Photo extends BaseModel
     if(!$fp)
       return false;
 
+    header('Content-Type: image/jpeg');
     header('Content-Description: File Transfer');
     header('Content-Disposition: attachment; filename="'.$photo['filenameOriginal'].'"');
     while($buffer = fgets($fp, 4096))
