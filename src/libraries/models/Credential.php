@@ -25,6 +25,15 @@ class Credential extends BaseModel
 
     if(class_exists('OAuthProvider'))
       $this->provider = new OAuthProvider($this->getOAuthParameters());
+    // below is a proposed solution to #929
+    //  it breaks unit tests so leaving it commented out for now
+    //  committing for posterity :)
+    /*{
+      $oauthParams = $this->getOAuthParameters();
+      $this->provider = new OAuthProvider($oauthParams);
+      // seed the consumer (see #929 and #950)
+      $this->getConsumer($oauthParams['oauth_consumer_key']);
+    }*/
   }
 
   /**
