@@ -16,7 +16,7 @@ This guide instructs you on how to install OpenPhoto on a Macintosh OSX computer
 You'll need to provide credentials for a MySql database. If the database doesn't already exist it will be created. If the user doesn't have `CREATE DATABASE` permissions then make sure it's already created.
 
 ##### AWS
-If you're going to use AWS services then You'll need to be signed up for them.
+If you're going to use AWS services then you'll need to be signed up for them.
 
 * http://aws.amazon.com/simpledb/
 * http://aws.amazon.com/s3/
@@ -24,7 +24,7 @@ If you're going to use AWS services then You'll need to be signed up for them.
 #### Server Packages and Modules
 Once you've confirmed that your cloud account is setup you can get started on your server. For that you'll need to have _Apache_, _PHP_ and _curl_ installed with a few modules.
 
-This guide assumes you have [get it here][Macports installed]. If not you can . The easiest option is to use `.pkg` installer.
+This guide assumes you have Macports installed. If not you can [get it here](http://www.macports.org/install.php). The easiest option is to use `.pkg` installer.
 
     sudo port install apache2
     sudo port install php5 +apache2
@@ -141,7 +141,7 @@ If you happen to not have `yourdomain.com` registered, you can fake it by editin
 
 Now you're ready to launch your OpenPhoto site. Point your browser to your host and you'll be taken to a setup screen. You'll need your cloud account credentials to continue.
 
-Once you complete the 3 steps your site will be up and running and you'll be redirected there. The _setup_ screen won't show up anymore.
+Once you complete the 3 steps your site will be up and running and you'll be redirected there. The setup screen won't show up anymore.
 
 ### Performing setup again ###
 
@@ -150,5 +150,3 @@ If for any reason you want to go through the setup again you will need to delete
     rm ~/Sites/yourdomain.com/src/userdata/configs/settings.ini
 
 **ENJOY!**
-
-[macports]: http://www.macports.org/install.php
