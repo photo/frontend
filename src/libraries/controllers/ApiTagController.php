@@ -21,22 +21,6 @@ class ApiTagController extends ApiBaseController
   }
 
   /**
-    * Delete a tag in the tag database.
-    *
-    * @return string Standard JSON envelope
-    */
-  public function delete($tag)
-  {
-    getAuthentication()->requireAuthentication();
-    getAuthentication()->requireCrumb();
-    $res = $this->tag->delete($tag);
-    if($res)
-      return $this->noContent('Tag deleted successfully', true);
-    else
-      return $this->error('Tag could not be deleted', false);
-  }
-
-  /**
     * Create a tag in the tag database.
     *
     * @return string Standard JSON envelope
@@ -50,7 +34,26 @@ class ApiTagController extends ApiBaseController
     $res = $this->update($tag);
     if($res['code'] !== 200)
       return $this->error(sprintf('Could not create tag %s', $tag), false);
+    // Here we do not return the Tag object since the count would be 0
+    //  and tags with a count of 0 are essentially invisible.
+    //  See #987
     return $this->created(sprintf('Tag %s created successfully.', $tag), true);
+  }
+
+  /**
+    * Delete a tag in the tag database.
+    *
+    * @return string Standard JSON envelope
+    */
+  public function delete($tag)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $res = $this->tag->delete($tag);
+    if($res)
+      return $this->noContent('Tag deleted successfully', true);
+    else
+      return $this->error('Tag could not be deleted', false);
   }
 
   /**
