@@ -234,7 +234,7 @@ class ApiPhotoController extends ApiBaseController
     if(isset($_GET['generate']) && $_GET['generate'] == 'true')
       $generate = true;
 
-    if($photos[0]['totalRows'] > 0)
+    if($photos[0]['currentRows'] > 0)
     {
       foreach($photos as $key => $photo)
       {
