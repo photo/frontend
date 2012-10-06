@@ -67,12 +67,17 @@ class Photo extends BaseModel
       }
     }
 
-    $photo['pathBase'] = $this->generateUrlBase($photo);
+    $photo['pathBase'] = $this->generateUrlBaseOrOriginal($photo, 'base');
     // the original needs to be conditionally included
     if($this->config->site->allowOriginalDownload == 1 || $this->user->isOwner())
-      $photo['pathOriginal'] = $this->generateUrlOriginal($photo);
+    {
+      $photo['pathOriginal'] = $this->generateUrlBaseOrOriginal($photo, 'original');
+      $photo['pathDownload'] = $this->generateUrlDownload($photo);
+    }
     elseif(isset($photo['pathOriginal']))
+    {
       unset($photo['pathOriginal']);
+    }
 
     $photo['url'] = $this->getPhotoViewUrl($photo);
     return $photo;
@@ -313,9 +318,13 @@ class Photo extends BaseModel
     * @param string $protocol Protocol for the URL
     * @return mixed string URL on success, FALSE on failure
     */
-  public function generateUrlBase($photo, $protocol = 'http')
+  public function generateUrlBaseOrOriginal($photo, $type = 'base', $protocol = 'http')
   {
-    return "{$protocol}://{$photo['host']}{$photo['pathBase']}";
+    if($type === 'base')
+      return "{$protocol}://{$photo['host']}{$photo['pathBase']}";
+    elseif($type === 'original')
+      return "{$protocol}://{$photo['host']}{$photo['pathOriginal']}";
+
   }
 
   /**
@@ -327,9 +336,9 @@ class Photo extends BaseModel
     * @param string $protocol Protocol for the URL
     * @return mixed string URL on success, FALSE on failure
     */
-  public function generateUrlOriginal($photo, $protocol = 'http')
+  public function generateUrlDownload($photo, $protocol = 'http')
   {
-    return "{$protocol}://{$photo['host']}{$photo['pathOriginal']}";
+    return sprintf('%s://%s/photo/%s/download', $protocol, $this->utility->getHost(), $photo['id']);
   }
 
   /**
