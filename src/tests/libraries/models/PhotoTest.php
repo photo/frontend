@@ -78,6 +78,7 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
     $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
     $this->assertTrue(isset($res['pathOriginal']));
+    $this->assertTrue(isset($res['pathDownload']));
   }
 
   public function testAddApiUrlsOriginalAsNonOwner()
@@ -103,6 +104,7 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
     $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
     $this->assertTrue(isset($res['pathOriginal']));
+    $this->assertTrue(isset($res['pathDownload']));
   }
 
   public function testAddApiUrlsOriginalNotAllowed()
@@ -128,6 +130,7 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
     $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
     $this->assertFalse(isset($res['pathOriginal']));
+    $this->assertFalse(isset($res['pathDownload']));
   }
 
   public function testDeleteCouldNotGetPhoto()
@@ -405,6 +408,20 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $this->assertTrue(preg_match("#/base/{$ym}/[a-z0-9]{6}-foobar#", $res['pathBase']) == 1, 'base path not correct, if it is a timestamp mismatch - ignore');
   }
 
+  public function testGenerateUrlBase()
+  {
+    $user = $this->getMock('Url', array('isOwner'));
+    $user->expects($this->any())
+      ->method('isOwner')
+      ->will($this->returnValue(true));
+    $this->photo->inject('user', $user);
+
+    $res = $this->photo->generateUrlBaseOrOriginal($this->photoData, 'base');
+    $this->assertEquals('http://host/path/base', $res);
+    $res = $this->photo->generateUrlBaseOrOriginal($this->photoData, 'base', 'https');
+    $this->assertEquals('https://host/path/base', $res);
+  }
+
   public function testGenerateUrlOriginal()
   {
     $user = $this->getMock('Url', array('isOwner'));
@@ -413,9 +430,9 @@ class PhotoTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(true));
     $this->photo->inject('user', $user);
 
-    $res = $this->photo->generateUrlOriginal($this->photoData);
+    $res = $this->photo->generateUrlBaseOrOriginal($this->photoData, 'original');
     $this->assertEquals('http://host/path/original', $res);
-    $res = $this->photo->generateUrlOriginal($this->photoData, 'https');
+    $res = $this->photo->generateUrlBaseOrOriginal($this->photoData, 'original', 'https');
     $this->assertEquals('https://host/path/original', $res);
   }
 
