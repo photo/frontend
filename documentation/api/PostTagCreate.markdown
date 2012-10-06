@@ -63,7 +63,7 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
 
 * _message_, A string describing the result. Don't use this for anything but reading.
 * _code_, _201_ on success
-* _result_, Boolean
+* _result_, A [Tag][Tag] object or FALSE on error
 
 <a name="sample"></a>
 #### Sample
@@ -71,7 +71,11 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
     {
       "message":"",
       "code":201,
-      "result": true
+      "result":     	
+      {
+        "id": "mountain",
+        "count": 0
+      }
     }
 
 
