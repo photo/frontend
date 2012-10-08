@@ -789,6 +789,17 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete all activity for a user
+    *
+    * @return boolean
+    */
+  public function postActivitiesPurge()
+  {
+    $result = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE owner=:owner", array(':owner' => $this->owner));
+    return ($result !== false);
+  }
+
+  /**
     * Update an existing album in the database
     * This method does not overwrite existing values present in $params - hence "new action".
     *

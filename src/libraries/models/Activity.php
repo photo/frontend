@@ -49,6 +49,11 @@ class Activity extends BaseModel
     return $this->db->getActivities($filters);
   }
 
+  public function purge()
+  {
+    return $this->db->postActivitiesPurge();
+  }
+
   public function view($id)
   {
     return $this->db->getActivity($id);

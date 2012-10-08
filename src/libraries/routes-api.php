@@ -23,6 +23,7 @@ $apiObj->post('/?v?1?/action/([a-zA-Z0-9]+)/(photo)/create.json', array('ApiActi
  * /activit(y|ies)/{action}.json
  */
 $apiObj->get('/?v?1?/activities/?(.+)?/list.json', array('ApiActivityController', 'list_'), EpiApi::external); // retrieve activities (/activities/list.json)
+$apiObj->post('/?v?1?/activities/purge.json', array('ApiActivityController', 'purge'), EpiApi::external); // purge all activities (/activities/purge.json)
 $apiObj->get('/?v?1?/activity/([a-zA-Z0-9]+)/view.json', array('ApiActivityController', 'view'), EpiApi::external); // retrieve activity (/activity/:id/view.json)
 $apiObj->post('/?v?1?/activity/create.json', array('ApiActivityController', 'create'), EpiApi::internal); // post an action (/action/{id}/{type}/create.json)
 
