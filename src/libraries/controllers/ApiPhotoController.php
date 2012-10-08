@@ -333,6 +333,7 @@ class ApiPhotoController extends ApiBaseController
       return $this->error('Invalid mime type', false);;
     }
 
+    // TODO put this in a whitelist function (see replace())
     if(isset($attributes['__route__']))
       unset($attributes['__route__']);
     if(isset($attributes['photo']))
@@ -500,7 +501,8 @@ class ApiPhotoController extends ApiBaseController
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
 
-    $attributes = $_GET;
+    $attributes = $_REQUEST;
+
     // this determines where to get the photo from and populates $localFile and $name
     extract($this->parsePhotoFromRequest());
 
@@ -523,7 +525,20 @@ class ApiPhotoController extends ApiBaseController
         exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
     }
 
-    $status = $this->photo->replace($id, $localFile, $name);
+    // TODO put this in a whitelist function (see upload())
+    if(isset($attributes['__route__']))
+      unset($attributes['__route__']);
+    if(isset($attributes['photo']))
+      unset($attributes['photo']);
+    if(isset($attributes['crumb']))
+      unset($attributes['crumb']);
+    if(isset($attributes['returnSizes']))
+    {
+      $returnSizes = $attributes['returnSizes'];
+      unset($attributes['returnSizes']);
+    }
+
+    $status = $this->photo->replace($id, $localFile, $name, $attributes);
     if(!$status)
       return $this->error('Could not complete the replacement of the photo', false);
 

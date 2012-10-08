@@ -558,7 +558,7 @@ class Photo extends BaseModel
     return $id;
   }
 
-  public function replace($id, $localFile, $name)
+  public function replace($id, $localFile, $name, $attributes = array())
   {
     // check if file type is valid
     if(!$this->utility->isValidMimeType($localFile))
@@ -567,16 +567,18 @@ class Photo extends BaseModel
       return false;
     }
 
-    $attributes = array();
     $resp = $this->createAndStoreBaseAndOriginal($name, $localFile);
-    $paths = $resp['paths'];
+    $attributes = array_merge($this->whitelistParams($attributes), $resp['paths']);
     if($resp['status'])
     {
       $this->logger->info("Photo ({$id}) successfully stored on the file system (replacement)");
+      $fsExtras = $this->fs->getMetaData($localFile);
+
+      if(!empty($fsExtras))
+        $attributes['extraFileSystem'] = $fsExtras;
       $exif = $this->readExif($localFile);
       $iptc = $this->readIptc($localFile);
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
-      $attributes = $paths;
       foreach($iptc as $iptckey => $iptcval)
       {
         if(empty($iptcval))
@@ -595,6 +597,7 @@ class Photo extends BaseModel
       }
       $attributes['hash'] = sha1_file($localFile);
       $attributes['size'] = intval(filesize($localFile)/1024);
+      $attributes['filenameOriginal'] = $name;
 
       $exifParams = array('width' => 'width', 'height' => 'height', 'exifCameraMake' => 'exifCameraMake', 'exifCameraModel' => 'exifCameraModel', 
         'FNumber' => 'exifFNumber', 'exposureTime' => 'exifExposureTime', 'ISO' => 'exifISOSpeed', 'focalLength' => 'exifFocalLength', 'latitude' => 'latitude', 'longitude' => 'longitude');
@@ -607,17 +610,23 @@ class Photo extends BaseModel
       $exiftran = $this->config->modules->exiftran;
       if(is_executable($exiftran))
         exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
-      
+
       $photo = $this->db->getPhoto($id);
 
-      // purge photoVersions
-      $delVersionsResp = $this->db->deletePhotoVersions($photo);
-      if(!$delVersionsResp)
-        return false;
-      // delete all photos from the original photo object (includes paths to existing photos)
-      $delFilesResp = $this->fs->deletePhoto($photo);
-      if(!$delFilesResp)
-        return false;
+      // normally we delete the existing photos
+      // in some cases we may have already done this (migration)
+      if(!isset($attributes['skipDeletes']) || $attributes['skipDeletes'] != 1)
+      {
+        // purge photoVersions
+        $delVersionsResp = $this->db->deletePhotoVersions($photo);
+        if(!$delVersionsResp)
+          return false;
+        // delete all photos from the original photo object (includes paths to existing photos)
+        $delFilesResp = $this->fs->deletePhoto($photo);
+        if(!$delFilesResp)
+          return false;
+      }
+
       // update photo paths / hash
       $updPathsResp = $this->db->postPhoto($id, $attributes);
 
