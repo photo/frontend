@@ -7,7 +7,7 @@
     </p>    
   </div>
   
-  <form class="well features-post-submit" action="/manage/features">
+  <form class="well features-post-submit" action="/manage/settings">
     <h3>General settings</h3>
     <div class="controls">
       <label class="checkbox inline">
