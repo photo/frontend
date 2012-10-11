@@ -43,6 +43,17 @@ class ApiActivityController extends ApiBaseController
       return $this->error('Could not get activities', false);
   }
 
+  public function purge()
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $status = $this->activity->purge();
+    if($status !== false)
+      return $this->success('Purged user activities', true);
+    else
+      return $this->error('Purged user activities', false);
+  }
+
   public function view($id)
   {
     $activity = $this->activity->view($id);

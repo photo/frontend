@@ -47,6 +47,7 @@ interface DatabaseInterface
   public function identity();
   public function executeScript($file, $database);
   // post methods update
+  public function postActivitiesPurge();
   public function postAlbum($id, $params);
   public function postAlbumAdd($albumId, $type, $elementIds);
   public function postAlbumRemove($albumId, $type, $elementIds);

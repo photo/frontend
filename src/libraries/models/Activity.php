@@ -21,8 +21,6 @@ class Activity extends BaseModel
 
   public function create($attributes)
   {
-    getAuthentication()->requireAuthentication(false);
-
     $attributes = array_merge($this->getDefaultAttributes(), $attributes);
     $attributes = $this->whitelistParams($attributes);
     if(!$this->validateParams($attributes))
@@ -47,6 +45,11 @@ class Activity extends BaseModel
     if(!$this->user->isOwner())
       $filters['permission'] = '1';
     return $this->db->getActivities($filters);
+  }
+
+  public function purge()
+  {
+    return $this->db->postActivitiesPurge();
   }
 
   public function view($id)
