@@ -7,7 +7,7 @@
  */
 class Theme
 {
-  const themeDefault = 'default';
+  const themeDefault = 'fabrizio1.0';
   private $template, $theme, $themeDir, $themeDirWeb, $user;
 
   public function __construct()
@@ -109,7 +109,7 @@ class Theme
   public function setTheme($theme = null)
   {
     if($theme === null)
-      $theme = 'beisel2.0';
+      $theme = self::themeDefault;
     $this->theme = $theme;
     $this->themeDir = sprintf('%s/%s', dirname($this->themeDir), $this->theme);
     $this->themeDirWeb = sprintf('%s/%s', dirname($this->themeDirWeb), $this->theme);
