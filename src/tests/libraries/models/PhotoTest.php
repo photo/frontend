@@ -208,9 +208,12 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
   public function testDeleteSourceSuccess()
   {
-    $db = $this->getMock('db', array('getPhoto'));
+    $db = $this->getMock('db', array('getPhoto', 'deletePhotoVersions'));
     $db->expects($this->any())
       ->method('getPhoto')
+      ->will($this->returnValue(true));
+    $db->expects($this->any())
+      ->method('deletePhotoVersions')
       ->will($this->returnValue(true));
     $fs = $this->getMock('fs', array('deletePhoto'));
     $fs->expects($this->any())
@@ -237,10 +240,33 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
   public function testDeleteSourceCouldNotDeletePhoto()
   {
-    $db = $this->getMock('db', array('getPhoto'));
+    $db = $this->getMock('db', array('getPhoto', 'deletePhotoVersions'));
     $db->expects($this->any())
       ->method('getPhoto')
       ->will($this->returnValue(true));
+    $db->expects($this->any())
+      ->method('deletePhotoVersions')
+      ->will($this->returnValue(false));
+    $fs = $this->getMock('fs', array('deletePhoto'));
+    $fs->expects($this->any())
+      ->method('deletePhoto')
+      ->will($this->returnValue(false));
+    $this->photo->inject('db', $db);
+    $this->photo->inject('fs', $fs);
+
+    $res = $this->photo->deleteSourceFiles('foo');
+    $this->assertFalse($res);
+  }
+
+  public function testDeleteSourceCouldNotDeletePhotoVersionsDb()
+  {
+    $db = $this->getMock('db', array('getPhoto', 'deletePhotoVersions'));
+    $db->expects($this->any())
+      ->method('getPhoto')
+      ->will($this->returnValue(true));
+    $db->expects($this->any())
+      ->method('deletePhotoVersions')
+      ->will($this->returnValue(false));
     $fs = $this->getMock('fs', array('deletePhoto'));
     $fs->expects($this->any())
       ->method('deletePhoto')

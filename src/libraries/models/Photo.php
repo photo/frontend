@@ -120,7 +120,8 @@ class Photo extends BaseModel
       return false;
 
     $fileStatus = $this->fs->deletePhoto($photo);
-    return $fileStatus;
+    $dbStatus = $this->db->deletePhotoVersions($photo);
+    return $fileStatus && $dbStatus;
   }
 
   /**
@@ -597,6 +598,7 @@ class Photo extends BaseModel
       }
       $attributes['hash'] = sha1_file($localFile);
       $attributes['size'] = intval(filesize($localFile)/1024);
+      $attributes['host'] = $this->fs->getHost();
       $attributes['filenameOriginal'] = $name;
 
       $exifParams = array('width' => 'width', 'height' => 'height', 'exifCameraMake' => 'exifCameraMake', 'exifCameraModel' => 'exifCameraModel', 
@@ -615,8 +617,9 @@ class Photo extends BaseModel
 
       // normally we delete the existing photos
       // in some cases we may have already done this (migration)
-      if(!isset($attributes['skipDeletes']) || $attributes['skipDeletes'] != 1)
+      if(!isset($_POST['skipDeletes']) || empty($_POST['skipDeletes']))
       {
+        $this->logger->info(sprintf('Purging photos in replace API for photo %s', $id));
         // purge photoVersions
         $delVersionsResp = $this->db->deletePhotoVersions($photo);
         if(!$delVersionsResp)
