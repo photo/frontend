@@ -23,6 +23,7 @@ $apiObj->post('/?v?1?/action/([a-zA-Z0-9]+)/(photo)/create.json', array('ApiActi
  * /activit(y|ies)/{action}.json
  */
 $apiObj->get('/?v?1?/activities/?(.+)?/list.json', array('ApiActivityController', 'list_'), EpiApi::external); // retrieve activities (/activities/list.json)
+$apiObj->post('/?v?1?/activities/purge.json', array('ApiActivityController', 'purge'), EpiApi::external); // purge all activities (/activities/purge.json)
 $apiObj->get('/?v?1?/activity/([a-zA-Z0-9]+)/view.json', array('ApiActivityController', 'view'), EpiApi::external); // retrieve activity (/activity/:id/view.json)
 $apiObj->post('/?v?1?/activity/create.json', array('ApiActivityController', 'create'), EpiApi::internal); // post an action (/action/{id}/{type}/create.json)
 
@@ -45,7 +46,7 @@ $apiObj->get('/?v?1?/album/([a-zA-Z0-9]+)/view.json', array('ApiAlbumController'
  * All manage endpoints follow the same convention.
  * /manage/{action}.json
  */
-$apiObj->post('/?v?1?/manage/features.json', array('ApiManageController', 'featuresPost'), EpiApi::external); // update features (/manage/features.json)
+$apiObj->post('/?v?1?/manage/settings.json', array('ApiManageController', 'settingsPost'), EpiApi::external); // update features (/manage/features.json)
 
 /*
  * Photo endpoints
@@ -54,6 +55,7 @@ $apiObj->post('/?v?1?/manage/features.json', array('ApiManageController', 'featu
  * /photo[s]/{id}/{action}[/{additional}].json
  */
 $apiObj->post('/?v?1?/photo/([a-zA-Z0-9]+)/delete.json', array('ApiPhotoController', 'delete'), EpiApi::external); // delete a photo (/photo/{id}/delete.json)
+$apiObj->post('/?v?1?/photo/([a-zA-Z0-9]+)/source/delete.json', array('ApiPhotoController', 'deleteSource'), EpiApi::external); // delete the source files for a photo record (/photo/{id}/source/delete.json)
 $apiObj->get('/?v?1?/photo/([a-zA-Z0-9]+)/edit.json', array('ApiPhotoController', 'edit'), EpiApi::external); // edit form for photo (/photo/{id}/edit.json)
 $apiObj->post('/?v?1?/photo/([a-zA-Z0-9]+)/replace.json', array('ApiPhotoController', 'replace'), EpiApi::external); // update a photo (/photo/{id}/update.json)
 $apiObj->post('/?v?1?/photo/([a-zA-Z0-9]+)/update.json', array('ApiPhotoController', 'update'), EpiApi::external); // update a photo (/photo/{id}/update.json)

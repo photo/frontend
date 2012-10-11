@@ -78,7 +78,7 @@ class Url
   public function photoDownload($photo, $write = true)
   {
     $utilityObj = new Utility;
-    return $utilityObj->returnValue(sprintf('/photo/%s/download', $photo['id']), $write);
+    return $utilityObj->returnValue($photo['pathDownload'], $write);
   }
 
   public function photoEdit($id, $write = true)

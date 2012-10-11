@@ -705,6 +705,16 @@ class DatabaseSimpleDb implements DatabaseInterface
   }
 
   /**
+    * Delete all activity for a user
+    *
+    * @return boolean
+    */
+  public function postActivitiesPurge()
+  {
+    return false;
+  }
+
+  /**
     * Add an album
     *
     * @param string $albumId ID of the album to update.

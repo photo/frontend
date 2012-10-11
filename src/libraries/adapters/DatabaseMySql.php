@@ -555,6 +555,7 @@ class DatabaseMySql implements DatabaseInterface
     for($i = 0; $i < count($photos); $i++)
       $photos[$i] = $this->normalizePhoto($photos[$i]);
 
+    $photos[0]['currentRows'] = count($photos);
     // TODO evaluate SQL_CALC_FOUND_ROWS (indexes with the query builder might be hard to optimize)
     // http://www.mysqlperformanceblog.com/2007/08/28/to-sql_calc_found_rows-or-not-to-sql_calc_found_rows/
     $result = $this->db->one("SELECT COUNT(*) {$query['from']} {$query['where']} {$query['groupBy']}");
@@ -785,6 +786,17 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
     return true;
+  }
+
+  /**
+    * Delete all activity for a user
+    *
+    * @return boolean
+    */
+  public function postActivitiesPurge()
+  {
+    $result = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE owner=:owner", array(':owner' => $this->owner));
+    return ($result !== false);
   }
 
   /**

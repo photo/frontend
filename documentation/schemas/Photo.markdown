@@ -52,6 +52,7 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
       dateUploadedMonth: (int)
       dateUploadedYear: (int)
       pathOriginal: (string),
+      pathDownload: (string),
       pathBase: (string),
       ...
       pathWxH: (string), // pseudo key
@@ -102,7 +103,8 @@ This includes EXIF information from the photo, tags and URLs to all versions of 
   * dateUploadedDay, Day the photo was uploaded (for searching)
   * dateUploadedMonth, Month the photo was uploaded (for searching)
   * dateUploadedYear, Year the photo was uploaded (for searching)
-  * pathOriginal, The URL of the original photo
+  * pathOriginal, A path to the original photo (do not rely on this to access original photos, use photoDownload)
+  * pathDownload, The URL of the original photo proxied through the storage service if needed
   * pathBase, The URL of the base version of the photo, used for photo generation
   * pathWxH, A pseudo key which represents any resized version of a photo and it's URL
 
