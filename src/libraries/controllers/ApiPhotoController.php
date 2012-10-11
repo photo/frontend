@@ -540,10 +540,10 @@ class ApiPhotoController extends ApiBaseController
 
     $status = $this->photo->replace($id, $localFile, $name, $attributes);
     if(!$status)
-      return $this->error('Could not complete the replacement of the photo', false);
+      return $this->error(sprintf('Could not complete the replacement of photo %s', $id), false);
 
     $photoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
-    return $this->success('yes', $photoResp['result']);
+    return $this->success(sprintf('Photo %s was successfully replaced.', $id), $photoResp['result']);
   }
 
   /**
