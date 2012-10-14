@@ -43,10 +43,11 @@ function get_mime_type($filename)
   }
   else if(function_exists('exec'))
   {
+      
       $type = exec('/usr/bin/file --mime-type -b ' .escapeshellarg($filename));
-      if(!empty($this->type))
-          $type = null;
-  }
+      if(empty($type)) 
+        $type = null;
+  } 
 
   return $type;
 }
