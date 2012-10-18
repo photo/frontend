@@ -237,6 +237,7 @@ class FileSystemS3 implements FileSystemInterface
       }
     }
 
+    // DreamObjects doesn't seem to support this #1000
     // TODO add versioning?
     // Set a policy for this bucket only
     $policy = new CFPolicy($this->fs, array(
