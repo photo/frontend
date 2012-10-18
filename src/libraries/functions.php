@@ -146,6 +146,9 @@ function getFs(/*$type, $useCache*/)
     case 'S3Dropbox':
       $fs = new FileSystemS3Dropbox();
       break;
+    case 'DreamObjects':
+      $fs = new FileSystemDreamObjects();
+      break;
     default:
       throw new Exception("FileSystem Provider {$type} does not exist", 404);
       break;

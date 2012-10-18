@@ -298,10 +298,10 @@ class SetupController extends BaseController
     $appId = getSession()->get('appId');
     $database = getSession()->get('database');
     $filesystem = getSession()->get('fileSystem');
-    $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
+    $usesAws = (getSession()->get('database') == 'SimpleDb' || preg_match('/S3|DreamObjects/', getSession()->get('fileSystem'))) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
-    $usesS3 = (stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
+    $usesS3 = (preg_match('/S3|DreamObjects/', getSession()->get('fileSystem')) !== false) ? true : false;
     $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
 
@@ -399,11 +399,11 @@ class SetupController extends BaseController
     $filesystem = getSession()->get('fileSystem');
     $appId = getSession()->get('appId');
     $password = getSession()->get('password');
-    $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
+    $usesAws = (getSession()->get('database') == 'SimpleDb' || preg_match('/S3|DreamObjects/', $filesystem)) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
     $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
-    $usesS3 = (stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
+    $usesS3 = (preg_match('/S3|DreamObjects/', $filesystem) !== false) ? true : false;
     $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
     $awsErrors = false;
     $mySqlErrors = false;
@@ -489,7 +489,10 @@ class SetupController extends BaseController
         {
           getSession()->set('s3BucketName', $s3Bucket);
           $aws->s3BucketName = $s3Bucket;
-          $aws->s3Host = "{$s3Bucket}.s3.amazonaws.com";
+          if($filesystem === 'DreamObjects')
+            $aws->s3Host = "{$s3Bucket}.objects.dreamhost.com";
+          else
+            $aws->s3Host = "{$s3Bucket}.s3.amazonaws.com";
         }
 
         if($usesSimpleDb)
