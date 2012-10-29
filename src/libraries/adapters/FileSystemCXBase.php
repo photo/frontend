@@ -10,7 +10,7 @@ class FileSystemCXBase
   private $config, $parent, $cx, $boxFolderId, $metaDataMap = array();
   public function __construct($parent, $config = null, $params = null)
   {
-    $this->directoryMask = 'Y-m-F';
+    $this->directoryMask = 'Y/m-F';
     $this->config = !is_null($config) ? $config : getConfig()->get();
     $utilityObj = new Utility;
     $this->cx = new CloudExperience($utilityObj->decrypt($this->config->credentials->cxKey), $utilityObj->decrypt($this->config->credentials->cxSecret));
@@ -152,12 +152,12 @@ class FileSystemCXBase
     $createDirectory = false;
 
     // TODO replace with search API
-    $this->cx->post('/files/mkdir/self:/Photos');
+    $this->cx->post(sprintf('/files/mkdir/self:/Photos/%s', $directory));
     $params = array(
       'file_content_type' => 'image/jpg',
       'file' => sprintf('@%s', $localFile)
     );
-    $photoPath = sprintf('Photos/%s', $destinationName);
+    $photoPath = sprintf('Photos/%s/%s', $directory, $destinationName);
     $res = $this->cx->upload(sprintf('/data/self:/%s', $photoPath), $params);
     if(!isset($res['id']))
     {
