@@ -1,8 +1,9 @@
 <?php
 /**
- * Amazon AWS S3 implementation for FileSystemInterface
+ * DreamHost DreamObjects implementation for FileSystemInterface
+ * Extends the S3 adapter
  *
- * This class defines the functionality defined by FileSystemInterface for AWS S3.
+ * This class defines the functionality defined by FileSystemInterface for DreamObjects.
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 class FileSystemDreamObjects extends FileSystemS3 implements FileSystemInterface
