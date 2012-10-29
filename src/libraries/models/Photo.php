@@ -304,8 +304,10 @@ class Photo extends BaseModel
     */
   public function generatePaths($photoName)
   {
-    $baseName = dechex(rand(1000000,9999999)) . '-' . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
-    $originalName = uniqid() . '-' . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
+    $ext = substr($photoName, (strrpos($photoName, '.')+1));
+    $rootName = preg_replace('/[^a-zA-Z0-9.-_]/', '-', substr($photoName, 0, (strrpos($photoName, '.'))));
+    $baseName = sprintf('%s-%s.%s', $rootName, dechex(rand(1000000,9999999)), $ext);
+    $originalName = sprintf('%s-%s.%s', $rootName, uniqid(), $ext);
     return array(
       'pathOriginal' => sprintf('/original/%s/%s', date('Ym'), $originalName),
       'pathBase' => sprintf('/base/%s/%s', date('Ym'), $baseName)
