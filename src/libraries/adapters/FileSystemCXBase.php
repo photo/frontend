@@ -13,9 +13,8 @@ class FileSystemCXBase
     $this->directoryMask = 'Y-m-F';
     $this->config = !is_null($config) ? $config : getConfig()->get();
     $utilityObj = new Utility;
-    // TODO encrypt
-    //$this->box = new CloudExperience($utilityObj->decrypt($this->config->credentials->boxKey));
-    $this->cx = new CloudExperience($this->config->credentials->cxKey, $this->config->credentials->cxSecret, $this->config->credentials->cxToken);
+    $this->cx = new CloudExperience($utilityObj->decrypt($this->config->credentials->cxKey), $utilityObj->decrypt($this->config->credentials->cxSecret));
+    $this->cx->setAccessToken($utilityObj->decrypt($this->config->credentials->cxToken));
     $this->parent = $parent;
   }
 
@@ -162,7 +161,7 @@ class FileSystemCXBase
     $res = $this->cx->upload(sprintf('/data/self:/%s', $photoPath), $params);
     if(!isset($res['id']))
     {
-      $this->logger->crit('Could not save file on CX');
+      getLogger()->crit(sprintf('Could not save file on CX : %s', var_export($res, 1)));
       return false;
     }
 
