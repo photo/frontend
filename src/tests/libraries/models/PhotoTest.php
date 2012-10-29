@@ -428,10 +428,10 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     // This *should* work
     $now = time();
     $ym = date('Ym');
-    $res = $this->photo->generatePaths('foobar');
-    $this->assertNotEquals("/original/{$ym}/{$now}-foobar", $res['pathOriginal'], 'original path not correct, if it is a timestamp mismatch - ignore');
-    $this->assertTrue(preg_match("#/original/{$ym}/[a-z0-9]{13}-foobar#", $res['pathOriginal']) == 1, 'original path not correct, if it is a timestamp mismatch - ignore');
-    $this->assertTrue(preg_match("#/base/{$ym}/[a-z0-9]{6}-foobar#", $res['pathBase']) == 1, 'base path not correct, if it is a timestamp mismatch - ignore');
+    $res = $this->photo->generatePaths('foobar.jpg');
+    $this->assertNotEquals("/original/{$ym}/{$now}-foobar.jpg", $res['pathOriginal'], 'original path not correct, if it is a timestamp mismatch - ignore');
+    $this->assertTrue(preg_match("#/original/{$ym}/foobar-[a-z0-9]{13}\.jpg#", $res['pathOriginal']) == 1, 'original path not correct, if it is a timestamp mismatch - ignore');
+    $this->assertTrue(preg_match("#/base/{$ym}/foobar-[a-z0-9]{6}\.jpg#", $res['pathBase']) == 1, 'base path not correct, if it is a timestamp mismatch - ignore');
   }
 
   public function testGenerateUrlBase()

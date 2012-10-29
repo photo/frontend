@@ -143,6 +143,9 @@ function getFs(/*$type, $useCache*/)
     case 'S3Box':
       $fs = new FileSystemS3Box();
       break;
+    case 'S3CX':
+      $fs = new FileSystemS3CX();
+      break;
     case 'S3Dropbox':
       $fs = new FileSystemS3Dropbox();
       break;
