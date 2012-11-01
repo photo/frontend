@@ -23,8 +23,16 @@ class Credential extends BaseModel
     else
       $this->utility = new Utility;
 
+    if(isset($params['db']))
+      $this->db = $params['db'];
+
     if(class_exists('OAuthProvider'))
-      $this->provider = new OAuthProvider($this->getOAuthParameters());
+    {
+      $oauthParams = $this->getOAuthParameters();
+      $this->provider = new OAuthProvider($oauthParams);
+      // seed the consumer (see #929 and #950)
+      $this->getConsumer($oauthParams['oauth_consumer_key']);
+    }
   }
 
   /**
