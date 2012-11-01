@@ -18,6 +18,16 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
   public function setUp()
   {
     $this->authentication = new AuthenticationWrapper; 
+    $db = $this->getMock('db', array('getConsumer'));
+    $db->expects($this->any())
+      ->method('getConsumer')
+      ->will($this->returnValue(array('foo')));
+
+    $this->credential = $this->getMock('Credential', array('isOAuthRequest', 'getConsumer', 'checkRequest','getErrorAsString'));
+    $this->credential->expects($this->any())
+      ->method('getConsumer')
+      ->will($this->returnValue(array('foo')));
+
     restore_exception_handler();
   }
 
@@ -39,13 +49,11 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
     $user->expects($this->any())
       ->method('isLoggedIn')
       ->will($this->returnValue(false));
-    $this->authentication->inject('user', $user);
-    $credential = $this->getMock('Credential', array('isOAuthRequest'));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $this->authentication->inject('user', $user);
-    $this->authentication->inject('credential', $credential);
+    $this->authentication->inject('credential', $this->credential);
 
     $resp = $this->authentication->isRequestAuthenticated();
     $this->assertFalse($resp, 'When user is NOT logged in and no valid OAuth isAuthenticatedRequest should return false');
@@ -58,12 +66,12 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
       ->method('isLoggedIn')
       ->will($this->returnValue(false));
     $this->authentication->inject('user', $user);
-    $credential = $this->getMock('Credential', array('isOAuthRequest'));
-    $credential->expects($this->any())
+
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(true));
-    $this->authentication->inject('user', $user);
-    $this->authentication->inject('credential', $credential);
+
+    $this->authentication->inject('credential', $this->credential);
 
     $resp = $this->authentication->isRequestAuthenticated();
     $this->assertTrue($resp, 'When user is NOT logged in but has valid OAuth isAuthenticatedRequest should return true');
@@ -74,18 +82,17 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
   */
   public function testRequireAuthenticationOAuthInvalid()
   {
-    $credential = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getErrorAsString'));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(true));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('checkRequest')
       ->will($this->returnValue(false));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('getErrorAsString')
       ->will($this->returnValue('foobar'));
 
-    $this->authentication->inject('credential', $credential);
+    $this->authentication->inject('credential', $this->credential);
 
     // as long as no exception is thrown, we're good
     $this->authentication->requireAuthentication();
@@ -93,18 +100,17 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
 
   public function testRequireAuthenticationOAuthValid()
   {
-    $credential = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getErrorAsString'));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(true));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('checkRequest')
       ->will($this->returnValue(true));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('getErrorAsString')
       ->will($this->returnValue('foobar'));
 
-    $this->authentication->inject('credential', $credential);
+    $this->authentication->inject('credential', $this->credential);
 
     // as long as no exception is thrown, we're good
     $this->authentication->requireAuthentication();
@@ -123,12 +129,11 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
       ->method('isOwner')
       ->will($this->returnValue(true));*/
     $this->authentication->inject('user', $user);
-    $credential = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getErrorAsString'));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $this->authentication->inject('user', $user);
-    $this->authentication->inject('credential', $credential);
+    $this->authentication->inject('credential', $this->credential);
 
     // should throw an exception
     $this->authentication->requireAuthentication();
@@ -144,12 +149,11 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
       ->method('isOwner')
       ->will($this->returnValue(false));
     $this->authentication->inject('user', $user);
-    $credential = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getErrorAsString'));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $this->authentication->inject('user', $user);
-    $this->authentication->inject('credential', $credential);
+    $this->authentication->inject('credential', $this->credential);
 
     // as long as no exception is thrown we're good
     $this->authentication->requireAuthentication(false);
@@ -168,12 +172,11 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
       ->method('isOwner')
       ->will($this->returnValue(false));
     $this->authentication->inject('user', $user);
-    $credential = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getErrorAsString'));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $this->authentication->inject('user', $user);
-    $this->authentication->inject('credential', $credential);
+    $this->authentication->inject('credential', $this->credential);
 
     // as long as no exception is thrown we're good
     $this->authentication->requireAuthentication();
@@ -192,12 +195,11 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
       ->method('isOwner')
       ->will($this->returnValue(false));
     $this->authentication->inject('user', $user);
-    $credential = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getErrorAsString'));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $this->authentication->inject('user', $user);
-    $this->authentication->inject('credential', $credential);
+    $this->authentication->inject('credential', $this->credential);
 
     // should thrown an exception
     $this->authentication->requireAuthentication(true);
@@ -205,11 +207,10 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
 
   public function testRequireCrumbIsOAuth()
   {
-    $credential = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getErrorAsString'));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(true));
-    $this->authentication->inject('credential', $credential);
+    $this->authentication->inject('credential', $this->credential);
 
     // as long as no exception is thrown we're good
     $this->authentication->requireCrumb();
@@ -217,15 +218,14 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
 
   public function testRequireCrumbValid()
   {
-    $credential = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getErrorAsString'));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $session = $this->getMock('Session', array('get'));
     $session->expects($this->any())
       ->method('get')
       ->will($this->returnValue('foobar'));
-    $this->authentication->inject('credential', $credential);
+    $this->authentication->inject('credential', $this->credential);
     $this->authentication->inject('session', $session);
 
     // as long as no exception is thrown we're good
@@ -237,15 +237,14 @@ class AuthenticationTest extends PHPUnit_Framework_TestCase
   */
   public function testRequireCrumbInvalid()
   {
-    $credential = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getErrorAsString'));
-    $credential->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $session = $this->getMock('Session', array('get'));
     $session->expects($this->any())
       ->method('get')
       ->will($this->returnValue('foobar'));
-    $this->authentication->inject('credential', $credential);
+    $this->authentication->inject('credential', $this->credential);
     $this->authentication->inject('session', $session);
 
     // as long as no exception is thrown we're good
