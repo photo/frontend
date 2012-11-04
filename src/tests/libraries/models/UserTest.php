@@ -7,6 +7,10 @@ class UserTest extends PHPUnit_Framework_TestCase
   {
     // to test the write methods
     $this->user = new User();
+    $this->credential = $this->getMock('cred', array('isOAuthRequest', 'getConsumer', 'checkRequest','getErrorAsString','getEmailFromOAuth'));
+    $this->credential->expects($this->any())
+      ->method('getConsumer')
+      ->will($this->returnValue(array('foo')));
   }
 
   public function testGetAvatarFromEmail()
@@ -15,13 +19,31 @@ class UserTest extends PHPUnit_Framework_TestCase
     $this->assertEquals('http://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=50', $res);
   }
 
-  public function testGetEmailAddress()
+  public function testGetEmailAddressNonOAuth()
   {
     $session = $this->getMock('session', array('get'));
     $session->expects($this->any())
       ->method('get')
       ->will($this->returnValue('test@example.com'));
     $this->user->inject('session', $session);
+    $this->credential->expects($this->any())
+      ->method('isOAuthRequest')
+      ->will($this->returnValue(false));
+    $this->user->inject('credential', $this->credential);
+    
+    $res = $this->user->getEmailAddress();
+    $this->assertEquals('test@example.com', $res);
+  }
+
+  public function testGetEmailAddressOAuth()
+  {
+    $this->credential->expects($this->any())
+      ->method('isOAuthRequest')
+      ->will($this->returnValue(true));
+    $this->credential->expects($this->any())
+      ->method('getEmailFromOAuth')
+      ->will($this->returnValue('test@example.com'));
+    $this->user->inject('credential', $this->credential);
     
     $res = $this->user->getEmailAddress();
     $this->assertEquals('test@example.com', $res);
@@ -34,6 +56,10 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->method('get')
       ->will($this->returnValue(null));
     $this->user->inject('session', $session);
+    $this->credential->expects($this->any())
+      ->method('isOAuthRequest')
+      ->will($this->returnValue(false));
+    $this->user->inject('credential', $this->credential);
     
     $res = $this->user->getEmailAddress();
     $this->assertNull($res);
@@ -201,8 +227,7 @@ class UserTest extends PHPUnit_Framework_TestCase
 
   public function testIsLoggedInFalse()
   {
-    $cred = $this->getMock('Credential', array('isOAuthRequest'));
-    $cred->expects($this->once())
+    $this->credential->expects($this->once())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $session = $this->getMock('session', array('get'));
@@ -210,7 +235,21 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->method('get')
       ->will($this->returnValue(null));
     $this->user->inject('session', $session);
-    $this->user->inject('credential', $cred);
+    $this->user->inject('credential', $this->credential);
+
+    $res = $this->user->isLoggedIn();
+    $this->assertFalse($res);
+  }
+
+  public function testIsLoggedInFalseWithOAuth()
+  {
+    $this->credential->expects($this->once())
+      ->method('isOAuthRequest')
+      ->will($this->returnValue(true));
+    $this->credential->expects($this->once())
+      ->method('checkRequest')
+      ->will($this->returnValue(false));
+    $this->user->inject('credential', $this->credential);
 
     $res = $this->user->isLoggedIn();
     $this->assertFalse($res);
@@ -218,8 +257,7 @@ class UserTest extends PHPUnit_Framework_TestCase
 
   public function testIsLoggedInTrue()
   {
-    $cred = $this->getMock('Credential', array('isOAuthRequest'));
-    $cred->expects($this->once())
+    $this->credential->expects($this->once())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $session = $this->getMock('session', array('get'));
@@ -227,37 +265,21 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->method('get')
       ->will($this->returnValue('test@example.com'));
     $this->user->inject('session', $session);
-    $this->user->inject('credential', $cred);
+    $this->user->inject('credential', $this->credential);
 
     $res = $this->user->isLoggedIn();
     $this->assertTrue($res);
   }
 
-  public function testIsLoggedInOAuthFalse()
+  public function testIsLoggedInTrueWithOAuth()
   {
-    $cred = $this->getMock('Credential', array('isOAuthRequest','checkRequest'));
-    $cred->expects($this->once())
+    $this->credential->expects($this->once())
       ->method('isOAuthRequest')
       ->will($this->returnValue(true));
-    $cred->expects($this->once())
-      ->method('checkRequest')
-      ->will($this->returnValue(false));
-    $this->user->inject('credential', $cred);
-
-    $res = $this->user->isLoggedIn();
-    $this->assertFalse($res);
-  }
-
-  public function testIsLoggedInOAuthTrue()
-  {
-    $cred = $this->getMock('Credential', array('isOAuthRequest','checkRequest'));
-    $cred->expects($this->once())
-      ->method('isOAuthRequest')
-      ->will($this->returnValue(true));
-    $cred->expects($this->once())
+    $this->credential->expects($this->once())
       ->method('checkRequest')
       ->will($this->returnValue(true));
-    $this->user->inject('credential', $cred);
+    $this->user->inject('credential', $this->credential);
 
     $res = $this->user->isLoggedIn();
     $this->assertTrue($res);
@@ -265,8 +287,7 @@ class UserTest extends PHPUnit_Framework_TestCase
 
   public function testIsOwnerFalse()
   {
-    $cred = $this->getMock('Credential', array('isOAuthRequest'));
-    $cred->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $session = $this->getMock('session', array('get'));
@@ -274,7 +295,7 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->method('get')
       ->will($this->returnValue(null));
     $this->user->inject('session', $session);
-    $this->user->inject('credential', $cred);
+    $this->user->inject('credential', $this->credential);
     $this->user->inject('config', new FauxObject);
 
     $res = $this->user->isOwner();
@@ -283,8 +304,7 @@ class UserTest extends PHPUnit_Framework_TestCase
 
   public function testIsOwnerFalseLoggedInAsSomeoneElse()
   {
-    $cred = $this->getMock('Credential', array('isOAuthRequest'));
-    $cred->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $session = $this->getMock('session', array('get'));
@@ -299,7 +319,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     $config->user = new stdClass;
     $config->user->email = 'test@example.com';
     $this->user->inject('session', $session);
-    $this->user->inject('credential', $cred);
+    $this->user->inject('credential', $this->credential);
     $this->user->inject('config', $config);
 
     $res = $this->user->isOwner();
@@ -308,8 +328,7 @@ class UserTest extends PHPUnit_Framework_TestCase
 
   public function testIsOwnerTrue()
   {
-    $cred = $this->getMock('Credential', array('isOAuthRequest'));
-    $cred->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $session = $this->getMock('session', array('get'));
@@ -324,7 +343,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     $config->user = new stdClass;
     $config->user->email = 'test@example.com';
     $this->user->inject('session', $session);
-    $this->user->inject('credential', $cred);
+    $this->user->inject('credential', $this->credential);
     $this->user->inject('config', $config);
 
     $res = $this->user->isOwner();
@@ -333,8 +352,7 @@ class UserTest extends PHPUnit_Framework_TestCase
 
   public function testIsOwnerTrueLoggedInAsAdmin()
   {
-    $cred = $this->getMock('Credential', array('isOAuthRequest'));
-    $cred->expects($this->any())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(false));
     $session = $this->getMock('session', array('get'));
@@ -350,7 +368,7 @@ class UserTest extends PHPUnit_Framework_TestCase
     $config->user->email = 'test@example.com';
     $config->user->admins = 'someoneelse@example.com';
     $this->user->inject('session', $session);
-    $this->user->inject('credential', $cred);
+    $this->user->inject('credential', $this->credential);
     $this->user->inject('config', $config);
 
     $res = $this->user->isOwner();
@@ -359,14 +377,13 @@ class UserTest extends PHPUnit_Framework_TestCase
 
   public function testIsOwnerOAuthInvalid()
   {
-    $cred = $this->getMock('Credential', array('isOAuthRequest','checkRequest'));
-    $cred->expects($this->once())
+    $this->credential->expects($this->any())
       ->method('isOAuthRequest')
       ->will($this->returnValue(true));
-    $cred->expects($this->once())
+    $this->credential->expects($this->once())
       ->method('checkRequest')
       ->will($this->returnValue(false));
-    $this->user->inject('credential', $cred);
+    $this->user->inject('credential', $this->credential);
     $config = new stdClass;
     $config->user = new stdClass;
     $config->user->email = 'doesnt matter';
@@ -378,17 +395,16 @@ class UserTest extends PHPUnit_Framework_TestCase
 
   public function testIsOwnerOAuthValidNotOwner()
   {
-    $cred = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getEmailFromOAuth'));
-    $cred->expects($this->once())
+    $this->credential->expects($this->once())
       ->method('isOAuthRequest')
       ->will($this->returnValue(true));
-    $cred->expects($this->once())
+    $this->credential->expects($this->once())
       ->method('checkRequest')
       ->will($this->returnValue(true));
-    $cred->expects($this->once())
+    $this->credential->expects($this->once())
       ->method('getEmailFromOAuth')
       ->will($this->returnValue('test@example.com'));
-    $this->user->inject('credential', $cred);
+    $this->user->inject('credential', $this->credential);
     $config = new stdClass;
     $config->user = new stdClass;
     $config->user->email = 'different@example.com';
@@ -400,17 +416,16 @@ class UserTest extends PHPUnit_Framework_TestCase
 
   public function testIsOwnerOAuthTrue()
   {
-    $cred = $this->getMock('Credential', array('isOAuthRequest','checkRequest','getEmailFromOAuth'));
-    $cred->expects($this->once())
+    $this->credential->expects($this->once())
       ->method('isOAuthRequest')
       ->will($this->returnValue(true));
-    $cred->expects($this->once())
+    $this->credential->expects($this->once())
       ->method('checkRequest')
       ->will($this->returnValue(true));
-    $cred->expects($this->once())
+    $this->credential->expects($this->once())
       ->method('getEmailFromOAuth')
       ->will($this->returnValue('test@example.com'));
-    $this->user->inject('credential', $cred);
+    $this->user->inject('credential', $this->credential);
     $config = new stdClass;
     $config->user = new stdClass;
     $config->user->email = 'test@example.com';
