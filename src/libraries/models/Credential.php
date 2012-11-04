@@ -26,7 +26,7 @@ class Credential extends BaseModel
     if(isset($params['db']))
       $this->db = $params['db'];
 
-    if(class_exists('OAuthProvider'))
+    if($this->isOAuthRequest() && class_exists('OAuthProvider'))
     {
       $oauthParams = $this->getOAuthParameters();
       $this->provider = new OAuthProvider($oauthParams);
