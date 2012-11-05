@@ -9,7 +9,7 @@ class Credential extends BaseModel
   const statusActive = '1';
 
   const nonceCacheKey = 'oauthTimestamps';
-  public $oauthException, $oauthParams, $provider, $sendHeadersOnError = true;
+  public $oauthException, $oauthParams, $provider, $sendHeadersOnError = true, $isUnitTest = false;
   private static $consumer = null, $requestStatus = null;
 
   /**
@@ -113,10 +113,10 @@ class Credential extends BaseModel
       $this->provider->setParam('__route__', null);
       $this->provider->setRequestTokenPath('/v1/oauth/token/request'); // No token needed for this end point
       // unit test requires HTTP method context #929
-      if(isset($_SERVER['HTTP_METHOD']))
-        $this->provider->checkOAuthRequest();
-      else
+      if($this->isUnitTest === true)
         $this->provider->checkOAuthRequest(null, OAUTH_HTTP_METHOD_GET);
+      else
+        $this->provider->checkOAuthRequest();
       self::$requestStatus = true;
     }
     catch(OAuthException $e)
