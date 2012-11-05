@@ -374,4 +374,20 @@ class CredentialTest extends PHPUnit_Framework_TestCase
     $res = $this->credential->isOAuthRequest();
     $this->assertFalse($res, 'When no oauth headers are present isOAuthRequest should return FALSE');
   }
+
+  /**
+   * @depends testValidateOAuthLibraryExists
+   */
+  public function testNonOAuthRequest()
+  {
+    $utility = $this->getMock('Utility', array('getAllHeaders'));
+    $utility->expects($this->any())
+      ->method('getAllHeaders')
+      ->will($this->returnValue(array()));
+
+    $this->credential = new Credential(array('utility' => $utility, 'db' => new FauxObject));
+    $this->credential->sendHeadersOnError = false;
+    $res = $this->credential->checkRequest();
+    $this->assertFalse($res, 'When no oauth headers are present isOAuthRequest should return FALSE');
+  }
 }

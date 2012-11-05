@@ -26,13 +26,16 @@ class Credential extends BaseModel
     if(isset($params['db']))
       $this->db = $params['db'];
 
-    if($this->isOAuthRequest() && class_exists('OAuthProvider'))
+    $oauthParams = array('oauth_consumer_key' => '');
+    if($this->isOAuthRequest())
     {
       $oauthParams = $this->getOAuthParameters();
-      $this->provider = new OAuthProvider($oauthParams);
       // seed the consumer (see #929 and #950)
       $this->getConsumer($oauthParams['oauth_consumer_key']);
     }
+    
+    if(class_exists('OAuthProvider'))
+      $this->provider = new OAuthProvider($oauthParams);
   }
 
   /**
@@ -109,7 +112,11 @@ class Credential extends BaseModel
       $this->provider->tokenHandler(array($this,'checkToken'));
       $this->provider->setParam('__route__', null);
       $this->provider->setRequestTokenPath('/v1/oauth/token/request'); // No token needed for this end point
-      $this->provider->checkOAuthRequest();
+      // unit test requires HTTP method context #929
+      if(isset($_SERVER['HTTP_METHOD']))
+        $this->provider->checkOAuthRequest();
+      else
+        $this->provider->checkOAuthRequest(null, OAUTH_HTTP_METHOD_GET);
       self::$requestStatus = true;
     }
     catch(OAuthException $e)
