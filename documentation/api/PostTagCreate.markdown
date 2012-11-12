@@ -62,7 +62,7 @@ _Authentication: required_
 The response is in a standard [response envelope](http://theopenphotoproject.org/documentation/api/Envelope).
 
 * _message_, A string describing the result. Don't use this for anything but reading.
-* _code_, _200_ on success
+* _code_, _201_ on success
 * _result_, A [Tag][Tag] object or FALSE on error
 
 <a name="sample"></a>
@@ -70,11 +70,11 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
 
     {
       "message":"",
-      "code":200,
-      "result":
+      "code":201,
+      "result":     	
       {
         "id": "mountain",
-        "count": 1
+        "count": 0
       }
     }
 
