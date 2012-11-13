@@ -132,15 +132,18 @@ class Photo extends BaseModel
     * @param array $photo photo object as returned from the API (not the DB)
     * @return 
     */
-  public function download($photo)
+  public function download($photo, $isAttachment = true)
   {
     $fp = $this->fs->downloadPhoto($photo);
     if(!$fp)
       return false;
 
     header('Content-Type: image/jpeg');
-    header('Content-Description: File Transfer');
-    header('Content-Disposition: attachment; filename="'.$photo['filenameOriginal'].'"');
+    if($isAttachment)
+    {
+      header('Content-Description: File Transfer');
+      header('Content-Disposition: attachment; filename="'.$photo['filenameOriginal'].'"');
+    }
     while($buffer = fgets($fp, 4096))
       echo $buffer;
 
