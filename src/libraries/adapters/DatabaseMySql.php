@@ -480,10 +480,11 @@ class DatabaseMySql implements DatabaseInterface
     // determine where to start
     // this should return the immediately adjacent photo prior to $photo
     // if there are none we set it to the current photo and only get a next
-    $startResp = $this->db->one("SELECT `dateSortByDay` FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND `dateSortByDay` < :dateSortByDay {$buildQuery['groupBy']} ORDER BY `dateSortByDay` DESC", 
+    $startResp = $this->db->all("SELECT `id`, `dateSortByDay` FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND `dateSortByDay` < :dateSortByDay {$buildQuery['groupBy']} ORDER BY `dateSortByDay` DESC, `id` DESC LIMIT 2", 
       array(':dateSortByDay' => $photo['dateSortByDay']));
-    if(!empty($startResp))
-      $startValue = $startResp['dateSortByDay'];
+    $ind = count($startResp)-1;
+    if($ind >= 0)
+      $startValue = $startResp[$ind]['dateSortByDay'];
     else
       $startValue = $photo['dateSortByDay'];
 
@@ -495,22 +496,33 @@ class DatabaseMySql implements DatabaseInterface
         {$buildQuery['from']}
         {$buildQuery['where']} AND `dateSortByDay` >= :startValue
         {$buildQuery['groupBy']}
-        ORDER BY `dateSortByDay` ASC
-        LIMIT 3", 
+        ORDER BY `dateSortByDay` ASC, `id` ASC
+        LIMIT 5", 
       array(':startValue' => $startValue)
     );
 
     $ret = array();
     if(!empty($photosNextPrev))
     {
-      if($photosNextPrev[0]['dateSortByDay'] < $photo['dateSortByDay'])
-        $ret['next'] = $this->normalizePhoto($photosNextPrev[0]);
+      if($photosNextPrev[0]['dateSortByDay'] <= $photo['dateSortByDay'] && $photosNextPrev[0]['id'] !== $photo['id'])
+      {
+        $ret['next'] = array();
+        if($photosNextPrev[1]['dateSortByDay'] <= $photo['dateSortByDay'] && $photosNextPrev[1]['id'] !== $photo['id'])
+          $ret['next'][] = $this->normalizePhoto($photosNextPrev[1]);
+
+        $ret['next'][] = $this->normalizePhoto($photosNextPrev[0]);
+      }
 
       $last = array_pop($photosNextPrev);
-      if($last && $last['dateSortByDay'] > $photo['dateSortByDay'])
-        $ret['previous'] = $this->normalizePhoto($last);
-    }
+      if($last && $last['dateSortByDay'] > $photo['dateSortByDay'] && $last['id'] !== $photo['id'])
+      {
+        $otherLast = array_pop($photosNextPrev);
+        if($otherLast && $last['dateSortByDay'] > $photo['dateSortByDay'] && $otherLast['id'] !== $photo['id'])
+          $ret['previous'][] = $this->normalizePhoto($otherLast);
 
+        $ret['previous'][] = $this->normalizePhoto($last);
+      }
+    }
     return $ret;
   }
 
