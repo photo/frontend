@@ -65,10 +65,10 @@
   <p><strong>Discover more photos</strong></p>
   <ul class="image-pagination">
     <?php if(!empty($photo['previous'])) { ?>
-    <li class="previous unpinned id-<?php $this->utility->safe($photo['previous']['id']); ?> pin-out">
-      <a href="#" class="pin pin-click" data-id="<?php $this->utility->safe($photo['previous']['id']); ?>"></a>
-      <a href="<?php $this->url->photoView($photo['previous']['id'], $options); ?>" title="Go to previous photo" class="thumb">
-        <img src="<?php $this->url->photoUrl($photo['previous'], $this->config->photoSizes->nextPrevious); ?>" alt="Go to previous photo" class="pin-over" />
+    <li class="previous unpinned id-<?php $this->utility->safe($photo['previous'][0]['id']); ?> pin-out">
+      <a href="#" class="pin pin-click" data-id="<?php $this->utility->safe($photo['previous'][0]['id']); ?>"></a>
+      <a href="<?php $this->url->photoView($photo['previous'][0]['id'], $options); ?>" title="Go to previous photo" class="thumb">
+        <img src="<?php $this->url->photoUrl($photo['previous'][0], $this->config->photoSizes->nextPrevious); ?>" alt="Go to previous photo" class="pin-over" />
         <span class="prev"><span></span></span>
         <span class="audible">Go to previous photo</span>
       </a>
@@ -79,10 +79,10 @@
       </li>
     <?php } ?>
     <?php if(!empty($photo['next'])) { ?>
-    <li class="next unpinned id-<?php $this->utility->safe($photo['next']['id']); ?> pin-out">
-      <a href="#" class="pin pin-click" data-id="<?php $this->utility->safe($photo['next']['id']); ?>"></a>
-      <a href="<?php $this->url->photoView($photo['next']['id'], $options); ?>" title="Go to next photo" class="thumb">
-        <img src="<?php $this->url->photoUrl($photo['next'], $this->config->photoSizes->nextPrevious); ?>" alt="Go to next photo" class="pin-over" />
+    <li class="next unpinned id-<?php $this->utility->safe($photo['next'][0]['id']); ?> pin-out">
+      <a href="#" class="pin pin-click" data-id="<?php $this->utility->safe($photo['next'][0]['id']); ?>"></a>
+      <a href="<?php $this->url->photoView($photo['next'][0]['id'], $options); ?>" title="Go to next photo" class="thumb">
+        <img src="<?php $this->url->photoUrl($photo['next'][0], $this->config->photoSizes->nextPrevious); ?>" alt="Go to next photo" class="pin-over" />
         <span class="next"><span></span></span>
         <span class="audible">Go to next photo</span>
       </a>
