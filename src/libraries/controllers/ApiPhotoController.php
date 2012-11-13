@@ -145,8 +145,11 @@ class ApiPhotoController extends ApiBaseController
     if(isset($_GET['returnSizes']))
       $sizes = (array)explode(',', $_GET['returnSizes']);
 
-    foreach($nextPrevious as $key => $photo)
-      $nextPrevious[$key] = $this->pruneSizes($photo, $sizes);
+    foreach($nextPrevious as $topKey => $photos)
+    {
+      foreach($photos as $innerKey => $photo)
+        $nextPrevious[$topKey][$innerKey] = $this->pruneSizes($photo, $sizes);
+    }
 
     $generate = $requery = false;
     if(isset($_GET['generate']) && $_GET['generate'] == 'true')
@@ -161,14 +164,17 @@ class ApiPhotoController extends ApiBaseController
 
       foreach($sizes as $size)
       {
-        foreach($nextPrevious as $key => $photo)
+        foreach($nextPrevious as $topKey => $photos)
         {
-          $options = $this->photo->generateFragmentReverse($size);
-          if($generate && !isset($nextPrevious[$key]["path{$size}"]))
+          foreach($photos as $innerKey => $photo)
           {
-            $hash = $this->photo->generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
-            $this->photo->generate($photo['id'], $hash, $options['width'], $options['width'], $options['options']);
-            $requery = true;
+            $options = $this->photo->generateFragmentReverse($size);
+            if($generate && !isset($nextPrevious[$topKey][$innerKey]["path{$size}"]))
+            {
+              $hash = $this->photo->generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
+              $this->photo->generate($photo['id'], $hash, $options['width'], $options['width'], $options['options']);
+              $requery = true;
+            }
           }
         }
       }
@@ -177,13 +183,19 @@ class ApiPhotoController extends ApiBaseController
       if($requery)
       {
         $nextPrevious = $db->getPhotoNextPrevious($id, $filters);
-        foreach($nextPrevious as $key => $photo)
-          $nextPrevious[$key] = $this->pruneSizes($photo, $sizes);
+        foreach($nextPrevious as $topKey => $photos)
+        {
+          foreach($photos as $innerKey => $photo)
+            $nextPrevious[$topKey][$innerKey] = $this->pruneSizes($photo, $sizes);
+        }
       }
     }
 
-    foreach($nextPrevious as $key => $photo)
-      $nextPrevious[$key] = $this->photo->addApiUrls($photo, $sizes);
+    foreach($nextPrevious as $topKey => $photos)
+    {
+      foreach($photos as $innerKey => $photo)
+        $nextPrevious[$topKey][$innerKey] = $this->photo->addApiUrls($photo, $sizes);
+    }
 
     return $this->success("Next/previous for photo {$id}", $nextPrevious);
   }
