@@ -22,7 +22,7 @@ class ApiPluginController extends ApiBaseController
     $pluginObj = getPlugin();
     $pluginsAll = $pluginObj->getAll();
     $pluginsActive = $pluginObj->getActive();
-    $pluginWhitelist = getConfig()->get('site')->pluginWhitelist;
+    $pluginWhitelist = getConfig()->get('plugins')->pluginWhitelist;
     if($pluginWhitelist)
       $pluginWhitelist = (array)explode(',', $pluginWhitelist);
 
