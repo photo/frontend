@@ -39,6 +39,11 @@ class Plugin extends BaseModel
       if(in_array($plugin, $pluginsFromConf))
         $active[] = $plugin;
     }
+
+    // if the configuration requires some plugins we force them here
+    if(isset($this->config->plugins->requiredPlugins))
+      $active = array_merge($active, (array)explode(',', $this->config->plugins->requiredPlugins));
+
     return $active;
   }
 
@@ -46,6 +51,7 @@ class Plugin extends BaseModel
   {
     if(empty($this->pluginDir) || !is_dir($this->pluginDir))
       return array();
+
     $dir = dir($this->pluginDir);
     $plugins = array();
     while (($name = $dir->read()) !== false)
