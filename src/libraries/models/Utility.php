@@ -116,6 +116,11 @@ class Utility
     return $this->licenses;
   }
 
+  public function getPath()
+  {
+    return $_SERVER['REDIRECT_URL'];
+  }
+
   public function dateLong($ts, $write = true)
   {
     if(empty($ts))
