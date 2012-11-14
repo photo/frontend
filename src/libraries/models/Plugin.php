@@ -44,7 +44,7 @@ class Plugin extends BaseModel
     if(isset($this->config->plugins->requiredPlugins))
       $active = array_merge($active, (array)explode(',', $this->config->plugins->requiredPlugins));
 
-    return $active;
+    return array_unique($active);
   }
 
   public function getAll()
