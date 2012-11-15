@@ -72,8 +72,10 @@
       </div>
     </div>
   </form>
-  <a href="//<?php $this->utility->safe($this->config->site->baseHost); ?>/for/flickr" class="btn">Import from Flickr</a>
-  <a href="//<?php $this->utility->safe($this->config->site->baseHost); ?>/for/facebook" class="btn">Import from Facebook</a>
-  <a href="//<?php $this->utility->safe($this->config->site->baseHost); ?>/for/instagram" class="btn">Import from Instagram</a>
+  <!--
+  <a href="https://<?php $this->utility->safe($this->config->site->baseHost); ?>/for/flickr" class="btn">Import from Flickr</a>
+  <a href="https://<?php $this->utility->safe($this->config->site->baseHost); ?>/for/facebook" class="btn">Import from Facebook</a>
+  <a href="https://<?php $this->utility->safe($this->config->site->baseHost); ?>/for/instagram" class="btn">Import from Instagram</a>
+  -->
 </div>
 
