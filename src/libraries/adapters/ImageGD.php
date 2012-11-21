@@ -70,14 +70,16 @@ class ImageGD extends ImageAbstract
     if($maintainAspectRatio)
     {
 			// only scale if the destination image is smaller in at least one dimension
-			if(!($this->width < $width && $this->height < $height))
+			if ($width < $this->width || $height < $this->height)
 			{
-				// ratio > 1 is horizontal image
-				$ratio = floatval($this->width / $this->height);
-				if($ratio >= 1)
-					$height = intval($width / $ratio);
-				else
-					$width = intval($height * $ratio);
+				// Compare ratios.
+				$srcRatio = floatval($this->width / $this->height);
+				$destRatio = floatval($width / $height);
+
+				if ($srcRatio > $destRatio)
+					$height = intval($width / $srcRatio);
+				else if($srcRatio < $destRatio)
+					$width = intval($height * $srcRatio);
 
 				$dstImage = imagecreatetruecolor($width, $height);
 				imagecopyresampled($dstImage, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
