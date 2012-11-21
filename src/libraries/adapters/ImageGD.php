@@ -27,6 +27,14 @@ class ImageGD extends ImageAbstract
 	private $height;
 
   /**
+    * Destructor.
+    */
+  public function __destruct()
+  {
+    if ($this->image) imagedestroy($this->image);
+  }
+
+  /**
     * Quasi constructor
     */
   public function init() {}
@@ -39,6 +47,11 @@ class ImageGD extends ImageAbstract
     */
   public function load($filename)
   {
+    if ($this->image) {
+      imagedestroy($this->image);
+      $this->image = null;
+    }
+
     $this->type = get_mime_type($filename);
     if(preg_match('/png$/', $this->type))
       $this->image = imagecreatefrompng($filename);
@@ -83,6 +96,7 @@ class ImageGD extends ImageAbstract
 
 				$dstImage = imagecreatetruecolor($width, $height);
 				imagecopyresampled($dstImage, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
+				imagedestroy($this->image);
 				$this->image = $dstImage;
 				$this->width = imagesx($this->image);
 				$this->height = imagesy($this->image);
@@ -127,6 +141,7 @@ class ImageGD extends ImageAbstract
 
 			$dstImage = imagecreatetruecolor($width, $height);
 			imagecopyresampled($dstImage, $this->image, 0, 0, $srcX, $srcY, $width, $height, $srcW, $srcH);
+			imagedestroy($this->image);
 			$this->image = $dstImage;
 			$this->width = imagesx($this->image);
 			$this->height = imagesy($this->image);
@@ -140,7 +155,9 @@ class ImageGD extends ImageAbstract
     */
   public function greyscale()
   {
-    $this->image = imagefilter($this->image, IMG_FILTER_GRAYSCALE);
+    $image = imagefilter($this->image, IMG_FILTER_GRAYSCALE);
+    imagedestroy($this->image);
+    $this->image = $image;
   }
 
   /**
