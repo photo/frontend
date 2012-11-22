@@ -21,8 +21,9 @@ class CredentialTest extends PHPUnit_Framework_TestCase
       ->method('getAllHeaders')
       ->will($this->returnValue($this->headers));
 
-    $this->credential = new Credential(array('utility' => $utility));
+    $this->credential = new Credential(array('utility' => $utility, 'db' => new FauxObject));
     $this->credential->sendHeadersOnError = false;
+    $this->credential->isUnitTest = true;
     $this->credential->reset();
     $this->token = 'abcdefghijklmnopqrstuvwxyz0123456789';
   }
@@ -372,6 +373,23 @@ class CredentialTest extends PHPUnit_Framework_TestCase
     $this->credential->oauthParams = null;
 
     $res = $this->credential->isOAuthRequest();
+    $this->assertFalse($res, 'When no oauth headers are present isOAuthRequest should return FALSE');
+  }
+
+  /**
+   * @depends testValidateOAuthLibraryExists
+   */
+  public function testNonOAuthRequest()
+  {
+    $utility = $this->getMock('Utility', array('getAllHeaders'));
+    $utility->expects($this->any())
+      ->method('getAllHeaders')
+      ->will($this->returnValue(array()));
+
+    $this->credential = new Credential(array('utility' => $utility, 'db' => new FauxObject));
+    $this->credential->sendHeadersOnError = false;
+    $this->credential->isUnitTest = true;
+    $res = $this->credential->checkRequest();
     $this->assertFalse($res, 'When no oauth headers are present isOAuthRequest should return FALSE');
   }
 }

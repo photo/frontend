@@ -47,11 +47,11 @@
           <label for="tags">Permission</label>
           <div class="controls">
             <label class="radio inline">
-              <input type="radio" name="permission" value="1" checked="checked">
+              <input type="radio" name="permission" value="1"<?php if($preferences['permission'] === false || $preferences['permission'] === '1') { ?> checked="checked"<?php } ?>>
               <span>Public</span>
             </label>
             <label class="radio inline">
-              <input type="radio" name="permission" value="0">
+              <input type="radio" name="permission" value="0"<?php if($preferences['permission'] === '0') { ?> checked="checked"<?php } ?>>
               <span>Private</span>
             </label>
           </div>
@@ -64,7 +64,7 @@
           <?php } ?>
         </select>
 
-        <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>" class="crumb">
+        <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
         
         <div class="btn-toolbar">
           <button type="submit" class="btn btn-primary upload-button"><i class="icon-upload-alt icon-large"></i> Start uploading</button>

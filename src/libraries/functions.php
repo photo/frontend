@@ -108,41 +108,59 @@ function getDb(/*$type*/)
   * Accepts a set of params that must include a type and targetType
   *
   * @param string $type Optional type parameter which defines the type of file system.
+  * @param boolean $force Force the return of a new FS object without "caching"
   * @return object A file system object that implements FileSystemInterface
   */
-function getFs(/*$type*/)
+function getFs(/*$type, $useCache*/)
 {
-  static $filesystem, $type;
-  if($filesystem)
-    return $filesystem;
-
-  if(func_num_args() == 1)
-    $type = func_get_arg(0);
-
+  static $filesystems, $type;
   // load configs only once
   if(!$type)
     $type = getConfig()->get('systems')->fileSystem;
 
+  if(func_num_args() >= 1)
+    $type = func_get_arg(0);
+
+  $useCache = true;
+  if(func_num_args() >= 2)
+    $useCache = func_get_arg(1);
+
+
+  if($useCache === true && $filesystems[$type])
+    return $filesystems[$type];
+
   switch($type)
   {
     case 'Local':
-      $filesystem = new FileSystemLocal();
+      $fs = new FileSystemLocal();
       break;
     case 'LocalDropbox':
-      $filesystem = new FileSystemLocalDropbox();
+      $fs = new FileSystemLocalDropbox();
       break;
     case 'S3':
-      $filesystem = new FileSystemS3();
+      $fs = new FileSystemS3();
+      break;
+    case 'S3Box':
+      $fs = new FileSystemS3Box();
+      break;
+    case 'S3CX':
+      $fs = new FileSystemS3CX();
       break;
     case 'S3Dropbox':
-      $filesystem = new FileSystemS3Dropbox();
+      $fs = new FileSystemS3Dropbox();
+      break;
+    case 'DreamObjects':
+      $fs = new FileSystemDreamObjects();
+      break;
+    default:
+      throw new Exception("FileSystem Provider {$type} does not exist", 404);
       break;
   }
 
-  if($filesystem)
-    return $filesystem;
+  if($useCache)
+    $filesystems[$type] = $fs;
 
-  throw new Exception("FileSystem Provider {$type} does not exist", 404);
+  return $fs;
 }
 
 /**

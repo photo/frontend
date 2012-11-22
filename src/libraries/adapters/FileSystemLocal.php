@@ -148,6 +148,15 @@ class FileSystemLocal implements FileSystemInterface
     return $this->host;
   }
 
+  /**
+    * Return any meta data which needs to be stored in the photo record
+    * @return array
+    */
+  public function getMetaData($localFile)
+  {
+    return array();
+  }
+
   public function initialize($isEditMode)
   {
     if(!file_exists($this->root)) {

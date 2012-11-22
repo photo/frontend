@@ -73,6 +73,27 @@ class ApiPhotoController extends ApiBaseController
   }
 
   /**
+    * Delete the source files for a photo specified by the ID.
+    *
+    * @param string $id ID of the photo to be deleted.
+    * @return string Standard JSON envelope
+    */
+  public function deleteSource($id)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $status = $this->photo->deleteSourceFiles($id);
+    if($status)
+    {
+      return $this->success('Photo source files deleted successfully', true);
+    }
+    else
+    {
+      return $this->error('Photo source file deletion failure', false);
+    }
+  }
+
+  /**
     * Get a form to edit a photo specified by the ID.
     *
     * @param string $id ID of the photo to be edited.
@@ -83,7 +104,7 @@ class ApiPhotoController extends ApiBaseController
     getAuthentication()->requireAuthentication();
     $photoResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
     $groupsResp = $this->api->invoke("/{$this->apiVersion}/groups/list.json", EpiRoute::httpGet);
-    $albumsResp = $this->api->invoke("/{$this->apiVersion}/albums/list.json", EpiRoute::httpGet);
+    $albumsResp = $this->api->invoke("/{$this->apiVersion}/albums/list.json", EpiRoute::httpGet, array('_GET' => array('pageSize' => 0)));
     $photo = $photoResp['result'];
     $groups = $groupsResp['result'];
     $albums = $albumsResp['result'];
@@ -124,8 +145,11 @@ class ApiPhotoController extends ApiBaseController
     if(isset($_GET['returnSizes']))
       $sizes = (array)explode(',', $_GET['returnSizes']);
 
-    foreach($nextPrevious as $key => $photo)
-      $nextPrevious[$key] = $this->pruneSizes($photo, $sizes);
+    foreach($nextPrevious as $topKey => $photos)
+    {
+      foreach($photos as $innerKey => $photo)
+        $nextPrevious[$topKey][$innerKey] = $this->pruneSizes($photo, $sizes);
+    }
 
     $generate = $requery = false;
     if(isset($_GET['generate']) && $_GET['generate'] == 'true')
@@ -140,14 +164,17 @@ class ApiPhotoController extends ApiBaseController
 
       foreach($sizes as $size)
       {
-        foreach($nextPrevious as $key => $photo)
+        foreach($nextPrevious as $topKey => $photos)
         {
-          $options = $this->photo->generateFragmentReverse($size);
-          if($generate && !isset($nextPrevious[$key]["path{$size}"]))
+          foreach($photos as $innerKey => $photo)
           {
-            $hash = $this->photo->generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
-            $this->photo->generate($photo['id'], $hash, $options['width'], $options['width'], $options['options']);
-            $requery = true;
+            $options = $this->photo->generateFragmentReverse($size);
+            if($generate && !isset($nextPrevious[$topKey][$innerKey]["path{$size}"]))
+            {
+              $hash = $this->photo->generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
+              $this->photo->generate($photo['id'], $hash, $options['width'], $options['width'], $options['options']);
+              $requery = true;
+            }
           }
         }
       }
@@ -156,13 +183,19 @@ class ApiPhotoController extends ApiBaseController
       if($requery)
       {
         $nextPrevious = $db->getPhotoNextPrevious($id, $filters);
-        foreach($nextPrevious as $key => $photo)
-          $nextPrevious[$key] = $this->pruneSizes($photo, $sizes);
+        foreach($nextPrevious as $topKey => $photos)
+        {
+          foreach($photos as $innerKey => $photo)
+            $nextPrevious[$topKey][$innerKey] = $this->pruneSizes($photo, $sizes);
+        }
       }
     }
 
-    foreach($nextPrevious as $key => $photo)
-      $nextPrevious[$key] = $this->photo->addApiUrls($photo, $sizes);
+    foreach($nextPrevious as $topKey => $photos)
+    {
+      foreach($photos as $innerKey => $photo)
+        $nextPrevious[$topKey][$innerKey] = $this->photo->addApiUrls($photo, $sizes);
+    }
 
     return $this->success("Next/previous for photo {$id}", $nextPrevious);
   }
@@ -213,7 +246,7 @@ class ApiPhotoController extends ApiBaseController
     if(isset($_GET['generate']) && $_GET['generate'] == 'true')
       $generate = true;
 
-    if($photos[0]['totalRows'] > 0)
+    if($photos[0]['currentRows'] > 0)
     {
       foreach($photos as $key => $photo)
       {
@@ -252,10 +285,68 @@ class ApiPhotoController extends ApiBaseController
         $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
     }
 
-    $photos[0]['pageSize'] = intval($pageSize);
     $photos[0]['currentPage'] = intval($page);
-    $photos[0]['totalPages'] = ceil($photos[0]['totalRows'] / $pageSize);
+    $photos[0]['pageSize'] = intval($pageSize);
+    $photos[0]['totalPages'] = !empty($pageSize) ? ceil($photos[0]['totalRows'] / $pageSize) : 0;
     return $this->success("Successfully retrieved user's photos", $photos);
+  }
+
+  /**
+    * Replace the binary image file and the associated hash
+    * This method does not take any additional parameters
+    *   call the update API to update meta data
+    *
+    * @param string $id ID of the photo to be updated.
+    * @return string Standard JSON envelope
+    */
+  public function replace($id)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+
+    $attributes = $_REQUEST;
+
+    // this determines where to get the photo from and populates $localFile and $name
+    extract($this->parsePhotoFromRequest());
+
+    $hash = sha1_file($localFile);
+    $allowDuplicate = $this->config->site->allowDuplicate;
+    if(isset($attributes['allowDuplicate']))
+      $allowDuplicate = $attributes['allowDuplicate'];
+    if($allowDuplicate == '0')
+    {
+      $hashResp = $this->api->invoke("/{$this->apiVersion}/photos/list.json", EpiRoute::httpGet, array('_GET' => array('hash' => $hash)));
+      if($hashResp['result'][0]['totalRows'] > 0)
+        return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates pass in allowDuplicate=1', false);
+    }
+
+    // auto rotation is enabled by default but requires exiftran
+    if(!isset($attributes['allowAutoRotate']) || $attributes['allowAutoRotate'] != '0')
+    {
+      $exiftran = $this->config->modules->exiftran;
+      if(is_executable($exiftran))
+        exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
+    }
+
+    // TODO put this in a whitelist function (see upload())
+    if(isset($attributes['__route__']))
+      unset($attributes['__route__']);
+    if(isset($attributes['photo']))
+      unset($attributes['photo']);
+    if(isset($attributes['crumb']))
+      unset($attributes['crumb']);
+    if(isset($attributes['returnSizes']))
+    {
+      $returnSizes = $attributes['returnSizes'];
+      unset($attributes['returnSizes']);
+    }
+
+    $status = $this->photo->replace($id, $localFile, $name, $attributes);
+    if(!$status)
+      return $this->error(sprintf('Could not complete the replacement of photo %s', $id), false);
+
+    $photoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+    return $this->success(sprintf('Photo %s was successfully replaced.', $id), $photoResp['result']);
   }
 
   /**
@@ -270,10 +361,17 @@ class ApiPhotoController extends ApiBaseController
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
     $res = $this->photo->transform($id, $_POST);
-    if(!$res)
-      return $this->error('Could not transform the photo', false);
 
-    return $this->success('Successfully transformed the photo', true);
+    if($res) 
+    {
+      $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
+      $photo = $apiResp['result'];
+      return $this->success('Successfully transformed the photo', $photo);
+    }
+    else
+    {
+      return $this->error('Could not transform the photo', false);
+    }
   }
 
 
@@ -305,6 +403,7 @@ class ApiPhotoController extends ApiBaseController
       return $this->error('Invalid mime type', false);;
     }
 
+    // TODO put this in a whitelist function (see replace())
     if(isset($attributes['__route__']))
       unset($attributes['__route__']);
     if(isset($attributes['photo']))
@@ -391,6 +490,8 @@ class ApiPhotoController extends ApiBaseController
         EpiRoute::httpPost, 
         array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
       );
+      $this->user->setAttribute('stickyPermission', $permission);
+      $this->user->setAttribute('stickyLicense', $photo['license']);
       return $this->created("Photo {$photoId} uploaded successfully", $photo);
     }
 
@@ -411,11 +512,13 @@ class ApiPhotoController extends ApiBaseController
       foreach($params['success'] as $p)
         $params['successIds'][] = $p['id'];
     }
-    if(isset($params['duplicates']) && !empty($params['duplicates']))
+    if(isset($params['duplicate']) && !empty($params['duplicate']))
     {
       foreach($params['duplicate'] as $p)
         $params['duplicateIds'][] = $params['successIds'][] = $p['id'];
     }
+    if(!isset($params['failure']))
+      $params['failure'] = array();
 
     $params['successIds'] = implode(',', $params['successIds']);
     $params['duplicateIds'] = implode(',', $params['duplicateIds']);
@@ -445,7 +548,7 @@ class ApiPhotoController extends ApiBaseController
     {
       $ids = implode(',', $params['ids']);
       $params['url'] = $this->url->photosView("ids-{$ids}", false);
-      $resourceMapResp = $this->api->invoke('/s/create.json', EpiRoute::httpPost, array('_POST' => array('uri' => $params['url'], 'method' => 'GET')));
+      $resourceMapResp = $this->api->invoke('/s/create.json', EpiRoute::httpPost, array('_POST' => array('uri' => $params['url'], 'method' => 'GET', 'crumb' => $this->session->get('crumb'))));
       if($resourceMapResp['code'] === 201)
         $params['url'] = $this->url->resourceMap($resourceMapResp['result']['id'], false);
     }
@@ -453,50 +556,6 @@ class ApiPhotoController extends ApiBaseController
     $template = sprintf('%s/uploadConfirm.php', $this->config->paths->templates);
     $body = $this->template->get($template, $params);
     return $this->success('Photos uploaded successfully', $body);
-  }
-
-  /**
-    * Replace the binary image file and the associated hash
-    * This method does not take any additional parameters
-    *   call the update API to update meta data
-    *
-    * @param string $id ID of the photo to be updated.
-    * @return string Standard JSON envelope
-    */
-  public function replace($id)
-  {
-    getAuthentication()->requireAuthentication();
-    getAuthentication()->requireCrumb();
-
-    $attributes = $_GET;
-    // this determines where to get the photo from and populates $localFile and $name
-    extract($this->parsePhotoFromRequest());
-
-    $hash = sha1_file($localFile);
-    $allowDuplicate = $this->config->site->allowDuplicate;
-    if(isset($attributes['allowDuplicate']))
-      $allowDuplicate = $attributes['allowDuplicate'];
-    if($allowDuplicate == '0')
-    {
-      $hashResp = $this->api->invoke("/{$this->apiVersion}/photos/list.json", EpiRoute::httpGet, array('_GET' => array('hash' => $hash)));
-      if($hashResp['result'][0]['totalRows'] > 0)
-        return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates pass in allowDuplicate=1', false);
-    }
-
-    // auto rotation is enabled by default but requires exiftran
-    if(!isset($attributes['allowAutoRotate']) || $attributes['allowAutoRotate'] != '0')
-    {
-      $exiftran = $this->config->modules->exiftran;
-      if(is_executable($exiftran))
-        exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
-    }
-
-    $status = $this->photo->replace($id, $localFile, $name);
-    if(!$status)
-      return $this->error('Could not complete the replacement of the photo', false);
-
-    $photoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
-    return $this->success('yes', $photoResp['result']);
   }
 
   /**
@@ -758,7 +817,7 @@ class ApiPhotoController extends ApiBaseController
     }
 
     // This section enables in path parameters which are normally GET
-    $pageSize = getConfig()->get('pagination')->pageSize;
+    $pageSize = $this->config->pagination->pageSize;
     $filters = array('sortBy' => 'dateTaken,desc');
     if($filterOpts !== null)
     {

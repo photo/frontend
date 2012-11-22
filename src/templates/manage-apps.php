@@ -5,7 +5,7 @@
       You've granted these applications access to your OpenPhoto account. Clicking <strong>revoke</strong> cannot be undone and you may have to reapprove the application.
     </p>
     <p>
-      <a href="/v1/oauth/authorize?oauth_callback=<?php $this->utility->safe(sprintf('%s://%s%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], '/manage/apps/callback')); ?>&name=<?php $this->utility->safe(urlencode('Self Generated App')); ?>" class="btn btn-primary">Create a new app</a>
+      <a href="/v1/oauth/authorize?oauth_callback=<?php $this->utility->safe(sprintf('%s://%s%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], '/manage/apps/callback')); ?>&name=<?php $this->utility->safe(urlencode('Self Generated App')); ?>&tokenType=access" class="btn btn-primary">Create a new app</a>
     </p>
   </div>
   <table class="table well">
@@ -20,10 +20,13 @@
         <td>
           <?php $this->utility->safe($credential['name']); ?>
           <?php if(!empty($credential['dateCreated'])) { ?>
-            <em class="credential-date"> created on <?php $this->utility->dateLong($credential['dateCreated']); ?></em>
+            <em class="credential-date">(<?php $this->utility->safe(ucwords($credential['type'])); ?> token created on <?php $this->utility->dateLong($credential['dateCreated']); ?>)</em>
           <?php } ?>
         </td>
-        <td><a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credential-delete-click"><i class="icon-remove icon-large"></i> Revoke</a></td>
+        <td>
+          <a href="/v1/oauth/<?php $this->utility->safe($credential['id']); ?>/view" class="credential-action-button credential-view-click" data-controls-modal="modal"><i class="icon-eye-open icon-large"></i> View</a>
+          <a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credential-action-button credential-delete-click"><i class="icon-remove icon-large"></i> Revoke</a>
+        </td>
       </tr>
     <?php } ?>
   </table>
@@ -46,7 +49,7 @@
         <td><?php $this->utility->safe($plugin['name']); ?></td>
         <td>
           <div class="<?php if($plugin['status'] === 'inactive') { ?>hide <?php } ?>active"><i class="icon-check icon-large"></i> Active (<a href="/plugin/<?php $this->utility->safe($plugin['name']); ?>/view" class="plugin-view-click">Configure</a> or <a href="/plugin/<?php $this->utility->safe($plugin['name']); ?>/deactivate" class="plugin-status-toggle-click">Deactivate</a>)</div>
-          <div class="<?php if($plugin['status'] === 'active') { ?>hide <?php } ?>inactive"><i class="icon-check-empty icon-large"></i> Inactive (<a href="/plugin/<?php $this->utility->safe($plugin['name']); ?>/activate" class="plugin-status-toggle-click">Activiate</a>)</div>
+          <div class="<?php if($plugin['status'] === 'active') { ?>hide <?php } ?>inactive"><i class="icon-check-empty icon-large"></i> Inactive (<a href="/plugin/<?php $this->utility->safe($plugin['name']); ?>/activate" class="plugin-status-toggle-click">Activate</a>)</div>
         </td>
       </tr>
     <?php } ?>

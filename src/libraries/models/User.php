@@ -82,11 +82,6 @@ class User extends BaseModel
     $nextIntId = base_convert($user[$key], 31, 10) + 1;
     $nextId = base_convert($nextIntId, 10, 31);
 
-    /*$nextId = $this->getAttribute($type);
-    if($nextId === false)
-      $nextId = '';
-    $nextIntId = base_convert($nextId, 31, 10) + 1;
-    $nextId = base_convert($nextIntId, 10, 31);*/
     $this->update(array($key => $nextId));
     return $nextId;
   }
@@ -99,6 +94,7 @@ class User extends BaseModel
     */
   public function getAttribute($name)
   {
+    $name = sprintf('attr%s', $name);
     $user = $this->getUserRecord();
     if($user === false)
       return false;
@@ -116,10 +112,10 @@ class User extends BaseModel
     *
     * @return mixed  FALSE on error, array on success
     */
-  public function getUserRecord()
+  public function getUserRecord($cache = true)
   {
     // we cache the user entry per request
-    if($this->user)
+    if($cache && $this->user)
       return $this->user;
 
     $res = $this->db->getUser();
@@ -218,6 +214,17 @@ class User extends BaseModel
   }
 
   /**
+    * Set an attribute.
+    *
+    * @return boolean
+    */
+  public function setAttribute($name, $value)
+  {
+    $name = sprintf('attr%s', $name);
+    return $this->update(array($name => $value));
+  }
+
+  /**
     * Set the session email.
     *
     * @return void
@@ -251,6 +258,9 @@ class User extends BaseModel
       else
         unset($params['password']);
     }
+
+    // update cache
+    $this->getUserRecord(false);
     // TODO check $params against a whitelist
     return $this->db->postUser($params);
   }

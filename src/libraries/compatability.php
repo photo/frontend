@@ -30,6 +30,9 @@ if(!function_exists('parse_ini_string')){
 // finfo_open is >= 5.3
 function get_mime_type($filename)
 {
+  if(!file_exists($filename))
+    return false;
+
   $type = null;
   if(function_exists("finfo_open"))
   {
@@ -44,8 +47,8 @@ function get_mime_type($filename)
   else if(function_exists('exec'))
   {
       $type = exec('/usr/bin/file --mime-type -b ' .escapeshellarg($filename));
-      if(!empty($this->type))
-          $type = null;
+      if(empty($type))
+        $type = null;
   }
 
   return $type;

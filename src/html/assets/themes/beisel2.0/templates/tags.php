@@ -13,9 +13,7 @@
   <?php } else { ?>
     <div class="row hero-unit tag-list">
       <?php foreach($tags as $tag) { ?>
-        <span class="label label-tag tag-<?php $this->utility->safe($tag['weight']); ?>">
-          <a href="<?php $this->url->photosView(sprintf('tags-%s', $this->utility->safe($tag['id'], false))); ?>"><?php $this->utility->safe($tag['id']); ?></a>
-        </span>
+        <a class="label label-tag tag-<?php $this->utility->safe($tag['weight']); ?>" href="<?php $this->url->photosView(sprintf('tags-%s', $this->utility->safe($tag['id'], false))); ?>"><?php $this->utility->safe($tag['id']); ?></a>
       <?php } ?>
     </div>
   <?php } ?>

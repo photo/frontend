@@ -16,6 +16,9 @@ OPU = (function() {
 
   return {
       init: function() {
+        if(typeof plupload === "undefined")
+          return;
+
         var uploaderEl = $("#uploader");
         if(uploaderEl.length == 0)
           return;
@@ -33,6 +36,7 @@ OPU = (function() {
             file_data_name : 'photo',
             //chunk_size : '1mb',
             unique_names : true,
+            keep_droptext : true,
      
             // Specify what files to browse for
             filters : [
@@ -50,6 +54,10 @@ OPU = (function() {
                 $(".upload-progress .total").html(uploader.files.length);
                 $(".upload-progress .completed").html(uploader.total.uploaded+1);
                 $(".upload-progress").slideDown('fast');
+              },
+              Error: function(uploader, error) {
+                opTheme.message.error('Uh oh, we encountered a problem. ('+error.message+')');
+                return false;
               },
               FilesAdded: function(uploader, files) {
                 var queue = uploader.files.concat(files);
@@ -84,12 +92,7 @@ OPU = (function() {
                   }
                 }
 
-                if(failed === 0) {
-                  OP.Util.fire('upload:complete-success', photosUploaded);
-                } else {
-                  OP.Util.fire('upload:complete-error', photosUploaded);
-                }
-
+                OP.Util.fire('upload:complete-success', photosUploaded);
               },
               UploadFile: function() {
                 var uploader = $("#uploader").pluploadQueue(), 
@@ -98,6 +101,7 @@ OPU = (function() {
                     permission = $("input[name='permission']:checked", form).val(),
                     albums = $("select[name='albums']", form).val(),
                     tags = $("input[name='tags']", form).val(), 
+                    crumb = $("input[name='crumb']", form).val(), 
                     // http://stackoverflow.com/a/6116631
                     // groups = $("input[name='groups[]']:checked", form).map(function () {return this.value;}).get().join(",");
                     groups = $("select[name='groups']", form).val();
@@ -117,6 +121,7 @@ OPU = (function() {
                 uploader.settings.multipart_params.permission = permission;
                 uploader.settings.multipart_params.albums = albums;
                 uploader.settings.multipart_params.groups = groups;
+                uploader.settings.multipart_params.crumb = crumb;
               }
             }
         });

@@ -67,12 +67,17 @@ class Photo extends BaseModel
       }
     }
 
-    $photo['pathBase'] = $this->generateUrlBase($photo);
+    $photo['pathBase'] = $this->generateUrlBaseOrOriginal($photo, 'base');
     // the original needs to be conditionally included
     if($this->config->site->allowOriginalDownload == 1 || $this->user->isOwner())
-      $photo['pathOriginal'] = $this->generateUrlOriginal($photo);
+    {
+      $photo['pathOriginal'] = $this->generateUrlBaseOrOriginal($photo, 'original');
+      $photo['pathDownload'] = $this->generateUrlDownload($photo);
+    }
     elseif(isset($photo['pathOriginal']))
+    {
       unset($photo['pathOriginal']);
+    }
 
     $photo['url'] = $this->getPhotoViewUrl($photo);
     return $photo;
@@ -99,6 +104,27 @@ class Photo extends BaseModel
   }
 
   /**
+    * Delete the source files of a photo from the remote filesystem.
+    * This deletes the original photo and all versions.
+    * Database entries are left in tact.
+    * Typically used for migration.
+    *
+    * @param string $id ID of the photo
+    * @return boolean
+    */
+  public function deleteSourceFiles($id)
+  {
+    // TODO, validation
+    $photo = $this->db->getPhoto($id);
+    if(!$photo)
+      return false;
+
+    $fileStatus = $this->fs->deletePhoto($photo);
+    $dbStatus = $this->db->deletePhotoVersions($photo);
+    return $fileStatus && $dbStatus;
+  }
+
+  /**
     * Output the contents of the original photo
     * Gets a file pointer from the adapter
     *   which can be a local or remote file
@@ -106,18 +132,23 @@ class Photo extends BaseModel
     * @param array $photo photo object as returned from the API (not the DB)
     * @return 
     */
-  public function download($photo)
+  public function download($photo, $isAttachment = true)
   {
     $fp = $this->fs->downloadPhoto($photo);
     if(!$fp)
       return false;
 
-    header('Content-Description: File Transfer');
-    header('Content-Disposition: attachment; filename='.$photo['filenameOriginal']);
+    header('Content-Type: image/jpeg');
+    if($isAttachment)
+    {
+      header('Content-Description: File Transfer');
+      header('Content-Disposition: attachment; filename="'.$photo['filenameOriginal'].'"');
+    }
     while($buffer = fgets($fp, 4096))
       echo $buffer;
 
     fclose($fp);
+    return true;
   }
 
   /**
@@ -276,8 +307,10 @@ class Photo extends BaseModel
     */
   public function generatePaths($photoName)
   {
-    $baseName = dechex(rand(1000000,9999999)) . '-' . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
-    $originalName = uniqid() . '-' . preg_replace('/[^a-zA-Z0-9.-_]/', '-', $photoName);
+    $ext = substr($photoName, (strrpos($photoName, '.')+1));
+    $rootName = preg_replace('/[^a-zA-Z0-9.-_]/', '-', substr($photoName, 0, (strrpos($photoName, '.'))));
+    $baseName = sprintf('%s-%s.%s', $rootName, dechex(rand(1000000,9999999)), $ext);
+    $originalName = sprintf('%s-%s.%s', $rootName, uniqid(), $ext);
     return array(
       'pathOriginal' => sprintf('/original/%s/%s', date('Ym'), $originalName),
       'pathBase' => sprintf('/base/%s/%s', date('Ym'), $baseName)
@@ -291,9 +324,13 @@ class Photo extends BaseModel
     * @param string $protocol Protocol for the URL
     * @return mixed string URL on success, FALSE on failure
     */
-  public function generateUrlBase($photo, $protocol = 'http')
+  public function generateUrlBaseOrOriginal($photo, $type = 'base', $protocol = 'http')
   {
-    return "{$protocol}://{$photo['host']}{$photo['pathBase']}";
+    if($type === 'base')
+      return "{$protocol}://{$photo['host']}{$photo['pathBase']}";
+    elseif($type === 'original')
+      return "{$protocol}://{$photo['host']}{$photo['pathOriginal']}";
+
   }
 
   /**
@@ -305,9 +342,9 @@ class Photo extends BaseModel
     * @param string $protocol Protocol for the URL
     * @return mixed string URL on success, FALSE on failure
     */
-  public function generateUrlOriginal($photo, $protocol = 'http')
+  public function generateUrlDownload($photo, $protocol = 'http')
   {
-    return "{$protocol}://{$photo['host']}{$photo['pathOriginal']}";
+    return sprintf('%s://%s/photo/%s/download', $protocol, $this->utility->getHost(), $photo['id']);
   }
 
   /**
@@ -527,18 +564,27 @@ class Photo extends BaseModel
     return $id;
   }
 
-  public function replace($id, $localFile, $name)
+  public function replace($id, $localFile, $name, $attributes = array())
   {
-    $attributes = array();
+    // check if file type is valid
+    if(!$this->utility->isValidMimeType($localFile))
+    {
+      $this->logger->warn(sprintf('Invalid mime type for %s', $localFile));
+      return false;
+    }
+
     $resp = $this->createAndStoreBaseAndOriginal($name, $localFile);
-    $paths = $resp['paths'];
+    $attributes = array_merge($this->whitelistParams($attributes), $resp['paths']);
     if($resp['status'])
     {
       $this->logger->info("Photo ({$id}) successfully stored on the file system (replacement)");
+      $fsExtras = $this->fs->getMetaData($localFile);
+
+      if(!empty($fsExtras))
+        $attributes['extraFileSystem'] = $fsExtras;
       $exif = $this->readExif($localFile);
       $iptc = $this->readIptc($localFile);
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
-      $attributes = $paths;
       foreach($iptc as $iptckey => $iptcval)
       {
         if(empty($iptcval))
@@ -557,6 +603,8 @@ class Photo extends BaseModel
       }
       $attributes['hash'] = sha1_file($localFile);
       $attributes['size'] = intval(filesize($localFile)/1024);
+      $attributes['host'] = $this->fs->getHost();
+      $attributes['filenameOriginal'] = $name;
 
       $exifParams = array('width' => 'width', 'height' => 'height', 'exifCameraMake' => 'exifCameraMake', 'exifCameraModel' => 'exifCameraModel', 
         'FNumber' => 'exifFNumber', 'exposureTime' => 'exifExposureTime', 'ISO' => 'exifISOSpeed', 'focalLength' => 'exifFocalLength', 'latitude' => 'latitude', 'longitude' => 'longitude');
@@ -569,17 +617,29 @@ class Photo extends BaseModel
       $exiftran = $this->config->modules->exiftran;
       if(is_executable($exiftran))
         exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
-      
+
       $photo = $this->db->getPhoto($id);
 
-      // purge photoVersions
-      $delVersionsResp = $this->db->deletePhotoVersions($photo);
-      if(!$delVersionsResp)
-        return false;
-      // delete all photos
-      $delFilesResp = $this->fs->deletePhoto($photo);
-      if(!$delFilesResp)
-        return false;
+      // normally we delete the existing photos
+      // in some cases we may have already done this (migration)
+      if(!isset($_POST['skipDeletes']) || empty($_POST['skipDeletes']))
+      {
+        $this->logger->info(sprintf('Purging photos in replace API for photo %s', $id));
+        // purge photoVersions
+        $delVersionsResp = $this->db->deletePhotoVersions($photo);
+        if(!$delVersionsResp)
+        {
+          $this->logger->info('Could not purge photo versions from the database');
+          return false;
+        }
+        // delete all photos from the original photo object (includes paths to existing photos)
+        $delFilesResp = $this->fs->deletePhoto($photo);
+        if(!$delFilesResp)
+        {
+          $this->logger->info('Could not purge photo versions from the file system');
+          return false;
+        }
+      }
       // update photo paths / hash
       $updPathsResp = $this->db->postPhoto($id, $attributes);
 
@@ -626,6 +686,9 @@ class Photo extends BaseModel
     if($resp['status'])
     {
       $this->logger->info("Photo ({$id}) successfully stored on the file system");
+      $fsExtras = $this->fs->getMetaData($localFile);
+      if(!empty($fsExtras))
+        $attributes['extraFileSystem'] = $fsExtras;
       $exif = $this->readExif($localFile);
       $iptc = $this->readIptc($localFile);
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
@@ -892,8 +955,8 @@ class Photo extends BaseModel
     $returnAttrs = array();
     $matches = array('id' => 1,'host' => 1,'appId' => 1,'title' => 1,'description' => 1,'key' => 1,'hash' => 1,'tags' => 1,'size' => 1,'photo'=>1,'height' => 1,
       'rotation'=>1,'altitude' => 1, 'latitude' => 1,'longitude' => 1,'views' => 1,'status' => 1,'permission' => 1,'albums'=>1,'groups' => 1,'license' => 1,
-      'dateTaken' => 1, 'dateUploaded' => 1, 'filenameOriginal' => 1 /* TODO remove in 1.5.0, only used for upgrade */);
-    $patterns = array('exif.*','date.*','path.*','extra.*');
+      'pathBase' => 1, 'pathOriginal' => 1, 'dateTaken' => 1, 'dateUploaded' => 1, 'filenameOriginal' => 1 /* TODO remove in 1.5.0, only used for upgrade */);
+    $patterns = array('exif.*','date.*','extra.*');
     foreach($attributes as $key => $val)
     {
       if(isset($matches[$key]))

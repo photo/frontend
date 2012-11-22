@@ -126,7 +126,7 @@ class DatabaseMySql implements DatabaseInterface
     if(!isset($photo['id']))
       return false;
 
-    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `owner`=:owner AND `id`=:id", array(':id' => $photo['id'], ':owner' => $this->owner));
     return $res !== false;
   }
 
@@ -389,13 +389,16 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getGroup($id = null)
   {
-    $res = $this->db->all("SELECT grp.*, memb.* FROM `{$this->mySqlTablePrefix}group` AS grp INNER JOIN `{$this->mySqlTablePrefix}groupMember` AS memb ON `grp`.`owner`=`memb`.`owner` WHERE `grp`.`id`=:id AND `grp`.`owner`=:owner", array(':id' => $id ,':owner' => $this->owner));
+    $res = $this->db->all("SELECT grp.*, memb.email FROM `{$this->mySqlTablePrefix}group` AS grp LEFT JOIN `{$this->mySqlTablePrefix}groupMember` AS memb ON `grp`.`owner`=`memb`.`owner` WHERE `grp`.`id`=:id AND `grp`.`owner`=:owner", array(':id' => $id ,':owner' => $this->owner));
     if($res === false || empty($res))
       return false;
 
     $group = array('id' => $res[0]['id'], 'owner' => $res[0]['owner'], 'name' => $res[0]['name'], 'permission' => $res[0]['permission'], 'members' => array());
     foreach($res as $r)
-      $group['members'][] = $r['email'];
+    {
+      if(!empty($r['email']))
+        $group['members'][] = $r['email'];
+    }
 
     return $this->normalizeGroup($group);
   }
@@ -432,7 +435,9 @@ class DatabaseMySql implements DatabaseInterface
         {
           if(!isset($tempGroups[$group['id']]))
             $tempGroups[$group['id']] = array('id' => $group['id'], 'name' => $group['name'], 'owner' => $group['owner'], 'permission' => $group['permission'], 'members' => array());
-          $tempGroups[$group['id']]['members'][] = $group['email'];
+
+          if(!empty($group['email']))
+            $tempGroups[$group['id']]['members'][] = $group['email'];
         }
         foreach($tempGroups as $g)
           $groups[] = $this->normalizeGroup($g);
@@ -475,10 +480,11 @@ class DatabaseMySql implements DatabaseInterface
     // determine where to start
     // this should return the immediately adjacent photo prior to $photo
     // if there are none we set it to the current photo and only get a next
-    $startResp = $this->db->one("SELECT `dateSortByDay` FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND `dateSortByDay` < :dateSortByDay {$buildQuery['groupBy']} ORDER BY `dateSortByDay` DESC", 
+    $startResp = $this->db->all("SELECT `id`, `dateSortByDay` FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND `dateSortByDay` < :dateSortByDay {$buildQuery['groupBy']} ORDER BY `dateSortByDay` DESC, `id` DESC LIMIT 2", 
       array(':dateSortByDay' => $photo['dateSortByDay']));
-    if(!empty($startResp))
-      $startValue = $startResp['dateSortByDay'];
+    $ind = count($startResp)-1;
+    if($ind >= 0)
+      $startValue = $startResp[$ind]['dateSortByDay'];
     else
       $startValue = $photo['dateSortByDay'];
 
@@ -490,22 +496,33 @@ class DatabaseMySql implements DatabaseInterface
         {$buildQuery['from']}
         {$buildQuery['where']} AND `dateSortByDay` >= :startValue
         {$buildQuery['groupBy']}
-        ORDER BY `dateSortByDay` ASC
-        LIMIT 3", 
+        ORDER BY `dateSortByDay` ASC, `id` ASC
+        LIMIT 5", 
       array(':startValue' => $startValue)
     );
 
     $ret = array();
     if(!empty($photosNextPrev))
     {
-      if($photosNextPrev[0]['dateSortByDay'] < $photo['dateSortByDay'])
-        $ret['next'] = $this->normalizePhoto($photosNextPrev[0]);
+      if($photosNextPrev[0]['dateSortByDay'] <= $photo['dateSortByDay'] && $photosNextPrev[0]['id'] !== $photo['id'])
+      {
+        $ret['next'] = array();
+        if($photosNextPrev[1]['dateSortByDay'] <= $photo['dateSortByDay'] && $photosNextPrev[1]['id'] !== $photo['id'])
+          $ret['next'][] = $this->normalizePhoto($photosNextPrev[1]);
+
+        $ret['next'][] = $this->normalizePhoto($photosNextPrev[0]);
+      }
 
       $last = array_pop($photosNextPrev);
-      if($last && $last['dateSortByDay'] > $photo['dateSortByDay'])
-        $ret['previous'] = $this->normalizePhoto($last);
-    }
+      if($last && $last['dateSortByDay'] > $photo['dateSortByDay'] && $last['id'] !== $photo['id'])
+      {
+        $otherLast = array_pop($photosNextPrev);
+        if($otherLast && $last['dateSortByDay'] > $photo['dateSortByDay'] && $otherLast['id'] !== $photo['id'])
+          $ret['previous'][] = $this->normalizePhoto($otherLast);
 
+        $ret['previous'][] = $this->normalizePhoto($last);
+      }
+    }
     return $ret;
   }
 
@@ -550,6 +567,7 @@ class DatabaseMySql implements DatabaseInterface
     for($i = 0; $i < count($photos); $i++)
       $photos[$i] = $this->normalizePhoto($photos[$i]);
 
+    $photos[0]['currentRows'] = count($photos);
     // TODO evaluate SQL_CALC_FOUND_ROWS (indexes with the query builder might be hard to optimize)
     // http://www.mysqlperformanceblog.com/2007/08/28/to-sql_calc_found_rows-or-not-to-sql_calc_found_rows/
     $result = $this->db->one("SELECT COUNT(*) {$query['from']} {$query['where']} {$query['groupBy']}");
@@ -584,11 +602,15 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getTag($tag)
   {
-    $tag = $this->db->one('SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND `owner`=:owner', array(':id' => $tag));
-    // TODO this should be in the normalize method
-    if($tag['params'])
-      $tag = array_merge($tag, json_decode($tag['params'], 1));
-    unset($tag['params']);
+    $tag = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND `owner`=:owner", array(':id' => $tag, ':owner' => $this->owner));
+
+    if(!$tag )
+      return false;
+
+    // TODO this should be in the normalize method #943
+    if($tag['extra'])
+      $tag = array_merge($tag, json_decode($tag['extra'], 1));
+    unset($tag['extra']);
     return $tag;
   }
 
@@ -776,6 +798,17 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
     return true;
+  }
+
+  /**
+    * Delete all activity for a user
+    *
+    * @return boolean
+    */
+  public function postActivitiesPurge()
+  {
+    $result = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE owner=:owner", array(':owner' => $this->owner));
+    return ($result !== false);
   }
 
   /**
@@ -1564,7 +1597,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   private function getPhotoVersions($id)
   {
-    $versions = $this->db->all("SELECT `key`,path FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `id`=:id AND owner=:owner",
+    $versions = $this->db->all("SELECT `key`,path FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `owner`=:owner AND `id`=:id ",
                  array(':id' => $id, ':owner' => $this->owner));
     if(empty($versions))
       return false;
@@ -1658,8 +1691,8 @@ class DatabaseMySql implements DatabaseInterface
     else
       $photo['tags'] = array();
 
-    $exif = (array)json_decode($photo['exif']);
-    $extra = (array)json_decode($photo['extra']);
+    $exif = (array)json_decode($photo['exif'], 1);
+    $extra = (array)json_decode($photo['extra'], 1);
     $photo = array_merge($photo, $exif, $extra);
     unset($photo['exif'], $photo['extra']);
 
@@ -1808,8 +1841,9 @@ class DatabaseMySql implements DatabaseInterface
         case 'gpsAltitude':
           $exif[$key] = $value;
           break;
-        case 'extra':
         case 'extraDropboxSource':
+        case 'extraFileSystem':
+        case 'extraDatabase':
           $extra[$key] = $value;
           break;
         default:
@@ -1898,11 +1932,11 @@ class DatabaseMySql implements DatabaseInterface
     {
       foreach($params as $key => $val)
       {
-        if($key !== 'password')
+        $prefix = substr($key, 0, 4);
+        if($val !== null && ($prefix === 'last' ||  $prefix === 'attr'))
           $extra[$key] = $val;
       }
       $ret['extra'] = json_encode($extra);
-      $ret['password'] = '';
       if(isset($params['password']))
         $ret['password'] = $params['password'];
     }

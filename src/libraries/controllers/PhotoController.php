@@ -86,6 +86,7 @@ class PhotoController extends BaseController
     */
   public function download($id)
   {
+    $isAttachment = !isset($_GET['stream']) && $_GET['stream'] == '1';
     $userObj = new User;
     // the API enforces permissions, we just have to check for download privileges
     if($userObj->isOwner() || $this->config->site->allowOriginalDownload == 1)
@@ -96,7 +97,7 @@ class PhotoController extends BaseController
       {
         // Photo::download returns false on failure
         // If no failure assume success and die()
-        if($this->photo->download($photo))
+        if($this->photo->download($photo, $isAttachment))
           die();
       }
     }
@@ -194,6 +195,7 @@ class PhotoController extends BaseController
     */
   public function upload()
   {
+    getAuthentication()->requireAuthentication();
     $userObj = new User;
     if(!$userObj->isOwner())
     {
@@ -205,7 +207,8 @@ class PhotoController extends BaseController
     $template = sprintf('%s/upload.php', $this->config->paths->templates);
     $groupsResp = $this->api->invoke('/groups/list.json');
     $albumsResp = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => '0')));
-    $body = $this->template->get($template, array('crumb' => $crumb, 'groups' => $groupsResp['result'], 'albums' => $albumsResp['result'], 'licenses' => $this->utility->getLicenses()));
+    $preferences = array('permission' => $userObj->getAttribute('stickyPermission'));
+    $body = $this->template->get($template, array('crumb' => $crumb, 'groups' => $groupsResp['result'], 'albums' => $albumsResp['result'], 'licenses' => $this->utility->getLicenses($userObj->getAttribute('stickyLicense')), 'preferences' => $preferences));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'upload'));
   }
 
@@ -219,6 +222,7 @@ class PhotoController extends BaseController
   public function uploadPost()
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
     $upload = $this->api->invoke('/photo/upload.json', EpiRoute::httpPost, array('_FILES' => $_FILES, '_POST' => $_POST));
     if($upload['result'])
       $this->route->redirect('/photos?uploadSuccess');

@@ -9,7 +9,7 @@ class Credential extends BaseModel
   const statusActive = '1';
 
   const nonceCacheKey = 'oauthTimestamps';
-  public $oauthException, $oauthParams, $provider, $sendHeadersOnError = true;
+  public $oauthException, $oauthParams, $provider, $sendHeadersOnError = true, $isUnitTest = false;
   private static $consumer = null, $requestStatus = null;
 
   /**
@@ -23,8 +23,19 @@ class Credential extends BaseModel
     else
       $this->utility = new Utility;
 
+    if(isset($params['db']))
+      $this->db = $params['db'];
+
+    $oauthParams = array('oauth_consumer_key' => '');
+    if($this->isOAuthRequest())
+    {
+      $oauthParams = $this->getOAuthParameters();
+      // seed the consumer (see #929 and #950)
+      $this->getConsumer($oauthParams['oauth_consumer_key']);
+    }
+    
     if(class_exists('OAuthProvider'))
-      $this->provider = new OAuthProvider($this->getOAuthParameters());
+      $this->provider = new OAuthProvider($oauthParams);
   }
 
   /**
@@ -101,7 +112,11 @@ class Credential extends BaseModel
       $this->provider->tokenHandler(array($this,'checkToken'));
       $this->provider->setParam('__route__', null);
       $this->provider->setRequestTokenPath('/v1/oauth/token/request'); // No token needed for this end point
-      $this->provider->checkOAuthRequest();
+      // unit test requires HTTP method context #929
+      if($this->isUnitTest === true)
+        $this->provider->checkOAuthRequest(null, OAUTH_HTTP_METHOD_GET);
+      else
+        $this->provider->checkOAuthRequest();
       self::$requestStatus = true;
     }
     catch(OAuthException $e)

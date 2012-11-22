@@ -24,7 +24,6 @@ class ApiAlbumController extends ApiBaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-
     $albumId = $this->album->create($_POST);
     if($albumId)
     {
@@ -71,9 +70,9 @@ class ApiAlbumController extends ApiBaseController
 
   public function updateIndex($albumId, $type, $action)
   {
-    $this->logger->info(sprintf('Calling ApiAlbumController::updateIndex with %s, %s, %s', $albumId, $type, $action));
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
+    $this->logger->info(sprintf('Calling ApiAlbumController::updateIndex with %s, %s, %s', $albumId, $type, $action));
 
     if(!isset($_POST['ids']) || empty($_POST['ids']))
       return $this->error('Please provide ids', false);
@@ -128,12 +127,16 @@ class ApiAlbumController extends ApiBaseController
     if(!$status)
       return $this->error('Could not update album', false);
 
-    return $this->success('Album updated', true);
+    $albumResp = $this->api->invoke("/{$this->apiVersion}/album/{$id}/view.json", EpiRoute::httpGet);
+    return $this->success('Album {$id} updated', $albumResp['result']);
   }
 
   public function view($id)
   {
-    $album = $this->album->getAlbum($id);
+    $includeElements = false;
+    if(isset($_GET['includeElements']) && $_GET['includeElements'] == '1')
+      $includeElements = true;
+    $album = $this->album->getAlbum($id, $includeElements);
     if($album === false)
       return $this->error('Could not retrieve album', false);
     return $this->success('Album', $album);

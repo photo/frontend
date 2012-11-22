@@ -18,6 +18,7 @@
   <?php echo $groupAddForm; ?>
 
   <?php foreach($groups as $group) { ?>
+    <a name="group-<?php $this->utility->safe($group['id']); ?>"></a>
     <form class="well group-post-submit" action="/group/<?php $this->utility->safe($group['id']); ?>/update">
       <h3>Edit <?php $this->utility->safe($group['name']); ?></h3>
       <label>Name</label>

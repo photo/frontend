@@ -21,21 +21,6 @@ class ApiTagController extends ApiBaseController
   }
 
   /**
-    * Delete a tag in the tag database.
-    *
-    * @return string Standard JSON envelope
-    */
-  public function delete($tag)
-  {
-    getAuthentication()->requireAuthentication();
-    $res = $this->tag->delete($tag);
-    if($res)
-      return $this->noContent('Tag deleted successfully', true);
-    else
-      return $this->error('Tag could not be deleted', false);
-  }
-
-  /**
     * Create a tag in the tag database.
     *
     * @return string Standard JSON envelope
@@ -43,9 +28,32 @@ class ApiTagController extends ApiBaseController
   public function create()
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
     $tag = $_POST['tag'];
     unset($_POST['tag']);
-    return $this->update($tag);
+    $res = $this->update($tag);
+    if($res['code'] !== 200)
+      return $this->error(sprintf('Could not create tag %s', $tag), false);
+    // Here we do not return the Tag object since the count would be 0
+    //  and tags with a count of 0 are essentially invisible.
+    //  See #987
+    return $this->created(sprintf('Tag %s created successfully.', $tag), true);
+  }
+
+  /**
+    * Delete a tag in the tag database.
+    *
+    * @return string Standard JSON envelope
+    */
+  public function delete($tag)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $res = $this->tag->delete($tag);
+    if($res)
+      return $this->noContent('Tag deleted successfully', true);
+    else
+      return $this->error('Tag could not be deleted', false);
   }
 
   /**
@@ -56,6 +64,7 @@ class ApiTagController extends ApiBaseController
   public function update($tag)
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
     $tag = $this->tag->sanitize($tag);
     $params = $this->tag->validateParams($_POST);
     $res = getDb()->postTag($tag, $params);
@@ -68,6 +77,20 @@ class ApiTagController extends ApiBaseController
     {
       return $this->error('Tag could not be created/updated', false);
     }
+  }
+
+  /**
+    * Return a single tag tags.
+    *
+    * @return string Standard JSON envelope
+    */
+  public function view($tag)
+  {
+    $tagFromDb = $this->tag->getTag($tag);
+    if($tagFromDb === false)
+      return $this->notFound(sprintf('Could not find tag %s', $tag), false);
+
+    return $this->success(sprintf('Successfully returned tag %s', $tag), $tagFromDb);
   }
 
   /**
@@ -94,7 +117,8 @@ class ApiTagController extends ApiBaseController
       {
         if(strlen($tag['id']) === 0)
           continue;
-        $tag['count'] = $tag[$tagField];
+        $tag['count'] = intval($tag[$tagField]);
+        unset($tag['countPrivate'], $tag['countPublic']);
         $tags[] = $tag;
       }
     }
