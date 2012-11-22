@@ -27,6 +27,14 @@ class ImageGD extends ImageAbstract
 	private $height;
 
   /**
+    * Destructor.
+    */
+  public function __destruct()
+  {
+    if ($this->image) imagedestroy($this->image);
+  }
+
+  /**
     * Quasi constructor
     */
   public function init() {}
@@ -39,6 +47,11 @@ class ImageGD extends ImageAbstract
     */
   public function load($filename)
   {
+    if ($this->image) {
+      imagedestroy($this->image);
+      $this->image = null;
+    }
+
     $this->type = get_mime_type($filename);
     if(preg_match('/png$/', $this->type))
       $this->image = imagecreatefrompng($filename);
@@ -67,64 +80,53 @@ class ImageGD extends ImageAbstract
     */
   public function scale($width, $height, $maintainAspectRatio = true)
   {
-    if($maintainAspectRatio)
-    {
-			// only scale if the destination image is smaller in at least one dimension
-			if(!($this->width < $width && $this->height < $height))
-			{
-				// ratio > 1 is horizontal image
-				$ratio = floatval($this->width / $this->height);
-				if($ratio >= 1)
-					$height = intval($width / $ratio);
-				else
-					$width = intval($height * $ratio);
+	if($maintainAspectRatio)
+	{
+			// Compare ratios.
+			$srcRatio = floatval($this->width / $this->height);
+			$destRatio = floatval($width / $height);
 
-				$dstImage = imagecreatetruecolor($width, $height);
-				imagecopyresampled($dstImage, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
-				$this->image = $dstImage;
-				$this->width = imagesx($this->image);
-				$this->height = imagesy($this->image);
-			}
+			if ($srcRatio > $destRatio)
+				$height = intval($width / $srcRatio);
+			else if($srcRatio < $destRatio)
+				$width = intval($height * $srcRatio);
+
+			$dstImage = imagecreatetruecolor($width, $height);
+			imagecopyresampled($dstImage, $this->image, 0, 0, 0, 0, $width, $height, $this->width, $this->height);
+			imagedestroy($this->image);
+			$this->image = $dstImage;
+			$this->width = imagesx($this->image);
+			$this->height = imagesy($this->image);
 		}
-    else
+	else
 		{
-			// check to see if the requested image is bigger than the original
-			if($this->width < $width && $this->height < $height)
+			$srcRatio = floatval($this->width / $this->height);
+			$destRatio = floatval($width / $height);
+			if($srcRatio > $destRatio) // crop the width
+			{
+				$srcW = intval($this->height * $destRatio);
+				$srcH = $this->height;
+				$srcX = intval(($this->width - $srcW) / 2);
+				$srcY = 0;
+			}
+			else if($srcRatio < $destRatio) // crop the height
+			{
+				$srcW = $this->width;
+				$srcH = intval($this->width / $destRatio);
+				$srcX = 0;
+				$srcY = intval(($this->height - $srcH) / 2);
+			}
+			else // aspect ratio matches
 			{
 				$srcX = 0;
 				$srcY = 0;
-				$width = $srcW = $this->width;
-				$height = $srcH = $this->height;
-			}
-			else
-			{
-				$srcRatio = floatval($this->width / $this->height);
-				$destRatio = floatval($width / $height);
-				if($srcRatio > $destRatio) // crop the width
-				{
-					$srcW = intval($this->height * $destRatio);
-					$srcH = $this->height;
-					$srcX = intval(($this->width - $srcW) / 2);
-					$srcY = 0;
-				}
-				else if($srcRatio < $destRatio) // crop the height
-				{
-					$srcW = $this->width;
-					$srcH = intval($this->width / $destRatio);
-					$srcX = 0;
-					$srcY = intval(($this->height - $srcH) / 2);
-				}
-				else // aspect ratio matches
-				{
-					$srcX = 0;
-					$srcY = 0;
-					$srcW = $this->width;
-					$srcH = $this->height;
-				}
+				$srcW = $this->width;
+				$srcH = $this->height;
 			}
 
 			$dstImage = imagecreatetruecolor($width, $height);
 			imagecopyresampled($dstImage, $this->image, 0, 0, $srcX, $srcY, $width, $height, $srcW, $srcH);
+			imagedestroy($this->image);
 			$this->image = $dstImage;
 			$this->width = imagesx($this->image);
 			$this->height = imagesy($this->image);
@@ -138,7 +140,9 @@ class ImageGD extends ImageAbstract
     */
   public function greyscale()
   {
-    $this->image = imagefilter($this->image, IMG_FILTER_GRAYSCALE);
+    $image = imagefilter($this->image, IMG_FILTER_GRAYSCALE);
+    imagedestroy($this->image);
+    $this->image = $image;
   }
 
   /**
