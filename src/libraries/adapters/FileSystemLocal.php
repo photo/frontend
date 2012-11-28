@@ -39,7 +39,7 @@ class FileSystemLocal implements FileSystemInterface
     foreach($photo as $key => $value)
     {
       if(strncmp($key, 'path', 4) === 0) {
-        $path = self::normalizePath($value);
+        $path = $this->normalizePath($value);
         if(file_exists($path) && !@unlink($path))
           return false;
       }
@@ -100,7 +100,7 @@ class FileSystemLocal implements FileSystemInterface
    */
   public function getPhoto($filename)
   {
-    $filename = self::normalizePath($filename);
+    $filename = $this->normalizePath($filename);
     if(file_exists($filename)) {
       $tmpname = tempnam($this->config->paths->temp, 'opme');
       copy($filename, $tmpname);
@@ -109,7 +109,7 @@ class FileSystemLocal implements FileSystemInterface
     return false;
   }
 
-  public function putPhoto($localFile, $remoteFile)
+  public function putPhoto($localFile, $remoteFile, $dateTaken)
   {
     if(!file_exists($localFile))
     {
@@ -117,7 +117,7 @@ class FileSystemLocal implements FileSystemInterface
       return false;
     }
 
-    $remoteFile = self::normalizePath($remoteFile);
+    $remoteFile = $this->normalizePath($remoteFile);
     // create all the directories to the file
     $dirname = dirname($remoteFile);
     if(!file_exists($dirname)) {
@@ -131,8 +131,10 @@ class FileSystemLocal implements FileSystemInterface
   {
     foreach($files as $file)
     {
-      list($localFile, $remoteFile) = each($file);
-      $res = self::putPhoto($localFile, $remoteFile);
+      list($localFile, $remoteFileArr) = each($file);
+      $remoteFile = $remoteFileArr[0];
+      $dateTaken = $remoteFileArr[1];
+      $res = $this->putPhoto($localFile, $remoteFile, $dateTaken);
       if(!$res)
         return false;
     }

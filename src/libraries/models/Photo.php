@@ -202,14 +202,14 @@ class Photo extends BaseModel
     $photo = $this->db->getPhoto($id);
     if(!$photo)
     {
-      $this->logger->crit('Could not get photo from db in generate method');
+      $this->logger->crit(sprintf('Could not get photo from db in generate method (%s)', $id));
       return false;
     }
 
     $filename = $this->fs->getPhoto($photo['pathBase']);
     if(!$filename)
     {
-      $this->logger->crit('Could not get photo from fs in generate method');
+      $this->logger->crit(sprintf('Could not get photo from fs in generate method %s', $photo['pathBase']));
       return false;
     }
 
@@ -245,7 +245,7 @@ class Photo extends BaseModel
     $this->image->write($filename);
     $customPath = $this->generateCustomUrl($photo['pathBase'], $width, $height, $options);
     $key = $this->generateCustomKey($width, $height, $options);
-    $resFs = $this->fs->putPhoto($filename, $customPath);
+    $resFs = $this->fs->putPhoto($filename, $customPath, $photo['dateTaken']);
     $resDb = $this->db->postPhoto($id, array($key => $customPath));
     // TODO unlink $filename
     if($resFs && $resDb)
@@ -305,15 +305,15 @@ class Photo extends BaseModel
     * @param string $photoName File name of the photo
     * @return array
     */
-  public function generatePaths($photoName)
+  public function generatePaths($photoName, $dateTaken)
   {
     $ext = substr($photoName, (strrpos($photoName, '.')+1));
     $rootName = preg_replace('/[^a-zA-Z0-9.-_]/', '-', substr($photoName, 0, (strrpos($photoName, '.'))));
     $baseName = sprintf('%s-%s.%s', $rootName, dechex(rand(1000000,9999999)), $ext);
     $originalName = sprintf('%s-%s.%s', $rootName, uniqid(), $ext);
     return array(
-      'pathOriginal' => sprintf('/original/%s/%s', date('Ym'), $originalName),
-      'pathBase' => sprintf('/base/%s/%s', date('Ym'), $baseName)
+      'pathOriginal' => sprintf('/original/%s/%s', date('Ym', $dateTaken), $originalName),
+      'pathBase' => sprintf('/base/%s/%s', date('Ym', $dateTaken), $baseName)
     );
   }
 
@@ -526,7 +526,7 @@ class Photo extends BaseModel
       }
     }
 
-    $updateFs = $this->fs->putPhoto($filename, $paths['pathBase']);
+    $updateFs = $this->fs->putPhoto($filename, $paths['pathBase'], $photo['dateTaken']);
     $updateDb = $this->db->postPhoto($id, $updateFields);
 
     unlink($filename);
@@ -784,7 +784,7 @@ class Photo extends BaseModel
         ),
         $attributes
       );
-      $stored = $this->db->putPhoto($id, $attributes);
+      $stored = $this->db->putPhoto($id, $attributes, $dateTaken);
       unlink($localFile);
       unlink($resp['localFileCopy']);
       if($stored)
@@ -906,9 +906,9 @@ class Photo extends BaseModel
     return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
   }
 
-  private function createAndStoreBaseAndOriginal($name, $localFile)
+  private function createAndStoreBaseAndOriginal($name, $localFile, $dateTaken)
   {
-    $paths = $this->generatePaths($name);
+    $paths = $this->generatePaths($name, $dateTaken);
 
     // resize the base image before uploading
     $localFileCopy = "{$localFile}-copy";
@@ -925,8 +925,8 @@ class Photo extends BaseModel
     $baseImage->write($localFileCopy);
     $uploaded = $this->fs->putPhotos(
       array(
-        array($localFile => $paths['pathOriginal']),
-        array($localFileCopy => $paths['pathBase'])
+        array($localFile => array($paths['pathOriginal'], $dateTaken)),
+        array($localFileCopy => array($paths['pathBase'], $dateTaken))
       )
     );
 
