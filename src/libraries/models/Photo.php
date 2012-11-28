@@ -579,8 +579,21 @@ class Photo extends BaseModel
       return false;
     }
 
-    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile);
+    $exif = $this->readExif($localFile);
+    $iptc = $this->readIptc($localFile);
+
+    if(isset($attributes['dateTaken']) && !empty($attributes['dateTaken']))
+      $dateTaken = $attributes['dateTaken'];
+    elseif(isset($exif['dateTaken']))
+      $dateTaken = $exif['dateTaken'];
+    else
+      $dateTaken = time();
+
+    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile, $dateTaken);
+    $paths = $resp['paths'];
+
     $attributes = array_merge($this->whitelistParams($attributes), $resp['paths']);
+
     if($resp['status'])
     {
       $this->logger->info("Photo ({$id}) successfully stored on the file system (replacement)");
@@ -588,8 +601,6 @@ class Photo extends BaseModel
 
       if(!empty($fsExtras))
         $attributes['extraFileSystem'] = $fsExtras;
-      $exif = $this->readExif($localFile);
-      $iptc = $this->readIptc($localFile);
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
       foreach($iptc as $iptckey => $iptcval)
       {
@@ -619,11 +630,6 @@ class Photo extends BaseModel
         if(isset($exif[$paramName]) && !isset($attributes[$mapName]))
           $attributes[$mapName] = $exif[$paramName];
       }
-
-      if(isset($attributes['dateTaken']) && !empty($attributes['dateTaken']))
-        $dateTaken = $attributes['dateTaken'];
-      else
-        $dateTaken = @$exif['dateTaken'];
 
       $attributes['dateTakenDay'] = date('d', $dateTaken);
       $attributes['dateTakenMonth'] = date('m', $dateTaken);
@@ -699,17 +705,27 @@ class Photo extends BaseModel
     $tagObj = new Tag;
     $filenameOriginal = $name;
 
-    $attributes = $this->whitelistParams($attributes);
-    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile);
+    $exif = $this->readExif($localFile);
+    $iptc = $this->readIptc($localFile);
+
+    if(isset($attributes['dateTaken']) && !empty($attributes['dateTaken']))
+      $dateTaken = $attributes['dateTaken'];
+    elseif(isset($exif['dateTaken']))
+      $dateTaken = $exif['dateTaken'];
+    else
+      $dateTaken = time();
+
+    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile, $dateTaken);
     $paths = $resp['paths'];
+
+    $attributes = $this->whitelistParams($attributes);
+
     if($resp['status'])
     {
       $this->logger->info("Photo ({$id}) successfully stored on the file system");
       $fsExtras = $this->fs->getMetaData($localFile);
       if(!empty($fsExtras))
         $attributes['extraFileSystem'] = $fsExtras;
-      $exif = $this->readExif($localFile);
-      $iptc = $this->readIptc($localFile);
       $defaults = array('title', 'description', 'tags', 'latitude', 'longitude');
       foreach($iptc as $iptckey => $iptcval)
       {
@@ -745,11 +761,6 @@ class Photo extends BaseModel
         $dateUploaded = $attributes['dateUploaded'];
       else
         $dateUploaded = time();
-      
-      if(isset($attributes['dateTaken']) && !empty($attributes['dateTaken']))
-        $dateTaken = $attributes['dateTaken'];
-      else
-        $dateTaken = @$exif['dateTaken'];
 
       if($this->config->photos->autoTagWithDate == 1)
       {
