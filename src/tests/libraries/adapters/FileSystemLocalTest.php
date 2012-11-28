@@ -113,7 +113,7 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild($this->file), 'Post init validation that vfs file exists failed');
     $copiedFileName = str_replace('.jpg', '-copy.jpg', basename($this->vfsPath));
     $copiedFileFullPath = str_replace(basename($this->vfsPath), $copiedFileName, $this->vfsPath);
-    $res = $this->fs->putPhoto($this->vfsPath, "/{$copiedFileName}");
+    $res = $this->fs->putPhoto($this->vfsPath, "/{$copiedFileName}", 1234);
     $this->assertTrue($res, 'The putPhoto call did not return TRUE');
     $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild($copiedFileName), 'The copied file does not actually exist');
   }
@@ -125,7 +125,7 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
   {
     $copiedFileName = str_replace('.jpg', '-copy.jpg', basename($this->vfsPath));
     $copiedFileFullPath = str_replace(basename($this->vfsPath), $copiedFileName, $this->vfsPath);
-    $res = $this->fs->putPhoto($this->vfsPath, "/{$copiedFileName}");
+    $res = $this->fs->putPhoto($this->vfsPath, "/{$copiedFileName}", 1234);
     $this->assertFalse($res, 'The putPhoto call did not return FALSE');
   }
 
@@ -149,8 +149,8 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
     
 
     $files = array(
-      array($this->vfsPath => '/'.$copiedFileName),
-      array($secondFileFullPath => '/'.$copiedSecondFileName),
+      array($this->vfsPath => array('/'.$copiedFileName, 1234)),
+      array($secondFileFullPath => array('/'.$copiedSecondFileName, 1234)),
     );
     $res = $this->fs->putPhotos($files);
 
@@ -158,6 +158,27 @@ class FileSystemLocalTest extends PHPUnit_Framework_TestCase
     $this->assertFileExists($copiedFileFullPath, 'Putting multiple photos (1 or 2) failed');
     $this->assertFileExists($copiedSecondFileFullPath, 'Putting multiple photos (2 or 2) failed');
   }
+
+  /**
+   * @depends testValidateVfsFunctionSuccess
+   */
+  public function testPutPhotosWithDateTakenSuccess()
+  {
+    // Gh-1012
+    file_put_contents($this->vfsPath, 'foo');
+    $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild($this->file), 'Post init validation that vfs file exists failed');
+
+    $copiedFileName = str_replace('.jpg', '-copy.jpg', basename($this->vfsPath));
+    $copiedFileFullPath = str_replace(basename($this->vfsPath), $copiedFileName, $this->vfsPath);
+    
+    $files = array(
+      array($this->vfsPath => array('/' . date('Ym', strtotime('1/1/2000')) . '/'.$copiedFileName, strtotime('1/1/2000'))),
+    );
+    $res = $this->fs->putPhotos($files);
+    $this->assertTrue($res, 'Putting multiple photos failed');
+    $this->assertTrue(vfsStreamWrapper::getRoot()->hasChild(sprintf('%s/%s', date('Ym', strtotime('1/1/2000')), $copiedFileName)), 'File does not exist at specified dateTaken');
+  }
+
 
   /**
    * @depends testValidateVfsFunctionSuccess

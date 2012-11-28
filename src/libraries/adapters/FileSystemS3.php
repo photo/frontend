@@ -139,8 +139,9 @@ class FileSystemS3 implements FileSystemInterface
     * @param string $acl Permission setting for this photo.
     * @return boolean
     */
-  public function putPhoto($localFile, $remoteFile, $acl = AmazonS3::ACL_PUBLIC)
+  public function putPhoto($localFile, $remoteFile, $dateTaken)
   {
+    $acl = AmazonS3::ACL_PUBLIC;
     if(!file_exists($localFile))
     {
       getLogger()->warn("The photo {$localFile} does not exist so putPhoto failed");
@@ -164,12 +165,15 @@ class FileSystemS3 implements FileSystemInterface
     * @param string $acl Permission setting for this photo.
     * @return boolean
     */
-  public function putPhotos($files, $acl = AmazonS3::ACL_PUBLIC)
+  public function putPhotos($files)
   {
+    $acl = AmazonS3::ACL_PUBLIC;
     $queue = $this->getBatchRequest();
     foreach($files as $file)
     {
-      list($localFile, $remoteFile) = each($file);
+      list($localFile, $remoteFileArr) = each($file);
+      $remoteFile = $remoteFileArr[0];
+      $dateTaken = $remoteFileArr[1];
       $opts = $this->getUploadOpts($localFile, $acl);
       $remoteFile = $this->normalizePath($remoteFile);
       $this->fs->batch($queue)->create_object($this->bucket, $remoteFile, $opts);

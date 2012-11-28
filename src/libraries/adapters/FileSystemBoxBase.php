@@ -149,7 +149,7 @@ class FileSystemBoxBase
     */
   }
 
-  public function putPhoto($localFile, $remoteFile)
+  public function putPhoto($localFile, $remoteFile, $dateTaken)
   {
     if(!file_exists($localFile))
     {
@@ -159,9 +159,7 @@ class FileSystemBoxBase
 
     if(strpos($remoteFile, '/original/') !== false)
     {
-      $photoObj = new Photo;
-      $exif = $photoObj->readExif($localFile);
-      $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
+      $directory = urlencode(date($this->directoryMask, $dateTaken));
       if(!$this->putFileInDirectory($directory, $localFile, basename($remoteFile)))
         return false;
     }
@@ -172,12 +170,12 @@ class FileSystemBoxBase
   {
     foreach($files as $file)
     {
-      list($localFile, $remoteFile) = each($file);
+      list($localFile, $remoteFileArr) = each($file);
+      $remoteFile = $remoteFileArr[0];
+      $dateTaken = $remoteFileArr[1];
       if(strpos($remoteFile, '/original/') !== false && file_exists($localFile))
       {
-        $photoObj = new Photo;
-        $exif = $photoObj->readExif($localFile);
-        $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
+        $directory = urlencode(date($this->directoryMask, $dateTaken));
         if(!$this->putFileInDirectory($directory, $localFile, basename($remoteFile)))
           return false;
       }

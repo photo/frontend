@@ -53,7 +53,7 @@ class GeneralController extends BaseController
     if(!$this->theme->fileExists($template))
       $this->route->redirect($this->url->photosView(null, false));
 
-    $apisToCall = getConfig()->get('frontApis');
+    $apisToCall = $this->config->frontApis;
     $params = $this->utility->callApis($apisToCall);
     $body = $this->theme->get($template, $params);
     $this->plugin->setData('page', 'front');
@@ -69,5 +69,19 @@ class GeneralController extends BaseController
   {
     $this->theme->setTheme(); // defaults
     $this->theme->display($this->utility->getTemplate('maintenance.php'));
+  }
+
+  /**
+   * Robots.txt
+   * @return string Robots.txt file
+   */
+  public function robots()
+  {
+    $params = array(
+      'hideFromSearchEngines' => $this->config->site->hideFromSearchEngines,
+      'hideFromTwitterBot' => false
+    );
+    $template = sprintf('%s/robots.txt', $this->config->paths->templates);
+    $this->template->display($template, $params);
   }
 }

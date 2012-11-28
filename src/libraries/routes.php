@@ -8,6 +8,12 @@ getRoute()->get('/', array('GeneralController', 'home'));
 if($configObj->get('site')->maintenance == 1)
   getRoute()->get('/maintenance', array('GeneralController', 'maintenance'));
 
+
+/*
+ * General pages like robots.txt
+ */
+$routeObj->get('/robots.txt', array('GeneralController', 'robots')); // robots.txt
+
 /*
  * Action endpoints
  * All action endpoints follow the same convention.

@@ -86,7 +86,7 @@ class PhotoController extends BaseController
     */
   public function download($id)
   {
-    $isAttachment = !isset($_GET['stream']) && $_GET['stream'] == '1';
+    $isAttachment = !isset($_GET['stream']) || $_GET['stream'] != '1';
     $userObj = new User;
     // the API enforces permissions, we just have to check for download privileges
     if($userObj->isOwner() || $this->config->site->allowOriginalDownload == 1)

@@ -1,0 +1,15 @@
+# General to hide from all robots
+User-Agent: *
+<?php if($hideFromSearchEngines) { ?>
+Disallow: /
+<?php } else { ?>
+Disallow:
+<?php } ?>
+
+# This is useful for allowing Twitter to embed thumbnails in tweets
+User-agent: Twitterbot
+<?php if($hideFromTwitterBot) { ?>
+Disallow: /
+<?php } else { ?>
+Disallow:
+<?php } ?>
