@@ -120,7 +120,13 @@ class Photo extends BaseModel
       return false;
 
     $fileStatus = $this->fs->deletePhoto($photo);
+    if(!$fileStatus)
+      $this->logger->warn(sprintf('Could not delete source photo from file system (%s)', $photo['id']));
+
     $dbStatus = $this->db->deletePhotoVersions($photo);
+    if(!$dbStatus)
+      $this->logger->warn(sprintf('Could not delete source photo from database (%s)', $photo['id']));
+
     return $fileStatus && $dbStatus;
   }
 
