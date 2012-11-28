@@ -89,7 +89,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
     $this->fs->inject('fs', $fs);
     $tempfile = sys_get_temp_dir() . '/' . rand(0,1000);
     file_put_contents($tempfile, 'foo');
-    $res = $this->fs->putPhoto($tempfile, 'bar');
+    $res = $this->fs->putPhoto($tempfile, 'remote', 1234);
     $this->assertTrue($res, 'The S3 FileSystem adapter did not return TRUE for putPhoto');
   }
 
@@ -101,7 +101,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSFailureResponse));
 
     $this->fs->inject('fs', $fs);
-    $res = $this->fs->putPhoto('foo', 'bar');
+    $res = $this->fs->putPhoto('foo', 'remote', 1234);
     $this->assertFalse($res, 'The S3 FileSystem adapter did not return FALSE for putPhoto');
   }
 
@@ -113,7 +113,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSSuccessResponse));
 
     $this->fs->inject('fs', $fs);
-    $res = $this->fs->putPhoto('foo', 'bar');
+    $res = $this->fs->putPhoto('foo', 'remote', 1234);
     $this->assertFalse($res, 'The S3 FileSystem adapter did not return FALSE for putPhoto');
   }
 
@@ -125,7 +125,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSBatchSuccessResponse));
 
     $this->fs->inject('fs', $fs);
-    $res = $this->fs->putPhotos(array(array('local1' => 'remote1'), array('local2' => 'remote2')), 'bar');
+    $res = $this->fs->putPhotos(array(array('local1' => array('remote1', 1234)), array('local2' => array('remote2', 1234))));
     $this->assertTrue($res, 'The S3 FileSystem adapter did not return TRUE for putPhotos');
   }
 
@@ -137,7 +137,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(new AWSBatchFailureResponse));
 
     $this->fs->inject('fs', $fs);
-    $res = $this->fs->putPhotos(array(array('local1' => 'remote1'), array('local2' => 'remote2')), 'bar');
+    $res = $this->fs->putPhotos(array(array('local1' => array('remote1', 1234)), array('local2' => array('remote2', 1234))));
     $this->assertFalse($res, 'The S3 FileSystem adapter did not return FALSE for putPhotos');
   }
 
