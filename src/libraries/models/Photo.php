@@ -594,25 +594,38 @@ class Photo extends BaseModel
         {
           $iptcval = implode(',', $iptcval);
         }
-        $attributes[$iptckey] = $iptcval;
+
+        // do not clobber if already in $attributes #1011
+        if(!isset($attributes[$iptckey]))
+          $attributes[$iptckey] = $iptcval;
       }
       foreach($defaults as $default)
       {
         if(!isset($attributes[$default]))
           $attributes[$default] = null;
       }
+
+      $exifParams = array('width' => 'width', 'height' => 'height', 'cameraMake' => 'exifCameraMake', 'cameraModel' => 'exifCameraModel', 
+        'FNumber' => 'exifFNumber', 'exposureTime' => 'exifExposureTime', 'ISO' => 'exifISOSpeed', 'focalLength' => 'exifFocalLength', 'latitude' => 'latitude', 'longitude' => 'longitude');
+      foreach($exifParams as $paramName => $mapName)
+      {
+        // do not clobber if already in $attributes #1011
+        if(isset($exif[$paramName]) && !isset($attributes[$mapName]))
+          $attributes[$mapName] = $exif[$paramName];
+      }
+
+      if(isset($attributes['dateTaken']) && !empty($attributes['dateTaken']))
+        $dateTaken = $attributes['dateTaken'];
+      else
+        $dateTaken = @$exif['dateTaken'];
+
+      $attributes['dateTakenDay'] = date('d', $dateTaken);
+      $attributes['dateTakenMonth'] = date('m', $dateTaken);
+      $attributes['dateTakenYear'] = date('Y', $dateTaken);
       $attributes['hash'] = sha1_file($localFile);
       $attributes['size'] = intval(filesize($localFile)/1024);
       $attributes['host'] = $this->fs->getHost();
       $attributes['filenameOriginal'] = $name;
-
-      $exifParams = array('width' => 'width', 'height' => 'height', 'exifCameraMake' => 'exifCameraMake', 'exifCameraModel' => 'exifCameraModel', 
-        'FNumber' => 'exifFNumber', 'exposureTime' => 'exifExposureTime', 'ISO' => 'exifISOSpeed', 'focalLength' => 'exifFocalLength', 'latitude' => 'latitude', 'longitude' => 'longitude');
-      foreach($exifParams as $paramName => $mapName)
-      {
-        if(isset($exif[$paramName]))
-          $attributes[$mapName] = $exif[$paramName];
-      }
 
       $exiftran = $this->config->modules->exiftran;
       if(is_executable($exiftran))
@@ -701,19 +714,32 @@ class Photo extends BaseModel
         {
           $iptcval = implode(',', $iptcval);
         }
-        $attributes[$iptckey] = $iptcval;
+
+        // do not clobber if already in $attributes #1011
+        if(!isset($attributes[$iptckey]))
+          $attributes[$iptckey] = $iptcval;
       }
+
       foreach($defaults as $default)
       {
         if(!isset($attributes[$default]))
           $attributes[$default] = null;
       }
 
+      $exifParams = array('width' => 'width', 'height' => 'height', 'cameraMake' => 'exifCameraMake', 'cameraModel' => 'exifCameraModel', 
+        'FNumber' => 'exifFNumber', 'exposureTime' => 'exifExposureTime', 'ISO' => 'exifISOSpeed', 'focalLength' => 'exifFocalLength', 'latitude' => 'latitude', 'longitude' => 'longitude');
+      foreach($exifParams as $paramName => $mapName)
+      {
+        // do not clobber if already in $attributes #1011
+        if(isset($exif[$paramName]) && !isset($attributes[$mapName]))
+          $attributes[$mapName] = $exif[$paramName];
+      }
+
       if(isset($attributes['dateUploaded']) && !empty($attributes['dateUploaded']))
         $dateUploaded = $attributes['dateUploaded'];
       else
         $dateUploaded = time();
-
+      
       if(isset($attributes['dateTaken']) && !empty($attributes['dateTaken']))
         $dateTaken = $attributes['dateTaken'];
       else
@@ -742,12 +768,6 @@ class Photo extends BaseModel
         array(
           'hash' => sha1_file($localFile), // fallback if not in $attributes
           'size' => intval(filesize($localFile)/1024),
-          'exifCameraMake' => @$exif['cameraMake'],
-          'exifCameraModel' => @$exif['cameraModel'],
-          'exifFNumber' => @$exif['FNumber'],
-          'exifExposureTime' => @$exif['exposureTime'],
-          'exifISOSpeed' => @$exif['ISO'],
-          'exifFocalLength' => @$exif['focalLength'],
           'filenameOriginal' => $filenameOriginal,
           'width' => @$exif['width'],
           'height' => @$exif['height'],
