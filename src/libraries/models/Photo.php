@@ -608,14 +608,11 @@ class Photo extends BaseModel
           continue;
 
         if($iptckey == 'tags')
-        {
-          $iptcval = implode(',', $iptcval);
-        }
-
-        // do not clobber if already in $attributes #1011
-        if(!isset($attributes[$iptckey]))
+          $attributes[$iptckey] .= implode(',', $iptcval);
+        else if(!isset($attributes[$iptckey])) // do not clobber if already in $attributes #1011
           $attributes[$iptckey] = $iptcval;
       }
+
       foreach($defaults as $default)
       {
         if(!isset($attributes[$default]))
@@ -733,12 +730,8 @@ class Photo extends BaseModel
           continue;
 
         if($iptckey == 'tags')
-        {
-          $iptcval = implode(',', $iptcval);
-        }
-
-        // do not clobber if already in $attributes #1011
-        if(!isset($attributes[$iptckey]))
+          $attributes[$iptckey] .= implode(',', $iptcval);
+        else if(!isset($attributes[$iptckey])) // do not clobber if already in $attributes #1011
           $attributes[$iptckey] = $iptcval;
       }
 
@@ -776,9 +769,7 @@ class Photo extends BaseModel
       if(isset($exif['longitude']))
         $attributes['longitude'] = floatval($exif['longitude']);
       if(isset($attributes['tags']) && !empty($attributes['tags']))
-      {
         $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
-      }
 
       $attributes = array_merge(
         $this->getDefaultAttributes(),
