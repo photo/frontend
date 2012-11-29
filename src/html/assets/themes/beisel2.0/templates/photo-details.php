@@ -4,10 +4,10 @@
         <li><a href="#comment-form"><i class="icon-comment icon-large"></i> Leave a comment</a></li>
         <!-- <li><a href="#"><i class="icon-envelope icon-large"></i> Share this photo</a></li> -->
         <?php if(isset($photo['next'])) { ?>
-          <li class="last"><a href="<?php $this->url->photoView($photo['next']['id'], $options); ?>">Next <i class="icon-arrow-right icon-large"></i></a></li>
+          <li class="last"><a href="<?php $this->url->photoView($photo['next'][0]['id'], $options); ?>">Next <i class="icon-arrow-right icon-large"></i></a></li>
         <?php } ?>
         <?php if(isset($photo['previous'])) { ?>
-          <li class="last"><a href="<?php $this->url->photoView($photo['previous']['id'], $options); ?>"><i class="icon-arrow-left icon-large"></i> Previous</a></li>
+          <li class="last"><a href="<?php $this->url->photoView($photo['previous'][0]['id'], $options); ?>"><i class="icon-arrow-left icon-large"></i> Previous</a></li>
         <?php } ?>
       </ul>
     </div>
@@ -84,15 +84,15 @@
         <div class="morephotos">
           <strong>Discover more photos:</strong>
           <ul>
-            <?php if(!empty($photo['previous'])) { ?>
+            <?php if(isset($photo['previous'])) { ?>
               <li class="buttonmp"><a href="<?php $this->url->photoView($photo['previous'][0]['id'], $options); ?>"><button type="button" class="btn btn-primary photo-view-click previous-photo"><i class="icon-arrow-left"></i></button></a></li>
-              <li class="span1 mspacer"><a href="<?php $this->url->photoView($photo['previous'][0]['id'], $options); ?>"><img src="<?php $this->url->photoUrl($photo['previous'][0], $this->config->photoSizes->nextPrevious); ?>" alt="Previous photo: <?php $this->utility->safe($photo['previous']['title']); ?>" class="photo-view-click previous-photo" data-id="<?php $this->utility->safe($photo['previous']['id']); ?>" /></a></li>
+              <li class="span1 mspacer"><a href="<?php $this->url->photoView($photo['previous'][0]['id'], $options); ?>"><img src="<?php $this->url->photoUrl($photo['previous'][0], $this->config->photoSizes->nextPrevious); ?>" alt="Previous photo: <?php $this->utility->safe($photo['previous'][0]['title']); ?>" class="photo-view-click previous-photo" data-id="<?php $this->utility->safe($photo['previous'][0]['id']); ?>" /></a></li>
             <?php } else { ?>
               <li class="buttonmp"><button type="button" class="btn disabled"><i class="icon-arrow-left"></i></button></li>
               <li class="span1 mspacer">&nbsp;</li>
             <?php } ?>
-            <?php if(!empty($photo['next'])) { ?>
-              <li class="span1"><a href="<?php $this->url->photoView($photo['next'][0]['id'], $options); ?>"><img src="<?php $this->url->photoUrl($photo['next'][0], $this->config->photoSizes->nextPrevious); ?>" alt="Next photo: <?php $this->utility->safe($photo['previous']['title']); ?>" class="photo-view-click next-photo" data-id="<?php $this->utility->safe($photo['next']['id']); ?>" /></a></li>
+            <?php if(isset($photo['next'])) { ?>
+              <li class="span1"><a href="<?php $this->url->photoView($photo['next'][0]['id'], $options); ?>"><img src="<?php $this->url->photoUrl($photo['next'][0], $this->config->photoSizes->nextPrevious); ?>" alt="Next photo: <?php $this->utility->safe($photo['next'][0]['title']); ?>" class="photo-view-click next-photo" data-id="<?php $this->utility->safe($photo['next'][0]['id']); ?>" /></a></li>
               <li class="buttonmp"><a href="<?php $this->url->photoView($photo['next'][0]['id'], $options); ?>"><button type="button" class="btn btn-primary photo-view-click next-photo"><i class="icon-arrow-right"></i></button></a></li>
             <?php } else { ?>
               <li class="span1">&nbsp;</li>
