@@ -28,9 +28,7 @@ class FileSystemLocalDropbox extends FileSystemLocal implements FileSystemInterf
 
   public function downloadPhoto($photo)
   {
-    $url = $this->dropbox->getFileUrl($photo);
-    $fp = fopen($url, 'r');
-    return $fp;
+    return $this->dropbox->getFilePointer($photo);
   }
 
   /**

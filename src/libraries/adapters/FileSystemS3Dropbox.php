@@ -25,9 +25,7 @@ class FileSystemS3Dropbox extends FileSystemS3 implements FileSystemInterface
 
   public function downloadPhoto($photo)
   {
-    $url = $this->dropbox->getFileUrl($photo);
-    $fp = fopen($url, 'r');
-    return $fp;
+    return $this->dropbox->getFilePointer($photo);
   }
 
   /**
