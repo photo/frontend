@@ -13,6 +13,7 @@ if($configObj->get('site')->maintenance == 1)
  * General pages like robots.txt
  */
 $routeObj->get('/robots.txt', array('GeneralController', 'robots')); // robots.txt
+$routeObj->options('/.*', array('GeneralController', 'options')); // OPTIONS call
 
 /*
  * Action endpoints
