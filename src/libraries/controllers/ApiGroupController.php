@@ -97,7 +97,7 @@ class ApiGroupController extends ApiBaseController
     getAuthentication()->requireAuthentication();
 
     $userObj = new User;
-    if(!$userObj->isOwner())
+    if(!$userObj->isAdmin())
       return $this->forbidden('You do not have permission to access this API.', false);
 
     $groups = $this->group->getGroups();

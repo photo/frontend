@@ -58,7 +58,7 @@ class Authentication
         OPException::raise(new OPAuthorizationOAuthException($this->credential->getErrorAsString()));
       }
     }
-    elseif(!$this->user->isLoggedIn() || ($requireOwner && !$this->user->isOwner()))
+    elseif(!$this->user->isLoggedIn() || ($requireOwner && !$this->user->isAdmin()))
     {
       OPException::raise(new OPAuthorizationSessionException());
     }
