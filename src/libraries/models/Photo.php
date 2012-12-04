@@ -771,6 +771,9 @@ class Photo extends BaseModel
       if(isset($attributes['tags']) && !empty($attributes['tags']))
         $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
 
+      $attributes['owner'] = $this->owner;
+      $attributes['actor'] = $this->getActor();
+
       $attributes = array_merge(
         $this->getDefaultAttributes(),
         array(

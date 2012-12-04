@@ -19,6 +19,10 @@ class BaseModel
     $this->route = getRoute();
     $this->session = getSession();
     $this->cache = getCache();
+
+    $this->owner = null;
+    if(isset($this->config->user))
+      $this->owner = $this->config->user->email;
     
     // really just for setup when the systems don't yet exist
     if(isset($this->config->systems))
@@ -26,6 +30,12 @@ class BaseModel
       $this->db = getDb();
       $this->fs = getFs();
     }
+  }
+
+  public function getActor()
+  {
+    $user = new User;
+    return $user->getEmailAddress();
   }
 
   /*

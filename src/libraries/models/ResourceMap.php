@@ -25,6 +25,9 @@ class ResourceMap extends BaseModel
     if(isset($params['method']))
       $data['method'] = $params['method'];
 
+    $data['owner'] = $this->owner;
+    $data['actor'] = $this->getActor();
+
     $result = $this->db->putResourceMap($id, $data);
     if(!$result)
     {

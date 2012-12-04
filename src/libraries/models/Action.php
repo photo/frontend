@@ -38,6 +38,8 @@ class Action extends BaseModel
       return false;
     }
     $params = array_merge($this->getDefaultAttributes(), $params);
+    $params['owner'] = $this->owner;
+    $params['actor'] = $this->getActor();
     $params['permalink'] = sprintf('%s#action-%s', $params['targetUrl'], $id);
     $action = $this->db->putAction($id, $params);
     if(!$action)
@@ -81,7 +83,6 @@ class Action extends BaseModel
   {
     return array(
       'appId' => $this->config->application->appId,
-      'owner' => $this->config->user->email,
       'email' => '',
       'name' => '',
       'avatar' => '',

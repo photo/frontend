@@ -18,7 +18,7 @@ class Tag extends BaseModel
   /**
     * Delete a tag.
     *
-    * @param array $tags An array of Tag objects optionally passed in else queried from the database.
+    * @param array $id A string of the tag
     * @return array Tag object augmented with a "weight" property.
     */
   public function delete($id)
@@ -29,7 +29,7 @@ class Tag extends BaseModel
   /**
     * Get a single tag.
     *
-    * @param tag $tag An string of the tag
+    * @param tag $tag A string of the tag
     * @return array Tag object augmented with a "weight" property.
     */
   public function getTag($tag = null)
@@ -202,6 +202,20 @@ class Tag extends BaseModel
 
     natcasesort($tagsArray);
     return implode(',', $tagsArray);
+  }
+
+  /**
+    * Update a tag.
+    *
+    * @param string $id A string of the tag
+    * @param array $params Tags and related attributes to update.
+    * @return array Tag object augmented with a "weight" property.
+    */
+  public function update($id, $params)
+  {
+    $params['owner'] = $this->owner;
+    $params['actor'] = $this->getActor();
+    return $this->db->postTag($id, $params);
   }
 
   public function validateParams($params)

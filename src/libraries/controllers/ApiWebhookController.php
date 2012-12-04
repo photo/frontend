@@ -25,9 +25,9 @@ class ApiWebhookController extends ApiBaseController
     */
   public function create()
   {
-    //getAuthentication()->requireAuthentication();
+    getAuthentication()->requireAuthentication();
     $params = $_POST;
-    $id = $this->webhook->add($params);
+    $id = $this->webhook->create($params);
     if($id)
       return $this->success("Webhook {$id} created", array_merge(array('id' => $id), $params));
     else

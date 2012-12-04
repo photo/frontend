@@ -29,6 +29,8 @@ class Album extends BaseModel
   public function create($params)
   {
     $params = $this->whitelistParams($params);
+    $params['owner'] = $this->owner;
+    $params['actor'] = $this->getActor();
     $id = $this->user->getNextId('album');
     if($id === false)
     {

@@ -23,6 +23,13 @@ class EpiApi
       getRoute()->get($route, $callback, true);
   }
 
+  public function options($route, $callback, $visibility = self::internal)
+  {
+    $this->addRoute($route, $callback, EpiRoute::httpOptions);
+    if($visibility === self::external)
+      getRoute()->options($route, $callback, true);
+  }
+
   public function post($route, $callback, $visibility = self::internal)
   {
     $this->addRoute($route, $callback, EpiRoute::httpPost);

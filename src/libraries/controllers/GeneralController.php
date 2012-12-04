@@ -72,6 +72,19 @@ class GeneralController extends BaseController
   }
 
   /**
+    * Options calls for XHR
+    *
+    * @return string Standard JSON envelope
+    */
+  public function options()
+  {
+    header('Access-Control-Allow-Headers: X-Requested-With');
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Max-Age: 60');
+    die();
+  }
+
+  /**
    * Robots.txt
    * @return string Robots.txt file
    */
