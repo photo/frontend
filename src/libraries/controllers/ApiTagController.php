@@ -67,7 +67,7 @@ class ApiTagController extends ApiBaseController
     getAuthentication()->requireCrumb();
     $tag = $this->tag->sanitize($tag);
     $params = $this->tag->validateParams($_POST);
-    $res = getDb()->postTag($tag, $params);
+    $res = $this->tag->update($tag, $params);
     if($res)
     {
       $tag = $this->api->invoke("/{$this->apiVersion}/tag/{$tag}/view.json", EpiRoute::httpGet);

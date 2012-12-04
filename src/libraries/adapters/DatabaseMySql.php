@@ -12,7 +12,7 @@ class DatabaseMySql implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $config, $errors = array(), $owner, $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
+  private $actor, $config, $errors = array(), $owner, $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
 
   /**
     * Constructor
@@ -822,7 +822,6 @@ class DatabaseMySql implements DatabaseInterface
   public function postAlbum($id, $params)
   {
     $params = $this->prepareAlbum($params);
-    $params['owner'] = $this->owner;
     $bindings = array();
     if(isset($params['::bindings']))
       $bindings = $params['::bindings'];
@@ -1010,10 +1009,8 @@ class DatabaseMySql implements DatabaseInterface
   public function postTag($id, $params)
   {
     if(!isset($params['id']))
-    {
       $params['id'] = $id;
-    }
-    $params['owner'] = $this->owner;
+
     $params = $this->prepareTag($params);
     if(isset($params['::bindings']))
       $bindings = $params['::bindings'];
@@ -1126,7 +1123,6 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putAlbum($id, $params)
   {
-    $params['owner'] = $this->owner;
     $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute($sql = "INSERT INTO `{$this->mySqlTablePrefix}album` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return ($result !== false);
@@ -1142,7 +1138,6 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putCredential($id, $params)
   {
-    $params['owner'] = $this->owner;
     if(!isset($params['id']))
       $params['id'] = $id;
     $params = $this->prepareCredential($params);
@@ -1185,7 +1180,6 @@ class DatabaseMySql implements DatabaseInterface
   public function putPhoto($id, $params)
   {
     $params['id'] = $id;
-    $params['owner'] = $this->owner;
     $tags = null;
     if(isset($params['tags']) && !empty($params['tags']))
       $tags = (array)explode(',', $params['tags']);
@@ -1224,7 +1218,6 @@ class DatabaseMySql implements DatabaseInterface
   {
     if(!isset($params['id']))
       $params['id'] = $id;
-    $params['owner'] = $this->owner;
     $params = $this->prepareResourceMap($params);
     $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}resourceMap` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
@@ -1280,7 +1273,7 @@ class DatabaseMySql implements DatabaseInterface
   public function putWebhook($id, $params)
   {
     $stmt = $this->sqlInsertExplode($params);
-    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}webhook` (id,owner,{$stmt['cols']}) VALUES (:id,:owner,{$stmt['vals']})", array(':id' => $id, ':owner' => $this->owner));
+    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}webhook` ({$stmt['cols']}) VALUES (:id,:owner,{$stmt['vals']})");
     return $result !== false;
   }
 
@@ -1417,7 +1410,10 @@ class DatabaseMySql implements DatabaseInterface
   {
     // TODO: support logic for multiple conditions
     $from = "FROM `{$this->mySqlTablePrefix}{$table}` ";
-    $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
+    if($table !== 'activity')
+      $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
+    else
+      $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner` IN(SELECT `follows` FROM `{$this->mySqlTablePrefix}relationship` WHERE `actor`='{$this->getActor()}')";
     $groupBy = '';
     $sortBy = 'ORDER BY dateSortByDay DESC';
     if(!empty($filters) && is_array($filters))
@@ -1586,6 +1582,16 @@ class DatabaseMySql implements DatabaseInterface
   {
     $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':owner' => $this->owner, ':type' => $type, ':element' => $id));
     return $res !== false;
+  }
+
+  private function getActor()
+  {
+    if($this->actor !== null)
+      return $this->actor;
+
+    $user = new User;
+    $this->actor = $user->getEmailAddress();
+    return $this->actor;
   }
 
   /**
