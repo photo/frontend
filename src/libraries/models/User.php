@@ -150,7 +150,12 @@ class User extends BaseModel
       return $this->session->get('email') != '';
   }
 
-  public function isOwner()
+  public function isAdmin()
+  {
+    return $this->isOwner(true);
+  }
+
+  public function isOwner($includeAdmin = false)
   {
     if(!isset($this->config->user))
       return false;
@@ -175,7 +180,7 @@ class User extends BaseModel
       if($isOwner)
         return true;
 
-      if(isset($user->admins))
+      if($includeAdmin && isset($user->admins))
       {
         $admins = (array)explode(',', $user->admins);
         if(array_search(strtolower($loggedInEmail), array_map('strtolower', $admins)) !== false)
@@ -233,7 +238,7 @@ class User extends BaseModel
   {
     $this->session->set('email', $email);
     $this->session->set('crumb', md5($this->config->secrets->secret . time()));
-    if($this->isOwner())
+    if($this->isAdmin())
       $this->session->set('site', $_SERVER['HTTP_HOST']);
   }
 

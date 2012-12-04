@@ -126,10 +126,10 @@
         <div class="iconbox">
           <a href="#" class="invert"><i class="icon-comment"></i> <?php echo count($photo['actions']); ?> comments &amp; favorites</a>
           <a href="#" class="invert"><i class="icon-eye-open"></i> <?php $this->utility->licenseName($photo['license']); ?></a>
-          <?php if($this->user->isOwner() || $this->config->site->allowOriginalDownload == 1) { ?>
+          <?php if($this->user->isAdmin() || $this->config->site->allowOriginalDownload == 1) { ?>
             <a href="<?php $this->url->photoDownload($photo); ?>" class="invert"><i class="icon-download"></i> Download original</a>
           <?php } ?>
-          <?php if($this->user->isOwner()) { ?>
+          <?php if($this->user->isAdmin()) { ?>
             <a href="#" class="photo-edit-click invert" data-id="<?php $this->utility->safe($photo['id']); ?>"><i class="icon-edit"></i> Edit details</a>
           <?php } ?>
         </div>

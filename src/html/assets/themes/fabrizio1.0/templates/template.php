@@ -137,7 +137,7 @@
               'plugin-update-submit':'submit:plugin-update',
               'search-submit':'submit:search'
           },
-          <?php if($this->user->isOwner()) { ?>
+          <?php if($this->user->isAdmin()) { ?>
             'change': {
                 'batch-field-change':'change:batch-field'
             },
