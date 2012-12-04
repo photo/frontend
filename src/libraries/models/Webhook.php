@@ -16,18 +16,18 @@ class Webhook extends BaseModel
   }
 
   /**
-    * Add an action to a photo/video.
+    * Create an action to a photo/video.
     * Accepts a set of params that must include a type and targetType
     *
     * @param array $params Params describing the action to be added
     * @return mixed Action ID on success, false on failure
     */
-  public function add($params)
+  public function create($params)
   {
     $params = $this->getValidAttributes($params);
     if(!isset($params['callback']) || !isset($params['topic']))
     {
-      $this->logger->info(sprintf('Not all required paramaters were passed in to add(), %s', json_encode($params)));
+      $this->logger->info(sprintf('Not all required paramaters were passed in to create(), %s', json_encode($params)));
       return false;
     }
 
@@ -38,8 +38,12 @@ class Webhook extends BaseModel
       return false;
     }
 
-    $action = $this->db->putWebhook($id, $params);
-    if(!$action)
+    $params['id'] = $id;
+    $params['owner'] = $this->owner;
+    $params['actor'] = $this->getActor();
+
+    $status = $this->db->putWebhook($id, $params);
+    if(!$status)
     {
       $this->logger->crit("Could not save webhook ID ({$id})");
       return false;

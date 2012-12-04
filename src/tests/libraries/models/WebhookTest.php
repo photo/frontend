@@ -6,13 +6,13 @@ class WebhookTest extends PHPUnit_Framework_TestCase
     $this->webhook = new Webhook;
   }
 
-  public function testAddInvalidParams()
+  public function testCreateInvalidParams()
   {
-    $res = $this->webhook->add(array('foo' => 'bar'));
+    $res = $this->webhook->create(array('foo' => 'bar'));
     $this->assertFalse($res);
   }
 
-  public function testAddFailure()
+  public function testCreateFailure()
   {
     $db = $this->getMock('Db', array('putWebhook'));
     $db->expects($this->any())
@@ -20,11 +20,11 @@ class WebhookTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(false));
     $this->webhook->inject('db', $db);
 
-    $res = $this->webhook->add(array('callback' => 'yes', 'topic' => 'yes'));
+    $res = $this->webhook->create(array('callback' => 'yes', 'topic' => 'yes'));
     $this->assertFalse($res);
   }
 
-  public function testAddSuccess()
+  public function testCreateSuccess()
   {
     $db = $this->getMock('Db', array('putWebhook'));
     $db->expects($this->any())
@@ -32,7 +32,7 @@ class WebhookTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(array('foo' => 'bar')));
     $this->webhook->inject('db', $db);
 
-    $res = $this->webhook->add(array('callback' => 'yes', 'topic' => 'yes'));
+    $res = $this->webhook->create(array('callback' => 'yes', 'topic' => 'yes'));
     $this->assertEquals(32, strlen($res));
   }
 
