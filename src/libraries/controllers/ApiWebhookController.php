@@ -42,7 +42,7 @@ class ApiWebhookController extends ApiBaseController
     */
   public function delete($id)
   {
-    //getAuthentication()->requireAuthentication();
+    getAuthentication()->requireAuthentication();
     $status = $this->webhook->delete($id);
     if($status)
       return $this->noContent('Webhook deleted successfully', true);
@@ -58,7 +58,7 @@ class ApiWebhookController extends ApiBaseController
     */
   public function update($id)
   {
-    //getAuthentication()->requireAuthentication();
+    getAuthentication()->requireAuthentication();
     $params = $_POST;
     $id = $this->webhook->update($id, $params);
     if($id)
@@ -75,7 +75,7 @@ class ApiWebhookController extends ApiBaseController
     */
   public function view($id)
   {
-    //getAuthentication()->requireAuthentication();
+    getAuthentication()->requireAuthentication();
     $webhook = $this->webhook->getById($id);
     if($webhook)
       return $this->success("Successfully retrieved webhook ({$id})", $webhook);
