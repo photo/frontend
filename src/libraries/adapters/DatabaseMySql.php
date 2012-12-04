@@ -1410,10 +1410,16 @@ class DatabaseMySql implements DatabaseInterface
   {
     // TODO: support logic for multiple conditions
     $from = "FROM `{$this->mySqlTablePrefix}{$table}` ";
-    if($table !== 'activity')
-      $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
-    else
-      $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner` IN(SELECT `follows` FROM `{$this->mySqlTablePrefix}relationship` WHERE `actor`='{$this->getActor()}')";
+    $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
+    if($table === 'activity')
+    {
+      $ids = array($this->getActor());
+      $queryForFollows = $this->db->all("SELECT `follows` FROM `{$this->mySqlTablePrefix}relationship` WHERE `actor`=:actor", array(':actor' => $this->getActor()));
+      foreach($queryForFollows as $followRes)
+        $ids[] = $this->_($followRes['follows']);
+      $ids = sprintf("'%s'", implode("','", $ids));
+      $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner` IN({$ids})";
+    }
     $groupBy = '';
     $sortBy = 'ORDER BY dateSortByDay DESC';
     if(!empty($filters) && is_array($filters))
