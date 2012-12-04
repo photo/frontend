@@ -36,6 +36,8 @@ class Activity extends BaseModel
       return false;
     }
 
+    $attributes['owner'] = $this->owner;
+    $attributes['actor'] = $this->getActor();
     return $this->db->putActivity($id, $attributes);
   }
 
@@ -61,14 +63,13 @@ class Activity extends BaseModel
   {
     return array(
       'appId' => $this->config->application->appId,
-      'owner' => $this->config->user->email,
       'dateCreated' => time()
     );
   }
 
   private function validateParams($attributes)
   {
-    if(!isset($attributes['owner']) || !isset($attributes['type']) || !isset($attributes['permission']))
+    if(!isset($attributes['type']) || !isset($attributes['permission']))
       return false;
 
     return true;

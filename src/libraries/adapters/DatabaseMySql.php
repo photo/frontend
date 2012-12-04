@@ -12,7 +12,7 @@ class DatabaseMySql implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $config, $errors = array(), $owner, $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
+  private $actor, $config, $errors = array(), $owner, $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
 
   /**
     * Constructor
@@ -822,7 +822,6 @@ class DatabaseMySql implements DatabaseInterface
   public function postAlbum($id, $params)
   {
     $params = $this->prepareAlbum($params);
-    $params['owner'] = $this->owner;
     $bindings = array();
     if(isset($params['::bindings']))
       $bindings = $params['::bindings'];
@@ -1417,7 +1416,10 @@ class DatabaseMySql implements DatabaseInterface
   {
     // TODO: support logic for multiple conditions
     $from = "FROM `{$this->mySqlTablePrefix}{$table}` ";
-    $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
+    if($table !== 'activity')
+      $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
+    else
+      $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner` IN(SELECT `follows` FROM `{$this->mySqlTablePrefix}relationship` WHERE `actor`='{$this->getActor()}')";
     $groupBy = '';
     $sortBy = 'ORDER BY dateSortByDay DESC';
     if(!empty($filters) && is_array($filters))
@@ -1586,6 +1588,16 @@ class DatabaseMySql implements DatabaseInterface
   {
     $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':owner' => $this->owner, ':type' => $type, ':element' => $id));
     return $res !== false;
+  }
+
+  private function getActor()
+  {
+    if($this->actor !== null)
+      return $this->actor;
+
+    $user = new User;
+    $this->actor = $user->getEmailAddress();
+    return $this->actor;
   }
 
   /**
