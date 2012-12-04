@@ -39,7 +39,7 @@ class CredentialTest extends PHPUnit_Framework_TestCase
   /**
    * @depends testValidateOAuthLibraryExists
    */
-  public function testAddSuccess()
+  public function testCreateSuccess()
   {
     $provider = $this->getMock('foobar', array('generateToken'));
     $provider->expects($this->any())
@@ -53,14 +53,14 @@ class CredentialTest extends PHPUnit_Framework_TestCase
     $this->credential->inject('db', $db);
     
     $expected = substr(bin2hex($this->token), 0, 30);
-    $id = $this->credential->add('name', array());
+    $id = $this->credential->create('name', array());
     $this->assertEquals($expected, $id, 'The ID returned by add was incorrect');
   }
 
   /**
    * @depends testValidateOAuthLibraryExists
    */
-  public function testAddFailure()
+  public function testCreateFailure()
   {
     $provider = $this->getMock('foobar', array('generateToken'));
     $provider->expects($this->any())
@@ -73,7 +73,7 @@ class CredentialTest extends PHPUnit_Framework_TestCase
     $this->credential->inject('provider', $provider);
     $this->credential->inject('db', $db);
     
-    $id = $this->credential->add('name', array());
+    $id = $this->credential->create('name', array());
     $this->assertFalse($id, 'The ID returned by add was incorrect');
   }
 

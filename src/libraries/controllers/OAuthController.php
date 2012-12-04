@@ -53,7 +53,7 @@ class OAuthController extends BaseController
     }
 
     // TODO make permissions an array
-    $consumerKey = getCredential()->add($_POST['name'], array()/*$_POST['permissions']*/);
+    $consumerKey = getCredential()->create($_POST['name'], array()/*$_POST['permissions']*/);
     if(!$consumerKey)
     {
       getLogger()->warn(sprintf('Could not add credential for: %s', json_encode($consumerKey)));

@@ -1009,10 +1009,8 @@ class DatabaseMySql implements DatabaseInterface
   public function postTag($id, $params)
   {
     if(!isset($params['id']))
-    {
       $params['id'] = $id;
-    }
-    $params['owner'] = $this->owner;
+
     $params = $this->prepareTag($params);
     if(isset($params['::bindings']))
       $bindings = $params['::bindings'];
@@ -1125,7 +1123,6 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putAlbum($id, $params)
   {
-    $params['owner'] = $this->owner;
     $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute($sql = "INSERT INTO `{$this->mySqlTablePrefix}album` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return ($result !== false);
@@ -1141,7 +1138,6 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putCredential($id, $params)
   {
-    $params['owner'] = $this->owner;
     if(!isset($params['id']))
       $params['id'] = $id;
     $params = $this->prepareCredential($params);
@@ -1184,7 +1180,6 @@ class DatabaseMySql implements DatabaseInterface
   public function putPhoto($id, $params)
   {
     $params['id'] = $id;
-    $params['owner'] = $this->owner;
     $tags = null;
     if(isset($params['tags']) && !empty($params['tags']))
       $tags = (array)explode(',', $params['tags']);
@@ -1223,7 +1218,6 @@ class DatabaseMySql implements DatabaseInterface
   {
     if(!isset($params['id']))
       $params['id'] = $id;
-    $params['owner'] = $this->owner;
     $params = $this->prepareResourceMap($params);
     $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}resourceMap` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
@@ -1279,7 +1273,7 @@ class DatabaseMySql implements DatabaseInterface
   public function putWebhook($id, $params)
   {
     $stmt = $this->sqlInsertExplode($params);
-    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}webhook` (id,owner,{$stmt['cols']}) VALUES (:id,:owner,{$stmt['vals']})", array(':id' => $id, ':owner' => $this->owner));
+    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}webhook` ({$stmt['cols']}) VALUES (:id,:owner,{$stmt['vals']})");
     return $result !== false;
   }
 
