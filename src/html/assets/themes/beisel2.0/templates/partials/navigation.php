@@ -12,7 +12,7 @@
           <li class="photos"><a href="<?php $this->url->photosView(); ?>"><i class="icon-picture icon-large"></i> Gallery</a></li>
           <li class="albums"><a href="<?php $this->url->albumsView(); ?>"><i class="icon-th icon-large"></i> Albums</a></li>
           <li class="tags"><a href="<?php $this->url->tagsView(); ?>"><i class="icon-tags icon-large"></i> Tags</a></li>
-          <?php if($this->user->isOwner()) { ?>
+          <?php if($this->user->isAdmin()) { ?>
             <li class="upload"><a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload-alt icon-large"></i> Upload</a></li>
             <li class="manage">
               <ul class="nav pull-right">

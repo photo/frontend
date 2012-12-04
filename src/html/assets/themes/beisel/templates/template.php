@@ -15,7 +15,7 @@
       <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'bootstrap.min.css'); ?>">
       <link rel="stylesheet" href="/assets/stylesheets/upload.css">
       <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'main.css'); ?>">
-      <?php if(true || $this->user->isOwner()) { ?>
+      <?php if(true || $this->user->isAdmin()) { ?>
         <link rel="stylesheet" href="<?php $this->theme->asset('stylesheet', 'owner.css'); ?>">
       <?php } ?>
     <?php } else { ?>
@@ -23,7 +23,7 @@
                                                                   addCss("/assets/stylesheets/upload.css")->
                                                                   addCss($this->theme->asset('stylesheet', 'main.css', false))->
                                                                   getUrl(AssetPipeline::css, 'i'); ?>">
-      <?php if(true || $this->user->isOwner()) { ?>
+      <?php if(true || $this->user->isAdmin()) { ?>
         <link rel="stylesheet" href="<?php echo getAssetPipeline(true)->addCss($this->theme->asset('stylesheet', 'owner.css', false))->
                                                                   getUrl(AssetPipeline::css, 'd'); ?>">
       <?php } ?>
@@ -99,7 +99,7 @@
             'upload-start-click':'click:upload-start',
             'webhook-delete-click':'click:webhook-delete'
         },
-        <?php if($this->user->isOwner()) { ?>
+        <?php if($this->user->isAdmin()) { ?>
           'change': {
               'batch-field-change':'change:batch-field'
           },

@@ -26,11 +26,11 @@
       <p>Start by clicking the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> or <a href="https://openphoto.me"><i class="icon-plus icon-large"></i> register</a> button.</p>
     <?php } ?>
   <?php } else { // user is logged in ?>
-    <?php if($this->user->isOwner() && $type == 'upload') { // message to upload photos ?>
+    <?php if($this->user->isAdmin() && $type == 'upload') { // message to upload photos ?>
       <strong class="bigtext"><i class="icon-upload-alt icon-large"></i></strong><br/>
       <h1>Either you haven't uploaded photos yet or none matched your search.</h1>
       <p>Start now by clicking the <a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload-alt icon-large"></i> upload button</a>!</p>
-    <?php } else if($this->user->isOwner() && $type == 'albums') { // message to create albums ?>
+    <?php } else if($this->user->isAdmin() && $type == 'albums') { // message to create albums ?>
       <strong class="bigtext"><i class="icon-th icon-large"></i></strong><br/>
       <h1>You haven't created an albums on OpenPhoto yet.</h1>
       <p>Start now by clicking the <a href="<?php $this->url->manageAlbums(); ?>"><i class="icon-th icon-large"></i> manage albums button</a>!</p>
@@ -42,7 +42,7 @@
     <?php } else { // default with message appropriate for owner/visitor ?>
       <strong class="bigtext">:-(</strong><br/>
       <h1>Sorry, nothing to see here.</h1>
-      <?php if($this->user->isOwner()) { ?>
+      <?php if($this->user->isAdmin()) { ?>
         <p>You can <a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload-alt icon-large"></i> upload photos</a> or <a href="<?php $this->url->manage(); ?>"><i class="icon-upload-alt icon-large"></i> manage your account</a>.</p>
       <?php } else { ?>
         <p>You can <a href="https://openphoto.me"><i class="icon-plus icon-large"></i> register</a> for your own account.</p>

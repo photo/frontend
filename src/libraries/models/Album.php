@@ -58,7 +58,7 @@ class Album extends BaseModel
     if(!$album)
       return false;
 
-    if(!$this->user->isOwner())
+    if(!$this->user->isAdmin())
     {
       if(!$this->isAlbumCoverVisible($album))
         $album['cover'] = null;
@@ -79,7 +79,7 @@ class Album extends BaseModel
     if($albums === false)
       return false;
     
-    if(!$this->user->isOwner())
+    if(!$this->user->isAdmin())
     {
       foreach($albums as $key => $alb)
       {

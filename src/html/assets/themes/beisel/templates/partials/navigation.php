@@ -5,7 +5,7 @@
 	<li id="nav-tags" <?php if($this->utility->isActiveTab('tags')) { ?> class="active" <?php } ?>>
 		<a href="<?php $this->url->tagsView(); ?>">Tags</a>
 	</li>
-<?php if($this->user->isOwner()) { ?>
+<?php if($this->user->isAdmin()) { ?>
 	<li id="nav-upload" <?php if($this->utility->isActiveTab('upload')) { ?> class="active" <?php } ?>>
 		<a href="<?php $this->url->photosUpload(); ?>">Upload</a>
 	</li>

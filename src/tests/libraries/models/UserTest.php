@@ -372,6 +372,10 @@ class UserTest extends PHPUnit_Framework_TestCase
     $this->user->inject('config', $config);
 
     $res = $this->user->isOwner();
+    $this->assertFalse($res);
+    $res = $this->user->isOwner(true);
+    $this->assertTrue($res);
+    $res = $this->user->isAdmin();
     $this->assertTrue($res);
   }
 
