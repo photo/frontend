@@ -22,7 +22,7 @@
               <span>Marked this photo as a favorite.</span>
             <?php } ?>
             <span class="date">
-              <?php if($this->user->isOwner()) { ?>
+              <?php if($this->user->isAdmin()) { ?>
                 <form method="post" action="<?php $this->url->actionDelete($action['id']); ?>">
                   <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
                   <a href="<?php $this->url->actionDelete($action['id']); ?>" data-id="<?php $this->utility->safe($action['id']); ?>" class="action-delete-click"><span></span>Delete comment</a>

@@ -89,7 +89,7 @@ class PhotoController extends BaseController
     $isAttachment = !isset($_GET['stream']) || $_GET['stream'] != '1';
     $userObj = new User;
     // the API enforces permissions, we just have to check for download privileges
-    if($userObj->isOwner() || $this->config->site->allowOriginalDownload == 1)
+    if($userObj->isAdmin() || $this->config->site->allowOriginalDownload == 1)
     {
       $photoResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
       $photo = $photoResp['result'];
@@ -197,7 +197,7 @@ class PhotoController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     $userObj = new User;
-    if(!$userObj->isOwner())
+    if(!$userObj->isAdmin())
     {
       $this->route->run('/error/403');
       return;

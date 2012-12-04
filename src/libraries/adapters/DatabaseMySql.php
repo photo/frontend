@@ -12,7 +12,7 @@ class DatabaseMySql implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $actor, $config, $errors = array(), $owner, $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
+  private $actor, $config, $errors = array(), $isOwner, $isAdmin, $owner, $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
 
   /**
     * Constructor
@@ -1413,10 +1413,15 @@ class DatabaseMySql implements DatabaseInterface
     $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
     if($table === 'activity')
     {
-      $ids = array($this->getActor());
-      $queryForFollows = $this->db->all("SELECT `follows` FROM `{$this->mySqlTablePrefix}relationship` WHERE `actor`=:actor", array(':actor' => $this->getActor()));
-      foreach($queryForFollows as $followRes)
-        $ids[] = $this->_($followRes['follows']);
+      // for owners and admins we get social feed
+      // for everyone else just get activity for this site
+      $ids = array($this->owner);
+      if($this->isAdmin())
+      {
+        $queryForFollows = $this->db->all("SELECT `follows` FROM `{$this->mySqlTablePrefix}relationship` WHERE `actor`=:actor", array(':actor' => $this->getActor()));
+        foreach($queryForFollows as $followRes)
+          $ids[] = $this->_($followRes['follows']);
+      }
       $ids = sprintf("'%s'", implode("','", $ids));
       $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner` IN({$ids})";
     }
@@ -1598,6 +1603,15 @@ class DatabaseMySql implements DatabaseInterface
     $user = new User;
     $this->actor = $user->getEmailAddress();
     return $this->actor;
+  }
+
+  private function isAdmin()
+  {
+    if($this->isAdmin !== null)
+      return $this->isAdmin;
+
+    $user = new User;
+    return $user->isAdmin();
   }
 
   /**

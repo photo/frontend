@@ -40,7 +40,7 @@ class OAuthController extends BaseController
   public function authorizePost()
   {
     $userObj = new User;
-    if(!$userObj->isOwner())
+    if(!$userObj->isAdmin())
     {
       $this->route->run('/error/403', EpiRoute::httpGet);
       die();

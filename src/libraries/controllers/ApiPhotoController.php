@@ -696,7 +696,7 @@ class ApiPhotoController extends ApiBaseController
     {
       return $this->notFound("Photo {$id} not found", false);
     }
-    elseif(!$this->user->isOwner())
+    elseif(!$this->user->isAdmin())
     {
       if($photo['permission'] == 0)
       {
@@ -800,7 +800,7 @@ class ApiPhotoController extends ApiBaseController
     $groupsObj = new Group;
     // If the user is logged in then we can display photos based on group membership
     $permission = 0;
-    if($this->user->isOwner())
+    if($this->user->isAdmin())
     {
       $permission = 1;
     }

@@ -35,7 +35,7 @@ class Tag extends BaseModel
   public function getTag($tag = null)
   {
     $userObj = new User;
-    $tagField = $userObj->isOwner() ? 'countPrivate' : 'countPublic';
+    $tagField = $userObj->isAdmin() ? 'countPrivate' : 'countPublic';
     $tag = $this->db->getTag($tag);
     if(!$tag || $tag[$tagField] == 0)
       return false;

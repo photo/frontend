@@ -44,7 +44,7 @@ class Activity extends BaseModel
   public function list_($filters, $pageSize)
   {
     $filters['pageSize'] = $pageSize;
-    if(!$this->user->isOwner())
+    if(!$this->user->isAdmin())
       $filters['permission'] = '1';
     return $this->db->getActivities($filters);
   }

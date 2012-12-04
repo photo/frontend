@@ -69,7 +69,7 @@ class Photo extends BaseModel
 
     $photo['pathBase'] = $this->generateUrlBaseOrOriginal($photo, 'base');
     // the original needs to be conditionally included
-    if($this->config->site->allowOriginalDownload == 1 || $this->user->isOwner())
+    if($this->config->site->allowOriginalDownload == 1 || $this->user->isAdmin())
     {
       $photo['pathOriginal'] = $this->generateUrlBaseOrOriginal($photo, 'original');
       $photo['pathDownload'] = $this->generateUrlDownload($photo);

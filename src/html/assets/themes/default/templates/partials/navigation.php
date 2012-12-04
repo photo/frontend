@@ -16,7 +16,7 @@
       </form>
     </div>
   </li>
-  <?php if($this->user->isOwner()) { ?>
+  <?php if($this->user->isAdmin()) { ?>
     <li id="nav-upload" <?php if($this->utility->isActiveTab('search')) { ?> class="on" <?php } ?>>
       <a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload-alt"></i>Upload</a>
     </li>
