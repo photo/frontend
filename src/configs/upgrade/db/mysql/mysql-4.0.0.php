@@ -21,11 +21,21 @@ SQL;
 
 }
 
+$sql = <<<SQL
+  CREATE TABLE `{$this->mySqlTablePrefix}relationship` (
+   `actor` varchar(127) NOT NULL,
+   `follows` varchar(127) NOT NULL,
+   `dateCreated` datetime NOT NULL,
+   PRIMARY KEY (`actor`,`follows`)
+  ) ENGINE=InnoDB;
+SQL;
+$status = $status && mysql_4_0_0($sql, array(':key' => 'version', ':version' => '4.0.0'));
+
 
 $sql = <<<SQL
   UPDATE `{$this->mySqlTablePrefix}admin` SET `value`=:version WHERE `key`=:key
 SQL;
-$status = $status && mysql_3_0_8($sql, array(':key' => 'version', ':version' => '4.0.0'));
+$status = $status && mysql_4_0_0($sql, array(':key' => 'version', ':version' => '4.0.0'));
 
 function mysql_4_0_0($sql, $params = array())
 {
