@@ -33,7 +33,7 @@
                 <input type="password" name="password">
               </fieldset>
         
-              <button class="btn btn-primary">Login</button> or <a href="#" class="manage-password-request-click">enter your email and click to reset</a>
+              <button class="btn btn-primary">Login</button> or <a href="https://openphoto.me/password/forgot">request a new password</a>
             </form>
           </div>
         <?php } ?>
