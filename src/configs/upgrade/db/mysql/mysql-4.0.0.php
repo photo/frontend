@@ -21,12 +21,19 @@ SQL;
 
 }
 
-//GH-1024
+// GH-1024
 $sql = <<<SQL
   ALTER TABLE `{$this->mySqlTablePrefix}tag` DROP INDEX `id` ,
   ADD UNIQUE `id` ( `owner` , `id` ) ;
 SQL;
 $status = $status && mysql_4_0_0($sql, array(':key' => 'version', ':version' => '4.0.0'));
+
+// GH-1025
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}config` ADD INDEX ( `aliasOf` ) ;
+SQL;
+$status = $status && mysql_4_0_0($sql, array(':key' => 'version', ':version' => '4.0.0'));
+
 
 
 
