@@ -21,6 +21,14 @@ SQL;
 
 }
 
+//GH-1024
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}tag` DROP INDEX `id` ,
+  ADD UNIQUE `id` ( `owner` , `id` ) ;
+SQL;
+$status = $status && mysql_4_0_0($sql, array(':key' => 'version', ':version' => '4.0.0'));
+
+
 
 $sql = <<<SQL
   UPDATE `{$this->mySqlTablePrefix}admin` SET `value`=:version WHERE `key`=:key
