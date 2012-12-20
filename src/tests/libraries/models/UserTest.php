@@ -13,8 +13,24 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(array('foo')));
   }
 
-  public function testGetAvatarFromEmail()
+  public function testGetAvatarFromEmailFromLibrary()
   {
+    $db = $this->getMock('Db', array('getUser', 'postUser', 'putUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->returnValue(array('id' => 'test@example.com', 'lastPhotoId' => 'abc', 'attrprofilePhoto' => 'http://foo/bar')));
+    $this->user->inject('db', $db);
+    $res = $this->user->getAvatarFromEmail(50, 'test@example.com');
+    $this->assertEquals('http://foo/bar', $res);
+  }
+
+  public function testGetAvatarFromEmailGravatar()
+  {
+    $db = $this->getMock('Db', array('getUser', 'postUser', 'putUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->returnValue(array('id' => 'test@example.com', 'lastPhotoId' => 'abc')));
+    $this->user->inject('db', $db);
     $res = $this->user->getAvatarFromEmail(50, 'test@example.com');
     $this->assertEquals('http://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=50', $res);
   }

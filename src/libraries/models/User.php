@@ -46,6 +46,14 @@ class User extends BaseModel
     if($email === null)
       $email = $this->session->get('email');
 
+    // TODO return standard avatar
+    if(empty($email))
+      return;
+
+    $user = $this->db->getUser($email);
+    if(isset($user['attrprofilePhoto']) && !empty($user['attrprofilePhoto']))
+      return $user['attrprofilePhoto'];
+
     $hash = md5(strtolower(trim($email)));
     return "http://www.gravatar.com/avatar/{$hash}?s={$size}";
   }
@@ -62,6 +70,25 @@ class User extends BaseModel
       return $credential->getEmailFromOAuth();
     else
       return $this->session->get('email');
+  }
+
+  /**
+    * Get a name given an email address
+    *
+    * @return string
+    */
+  public function getNameFromEmail($email)
+  {
+    if($email === null)
+      $email = $this->session->get('email');
+
+    if(!empty($email))
+    {
+      $user = $this->db->getUser($email);
+      if(isset($user['attrprofileName']) && !empty($user['attrprofileName']))
+        return $user['attrprofileName'];
+    }
+    return 'OpenPhoto User';
   }
 
   /**
