@@ -5,6 +5,15 @@ var Gallery = (function($) {
   // Keep track of remaining width on last row and date
   var lastRowWidthRemaining = 0;
   var lastDate = null;
+  
+  // Backbone View For Images Meta Data
+  var MetaView = Backbone.View.extend({
+    template    :_.template($('#photo-meta').html()),
+    render      :function(){
+      $(this.el).html(this.template(this.model.toJSON()));
+      return this;
+    }
+  });
 
 
   // defaults
@@ -29,7 +38,7 @@ var Gallery = (function($) {
   var calendarContainer = $('<div/>'),
       a = $('<a/>');
     calendarContainer.attr('class', 'date-placeholder');
-    a.html('<i class="icon-calendar icon-large""></i> '+phpjs.date('M jS, Y', ts));
+    a.html('<i class="tb-icon-small-calendar tb-icon-light""></i> '+phpjs.date('M jS, Y', ts));
     calendarContainer.append(a);
     return calendarContainer;
   };
@@ -173,7 +182,7 @@ var Gallery = (function($) {
 	 * to the image. 
 	 */
 	var createImageElement = function(parent, item) {
-    var pageObject = opTheme.init.pages.photos;
+    var pageObject = TBX.init.pages.photos;
     var qsRe = /(page|returnSizes)=[^&?]+\&?/g;
     var qs = pageObject.pageLocation.search.replace(qsRe, '');
 		var imageContainer = $('<div class="imageContainer"/>');
@@ -217,6 +226,24 @@ var Gallery = (function($) {
     if(currentDate !== lastDate)
       imageContainer.prepend(dateSeparator(item.dateTaken));
     lastDate = currentDate;
+    
+    /**
+     * Add meta information to bottom
+     *
+     * @date 2012-12-11
+     * @author fabrizim
+     */
+    var meta = $('<div class="meta" />').appendTo(imageContainer)
+    // while we could grab this directly from the item,
+    // this should all be derived from the Backbone Store
+    // for the page
+      , model = op.data.store.Photos.get(item.id)
+      , view = new MetaView({model: model, el: meta})
+    
+    view.render();
+      
+    
+    // End meta section
 
 		// fade in the image after load
 		img.bind("load", function () { 
@@ -275,4 +302,3 @@ var Gallery = (function($) {
 		}
 	}
 })(jQuery);
-
