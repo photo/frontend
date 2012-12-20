@@ -101,24 +101,24 @@ class ApiUserController extends ApiBaseController
     return $this->success('Password was updated successfully.', true);
   }
 
-  /**
-    * Update a group
-    *
-    * @param string $id id of the group to update
-    * @return string Standard JSON envelope
-    */
-  public function postGroup($id = null)
+  public function profile()
   {
-    getAuthentication()->requireAuthentication();
+    $userObj = new User;
+    $user = $userObj->getUserRecord();
+    if(empty($user))
+      return $this->notFound('Could not load user profile');
+    
+    $profile = array(
+      'photoUrl' => $userObj->getAvatarFromEmail(),
+      //'photoId' => '',
+      'name' => $userObj->getNameFromEmail()
+    );
 
-    if(!$id)
-      $id = $this->user->getNextId('group');
+    if($userObj->isAdmin())
+    {
+      $profile['email'] = $userObj->getEmailAddress();
+    }
 
-    $res = getDb()->postGroup($id, $_POST);
-
-    if($res)
-      return $this->success("Group {$id} was updated", array_merge(array('id' => $id), $_POST));
-    else
-      return $this->error("Could not updated group {$id}", false);
+    return $this->success('User profile', $profile);
   }
 }

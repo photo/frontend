@@ -77,10 +77,10 @@ class User extends BaseModel
     *
     * @return string
     */
-  public function getNameFromEmail($email)
+  public function getNameFromEmail($email = null)
   {
     if($email === null)
-      $email = $this->session->get('email');
+      $email = $this->getEmailAddress();
 
     if(!empty($email))
     {
