@@ -1,0 +1,49 @@
+.trovebox {
+  .trovebox-banner {
+    .trovebox-message {
+      border-top-width: 0;
+      border-bottom: 1px solid darken(#badbe0, 10%);
+      background-color: #badbe0;
+      color: #333;
+      padding: 0;
+      margin-bottom: 0;
+      .close {
+        right: 0;
+      }
+      .container {
+        position: relative;
+        padding: 10px 0;
+        
+        
+        &:before {
+          
+          content: ' ';
+          position: absolute;
+          width: 0px;
+          height: 0px;
+          line-height: 0;
+          left: 84px;
+          margin-left: -6px;
+          border-bottom: 6px solid #bebec0;
+          border-left: 9px solid transparent;
+          border-right: 9px solid transparent;
+          bottom: 100%;
+        }
+        
+        &:after {
+          content: ' ';
+          position: absolute;
+          width: 0px;
+          height: 0px;
+          line-height: 0;
+          left: 85px;
+          margin-left: -5px;
+          border-bottom: 5px solid #badbe0;
+          border-left: 7px solid transparent;
+          border-right: 7px solid transparent;
+          bottom: 100%;
+        }
+      }
+    }
+  }
+}

@@ -9,7 +9,13 @@
     
     <!-- link href="../../assets/css/bootstrap.css" rel="stylesheet" -->
     <!--<link href="../../theme/style/dev.css.php" rel="stylesheet">-->
-    <link href="<?php $this->theme->asset('stylesheet', 'fabrizio1.0.css'); ?>" rel="stylesheet">
+    <?php if($this->config->site->mode === 'dev') { ?>
+      <link href="/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less" rel="stylesheet">
+    <?php } else { ?>
+      <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->
+                                                                  addCss("/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less")->
+                                                                  getUrl(AssetPipeline::css, 'a'); ?>">
+    <?php } ?>
       
     <!-- <link href="../../assets/css/bootstrap-responsive.css" rel="stylesheet"> -->
 

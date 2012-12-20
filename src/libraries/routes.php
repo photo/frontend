@@ -106,6 +106,12 @@ $routeObj->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenRequ
 $routeObj->get('/v[1]/oauth/test', array('OAuthController', 'test'));
 $routeObj->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
 
+/*
+ * HTML endpoints that require logic
+ */
+$routeObj->get('/assets/.*/stylesheets/lessc', array('AssetController', 'lessc'));
+
+
 if($runUpgrade)
   require $configObj->get('paths')->libraries . '/routes-upgrade.php';
 
