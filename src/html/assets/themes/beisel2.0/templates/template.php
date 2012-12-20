@@ -1,4 +1,3 @@
-<?php $this->theme->setTheme(); // force this as the default theme ?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
