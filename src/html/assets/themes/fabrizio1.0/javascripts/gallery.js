@@ -5,16 +5,6 @@ var Gallery = (function($) {
   // Keep track of remaining width on last row and date
   var lastRowWidthRemaining = 0;
   var lastDate = null;
-  
-  // Backbone View For Images Meta Data
-  var MetaView = Backbone.View.extend({
-    template    :_.template($('#photo-meta').html()),
-    render      :function(){
-      $(this.el).html(this.template(this.model.toJSON()));
-      return this;
-    }
-  });
-
 
   // defaults
   var configuration = {
@@ -23,7 +13,8 @@ var Gallery = (function($) {
   	'defaultWidthValue':120,
   	'defaultHeightValue':120
   };
-
+  
+  
 	/* ------------ PRIVATE functions ------------ */
 
 	/** Utility function that returns a value or the defaultvalue if the value is null */
@@ -238,10 +229,9 @@ var Gallery = (function($) {
     // this should all be derived from the Backbone Store
     // for the page
       , model = op.data.store.Photos.get(item.id)
-      , view = new MetaView({model: model, el: meta})
+      , view = new op.data.view.PhotoGallery({model: model, el: meta})
     
     view.render();
-      
     
     // End meta section
 

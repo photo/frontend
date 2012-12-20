@@ -9,6 +9,7 @@
       <li><a href="#"><i class="tb-icon-small-comment tb-icon-dark"></i> <span class="number">24</span></a>
       <li><a href="#"><i class="tb-icon-small-heart tb-icon-dark"></i> <span class="number">24</span></a>
       <li><a href="#"><i class="tb-icon-small-maximize tb-icon-dark"></i> <span class="number">Share</span></a>
+      <li><a href="#"><i class="tb-icon-small-<%= permission == 1 ? 'locked' : 'unlocked' %> tb-icon-dark permission" data-id="<%= id %>"></i></a>
     </ul>
   </div>
 </script>

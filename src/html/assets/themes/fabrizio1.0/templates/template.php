@@ -9,7 +9,7 @@
     
     <!-- link href="../../assets/css/bootstrap.css" rel="stylesheet" -->
     <!--<link href="../../theme/style/dev.css.php" rel="stylesheet">-->
-      <link href="<?php $this->theme->asset('stylesheet', 'fabrizio1.0.css'); ?>" rel="stylesheet">
+    <link href="<?php $this->theme->asset('stylesheet', 'fabrizio1.0.css'); ?>" rel="stylesheet">
       
     <!-- <link href="../../assets/css/bootstrap-responsive.css" rel="stylesheet"> -->
 
