@@ -238,6 +238,57 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
     $this->assertEquals($res['lastPhotoId'], 'abc', 'The MySql adapter did not return "abc" as the lastPhotoId for getUser');
   }
 
+  public function testGetUserCacheSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('one'));
+    $db->expects($this->once())
+      ->method('one')
+      ->will($this->returnValue(MySqlMockHelper::getUser()));
+    $user2 = MySqlMockHelper::getUser();
+    $user2['id'] = 'user2';
+    $db->expects($this->once())
+      ->method('one')
+      ->will($this->returnValue($user2));
+
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getUser();
+    $this->assertEquals($res['id'], 'foo', 'The MySql adapter did not return "foo" as the id for getUser');
+    
+    // 2nd call should return first value
+    $res = $this->db->getUser();
+    $this->assertEquals($res['id'], 'foo', 'The MySql adapter did not return "foo" as the id for getUser in cached call');
+  }
+
+  public function testGetUserCacheClearSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('one','execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(1));
+    $db->expects($this->at(0))
+      ->method('one')
+      ->will($this->returnValue(MySqlMockHelper::getUser()));
+    $user2 = MySqlMockHelper::getUser();
+    $user2['lastPhotoId'] = 'xyz';
+    // here we set the index to 2 because postUser calls execute on this mock
+    $db->expects($this->at(2))
+      ->method('one')
+      ->will($this->returnValue($user2));
+
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getUser();
+    $this->assertEquals($res['lastPhotoId'], 'abc', 'The MySql adapter did not return "abc" as the id for lastPhotoId');
+
+    // this should clear the cache
+    $this->db->postUser(array('id' => 'bar'));
+    
+    // 2nd call should return second value
+    $res = $this->db->getUser();
+    $this->assertEquals($res['lastPhotoId'], 'xyz', 'The MySql adapter did not return "xyz" as the lastPhotoId since cache should be  cleared');
+  }
+
   public function testGetUserFailure()
   {
     $db = $this->getMock('MySqlMock', array('one'));
