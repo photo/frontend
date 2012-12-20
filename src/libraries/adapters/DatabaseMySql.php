@@ -12,7 +12,7 @@ class DatabaseMySql implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $actor, $config, $errors = array(), $isOwner, $isAdmin, $owner, $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
+  private $actor, $cache = array(), $config, $errors = array(), $isOwner, $isAdmin, $owner, $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
 
   /**
     * Constructor
@@ -676,9 +676,16 @@ class DatabaseMySql implements DatabaseInterface
   {
     if($owner === null)
       $owner = $this->owner;
+
+    $cached = $this->cacheGet('user', $owner);
+    if($cached !== null)
+      return $cached;
+
     $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
+ 
     if($res)
-      return $this->normalizeUser($res);
+      return $this->cacheSet('user', $this->normalizeUser($res), $owner);
+
     return null;
   }
 
@@ -1066,7 +1073,13 @@ class DatabaseMySql implements DatabaseInterface
     }
 
     $res = $this->db->execute($sql, $params); 
-    return ($res == 1);
+    if($res == 1)
+    {
+      // clear the cache
+      $this->cacheSet('user', null, $this->owner);
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -1541,6 +1554,40 @@ class DatabaseMySql implements DatabaseInterface
       return "where {$add} ";
     else
       return "{$existing} and {$add} ";
+  }
+
+  /**
+    * Get an entry from the cache
+    *
+    * @param string $node Top level container
+    * @param string $key Second level container
+    * @return mixed Returns value from cache
+    */
+  private function cacheGet($node, $key = '')
+  {
+    $id = md5(sprintf('%s-%s', $node, $key));
+    if(isset($this->cache[$id]))
+      return $this->cache[$id];
+    return null;
+  }
+
+  /**
+    * Set a value for a cached entry
+    *
+    * @param string $node Top level container
+    * @param string $value to be stored (if null the entry is deleted)
+    * @param string $key Second level container
+    * @return mixed Returns $value
+    */
+  private function cacheSet($node, $value, $key = '')
+  {
+    $id = md5(sprintf('%s-%s', $node, $key));
+    if($value === null)
+      unset($this->cache[$id]);
+    else
+      $this->cache[$id] = $value;
+
+    return $value;
   }
 
   /**
@@ -2094,7 +2141,6 @@ class DatabaseMySql implements DatabaseInterface
       $this->addGroupsToElement($id, $groups, 'photo');
 
   }
-
 
   /**
    * Wrapper function for escaping strings for queries
