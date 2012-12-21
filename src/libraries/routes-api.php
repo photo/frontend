@@ -102,6 +102,7 @@ $apiObj->get('/?v?1?/user/logout.json', array('ApiUserController', 'logout'), Ep
 $apiObj->post('/?v?1?/user/password/request.json', array('ApiUserController', 'passwordRequest'), EpiApi::external);
 $apiObj->post('/?v?1?/user/password/reset.json', array('ApiUserController', 'passwordReset'), EpiApi::external);
 $apiObj->get('/?v?1?/user/profile.json', array('ApiUserController', 'profile'), EpiApi::external);
+$apiObj->post('/?v?1?/user/profile.json', array('ApiUserController', 'profilePost'), EpiApi::external);
 
 /*
  * OAuth endpoints
