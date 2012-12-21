@@ -121,7 +121,7 @@ class User extends BaseModel
     */
   public function getAttribute($name)
   {
-    $name = sprintf('attr%s', $name);
+    $name = $this->getAttributeName($name);
     $user = $this->getUserRecord();
     if($user === false)
       return false;
@@ -129,6 +129,17 @@ class User extends BaseModel
     if(isset($user[$name]))
       return $user[$name];
     return false;
+  }
+
+  /**
+    * Gets an attribute name
+    * @param string $name The name of the value to retrieve
+    *
+    * @return string
+    */
+  public function getAttributeName($name)
+  {
+    return sprintf('attr%s', $name);
   }
 
   /**
@@ -252,7 +263,7 @@ class User extends BaseModel
     */
   public function setAttribute($name, $value)
   {
-    $name = sprintf('attr%s', $name);
+    $name = $this->getAttributeName($name);
     return $this->update(array($name => $value));
   }
 

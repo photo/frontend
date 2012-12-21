@@ -160,6 +160,12 @@ class UserTest extends PHPUnit_Framework_TestCase
     $this->assertFalse($res);
   }
 
+  public function testGetAttributeNameSuccess()
+  {
+    $res = $this->user->getAttributeName('foobar');
+    $this->assertEquals('attrfoobar', $res);
+  }
+
   public function testGetAttributeSuccess()
   {
     $this->user->inject('user', array('attrfoobar' => '1234'));
