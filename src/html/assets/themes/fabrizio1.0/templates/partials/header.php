@@ -1,3 +1,9 @@
+      <script type="tmpl/underscore" id="profile-photo-meta">
+        <img class="profile-pic profile-photo" src="<%= photoUrl %>" />
+      </script>
+      <script type="tmpl/underscore" id="profile-name-meta">
+        <%= name %>
+      </script>
       <!-- Logo and Primary Navigation -->
       <div class="navbar-inner navbar-inner-primary">
         <div class="container">
@@ -16,7 +22,7 @@
           </div>
           <?php if($this->user->isLoggedIn()) { ?>
             <div class="user">
-              <a href="#" class="profile-link" data-toggle="dropdown"><img class="profile-pic" src="<?php $this->utility->safe($this->user->getAvatarFromEmail()); ?>" /></a>
+              <a href="#" class="profile-link" data-toggle="dropdown"><span class="profile-photo-meta"></span></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="#">Child Item 1</a></li>
                 <li><a href="#">Child Item 2</a></li>
