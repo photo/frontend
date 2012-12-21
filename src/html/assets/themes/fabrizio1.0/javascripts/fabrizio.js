@@ -36,6 +36,15 @@ var TBX = (function() {
 
         // jm $('.dropdown-toggle').dropdown();
         // jm $('.modal').on('shown', TBX.callback.modalShown);
+        $.get('/user/profile.json', function(response) {
+          TBX.models.profile = new op.data.model.Profile(response.result);
+          $('.profile-name-meta').each(function(i, el) {
+            (new op.data.view.ProfileName({model:TBX.models.profile, el: el})).render();
+          });
+          $('.profile-photo-meta').each(function(i, el) {
+            (new op.data.view.ProfilePhoto({model:TBX.models.profile, el: el})).render();
+          });
+        }, 'json');
 
         if(location.pathname === '/')
           TBX.init.pages.front();
@@ -167,6 +176,9 @@ var TBX = (function() {
           }
         }
       }
+    },
+    models: {
+      profile: {}
     }
   };
 })();

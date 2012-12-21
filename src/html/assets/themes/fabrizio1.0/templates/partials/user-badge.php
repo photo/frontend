@@ -1,7 +1,7 @@
 <div class="userbadge">
-  <h4 class="username"><?php $this->utility->safe($this->user->getNameFromEmail($this->config->user->email)); ?></h4>
+  <h4 class="profile-name-meta username"></h4>
   <div class="tray-wrap">
-  <img src="<?php $this->utility->safe($this->user->getAvatarFromEmail($this->config->user->email)); ?>" title="<?php $this->utility->safe($this->user->getNameFromEmail($this->config->user->email)); ?>" class="avatar" />
+  <span class="profile-photo-meta avatar"></span>
     <div class="tray">
       <div class="details">
         <ul>

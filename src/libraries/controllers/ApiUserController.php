@@ -103,22 +103,63 @@ class ApiUserController extends ApiBaseController
 
   public function profile()
   {
-    $userObj = new User;
-    $user = $userObj->getUserRecord();
+    $user = $this->user->getUserRecord();
     if(empty($user))
       return $this->notFound('Could not load user profile');
     
+    $utilityObj = new Utility;
     $profile = array(
-      'photoUrl' => $userObj->getAvatarFromEmail(),
+      'id' => $utilityObj->getHost(),
+      'photoUrl' => $this->user->getAvatarFromEmail(),
       //'photoId' => '',
-      'name' => $userObj->getNameFromEmail()
+      'name' => $this->user->getNameFromEmail()
     );
 
-    if($userObj->isAdmin())
+    if($this->user->isAdmin())
     {
-      $profile['email'] = $userObj->getEmailAddress();
+      $profile['email'] = $this->user->getEmailAddress();
     }
 
     return $this->success('User profile', $profile);
+  }
+
+  public function profilePost()
+  {
+    getAuthentication()->requireAuthentication(true);
+    getAuthentication()->requireCrumb();
+    $params = array();
+    if(isset($_POST['photoId']))
+    {
+      $photoAttribute = $this->user->getAttributeName('profilePhoto');
+      if($_POST['photoId'] == '')
+      {
+        $params[$photoAttribute] = null;
+      }
+      else
+      {
+        $apiResp = $this->api->invoke(sprintf('/photo/%s/view.json', $_POST['photoId']), EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
+        if($apiResp['code'] !== 200)
+          return $this->error('Could not fetch profile photo', false);
+
+        $params[$photoAttribute] = $apiResp['result']['path100x100xCR'];
+      }
+    }
+
+    if(isset($_POST['name']))
+    {
+      $params[$this->user->getAttributeName('profileName')] = $_POST['name'];
+    }
+
+    if(!empty($params))
+    {
+      if(!$this->user->update($params))
+        return $this->error('Could not update profile', false);
+    }
+
+    $apiUserResp = $this->api->invoke('/user/profile.json', EpiRoute::httpGet);
+    if($apiUserResp['code'] !== 200)
+      return $this->error('Profile updated but could not retrieve', false);
+
+    return $this->success('Profile updated', $apiUserResp['result']);
   }
 }
