@@ -22,6 +22,11 @@ SQL;
 }
 
 $sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}activity` ADD `permission` BOOLEAN NOT NULL AFTER `data` 
+;
+$status = $status && mysql_4_0_0($sql, array(':key' => 'version', ':version' => '4.0.0'));
+
+$sql = <<<SQL
   CREATE TABLE `{$this->mySqlTablePrefix}relationship` (
    `actor` varchar(127) NOT NULL,
    `follows` varchar(127) NOT NULL,
