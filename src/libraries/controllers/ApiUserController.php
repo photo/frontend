@@ -147,7 +147,7 @@ class ApiUserController extends ApiBaseController
 
     if(isset($_POST['name']))
     {
-      $params[$this->user->getAttributeName('profileName')] = $_POST['name'];
+      $params[$this->user->getAttributeName('profileName')] = strip_tags($_POST['name']);
     }
 
     if(!empty($params))

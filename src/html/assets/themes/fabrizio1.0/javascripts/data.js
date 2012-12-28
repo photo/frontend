@@ -61,7 +61,38 @@ if( !window.op.data ) window.op.data = {};
     },
     modelChanged: function() {
       this.render();
+    },
+    events: {
+      'click .name': 'prompt'
+    },
+    prompt: function() {
+      var model = this.model, currentName = this.model.get('name');
+      var newName = prompt("Change your name", currentName);
+      if(newName === null || newName === currentName)
+        return;
+
+      model.set('name', newName, {silent:true});
+      model.save();
     }
+  });
+  var ProfilePhotoHeaderView = Backbone.View.extend({
+    initialize: function() {
+      this.model.on('change', this.modelChanged, this);
+    },
+    model: this.model,
+    tagName: 'span',
+    className: 'profile-photo-header-meta',
+    template    :_.template($('#profile-photo-header-meta').html()),
+    render      :function(){
+      $(this.el).html(this.template(this.model.toJSON()));
+      return this;
+    },
+    modelChanged: function() {
+      this.render();
+    }
+  });
+  var ProfileCollection = Backbone.Collection.extend({
+    model         :Profile
   });
   var ProfilePhotoView = Backbone.View.extend({
     initialize: function() {
@@ -140,13 +171,20 @@ if( !window.op.data ) window.op.data = {};
       return this;
     },
     events: {
-      'click .permission': 'permission'
+      'click .permission': 'permission',
+      'click .profile': 'profile'
     },
     permission: function(ev) {
       ev.preventDefault();
       var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model/*arguments[0].view.Photos.get(id)*/, view = this;
       model.set('permission', model.get('permission') == 0 ? 1 : 0, {silent:true});
       model.save();
+    },
+    profile: function(ev) {
+      ev.preventDefault();
+      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model/*arguments[0].view.Photos.get(id)*/, view = this;
+      TBX.models.profile.set('photoId', id, {silent:true});
+      TBX.models.profile.save();
     },
     modelChanged: function() {
       this.render();
@@ -167,6 +205,7 @@ if( !window.op.data ) window.op.data = {};
   exports.view = {
     PhotoGallery: PhotoGalleryView,
     ProfilePhoto: ProfilePhotoView,
+    ProfilePhotoHeader: ProfilePhotoHeaderView,
     ProfileName: ProfileNameView
   };
 })(window.op.data);
