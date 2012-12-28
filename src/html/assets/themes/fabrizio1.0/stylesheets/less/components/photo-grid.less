@@ -45,7 +45,7 @@
         left: 0;
         width: 100%;
         background: rgba(0,0,0,0.6);
-        overflow: hidden;
+        overflow: visible;
         .transition(bottom 0.2s);
         .photo-meta {
           padding: 4px 4px 6px;
@@ -80,10 +80,14 @@
         }
       }
       
-      &:hover {
+      &:hover, &.editing {
         .meta {
           bottom: 0;
         }
+      }
+      
+      &.editing {
+        overflow: visible;
       }
     }
   }
