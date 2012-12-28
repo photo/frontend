@@ -9,6 +9,7 @@
     
     <!-- link href="../../assets/css/bootstrap.css" rel="stylesheet" -->
     <!--<link href="../../theme/style/dev.css.php" rel="stylesheet">-->
+    <link href="/assets/themes/fabrizio1.0/javascripts/x-editable/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet" />
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less" rel="stylesheet">
     <?php } else { ?>
@@ -78,6 +79,7 @@
     <script src="<?php $this->theme->asset('javascript', 'underscore-min.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'backbone.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'x-editable/bootstrap-editable/js/bootstrap-editable.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'phpjs.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'data.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'gallery.js'); ?>"></script>
@@ -121,6 +123,7 @@
               '<?php $this->theme->asset('javascript', 'underscore-min.js'); ?>',
               '<?php $this->theme->asset('javascript', 'backbone.js'); ?>',
               '<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>',
+              '<?php $this->theme->asset('javascript', 'x-editable/bootstrap-editable/js/bootstrap-editable.js'); ?>',
               '<?php $this->theme->asset('javascript', 'phpjs.js'); ?>',
               '<?php $this->theme->asset('javascript', 'data.js'); ?>',
               '<?php $this->theme->asset('javascript', 'gallery.js'); ?>',
