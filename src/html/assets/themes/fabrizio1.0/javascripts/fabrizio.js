@@ -44,6 +44,7 @@ var TBX = (function() {
           $('.profile-photo-meta').each(function(i, el) {
             (new op.data.view.ProfilePhoto({model:TBX.models.profile, el: el})).render();
           });
+          (new op.data.view.ProfilePhoto({model:TBX.models.profile, el: $('.profile-photo-header-meta')})).render();
         }, 'json');
 
         if(location.pathname === '/')
