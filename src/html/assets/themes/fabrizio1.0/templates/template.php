@@ -67,7 +67,7 @@
     <div class="container">
       <?php echo $body; ?>
     </div> <!-- /container -->
-
+    <?php /* $this->theme->display('partials/underscore.php'); */ ?>
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
