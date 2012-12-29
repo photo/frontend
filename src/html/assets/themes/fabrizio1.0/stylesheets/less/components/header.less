@@ -145,9 +145,13 @@
       .profile-link {
         display: inline-block;
         margin-left: 10px;
+        white-space: nowrap;
         .profile-pic {
           height: 32px;
           border-radius: 4px;
+        }
+        &:hover {
+          text-decoration: none;
         }
         &:after {
           content: ' ';
@@ -156,6 +160,7 @@
           .tb-icon-small;
           .tb-icon-dark;
           .tb-icon-small-arrow-down;
+          vertical-align: middle;
         }
         &:focus, &:active {
           outline: 0;
