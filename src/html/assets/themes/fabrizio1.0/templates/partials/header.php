@@ -16,7 +16,7 @@
           </div>
           <?php if($this->user->isLoggedIn()) { ?>
             <div class="user">
-              <a href="#" class="profile-link" data-toggle="dropdown"><span class="profile-photo-header-meta"></span></a>
+              <a href="#" class="profile-link profile-photo-header-meta" data-toggle="dropdown"></a>
               <ul class="dropdown-menu" role="menu">
                 <li><a href="/user/logout">Logout</a></li>
               </ul>

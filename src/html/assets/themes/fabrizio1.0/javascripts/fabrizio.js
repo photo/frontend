@@ -5,6 +5,22 @@ var TBX = (function() {
     loginSuccess: function() {
       var redirect = $('input[name="r"]', this).val();
       window.location.href = redirect;
+    },
+    profilesSuccess: function(owner, viewer) {
+      profiles.owner = owner;
+      op.data.store.Profiles.add(profiles.owner);
+      if(viewer !== undefined) {
+        profiles.viewer = viewer;
+        op.data.store.Profiles.add(profiles.viewer);
+      }
+
+      $('.profile-name-meta').each(function(i, el) {
+        (new op.data.view.ProfileName({model:op.data.store.Profiles.get(profiles.owner.id), el: el})).render();
+      });
+      $('.profile-photo-meta').each(function(i, el) {
+        (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(profiles.owner.id), el: el})).render();
+      });
+      (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(profiles.viewer.id), el: $('.profile-photo-header-meta')})).render();
     }
   };
   crumb = (function() {
@@ -19,9 +35,40 @@ var TBX = (function() {
     };
   })();
   profiles = {
-    owner: {},
-    viewer: {}
+    owner: { },
+    viewer: { },
+    load: function() {
+      // TODO cache this somehow
+      $.get('/user/profile.json', {includeViewer: '1'}, function(response) {
+        if(response.code !== 200)
+          return;
+
+        var result = response.result, id = result.id, owner = result, viewer = result.viewer || null;
+        if(owner.viewer !== undefined)
+          delete owner.viewer;
+
+        callbacks.profilesSuccess(owner, viewer);
+      }, 'json');
+    }
   };
+  util = (function() {
+    return {
+      getDeviceWidth: function() {
+        return $(window).width();
+      },
+      fetchAndCache: function(src) {
+        $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
+      },
+      fetchAndCacheNextPrevious: function() {
+        var nextPhoto = $('img.next-photo'), prevPhoto = $('img.previous-photo');
+        if(prevPhoto.length > 0)
+          OP.Util.fire('preload:photo', {id: prevPhoto.attr('data-id'), sizes:'870x550'});
+        if(nextPhoto.length > 0)
+          OP.Util.fire('preload:photo', {id: nextPhoto.attr('data-id'), sizes:'870x550'});
+      }
+    };
+  })();
+
   return {
     crumb: function() { return crumb.get(); },
     handlers: {
@@ -58,7 +105,7 @@ var TBX = (function() {
       load: function(_crumb) {
         // http://stackoverflow.com/a/6974186
         // http://stackoverflow.com/questions/6421769/popstate-on-pages-load-in-chrome/10651028#10651028
-        var popped = ('state' in window.history && window.history.state !== null), initialURL = location.href;
+        var popped = ('state' in window.history && window.history.state !== null);
 
         crumb.set(_crumb);
         OP.Tag.init();
@@ -75,19 +122,8 @@ var TBX = (function() {
         });*/
 
         // TODO cache in local storage
-        $.get('/user/profile.json', function(response) {
-          var result = response.result, id = result.id;
-          profiles.owner.id = id;
-          op.data.store.Profiles.add(result);
-          //TBX.models.profile = new op.data.model.Profile(response.result);
-          $('.profile-name-meta').each(function(i, el) {
-            (new op.data.view.ProfileName({model:op.data.store.Profiles.get(id), el: el})).render();
-          });
-          $('.profile-photo-meta').each(function(i, el) {
-            (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(id), el: el})).render();
-          });
-          (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(id), el: $('.profile-photo-header-meta')})).render();
-        }, 'json');
+
+        profiles.load();
 
         if(location.pathname === '/')
           TBX.init.pages.front();

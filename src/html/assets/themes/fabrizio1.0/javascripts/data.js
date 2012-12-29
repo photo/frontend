@@ -63,7 +63,7 @@ if( !window.op.data ) window.op.data = {};
       this.render();
     },
     events: {
-      'click .name': 'prompt'
+      'click .name.edit': 'prompt'
     },
     prompt: function() {
       var model = this.model, currentName = this.model.get('name');
@@ -75,22 +75,6 @@ if( !window.op.data ) window.op.data = {};
       model.save();
     }
   });
-  var ProfilePhotoHeaderView = Backbone.View.extend({
-    initialize: function() {
-      this.model.on('change', this.modelChanged, this);
-    },
-    model: this.model,
-    tagName: 'span',
-    className: 'profile-photo-header-meta',
-    template    :_.template($('#profile-photo-header-meta').html()),
-    render      :function(){
-      $(this.el).html(this.template(this.model.toJSON()));
-      return this;
-    },
-    modelChanged: function() {
-      this.render();
-    }
-  });
   var ProfileCollection = Backbone.Collection.extend({
     model         :Profile
   });
@@ -99,7 +83,6 @@ if( !window.op.data ) window.op.data = {};
       this.model.on('change', this.modelChanged, this);
     },
     model: this.model,
-    tagName: 'span',
     className: 'profile-photo-meta',
     template    :_.template($('#profile-photo-meta').html()),
     render      :function(){
@@ -166,7 +149,6 @@ if( !window.op.data ) window.op.data = {};
       this.model.on('change', this.modelChanged, this);
     },
     model: this.model,
-    tagName: 'div',   
     className: 'photo-meta',
     template    :_.template($('#photo-meta').html()),
     render      :function(){
@@ -174,9 +156,9 @@ if( !window.op.data ) window.op.data = {};
       return this;
     },
     events: {
-      'click .permission': 'permission',
-      'click .title': 'title',
-      'click .profile': 'profile'
+      'click .permission.edit': 'permission',
+      'click .title.edit': 'title',
+      'click .profile.edit': 'profile'
     },
     permission: function(ev) {
       ev.preventDefault();
@@ -220,7 +202,6 @@ if( !window.op.data ) window.op.data = {};
   exports.view = {
     PhotoGallery: PhotoGalleryView,
     ProfilePhoto: ProfilePhotoView,
-    ProfilePhotoHeader: ProfilePhotoHeaderView,
     ProfileName: ProfileNameView
   };
 })(window.op.data);
