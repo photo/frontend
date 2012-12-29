@@ -1,5 +1,5 @@
 var TBX = (function() {
-  var crumb, log, markup, pushstate, tags, pathname, util, callbacks;
+  var callbacks, crumb, log, markup, profiles, pushstate, tags, pathname, util;
 
   callbacks = {
     loginSuccess: function() {
@@ -18,6 +18,10 @@ var TBX = (function() {
       }
     };
   })();
+  profiles = {
+    owner: {},
+    viewer: {}
+  };
   return {
     crumb: function() { return crumb.get(); },
     handlers: {
@@ -70,17 +74,19 @@ var TBX = (function() {
           pushstate.render(State.data);
         });*/
 
-        // jm $('.dropdown-toggle').dropdown();
-        // jm $('.modal').on('shown', TBX.callback.modalShown);
+        // TODO cache in local storage
         $.get('/user/profile.json', function(response) {
-          TBX.models.profile = new op.data.model.Profile(response.result);
+          var result = response.result, id = result.id;
+          profiles.owner.id = id;
+          op.data.store.Profiles.add(result);
+          //TBX.models.profile = new op.data.model.Profile(response.result);
           $('.profile-name-meta').each(function(i, el) {
-            (new op.data.view.ProfileName({model:TBX.models.profile, el: el})).render();
+            (new op.data.view.ProfileName({model:op.data.store.Profiles.get(id), el: el})).render();
           });
           $('.profile-photo-meta').each(function(i, el) {
-            (new op.data.view.ProfilePhoto({model:TBX.models.profile, el: el})).render();
+            (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(id), el: el})).render();
           });
-          (new op.data.view.ProfilePhoto({model:TBX.models.profile, el: $('.profile-photo-header-meta')})).render();
+          (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(id), el: $('.profile-photo-header-meta')})).render();
         }, 'json');
 
         if(location.pathname === '/')
@@ -214,8 +220,13 @@ var TBX = (function() {
         }
       }
     },
-    models: {
-      profile: {}
+    profiles: {
+      getOwner: function() {
+        return profiles.owner.id;
+      },
+      getViewer: function() {
+        return profiles.viewer.id;
+      }
     }
   };
 })();

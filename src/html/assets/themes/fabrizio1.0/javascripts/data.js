@@ -113,6 +113,9 @@ if( !window.op.data ) window.op.data = {};
   var ProfileCollection = Backbone.Collection.extend({
     model         :Profile
   });
+  var ProfileStore = new ProfileCollection({
+    localStorage  :'op-profile'
+  });
 
   /* ------------------------------- Photos ------------------------------- */
   var Photo = Backbone.Model.extend({
@@ -172,19 +175,30 @@ if( !window.op.data ) window.op.data = {};
     },
     events: {
       'click .permission': 'permission',
+      'click .title': 'title',
       'click .profile': 'profile'
     },
     permission: function(ev) {
       ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model/*arguments[0].view.Photos.get(id)*/, view = this;
+      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model;
       model.set('permission', model.get('permission') == 0 ? 1 : 0, {silent:true});
       model.save();
     },
     profile: function(ev) {
       ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model/*arguments[0].view.Photos.get(id)*/, view = this;
-      TBX.models.profile.set('photoId', id, {silent:true});
-      TBX.models.profile.save();
+      var el = $(ev.currentTarget), id = el.attr('data-id'), profileModel = op.data.store.Profiles.get(TBX.profiles.getOwner());
+      profileModel.set('photoId', id, {silent:true});
+      profileModel.save();
+    },
+    title: function(ev) {
+      ev.preventDefault();
+      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model, currentTitle = model.get('title');
+      var newTitle = prompt("Change your name", currentTitle);
+      if(newTitle === null || newTitle === currentTitle)
+        return;
+
+      model.set('title', newTitle, {silent:true});
+      model.save();
     },
     modelChanged: function() {
       this.render();
@@ -200,7 +214,8 @@ if( !window.op.data ) window.op.data = {};
     Profiles: ProfileCollection
   };
   exports.store = {
-    Photos: PhotoStore
+    Photos: PhotoStore,
+    Profiles: ProfileStore
   };
   exports.view = {
     PhotoGallery: PhotoGalleryView,
