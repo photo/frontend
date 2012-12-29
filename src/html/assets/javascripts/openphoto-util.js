@@ -148,7 +148,6 @@
         * @method onviewevent
         */
         this.onviewevent = function(e) {
-
             log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
