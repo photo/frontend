@@ -67,7 +67,7 @@
     <div class="container">
       <?php echo $body; ?>
     </div> <!-- /container -->
-    <?php /* $this->theme->display('partials/underscore.php'); */ ?>
+    <?php $this->theme->display('partials/underscore.php'); ?>
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -86,6 +86,7 @@
     <script src="<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>"></script>
     <script type="text/javascript">
       OP.Util.init(jQuery, {
+        eventMap: TBX.handlers,
         js: {
           assets: [
             '<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>'

@@ -16,10 +16,9 @@
           </div>
           <?php if($this->user->isLoggedIn()) { ?>
             <div class="user">
-              <a href="#" class="profile-link" data-toggle="dropdown"><span class="profile-photo-header-meta"></span></a>
+              <a href="#" class="profile-link profile-photo-header-meta" data-toggle="dropdown"></a>
               <ul class="dropdown-menu" role="menu">
-                <li><a href="#">Child Item 1</a></li>
-                <li><a href="#">Child Item 2</a></li>
+                <li><a href="/user/logout">Logout</a></li>
               </ul>
             </div>
           <?php } else { ?>
@@ -27,7 +26,7 @@
               <?php if($this->config->site->displaySignupLink == 1) { ?>
               <a href="<?php $this->utility->safe($this->config->site->displaySignupUrl); ?>" class="btn btn-brand btn-arrow">Sign Up</a>
               <?php } ?>
-              <a href="/signin" class="btn btn-theme-secondary">Sign In</a>
+              <a href="/user/login?r=<?php $this->utility->safe($_SERVER['REQUEST_URI']); ?>" class="btn btn-theme-secondary">Sign In</a>
             </div>
           <?php } ?>
         </div>

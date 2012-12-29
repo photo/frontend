@@ -103,22 +103,45 @@ class ApiUserController extends ApiBaseController
 
   public function profile()
   {
+    $email = $this->session->get('email');
     $user = $this->user->getUserRecord();
     if(empty($user))
       return $this->notFound('Could not load user profile');
-    
+
     $utilityObj = new Utility;
     $profile = array(
       'id' => $utilityObj->getHost(),
-      'photoUrl' => $this->user->getAvatarFromEmail(),
+      'photoUrl' => $this->user->getAvatarFromEmail(100, $this->config->user->email),
       //'photoId' => '',
-      'name' => $this->user->getNameFromEmail()
+      'name' => $this->user->getNameFromEmail($this->config->user->email)
     );
 
-    if($this->user->isAdmin())
+    if(isset($_GET['includeViewer']) && $_GET['includeViewer'] == '1')
     {
-      $profile['email'] = $this->user->getEmailAddress();
+      $viewer = null;
+      if($email !== null)
+        $viewer = $this->user->getUserByEmail($email);
+
+      if($viewer !== null)
+      {
+        $profile['viewer'] = array(
+          'id' => $viewer['id'],
+          'photoUrl' => $this->user->getAvatarFromEmail(100, $viewer['id']),
+          'name' => $this->user->getNameFromEmail($viewer['id'])
+        );
+      }
     }
+
+    if($this->user->isLoggedIn())
+    {
+      if($user['id'] == $this->session->get('email'))
+        $profile['isOwner'] = true;
+      else
+        $profile['isOwner'] = false;
+    }
+
+    if($this->user->isAdmin())
+      $profile['email'] = $this->user->getEmailAddress();
 
     return $this->success('User profile', $profile);
   }
