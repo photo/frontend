@@ -18,8 +18,7 @@
             <div class="user">
               <a href="#" class="profile-link" data-toggle="dropdown"><span class="profile-photo-header-meta"></span></a>
               <ul class="dropdown-menu" role="menu">
-                <li><a href="#">Child Item 1</a></li>
-                <li><a href="#">Child Item 2</a></li>
+                <li><a href="/user/logout">Logout</a></li>
               </ul>
             </div>
           <?php } else { ?>

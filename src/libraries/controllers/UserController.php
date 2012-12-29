@@ -14,7 +14,21 @@ class UserController extends BaseController
   public function __construct()
   {
     parent::__construct();
-    $this->theme->setTheme(); // defaults
+  }
+
+  /**
+    * Login page
+    *
+    * @return void
+    */
+  public function login()
+  {
+    $userObj = new User;
+    $redirect = '/';
+    if(isset($_GET['r']) && strpos($_GET['r'], '/') === 0)
+      $redirect = $_GET['r'];
+    $body = $this->theme->get('login.php', array('r' => $redirect));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'settings'));
   }
 
   /**
