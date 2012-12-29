@@ -63,7 +63,7 @@ if( !window.op.data ) window.op.data = {};
       this.render();
     },
     events: {
-      'click .name': 'prompt'
+      'click .name.edit': 'prompt'
     },
     prompt: function() {
       var model = this.model, currentName = this.model.get('name');
@@ -73,22 +73,6 @@ if( !window.op.data ) window.op.data = {};
 
       model.set('name', newName, {silent:true});
       model.save();
-    }
-  });
-  var ProfilePhotoHeaderView = Backbone.View.extend({
-    initialize: function() {
-      this.model.on('change', this.modelChanged, this);
-    },
-    model: this.model,
-    tagName: 'span',
-    className: 'profile-photo-header-meta',
-    template    :_.template($('#profile-photo-header-meta').html()),
-    render      :function(){
-      $(this.el).html(this.template(this.model.toJSON()));
-      return this;
-    },
-    modelChanged: function() {
-      this.render();
     }
   });
   var ProfileCollection = Backbone.Collection.extend({
@@ -112,6 +96,9 @@ if( !window.op.data ) window.op.data = {};
   });
   var ProfileCollection = Backbone.Collection.extend({
     model         :Profile
+  });
+  var ProfileStore = new ProfileCollection({
+    localStorage  :'op-profile'
   });
 
   /* ------------------------------- Photos ------------------------------- */
@@ -236,7 +223,6 @@ if( !window.op.data ) window.op.data = {};
       this.model.on('change', this.modelChanged, this);
     },
     model: this.model,
-    tagName: 'div',   
     className: 'photo-meta',
     template    :_.template($('#photo-meta').html()),
     render      :function(){
@@ -291,8 +277,9 @@ if( !window.op.data ) window.op.data = {};
       return this;
     },
     events: {
-      'click .permission': 'permission',
-      'click .profile': 'profile'
+      'click .permission.edit': 'permission',
+      'click .title.edit': 'title',
+      'click .profile.edit': 'profile'
     },
     permission: function(ev) {
       ev.preventDefault();
@@ -302,9 +289,19 @@ if( !window.op.data ) window.op.data = {};
     },
     profile: function(ev) {
       ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model/*arguments[0].view.Photos.get(id)*/, view = this;
-      TBX.models.profile.set('photoId', id, {silent:true});
-      TBX.models.profile.save();
+      var el = $(ev.currentTarget), id = el.attr('data-id'), profileModel = op.data.store.Profiles.get(TBX.profiles.getOwner());
+      profileModel.set('photoId', id, {silent:true});
+      profileModel.save();
+    },
+    title: function(ev) {
+      ev.preventDefault();
+      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model, currentTitle = model.get('title');
+      var newTitle = prompt("Change your name", currentTitle);
+      if(newTitle === null || newTitle === currentTitle)
+        return;
+
+      model.set('title', newTitle, {silent:true});
+      model.save();
     },
     modelChanged: function() {
       this.render();
@@ -320,12 +317,12 @@ if( !window.op.data ) window.op.data = {};
     Profiles: ProfileCollection
   };
   exports.store = {
-    Photos: PhotoStore
+    Photos: PhotoStore,
+    Profiles: ProfileStore
   };
   exports.view = {
     PhotoGallery: PhotoGalleryView,
     ProfilePhoto: ProfilePhotoView,
-    ProfilePhotoHeader: ProfilePhotoHeaderView,
     ProfileName: ProfileNameView
   };
 })(window.op.data);

@@ -209,8 +209,8 @@ function getLogin($provider)
 {
   switch($provider)
   {
-    case 'openphoto':
-      return new LoginOpenPhoto;
+    case 'self':
+      return new LoginSelf;
       break;
     case 'facebook':
       return new LoginFacebook;
