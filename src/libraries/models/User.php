@@ -15,7 +15,7 @@ class User extends BaseModel
     * @access private
     * @var array
     */
-  protected $user, $credential;
+  protected $user, $userArray = array(), $credential;
 
   /*
    * Constructor
@@ -50,7 +50,7 @@ class User extends BaseModel
     if(empty($email))
       return;
 
-    $user = $this->db->getUser($email);
+    $user = $this->getUserByEmail($email);
     if(isset($user['attrprofilePhoto']) && !empty($user['attrprofilePhoto']))
       return $user['attrprofilePhoto'];
 
@@ -84,7 +84,7 @@ class User extends BaseModel
 
     if(!empty($email))
     {
-      $user = $this->db->getUser($email);
+      $user = $this->getUserByEmail($email);
       if(isset($user['attrprofileName']) && !empty($user['attrprofileName']))
         return $user['attrprofileName'];
     }
@@ -150,7 +150,7 @@ class User extends BaseModel
     *
     * @return mixed  FALSE on error, array on success
     */
-  public function getUserRecord($cache = true)
+  public function getUserRecord($cache = true, $owner = null)
   {
     // we cache the user entry per request
     if($cache && $this->user)
@@ -179,6 +179,29 @@ class User extends BaseModel
     return $this->user;
   }
 
+  /**
+    * Get the user record by email address.
+    *
+    * @return mixed  FALSE on error, array on success
+    */
+  public function getUserByEmail($email, $cache = true)
+  {
+    if($cache && isset($this->userArray[$email]))
+      return $this->userArray[$email];
+
+    $user = $this->db->getUser($email);
+    if($user)
+      $this->userArray[$email] = $user;
+
+    return $user;
+  }
+
+  /**
+    * Checks if the user is logged in.
+    * Works for Cookie and OAuth requests
+    *
+    * @return boolean
+    */
   public function isLoggedIn()
   {
     $credential = $this->getCredentialObject();
@@ -188,11 +211,23 @@ class User extends BaseModel
       return $this->session->get('email') != '';
   }
 
+  /**
+    * Checks if the logged in user is the owner or an admin
+    * Works for Cookie and OAuth requests
+    *
+    * @return boolean
+    */
   public function isAdmin()
   {
     return $this->isOwner(true);
   }
 
+  /**
+    * Checks if the logged in user is the owner
+    * Works for Cookie and OAuth requests
+    *
+    * @return boolean
+    */
   public function isOwner($includeAdmin = false)
   {
     if(!isset($this->config->user))

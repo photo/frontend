@@ -81,6 +81,64 @@ class UserTest extends PHPUnit_Framework_TestCase
     $this->assertNull($res);
   }
 
+  public function testGetUserByEmailFirstCallShouldCacheSuccess()
+  {
+    $db = $this->getMock('Db', array('getUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->onConsecutiveCalls(
+        array('id' => 'test@example.com', 'seq' => 1),
+        array('id' => 'test@example.com', 'seq' => 2)
+      ));
+    $this->user->inject('db', $db);
+    $res = $this->user->getUserByEmail('foo@bar.com');
+    $this->assertEquals(1, $res['seq']);
+
+    $res = $this->user->getUserByEmail('foo@bar.com');
+    $this->assertEquals(1, $res['seq']);
+  }
+
+  public function testGetUserByEmailSkipCacheSuccess()
+  {
+    $db = $this->getMock('Db', array('getUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->onConsecutiveCalls(
+        array('id' => 'test@example.com', 'seq' => 1),
+        array('id' => 'test@example.com', 'seq' => 2)
+      ));
+    $this->user->inject('db', $db);
+    $res = $this->user->getUserByEmail('foo@bar.com');
+    $this->assertEquals(1, $res['seq']);
+
+    $res = $this->user->getUserByEmail('foo@bar.com', false);
+    $this->assertEquals(2, $res['seq']);
+  }
+
+  public function testGetUserByEmailVerifyCacheByHandleSuccess()
+  {
+    $db = $this->getMock('Db', array('getUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->onConsecutiveCalls(
+        array('id' => 'test1@example.com', 'seq' => 1),
+        array('id' => 'test2@example.com', 'seq' => 2)
+      ));
+    $this->user->inject('db', $db);
+    $res = $this->user->getUserByEmail('foo1@bar.com');
+    $this->assertEquals(1, $res['seq']);
+
+    $res = $this->user->getUserByEmail('foo2@bar.com');
+    $this->assertEquals(2, $res['seq']);
+  }
+
+  public function testGetUserByEmailCachedSuccess()
+  {
+    $this->user->inject('userArray', array('foo@bar.com' => '123'));
+    $res = $this->user->getUserByEmail('foo@bar.com');
+    $this->assertEquals('123', $res);
+  }
+
   public function testGetNextIdPhoto()
   {
     $db = $this->getMock('Db', array('getUser', 'postUser', 'putUser'));
