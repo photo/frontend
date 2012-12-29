@@ -26,7 +26,7 @@
               <?php if($this->config->site->displaySignupLink == 1) { ?>
               <a href="<?php $this->utility->safe($this->config->site->displaySignupUrl); ?>" class="btn btn-brand btn-arrow">Sign Up</a>
               <?php } ?>
-              <a href="/signin" class="btn btn-theme-secondary">Sign In</a>
+              <a href="/user/login?r=<?php $this->utility->safe($_SERVER['REQUEST_URI']); ?>" class="btn btn-theme-secondary">Sign In</a>
             </div>
           <?php } ?>
         </div>
