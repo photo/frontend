@@ -1,6 +1,12 @@
 var TBX = (function() {
-  var crumb, log, markup, pushstate, tags, pathname, util;
+  var crumb, log, markup, pushstate, tags, pathname, util, callbacks;
 
+  callbacks = {
+    loginSuccess: function() {
+      var redirect = $('input[name="r"]', this).val();
+      window.location.href = redirect;
+    }
+  };
   crumb = (function() {
     var value = null;
     return {
@@ -14,6 +20,36 @@ var TBX = (function() {
   })();
   return {
     crumb: function() { return crumb.get(); },
+    handlers: {
+      submit: {
+        login: function(ev) {
+          ev.preventDefault();
+          var form = $(ev.target),
+              params = form.serialize();
+          params += '&httpCodes=403';
+          $.ajax(
+            {
+              url: '/user/self/login.json',
+              dataType:'json',
+              data:params,
+              type:'POST',
+              success: callbacks.loginSuccess,
+              error: function() { console.log('f'); },//opTheme.callback.loginOpenPhotoFailedCb,
+              context: form
+            }
+          );
+          return false;
+        }
+      },
+      click: {
+      },
+      keydown: {
+      },
+      keyup: {
+      },
+      mouseover: {
+      }
+    },
     init: {
       load: function(_crumb) {
         // http://stackoverflow.com/a/6974186

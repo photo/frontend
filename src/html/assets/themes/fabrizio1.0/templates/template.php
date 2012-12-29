@@ -84,6 +84,7 @@
     <script src="<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>"></script>
     <script type="text/javascript">
       OP.Util.init(jQuery, {
+        eventMap: TBX.handlers,
         js: {
           assets: [
             '<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>'

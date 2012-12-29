@@ -12,7 +12,6 @@
 
     //constants
     var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
-        BROWSER_ID_SRC = 'https://login.persona.org/include.js',
         log = function(msg) { if(typeof(console) !== 'undefined' && typeof(console.log) !== 'undefined') {  console.log(msg); } };
 
     /**
@@ -163,7 +162,7 @@
                 if (map !== undefined && map[cls]) {
                     //do not prevent the default action, let the callback
                     //function do it if it wants
-                    this.fire( map[cls], e);
+                    map[cls](e, targ);
                 }
             }
         };
@@ -222,7 +221,7 @@
         */
         this.onmouseevent = function(e) {
             
-            log('[Util] ' + e.type + ': ' + e.target);
+            //log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -262,7 +261,6 @@
 
             //load the script and attach the event handlers onload
             this.loadScript(url, this._init, this);
-            this.loadScript(BROWSER_ID_SRC);
 
         };
 

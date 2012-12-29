@@ -1,12 +1,12 @@
 <?php
 /**
- * BrowserId implementation
+ * Instance implementation
  *
  * This class defines the functionality defined by LoginInterface for OpenPhoto.
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 
-class LoginOpenPhoto implements LoginInterface
+class LoginSelf implements LoginInterface
 {
   private $config, $db, $utility, $user;
   public function __construct()
