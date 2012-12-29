@@ -589,9 +589,9 @@ class SetupController extends BaseController
       try {
         if(getConfig()->get('site')->allowOpenPhotoLogin == 1) {
           if($isEditMode)
-            $dbObj->postUser(array('password' => sha1(sprintf('%s-%s', $password, getConfig()->get('secrets')->passwordSalt))));
+            $dbObj->postUser(array('password' => User::encryptPassword( $password )));
           else
-            $dbObj->putUser(array('password' => sha1(sprintf('%s-%s', $password, getConfig()->get('secrets')->passwordSalt))));
+            $dbObj->putUser(array('password' => User::encryptPassword( $password )));
         }
         else {
           if($isEditMode)

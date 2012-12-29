@@ -30,9 +30,19 @@ class User extends BaseModel
     *
     * @return string
    */
-  public function encryptPassword($password)
+  public static function encryptPassword($password)
   {
-    return sha1(sprintf('%s-%s', $password, $this->config->secrets->passwordSalt));
+    return getPasswordHasher()->HashPassword($password);
+  }
+
+  /**
+    * Check user password against hashed version
+    *
+    * @return boolean
+   */
+  public static function checkPassword($password, $hash)
+  {
+    return getPasswordHasher()->CheckPassword($password, $hash);
   }
 
   /**
@@ -254,7 +264,7 @@ class User extends BaseModel
     if(isset($params['password']))
     {
       if(!empty($params['password']))
-        $params['password'] = $this->encryptPassword($params['password']);
+        $params['password'] = self::encryptPassword($params['password']);
       else
         unset($params['password']);
     }
