@@ -296,10 +296,11 @@ if( !window.op.data ) window.op.data = {};
     className: 'photo-meta',
     template    :_.template($('#photo-meta').html()),
     editable    : {
-      '.title a' : {
+      '.title.edit a' : {
         name: 'title',
         title: 'Edit Photo Title',
         placement: 'top',
+        emptytext: '',
         on: {
           shown: function(){
             // var view = $(this).data('editable').view;
@@ -318,7 +319,6 @@ if( !window.op.data ) window.op.data = {};
     },
     events: {
       'click .permission.edit': 'permission',
-      'click .title.edit': 'title',
       'click .profile.edit': 'profile'
     },
     permission: function(ev) {
@@ -329,19 +329,15 @@ if( !window.op.data ) window.op.data = {};
     },
     profile: function(ev) {
       ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), profileModel = op.data.store.Profiles.get(TBX.profiles.getOwner());
-      profileModel.set('photoId', id, {silent:true});
-      profileModel.save();
-    },
-    title: function(ev) {
-      ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model, currentTitle = model.get('title');
-      var newTitle = prompt("Change your name", currentTitle);
-      if(newTitle === null || newTitle === currentTitle)
-        return;
-
-      model.set('title', newTitle, {silent:true});
-      model.save();
+      var el = $(ev.currentTarget), id = el.attr('data-id'), 
+          ownerModel = op.data.store.Profiles.get(TBX.profiles.getOwner()),
+          viewerModel = op.data.store.Profiles.get(TBX.profiles.getViewer());
+      ownerModel.set('photoId', id, {silent:true});
+      ownerModel.save();
+      if(TBX.profiles.getOwner() !== TBX.profiles.getViewer()) {
+        viewerModel.set('photoId', id, {silent:true});
+        viewerModel.save();
+      }
     },
     modelChanged: function() {
       this.render();
