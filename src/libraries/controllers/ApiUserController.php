@@ -101,47 +101,62 @@ class ApiUserController extends ApiBaseController
     return $this->success('Password was updated successfully.', true);
   }
 
+  /**
+    * Return profile information for the site and the viewer
+    * TODO: separate the viewer into a separate API and call it from here
+    *  for backwards compatability
+    *
+    * @return string Standard JSON envelope
+    */
   public function profile()
   {
-    $email = $this->session->get('email');
+    $email = $this->user->getEmailAddress();
     $user = $this->user->getUserRecord();
     if(empty($user))
       return $this->notFound('Could not load user profile');
 
     $utilityObj = new Utility;
-    $profile = array(
+    $profile = array();
+    $owner = array(
       'id' => $utilityObj->getHost(),
       'photoUrl' => $this->user->getAvatarFromEmail(100, $this->config->user->email),
       //'photoId' => '',
       'name' => $this->user->getNameFromEmail($this->config->user->email)
     );
 
-    if(isset($_GET['includeViewer']) && $_GET['includeViewer'] == '1')
-    {
-      $viewer = null;
-      if($email !== null)
-        $viewer = $this->user->getUserByEmail($email);
-
-      if($viewer !== null)
-      {
-        $profile['viewer'] = array(
-          'id' => $viewer['id'],
-          'photoUrl' => $this->user->getAvatarFromEmail(100, $viewer['id']),
-          'name' => $this->user->getNameFromEmail($viewer['id'])
-        );
-      }
-    }
-
-    if($this->user->isLoggedIn())
-    {
-      if($user['id'] == $this->session->get('email'))
-        $profile['isOwner'] = true;
-      else
-        $profile['isOwner'] = false;
-    }
+    $profile = $owner;
 
     if($this->user->isAdmin())
       $profile['email'] = $this->user->getEmailAddress();
+
+    $profile['isOwner'] = false;
+
+    // should we include the viewer?
+    if(isset($_GET['includeViewer']) && $_GET['includeViewer'] == '1')
+    {
+      // check if the viewer == owner
+      // if so then we just copy the owner in
+      // else we have to build the viewer array
+      if($this->user->isOwner())
+      {
+        $profile['viewer'] = $owner;
+      }
+      else
+      {
+        $viewer = null;
+        if($email !== null)
+          $viewer = $this->user->getUserByEmail($email);
+
+        if($viewer !== null)
+        {
+          $profile['viewer'] = array(
+            'id' => $this->user->isOwner() ? $utilityObj->getHost() : $viewer['id'],
+            'photoUrl' => $this->user->getAvatarFromEmail(100, $viewer['id']),
+            'name' => $this->user->getNameFromEmail($viewer['id'])
+          );
+        }
+      }
+    }
 
     return $this->success('User profile', $profile);
   }
