@@ -221,7 +221,6 @@ var TBX = (function() {
               delete _this.initData;
               _this.page = 1;
               var response = {code:200, result:initData};
-              op.data.store.Photos.add( response.result );
               _this.loadCb(response);
             }
           },
@@ -230,6 +229,7 @@ var TBX = (function() {
                 minDate = $('.startdate', infobar), maxDate = $('.enddate', infobar),
                 minDateVal = parseInt(minDate.attr('data-time')), maxDateVal = parseInt(maxDate.attr('data-time')),
                 ui = TBX.ui, i;
+            op.data.store.Photos.add( items );
             if(items[0].totalPages >= _this.page) {
 
               var thisTaken;
