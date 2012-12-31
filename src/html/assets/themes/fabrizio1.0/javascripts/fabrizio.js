@@ -7,20 +7,24 @@ var TBX = (function() {
       window.location.href = redirect;
     },
     profilesSuccess: function(owner, viewer) {
+      var ownerId = owner.id, viewerId = viewer.id;
       profiles.owner = owner;
-      op.data.store.Profiles.add(profiles.owner);
-      if(viewer !== undefined) {
+      if(viewer !== undefined)
         profiles.viewer = viewer;
+
+      // create model(s)
+      op.data.store.Profiles.add(profiles.owner);
+      // only if the viewer !== owner do we create two models
+      if(viewer !== undefined && owner.isOwner === false)
         op.data.store.Profiles.add(profiles.viewer);
-      }
 
       $('.profile-name-meta').each(function(i, el) {
-        (new op.data.view.ProfileName({model:op.data.store.Profiles.get(profiles.owner.id), el: el})).render();
+        (new op.data.view.ProfileName({model:op.data.store.Profiles.get(ownerId), el: el})).render();
       });
       $('.profile-photo-meta').each(function(i, el) {
-        (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(profiles.owner.id), el: el})).render();
+        (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(ownerId), el: el})).render();
       });
-      (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(profiles.viewer.id), el: $('.profile-photo-header-meta')})).render();
+      (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(viewerId), el: $('.profile-photo-header-meta')})).render();
     }
   };
   crumb = (function() {
@@ -46,7 +50,6 @@ var TBX = (function() {
         var result = response.result, id = result.id, owner = result, viewer = result.viewer || null;
         if(owner.viewer !== undefined)
           delete owner.viewer;
-
         callbacks.profilesSuccess(owner, viewer);
       }, 'json');
     }
