@@ -3,7 +3,7 @@ Contributing to the Web and API components
 
 ## Up and contributing in under 5 minutes
 
-So what do you need to start contributing?
+So what do you need to get started?
 
 A computer! Once you've secured one of those all you need is a Github account. It helps to have a locally installed version of the frontend repository to test your changes. We've got <a href="http://theopenphotoproject.org/documentation">lots of guides</a> to help you get started. If you're updating any of the PHP code you should get PHPUnit as well.
 
@@ -16,12 +16,14 @@ A computer! Once you've secured one of those all you need is a Github account. I
     # http://www.phpunit.de/manual/3.6/en/installation.html
     # http://stackoverflow.com/questions/3301300/setting-up-phpunit-on-osx
     
-Now that you've got the following we can continue.
+Now that you've got:
 
 * A computer
 * <a href="https://github.com">A GitHub account</a>
 * An <a href="http://theopenphotoproject.org/documentation">installation of the frontend repository</a>
-* <a href="http://www.phpunit.de/manual/3.6/en/installation.html">PHPUnit</a>
+* <a href="http://www.phpunit.de/manual/3.6/en/installation.html">PHPUnit</a>,
+
+let's continue.
 
 ## Deciding what to fix
 
@@ -49,14 +51,14 @@ Once you've made your change and verified it does what it should it's time to ma
     OK, but incomplete or skipped tests!
     Tests: 311, Assertions: 661, Incomplete: 4.
 
-Those `I`s are okay but you shouldn't see any `E`s or `F`s and definitely look for the _OK_ message at the end. If all the tests pass then you're good to go and can commit it.
+Those `I`s are okay but you shouldn't see any `E`s or `F`s and definitely look for the `OK` message at the end. If all the tests pass then you're good to go and can commit your changes.
 
-You can also automate this by adding a pre-commit hook. Just copy <a href="https://github.com/photo/frontend/blob/master/documentation/hooks/pre-commit">this file</a> into your `.git/hooks` directory or run the command below.
+You can automate this by adding a pre-commit hook. Just copy <a href="https://github.com/photo/frontend/blob/master/documentation/hooks/pre-commit">this file</a> into your `.git/hooks` directory or run the command below.
 
     wget --no-check-certificate https://raw.github.com/photo/frontend/master/documentation/hooks/pre-commit -O .git/hooks/pre-commit
     chmod u+x .git/hooks/pre-commit
 
-Now everytime you make a commit it will first run the unit tests, automatically.
+Now every time you make a commit it will first run the unit tests automatically.
 
 ## Committing your code
 
@@ -74,9 +76,9 @@ Be descriptive, it helps a ton. Once you've committed your code it's time to pus
 
 ## Getting your change into the OpenPhoto branch
 
-To get your change merged into the official OpenPhoto branch you should submit a pull request. <a href="http://help.github.com/send-pull-requests/"GitHub's tutorial</a> is better than anything we could do so we'll link to it.
+To get your change merged into the official OpenPhoto branch, submit a pull request. <a href="http://help.github.com/send-pull-requests/">GitHub's tutorial</a> is better than anything we could do so we'll link to it.
 
-It makes everyone's life easier if you can remember to issue the pull request to OpenPhoto's development. If you forget, no big deal. The important thing is we get your change and your awesomeness can be merged into everyone else's awesomeness.
+It makes everyone's lives easier if you can remember to issue the pull request to OpenPhoto's development branch. If you forget, no big deal. The important thing is we get your change and your awesomeness can be merged into everyone else's awesomeness.
 
 ## Help! I'm stuck and have questions
 
