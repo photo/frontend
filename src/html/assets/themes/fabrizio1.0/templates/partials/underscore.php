@@ -2,7 +2,7 @@
 <script type="tmpl/underscore" id="photo-meta">
   <div class="photo-meta">
     <?php if($isAdmin) { ?>
-      <h4 class="title edit"><a href="/p/<%= id %>" title="Click to change"><%= title || filenameOriginal %><a/></h4>
+      <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><%= title || filenameOriginal %><a/></h4>
       <ul class="info">
         <li><a href="#"><i class="tb-icon-small-comment tb-icon-dark"></i> <span class="number">24</span></li>
         <li><a href="#"><i class="tb-icon-small-heart tb-icon-dark"></i> <span class="number">24</span></li>
@@ -27,6 +27,6 @@
   <img class="profile-pic profile-photo" src="<%= photoUrl %>" />
 -->
 <script type="tmpl/underscore" id="profile-name-meta">
-  <span class="name <?php if($isAdmin) { ?> edit <?php } ?>"><%= name %></span>
+  <span class="name <?php if($isAdmin) { ?> edit <?php } ?>" <?php if($isAdmin) { ?>title="Change display name"<?php } ?>><%= name %></span>
 </script>
 
