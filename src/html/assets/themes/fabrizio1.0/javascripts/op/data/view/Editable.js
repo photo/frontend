@@ -28,6 +28,8 @@
           
           var $el = $(this.el).find(i);
           
+          if( $el.length === 0 ) continue;
+          
           var config = _.extend({
             placement: 'top',
             url : function(params){
