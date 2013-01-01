@@ -14,11 +14,12 @@ class AlbumController extends BaseController
   public function list_()
   {
     $page = 1;
+    $pageSize = null;
     if(isset($_GET['pageSize']))
       $pageSize = (int)$_GET['pageSize'];
     if(isset($_GET['page']))
       $page = (int)$_GET['page'];
-    $albumsResp = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('page' => $page)));
+    $albumsResp = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('page' => $page, 'pageSize' => $pageSize)));
     $albums = $albumsResp['result'];
     $this->plugin->setData('albums', $albums);
     $this->plugin->setData('page', 'albums');
