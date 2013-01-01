@@ -29,4 +29,15 @@
 <script type="tmpl/underscore" id="profile-name-meta">
   <span class="name <?php if($isAdmin) { ?> edit <?php } ?>" <?php if($isAdmin) { ?>title="Change display name"<?php } ?>><%= name %></span>
 </script>
-
+<script type="tmpl/underscore" id="album-meta">
+  <li>
+    <a href="/photos/album-<%= id %>/list">
+      <img src="<%= cover.path200x200xCR %>">
+    </a>
+    <?php if($isAdmin) { ?>
+      <h5 class=" name edit"><%= name %></h5>
+    <?php } else { ?>
+      <h5 class="name"><%= name %></h5>
+    <?php } ?>
+  </li>
+</script>
