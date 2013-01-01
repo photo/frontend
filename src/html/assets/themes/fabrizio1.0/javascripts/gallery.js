@@ -231,7 +231,7 @@ var Gallery = (function($) {
     // this should all be derived from the Backbone Store
     // for the page
       , model = op.data.store.Photos.get(item.id)
-      , view = new op.data.view.PhotoGallery({model: model, el: meta})
+      , view = new op.data.view.PhotoGallery({model: model, el: meta});
     
     view.render();
     

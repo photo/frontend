@@ -76,6 +76,64 @@ if( !window.op.data ) window.op.data = {};
     }
   });
   
+  /* ------------------------------- Album   ------------------------------- */
+  var Album = Backbone.Model.extend({
+    sync: function(method, model) {
+      var params = {};
+      params.crumb = TBX.crumb();
+      switch(method) {
+        case 'update':
+          var changedParams = model.changedAttributes();
+          for(i in changedParams) {
+            if(changedParams.hasOwnProperty(i)) {
+              params[i] = changedParams[i];
+            }
+          }
+          $.post('/album/'+model.get('id')+'/update.json', params, function(response) {
+            if(response.code === 200) {
+              model.trigger('change');
+            } else {
+
+              model.trigger('error');
+            }
+          }, 'json');
+          break;
+      }
+    },
+    parse: function(response) {
+      return response.result;
+    }
+  });
+  var AlbumCoverView = EditableView.extend({
+    initialize: function() {
+      this.model.on('change', this.modelChanged, this);
+    },
+    model: this.model,
+    className: 'album-meta',
+    template    :_.template($('#album-meta').html()),
+    editable    : {
+      '.name.edit' : {
+        name: 'name',
+        placement: 'bottom',
+        title: 'Edit Ablum Name',
+        validate : function(value){
+          if($.trim(value) == ''){
+            return 'Please enter a name';
+          }
+          return null;
+        }
+      }
+    },
+    modelChanged: function() {
+      this.render();
+    }
+  });
+  var AlbumCollection = Backbone.Collection.extend({
+    model         :Album
+  });
+  var AlbumStore = new AlbumCollection({
+    localStorage  :'op-album'
+  });
   
   /* ------------------------------- Profile ------------------------------- */
   var Profile = Backbone.Model.extend({
@@ -267,18 +325,22 @@ if( !window.op.data ) window.op.data = {};
   });
 
   exports.model = {
+      Album: Album,
       Photo: Photo,
       Profile: Profile
   };
   exports.collection = {
+    Albums: AlbumCollection,
     Photos: PhotoCollection,
     Profiles: ProfileCollection
   };
   exports.store = {
+    Albums: AlbumStore,
     Photos: PhotoStore,
     Profiles: ProfileStore
   };
   exports.view = {
+    AlbumCover: AlbumCoverView,
     PhotoGallery: PhotoGalleryView,
     ProfilePhoto: ProfilePhotoView,
     ProfileName: ProfileNameView

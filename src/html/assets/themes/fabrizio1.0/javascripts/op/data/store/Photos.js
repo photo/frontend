@@ -4,5 +4,5 @@
  * but will leave them here for now.
  */
 op.ns('data.store').Photos = new op.data.collection.Photo({
-  localStorage  :'op-photo'
+  localStorage  :'op-photos'
 });

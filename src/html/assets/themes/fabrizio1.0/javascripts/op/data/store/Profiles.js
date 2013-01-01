@@ -4,5 +4,5 @@
  * but will leave them here for now.
  */
 op.ns('data.store').Profiles = new op.data.collection.Profile({
-  localStorage  :'op-profile'
+  localStorage  :'op-profiles'
 });
