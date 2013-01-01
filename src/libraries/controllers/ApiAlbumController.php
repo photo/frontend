@@ -6,8 +6,6 @@
   */
 class ApiAlbumController extends ApiBaseController
 {
-  private $pageSize = 8;
-
   /**
     * Call the parent constructor
     *
@@ -55,7 +53,7 @@ class ApiAlbumController extends ApiBaseController
 
   public function list_()
   {
-    $limit = $this->pageSize;
+    $limit = $this->config->pagination->albums;
     $offset = null;
     if(isset($_GET['pageSize']))
       $limit = (int)$_GET['pageSize'];
