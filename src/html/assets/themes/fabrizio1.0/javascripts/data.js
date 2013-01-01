@@ -171,7 +171,6 @@ if( !window.op.data ) window.op.data = {};
             if(response.code === 200) {
               model.trigger('change');
             } else {
-
               model.trigger('error');
             }
           }, 'json');
