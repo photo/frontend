@@ -1108,6 +1108,7 @@ Makes editable any HTML element on the page. Applied as jQuery method.
             if(this.options.toggle !== 'manual') {
                 this.$element.addClass('editable-click');
                 this.$element.on(this.options.toggle + '.editable', $.proxy(function(e){
+                    
                     e.preventDefault();
                     //stop propagation not required anymore because in document click handler it checks event target
                     //e.stopPropagation();
