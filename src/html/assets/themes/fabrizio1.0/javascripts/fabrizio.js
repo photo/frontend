@@ -110,7 +110,6 @@ var TBX = (function() {
 
           params.returnSizes = '960x180';
           params.page = context.page;
-
           // for mobile devices limit the number pages before a full page refresh. See #778
           if(context.pageCount > context.maxMobilePageCount && util.getDeviceWidth() < 900) {
             location.href = context.pageLocation.pathname + '?' + decodeURIComponent($.param(params));
@@ -242,7 +241,7 @@ var TBX = (function() {
           loadCb: function(response) {
             var items = response.result, _this = TBX.init.pages.albums;
             op.data.store.Albums.add( items );
-            if(items.length >= _this.page) {
+            if(items.length > 0) {
               _this.addAlbums(items);
               _this.page++;
               _this.pageCount++;
