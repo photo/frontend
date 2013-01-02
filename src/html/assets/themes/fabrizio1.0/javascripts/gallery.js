@@ -176,7 +176,8 @@ var Gallery = (function($) {
     var pageObject = TBX.init.pages.photos;
     var qsRe = /(page|returnSizes)=[^&?]+\&?/g;
     var qs = pageObject.pageLocation.search.replace(qsRe, '');
-		var imageContainer = $('<div class="imageContainer"/>');
+	var imageContainer = $('<div class="imageContainer"/>');
+		
     var d = new Date(item.dateTaken*1000);
 
 		var pathKey = 'path' + configuration['thumbnailSize'];
@@ -199,6 +200,7 @@ var Gallery = (function($) {
     link.attr('href', urlParts.pathname+qs);
 		
 		var img = $("<img/>");
+		img.attr("data-id", item.id);
 		img.attr("src", item[pathKey]);
     img.attr('class', 'photo-view-modal-click');
 		img.attr("title", item.title);
