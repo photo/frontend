@@ -70,6 +70,10 @@
     <div class="container">
       <?php echo $body; ?>
     </div> <!-- /container -->
+    <div class="footer">
+      <hr>
+      footer
+    </div>
     <?php $this->theme->display('partials/underscore.php'); ?>
     <!-- Le javascript
     ================================================== -->
@@ -97,6 +101,7 @@
     <script src="<?php $this->theme->asset('javascript', 'op/data/store/Photos.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/Editable.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/AlbumCover.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoDetail.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoGallery.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfileName.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfilePhoto.js'); ?>"></script>

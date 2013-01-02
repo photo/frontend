@@ -679,7 +679,7 @@ class ApiPhotoController extends ApiBaseController
     * @param string $id ID of the photo to be viewed.
     * @return string Standard JSON envelope
     */
-  public function view($id)
+  public function view($id, $options = null)
   {
     $db = getDb();
     $getActions = isset($_GET['actions']) && $_GET['actions'] == 'true';
@@ -756,6 +756,20 @@ class ApiPhotoController extends ApiBaseController
           $photo = $db->getPhoto($id);
 
         $photo = $this->pruneSizes($photo, $sizes);
+      }
+    }
+
+    if(isset($_GET['nextprevious']) && !empty($_GET['nextprevious']))
+    {
+      if(empty($options))
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet);
+      else
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet);
+
+      if($apiNextPrevious['code'] === 200)
+      {
+        $photo['next'] = $apiNextPrevious['result']['next'];
+        $photo['previous'] = $apiNextPrevious['result']['previous'];
       }
     }
 
