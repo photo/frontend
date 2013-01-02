@@ -1,0 +1,39 @@
+(function($){
+  op.ns('data.model').Photo = Backbone.Model.extend({
+    sync: function(method, model) {
+      var params = {};
+      params.crumb = TBX.crumb();
+      switch(method) {
+        case 'update':
+          //params = model.toJSON();
+          var changedParams = model.changedAttributes();
+          for(i in changedParams) {
+            if(changedParams.hasOwnProperty(i)) {
+              params[i] = changedParams[i];
+            }
+          }
+          $.post('/photo/'+model.get('id')+'/update.json', params, function(response) {
+            if(response.code === 200) {
+              model.trigger('change');
+            } else {
+              model.trigger('error');
+            }
+          }, 'json');
+          break;
+        case 'delete':
+          $.post('/photo/'+model.get('id')+'/delete.json', params, function(response) {
+            if(response.code === 204) {
+              model.trigger('sync');
+              model.remove();
+            } else {
+              model.trigger('error');
+            }
+          }, 'json');
+          break;
+      }
+    },
+    parse: function(response) {
+      return response.result;
+    }
+  });
+})(jQuery);
