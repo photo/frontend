@@ -12,6 +12,9 @@
     <link href="/assets/themes/fabrizio1.0/javascripts/x-editable/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet" />
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less" rel="stylesheet">
+      <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
+        <link href="/assets/stylesheets/upload.css" rel="stylesheet">
+      <?php } ?>
     <?php } else { ?>
       <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->
                                                                   addCss("/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less")->
@@ -84,6 +87,17 @@
     <script src="<?php $this->theme->asset('javascript', 'data.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'gallery.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>"></script>
+    <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
+      <?php if(true || $this->config->site->mode === 'dev') { ?>
+        <script src="/assets/javascripts/plupload.js"></script>
+        <script src="/assets/javascripts/plupload.html5.js"></script>
+        <script src="/assets/javascripts/jquery.plupload.queue.js"></script>
+        <script src="/assets/javascripts/openphoto-upload.js"></script>
+      <?php } else { ?>
+        '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'q'); ?>',
+      <?php } ?>
+    <?php } ?>
+
     <script type="text/javascript">
       OP.Util.init(jQuery, {
         eventMap: TBX.handlers,
@@ -95,13 +109,6 @@
             TBX.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
           }
         }
-      });
-      jQuery(function($){
-        $('.example-icon-list li').hover(function(){
-          $(this).find('i').addClass('tb-icon-highlight');
-        }, function(){
-          $(this).find('i').removeClass('tb-icon-highlight');
-        });
       });
     </script>
     <!--

@@ -189,7 +189,7 @@ var Gallery = (function($) {
 		overflow.css("overflow", "hidden");
 
     var urlParts = parseURL(item.url);
-    if(pageObject.filterOpts !== null && pageObject.filterOpts.length > 0) {
+    if(pageObject.filterOpts !== undefined && pageObject.filterOpts !== null && pageObject.filterOpts.length > 0) {
       if(qs.length === 0)
         urlParts.pathname = urlParts.pathname+'/'+pageObject.filterOpts;
       else
