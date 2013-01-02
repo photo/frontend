@@ -37,10 +37,12 @@
         <div class="logo"></div>
       </div>
     </div>
-    <div class="photo">
-      <div class="nav">
-        <a href="#" class="prev">&lt;</a>
-        <a href="#" class="next">&gt;</a>
+    <div class="bd">
+      <div class="photo">
+        <div class="nav">
+          <a href="#" class="prev">&lt;</a>
+          <a href="#" class="next">&gt;</a>
+        </div>
       </div>
       <div class="details">
         <div class="container">
