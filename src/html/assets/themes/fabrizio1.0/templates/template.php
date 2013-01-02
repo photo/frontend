@@ -84,7 +84,6 @@
     <script src="<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'x-editable/bootstrap-editable/js/bootstrap-editable.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'phpjs.js'); ?>"></script>
-    <!-- <script src="<?php $this->theme->asset('javascript', 'data.js'); ?>"></script> -->
     <script src="<?php $this->theme->asset('javascript', 'overrides.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/namespace.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Album.js'); ?>"></script>
