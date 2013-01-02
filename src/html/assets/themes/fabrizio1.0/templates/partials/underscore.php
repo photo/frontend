@@ -77,3 +77,50 @@
     <?php } ?>
   </li>
 </script>
+
+<script type="tmpl/underscore" id="photo-detail-meta">
+  <img src="<%= path870x550 %>">
+  <br>
+  <?php if($isAdmin) { ?>
+    <a href="#" class="title edit"><%= title %></a>
+    <br>
+    <a href="#" class="description edit"><%= description %></a>
+  <?php } else { ?>
+   <%= title %>
+   <br>
+   <%= description %>
+  <?php } ?>
+
+   <hr>
+
+  <% if (!_.isNull(previous)) { %>
+    <% if (!_.isNull(previous[0])) { %>
+      <a class="next" data-id="<%= previous[0].id %>">
+        <img src="<%= previous[0].path90x90xCR %>">
+      </a>
+    <% } %>
+    <% if (!_.isNull(previous[1])) { %>
+      <a class="next" data-id="<%= previous[1].id %>">
+        <img src="<%= previous[1].path90x90xCR %>">
+      </a>
+    <% } %>
+  <% } %>
+  --
+  <% if (!_.isNull(next)) { %>
+    <% if (!_.isNull(next[0])) { %>
+      <a class="next" data-id="<%= next[0].id %>">
+        <img src="<%= next[0].path90x90xCR %>">
+      </a>
+    <% } %>
+    <% if (!_.isNull(next[1])) { %>
+      <a class="next" data-id="<%= next[1].id %>">
+        <img src="<%= next[1].path90x90xCR %>">
+      </a>
+    <% } %>
+  <% } %>
+  <ul>
+    <% for(var tag in tags) { %>
+      <li><%= tags[tag] %></li>
+    <% } %>
+  </ul>
+</script>

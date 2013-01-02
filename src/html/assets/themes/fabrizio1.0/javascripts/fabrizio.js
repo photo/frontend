@@ -49,7 +49,6 @@ var TBX = (function() {
         if(success.length > 0) {
           op.data.store.Photos.add(success);
           container = $('.upload-preview.success');
-          console.log('init container width ' + container.width());
           Gallery.showImages(container, success);
         }
       });
@@ -295,6 +294,41 @@ var TBX = (function() {
               $('.load-more').hide();
               _this.end = true;
             }
+          }
+        },
+        photo: {
+          initData: typeof(initData) === "undefined" ? undefined : initData,
+          filterOpts: typeof(filterOpts) === "undefined" ? undefined : filterOpts,
+          photo: null,
+          el: $('.photo-detail'),
+          init: function() {
+            var _this = TBX.init.pages.photo;
+            if(_this.initData === undefined) {
+              return;
+            }
+
+            _this.photo = initData;
+            delete _this.photo.actions;
+            _this.render(_this.photo);
+            delete _this.initData;
+          },
+          load: function(id) {
+            // TODO don't hard code the returnSizes
+            var _this = TBX.init.pages.photo, endpoint, apiParams = {nextprevious:'1', returnSizes:'90x90xCR,870x550'};
+            
+            if(_this.filterOpts === undefined || _this.filterOpts === null)
+              endpoint = '/photo/'+id+'/view.json';
+            else
+              endpoint = '/photo/'+id+'/'+filterOpts+'/view.json';
+
+            OP.Util.makeRequest(endpoint, apiParams, function(response) {
+              _this.render(response.result);
+            }, 'json', 'get');
+          },
+          render: function(photo) {
+            var _this = TBX.init.pages.photo, $el = _this.el;
+            op.data.store.Photos.add(photo);
+            (new op.data.view.PhotoDetail({model: op.data.store.Photos.get(photo.id), el: $el})).render();
           }
         },
         photos: {
