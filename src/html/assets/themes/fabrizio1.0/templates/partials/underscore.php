@@ -94,26 +94,26 @@
    <hr>
 
   <% if (!_.isNull(previous)) { %>
-    <% if (!_.isNull(previous[0])) { %>
-      <a class="next" data-id="<%= previous[0].id %>">
+    <% if (previous[0]) { %>
+      <a class="paginate" data-id="<%= previous[0].id %>">
         <img src="<%= previous[0].path90x90xCR %>">
       </a>
     <% } %>
-    <% if (!_.isNull(previous[1])) { %>
-      <a class="next" data-id="<%= previous[1].id %>">
+    <% if (previous[1]) { %>
+      <a class="paginate" data-id="<%= previous[1].id %>">
         <img src="<%= previous[1].path90x90xCR %>">
       </a>
     <% } %>
   <% } %>
   --
   <% if (!_.isNull(next)) { %>
-    <% if (!_.isNull(next[0])) { %>
-      <a class="next" data-id="<%= next[0].id %>">
+    <% if (next[0]) { %>
+      <a class="paginate" data-id="<%= next[0].id %>">
         <img src="<%= next[0].path90x90xCR %>">
       </a>
     <% } %>
-    <% if (!_.isNull(next[1])) { %>
-      <a class="next" data-id="<%= next[1].id %>">
+    <% if (next[1]) { %>
+      <a class="paginate" data-id="<%= next[1].id %>">
         <img src="<%= next[1].path90x90xCR %>">
       </a>
     <% } %>
