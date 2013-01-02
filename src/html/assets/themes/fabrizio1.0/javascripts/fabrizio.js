@@ -278,7 +278,9 @@ var TBX = (function() {
                 minDate = $('.startdate', infobar), maxDate = $('.enddate', infobar),
                 minDateVal = parseInt(minDate.attr('data-time')), maxDateVal = parseInt(maxDate.attr('data-time')),
                 ui = TBX.ui, i;
+            
             op.data.store.Photos.add( items );
+            
             if(items[0].totalPages >= _this.page) {
 
               var thisTaken;

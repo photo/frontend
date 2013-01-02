@@ -18,6 +18,12 @@
         name: 'title',
         title: 'Edit Photo Title',
         placement: 'top',
+      },
+      '.description' : {
+        name: 'description',
+        title: 'Edit Photo Description',
+        placement: 'top',
+        empty: 'Click to add a description'
       }
     },
     setModel: function(model){
@@ -28,12 +34,6 @@
       this.model = model;
       this.model.on('change', this._bound('render'));
       this.render();
-    },
-    
-    render : function(){
-      DetailView.__super__.render.call(this);
-      // capture any editables since the document listener will close
-      // everything
     }
   });
   
@@ -41,14 +41,16 @@
     
     // we are going to use the global photo store.
     this.boundFunctions = {};
+    this.cache = {};
     this.store = op.data.store.Photos;
     this.template = _.template($('#op-lightbox').html());
     this._initView();
     this._initEvents();
-    
   };
   
   _.extend( Lightbox.prototype, {
+	
+	imagePathKey : 'pathBase',
     
     keys : {
       // we may want to rethink some of these key codes...
@@ -78,23 +80,32 @@
         .hide()
         .fadeIn('fast')
         
-      this.detailView = new DetailView({el: this.$el.find('.details')} );
+      this.detailView = new DetailView({el: this.$el.find('.details .container')} );
     },
     
     _initEvents : function(){
       this.$el.click( this._bound('onContainerClick') );
+	  this.$el.find('.photo .nav .prev').click( this._bound('prev'));
+	  this.$el.find('.photo .nav .next').click( this._bound('next'));
     },
     
     _captureDocumentEvents : function(){
-      $(document).on('keydown.oplightbox', this._bound('keydown'));
+      $(document).on({
+		'keydown.oplightbox'	:this._bound('keydown')
+	  });
+	  $(window).on({
+		'resize.oplightbox'		:this._bound('adjustSize')
+	  })
     },
     
     _releaseDocumentEvents : function(){
-      $(document).off('keydown.oplightbox', this._bound('keydown'));
+      $(document).off('.oplightbox');
+	  $(window).off('.oplightbox');
     },
     
     onContainerClick : function(e){
       if( e.target === this.$el[0] ) this.hide();
+	  if( $(e.target).parent()[0] == this.$el[0] ) this.hide();
     },
     
     keydown : function(e){
@@ -113,11 +124,37 @@
         });
       }
     },
+	
+	adjustSize : function(){
+	  var $photo = this.$el.find('.photo');
+	  
+	  // check for the image
+	  if( (c =this.cache[this.model.get('id')]) && c._loaded ){
+		var iw = c.width
+		  , ih = c.height
+		  , ir = iw / ih
+		  , cw = $(window).width()
+		  , ch = $(window).height() - this.$el.find('.bd').position().top
+		  , cr = cw / ch
+		
+		if( iw < cw && ih < ch ){
+		  $photo.width(iw);
+		  $photo.height(ih);
+		}
+		else {
+		  $photo.css( cr > ir ? {width: iw * ch/ih, height: ch} : {width: cw, height: ih * cw/iw} );
+		}
+	  }
+	  else {
+		$photo.css({'height': ( $(window).height() - this.$el.find('.bd').position().top )+'px'} );
+	  }
+	},
     
     show : function(item){
       this._captureDocumentEvents();
       this.$el.fadeIn('fast');
-      return this;
+	  this.adjustSize();
+	  return this;
     },
     
     hide : function(){
@@ -127,13 +164,56 @@
     },
     
     update : function(model){
-      this.detailView.setModel( model );
-      // we need to remove our listeners and add then add them
-      // so the editable document events can be captured first
-      this._releaseDocumentEvents();
-      this._captureDocumentEvents();
+      this.$el.addClass('loading');
+      this.setModel( model );
+	  this.$el.find('.photo').find('img').remove();
+	  this.loadImage();
       return this;
     },
+	
+	setModel : function(model){
+	  this.model = model;
+	  this.detailView.setModel( model );
+	  this.loadImage();
+	},
+	
+	_imageLoaded : function(id){
+	  var c = this.cache[id];
+	  c._loaded = true;
+	  if( this.model.get('id') != id ) return;
+	  $('<img />').attr('src', $(c).attr('src')).hide().appendTo(this.$el.find('.photo')).fadeIn('fast');
+	  this.adjustSize();
+	},
+	
+	loadImage : function(){
+	  var c;
+	  this.$el.find('.photo img').remove();
+	  if( !(c = this.cache[this.model.get('id')]) ){
+		var c = this.cache[this.model.get('id')] = new Image();
+		c.onload = _.bind(this._imageLoaded, this, this.model.get('id'));
+		c.src = this.model.get(this.imagePathKey);
+		c._loaded = true;
+	  }
+	  else if( c._loaded ){
+		this._imageLoaded(this.model.get('id'));
+	  }
+	},
+	
+	prev : function(){
+	  var i = _.indexOf( this.store.models, this.model ) - 1;
+	  if( i < 0 ) i = this.store.models.length-1;
+	  this.go(i);
+	},
+	
+	next : function(){
+	  var i = _.indexOf( this.store.models, this.model ) + 1;
+	  if( i > this.store.models.length-1 ) i = 0;
+	  this.go(i);
+	},
+	
+	go : function( index ){
+	  this.setModel( this.store.models[index] );
+	},
     
     togglePlay : function(){
       // TODO - implement slideshow playing state.
