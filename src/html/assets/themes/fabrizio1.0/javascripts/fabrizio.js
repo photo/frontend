@@ -25,6 +25,41 @@ var TBX = (function() {
         (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(ownerId), el: el})).render();
       });
       (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(viewerId), el: $('.profile-photo-header-meta')})).render();
+    },
+    upload: function(ev) {
+      ev.preventDefault();
+      var uploader = $("#uploader").pluploadQueue();
+      if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
+        uploader.start();
+      } else {
+        // TODO something that doesn't suck
+        //opTheme.message.error('Please select at least one photo to upload.');
+      }
+    },
+    uploadCompleteSuccess: function(photoResponse) {
+      photoResponse.crumb = crumb.get();
+      $("form.upload").fadeOut('fast', function() {
+        OP.Util.makeRequest('/photos/upload/confirm.json', photoResponse, callbacks.uploadConfirm, 'json', 'post');
+      });
+    },
+    uploadConfirm: function(response) {
+      var $el, container, model, view, item, result = response.result, success = result.data.successPhotos;
+      $(".upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
+      $(".upload-confirm").html(result.tpl).show('fast', function(){
+        if(success.length > 0) {
+          op.data.store.Photos.add(success);
+          container = $('.upload-preview.success');
+          console.log('init container width ' + container.width());
+          Gallery.showImages(container, success);
+        }
+      });
+    },
+    uploaderReady: function() {
+      var form = $('form.upload');
+      if(typeof OPU === 'object')
+        OPU.init();
+
+      //$("select.typeahead").chosen();
     }
   };
   crumb = (function() {
@@ -158,6 +193,16 @@ var TBX = (function() {
             }
           );
           return false;
+        },
+        upload: function(ev) {
+          ev.preventDefault();
+          var uploader = $("#uploader").pluploadQueue();
+          if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
+            uploader.start();
+          } else {
+            // TODO something that doesn't suck
+            //opTheme.message.error('Please select at least one photo to upload.');
+          }
         }
       },
       click: {
@@ -303,6 +348,13 @@ var TBX = (function() {
               _this.end = true;
             }
           }
+        },
+        upload: function() {
+          OP.Util.on('upload:complete-success', callbacks.uploadCompleteSuccess);
+          OP.Util.on('upload:complete-failure', callbacks.uploadCompleteFailure);
+          OP.Util.on('upload:uploader-ready', callbacks.uploaderReady);
+          OP.Util.on('submit:photo-upload', callbacks.upload);
+          OP.Util.fire('upload:uploader-ready');
         }
       }
     },

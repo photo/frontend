@@ -521,20 +521,17 @@ class ApiPhotoController extends ApiBaseController
       $params['failure'] = array();
 
     $params['successIds'] = implode(',', $params['successIds']);
-    $params['duplicateIds'] = implode(',', $params['duplicateIds']);
 
-    $params['successPhotos'] = $params['duplicatePhotos'] = array();
+    $returnSizes = $this->config->photoSizes->thumbnail;
+
+    $params['successPhotos'] = array();
+    $params['duplicateCount'] = count($params['duplicateIds']);
+    unset($params['duplicateIds']);
     if(count($params['successIds']) > 0)
     {
-      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => '0', 'ids' => $params['successIds'], 'returnSizes' => '100x100xCR')));
+      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => '0', 'ids' => $params['successIds'], 'returnSizes' => $returnSizes)));
       if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
         $params['successPhotos'] = $photosResp['result'];
-    }
-    if(count($params['duplicateIds']) > 0)
-    {
-      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => '0', 'ids' => $params['duplicateIds'], 'returnSizes' => '100x100xCR')));
-      if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
-        $params['duplicatePhotos'] = $photosResp['result'];
     }
 
     $params['facebookId'] = false;
@@ -555,7 +552,7 @@ class ApiPhotoController extends ApiBaseController
 
     $template = sprintf('%s/uploadConfirm.php', $this->config->paths->templates);
     $body = $this->template->get($template, $params);
-    return $this->success('Photos uploaded successfully', $body);
+    return $this->success('Photos uploaded successfully', array('tpl' => $body, 'data' => $params));
   }
 
   /**
