@@ -47,9 +47,9 @@
       }
     },
     events: {
-      'click a.next': 'next'
+      'click a.paginate': 'paginate'
     },
-    next: function(ev) {
+    paginate: function(ev) {
       var $el = $(ev.currentTarget), id = $el.attr('data-id');
       console.log(id);
       TBX.init.pages.photo.load(id);
