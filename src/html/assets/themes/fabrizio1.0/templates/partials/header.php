@@ -4,10 +4,10 @@
           <h1 class="logo"><a href="/">TroveBox</a></h1>
           <div class="nav-collapse collapse">
             <ul class="nav separator-left">
-              <li class="active active-page-item"><a href="<?php $this->url->photosView(); ?>"><i class="tb-icon-gallery tb-icon-highlight"></i> Gallery</a></li>
-              <li><a href="<?php $this->url->albumsView(); ?>"><i class="tb-icon-albums tb-icon-dark"></i> Albums</a></li>
+              <li class="<?php if($this->utility->isActiveTab('photos')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->photosView(); ?>"><i class="tb-icon-gallery <?php if($this->utility->isActiveTab('photos')) { ?> tb-icon-highlight<?php } else { ?>tb-icon-dark<?php } ?>"></i> Gallery</a></li>
+              <li class="<?php if($this->utility->isActiveTab('albums')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->albumsView(); ?>"><i class="tb-icon-albums <?php if($this->utility->isActiveTab('albums')) { ?> tb-icon-highlight<?php } else { ?>tb-icon-dark<?php } ?>"></i> Albums</a></li>
               <?php if($this->user->isAdmin()) { ?>
-                <li><a href="<?php $this->url->photosUpload(); ?>"><i class="tb-icon-upload tb-icon-dark"></i> Upload</a></li>
+                <li class="<?php if($this->utility->isActiveTab('upload')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->photosUpload(); ?>"><i class="tb-icon-upload <?php if($this->utility->isActiveTab('upload')) { ?> tb-icon-highlight<?php } else { ?>tb-icon-dark<?php } ?>"></i> Upload</a></li>
               <?php } ?>
             </ul>
           </div><!--/.nav-collapse -->

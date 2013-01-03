@@ -220,7 +220,7 @@ class Utility
         break;
       case 'photo':
       case 'photos':
-        if(!empty($route) && preg_match('#^/photo#', $route) && !preg_match('#^/photos/upload#', $route))
+        if(!empty($route) && (preg_match('#^/photo#', $route) || preg_match('#^/p/.+#', $route)) && !preg_match('#^/photos/upload#', $route))
           return true;
         return false;
         break;

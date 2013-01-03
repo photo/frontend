@@ -29,7 +29,7 @@
     <![endif]-->
   </head>
 
-  <body class="trovebox">
+  <body class="trovebox <?php $this->utility->safe($page); ?>">
     <div class="navbar navbar-inverse navbar-fixed-top trovebox-banner">
       
       <?php $this->theme->display('partials/header.php'); ?>
