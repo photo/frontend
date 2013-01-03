@@ -28,9 +28,9 @@
 -->
 
 <script type="tmpl/underscore" id="user-badge-meta">
-  <h4 class="profile-name-meta username<?php if($isAdmin) { ?> edit <?php } ?>"><%= name %></h4>
+  <h4 class="profile-name-meta username"><span class="name <?php if($isAdmin) { ?> edit <?php } ?>"><%= name %></span></h4>
   <div class="tray-wrap">
-  <span class="profile-photo-meta avatar"></span>
+    <span class="avatar"><img class="avatar profile-pic profile-photo" src="<%= photoUrl %>" /></span>
     <div class="tray">
       <div class="details">
         <ul>
