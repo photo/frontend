@@ -32,40 +32,7 @@
   <body class="trovebox <?php $this->utility->safe($page); ?>">
     <div class="navbar navbar-inverse navbar-fixed-top trovebox-banner">
       
-      <?php $this->theme->display('partials/header.php'); ?>
-      <div class="navbar-inner navbar-inner-secondary">
-        <div class="container">
-          <ul class="nav">
-            <li><a href="#"><i class="tb-icon-light tb-icon-home"></i></a></li>
-            <li class="separator-left">Howdy Mark Fabrizio!</li>
-            <li><a href="#"><i class="tb-icon-light tb-icon-heart"></i> <span class="badge badge-important">3</span></a></li>
-            <li><a href="#"><i class="tb-icon-light tb-icon-comment"></i> <span class="badge badge-important">6</span></a></li>
-            <li class="separator-left"><a href="#"><i class="tb-icon-light tb-icon-heart"></i> My Favorites</a></li>
-            <li class="dropdown"><a data-toggle="dropdown" href="#"><i class="tb-icon-light tb-icon-gear"></i> Manage</a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Child Item 1</a></li>
-                <li><a href="#">Child Item 2</a></li>
-              </ul>
-            </li>
-            <li class="dropdown"><a data-toggle="dropdown" href="#"><i class="tb-icon-light tb-icon-plus"></i> Create New</a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Child Item 1</a></li>
-                <li><a href="#">Child Item 2</a></li>
-              </ul>
-            </li>
-            <li class="dropdown"><a data-toggle="dropdown" href="#"><i class="tb-icon-light tb-icon-chart"></i> Statistics</a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Child Item 1</a></li>
-                <li><a href="#">Child Item 2</a></li>
-              </ul>
-            </li>
-          </ul>
-          <div class="help-container">
-            <a href="#"><i class="tb-icon-help"></i></a>
-          </div>
-        </div>
-      </div>
-    </div>
+    <?php $this->theme->display('partials/header.php'); ?>
 
     <div class="container">
       <?php echo $body; ?>

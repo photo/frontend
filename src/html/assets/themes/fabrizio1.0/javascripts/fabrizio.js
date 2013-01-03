@@ -21,6 +21,9 @@ var TBX = (function() {
       $('.user-badge-meta').each(function(i, el) {
         (new op.data.view.UserBadge({model:op.data.store.Profiles.get(ownerId), el: el})).render();
       });
+      $('.profile-name-meta.owner').each(function(i, el) {
+        (new op.data.view.ProfileName({model:op.data.store.Profiles.get(ownerId), el: el})).render();
+      });
       $('.profile-photo-meta').each(function(i, el) {
         (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(ownerId), el: el})).render();
       });
@@ -60,7 +63,7 @@ var TBX = (function() {
 
       //$("select.typeahead").chosen();
     }
-  };
+  }; // callbacks
   crumb = (function() {
     var value = null;
     return {
@@ -71,7 +74,29 @@ var TBX = (function() {
         value = crumb;
       }
     };
-  })();
+  })(); // crumb
+  markup = {
+    message: function(message) { // messageMarkup
+      var cls = '';
+      if(arguments.length > 1) {
+        if(arguments[1] == 'error')
+          cls = 'error';
+        else if(arguments[1] == 'confirm')
+          cls = 'success';
+      }
+      return '<div class="alert-message block-message '+cls+'"><a class="modal-close-click close" href="#">x</a>' + message + '</div>'
+    },
+    modal: function(header, body, footer) { // modalMarkup
+      return '<div class="modal-header">' +
+             '  <a href="#" class="close" data-dismiss="modal">&times;</a>' +
+             '  <h3>'+header+'</h3>' +
+             '</div>' +
+             '<div class="modal-body">' +
+             '  <p>'+body+'</p>' +
+             '</div>' +
+             (footer ? '<div class="modal-footer">' + footer + '</div>' : '');
+    }
+  }; // markup
   profiles = {
     owner: { },
     viewer: { },
@@ -87,7 +112,7 @@ var TBX = (function() {
         callbacks.profilesSuccess(owner, viewer);
       }, 'json');
     }
-  };
+  }; // profiles
   util = (function() {
     return {
       getDeviceWidth: function() {
@@ -169,7 +194,7 @@ var TBX = (function() {
         }
       },
     };
-  })();
+  })(); // util
 
   return {
     crumb: function() { return crumb.get(); },
@@ -212,7 +237,7 @@ var TBX = (function() {
       },
       mouseover: {
       }
-    },
+    }, // handlers
     init: {
       load: function(_crumb) {
         // http://stackoverflow.com/a/6974186
@@ -295,6 +320,8 @@ var TBX = (function() {
               _this.end = true;
             }
           }
+        },
+        front: function() {
         },
         photo: {
           initData: typeof(initData) === "undefined" ? undefined : initData,
@@ -391,7 +418,32 @@ var TBX = (function() {
           OP.Util.fire('upload:uploader-ready');
         }
       }
-    },
+    }, // init
+    message: {
+      append: function(html/*, isStatic*/) {
+        var el = $(".message:first").clone(false),
+            last = $(".message:last"),
+            isStatic = arguments[1] || false;
+
+        // TODO differentiate on type #962
+        el.addClass('alert alert-info').html(html);
+        last.after(el).slideDown();
+        if(!isStatic)
+          el.delay(5000).slideUp(function(){ $(this).remove(); });
+      },
+      confirm: function(messageHtml/*, isStatic*/) {
+        var isStatic = arguments[1] || false, msg = TBX.message;
+        TBX.message.show(messageHtml, 'confirm', isStatic);
+      },
+      error: function(messageHtml/*, isStatic*/) {
+        var isStatic = arguments[1] || false, msg = TBX.message;
+        msg.show(messageHtml, 'error', isStatic);
+      },
+      show: function(messageHtml, type/*, isStatic*/) {
+        var isStatic = arguments[1] || false, msg = TBX.message;
+        msg.append(markup.message(messageHtml, type), isStatic);
+      }
+    }, // message
     profiles: {
       getOwner: function() {
         return profiles.owner.id;
@@ -399,6 +451,6 @@ var TBX = (function() {
       getViewer: function() {
         return profiles.viewer.id;
       }
-    }
+    } // profiles
   };
 })();
