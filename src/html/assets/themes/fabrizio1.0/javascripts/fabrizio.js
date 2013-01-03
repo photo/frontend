@@ -40,7 +40,7 @@ var TBX = (function() {
       }
     },
     uploadCompleteSuccess: function(photoResponse) {
-      photoResponse.crumb = crumb.get();
+      photoResponse.crumb = TBX.crumb();
       $("form.upload").fadeOut('fast', function() {
         OP.Util.makeRequest('/photos/upload/confirm.json', photoResponse, callbacks.uploadConfirm, 'json', 'post');
       });
