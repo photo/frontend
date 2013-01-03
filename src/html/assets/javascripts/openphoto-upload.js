@@ -125,17 +125,6 @@ OPU = (function() {
               }
             }
         });
-
-        OP.Util.on('submit:photo-upload', function(ev) {
-          ev.preventDefault();
-          var uploader = $("#uploader").pluploadQueue();
-          if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
-            uploader.start();
-          } else {
-            // TODO something that doesn't suck
-            opTheme.message.error('Please select at least one photo to upload.');
-          }
-        });
       }
     };
 }());

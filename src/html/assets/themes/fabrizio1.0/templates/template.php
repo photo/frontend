@@ -12,6 +12,9 @@
     <link href="/assets/themes/fabrizio1.0/javascripts/x-editable/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet" />
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less" rel="stylesheet">
+      <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
+        <link href="/assets/stylesheets/upload.css" rel="stylesheet">
+      <?php } ?>
     <?php } else { ?>
       <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->
                                                                   addCss("/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less")->
@@ -67,6 +70,10 @@
     <div class="container">
       <?php echo $body; ?>
     </div> <!-- /container -->
+    <div class="footer">
+      <hr>
+      footer
+    </div>
     <?php $this->theme->display('partials/underscore.php'); ?>
     <!-- Le javascript
     ================================================== -->
@@ -81,7 +88,6 @@
     <script src="<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'x-editable/bootstrap-editable/js/bootstrap-editable.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'phpjs.js'); ?>"></script>
-    <!-- <script src="<?php $this->theme->asset('javascript', 'data.js'); ?>"></script> -->
     <script src="<?php $this->theme->asset('javascript', 'overrides.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/namespace.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Album.js'); ?>"></script>
@@ -95,12 +101,24 @@
     <script src="<?php $this->theme->asset('javascript', 'op/data/store/Photos.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/Editable.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/AlbumCover.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoDetail.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoGallery.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfileName.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfilePhoto.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/Lightbox.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'gallery.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>"></script>
+    <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
+      <?php if(true || $this->config->site->mode === 'dev') { ?>
+        <script src="/assets/javascripts/plupload.js"></script>
+        <script src="/assets/javascripts/plupload.html5.js"></script>
+        <script src="/assets/javascripts/jquery.plupload.queue.js"></script>
+        <script src="/assets/javascripts/openphoto-upload.js"></script>
+      <?php } else { ?>
+        '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'q'); ?>',
+      <?php } ?>
+    <?php } ?>
+
     <script type="text/javascript">
       OP.Util.init(jQuery, {
         eventMap: TBX.handlers,
@@ -112,13 +130,6 @@
             TBX.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
           }
         }
-      });
-      jQuery(function($){
-        $('.example-icon-list li').hover(function(){
-          $(this).find('i').addClass('tb-icon-highlight');
-        }, function(){
-          $(this).find('i').removeClass('tb-icon-highlight');
-        });
       });
     </script>
     <!--

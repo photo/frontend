@@ -10,6 +10,7 @@
   */
 class User extends BaseModel
 {
+  const displayNameDefault = 'OpenPhoto User';
   /**
     * A user object that caches the value once it's been fetched from the remote datasource.
     * @access private
@@ -88,7 +89,7 @@ class User extends BaseModel
       if(isset($user['attrprofileName']) && !empty($user['attrprofileName']))
         return $user['attrprofileName'];
     }
-    return 'OpenPhoto User';
+    return self::displayNameDefault;
   }
 
   /**

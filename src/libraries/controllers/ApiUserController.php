@@ -155,6 +155,10 @@ class ApiUserController extends ApiBaseController
             'name' => $this->user->getNameFromEmail($viewer['id'])
           );
         }
+        else
+        {
+          $profile['viewer'] = array('id' => null, 'photoUrl' => $this->user->getAvatarFromEmail(100, null), 'name' => User::displayNameDefault);
+        }
       }
     }
 

@@ -521,20 +521,17 @@ class ApiPhotoController extends ApiBaseController
       $params['failure'] = array();
 
     $params['successIds'] = implode(',', $params['successIds']);
-    $params['duplicateIds'] = implode(',', $params['duplicateIds']);
 
-    $params['successPhotos'] = $params['duplicatePhotos'] = array();
+    $returnSizes = $this->config->photoSizes->thumbnail;
+
+    $params['successPhotos'] = array();
+    $params['duplicateCount'] = count($params['duplicateIds']);
+    unset($params['duplicateIds']);
     if(count($params['successIds']) > 0)
     {
-      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => '0', 'ids' => $params['successIds'], 'returnSizes' => '100x100xCR')));
+      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => '0', 'ids' => $params['successIds'], 'returnSizes' => $returnSizes)));
       if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
         $params['successPhotos'] = $photosResp['result'];
-    }
-    if(count($params['duplicateIds']) > 0)
-    {
-      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => '0', 'ids' => $params['duplicateIds'], 'returnSizes' => '100x100xCR')));
-      if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
-        $params['duplicatePhotos'] = $photosResp['result'];
     }
 
     $params['facebookId'] = false;
@@ -555,7 +552,7 @@ class ApiPhotoController extends ApiBaseController
 
     $template = sprintf('%s/uploadConfirm.php', $this->config->paths->templates);
     $body = $this->template->get($template, $params);
-    return $this->success('Photos uploaded successfully', $body);
+    return $this->success('Photos uploaded successfully', array('tpl' => $body, 'data' => $params));
   }
 
   /**
@@ -682,7 +679,7 @@ class ApiPhotoController extends ApiBaseController
     * @param string $id ID of the photo to be viewed.
     * @return string Standard JSON envelope
     */
-  public function view($id)
+  public function view($id, $options = null)
   {
     $db = getDb();
     $getActions = isset($_GET['actions']) && $_GET['actions'] == 'true';
@@ -762,6 +759,20 @@ class ApiPhotoController extends ApiBaseController
       }
     }
 
+    if(isset($_GET['nextprevious']) && !empty($_GET['nextprevious']))
+    {
+      if(empty($options))
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious.json", EpiRoute::httpGet);
+      else
+        $apiNextPrevious = $this->api->invoke("/photo/{$id}/nextprevious/{$options}.json", EpiRoute::httpGet);
+
+      if($apiNextPrevious['code'] === 200)
+      {
+        $photo['next'] = $apiNextPrevious['result']['next'];
+        $photo['previous'] = $apiNextPrevious['result']['previous'];
+      }
+    }
+
     $photo = $this->photo->addApiUrls($photo, $sizes);
     return $this->success("Photo {$id}", $photo);
   }
@@ -817,7 +828,7 @@ class ApiPhotoController extends ApiBaseController
     }
 
     // This section enables in path parameters which are normally GET
-    $pageSize = $this->config->pagination->pageSize;
+    $pageSize = $this->config->pagination->photos;
     $filters = array('sortBy' => 'dateTaken,desc');
     if($filterOpts !== null)
     {
