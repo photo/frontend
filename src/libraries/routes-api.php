@@ -51,6 +51,16 @@ $apiObj->get('/?v?[1-2]?/album/([a-zA-Z0-9]+)/view.json', array('ApiAlbumControl
 $apiObj->post('/?v?[1-2]?/manage/settings.json', array('ApiManageController', 'settingsPost'), EpiApi::external); // update features (/manage/features.json)
 
 /*
+ * Notification endpoints
+ * All notifiation endpoints follow the same convention.
+ * /notification/{action}.json
+ * API version >= 2
+ */
+$apiObj->get('/?v?[2]?/notification/?(flash|static)?/view.json', array('ApiNotificationController', 'view'), EpiApi::external); // fetch the next notification in the queue
+$apiObj->post('/?v?[2]?/notification/create.json', array('ApiNotificationController', 'create'), EpiApi::external); // create a notifiation
+$apiObj->post('/?v?[2]?/notification/delete.json', array('ApiNotificationController', 'delete'), EpiApi::external); // delete the next/current static notifiation
+
+/*
  * Photo endpoints
  * All photo endpoints follow the same convention.
  * Everything in []'s are optional

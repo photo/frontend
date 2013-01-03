@@ -246,6 +246,12 @@ RES;
     $this->assertEquals('Hello &quot; there', $res, 'content not properly safed');
   }
 
+  public function testSafeWithTags()
+  {
+    $res = $this->utility->safe('Hello " <a href="">there</a> <script>location.href="http://google.com";</script>', '<a>', false);
+    $this->assertEquals('Hello " <a href="">there</a> location.href="http://google.com";', $res, 'content not properly safed with tags allowed');
+  }
+
   // TODO populate this test
   public function testStaticMapUrl() {}
 

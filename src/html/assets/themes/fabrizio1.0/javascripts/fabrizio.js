@@ -199,6 +199,15 @@ var TBX = (function() {
   return {
     crumb: function() { return crumb.get(); },
     handlers: {
+      click: {
+        notificationDelete: function(ev) {
+          ev.preventDefault();
+          OP.Util.makeRequest('/notification/delete.json', {crumb: TBX.crumb()}, null, 'json');
+        }
+      },
+      keydown: { },
+      keyup: { },
+      mouseover: { },
       submit: {
         login: function(ev) {
           ev.preventDefault();
@@ -228,14 +237,6 @@ var TBX = (function() {
             //opTheme.message.error('Please select at least one photo to upload.');
           }
         }
-      },
-      click: {
-      },
-      keydown: {
-      },
-      keyup: {
-      },
-      mouseover: {
       }
     }, // handlers
     init: {

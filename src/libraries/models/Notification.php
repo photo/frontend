@@ -22,31 +22,46 @@ class Notification extends BaseModel
     return $this->cache->set($this->key, $current);
   }
 
-  public function get()
+  public function delete()
+  {
+    $current = $this->cache->get($this->key);
+    $msg = $this->getAndRemoveFrom($current, self::typeStatic);
+    $this->cache->set($this->key, $current);
+    return $msg;
+  }
+
+  public function get($type = null)
   {
     $current = $this->cache->get($this->key);
     if(empty($current))
       return null;
 
-    if(!empty($current[self::typeFlash]))
+    if($type !== null)
+      $fetchType = $type;
+    elseif(!empty($current[self::typeFlash]))
+      $fetchType = self::typeFlash;
+    elseif(!empty($current[self::typeStatic]))
+      $fetchType = self::typeStatic;
+    else
+      return null;
+
+    if($fetchType === self::typeFlash)
     {
-      $msg = $this->getAndRemoveFromFlash($current); // pass by reference
+      $msg = $this->getAndRemoveFrom($current, self::typeFlash); // pass by reference
       $this->cache->set($this->key, $current);
       return array('msg' => $msg, 'type' => self::typeFlash);
     }
-    elseif(!empty($current[self::typeStatic]))
+    elseif($fetchType === self::typeStatic)
     {
       $msg = $current[self::typeStatic][0];
       return array('msg' => $msg, 'type' => self::typeStatic);
     }
-
-    return null;
   }
 
-  public function getAndRemoveFromFlash(&$queue)
+  public function getAndRemoveFrom(&$queue, $type)
   {
-    $msg = $queue[self::typeFlash][0];
-    $queue[self::typeFlash] = array_slice($queue[self::typeFlash], 1, null, false);
+    $msg = $queue[$type][0];
+    $queue[$type] = array_slice($queue[$type], 1, null, false);
     return $msg;    
   }
 
