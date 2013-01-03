@@ -236,7 +236,7 @@ class ApiPhotoController extends ApiBaseController
     $photos = $db->getPhotos($filters, $pageSize);
 
     if(empty($photos))
-      return $this->success('Your search did not return any photos', null);
+      return $this->success('Your search did not return any photos', $photos);
 
     $sizes = array();
     if(isset($filters['returnSizes']))
@@ -285,9 +285,14 @@ class ApiPhotoController extends ApiBaseController
         $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
     }
 
-    $photos[0]['currentPage'] = intval($page);
-    $photos[0]['pageSize'] = intval($pageSize);
-    $photos[0]['totalPages'] = !empty($pageSize) ? ceil($photos[0]['totalRows'] / $pageSize) : 0;
+    if(!empty($photos))
+    {
+      $photos[0]['currentPage'] = intval($page);
+      $photos[0]['currentRows'] = count($photos);
+      $photos[0]['pageSize'] = intval($pageSize);
+      $photos[0]['totalPages'] = !empty($pageSize) ? ceil($photos[0]['totalRows'] / $pageSize) : 0;
+    }
+
     return $this->success("Successfully retrieved user's photos", $photos);
   }
 
@@ -345,7 +350,7 @@ class ApiPhotoController extends ApiBaseController
     if(!$status)
       return $this->error(sprintf('Could not complete the replacement of photo %s', $id), false);
 
-    $photoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+    $photoResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
     return $this->success(sprintf('Photo %s was successfully replaced.', $id), $photoResp['result']);
   }
 
@@ -806,7 +811,7 @@ class ApiPhotoController extends ApiBaseController
     }
   }
 
-  private function parseFilters($filterOpts)
+  protected function parseFilters($filterOpts)
   {
     $groupsObj = new Group;
     // If the user is logged in then we can display photos based on group membership

@@ -160,6 +160,11 @@ class ApiUserController extends ApiBaseController
           $profile['viewer'] = array('id' => null, 'photoUrl' => $this->user->getAvatarFromEmail(100, null), 'name' => User::displayNameDefault);
         }
       }
+
+      $photos = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
+      $albums = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
+      $tags = $this->api->invoke('/tags/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
+      $profile['counts'] = array('photos' => $photos['result'][0]['totalRows'], 'albums' => $albums['result']);
     }
 
     return $this->success('User profile', $profile);
