@@ -45,10 +45,12 @@
         </div>
       </div>
     <?php } ?>
-    <div class="alert trovebox-message">
-      <div class="container">
-        <button type="button" class="close" data-dismiss="alert" data-target=".trovebox-message">×</button>
-        Oh Hey! This is a message box that can be displayed for a variety of reasons!
-      </div>
-    </div>
+      <?php if($msg = $this->notification->get($msg) != '') { ?>
+        <div class="alert trovebox-message">
+          <div class="container">
+            <button type="button" class="close" data-dismiss="alert" data-target=".trovebox-message">×</button>
+            <?php var_dump($msg); ?>
+          </div>
+        </div>
+      <?php } ?>
 

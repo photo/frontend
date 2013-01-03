@@ -10,6 +10,12 @@ class EpiSession_Apc implements EpiSessionInterface
     setcookie(EpiSession::COOKIE, null, time()-86400);
   }
 
+  public function delete($key)
+  {
+    unset($this->store[$key]);
+    apc_store($this->key, $this->store);
+  }
+
   public function get($key = null)
   {
     if(empty($key) || !isset($this->store[$key]))
