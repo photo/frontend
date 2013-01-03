@@ -35,6 +35,7 @@
     <div class="header">
       <div class="container">
         <div class="logo"></div>
+        <a class="detail-link" href="#">Full Details</a>
       </div>
     </div>
     <div class="bd">
@@ -45,6 +46,11 @@
         </div>
       </div>
       <div class="details">
+        <div class="toggle">
+          <span class="special-key">D</span>
+          <span class="hide-details">Hide Details</span>
+          <span class="show-details">Show Details</span>
+        </div>
         <div class="container">
         
         </div>
@@ -56,9 +62,15 @@
   <div class="detail-block">
     <div class="title">
       <span class="text"><%= title || filenameOriginal %></span>
-      <a href="#"><i class="tb-icon-heart tb-icon-dark"></i></a>
+      <span class="actions">
+        <a href="#"><i class="tb-icon-heart tb-icon-dark"></i></a>
+        <a href="#"><i class="tb-icon-comment tb-icon-dark"></i></a>
+        <a href="#"><i class="tb-icon-maximize tb-icon-dark"></i></a>
+      </span>
     </div>
-    <div class="description"><%= description %></div>
+    <div class="description">
+      <span class="text"><%= description %></span>
+    </div>
   </div>
   <div class="action-block">
   

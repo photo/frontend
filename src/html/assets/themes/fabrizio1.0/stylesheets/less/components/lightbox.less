@@ -10,6 +10,16 @@
   
   .header {
     padding: 12px 0;
+    .container {
+      position: relative;
+    }
+    .detail-link {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      color: #fff;
+      text-decoration: underline;
+    }
   }
   
   .logo {
@@ -28,6 +38,7 @@
   .bd {
     text-align: center;
     .photo {
+      background-image: none;
       position: relative;
       display: inline-block;
       img {
@@ -35,6 +46,8 @@
         max-height: 100%;
       }
       .nav {
+        .opacity(0);
+        .transition(opacity .5s);
         position: absolute;
         top: 50%;
         width: 100%;
@@ -44,12 +57,15 @@
           display: block;
           height: 80px;
           width: 40px;
-          font-size: 18px;
+          font-size: 20px;
           background: rgba(0,0,0,.3);
           color: #ccc;
           line-height: 80px;
           vertical-align: middle;
+          .transition(background .25s);
+          font-weight: 300;
           &:hover {
+            background: rgba(0,0,0,.7);
             text-decoration: none;
             color: #fff;
           }
@@ -63,6 +79,11 @@
           margin-right: 10px;
         }
       }
+      &:hover {
+        .nav {
+          .opacity(98);
+        }
+      }
     }
   }
   
@@ -74,11 +95,44 @@
     color: #fff;
     background: rgba(0,0,0,.8);
     
+    .toggle {
+      cursor: pointer;
+      position: absolute;
+      bottom: 100%;
+      right: 20px;
+      background: rgba(0,0,0,.8);
+      padding: 4px 10px;
+      font-weight: 300;
+      font-size: 12px;
+      
+      span {
+        text-decoration: underline;
+      }
+      
+      .special-key {
+        margin-right: 8px;
+        text-decoration: none;
+      }
+      
+      .show-details {
+        display: none;
+      }
+    }
+    
     .container {
       padding: 10px 0;
       
       .title {
         font-size: 1.2em;
+        margin-bottom: .6em;
+        
+        .actions {
+          margin-left: 12px;
+          a {
+            margin: 0 4px;
+          }
+        }
+        
       }
       
       .tb-icon,
@@ -87,7 +141,42 @@
         vertical-align: middle;
       }
       
+      .description {
+        font-weight: 300;
+        font-size: 1em;
+        
+      }
     }
   }
   
+  &.details-hidden {
+    .details {
+      .toggle {
+        .show-details {
+          display: inline;
+        }
+        .hide-details {
+          display: none;
+        }
+      }
+      height: 0;
+    }
+  }
+  
+  .editable-empty, .editable-empty:hover {
+    font-style: italic;
+    color: #ccc;
+    text-decoration: none;
+    border-bottom: 1px dashed #666;
+  }
+  
+  &.loading {
+    .bd {
+      .photo {
+        background-image: url("../images/loading.gif");
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+      }
+    }
+  }
 }

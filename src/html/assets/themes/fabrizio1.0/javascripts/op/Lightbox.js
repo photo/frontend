@@ -19,11 +19,12 @@
         title: 'Edit Photo Title',
         placement: 'top',
       },
-      '.description' : {
+      '.description .text' : {
         name: 'description',
+        type: 'textarea',
         title: 'Edit Photo Description',
         placement: 'top',
-        empty: 'Click to add a description'
+        emptytext: 'Click to add a description'
       }
     },
     setModel: function(model){
@@ -50,15 +51,16 @@
   
   _.extend( Lightbox.prototype, {
 	
-	imagePathKey : 'pathBase',
+    imagePathKey : 'pathBase',
     
     keys : {
       // we may want to rethink some of these key codes...
       // i think down and up may be good to toggle details / thumbs
-      next      :[13, 34, 39, 40],
-      prev      :[ 8, 33, 37, 38],
-      hide      :[27],
-      togglePlay:[32]
+      next      	  :[13, 34, 39, 40],
+      prev      	  :[ 8, 33, 37, 38],
+      hide      	  :[27],  // escape
+      togglePlay	  :[32],  // spacebar 
+      toggleDetails :[68]   // D
     },
     
     _indexOf : function(model){
@@ -85,27 +87,28 @@
     
     _initEvents : function(){
       this.$el.click( this._bound('onContainerClick') );
-	  this.$el.find('.photo .nav .prev').click( this._bound('prev'));
-	  this.$el.find('.photo .nav .next').click( this._bound('next'));
+      this.$el.find('.photo .nav .prev').click( this._bound('prev'));
+      this.$el.find('.photo .nav .next').click( this._bound('next'));
+      this.$el.find('.details .toggle').click( this._bound('toggleDetails'));
     },
     
     _captureDocumentEvents : function(){
       $(document).on({
-		'keydown.oplightbox'	:this._bound('keydown')
-	  });
-	  $(window).on({
-		'resize.oplightbox'		:this._bound('adjustSize')
-	  })
+        'keydown.oplightbox'	:this._bound('keydown')
+      });
+      $(window).on({
+        'resize.oplightbox'		:this._bound('adjustSize')
+      })
     },
     
     _releaseDocumentEvents : function(){
       $(document).off('.oplightbox');
-	  $(window).off('.oplightbox');
+      $(window).off('.oplightbox');
     },
     
     onContainerClick : function(e){
       if( e.target === this.$el[0] ) this.hide();
-	  if( $(e.target).parent()[0] == this.$el[0] ) this.hide();
+      if( $(e.target).parent()[0] == this.$el[0] ) this.hide();
     },
     
     keydown : function(e){
@@ -114,7 +117,7 @@
         , self = this
         
       // Ignore key combinations and key events within form elements
-	  if (!e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey && !(target && (target.type || $(target).is('[contenteditable]')))) {
+      if (!e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey && !(target && (target.type || $(target).is('[contenteditable]')))) {
         $.each(self.keys, function(fn, codes){
           if( ~_.indexOf(codes, code) ){
             self[fn]();
@@ -125,36 +128,36 @@
       }
     },
 	
-	adjustSize : function(){
-	  var $photo = this.$el.find('.photo');
-	  
-	  // check for the image
-	  if( (c =this.cache[this.model.get('id')]) && c._loaded ){
-		var iw = c.width
-		  , ih = c.height
-		  , ir = iw / ih
-		  , cw = $(window).width()
-		  , ch = $(window).height() - this.$el.find('.bd').position().top
-		  , cr = cw / ch
-		
-		if( iw < cw && ih < ch ){
-		  $photo.width(iw);
-		  $photo.height(ih);
-		}
-		else {
-		  $photo.css( cr > ir ? {width: iw * ch/ih, height: ch} : {width: cw, height: ih * cw/iw} );
-		}
-	  }
-	  else {
-		$photo.css({'height': ( $(window).height() - this.$el.find('.bd').position().top )+'px'} );
-	  }
-	},
+    adjustSize : function(){
+      var $photo = this.$el.find('.photo');
+      
+      // check for the image
+      if( (c =this.cache[this.model.get('id')]) && c._loaded ){
+      var iw = c.width
+        , ih = c.height
+        , ir = iw / ih
+        , cw = $(window).width()
+        , ch = $(window).height() - this.$el.find('.bd').position().top
+        , cr = cw / ch
+      
+      if( iw < cw && ih < ch ){
+        $photo.width(iw);
+        $photo.height(ih);
+      }
+      else {
+        $photo.css( cr > ir ? {width: iw * ch/ih, height: ch} : {width: cw, height: ih * cw/iw} );
+      }
+      }
+      else {
+        $photo.css({'height': ( $(window).height() - this.$el.find('.bd').position().top )+'px'} );
+      }
+    },
     
     show : function(item){
       this._captureDocumentEvents();
       this.$el.fadeIn('fast');
-	  this.adjustSize();
-	  return this;
+      this.adjustSize();
+      return this;
     },
     
     hide : function(){
@@ -166,58 +169,66 @@
     update : function(model){
       this.$el.addClass('loading');
       this.setModel( model );
-	  this.$el.find('.photo').find('img').remove();
-	  this.loadImage();
+      this.$el.find('.photo').find('img').remove();
+      this.loadImage();
       return this;
     },
 	
-	setModel : function(model){
-	  this.model = model;
-	  this.detailView.setModel( model );
-	  this.loadImage();
-	},
+    setModel : function(model){
+      this.model = model;
+      this.detailView.setModel( model );
+      this.loadImage();
+      this.$el.find('.header .detail-link').attr('href', model.get('url'));
+    },
 	
-	_imageLoaded : function(id){
-	  var c = this.cache[id];
-	  c._loaded = true;
-	  if( this.model.get('id') != id ) return;
-	  $('<img />').attr('src', $(c).attr('src')).hide().appendTo(this.$el.find('.photo')).fadeIn('fast');
-	  this.adjustSize();
-	},
-	
-	loadImage : function(){
-	  var c;
-	  this.$el.find('.photo img').remove();
-	  if( !(c = this.cache[this.model.get('id')]) ){
-		var c = this.cache[this.model.get('id')] = new Image();
-		c.onload = _.bind(this._imageLoaded, this, this.model.get('id'));
-		c.src = this.model.get(this.imagePathKey);
-		c._loaded = true;
-	  }
-	  else if( c._loaded ){
-		this._imageLoaded(this.model.get('id'));
-	  }
-	},
-	
-	prev : function(){
-	  var i = _.indexOf( this.store.models, this.model ) - 1;
-	  if( i < 0 ) i = this.store.models.length-1;
-	  this.go(i);
-	},
-	
-	next : function(){
-	  var i = _.indexOf( this.store.models, this.model ) + 1;
-	  if( i > this.store.models.length-1 ) i = 0;
-	  this.go(i);
-	},
-	
-	go : function( index ){
-	  this.setModel( this.store.models[index] );
-	},
+    _imageLoaded : function(id){
+      var c = this.cache[id];
+      c._loaded = true;
+      if( this.model.get('id') != id ) return;
+      this.$el.removeClass('loading');
+      this.$el.find('.photo img').remove();
+      $('<img />').attr('src', $(c).attr('src')).hide().appendTo(this.$el.find('.photo')).fadeIn('fast');
+      this.adjustSize();
+    },
+    
+    loadImage : function(){
+      var c;
+      this.$el.find('.photo img').remove();
+      this.$el.addClass('loading');
+      if( !(c = this.cache[this.model.get('id')]) ){
+        var c = this.cache[this.model.get('id')] = new Image();
+        c.onload = _.bind(this._imageLoaded, this, this.model.get('id'));
+        c.src = this.model.get(this.imagePathKey);
+        c._loaded = true;
+      }
+      else if( c._loaded ){
+        this._imageLoaded(this.model.get('id'));
+      }
+    },
+    
+    prev : function(){
+      var i = _.indexOf( this.store.models, this.model ) - 1;
+      if( i < 0 ) i = this.store.models.length-1;
+      this.go(i);
+    },
+    
+    next : function(){
+      var i = _.indexOf( this.store.models, this.model ) + 1;
+      if( i > this.store.models.length-1 ) i = 0;
+      this.go(i);
+    },
+    
+    go : function( index ){
+      this.setModel( this.store.models[index] );
+    },
     
     togglePlay : function(){
       // TODO - implement slideshow playing state.
       return this;
+    },
+    
+    toggleDetails : function(){
+      this.$el.toggleClass('details-hidden');
     }
   });
   
