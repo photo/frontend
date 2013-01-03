@@ -26,6 +26,41 @@
 <!--
   <img class="profile-pic profile-photo" src="<%= photoUrl %>" />
 -->
+
+<script type="tmpl/underscore" id="user-badge-meta">
+  <h4 class="profile-name-meta username<?php if($isAdmin) { ?> edit <?php } ?>"><%= name %></h4>
+  <div class="tray-wrap">
+  <span class="profile-photo-meta avatar"></span>
+    <div class="tray">
+      <div class="details">
+        <ul>
+          <li>
+            <a href="#">
+              <i class="tb-icon-gallery"></i>
+              <span class="number"><%= counts.photos %></span>
+              <span class="title">photos</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="tb-icon-albums"></i>
+              <span class="number"><%= counts.albums %></span>
+              <span class="title">albums</span>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <i class="tb-icon-tag"></i>
+              <span class="number"><%= counts.tags %></span>
+              <span class="title">tags</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</script>
+
 <script type="tmpl/underscore" id="profile-name-meta">
   <span class="name <?php if($isAdmin) { ?> edit <?php } ?>" <?php if($isAdmin) { ?>title="Change display name"<?php } ?>><%= name %></span>
 </script>

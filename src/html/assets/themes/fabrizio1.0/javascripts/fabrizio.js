@@ -18,8 +18,8 @@ var TBX = (function() {
       if(viewer !== undefined && owner.isOwner === false)
         op.data.store.Profiles.add(profiles.viewer);
 
-      $('.profile-name-meta').each(function(i, el) {
-        (new op.data.view.ProfileName({model:op.data.store.Profiles.get(ownerId), el: el})).render();
+      $('.user-badge-meta').each(function(i, el) {
+        (new op.data.view.UserBadge({model:op.data.store.Profiles.get(ownerId), el: el})).render();
       });
       $('.profile-photo-meta').each(function(i, el) {
         (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(ownerId), el: el})).render();
