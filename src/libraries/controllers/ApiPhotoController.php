@@ -246,44 +246,41 @@ class ApiPhotoController extends ApiBaseController
     if(isset($_GET['generate']) && $_GET['generate'] == 'true')
       $generate = true;
 
-    if($photos[0]['currentRows'] > 0)
+    foreach($photos as $key => $photo)
     {
-      foreach($photos as $key => $photo)
-      {
-        // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
-        // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
-        $photos[$key] = $this->pruneSizes($photo, $sizes);
+      // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
+      // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
+      $photos[$key] = $this->pruneSizes($photo, $sizes);
 
-        if(!empty($sizes))
+      if(!empty($sizes))
+      {
+        foreach($sizes as $size)
         {
-          foreach($sizes as $size)
+          // TODO call API
+          // we do this to put a previously deleted key (pruneSizes) back in - ah, the things we do for consistency
+          $options = $this->photo->generateFragmentReverse($size);
+          if($generate && !isset($photo["path{$size}"]))
           {
-            // TODO call API
-            // we do this to put a previously deleted key (pruneSizes) back in - ah, the things we do for consistency
-            $options = $this->photo->generateFragmentReverse($size);
-            if($generate && !isset($photo["path{$size}"]))
-            {
-              $hash = $this->photo->generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
-              $this->photo->generate($photo['id'], $hash, $options['width'], $options['height'], $options['options']);
-              $requery = true;
-            }
+            $hash = $this->photo->generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
+            $this->photo->generate($photo['id'], $hash, $options['width'], $options['height'], $options['options']);
+            $requery = true;
           }
         }
       }
-
-      // requery to get generated paths
-      if($requery)
-      {
-        $photos = $db->getPhotos($filters, $pageSize);
-        foreach($photos as $key => $photo)
-          $photos[$key] = $this->pruneSizes($photo, $sizes);
-      }
-
-      // we have to merge to retain multiple sizes else the last one overwrites the rest
-      // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
-      foreach($photos as $key => $photo)
-        $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
     }
+
+    // requery to get generated paths
+    if($requery)
+    {
+      $photos = $db->getPhotos($filters, $pageSize);
+      foreach($photos as $key => $photo)
+        $photos[$key] = $this->pruneSizes($photo, $sizes);
+    }
+
+    // we have to merge to retain multiple sizes else the last one overwrites the rest
+    // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
+    foreach($photos as $key => $photo)
+      $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
 
     if(!empty($photos))
     {
