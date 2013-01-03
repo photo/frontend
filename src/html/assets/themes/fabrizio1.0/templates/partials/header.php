@@ -45,12 +45,13 @@
         </div>
       </div>
     <?php } ?>
-      <?php if($msg = $this->notification->get($msg) != '') { ?>
-        <div class="alert trovebox-message">
-          <div class="container">
-            <button type="button" class="close" data-dismiss="alert" data-target=".trovebox-message">×</button>
-            <?php var_dump($msg); ?>
-          </div>
+    <?php if($msg = $this->notification->get()) { ?>
+      <div class="alert trovebox-message">
+        <div class="container">
+          <?php if($msg['type'] !== Notification::typeFlash) { ?>
+            <button type="button" class="close <?php if($msg['type'] === Notification::typeStatic) { ?> notificationDelete<?php } ?>" data-dismiss="alert" data-target=".trovebox-message">×</button>
+          <?php } ?>
+          <?php $this->utility->safe($msg['msg'], '<a>'); ?>
         </div>
-      <?php } ?>
-
+      </div>
+    <?php } ?>

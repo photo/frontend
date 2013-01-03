@@ -336,9 +336,23 @@ class Utility
       return $value;
   }
 
-  public function safe($string, $write = true)
+  public function safe($string/*[, $allowedTags], $write = true*/)
   {
-    return $this->returnValue(htmlspecialchars($string), $write);
+    $argCnt = func_num_args();
+    if($argCnt === 1)
+      return $this->returnValue(htmlspecialchars($string), true);
+
+    $args = func_get_args();
+    if(gettype($args[1]) == 'string')
+    {
+      $write = $argCnt == 3 ? $args[2] : true;
+      return $this->returnValue(strip_tags($string, $args[1]), $write);
+    }
+    else
+    {
+      $write = $argCnt == 2 ? $args[1] : true;
+      return $this->returnValue(htmlspecialchars($string), $write);
+    }
   }
 
   public function mapLinkUrl($latitude, $longitude, $zoom, $write = true)

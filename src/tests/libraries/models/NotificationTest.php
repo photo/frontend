@@ -75,7 +75,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase
   public function testGetAndRemoveFromFlashSuccess()
   {
     $queue = $this->cacheResponse(array('one', 'two'));
-    $res = $this->notification->getAndRemoveFromFlash($queue);
+    $res = $this->notification->getAndRemoveFrom($queue, Notification::typeFlash);
     $this->assertEquals($res, 'one');
     $this->assertEquals($this->cacheResponse(array('two')), $queue);
   }
@@ -84,12 +84,90 @@ class NotificationTest extends PHPUnit_Framework_TestCase
   {
     $queue = $this->cacheResponse(array('one', 'two'));
     $queue[Notification::typeStatic][] = 'hi';
-    $res = $this->notification->getAndRemoveFromFlash($queue);
+    $res = $this->notification->getAndRemoveFrom($queue, Notification::typeFlash);
     $this->assertEquals($res, 'one');
 
     $queueExp = $this->cacheResponse(array('two'));
     $queueExp[Notification::typeStatic][] = 'hi';
     $this->assertEquals($queueExp, $queue);
+  }
+
+  public function testGetAndRemoveFromStaticSuccess()
+  {
+    $queue = $this->cacheResponse(array('one', 'two'), Notification::typeStatic);
+    $res = $this->notification->getAndRemoveFrom($queue, Notification::typeStatic);
+    $this->assertEquals($res, 'one');
+    $this->assertEquals($this->cacheResponse(array('two'), Notification::typeStatic), $queue);
+  }
+
+  public function testGetAndRemoveFromStaticWithFlashSuccess()
+  {
+    $queue = $this->cacheResponse(array('one', 'two'), Notification::typeStatic);
+    $queue[Notification::typeFlash][] = 'hi';
+    $res = $this->notification->getAndRemoveFrom($queue, Notification::typeStatic);
+    $this->assertEquals($res, 'one');
+
+    $queueExp = $this->cacheResponse(array('two'), Notification::typeStatic);
+    $queueExp[Notification::typeFlash][] = 'hi';
+    $this->assertEquals($queueExp, $queue);
+  }
+
+  public function testGetForceFlashSuccess()
+  {
+    $queue = $this->cacheResponse(array('one', 'two'));
+    $queue[Notification::typeStatic][] = 'hi';
+    $this->cache->expects($this->any())
+      ->method('get')
+      ->will($this->returnValue($queue));
+    $this->cache->expects($this->any())
+      ->method('set')
+      ->will($this->returnValue($queue));
+    $this->notification->inject('cache', $this->cache);
+    $res = $this->notification->get(Notification::typeFlash);
+    $this->assertEquals(array('msg' => 'one', 'type' => Notification::typeFlash), $res);
+  }
+
+  public function testGetForceStaticSuccess()
+  {
+    $queue = $this->cacheResponse(array('one', 'two'));
+    $queue[Notification::typeStatic][] = 'hi';
+    $this->cache->expects($this->any())
+      ->method('get')
+      ->will($this->returnValue($queue));
+    $this->cache->expects($this->any())
+      ->method('set')
+      ->will($this->returnValue($queue));
+    $this->notification->inject('cache', $this->cache);
+    $res = $this->notification->get(Notification::typeStatic);
+    $this->assertEquals(array('msg' => 'hi', 'type' => Notification::typeStatic), $res);
+  }
+
+  public function testGetFallbackToStaticWhenFlashExistsSuccess()
+  {
+    $queue = $this->cacheResponse(array('one', 'two'), Notification::typeFlash);
+    $this->cache->expects($this->any())
+      ->method('get')
+      ->will($this->returnValue($queue));
+    $this->cache->expects($this->any())
+      ->method('set')
+      ->will($this->returnValue($queue));
+    $this->notification->inject('cache', $this->cache);
+    $res = $this->notification->get();
+    $this->assertEquals(array('msg' => 'one', 'type' => Notification::typeFlash), $res);
+  }
+
+  public function testGetFallbackToStaticWhenNoFlashSuccess()
+  {
+    $queue = $this->cacheResponse(array('one', 'two'), Notification::typeStatic);
+    $this->cache->expects($this->any())
+      ->method('get')
+      ->will($this->returnValue($queue));
+    $this->cache->expects($this->any())
+      ->method('set')
+      ->will($this->returnValue($queue));
+    $this->notification->inject('cache', $this->cache);
+    $res = $this->notification->get();
+    $this->assertEquals(array('msg' => 'one', 'type' => Notification::typeStatic), $res);
   }
 
   private function cacheResponse($msg, $type = Notification::typeFlash)
