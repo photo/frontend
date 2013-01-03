@@ -105,6 +105,7 @@
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoGallery.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfileName.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfilePhoto.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/view/UserBadge.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/Lightbox.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'gallery.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>"></script>
