@@ -308,10 +308,15 @@ class DatabaseMySql implements DatabaseInterface
     $offset = (int)$offset;
 
     if($this->owner === $email)
+    {
       $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+      $albumsCount = $this->db->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner ORDER BY `name`", array(':owner' => $this->owner));
+    }
     else
+    {
       $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `visible`=1 ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
-
+      $albumsCount = $this->db->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `visible`=1 ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+    }
 
     if($albums === false)
       return false;
@@ -319,6 +324,9 @@ class DatabaseMySql implements DatabaseInterface
     foreach($albums as $key => $album)
       $albums[$key] = $this->normalizeAlbum($album);
     
+    if(!empty($albums))
+      $albums[0]['totalRows'] = intval($albumsCount['COUNT(*)']);
+
     return $albums;
   }
 
@@ -567,12 +575,14 @@ class DatabaseMySql implements DatabaseInterface
     for($i = 0; $i < count($photos); $i++)
       $photos[$i] = $this->normalizePhoto($photos[$i]);
 
-    $photos[0]['currentRows'] = count($photos);
     // TODO evaluate SQL_CALC_FOUND_ROWS (indexes with the query builder might be hard to optimize)
     // http://www.mysqlperformanceblog.com/2007/08/28/to-sql_calc_found_rows-or-not-to-sql_calc_found_rows/
-    $result = $this->db->one("SELECT COUNT(*) {$query['from']} {$query['where']} {$query['groupBy']}");
-    if(!empty($result))
+
+    if(!empty($photos))
+    {
+      $result = $this->db->one("SELECT COUNT(*) {$query['from']} {$query['where']} {$query['groupBy']}");
       $photos[0]['totalRows'] = intval($result['COUNT(*)']);
+    }
 
     return $photos;
   }
