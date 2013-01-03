@@ -1,5 +1,5 @@
 (function($){
-  op.ns('data.view').AlbumCover = EditableView.extend({
+  op.ns('data.view').AlbumCover = op.data.view.Editable.extend({
     initialize: function() {
       this.model.on('change', this.modelChanged, this);
     },
@@ -23,4 +23,4 @@
       this.render();
     }
   });
-});
+})(jQuery);
