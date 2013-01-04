@@ -4,16 +4,14 @@
 
 ## Installation on Shared Hosting
 
-This guide instructs you on how to install OpenPhoto on shared hosting sites such as Dreamhost or Bluehost. OpenPhoto can be difficult to install for users not experienced with PHP, Apache, or MySQL. If you'd like to use OpenPhoto without installing the software yourself, <a href="http://openphoto.me">get started here</a>.
+This guide instructs you on how to install OpenPhoto on shared hosting sites such as Dreamhost or Bluehost. OpenPhoto can be difficult to install for users not experienced with performing such installations. If you'd like to use OpenPhoto without installing the software yourself, <a href="http://openphoto.me">get started here</a>.
 
-If you're using Dreamhost <a href="https://github.com/photo/frontend/blob/master/documentation/guides/InstallationDreamhost.markdown">we have a community-written guide for Dreamhost users.</a>
+If you're using Dreamhost <a href="https://github.com/photo/frontend/blob/master/documentation/guides/InstallationDreamhost.markdown">we have a community-written guide for Dreamhost users</a>. Because every webhost is unique, we welcome additions to this guide as well as guides on installing OpenPhoto on your webhost.
 
 *OpenPhoto should be installed in the root directory of a domain or subdomain.*
 
 Variables:
 
-- *YOURDOMAIN*:the subdomain or domain for hosting OpenPhoto
-- *YOURNAME*: your shared hosting username
 - *OpenPhotoRoot*: the root directory for OpenPhoto (e.g., ~/openphoto)
 
 ### Before you install OpenPhoto
@@ -51,43 +49,49 @@ That's it! OpenPhoto should now be installed. Because there are so many special 
 
 ### The detailed version
 
-1. Download OpenPhoto from Github. <a href="https://github.com/photo/frontend/archive/master.zip">Direct link to latest version as a .zip file</a>. You can also do the following:
+#### 1. Download OpenPhoto from Github.
+<a href="https://github.com/photo/frontend/archive/master.zip">Direct link to latest version as a .zip file</a>. You can also do the following:
 
         wget https://github.com/photo/frontend/tarball/master -O openphoto.tar.gz
         tar -zxvf openphoto.tar.gz
         mv openphoto-frontend-* OpenPhotoRoot
 
-1. Install any dependencies or modules needed.
-Your webhost may include them by default, but if not, check their documentation. Here's what you'll need:
+#### 2. Install any dependencies or modules needed.
+Your webhost may include them by default. Check their documentation. Here's what you'll need:
 
-* OAuth for authentication
+* The Pecl extension oauth for authentication
 * ImageMagick or GD for photo rendering
 
-The method of installing these varies by webhost. Some webhosts let you install them by yourself; others will install these for you if you contact them. Again, consult their documentation.
+The method of installing these varies by webhost. Some webhosts let you install them by yourself; others will install these for you if you contact them.
 
+#### 3. Create your cloud accounts (optional).
+Create an account at <a href="https://aws.amazon.com/s3">Amazon AWS</a> or <a href="http://www.dropbox.com">Dropbox</a> if you plan to use them. Create a new bucket (S3) or app (Dropbox). Save your keys since you'll need them soon.  
 
-1. Create an account at <a href="https://aws.amazon.com/s3">Amazon AWS</a> or <a href="http://www.dropbox.com">Dropbox</a> if you plan to use them. Create a new bucket (S3) or app (Dropbox). Save your keys since you'll need them soon.  
+    At Amazon:
+* Sign in and visit <a href="https://console.aws.amazon.com/s3/home">the S3 panel</a> and select Create a New Bucket. 
+* Give your bucket a name and select a region, then select Create. 
+* <a href="https://portal.aws.amazon.com/gp/aws/securityCredentials">Obtain your access keys</a> and save them.
 
-At Amazon:
-After signing in, visit <a href="https://console.aws.amazon.com/s3/home">the S3 panel</a> and select Create a New Bucket. Give your bucket a name and select a region, then select Create. <a href="https://portal.aws.amazon.com/gp/aws/securityCredentials">Obtain your access keys</a> and save them.
+    At Dropbox:
+* Sign in and create a folder for your photos to go in. 
+* Visit <a href="https://www.dropbox.com/developers/apps">the developers page</a>
+* Select Create an App, and select Core API for App Type and Full Dropbox Access.
 
-At Dropbox:
-Sign in and create a folder for your photos to go in. Visit <a href="https://www.dropbox.com/developers/apps">the developers page</a>, select Create an App, and select the following Settings:
-* App Type: Core API
-* Access: Full Dropbox
 This will give you a development app to use for your photos. Save your access keys; you'll need them soon.
 
-1. Visit your control panel for managing databases and create a new database and new user for the database. Remember the hostname (the default should be fine), database name, username, and password. You'll need these during setup.
+#### 4. Create a database and user.
+Visit your control panel for managing databases and create a new database and new user for the database. Give the user `CREATE DATABASE` privileges. Remember the hostname (the default should be fine), database name, username, and password. You'll need these during setup.
 
-1. Configure the subdomain or domain.
+#### 5. Configure the subdomain or domain.
 You may have to add the domain if you're bringing in a new domain. Consult your webhost's documentation if needed. Depending on your webhost you may have to visit multiple areas of the site to configure everything, or you may have to configure these separately. But here's what you need to set up.
 
 * PHP: Select the latest version, FastCGI configuration if available
 * Web directory: OpenPhotoRoot/src/html
 
-1. Upload the contents of the downloaded OpenPhoto folder to OpenPhotoRoot if you haven't already done that. You can do this with an FTP or SSH client.
+#### 6. Upload OpenPhoto.
+Upload the contents of the downloaded OpenPhoto folder to OpenPhotoRoot if you haven't already done that. You can do this with an FTP or SSH client.
         
-1. Create the following directories.
+#### 7. Create the following directories.
 
         the cache:
         mkdir OpenPhotoRoot/src/html/assets/cache
@@ -101,7 +105,8 @@ You may have to add the domain if you're bringing in a new domain. Consult your 
         mkdir OpenPhotoRoot/src/userdata
         chmod 775 OpenPhotoRoot/src/userdata
 
-1. After waiting a sufficient amount of time for the subdomain name to propagate, use the browser to connect to the new subdomain.  You should see a setup page for OpenPhoto which will allow you to configure your OpenPhoto project.
+#### 8. Install OpenPhoto
+After waiting a sufficient amount of time for the subdomain name to propagate, use the browser to connect to the new subdomain.  You should see a setup page for OpenPhoto which will allow you to configure your OpenPhoto project.
 
 * Enter your email address and select a password.
 
@@ -109,7 +114,7 @@ You may have to add the domain if you're bringing in a new domain. Consult your 
 
 * Enter your credentials for your database, Amazon S3, or Dropbox.
 
-ENJOY! 
+**ENJOY!**
 
 ### Troubleshooting
 
@@ -117,16 +122,10 @@ ENJOY!
 If the setup page is not colorful and well formatted, then the css and javascript files are most likely not being loaded.  Possible causes:
 
 - Web directory root is not properly set (check control panel for the subdomain)
-- src/html/assets/cache directory is not writeable by Apache (check your permissions--they should be set to 775)
+- src/html/assets/cache directory is not writeable by Apache (check your permissions)
 
-#### I set my permissions to 775 and it's still not working. What gives? (or safe_mode issues)
-
-#### My webhost doesn't recognize OpenPhotoRoot/src/html as the index page.
-You can set this in the .htaccess page at OpenPhotoRoot/src
-
+#### My webhost doesn't recognize OpenPhotoRoot/src/html as the index directory.
+You can set this in the .htaccess page at OpenPhotoRoot/src. If your webhost lets you set this through the web panel you can also do that there.
 
 #### Error setting up the database
 Double check all the parameters. Check your database control panel and verify that everything is correct. Also double check that the user for your database has permission to create a database.
-
-**ENJOY!**
-
