@@ -29,6 +29,7 @@ class ManageController extends BaseController
 
   public function apps()
   {
+    $this->route->redirect('/manage/settings#apps');
   }
 
   public function appsCallback()
@@ -40,7 +41,7 @@ class ManageController extends BaseController
 
   public function features()
   {
-    $this->route->redirect('/manage/settings');
+    $this->route->redirect('/manage/settings#settings');
   }
 
   public function home()
