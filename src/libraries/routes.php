@@ -34,6 +34,7 @@ $routeObj->get('/manage/apps', array('ManageController', 'apps'));
 $routeObj->get('/manage/apps/callback', array('ManageController', 'appsCallback'));
 $routeObj->get('/manage/features', array('ManageController', 'features')); // redirect to /manage/settings
 $routeObj->get('/manage/settings', array('ManageController', 'settings'));
+$routeObj->post('/manage/settings', array('ManageController', 'settingsPost'));
 $routeObj->get('/manage/groups', array('ManageController', 'groups'));
 $routeObj->get('/manage/password/reset/([a-z0-9]{32})', array('ManageController', 'passwordReset'));
 

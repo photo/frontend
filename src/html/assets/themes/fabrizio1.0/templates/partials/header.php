@@ -40,19 +40,19 @@
         </ul>
         <ul class="nav pull-right">
           <?php if($this->user->isAdmin()) { ?>
-            <li><a href="#"><i class="tb-icon-light tb-icon-gear"></i> Site Settings</a></li>
+            <li><a href="/manage/settings"><i class="tb-icon-light tb-icon-gear"></i> Site Settings</a></li>
           <?php } ?>
           <li><div class="help-container"><a href="#"><i class="tb-icon-help"></i></div></a>
         </ul>
       </div>
     </div>
-    <?php if($msg = $this->notification->get()) { ?>
-      <div class="alert trovebox-message">
+    <?php if($note = $this->notification->get()) { ?>
+    <div class="alert alert-<?php if($note['mode'] === 'confirm') { ?>error<?php } else { ?>danger<?php } ?> trovebox-message">
         <div class="container">
-          <?php if($msg['type'] !== Notification::typeFlash) { ?>
-            <button type="button" class="close <?php if($msg['type'] === Notification::typeStatic) { ?> notificationDelete<?php } ?>" data-dismiss="alert" data-target=".trovebox-message">×</button>
+          <?php if($note['type'] !== Notification::typeFlash) { ?>
+            <button type="button" class="close <?php if($note['type'] === Notification::typeStatic) { ?> notificationDelete<?php } ?>" data-dismiss="alert" data-target=".trovebox-message">×</button>
           <?php } ?>
-          <?php $this->utility->safe($msg['msg'], '<a>'); ?>
+          <?php $this->utility->safe($note['msg'], '<a>'); ?>
         </div>
       </div>
     <?php } ?>

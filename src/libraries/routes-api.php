@@ -48,7 +48,7 @@ $apiObj->get('/?v?[1-2]?/album/([a-zA-Z0-9]+)/view.json', array('ApiAlbumControl
  * All manage endpoints follow the same convention.
  * /manage/{action}.json
  */
-$apiObj->post('/?v?[1-2]?/manage/settings.json', array('ApiManageController', 'settingsPost'), EpiApi::external); // update features (/manage/features.json)
+$apiObj->post('/?v?[1-2]?/manage/settings.json', array('ApiManageController', 'settingsPost'), EpiApi::external); // update features (/manage/settings.json)
 
 /*
  * Notification endpoints
