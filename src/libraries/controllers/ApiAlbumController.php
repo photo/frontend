@@ -53,16 +53,25 @@ class ApiAlbumController extends ApiBaseController
 
   public function list_()
   {
-    $limit = $this->config->pagination->albums;
-    $offset = null;
+    $pageSize = $this->config->pagination->albums;
+    $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
     if(isset($_GET['pageSize']))
-      $limit = (int)$_GET['pageSize'];
-    if(isset($_GET['page']))
-      $offset = intval($limit * (int)$_GET['page'] - $limit);
+      $pageSize = (int)$_GET['pageSize'];
+
+    $offset = ($pageSize * $page) - $pageSize;
     // model passes on the email
-    $albums = $this->album->getAlbums(null, $limit, $offset);
+    $albums = $this->album->getAlbums(null, $pageSize, $offset);
     if($albums === false)
       return $this->error('Could not retrieve albums', false);
+
+    if(!empty($albums))
+    {
+      $albums[0]['currentPage'] = intval($page);
+      $albums[0]['currentRows'] = count($albums);
+      $albums[0]['pageSize'] = intval($pageSize);
+      $albums[0]['totalPages'] = !empty($pageSize) ? ceil($albums[0]['totalRows'] / $pageSize) : 0;
+    }
+
     return $this->success('List of albums', $albums);
   }
 

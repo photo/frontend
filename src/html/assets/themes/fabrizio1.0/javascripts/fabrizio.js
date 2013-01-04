@@ -18,7 +18,10 @@ var TBX = (function() {
       if(viewer !== undefined && owner.isOwner === false)
         op.data.store.Profiles.add(profiles.viewer);
 
-      $('.profile-name-meta').each(function(i, el) {
+      $('.user-badge-meta').each(function(i, el) {
+        (new op.data.view.UserBadge({model:op.data.store.Profiles.get(ownerId), el: el})).render();
+      });
+      $('.profile-name-meta.owner').each(function(i, el) {
         (new op.data.view.ProfileName({model:op.data.store.Profiles.get(ownerId), el: el})).render();
       });
       $('.profile-photo-meta').each(function(i, el) {
@@ -37,7 +40,7 @@ var TBX = (function() {
       }
     },
     uploadCompleteSuccess: function(photoResponse) {
-      photoResponse.crumb = crumb.get();
+      photoResponse.crumb = TBX.crumb();
       $("form.upload").fadeOut('fast', function() {
         OP.Util.makeRequest('/photos/upload/confirm.json', photoResponse, callbacks.uploadConfirm, 'json', 'post');
       });
@@ -60,7 +63,7 @@ var TBX = (function() {
 
       //$("select.typeahead").chosen();
     }
-  };
+  }; // callbacks
   crumb = (function() {
     var value = null;
     return {
@@ -71,7 +74,29 @@ var TBX = (function() {
         value = crumb;
       }
     };
-  })();
+  })(); // crumb
+  markup = {
+    message: function(message) { // messageMarkup
+      var cls = '';
+      if(arguments.length > 1) {
+        if(arguments[1] == 'error')
+          cls = 'error';
+        else if(arguments[1] == 'confirm')
+          cls = 'success';
+      }
+      return '<div class="alert-message block-message '+cls+'"><a class="modal-close-click close" href="#">x</a>' + message + '</div>'
+    },
+    modal: function(header, body, footer) { // modalMarkup
+      return '<div class="modal-header">' +
+             '  <a href="#" class="close" data-dismiss="modal">&times;</a>' +
+             '  <h3>'+header+'</h3>' +
+             '</div>' +
+             '<div class="modal-body">' +
+             '  <p>'+body+'</p>' +
+             '</div>' +
+             (footer ? '<div class="modal-footer">' + footer + '</div>' : '');
+    }
+  }; // markup
   profiles = {
     owner: { },
     viewer: { },
@@ -87,7 +112,7 @@ var TBX = (function() {
         callbacks.profilesSuccess(owner, viewer);
       }, 'json');
     }
-  };
+  }; // profiles
   util = (function() {
     return {
       getDeviceWidth: function() {
@@ -169,11 +194,20 @@ var TBX = (function() {
         }
       },
     };
-  })();
+  })(); // util
 
   return {
     crumb: function() { return crumb.get(); },
     handlers: {
+      click: {
+        notificationDelete: function(ev) {
+          ev.preventDefault();
+          OP.Util.makeRequest('/notification/delete.json', {crumb: TBX.crumb()}, null, 'json');
+        }
+      },
+      keydown: { },
+      keyup: { },
+      mouseover: { },
       submit: {
         login: function(ev) {
           ev.preventDefault();
@@ -203,16 +237,8 @@ var TBX = (function() {
             //opTheme.message.error('Please select at least one photo to upload.');
           }
         }
-      },
-      click: {
-      },
-      keydown: {
-      },
-      keyup: {
-      },
-      mouseover: {
       }
-    },
+    }, // handlers
     init: {
       load: function(_crumb) {
         // http://stackoverflow.com/a/6974186
@@ -296,6 +322,8 @@ var TBX = (function() {
             }
           }
         },
+        front: function() {
+        },
         photo: {
           initData: typeof(initData) === "undefined" ? undefined : initData,
           filterOpts: typeof(filterOpts) === "undefined" ? undefined : filterOpts,
@@ -335,6 +363,7 @@ var TBX = (function() {
           // TODO have a better way of sending data into the JS framework. See #780
           initData: typeof(initData) === "undefined" ? undefined : initData,
           filterOpts: typeof(filterOpts) === "undefined" ? undefined : filterOpts,
+          batchModel: new op.data.model.Batch({count: OP.Batch.length()}),
           page: null,
           pageCount: 0,
           pageLocation: window.location,
@@ -342,9 +371,10 @@ var TBX = (function() {
           end: false,
           running: false,
           init: function() {
-            var _pages = TBX.init.pages, _this = _pages.photos;
+            var _pages = TBX.init.pages, _this = _pages.photos, batchModel = _pages.photos.batchModel, $batchEl = $('.batch-meta');
             $(window).scroll(function() { util.scrollCb(_this); });
             _this.load();
+            (new op.data.view.BatchIndicator({model:batchModel, el: $batchEl})).render();
           },
           load: function() {
             var _this = TBX.init.pages.photos; loc = location;
@@ -391,7 +421,32 @@ var TBX = (function() {
           OP.Util.fire('upload:uploader-ready');
         }
       }
-    },
+    }, // init
+    message: {
+      append: function(html/*, isStatic*/) {
+        var el = $(".message:first").clone(false),
+            last = $(".message:last"),
+            isStatic = arguments[1] || false;
+
+        // TODO differentiate on type #962
+        el.addClass('alert alert-info').html(html);
+        last.after(el).slideDown();
+        if(!isStatic)
+          el.delay(5000).slideUp(function(){ $(this).remove(); });
+      },
+      confirm: function(messageHtml/*, isStatic*/) {
+        var isStatic = arguments[1] || false, msg = TBX.message;
+        TBX.message.show(messageHtml, 'confirm', isStatic);
+      },
+      error: function(messageHtml/*, isStatic*/) {
+        var isStatic = arguments[1] || false, msg = TBX.message;
+        msg.show(messageHtml, 'error', isStatic);
+      },
+      show: function(messageHtml, type/*, isStatic*/) {
+        var isStatic = arguments[1] || false, msg = TBX.message;
+        msg.append(markup.message(messageHtml, type), isStatic);
+      }
+    }, // message
     profiles: {
       getOwner: function() {
         return profiles.owner.id;
@@ -399,6 +454,6 @@ var TBX = (function() {
       getViewer: function() {
         return profiles.viewer.id;
       }
-    }
+    } // profiles
   };
 })();

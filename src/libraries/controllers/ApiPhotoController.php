@@ -236,7 +236,7 @@ class ApiPhotoController extends ApiBaseController
     $photos = $db->getPhotos($filters, $pageSize);
 
     if(empty($photos))
-      return $this->success('Your search did not return any photos', null);
+      return $this->success('Your search did not return any photos', $photos);
 
     $sizes = array();
     if(isset($filters['returnSizes']))
@@ -246,48 +246,50 @@ class ApiPhotoController extends ApiBaseController
     if(isset($_GET['generate']) && $_GET['generate'] == 'true')
       $generate = true;
 
-    if($photos[0]['currentRows'] > 0)
+    foreach($photos as $key => $photo)
     {
-      foreach($photos as $key => $photo)
-      {
-        // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
-        // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
-        $photos[$key] = $this->pruneSizes($photo, $sizes);
+      // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
+      // we need to leave the 'locally scoped' $photo in since we may put it back into the $photos array if requested
+      $photos[$key] = $this->pruneSizes($photo, $sizes);
 
-        if(!empty($sizes))
+      if(!empty($sizes))
+      {
+        foreach($sizes as $size)
         {
-          foreach($sizes as $size)
+          // TODO call API
+          // we do this to put a previously deleted key (pruneSizes) back in - ah, the things we do for consistency
+          $options = $this->photo->generateFragmentReverse($size);
+          if($generate && !isset($photo["path{$size}"]))
           {
-            // TODO call API
-            // we do this to put a previously deleted key (pruneSizes) back in - ah, the things we do for consistency
-            $options = $this->photo->generateFragmentReverse($size);
-            if($generate && !isset($photo["path{$size}"]))
-            {
-              $hash = $this->photo->generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
-              $this->photo->generate($photo['id'], $hash, $options['width'], $options['height'], $options['options']);
-              $requery = true;
-            }
+            $hash = $this->photo->generateHash($photo['id'], $options['width'], $options['height'], $options['options']);
+            $this->photo->generate($photo['id'], $hash, $options['width'], $options['height'], $options['options']);
+            $requery = true;
           }
         }
       }
-
-      // requery to get generated paths
-      if($requery)
-      {
-        $photos = $db->getPhotos($filters, $pageSize);
-        foreach($photos as $key => $photo)
-          $photos[$key] = $this->pruneSizes($photo, $sizes);
-      }
-
-      // we have to merge to retain multiple sizes else the last one overwrites the rest
-      // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
-      foreach($photos as $key => $photo)
-        $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
     }
 
-    $photos[0]['currentPage'] = intval($page);
-    $photos[0]['pageSize'] = intval($pageSize);
-    $photos[0]['totalPages'] = !empty($pageSize) ? ceil($photos[0]['totalRows'] / $pageSize) : 0;
+    // requery to get generated paths
+    if($requery)
+    {
+      $photos = $db->getPhotos($filters, $pageSize);
+      foreach($photos as $key => $photo)
+        $photos[$key] = $this->pruneSizes($photo, $sizes);
+    }
+
+    // we have to merge to retain multiple sizes else the last one overwrites the rest
+    // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
+    foreach($photos as $key => $photo)
+      $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
+
+    if(!empty($photos))
+    {
+      $photos[0]['currentPage'] = intval($page);
+      $photos[0]['currentRows'] = count($photos);
+      $photos[0]['pageSize'] = intval($pageSize);
+      $photos[0]['totalPages'] = !empty($pageSize) ? ceil($photos[0]['totalRows'] / $pageSize) : 0;
+    }
+
     return $this->success("Successfully retrieved user's photos", $photos);
   }
 
@@ -345,7 +347,7 @@ class ApiPhotoController extends ApiBaseController
     if(!$status)
       return $this->error(sprintf('Could not complete the replacement of photo %s', $id), false);
 
-    $photoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet);
+    $photoResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
     return $this->success(sprintf('Photo %s was successfully replaced.', $id), $photoResp['result']);
   }
 
@@ -806,7 +808,7 @@ class ApiPhotoController extends ApiBaseController
     }
   }
 
-  private function parseFilters($filterOpts)
+  protected function parseFilters($filterOpts)
   {
     $groupsObj = new Group;
     // If the user is logged in then we can display photos based on group membership

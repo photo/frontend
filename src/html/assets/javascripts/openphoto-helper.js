@@ -88,6 +88,14 @@
       this.collection.clear();
     };
 
+    this.length = function() {
+      return this.collection.getLength();
+    };
+
+    this.exists = function(id) {
+      return this.collection.exists(id);
+    };
+
 
     this.collection = (function() {
       var length,
@@ -95,6 +103,7 @@
           namespace = 'items';
 
       items = localStorage.getObject(namespace) || {};
+      length = items.length;
 
       return {
         add: function(key, value) {
@@ -107,6 +116,15 @@
           localStorage.setObject(namespace, {});
           length = 0;
           OP.Util.fire('callback:batch-clear');
+        },
+        exists: function(id) {
+          for (key in items) {
+            if (items.hasOwnProperty(key)) {
+              if(items[key].id == id)
+                return true;
+            }
+          }
+          return false;
         },
         getAll: function() {
           return items;
@@ -121,7 +139,8 @@
         getLength: function() {
           var size = 0, key;
           for (key in items) {
-              if (items.hasOwnProperty(key)) size++;
+            if (items.hasOwnProperty(key))
+              size++;
           }
           return size;
         },

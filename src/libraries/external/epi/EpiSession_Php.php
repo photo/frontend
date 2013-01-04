@@ -13,6 +13,11 @@ class EpiSession_Php implements EpiSessionInterface
     session_destroy();
   }
 
+  public function delete($key)
+  {
+    unset($_SESSION[$key]);
+  }
+
   public function get($key = null)
   {
     if(empty($key) || !isset($_SESSION[$key]))
