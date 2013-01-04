@@ -52,6 +52,7 @@
   _.extend( Lightbox.prototype, {
 	
     imagePathKey : 'pathBase',
+    //imagePathKey : 'pathOriginal',
     
     keys : {
       // we may want to rethink some of these key codes...
