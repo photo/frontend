@@ -174,20 +174,22 @@
 </script>
 
 <script type="tmpl/underscore" id="batch-meta">
-  <a data-toggle="dropdown" href="#"><i class="tb-icon-light tb-icon-pin"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
-  <ul class="dropdown-menu">
-    <% if (count > 0) { %>
-      <li><a>Batch edit your photos</a></li>
-      <li class="divider"></li>
-      <li><a href="#">&nbsp;&middot;&nbsp;Add or Remove Tags</a></li>
-      <li><a href="#">&nbsp;&middot;&nbsp;Organize Into Albums</a></li>
-      <li><a href="#">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
-      <li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>
-      <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>
-      <li class="divider"></li>
-      <li><a href="#" class="clear">Clear pinned photos</a></li>
-    <% } else { %>
-      <li><a>Select photos by clicking <i class="tb-icon-light tb-icon-pin"></i></a></li>
-    <% } %>
-  </ul>
+  <?php if($isAdmin) { ?>
+    <a data-toggle="dropdown" href="#"><i class="tb-icon-light tb-icon-pin"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
+    <ul class="dropdown-menu">
+      <% if (count > 0) { %>
+        <li><a>Batch edit your photos</a></li>
+        <li class="divider"></li>
+        <li><a href="#">&nbsp;&middot;&nbsp;Add or Remove Tags</a></li>
+        <li><a href="#">&nbsp;&middot;&nbsp;Organize Into Albums</a></li>
+        <li><a href="#">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
+        <li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>
+        <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>
+        <li class="divider"></li>
+        <li><a href="#" class="clear">Clear pinned photos</a></li>
+      <% } else { %>
+        <li><a>Select photos by clicking <i class="tb-icon-light tb-icon-pin"></i></a></li>
+      <% } %>
+    </ul>
+  <?php } ?>
 </script>
