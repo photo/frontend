@@ -31,20 +31,21 @@
         <?php } ?>
       </div>
     </div>
-    <?php if(!$this->utility->isActiveTab('home')) { ?>
-      <div class="navbar-inner navbar-inner-secondary">
-        <div class="container">
-          <ul class="nav">
-            <li><a href="#"><i class="tb-icon-light tb-icon-home"></i></a></li>
-            <li class="separator-left"><span class="profile-name-meta owner"></span></li>
-            <?php $this->theme->display('partials/header-secondary.php', array()); ?>
-          </ul>
-          <div class="help-container">
-            <a href="#"><i class="tb-icon-help"></i></a>
-          </div>
-        </div>
+    <div class="navbar-inner navbar-inner-secondary">
+      <div class="container">
+        <ul class="nav">
+          <li><a href="#"><i class="tb-icon-light tb-icon-home"></i></a></li>
+          <li class="separator-left"><span class="profile-name-meta owner"></span></li>
+          <?php $this->theme->display('partials/header-secondary.php', array()); ?>
+        </ul>
+        <ul class="nav pull-right">
+          <?php if($this->user->isAdmin()) { ?>
+            <li><a href="#"><i class="tb-icon-light tb-icon-gear"></i> Site Settings</a></li>
+          <?php } ?>
+          <li><div class="help-container"><a href="#"><i class="tb-icon-help"></i></div></a>
+        </ul>
       </div>
-    <?php } ?>
+    </div>
     <?php if($msg = $this->notification->get()) { ?>
       <div class="alert trovebox-message">
         <div class="container">
