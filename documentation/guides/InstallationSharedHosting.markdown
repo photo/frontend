@@ -67,12 +67,12 @@ The method of installing these varies by webhost. Some webhosts let you install 
 #### 3. Create your cloud accounts (optional).
 Create an account at <a href="https://aws.amazon.com/s3">Amazon AWS</a> or <a href="http://www.dropbox.com">Dropbox</a> if you plan to use them. Create a new bucket (S3) or app (Dropbox). Save your keys since you'll need them soon.  
 
-    At Amazon:
+At Amazon:    
 * Sign in and visit <a href="https://console.aws.amazon.com/s3/home">the S3 panel</a> and select Create a New Bucket. 
 * Give your bucket a name and select a region, then select Create. 
 * <a href="https://portal.aws.amazon.com/gp/aws/securityCredentials">Obtain your access keys</a> and save them.
 
-    At Dropbox:
+At Dropbox:
 * Sign in and create a folder for your photos to go in. 
 * Visit <a href="https://www.dropbox.com/developers/apps">the developers page</a>
 * Select Create an App, and select Core API for App Type and Full Dropbox Access.
