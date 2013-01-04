@@ -26,4 +26,4 @@
       return response.result;
     }
   });
-});
+})(jQuery);

@@ -13,6 +13,7 @@ class Theme
   public function __construct()
   {
     $this->template = getTemplate();
+    $this->template->notification = new Notification;
     $this->theme = getConfig()->get('defaults')->theme;
     $behavior = getConfig()->get('behavior');
     $themeConfig = getConfig()->get('theme');

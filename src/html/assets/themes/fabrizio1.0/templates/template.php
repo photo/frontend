@@ -29,43 +29,10 @@
     <![endif]-->
   </head>
 
-  <body class="trovebox">
+  <body class="trovebox <?php $this->utility->safe($page); ?>">
     <div class="navbar navbar-inverse navbar-fixed-top trovebox-banner">
       
-      <?php $this->theme->display('partials/header.php'); ?>
-      <div class="navbar-inner navbar-inner-secondary">
-        <div class="container">
-          <ul class="nav">
-            <li><a href="#"><i class="tb-icon-light tb-icon-home"></i></a></li>
-            <li class="separator-left">Howdy Mark Fabrizio!</li>
-            <li><a href="#"><i class="tb-icon-light tb-icon-heart"></i> <span class="badge badge-important">3</span></a></li>
-            <li><a href="#"><i class="tb-icon-light tb-icon-comment"></i> <span class="badge badge-important">6</span></a></li>
-            <li class="separator-left"><a href="#"><i class="tb-icon-light tb-icon-heart"></i> My Favorites</a></li>
-            <li class="dropdown"><a data-toggle="dropdown" href="#"><i class="tb-icon-light tb-icon-gear"></i> Manage</a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Child Item 1</a></li>
-                <li><a href="#">Child Item 2</a></li>
-              </ul>
-            </li>
-            <li class="dropdown"><a data-toggle="dropdown" href="#"><i class="tb-icon-light tb-icon-plus"></i> Create New</a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Child Item 1</a></li>
-                <li><a href="#">Child Item 2</a></li>
-              </ul>
-            </li>
-            <li class="dropdown"><a data-toggle="dropdown" href="#"><i class="tb-icon-light tb-icon-chart"></i> Statistics</a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Child Item 1</a></li>
-                <li><a href="#">Child Item 2</a></li>
-              </ul>
-            </li>
-          </ul>
-          <div class="help-container">
-            <a href="#"><i class="tb-icon-help"></i></a>
-          </div>
-        </div>
-      </div>
-    </div>
+    <?php $this->theme->display('partials/header.php'); ?>
 
     <div class="container">
       <?php echo $body; ?>
@@ -91,6 +58,7 @@
     <script src="<?php $this->theme->asset('javascript', 'overrides.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/namespace.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Album.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/model/Batch.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Profile.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Photo.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/collection/Album.js'); ?>"></script>
@@ -100,11 +68,13 @@
     <script src="<?php $this->theme->asset('javascript', 'op/data/store/Profiles.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/store/Photos.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/Editable.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/view/BatchIndicator.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/AlbumCover.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoDetail.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoGallery.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfileName.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfilePhoto.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/view/UserBadge.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/Lightbox.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'gallery.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>"></script>

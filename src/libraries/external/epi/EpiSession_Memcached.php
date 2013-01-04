@@ -20,6 +20,12 @@ class EpiSession_Memcached implements EpiSessionInterface
     }
   }
 
+  public function delete($key)
+  {
+    unset($this->store[$key]);
+    $this->memcached->set($this->key, $this->store);
+  }
+
   public function end()
   {
     if(!$this->connect())
