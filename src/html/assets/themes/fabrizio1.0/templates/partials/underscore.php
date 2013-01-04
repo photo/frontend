@@ -4,19 +4,19 @@
     <?php if($isAdmin) { ?>
       <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><%= title || filenameOriginal %></a></h4>
       <ul class="info">
-        <li><a href="#"><i class="tb-icon-small-comment tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="tb-icon-small-heart tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="tb-icon-small-maximize tb-icon-dark"></i> <span class="number">Share</span></li>
-        <li><a href="#" title="Toggle the privacy setting"><i class="tb-icon-small-<%= permission == 0 ? 'locked' : 'unlocked' %> tb-icon-dark permission edit" data-id="<%= id %>"></i></li>
-        <li><a href="#" title="Set as your profile photo"><i class="tb-icon-small-profile tb-icon-dark profile edit" data-id="<%= id %>"></i></li>
-        <li><a href="#" title="Select for batch editing"><i class="tb-icon-small-pin tb-icon-dark pin edit" data-id="<%= id %>"></i></li>
+        <li><a href="#"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
+        <li><a href="#"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>
+        <li><a href="#"><i class="icon-share-alt tb-icon-dark"></i> <span class="number">Share</span></li>
+        <li><a href="#" title="Toggle the privacy setting"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %> tb-icon-dark permission edit" data-id="<%= id %>"></i></li>
+        <li><a href="#" title="Set as your profile photo"><i class="icon-user tb-icon-dark profile edit" data-id="<%= id %>"></i></li>
+        <li><a href="#" title="Select for batch editing"><i class="icon-pushpin tb-icon-dark pin edit" data-id="<%= id %>"></i></li>
       </ul>
     <?php } else { ?>
       <h4 class="title"><%= title || filenameOriginal %></h4>
       <ul class="info">
-        <li><a href="#"><i class="tb-icon-small-comment tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="tb-icon-small-heart tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="tb-icon-small-maximize tb-icon-dark"></i> <span class="number">Share</span></li>
+        <li><a href="#"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
+        <li><a href="#"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>
+        <li><a href="#"><i class="icon-share-alt tb-icon-dark"></i> <span class="number">Share</span></li>
       </ul>
     <?php } ?>
   </div>
@@ -37,21 +37,21 @@
         <ul>
           <li>
             <a href="/photos/list">
-              <i class="tb-icon-gallery"></i>
+              <i class="icon-picture"></i>
               <span class="number"><%= counts.photos %></span>
               <span class="title">photos</span>
             </a>
           </li>
           <li>
             <a href="/albums/list">
-              <i class="tb-icon-albums"></i>
+              <i class="icon-th-large"></i>
               <span class="number"><%= counts.albums %></span>
               <span class="title">albums</span>
             </a>
           </li>
           <li>
             <a href="/tags/list">
-              <i class="tb-icon-tag"></i>
+              <i class="icon-tags"></i>
               <span class="number"><%= counts.tags %></span>
               <span class="title">tags</span>
             </a>
@@ -175,7 +175,7 @@
 
 <script type="tmpl/underscore" id="batch-meta">
   <?php if($isAdmin) { ?>
-    <a data-toggle="dropdown" href="#"><i class="tb-icon-light tb-icon-pin"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
+    <a data-toggle="dropdown" href="#"><i class="tb-icon-light icon-cogs"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
     <ul class="dropdown-menu">
       <% if (count > 0) { %>
         <li><a>Batch edit your photos</a></li>
