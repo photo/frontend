@@ -16,7 +16,10 @@ class ApiNotificationController extends ApiBaseController
     if(empty($_POST['message']) || empty($_POST['type']))
       return $this->error('Not all required parameters were passed in (message, type)', false);
 
-    $res = $this->notification->add($_POST['message'], $_POST['type']);
+    $mode = Notification::modeConfirm;
+    if(isset($_POST['mode']))
+      $mode = $_POST['mode'];
+    $res = $this->notification->add($_POST['message'], $_POST['type'], $mode);
     if(!$res)
       return $this->error('Could not store notification', false);
 

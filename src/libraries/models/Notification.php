@@ -55,7 +55,7 @@ class Notification extends BaseModel
     }
     elseif($fetchType === self::typeStatic)
     {
-      $msg = $current[self::typeStatic][0];
+      $note = $current[self::typeStatic][0];
       return array_merge(array('type' => self::typeStatic), $note);
 
     }
