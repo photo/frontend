@@ -1,5 +1,5 @@
 <div class="hide row hero-unit blurb upload-confirm"></div>
-<div class="row hero-unit upload-container">
+<div class="upload-container">
   <div class="upload-message upload-progress"><img src="/assets/images/upload-big.gif" align="absmiddle">Currently uploading <span class="completed">0</span> of <span class="total">0</span> photos.</div>
 
   <form class="upload form-stacked photo-upload-submit" method="post" action="/photo/upload">
@@ -59,12 +59,12 @@
           <label for="tags">Permission</label>
           <div class="controls">
             <label class="radio inline">
-              <input type="radio" name="permission" value="1"<?php if($preferences['permission'] === false || $preferences['permission'] === '1') { ?> checked="checked"<?php } ?>>
-              <span>Public</span>
+              <input type="radio" name="permission" value="0"<?php if($preferences['permission'] === false || $preferences['permission'] === '0') { ?> checked="checked"<?php } ?>>
+              <span>Private</span>
             </label>
             <label class="radio inline">
-              <input type="radio" name="permission" value="0"<?php if($preferences['permission'] === '0') { ?> checked="checked"<?php } ?>>
-              <span>Private</span>
+              <input type="radio" name="permission" value="1"<?php if($preferences['permission'] === '1') { ?> checked="checked"<?php } ?>>
+              <span>Public</span>
             </label>
           </div>
         </div>
