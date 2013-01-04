@@ -58,6 +58,7 @@
     <script src="<?php $this->theme->asset('javascript', 'overrides.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/namespace.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Album.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/model/Batch.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Profile.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Photo.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/collection/Album.js'); ?>"></script>
@@ -67,6 +68,7 @@
     <script src="<?php $this->theme->asset('javascript', 'op/data/store/Profiles.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/store/Photos.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/Editable.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/view/BatchIndicator.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/AlbumCover.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoDetail.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoGallery.js'); ?>"></script>
