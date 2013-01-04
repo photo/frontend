@@ -1,4 +1,4 @@
-<div class="hide row hero-unit blurb upload-confirm"></div>
+<div class="hide row upload-confirm"></div>
 <div class="upload-container">
   <div class="upload-message upload-progress"><img src="/assets/images/upload-big.gif" align="absmiddle">Currently uploading <span class="completed">0</span> of <span class="total">0</span> photos.</div>
 
