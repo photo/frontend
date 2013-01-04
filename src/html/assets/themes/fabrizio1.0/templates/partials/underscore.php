@@ -36,21 +36,21 @@
       <div class="details">
         <ul>
           <li>
-            <a href="#">
+            <a href="/photos/list">
               <i class="tb-icon-gallery"></i>
               <span class="number"><%= counts.photos %></span>
               <span class="title">photos</span>
             </a>
           </li>
           <li>
-            <a href="#">
+            <a href="/albums/list">
               <i class="tb-icon-albums"></i>
               <span class="number"><%= counts.albums %></span>
               <span class="title">albums</span>
             </a>
           </li>
           <li>
-            <a href="#">
+            <a href="/tags/list">
               <i class="tb-icon-tag"></i>
               <span class="number"><%= counts.tags %></span>
               <span class="title">tags</span>
