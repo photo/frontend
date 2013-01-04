@@ -33,7 +33,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase
     $this->notification->inject('cache', $this->cache);
     $this->notification->add($msg);
     $res = $this->notification->get();
-    $this->assertEquals(array('type' => Notification::typeFlash, 'msg' => $msg), $res, 'After adding the get method should return the value set');
+    $this->assertEquals(array('type' => Notification::typeFlash, 'msg' => $msg, 'mode' => Notification::modeConfirm), $res, 'After adding the get method should return the value set');
   }
 
   public function testGetClearsFlashQueueSuccess()
@@ -76,7 +76,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase
   {
     $queue = $this->cacheResponse(array('one', 'two'));
     $res = $this->notification->getAndRemoveFrom($queue, Notification::typeFlash);
-    $this->assertEquals($res, 'one');
+    $this->assertEquals($res, array('msg' => 'one', 'mode' => Notification::modeConfirm));
     $this->assertEquals($this->cacheResponse(array('two')), $queue);
   }
 
@@ -85,7 +85,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase
     $queue = $this->cacheResponse(array('one', 'two'));
     $queue[Notification::typeStatic][] = 'hi';
     $res = $this->notification->getAndRemoveFrom($queue, Notification::typeFlash);
-    $this->assertEquals($res, 'one');
+    $this->assertEquals($res, array('msg' => 'one', 'mode' => Notification::modeConfirm));
 
     $queueExp = $this->cacheResponse(array('two'));
     $queueExp[Notification::typeStatic][] = 'hi';
@@ -96,7 +96,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase
   {
     $queue = $this->cacheResponse(array('one', 'two'), Notification::typeStatic);
     $res = $this->notification->getAndRemoveFrom($queue, Notification::typeStatic);
-    $this->assertEquals($res, 'one');
+    $this->assertEquals($res, array('msg' => 'one', 'mode' => Notification::modeConfirm));
     $this->assertEquals($this->cacheResponse(array('two'), Notification::typeStatic), $queue);
   }
 
@@ -105,7 +105,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase
     $queue = $this->cacheResponse(array('one', 'two'), Notification::typeStatic);
     $queue[Notification::typeFlash][] = 'hi';
     $res = $this->notification->getAndRemoveFrom($queue, Notification::typeStatic);
-    $this->assertEquals($res, 'one');
+    $this->assertEquals($res, array('msg' => 'one', 'mode' => Notification::modeConfirm));
 
     $queueExp = $this->cacheResponse(array('two'), Notification::typeStatic);
     $queueExp[Notification::typeFlash][] = 'hi';
@@ -124,13 +124,13 @@ class NotificationTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue($queue));
     $this->notification->inject('cache', $this->cache);
     $res = $this->notification->get(Notification::typeFlash);
-    $this->assertEquals(array('msg' => 'one', 'type' => Notification::typeFlash), $res);
+    $this->assertEquals(array('msg' => 'one', 'type' => Notification::typeFlash, 'mode' => Notification::modeConfirm), $res);
   }
 
   public function testGetForceStaticSuccess()
   {
     $queue = $this->cacheResponse(array('one', 'two'));
-    $queue[Notification::typeStatic][] = 'hi';
+    $queue[Notification::typeStatic][] = array('msg' => 'hi', 'mode' => Notification::modeConfirm);
     $this->cache->expects($this->any())
       ->method('get')
       ->will($this->returnValue($queue));
@@ -139,7 +139,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue($queue));
     $this->notification->inject('cache', $this->cache);
     $res = $this->notification->get(Notification::typeStatic);
-    $this->assertEquals(array('msg' => 'hi', 'type' => Notification::typeStatic), $res);
+    $this->assertEquals(array('msg' => 'hi', 'type' => Notification::typeStatic, 'mode' => Notification::modeConfirm), $res);
   }
 
   public function testGetFallbackToStaticWhenFlashExistsSuccess()
@@ -153,7 +153,7 @@ class NotificationTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue($queue));
     $this->notification->inject('cache', $this->cache);
     $res = $this->notification->get();
-    $this->assertEquals(array('msg' => 'one', 'type' => Notification::typeFlash), $res);
+    $this->assertEquals(array('msg' => 'one', 'type' => Notification::typeFlash, 'mode' => Notification::modeConfirm), $res);
   }
 
   public function testGetFallbackToStaticWhenNoFlashSuccess()
@@ -167,14 +167,14 @@ class NotificationTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue($queue));
     $this->notification->inject('cache', $this->cache);
     $res = $this->notification->get();
-    $this->assertEquals(array('msg' => 'one', 'type' => Notification::typeStatic), $res);
+    $this->assertEquals(array('msg' => 'one', 'type' => Notification::typeStatic, 'mode' => Notification::modeConfirm), $res);
   }
 
   private function cacheResponse($msg, $type = Notification::typeFlash)
   {
     $retval = array(Notification::typeFlash => array(), Notification::typeStatic => array());
     foreach((array)$msg as $m)
-      $retval[$type][] = $m;
+      $retval[$type][] = array('msg' => $m, 'mode' => Notification::modeConfirm);
     return $retval;
   }
 }
