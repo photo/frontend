@@ -40,9 +40,9 @@
         </ul>
         <ul class="nav pull-right">
           <?php if($this->user->isAdmin()) { ?>
-            <li><a href="/manage/settings"><i class="tb-icon-light tb-icon-gear"></i> Site Settings</a></li>
+            <li><a href="/manage/settings"><i class="tb-icon-light icon-cog"></i> Site Settings</a></li>
           <?php } ?>
-          <li><div class="help-container"><a href="#"><i class="icon-cog"></i></div></a>
+          <li><div class="help-container"><a href="#"><i class="icon-question-sign"></i></div></a>
         </ul>
       </div>
     </div>
