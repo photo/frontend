@@ -1,4 +1,5 @@
 <div class="manage features">
+  <a name="settings"></a>
   <div class="row hero-unit blurb">
     <h2>Configure your OpenPhoto site</h2>
     <p>
@@ -31,6 +32,7 @@
     <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
   </form>
 
+  <a name="apps"></a>
   <div class="row hero-unit blurb">
     <h2>Your OAuth Applications</h2>
     <p>
@@ -40,7 +42,6 @@
       <a href="/v1/oauth/authorize?oauth_callback=<?php $this->utility->safe(sprintf('%s://%s%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], '/manage/apps/callback')); ?>&name=<?php $this->utility->safe(urlencode('Self Generated App')); ?>&tokenType=access" class="btn btn-primary">Create a new app</a>
     </p>
   </div>
-  <a name="apps"></a>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -66,6 +67,7 @@
     <?php } ?>
   </table>
   
+  <a name="plugins"></a>
   <div class="row hero-unit blurb">
     <h2>Your plugins</h2>
     <p>
