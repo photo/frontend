@@ -2,6 +2,11 @@ var TBX = (function() {
   var callbacks, crumb, log, markup, profiles, pushstate, tags, pathname, util;
 
   callbacks = {
+    credentialDelete: function(response) {
+      if(response.code === 204) {
+        this.closest('tr').slideUp('medium');
+      }
+    },
     loginSuccess: function() {
       var redirect = $('input[name="r"]', this).val();
       window.location.href = redirect;
@@ -200,6 +205,15 @@ var TBX = (function() {
     crumb: function() { return crumb.get(); },
     handlers: {
       click: {
+        credentialDelete: function(ev) {
+          ev.preventDefault();
+          var el = $(ev.target),
+              url = el.attr('href')+'.json',
+              params = {crumb: TBX.crumb()};
+
+          OP.Util.makeRequest(url, params, callbacks.credentialDelete.bind(el));
+          return false;
+        },
         notificationDelete: function(ev) {
           ev.preventDefault();
           OP.Util.makeRequest('/notification/delete.json', {crumb: TBX.crumb()}, null, 'json');
