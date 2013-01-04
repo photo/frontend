@@ -34,6 +34,27 @@ We've added a _Beginner_ label to issues that don't touch some of the more sensi
 * <a href="https://github.com/photo/frontend/issues?labels=Beginner%2CJavaScript&sort=created&direction=desc&state=open&page=1">Beginner + JavaScript issues</a>
 * <a href="https://github.com/photo/frontend/issues?labels=Beginner%2CPHP&sort=created&direction=desc&state=open&page=1">Beginner + PHP issues</a>
 
+## Things to keep in mind while you code
+Here's what your code should adhere to:
+
+* Unit tests should pass (more on that in the next section)
+* Spacing matters: two spaces, no tabs
+* Commits should reference an issue number (more on that below)
+* Comment your code so future developers can tell what's going on
+* Curly braces go on their own line. For example:
+````php
+  if(condition)
+  {
+      statement 1;
+      statement 2;
+  }
+
+  // or
+  if(condition)
+      only statement;
+````
+All in all, we recognize that everyone has a different style and level of experience, and we welcome all pull requests.
+
 ## Testing that your change didn't break anything
 
 Once you've made your change and verified it does what it should it's time to make sure it's not doing something it shouldn't. This is as easy as a single command.
