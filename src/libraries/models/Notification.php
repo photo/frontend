@@ -64,9 +64,4 @@ class Notification extends BaseModel
     $queue[$type] = array_slice($queue[$type], 1, null, false);
     return $msg;    
   }
-
-  public function lookup()
-  {
-
-  }
 }

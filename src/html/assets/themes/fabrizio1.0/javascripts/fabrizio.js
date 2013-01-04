@@ -363,6 +363,7 @@ var TBX = (function() {
           // TODO have a better way of sending data into the JS framework. See #780
           initData: typeof(initData) === "undefined" ? undefined : initData,
           filterOpts: typeof(filterOpts) === "undefined" ? undefined : filterOpts,
+          batchModel: new op.data.model.Batch({count: OP.Batch.length()}),
           page: null,
           pageCount: 0,
           pageLocation: window.location,
@@ -370,9 +371,10 @@ var TBX = (function() {
           end: false,
           running: false,
           init: function() {
-            var _pages = TBX.init.pages, _this = _pages.photos;
+            var _pages = TBX.init.pages, _this = _pages.photos, batchModel = _pages.photos.batchModel, $batchEl = $('.batch-meta');
             $(window).scroll(function() { util.scrollCb(_this); });
             _this.load();
+            (new op.data.view.BatchIndicator({model:batchModel, el: $batchEl})).render();
           },
           load: function() {
             var _this = TBX.init.pages.photos; loc = location;

@@ -9,6 +9,7 @@
         <li><a href="#"><i class="tb-icon-small-maximize tb-icon-dark"></i> <span class="number">Share</span></li>
         <li><a href="#" title="Toggle the privacy setting"><i class="tb-icon-small-<%= permission == 0 ? 'locked' : 'unlocked' %> tb-icon-dark permission edit" data-id="<%= id %>"></i></li>
         <li><a href="#" title="Set as your profile photo"><i class="tb-icon-small-profile tb-icon-dark profile edit" data-id="<%= id %>"></i></li>
+        <li><a href="#" title="Select for batch editing"><i class="tb-icon-small-pin tb-icon-dark pin edit" data-id="<%= id %>"></i></li>
       </ul>
     <?php } else { ?>
       <h4 class="title"><%= title || filenameOriginal %></h4>
@@ -156,6 +157,25 @@
   <ul>
     <% for(var tag in tags) { %>
       <li><%= tags[tag] %></li>
+    <% } %>
+  </ul>
+</script>
+
+<script type="tmpl/underscore" id="batch-meta">
+  <a data-toggle="dropdown" href="#"><i class="tb-icon-light tb-icon-pin"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
+  <ul class="dropdown-menu">
+    <% if (count > 0) { %>
+      <li><a>Batch edit your photos</a></li>
+      <li class="divider"></li>
+      <li><a href="#">&nbsp;&middot;&nbsp;Add or Remove Tags</a></li>
+      <li><a href="#">&nbsp;&middot;&nbsp;Organize Into Albums</a></li>
+      <li><a href="#">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
+      <li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>
+      <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>
+      <li class="divider"></li>
+      <li><a href="#" class="clear">Clear pinned photos</a></li>
+    <% } else { %>
+      <li><a>Select photos by clicking <i class="tb-icon-light tb-icon-pin"></i></a></li>
     <% } %>
   </ul>
 </script>
