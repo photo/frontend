@@ -15,7 +15,12 @@
     },
     clear: function(ev) {
       ev.preventDefault();
-      var el = $(ev.currentTarget), batch = OP.Batch;
+      var el = $(ev.currentTarget), batch = OP.Batch, ids = batch.ids();
+
+      // we have to fire this to clear the "pins" in the PhotoGallery view
+      for(i in ids)
+        OP.Util.fire('callback:batch-remove', ids[i]);
+
       batch.clear();
     },
     clearCallback: function() {

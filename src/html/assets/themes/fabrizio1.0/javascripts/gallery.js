@@ -13,6 +13,8 @@ var Gallery = (function($) {
   	'defaultWidthValue':120,
   	'defaultHeightValue':120
   };
+
+  var batchEmpty;
   
   
 	/* ------------ PRIVATE functions ------------ */
@@ -176,7 +178,8 @@ var Gallery = (function($) {
     var pageObject = TBX.init.pages.photos;
     var qsRe = /(page|returnSizes)=[^&?]+\&?/g;
     var qs = pageObject.pageLocation.search.replace(qsRe, '');
-	var imageContainer = $('<div class="imageContainer"/>');
+    var pinnedClass = !batchEmpty && OP.Batch.exists(item.id) ? 'pinned' : '';
+    var imageContainer = $('<div class="imageContainer photo-id-'+item.id+' '+pinnedClass+'"/>');
 		
     var d = new Date(item.dateTaken*1000);
 
@@ -270,6 +273,9 @@ var Gallery = (function($) {
 		},
 
 		showImages : function(photosContainer, realItems) {
+      // check if the batch queue is empty
+      // we do this here to keep from having to call length for each photo, just for each page
+      batchEmpty = OP.Batch.length() === 0;
 
 			// reduce width by 1px due to layout problem in IE
       var containerWidth = photosContainer.width() - 1;

@@ -5,13 +5,15 @@
       OP.Util.on('callback:batch-remove', this.batchRemove);
       OP.Util.on('callback:batch-add', this.batchAdd);
     },
-    batchAdd: function() {
+    batchAdd: function(photo) {
       var model = TBX.init.pages.photos.batchModel;
+      $('.photo-id-'+photo.id).addClass('pinned');
       model.set('count', model.get('count')+1);
       model.trigger('change');
     },
-    batchRemove: function() {
+    batchRemove: function(id) {
       var model = TBX.init.pages.photos.batchModel;
+      $('.photo-id-'+id).removeClass('pinned');
       model.set('count', model.get('count')-1);
       model.trigger('change');
     },
@@ -46,7 +48,7 @@
     },
     permission: function(ev) {
       ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model/*arguments[0].view.Photos.get(id)*/, view = this;
+      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model;
       model.set('permission', model.get('permission') == 0 ? 1 : 0, {silent:false});
       model.save();
     },

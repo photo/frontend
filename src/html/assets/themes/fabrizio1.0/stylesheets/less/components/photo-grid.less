@@ -89,6 +89,16 @@
       &.editing {
         overflow: visible;
       }
+
+      &.pinned:before {
+        content:"";
+        position:absolute;
+        top:0;
+        right:0;
+        border-width:0 20px 20px 0;
+        border-style:solid;
+        border-color:@color_brand #fff;
+      }
     }
   }
 }
