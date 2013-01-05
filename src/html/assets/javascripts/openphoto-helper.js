@@ -96,6 +96,10 @@
       return this.collection.exists(id);
     };
 
+    this.ids = function() {
+      return this.collection.getIds();
+    };
+
 
     this.collection = (function() {
       var length,
