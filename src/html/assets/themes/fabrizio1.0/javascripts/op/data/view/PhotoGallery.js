@@ -54,11 +54,11 @@
     },
     pin: function(ev) {
       ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), model = TBX.init.pages.photos.batchModel, batch = OP.Batch;
+      var el = $(ev.currentTarget), id = el.attr('data-id'), batch = OP.Batch, photo = op.data.store.Photos.get(id).toJSON();
       if(batch.exists(id)) { // exists, we need to remove
         OP.Batch.remove(id);
       } else { // let's add it
-        OP.Batch.add(id);
+        OP.Batch.add(id, photo);
       }
     },
     profile: function(ev) {
