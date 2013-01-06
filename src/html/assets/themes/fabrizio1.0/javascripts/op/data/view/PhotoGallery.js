@@ -6,15 +6,15 @@
       OP.Util.on('callback:batch-add', this.batchAdd);
     },
     batchAdd: function(photo) {
-      var model = TBX.init.pages.photos.batchModel;
+      var model = TBX.init.pages.photos.batchModel, batch = OP.Batch;
       $('.photo-id-'+photo.id).addClass('pinned');
-      model.set('count', model.get('count')+1);
+      model.set('count', batch.length());
       model.trigger('change');
     },
     batchRemove: function(id) {
-      var model = TBX.init.pages.photos.batchModel;
+      var model = TBX.init.pages.photos.batchModel, batch = OP.Batch;
       $('.photo-id-'+id).removeClass('pinned');
-      model.set('count', model.get('count')-1);
+      model.set('count', batch.length());
       model.trigger('change');
     },
     model: this.model,
