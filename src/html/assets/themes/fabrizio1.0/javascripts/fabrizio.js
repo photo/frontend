@@ -34,6 +34,10 @@ var TBX = (function() {
       });
       (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(viewerId), el: $('.profile-photo-header-meta')})).render();
     },
+    selectAll: function(i, el) {
+      var id = $(el).attr('data-id'), photo = op.data.store.Photos.get(id).toJSON();
+      OP.Batch.add(id, photo);
+    },
     upload: function(ev) {
       ev.preventDefault();
       var uploader = $("#uploader").pluploadQueue();
@@ -217,6 +221,11 @@ var TBX = (function() {
         notificationDelete: function(ev) {
           ev.preventDefault();
           OP.Util.makeRequest('/notification/delete.json', {crumb: TBX.crumb()}, null, 'json');
+        },
+        selectAll: function(ev) {
+          ev.preventDefault();
+          var $els = $('.photo-grid .imageContainer .pin.edit');
+          $els.each(callbacks.selectAll);
         }
       },
       keydown: { },
