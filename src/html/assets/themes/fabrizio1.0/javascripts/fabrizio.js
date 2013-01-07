@@ -444,6 +444,19 @@ var TBX = (function() {
         }
       }
     }, // init
+    notification: {
+      model: new op.data.model.Notification,
+      init: function() {
+        var $el = $('.notification-meta'), view = new op.data.view.Notification({model: TBX.notification.model, el: $el});
+      },
+      show: function(message, type, mode) {
+        var model = TBX.notification.model;
+        model.set('msg', message, {silent:true});
+        model.set('mode', mode, {silent:true});
+        model.set('type', type, {silent:true});
+        model.save();
+      }
+    },
     message: {
       append: function(html/*, isStatic*/) {
         var el = $(".message:first").clone(false),

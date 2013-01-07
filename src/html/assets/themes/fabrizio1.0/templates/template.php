@@ -59,6 +59,7 @@
     <script src="<?php $this->theme->asset('javascript', 'op/namespace.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Album.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Batch.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/model/Notification.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Profile.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Photo.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/collection/Album.js'); ?>"></script>
@@ -70,6 +71,7 @@
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/Editable.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/BatchIndicator.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/AlbumCover.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/view/Notification.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoDetail.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoGallery.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfileName.js'); ?>"></script>
@@ -97,6 +99,10 @@
             '<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>'
           ],
           onComplete: function() {
+            TBX.notification.init();
+            <?php if($note = $this->notification->get()) { ?>
+              TBX.notification.show(<?php printf('%s, %s, %s', json_encode($this->utility->safe($note['msg'], '<a>', false)), json_encode($this->utility->safe($note['type'], false)), json_encode($this->utility->safe($note['mode'], false))); ?>);
+            <?php } ?>
             TBX.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
           }
         }

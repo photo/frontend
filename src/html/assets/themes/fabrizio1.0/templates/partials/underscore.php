@@ -193,3 +193,14 @@
     </ul>
   <?php } ?>
 </script>
+
+<script type="tmpl/underscore" id="notification-meta">
+  <div class="alert alert-<% if(mode=='confirm') { %>confirm<% } else { %>error<% } %> trovebox-message">
+    <div class="container">
+      <% if(type!='flash') { %>
+        <button type="button" class="close <% if(type=='static') { %> notificationDelete<% } %>" data-dismiss="alert" data-target=".trovebox-message">×</button>
+      <% } %>
+      <%= msg %>
+    </div>
+  </div>
+</script>
