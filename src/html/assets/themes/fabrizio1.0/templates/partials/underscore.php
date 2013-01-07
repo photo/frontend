@@ -175,7 +175,7 @@
 
 <script type="tmpl/underscore" id="batch-meta">
   <?php if($isAdmin) { ?>
-    <a data-toggle="dropdown" href="#"><i class="tb-icon-light icon-cogs"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
+    <a data-toggle="dropdown" href="#"><i class="tb-icon-light <% if(!loading) { %>icon-cogs<% } else { %>icon-spinner icon-spin<% } %>"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
     <ul class="dropdown-menu">
       <% if (count > 0) { %>
         <li><a>Batch edit your photos</a></li>
