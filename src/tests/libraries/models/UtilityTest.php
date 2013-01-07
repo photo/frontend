@@ -179,6 +179,13 @@ RES;
     $res = $this->utility->isActiveTab('upload');
     $this->assertTrue($res, '/photos/upload not upload tab');
   }
+
+  public function testGetHostSuccess()
+  {
+    $_SERVER['HTTP_HOST'] = 'foobar';
+    $res = $this->utility->getHost();
+    $this->assertEquals('foobar', $res);
+  }
   
   // TODO implement some sort of test
   public function testIsMobile() {}
