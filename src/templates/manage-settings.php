@@ -55,13 +55,14 @@
           <td>
             <?php $this->utility->safe($credential['name']); ?>
             <?php if(!empty($credential['dateCreated'])) { ?>
-              <em class="credential-date">(<?php $this->utility->safe(ucwords($credential['type'])); ?> token created on <?php $this->utility->dateLong($credential['dateCreated']); ?>)</em>
+              <small><em class="credential-date">(<?php $this->utility->safe(ucwords($credential['type'])); ?> token created on <?php $this->utility->dateLong($credential['dateCreated']); ?>)</em></small>
             <?php } ?>
           </td>
           <td>
             <div class="pull-right">
-              <a href="/v1/oauth/<?php $this->utility->safe($credential['id']); ?>/view" class="credential-view-click" data-controls-modal="modal"><i class="icon-eye-open icon-large"></i> View</a>
-              <a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credentialDelete"><i class="icon-remove icon-large"></i> Revoke</a>
+              <i class="icon-eye-open icon-large"></i> <a href="/v1/oauth/<?php $this->utility->safe($credential['id']); ?>/view" class="credential-view-click" data-controls-modal="modal">View</a>
+              &nbsp;
+              <i class="icon-remove icon-large"></i> <a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credentialDelete">Revoke</a>
             </div>
           </td>
         </tr>

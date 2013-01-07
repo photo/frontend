@@ -188,7 +188,7 @@
         <li class="divider"></li>
         <li><a href="#" class="clear">Clear pinned photos</a></li>
       <% } else { %>
-        <li><a>Select photos by clicking <i class="tb-icon-light tb-icon-pin"></i></a></li>
+        <li><a><i class="tb-icon-light icon-pushpin"></i> Hover over a photo and click the pushpin</a></li>
       <% } %>
     </ul>
   <?php } ?>
