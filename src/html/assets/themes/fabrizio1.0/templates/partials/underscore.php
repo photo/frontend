@@ -180,7 +180,7 @@
       <% if (count > 0) { %>
         <li><a>Batch edit your photos</a></li>
         <li class="divider"></li>
-        <li><a href="#">&nbsp;&middot;&nbsp;Add or Remove Tags</a></li>
+        <li><a href="#" class="tags">&nbsp;&middot;&nbsp;Add or Remove Tags</a></li>
         <li><a href="#">&nbsp;&middot;&nbsp;Organize Into Albums</a></li>
         <li><a href="#">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
         <li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>

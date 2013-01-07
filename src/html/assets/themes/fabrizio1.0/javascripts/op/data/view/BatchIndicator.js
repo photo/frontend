@@ -11,7 +11,8 @@
       this.render();
     },
     events: {
-      'click .clear': 'clear'
+      'click .clear': 'clear',
+      'click .tags': 'tags'
     },
     clear: function(ev) {
       ev.preventDefault();
@@ -22,6 +23,14 @@
         OP.Util.fire('callback:batch-remove', ids[i]);
 
       batch.clear();
+    },
+    tags: function(ev) {
+      ev.preventDefault();
+      var tags;
+      tags = prompt("What tas should be added?"), batch = OP.Batch, params = {ids: batch.ids().join(','), tagsAdd: tags, crumb: TBX.crumb()};
+      OP.Util.makeRequest('/photos/update.json', params, function(response) {
+
+      }, 'post');
     },
     clearCallback: function() {
       var model = TBX.init.pages.photos.batchModel;
