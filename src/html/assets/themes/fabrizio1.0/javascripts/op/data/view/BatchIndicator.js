@@ -29,8 +29,13 @@
       var tags;
       tags = prompt("What tas should be added?"), batch = OP.Batch, params = {ids: batch.ids().join(','), tagsAdd: tags, crumb: TBX.crumb()};
       OP.Util.makeRequest('/photos/update.json', params, function(response) {
-
-      }, 'post');
+        if(response.code === 200) {
+          var tagCount = tags.split(',').length, photoCount = batch.length();
+          TBX.notification.show('<i class="icon-ok"></i> You successfully added ' + tagCount + ' tag' + (tagCount>1?'s':'') + ' to ' + photoCount + ' photo' + (photoCount>1?'x':'') + '.', 'flash', 'confirm');
+        } else {
+          TBX.notification.show('<i class="icon-warning-sign"></i> Sorry, an error occured when trying to add tags to your photos.');
+        }
+      }, 'json', 'post');
     },
     clearCallback: function() {
       var model = TBX.init.pages.photos.batchModel;
