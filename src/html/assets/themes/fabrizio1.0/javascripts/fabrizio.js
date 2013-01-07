@@ -401,7 +401,6 @@ var TBX = (function() {
           },
           load: function() {
             var _this = TBX.init.pages.photos; loc = location;
-            Gallery.setConfig('marginsOfImage', 10);
             util.load(_this);
           },
           loadCb: function(response) {
