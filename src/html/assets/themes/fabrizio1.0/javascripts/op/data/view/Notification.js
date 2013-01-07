@@ -10,8 +10,12 @@
       this.render();
     },
     render: function(){
-      var that = this, notification = that.model.toJSON();
-      $(this.el).hide(function() { $(this).html(that.template(notification)).slideDown('medium');; });
+      var that = this, $el = $(this.el), notification = that.model.toJSON(), exists = $('.trovebox-message').length === 1;
+      if(exists)
+        $el.slideUp('medium', function() { $(this).html(that.template(notification)).slideDown('slow'); });
+      else
+        $el.css('display', 'none').html(that.template(notification)).slideDown('medium');
+
       return this;
     }
   });
