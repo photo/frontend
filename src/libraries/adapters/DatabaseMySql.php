@@ -1690,7 +1690,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeActivity($raw)
@@ -1702,7 +1702,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeAction($raw)
@@ -1713,7 +1713,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeAlbum($raw)
@@ -1737,10 +1737,10 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A photo from SimpleDb in SimpleXML.
+    * @param Array $raw A photo from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizePhoto($photo)
@@ -1782,10 +1782,10 @@ class DatabaseMySql implements DatabaseInterface
     return $photo;
   }
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @param Array $raw A tag from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeResourceMap($raw)
@@ -1804,10 +1804,10 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @param Array $raw A tag from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeTag($raw)
@@ -1821,10 +1821,10 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @param Array $raw A tag from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeUser($raw)
@@ -1853,9 +1853,9 @@ class DatabaseMySql implements DatabaseInterface
 
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeGroup($raw)
