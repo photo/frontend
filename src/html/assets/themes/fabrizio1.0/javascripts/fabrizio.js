@@ -5,6 +5,9 @@ var TBX = (function() {
     credentialDelete: function(response) {
       if(response.code === 204) {
         this.closest('tr').slideUp('medium');
+        TBX.notification.show('Your app was successfully deleted.');
+      } else {
+        TBX.notification.show('There was a problem deleting your app.', null, 'error');
       }
     },
     loginSuccess: function() {
@@ -446,11 +449,21 @@ var TBX = (function() {
     }, // init
     notification: {
       model: new op.data.model.Notification,
+      errorIcon: '<i class="icon-warning-sign"></i>',
+      successIcon: '<i class="icon-ok"></i>',
       init: function() {
         var $el = $('.notification-meta'), view = new op.data.view.Notification({model: TBX.notification.model, el: $el});
       },
       show: function(message, type, mode) {
         var model = TBX.notification.model;
+        console.log(mode);
+        if(mode === 'confirm' || typeof mode === 'undefined')
+          message = TBX.notification.successIcon + ' ' + message;
+        else
+          message = TBX.notification.errorIcon + ' ' + message;
+
+        type = type || 'flash';
+
         model.set('msg', message, {silent:true});
         model.set('mode', mode, {silent:true});
         model.set('type', type, {silent:true});
