@@ -19,7 +19,7 @@ class Activity extends BaseModel
       $this->user = new User;
   }
 
-  public function create($attributes)
+  public function create($elementId, $attributes)
   {
     $attributes = array_merge($this->getDefaultAttributes(), $attributes);
     $attributes = $this->whitelistParams($attributes);
@@ -38,7 +38,7 @@ class Activity extends BaseModel
 
     $attributes['owner'] = $this->owner;
     $attributes['actor'] = $this->getActor();
-    return $this->db->putActivity($id, $attributes);
+    return $this->db->putActivity($id, $elementId, $attributes);
   }
 
   public function list_($filters, $pageSize)

@@ -490,7 +490,7 @@ class ApiPhotoController extends ApiBaseController
       $this->api->invoke(
         "/{$this->apiVersion}/activity/create.json", 
         EpiRoute::httpPost, 
-        array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
+        array('_POST' => array('elementId' => $photo['id'], 'type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
       );
       $this->user->setAttribute('stickyPermission', $permission);
       $this->user->setAttribute('stickyLicense', $photo['license']);
@@ -633,7 +633,7 @@ class ApiPhotoController extends ApiBaseController
       $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
       $photo = $apiResp['result'];
 
-      $post = array('type' => 'photo-update', 'data' => $photo);
+      $post = array('elementId' => $photo['id'], 'type' => 'photo-update', 'data' => $photo);
       if(isset($params['permission']))
         $post['permission'] = $params['permission'];
       $this->api->invoke("/{$this->apiVersion}/activity/create.json", EpiRoute::httpPost, array('_POST' => $post));

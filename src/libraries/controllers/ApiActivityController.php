@@ -22,7 +22,11 @@ class ApiActivityController extends ApiBaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-    $status = $this->activity->create($_POST);
+    $attributes = $_POST;
+    $elementId = $attributes['elementId'];
+    unset($attributes['elementId']);
+
+    $status = $this->activity->create($elementId, $attributes);
     if($status !== false)
       return $this->success('Created activity for user', true);
     else
