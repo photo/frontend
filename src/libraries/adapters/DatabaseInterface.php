@@ -61,7 +61,7 @@ interface DatabaseInterface
   // put methods create but do not update
   public function putGroup($id, $params);
   public function putAction($id, $params);
-  public function putActivity($id, $params);
+  public function putActivity($id, $elementId, $params);
   public function putAlbum($id, $params);
   public function putCredential($id, $params);
   public function putPhoto($id, $params);
