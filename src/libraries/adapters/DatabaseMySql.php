@@ -58,6 +58,36 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete all activity for a user
+    *
+    * @return boolean
+    */
+  public function deleteActivities()
+  {
+    $result = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE `owner`=:owner", array(':owner' => $this->owner));
+    return ($result !== false);
+  }
+
+  /**
+    * Delete activities pertaining to an element
+    *
+    * @param string $elementId ID of the photo whose activity should be deleted
+    * @param Array $types the types of activity to be deleted
+    *
+    * @return boolean
+    */
+  public function deleteActivitiesForElement($elementId, $types)
+  {
+    foreach($types as $key => $val)
+      $types[$key] = $this->_($val);
+    
+    $typesStr = "'".implode("','", $types)."'";
+    $result = $this->db->execute($sql = "DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE `owner`=:owner AND `type` IN({$typesStr}) AND `elementId`=:elementId", 
+      array(':owner' => $this->owner, ':elementId' => $elementId));
+    return ($result !== false);
+  }
+
+  /**
     * Delete an album from the database
     *
     * @param string $id ID of the action to delete
@@ -815,17 +845,6 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
     return true;
-  }
-
-  /**
-    * Delete all activity for a user
-    *
-    * @return boolean
-    */
-  public function postActivitiesPurge()
-  {
-    $result = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE owner=:owner", array(':owner' => $this->owner));
-    return ($result !== false);
   }
 
   /**

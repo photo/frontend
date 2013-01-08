@@ -41,6 +41,12 @@ class Activity extends BaseModel
     return $this->db->putActivity($id, $elementId, $attributes);
   }
 
+  public function deleteForElement($elementId, $types)
+  {
+    $types = (array)$types;
+    return $this->db->deleteActivitiesForElement($elementId, $types);
+  }
+
   public function list_($filters, $pageSize)
   {
     $filters['pageSize'] = $pageSize;

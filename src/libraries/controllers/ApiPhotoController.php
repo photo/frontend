@@ -33,6 +33,9 @@ class ApiPhotoController extends ApiBaseController
     $status = $this->photo->delete($id);
     if($status)
     {
+      $activityObj = new Activity;
+      $activityObj->deleteForElement($id, array('photo-upload','photo-update','action-create'));
+
       $res = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json");
       $this->tag->updateTagCounts($res['result']['tags'], array(), 1, 1);
       return $this->noContent('Photo deleted successfully', true);
@@ -606,6 +609,13 @@ class ApiPhotoController extends ApiBaseController
           $permission = $params['permission'];
         $this->tag->updateTagCounts($existingTags, $updatedTags, $permission, $photoBefore['permission']);
       }
+    }
+
+    // if a public photo is marked private we delete related activity
+    if(isset($params['permission']) && $params['permission'] == 0 && $params['permission'] != $photoBefore['permission'])
+    {
+      $activityObj = new Activity;
+      $activityObj->deleteForElement($id, array('photo-upload','photo-update','action-create'));
     }
 
     if(isset($params['albumsAdd']))

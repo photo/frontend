@@ -23,6 +23,9 @@ class ApiActivityController extends ApiBaseController
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
     $attributes = $_POST;
+    if(isset($attributes['crumb']))
+      unset($attributes['crumb']);
+
     $elementId = $attributes['elementId'];
     unset($attributes['elementId']);
 
