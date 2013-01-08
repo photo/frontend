@@ -23,8 +23,7 @@
         case 'delete':
           $.post('/photo/'+model.get('id')+'/delete.json', params, function(response) {
             if(response.code === 204) {
-              model.trigger('sync');
-              model.remove();
+              model.trigger('change');
             } else {
               model.trigger('error');
             }

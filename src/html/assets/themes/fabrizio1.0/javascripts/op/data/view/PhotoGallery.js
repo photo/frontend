@@ -2,6 +2,7 @@
   op.ns('data.view').PhotoGallery = op.data.view.Editable.extend({
     initialize: function() {
       this.model.on('change', this.modelChanged, this);
+      this.model.on('destroy', this.modelDestroyed, this);
       OP.Util.on('callback:batch-remove', this.batchRemove);
       OP.Util.on('callback:batch-add', this.batchAdd);
     },
@@ -42,9 +43,18 @@
       }
     },
     events: {
+      'click .delete.edit': 'delete',
       'click .permission.edit': 'permission',
       'click .profile.edit': 'profile',
       'click .pin.edit': 'pin'
+    },
+    delete: function(ev) {
+      ev.preventDefault();
+      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model, confirmation;
+
+      confirmation = confirm('Are you sure you want to delete this photo?');
+      if(confirmation)
+        model.destroy();
     },
     permission: function(ev) {
       ev.preventDefault();
@@ -75,6 +85,10 @@
     },
     modelChanged: function() {
       this.render();
+    },
+    modelDestroyed: function(model) {
+      var id = model.get('id'), $el = $('.imageContainer.photo-id-'+id);
+      $el.fadeTo('medium', .25);
     }
   });
 })(jQuery);
