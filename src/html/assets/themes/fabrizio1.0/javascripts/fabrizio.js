@@ -456,7 +456,6 @@ var TBX = (function() {
       },
       show: function(message, type, mode) {
         var model = TBX.notification.model;
-        console.log(mode);
         if(mode === 'confirm' || typeof mode === 'undefined')
           message = TBX.notification.successIcon + ' ' + message;
         else
