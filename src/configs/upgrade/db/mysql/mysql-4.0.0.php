@@ -38,6 +38,22 @@ $sql = <<<SQL
 SQL;
 $status = $status && mysql_4_0_0($sql);
 
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}elementAlbum` DROP INDEX `element` ;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}elementAlbum` ADD INDEX ( `owner` , `album` ) ;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}album` DROP PRIMARY KEY , ADD PRIMARY KEY ( `owner` , `id` ) ;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+
 
 $sql = <<<SQL
   CREATE TABLE `{$this->mySqlTablePrefix}relationship` (
