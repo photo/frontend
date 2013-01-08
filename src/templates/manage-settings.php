@@ -62,7 +62,7 @@
             <div class="pull-right">
               <i class="icon-eye-open icon-large"></i> <a href="/v1/oauth/<?php $this->utility->safe($credential['id']); ?>/view" class="credential-view-click" data-controls-modal="modal">View</a>
               &nbsp;
-              <i class="icon-remove icon-large"></i> <a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credentialDelete">Revoke</a>
+              <i class="icon-trash icon-large"></i> <a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credentialDelete">Revoke</a>
             </div>
           </td>
         </tr>

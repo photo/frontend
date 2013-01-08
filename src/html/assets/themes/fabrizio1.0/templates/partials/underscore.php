@@ -4,19 +4,20 @@
     <?php if($isAdmin) { ?>
       <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><%= title || filenameOriginal %></a></h4>
       <ul class="info">
-        <li><a href="#"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="icon-share-alt tb-icon-dark"></i> <span class="number">Share</span></li>
+        <li><a href="#" title="Comments"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
+        <li><a href="#" title="Favorites"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>
+        <li><a href="#" title="Share via Facebook, Twitter or Email"><i class="icon-share-alt tb-icon-dark"></i></li>
         <li><a href="#" title="Toggle the privacy setting"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %> tb-icon-dark permission edit" data-id="<%= id %>"></i></li>
         <li><a href="#" title="Set as your profile photo"><i class="icon-user tb-icon-dark profile edit" data-id="<%= id %>"></i></li>
         <li><a href="#" title="Select for batch editing"><i class="icon-pushpin tb-icon-dark pin edit" data-id="<%= id %>"></i></li>
+        <li><a href="#" title="Delete this photo"><i class="icon-trash tb-icon-dark delete edit" data-id="<%= id %>"></i></li>
       </ul>
     <?php } else { ?>
       <h4 class="title"><%= title || filenameOriginal %></h4>
       <ul class="info">
         <li><a href="#"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
         <li><a href="#"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="icon-share-alt tb-icon-dark"></i> <span class="number">Share</span></li>
+        <li><a href="#"><i class="icon-share-alt tb-icon-dark"></i></li>
       </ul>
     <?php } ?>
   </div>
