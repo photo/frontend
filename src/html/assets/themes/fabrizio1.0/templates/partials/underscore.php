@@ -95,21 +95,28 @@
   </div>
 </script>
 <script type="tmpl/underscore" id="op-lightbox-details">
+  <div class="action-block">
+    <ul>
+      <li><i class="icon-eye-open"></i> 110 Views</i></li>
+      <li><i class="icon-comment"></i> 7 Comments</i></li>
+      <li><a href="<%= pathDownload %>"><i class="icon-download"></i> Download</i></a></li>
+      <li><i class="icon-heart"></i> 16 Favorites</i></li>
+      <li><a href="#"><i class="icon-share"></i> Share</i></a></li>
+      <li><a class="permission<?php echo $isAdmin ? " edit" : "" ?>" href="#"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i> Private</i></a></li>
+    </ul>
+  </div>
   <div class="detail-block">
     <div class="title">
       <span class="text"><%= title || filenameOriginal %></span>
       <span class="actions">
-        <a href="#"><i class="tb-icon-heart tb-icon-dark"></i></a>
-        <a href="#"><i class="tb-icon-comment tb-icon-dark"></i></a>
-        <a href="#"><i class="tb-icon-maximize tb-icon-dark"></i></a>
+        <a href="#"><i class="icon-heart"></i></a>
+        <a href="#"><i class="icon-comments"></i></a>
+        <a href="#"><i class="icon-share"></i></a>
       </span>
     </div>
     <div class="description">
       <span class="text"><%= description %></span>
     </div>
-  </div>
-  <div class="action-block">
-  
   </div>
 </script>
 
@@ -127,50 +134,54 @@
 </script>
 
 <script type="tmpl/underscore" id="photo-detail-meta">
-  <img src="<%= path870x550 %>">
-  <br>
-  <?php if($isAdmin) { ?>
-    <a href="#" class="title edit"><%= title %></a>
-    <br>
-    <a href="#" class="description edit"><%= description %></a>
-  <?php } else { ?>
-   <%= title %>
-   <br>
-   <%= description %>
-  <?php } ?>
-
-   <hr>
-
-  <% if (!_.isNull(previous)) { %>
-    <% if (previous[0]) { %>
-      <a class="paginate" data-id="<%= previous[0].id %>">
-        <img src="<%= previous[0].path90x90xCR %>">
-      </a>
-    <% } %>
-    <% if (previous[1]) { %>
-      <a class="paginate" data-id="<%= previous[1].id %>">
-        <img src="<%= previous[1].path90x90xCR %>">
-      </a>
-    <% } %>
-  <% } %>
-  --
-  <% if (!_.isNull(next)) { %>
-    <% if (next[0]) { %>
-      <a class="paginate" data-id="<%= next[0].id %>">
-        <img src="<%= next[0].path90x90xCR %>">
-      </a>
-    <% } %>
-    <% if (next[1]) { %>
-      <a class="paginate" data-id="<%= next[1].id %>">
-        <img src="<%= next[1].path90x90xCR %>">
-      </a>
-    <% } %>
-  <% } %>
-  <ul>
-    <% for(var tag in tags) { %>
-      <li><%= tags[tag] %></li>
-    <% } %>
-  </ul>
+  <div class="row">
+    <div class="span7">
+      <img src="<%= path870x550 %>" />
+      <br>
+      <?php if($isAdmin) { ?>
+        <a href="#" class="title edit"><%= title %></a>
+        <br>
+        <a href="#" class="description edit"><%= description %></a>
+      <?php } else { ?>
+       <%= title %>
+       <br>
+       <%= description %>
+      <?php } ?>
+    
+       <hr>
+    
+      <% if (!_.isNull(previous)) { %>
+        <% if (previous[0]) { %>
+          <a class="paginate" data-id="<%= previous[0].id %>">
+            <img src="<%= previous[0].path90x90xCR %>">
+          </a>
+        <% } %>
+        <% if (previous[1]) { %>
+          <a class="paginate" data-id="<%= previous[1].id %>">
+            <img src="<%= previous[1].path90x90xCR %>">
+          </a>
+        <% } %>
+      <% } %>
+      --
+      <% if (!_.isNull(next)) { %>
+        <% if (next[0]) { %>
+          <a class="paginate" data-id="<%= next[0].id %>">
+            <img src="<%= next[0].path90x90xCR %>">
+          </a>
+        <% } %>
+        <% if (next[1]) { %>
+          <a class="paginate" data-id="<%= next[1].id %>">
+            <img src="<%= next[1].path90x90xCR %>">
+          </a>
+        <% } %>
+      <% } %>
+      <ul>
+        <% for(var tag in tags) { %>
+          <li><%= tags[tag] %></li>
+        <% } %>
+      </ul>
+    </div>
+  </div>
 </script>
 
 <script type="tmpl/underscore" id="batch-meta">

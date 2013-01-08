@@ -35,6 +35,15 @@
       this.model = model;
       this.model.on('change', this._bound('render'));
       this.render();
+    },
+    events : {
+      'click .permission.edit': 'permission'
+    },
+    permission: function(ev) {
+      ev.preventDefault();
+      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model;
+      model.set('permission', model.get('permission') == 0 ? 1 : 0, {silent:false});
+      model.save();
     }
   });
   

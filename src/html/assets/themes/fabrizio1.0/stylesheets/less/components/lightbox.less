@@ -122,29 +122,60 @@
     .container {
       padding: 10px 0;
       
-      .title {
-        font-size: 1.2em;
-        margin-bottom: .6em;
-        
-        .actions {
-          margin-left: 12px;
-          a {
-            margin: 0 4px;
+      .detail-block {
+      
+        .title {
+          font-size: 1.2em;
+          margin-bottom: .6em;
+          
+          .actions {
+            margin-left: 12px;
+            a {
+              margin: 0 4px;
+              color: #fff;
+              &:hover {
+                text-decoration: none;
+              }
+              i {
+                font-size: 18px;
+              }
+            }
           }
+          
         }
         
+        .description {
+          font-weight: 300;
+          font-size: 1em;
+          
+        }
       }
       
-      .tb-icon,
-      [class^="tb-icon-"],
-      [class*=" tb-icon-"] {
-        vertical-align: middle;
-      }
-      
-      .description {
-        font-weight: 300;
-        font-size: 1em;
+      .action-block {
+        float: right;
+        padding-top: 10px;
+        font-size: 11px;
+        ul, li {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+        ul {
+          width: 300px;
+        }
+        li {
+          width: 33%;
+          float: left;
+          color: #ddd;
+        }
         
+        a {
+          color: #ddd;
+          &:hover {
+            text-decoration: none;
+            color: #fff;
+          }
+        }
       }
     }
   }
