@@ -318,6 +318,13 @@ class Utility
       return $this->returnValue(($int != 1 ? "{$word}s" : $word), $write);
   }
 
+  public function selectPlural($int, $singularForm, $pluralForm, $write = true)
+  {
+    $singularForm = $this->safe($singularForm, false);
+    $pluralForm = $this->safe($pluralForm, false);
+    return $this->returnValue(($int != 1 ? $pluralForm : $singularForm), $write);
+  }
+
   public function posessive($noun, $write = true)
   {
     if(substr($noun, -1) === 's')
