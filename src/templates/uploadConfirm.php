@@ -28,7 +28,7 @@
 
 <?php if(count($successPhotos) > 0) { ?>
   <h3>Here's a breakdown of your upload</h3>
-  <strong><span class="label label-success"><?php printf('%d %s', count($successPhotos), $this->utility->plural(count($successPhotos), 'photo', false)); ?> were uploaded successfully.</span></strong>
+  <strong><span class="label label-success"><?php printf('%d %s %s', count($successPhotos), $this->utility->plural(count($successPhotos), 'photo', false), $this->utility->selectPlural(count($successPhotos), 'was', 'were', false)); ?> uploaded successfully.</span></strong>
   <div class="upload-preview">
     <ul class="thumbnails">
       <?php foreach($successPhotos as $photo) { ?>

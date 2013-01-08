@@ -228,6 +228,18 @@ RES;
     $this->assertEquals('words', $res, 'plural for word with 2 incorrect');
   }
 
+  public function testSelectPlural()
+  {
+    $res = $this->utility->selectPlural(0, 'was', 'were', false);
+    $this->assertEquals('were', $res, 'plural for word with 0 selected incorrectly');
+
+    $res = $this->utility->selectPlural(1, 'was', 'were', false);
+    $this->assertEquals('was', $res, 'plural for word with 1 selected incorrectly');
+
+    $res = $this->utility->selectPlural(2, 'was', 'were', false);
+    $this->assertEquals('were', $res, 'plural for word with 2 selected incorrectly');
+  }
+
   public function testReturnValue()
   {
     $res = $this->utility->returnValue('foo', false);
