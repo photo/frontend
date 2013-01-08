@@ -70,12 +70,15 @@
       OP.Util.fire('callback:batch-add', r);
     };
 
-    this.add = function(id) {
-      var args = {};
-      if(arguments.length > 1)
-        args = arguments[1];
-      log("[Util][Batch] adding " + id);
-      OU.makeRequest('/photo/'+id+'/view.json', args, self._callbackAdd, 'json', 'get');
+    this.add = function(id/*, photo */) {
+      var photo = arguments[1] || false;
+      if(typeof photo === 'object') {
+        log("[Util][Batch] adding from argument " + id);
+        self._callbackAdd({result: photo});
+      } else {
+        log("[Util][Batch] adding " + id);
+        OU.makeRequest('/photo/'+id+'/view.json', {}, self._callbackAdd, 'json', 'get');
+      }
     };
 
     this.remove = function(id) {

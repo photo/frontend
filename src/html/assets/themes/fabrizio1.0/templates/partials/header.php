@@ -18,6 +18,9 @@
           <div class="user">
             <a href="#" class="profile-link profile-photo-header-meta" data-toggle="dropdown"></a>
             <ul class="dropdown-menu" role="menu">
+              <?php if($this->session->get('site') != '' && $this->utility->gethost() != $this->session->get('site')) { ?>
+                <li><a href="<?php printf('%s://%s', $this->utility->getProtocol(false), $this->utility->safe($this->session->get('site'), false)); ?>">Back to my site</a></li>
+              <?php } ?>
               <li><a href="/user/logout">Logout</a></li>
             </ul>
           </div>
@@ -46,13 +49,5 @@
         </ul>
       </div>
     </div>
-    <?php if($note = $this->notification->get()) { ?>
-    <div class="alert alert-<?php if($note['mode'] === 'confirm') { ?>error<?php } else { ?>danger<?php } ?> trovebox-message">
-        <div class="container">
-          <?php if($note['type'] !== Notification::typeFlash) { ?>
-            <button type="button" class="close <?php if($note['type'] === Notification::typeStatic) { ?> notificationDelete<?php } ?>" data-dismiss="alert" data-target=".trovebox-message">×</button>
-          <?php } ?>
-          <?php $this->utility->safe($note['msg'], '<a>'); ?>
-        </div>
-      </div>
-    <?php } ?>
+    <div class="notification-meta"></div>
+    

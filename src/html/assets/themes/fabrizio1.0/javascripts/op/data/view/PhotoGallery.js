@@ -2,19 +2,20 @@
   op.ns('data.view').PhotoGallery = op.data.view.Editable.extend({
     initialize: function() {
       this.model.on('change', this.modelChanged, this);
+      this.model.on('destroy', this.modelDestroyed, this);
       OP.Util.on('callback:batch-remove', this.batchRemove);
       OP.Util.on('callback:batch-add', this.batchAdd);
     },
     batchAdd: function(photo) {
-      var model = TBX.init.pages.photos.batchModel;
+      var model = TBX.init.pages.photos.batchModel, batch = OP.Batch;
       $('.photo-id-'+photo.id).addClass('pinned');
-      model.set('count', model.get('count')+1);
+      model.set('count', batch.length());
       model.trigger('change');
     },
     batchRemove: function(id) {
-      var model = TBX.init.pages.photos.batchModel;
+      var model = TBX.init.pages.photos.batchModel, batch = OP.Batch;
       $('.photo-id-'+id).removeClass('pinned');
-      model.set('count', model.get('count')-1);
+      model.set('count', batch.length());
       model.trigger('change');
     },
     model: this.model,
@@ -42,9 +43,18 @@
       }
     },
     events: {
+      'click .delete.edit': 'delete',
       'click .permission.edit': 'permission',
       'click .profile.edit': 'profile',
       'click .pin.edit': 'pin'
+    },
+    delete: function(ev) {
+      ev.preventDefault();
+      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model, confirmation;
+
+      confirmation = confirm('Are you sure you want to delete this photo?');
+      if(confirmation)
+        model.destroy();
     },
     permission: function(ev) {
       ev.preventDefault();
@@ -54,11 +64,11 @@
     },
     pin: function(ev) {
       ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), model = TBX.init.pages.photos.batchModel, batch = OP.Batch;
+      var el = $(ev.currentTarget), id = el.attr('data-id'), batch = OP.Batch, photo = op.data.store.Photos.get(id).toJSON();
       if(batch.exists(id)) { // exists, we need to remove
         OP.Batch.remove(id);
       } else { // let's add it
-        OP.Batch.add(id);
+        OP.Batch.add(id, photo);
       }
     },
     profile: function(ev) {
@@ -75,6 +85,10 @@
     },
     modelChanged: function() {
       this.render();
+    },
+    modelDestroyed: function(model) {
+      var id = model.get('id'), $el = $('.imageContainer.photo-id-'+id);
+      $el.fadeTo('medium', .25);
     }
   });
 })(jQuery);

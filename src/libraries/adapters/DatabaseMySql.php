@@ -58,6 +58,36 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete all activity for a user
+    *
+    * @return boolean
+    */
+  public function deleteActivities()
+  {
+    $result = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE `owner`=:owner", array(':owner' => $this->owner));
+    return ($result !== false);
+  }
+
+  /**
+    * Delete activities pertaining to an element
+    *
+    * @param string $elementId ID of the photo whose activity should be deleted
+    * @param Array $types the types of activity to be deleted
+    *
+    * @return boolean
+    */
+  public function deleteActivitiesForElement($elementId, $types)
+  {
+    foreach($types as $key => $val)
+      $types[$key] = $this->_($val);
+    
+    $typesStr = "'".implode("','", $types)."'";
+    $result = $this->db->execute($sql = "DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE `owner`=:owner AND `type` IN({$typesStr}) AND `elementId`=:elementId", 
+      array(':owner' => $this->owner, ':elementId' => $elementId));
+    return ($result !== false);
+  }
+
+  /**
     * Delete an album from the database
     *
     * @param string $id ID of the action to delete
@@ -818,17 +848,6 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Delete all activity for a user
-    *
-    * @return boolean
-    */
-  public function postActivitiesPurge()
-  {
-    $result = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE owner=:owner", array(':owner' => $this->owner));
-    return ($result !== false);
-  }
-
-  /**
     * Update an existing album in the database
     * This method does not overwrite existing values present in $params - hence "new action".
     *
@@ -1114,10 +1133,10 @@ class DatabaseMySql implements DatabaseInterface
     * @param array $params Attributes to update.
     * @return boolean
     */
-  public function putActivity($id, $params)
+  public function putActivity($id, $elementId, $params)
   {
     $stmt = $this->sqlInsertExplode($this->prepareActivity($params));
-    $result = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}activity` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $result = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}activity` (id,elementId,{$stmt['cols']}) VALUES (:id,:elementId,{$stmt['vals']})", array(':id' => $id, ':elementId' => $elementId));
     return ($result !== false);
   }
 
@@ -1690,7 +1709,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeActivity($raw)
@@ -1702,7 +1721,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeAction($raw)
@@ -1713,7 +1732,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeAlbum($raw)
@@ -1737,10 +1756,10 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A photo from SimpleDb in SimpleXML.
+    * @param Array $raw A photo from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizePhoto($photo)
@@ -1782,10 +1801,10 @@ class DatabaseMySql implements DatabaseInterface
     return $photo;
   }
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @param Array $raw A tag from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeResourceMap($raw)
@@ -1804,10 +1823,10 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @param Array $raw A tag from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeTag($raw)
@@ -1821,10 +1840,10 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @param Array $raw A tag from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeUser($raw)
@@ -1853,9 +1872,9 @@ class DatabaseMySql implements DatabaseInterface
 
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeGroup($raw)

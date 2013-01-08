@@ -5,6 +5,9 @@ var TBX = (function() {
     credentialDelete: function(response) {
       if(response.code === 204) {
         this.closest('tr').slideUp('medium');
+        TBX.notification.show('Your app was successfully deleted.');
+      } else {
+        TBX.notification.show('There was a problem deleting your app.', null, 'error');
       }
     },
     loginSuccess: function() {
@@ -33,6 +36,10 @@ var TBX = (function() {
         (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(ownerId), el: el})).render();
       });
       (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(viewerId), el: $('.profile-photo-header-meta')})).render();
+    },
+    selectAll: function(i, el) {
+      var id = $(el).attr('data-id'), photo = op.data.store.Photos.get(id).toJSON();
+      OP.Batch.add(id, photo);
     },
     upload: function(ev) {
       ev.preventDefault();
@@ -217,6 +224,11 @@ var TBX = (function() {
         notificationDelete: function(ev) {
           ev.preventDefault();
           OP.Util.makeRequest('/notification/delete.json', {crumb: TBX.crumb()}, null, 'json');
+        },
+        selectAll: function(ev) {
+          ev.preventDefault();
+          var $els = $('.photo-grid .imageContainer .pin.edit');
+          $els.each(callbacks.selectAll);
         }
       },
       keydown: { },
@@ -392,7 +404,6 @@ var TBX = (function() {
           },
           load: function() {
             var _this = TBX.init.pages.photos; loc = location;
-            Gallery.setConfig('marginsOfImage', 10);
             util.load(_this);
           },
           loadCb: function(response) {
@@ -436,6 +447,28 @@ var TBX = (function() {
         }
       }
     }, // init
+    notification: {
+      model: new op.data.model.Notification,
+      errorIcon: '<i class="icon-warning-sign"></i>',
+      successIcon: '<i class="icon-ok"></i>',
+      init: function() {
+        var $el = $('.notification-meta'), view = new op.data.view.Notification({model: TBX.notification.model, el: $el});
+      },
+      show: function(message, type, mode) {
+        var model = TBX.notification.model;
+        if(mode === 'confirm' || typeof mode === 'undefined')
+          message = TBX.notification.successIcon + ' ' + message;
+        else
+          message = TBX.notification.errorIcon + ' ' + message;
+
+        type = type || 'flash';
+
+        model.set('msg', message, {silent:true});
+        model.set('mode', mode, {silent:true});
+        model.set('type', type, {silent:true});
+        model.save();
+      }
+    },
     message: {
       append: function(html/*, isStatic*/) {
         var el = $(".message:first").clone(false),

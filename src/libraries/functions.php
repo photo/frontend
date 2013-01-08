@@ -88,9 +88,6 @@ function getDb(/*$type*/)
 
   switch($type)
   {
-    case 'SimpleDb':
-      $database = new DatabaseSimpleDb();
-      break;
     case 'MySql':
       $database = new DatabaseMySql();
       break;

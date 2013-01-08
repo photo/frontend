@@ -33,6 +33,9 @@ class ApiPhotoController extends ApiBaseController
     $status = $this->photo->delete($id);
     if($status)
     {
+      $activityObj = new Activity;
+      $activityObj->deleteForElement($id, array('photo-upload','photo-update','action-create'));
+
       $res = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json");
       $this->tag->updateTagCounts($res['result']['tags'], array(), 1, 1);
       return $this->noContent('Photo deleted successfully', true);
@@ -490,7 +493,7 @@ class ApiPhotoController extends ApiBaseController
       $this->api->invoke(
         "/{$this->apiVersion}/activity/create.json", 
         EpiRoute::httpPost, 
-        array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
+        array('_POST' => array('elementId' => $photo['id'], 'type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
       );
       $this->user->setAttribute('stickyPermission', $permission);
       $this->user->setAttribute('stickyLicense', $photo['license']);
@@ -608,9 +611,16 @@ class ApiPhotoController extends ApiBaseController
       }
     }
 
+    // if a public photo is marked private we delete related activity
+    if(isset($params['permission']) && $params['permission'] == 0 && $params['permission'] != $photoBefore['permission'])
+    {
+      $activityObj = new Activity;
+      $activityObj->deleteForElement($id, array('photo-upload','photo-update','action-create'));
+    }
+
     if(isset($params['albumsAdd']))
     {
-      $params['albums'] = implode(',', array_merge($photoBefore['albums'], $params['albumsAdd']));
+      $params['albums'] = implode(',', array_merge($photoBefore['albums'], (array)explode(',', $params['albumsAdd'])));
     }
 
     if(isset($params['albums']))
@@ -633,7 +643,7 @@ class ApiPhotoController extends ApiBaseController
       $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
       $photo = $apiResp['result'];
 
-      $post = array('type' => 'photo-update', 'data' => $photo);
+      $post = array('elementId' => $photo['id'], 'type' => 'photo-update', 'data' => $photo);
       if(isset($params['permission']))
         $post['permission'] = $params['permission'];
       $this->api->invoke("/{$this->apiVersion}/activity/create.json", EpiRoute::httpPost, array('_POST' => $post));

@@ -4,19 +4,20 @@
     <?php if($isAdmin) { ?>
       <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><%= title || filenameOriginal %></a></h4>
       <ul class="info">
-        <li><a href="#"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="icon-share-alt tb-icon-dark"></i> <span class="number">Share</span></li>
+        <li><a href="#" title="Comments"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
+        <li><a href="#" title="Favorites"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>
+        <li><a href="#" title="Share via Facebook, Twitter or Email"><i class="icon-share-alt tb-icon-dark"></i></li>
         <li><a href="#" title="Toggle the privacy setting"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %> tb-icon-dark permission edit" data-id="<%= id %>"></i></li>
         <li><a href="#" title="Set as your profile photo"><i class="icon-user tb-icon-dark profile edit" data-id="<%= id %>"></i></li>
         <li><a href="#" title="Select for batch editing"><i class="icon-pushpin tb-icon-dark pin edit" data-id="<%= id %>"></i></li>
+        <li><a href="#" title="Delete this photo"><i class="icon-trash tb-icon-dark delete edit" data-id="<%= id %>"></i></li>
       </ul>
     <?php } else { ?>
       <h4 class="title"><%= title || filenameOriginal %></h4>
       <ul class="info">
         <li><a href="#"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
         <li><a href="#"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="icon-share-alt tb-icon-dark"></i> <span class="number">Share</span></li>
+        <li><a href="#"><i class="icon-share-alt tb-icon-dark"></i></li>
       </ul>
     <?php } ?>
   </div>
@@ -186,21 +187,30 @@
 
 <script type="tmpl/underscore" id="batch-meta">
   <?php if($isAdmin) { ?>
-    <a data-toggle="dropdown" href="#"><i class="tb-icon-light icon-cogs"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
+    <a data-toggle="dropdown" href="#"><i class="tb-icon-light <% if(!loading) { %>icon-cogs<% } else { %>icon-spinner icon-spin<% } %>"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
     <ul class="dropdown-menu">
       <% if (count > 0) { %>
         <li><a>Batch edit your photos</a></li>
         <li class="divider"></li>
-        <li><a href="#">&nbsp;&middot;&nbsp;Add or Remove Tags</a></li>
-        <li><a href="#">&nbsp;&middot;&nbsp;Organize Into Albums</a></li>
+        <li><a href="#" class="tags">&nbsp;&middot;&nbsp;Add Tags</a></li>
+        <li><a href="#" class="albums">&nbsp;&middot;&nbsp;Add to Album</a></li>
         <li><a href="#">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
-        <li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>
+        <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
         <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>
         <li class="divider"></li>
         <li><a href="#" class="clear">Clear pinned photos</a></li>
       <% } else { %>
-        <li><a>Select photos by clicking <i class="tb-icon-light tb-icon-pin"></i></a></li>
+        <li><a><i class="tb-icon-light icon-pushpin"></i> Hover over a photo and click the pushpin</a></li>
       <% } %>
     </ul>
   <?php } ?>
+</script>
+
+<script type="tmpl/underscore" id="notification-meta">
+  <div class="alert alert-<% if(mode=='confirm') { %>confirm<% } else { %>error<% } %> trovebox-message">
+    <div class="container">
+      <button type="button" class="close <% if(type=='static') { %> notificationDelete<% } %>" data-dismiss="alert" data-target=".trovebox-message">×</button>
+      <%= msg %>
+    </div>
+  </div>
 </script>
