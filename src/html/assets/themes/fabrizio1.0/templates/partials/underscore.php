@@ -181,10 +181,10 @@
       <% if (count > 0) { %>
         <li><a>Batch edit your photos</a></li>
         <li class="divider"></li>
-        <li><a href="#" class="tags">&nbsp;&middot;&nbsp;Add or Remove Tags</a></li>
-        <li><a href="#">&nbsp;&middot;&nbsp;Organize Into Albums</a></li>
+        <li><a href="#" class="tags">&nbsp;&middot;&nbsp;Add Tags</a></li>
+        <li><a href="#" class="albums">&nbsp;&middot;&nbsp;Add to Album</a></li>
         <li><a href="#">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
-        <li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>
+        <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
         <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>
         <li class="divider"></li>
         <li><a href="#" class="clear">Clear pinned photos</a></li>

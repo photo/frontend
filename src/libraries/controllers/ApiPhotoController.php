@@ -620,7 +620,7 @@ class ApiPhotoController extends ApiBaseController
 
     if(isset($params['albumsAdd']))
     {
-      $params['albums'] = implode(',', array_merge($photoBefore['albums'], $params['albumsAdd']));
+      $params['albums'] = implode(',', array_merge($photoBefore['albums'], (array)explode(',', $params['albumsAdd'])));
     }
 
     if(isset($params['albums']))
