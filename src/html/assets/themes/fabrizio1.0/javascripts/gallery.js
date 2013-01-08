@@ -9,7 +9,7 @@ var Gallery = (function($) {
   // defaults
   var configuration = {
   	'thumbnailSize':'960x180',
-  	'marginsOfImage':6,
+  	'marginsOfImage': 10,
   	'defaultWidthValue':120,
   	'defaultHeightValue':120
   };

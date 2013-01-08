@@ -13,6 +13,8 @@ interface DatabaseInterface
   public function diagnostics();
   // delete methods can delete or toggle status
   public function deleteAction($id);
+  public function deleteActivities();
+  public function deleteActivitiesForElement($elementId, $types);
   public function deleteAlbum($id);
   public function deleteCredential($id);
   public function deleteGroup($id);
@@ -47,7 +49,6 @@ interface DatabaseInterface
   public function identity();
   public function executeScript($file, $database);
   // post methods update
-  public function postActivitiesPurge();
   public function postAlbum($id, $params);
   public function postAlbumAdd($albumId, $type, $elementIds);
   public function postAlbumRemove($albumId, $type, $elementIds);
@@ -61,7 +62,7 @@ interface DatabaseInterface
   // put methods create but do not update
   public function putGroup($id, $params);
   public function putAction($id, $params);
-  public function putActivity($id, $params);
+  public function putActivity($id, $elementId, $params);
   public function putAlbum($id, $params);
   public function putCredential($id, $params);
   public function putPhoto($id, $params);

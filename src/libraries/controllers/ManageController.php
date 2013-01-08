@@ -36,7 +36,7 @@ class ManageController extends BaseController
   {
     $notification = new Notification;
     $notification->add('Your app has been successfully created. Take a look at <a href="#apps">your apps</a>.', Notification::typeFlash);
-    $this->route->redirect('/manage/settings');
+    $this->route->redirect('/manage/settings#apps');
   }
 
   public function features()

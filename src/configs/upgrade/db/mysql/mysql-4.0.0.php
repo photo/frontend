@@ -18,13 +18,26 @@ SQL;
   $sql = <<<SQL
     UPDATE `{$this->mySqlTablePrefix}{$table}` SET `actor`=`owner`;
 SQL;
+  $status = $status && mysql_4_0_0($sql);
 
 }
 
 $sql = <<<SQL
   ALTER TABLE `{$this->mySqlTablePrefix}activity` ADD `permission` BOOLEAN NOT NULL AFTER `data` 
 ;
-$status = $status && mysql_4_0_0($sql, array(':key' => 'version', ':version' => '4.0.0'));
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}activity` ADD `elementId` VARCHAR( 6 ) NOT NULL AFTER `type`;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}activity` DROP PRIMARY KEY , ADD PRIMARY KEY ( `owner` , `id` ) ;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
 
 $sql = <<<SQL
   CREATE TABLE `{$this->mySqlTablePrefix}relationship` (
@@ -34,7 +47,7 @@ $sql = <<<SQL
    PRIMARY KEY (`actor`,`follows`)
   ) ENGINE=InnoDB;
 SQL;
-$status = $status && mysql_4_0_0($sql, array(':key' => 'version', ':version' => '4.0.0'));
+$status = $status && mysql_4_0_0($sql);
 
 
 $sql = <<<SQL

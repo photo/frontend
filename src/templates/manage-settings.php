@@ -42,30 +42,33 @@
       <a href="/v1/oauth/authorize?oauth_callback=<?php $this->utility->safe(sprintf('%s://%s%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], '/manage/apps/callback')); ?>&name=<?php $this->utility->safe(urlencode('Self Generated App')); ?>&tokenType=access" class="btn btn-primary">Create a new app</a>
     </p>
   </div>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Application Name</th>
-        <th></th>
-      </tr>
-    </thead>
-    <?php foreach($credentials as $credential) { ?>
-      <tr>
-        <td>
-          <?php $this->utility->safe($credential['name']); ?>
-          <?php if(!empty($credential['dateCreated'])) { ?>
-            <em class="credential-date">(<?php $this->utility->safe(ucwords($credential['type'])); ?> token created on <?php $this->utility->dateLong($credential['dateCreated']); ?>)</em>
-          <?php } ?>
-        </td>
-        <td>
-          <div class="pull-right">
-            <a href="/v1/oauth/<?php $this->utility->safe($credential['id']); ?>/view" class="credential-view-click" data-controls-modal="modal"><i class="icon-eye-open icon-large"></i> View</a>
-            <a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credentialDelete"><i class="icon-remove icon-large"></i> Revoke</a>
-          </div>
-        </td>
-      </tr>
-    <?php } ?>
-  </table>
+  <?php if(!empty($credentials)) { ?>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Application Name</th>
+          <th></th>
+        </tr>
+      </thead>
+      <?php foreach($credentials as $credential) { ?>
+        <tr>
+          <td>
+            <?php $this->utility->safe($credential['name']); ?>
+            <?php if(!empty($credential['dateCreated'])) { ?>
+              <small><em class="credential-date">(<?php $this->utility->safe(ucwords($credential['type'])); ?> token created on <?php $this->utility->dateLong($credential['dateCreated']); ?>)</em></small>
+            <?php } ?>
+          </td>
+          <td>
+            <div class="pull-right">
+              <i class="icon-eye-open icon-large"></i> <a href="/v1/oauth/<?php $this->utility->safe($credential['id']); ?>/view" class="credential-view-click" data-controls-modal="modal">View</a>
+              &nbsp;
+              <i class="icon-trash icon-large"></i> <a href="/oauth/<?php $this->utility->safe($credential['id']); ?>/delete" class="credentialDelete">Revoke</a>
+            </div>
+          </td>
+        </tr>
+      <?php } ?>
+    </table>
+  <?php } ?>
   
   <a name="plugins"></a>
   <div class="row hero-unit blurb">
