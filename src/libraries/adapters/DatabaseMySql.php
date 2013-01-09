@@ -141,6 +141,7 @@ class DatabaseMySql implements DatabaseInterface
 
     $resPhoto = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
     $resVersions = $this->deletePhotoVersions($photo);
+    $this->deleteTagsFromElement($photo['id'], 'photo');
 
     return ($resPhoto !== false && $resVersions !== false);
   }
@@ -982,11 +983,8 @@ class DatabaseMySql implements DatabaseInterface
     elseif(empty($params))
       return true;
 
-    $tags = false;
-    if(isset($params['tags']))
-      $tags = !empty($params['tags']) ? (array)explode(',', $params['tags']) : null;
-
     // path\d+x\d+ keys go into the photoVersion table
+    $versions = array();
     foreach($params as $key => $val)
     {
       if(preg_match('/^path\d+x\d+/', $key))
@@ -996,40 +994,26 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
 
+    // check if params are still !empty and update the photo table
     if(!empty($params))
     {
-      if(isset($params['groups']))
-      {
-        $this->updateGroupToPhotoMapping($id, $params['groups']);
-        // TODO: Generalize this and use for tags too -- @jmathai
-        $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['groups']);
-      }
-      if(isset($params['albums']))
-      {
-        $this->updateAlbumToPhotoMapping($id, $params['albums']);
-        // TODO: Generalize this and use for tags too -- @jmathai
-        $params['albums'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['albums']);
-      }
-      $params = $this->preparePhoto($id, $params);
-      unset($params['id']);
-      $bindings = $params['::bindings'];
-      $stmt = $this->sqlUpdateExplode($params, $bindings);
+      $paramsUpd = $this->preparePhoto($id, $params);
+      unset($paramsUpd['id']);
+      $bindings = $paramsUpd['::bindings'];
+      $stmt = $this->sqlUpdateExplode($paramsUpd, $bindings);
       $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}photo` SET {$stmt} WHERE `id`=:id AND owner=:owner", 
         array_merge($bindings, array(':id' => $id, ':owner' => $this->owner)));
+
+      if($res === false)
+        return false;
     }
+
     if(!empty($versions))
       $resVersions = $this->postVersions($id, $versions);
 
-    if($tags !== false)
-    {
-      $this->deleteTagsFromElement($id, 'photo');
-      if(!empty($tags))
-      {
-        // TODO combine this into a multi row insert in addTagsToElement
-        foreach($tags as $tag)
-          $this->addTagToElement($id, $tag, 'photo');
-      }
-    }
+    // empty($tags) means remove from all tags
+    if(isset($params['tags']))
+      $this->updateTagsToPhotoMapping($id, $params['tags']);
 
     return (isset($res) && $res !== false) || (isset($resVersions) && $resVersions);
   }
@@ -1077,6 +1061,31 @@ class DatabaseMySql implements DatabaseInterface
       $res = $this->postTag($tagObj['id'], $tagObj);
     }
     return $res;
+  }
+
+  /**
+    * Ajdust the counters on tags
+    *
+    * @param array $params Tags and related attributes to update.
+    * @return boolean
+    */
+  public function postTagsIncrementer($tags, $value)
+  {
+    if(empty($tags) || empty($value))
+      return true;
+
+    $value = intval($value);
+    $status = true;
+    foreach($tags as $tag)
+    {
+      if(strlen($tag) > 0)
+      {
+        $status = $status && $this->db->execute("UPDATE `{$this->mySqlTablePrefix}tag` SET `countPublic`=`countPublic`+:value WHERE owner=:owner AND id=:tag",
+          array(':value' => $value, ':owner' => $this->owner, ':tag' => $tag));
+      }
+    }
+
+    return $status;
   }
 
   /**
@@ -1222,30 +1231,14 @@ class DatabaseMySql implements DatabaseInterface
   public function putPhoto($id, $params)
   {
     $params['id'] = $id;
-    $tags = null;
-    if(isset($params['tags']) && !empty($params['tags']))
-      $tags = (array)explode(',', $params['tags']);
-    if(isset($params['groups']))
-    {
-      $this->updateGroupToPhotoMapping($id, $params['groups']);
-      // TODO: Generalize this and use for tags too -- @jmathai
-      $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['groups']);
-    }
-    if(isset($params['albums']))
-    {
-      $this->updateAlbumToPhotoMapping($id, $params['albums']);
-      // TODO: Generalize this and use for tags too -- @jmathai
-      $params['albums'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['albums']);
-    }
-    $params = $this->preparePhoto($id, $params);
-    $bindings = $params['::bindings'];
-    $stmt = $this->sqlInsertExplode($params, $bindings);
+    $paramsIns = $this->preparePhoto($id, $params);
+    $bindings = $paramsIns['::bindings'];
+    $stmt = $this->sqlInsertExplode($paramsIns, $bindings);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}photo` ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
-    if(!empty($tags))
-    {
-      foreach($tags as $tag)
-        $this->addTagToElement($id, $tag, 'photo');
-    }
+
+    if(isset($params['tags']))
+      $this->addTagsToElement($id, $params['tags'], 'photo');
+
     return ($result !== false);
   }
 
@@ -1430,13 +1423,36 @@ class DatabaseMySql implements DatabaseInterface
     * Insert tags into the mapping table
     *
     * @param string $id Element id (id of the photo or video)
-    * @param string $tag Tag to be added
+    * @param string $tags Tag to be added (can also be an array)
     * @param string $type Element type (photo or video)
     * @return boolean
     */
-  private function addTagToElement($id, $tag, $type)
+  private function addTagsToElement($id, $tags, $type)
   {
-    $res = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementTag`(`owner`, `type`, `element`, `tag`) VALUES(:owner, :type, :element, :tag)", array(':owner' => $this->owner, ':type' => $type, ':element' => $id, ':tag' => $tag));
+    // empty($tags) means remove all tags
+    if(empty($id) || empty($type))
+      return false;
+
+    if(!is_array($tags))
+      $tags = (array)explode(',', $tags);
+
+    $hasTag = false;
+    $sql = "REPLACE INTO `{$this->mySqlTablePrefix}elementTag`(`owner`, `type`, `element`, `tag`) VALUES";
+    foreach($tags as $tag)
+    {
+      if(strlen($tag) > 0)
+      {
+        $sql .= sprintf("('%s', '%s', '%s', '%s'),", $this->_($this->owner), $this->_($type), $this->_($id), $this->_($tag));
+        $hasTag = true;
+      }
+    }
+
+    if(!$hasTag)
+      return false;
+
+    $sql = substr($sql, 0, -1);
+    $res = $this->db->execute($sql);
+
     return $res !== false;
   }
 
@@ -1948,6 +1964,9 @@ class DatabaseMySql implements DatabaseInterface
         case 'extraDatabase':
           $extra[$key] = $value;
           break;
+        case 'tags':
+          $params[$key] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $value);
+          // don't break here
         default:
           // when lat/long is empty set value to null else it is stored as 0. Gh-313
           if(($key == 'latitude' || $key == 'longitude') && empty($value))
@@ -2146,29 +2165,44 @@ class DatabaseMySql implements DatabaseInterface
    */
   private function updateAlbumToPhotoMapping($id, $albums)
   {
+    // empty albums means to clear all albums from photo
+    if(empty($id))
+      return '';
+
+    $this->deleteAlbumsFromElement($id, 'photo');
+    if(empty($albums))
+      return '';
+
     if(!is_array($albums))
       $albums = (array)explode(',', $albums);
-    $this->deleteAlbumsFromElement($id, 'photo');
-    if(!empty($albums))
-      $this->addAlbumsToElement($id, $albums, 'photo');
+    $this->addAlbumsToElement($id, $albums, 'photo');
+
+    return implode(',', $albums);
   }
 
 
   /**
-   * Update the mapping table for groups<->photos
+   * Update the mapping table for tags<->photos
    *
    * @param string $id ID of the photo
    * @param array $groups Groups
    * @return string
    */
-  private function updateGroupToPhotoMapping($id, $groups)
+  private function updateTagsToPhotoMapping($id, $tags)
   {
-    if(!is_array($groups))
-      $groups = (array)explode(',', $groups);
-    $this->deleteGroupsFromElement($id, 'photo');
-    if(!empty($groups))
-      $this->addGroupsToElement($id, $groups, 'photo');
+    // empty tags means to clear all tags from photo
+    if(empty($id))
+      return '';
 
+    $this->deleteTagsFromElement($id, 'photo');
+    if(empty($tags))
+      return '';
+
+    if(!is_array($tags))
+      $tags = (array)explode(',', $tags);
+    $this->addTagsToElement($id, $tags, 'photo');
+
+    return implode(',', $tags);
   }
 
   /**
