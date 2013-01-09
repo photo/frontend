@@ -78,8 +78,9 @@
     },
     tags: function(ev) {
       ev.preventDefault();
-      var tags, batch = OP.Batch, params = {ids: batch.ids().join(','), tagsAdd: tags, crumb: TBX.crumb()}, model = TBX.init.pages.photos.batchModel;
+      var tags, batch = OP.Batch, params = {ids: batch.ids().join(','), crumb: TBX.crumb()}, model = TBX.init.pages.photos.batchModel;
       tags = prompt("What tag should be added?");
+      params.tagsAdd = tags;
       model.set('loading', true);
       OP.Util.makeRequest('/photos/update.json', params, function(response) {
         model.set('loading', false);

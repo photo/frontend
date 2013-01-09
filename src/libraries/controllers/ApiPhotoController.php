@@ -37,7 +37,6 @@ class ApiPhotoController extends ApiBaseController
       $activityObj->deleteForElement($id, array('photo-upload','photo-update','action-create'));
 
       $res = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json");
-      $this->tag->updateTagCounts($res['result']['tags'], array(), 1, 1);
       return $this->noContent('Photo deleted successfully', true);
     }
     else
@@ -346,6 +345,10 @@ class ApiPhotoController extends ApiBaseController
       unset($attributes['returnSizes']);
     }
 
+    $tagObj = new Tag;
+    if(isset($attributes['tags']) && !empty($attributes['tags']))
+      $tagObj->createBatch($attributes['tags']);
+
     $status = $this->photo->replace($id, $localFile, $name, $attributes);
     if(!$status)
       return $this->error(sprintf('Could not complete the replacement of photo %s', $id), false);
@@ -394,6 +397,7 @@ class ApiPhotoController extends ApiBaseController
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
     $httpObj = new Http;
+    $tagObj = new Tag;
     $attributes = $_REQUEST;
 
     // this determines where to get the photo from and populates $localFile and $name
@@ -445,6 +449,9 @@ class ApiPhotoController extends ApiBaseController
       if(is_executable($exiftran))
         exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
     }
+
+    if(isset($attributes['tags']) && !empty($attributes['tags']))
+      $tagObj->createBatch($attributes['tags']);
 
     $photoId = $this->photo->upload($localFile, $name, $attributes);
 
@@ -573,54 +580,28 @@ class ApiPhotoController extends ApiBaseController
     $this->logger->info(sprintf('Calling ApiPhotoController::update with %s', $id));
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
+    if(isset($params['crumb']))
+      unset($params['crumb']);
+
+    $tagObj = new Tag;
 
     // diff/manage tag counts - not critical
     $params = $_POST;
     $photoBefore = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
     $photoBefore = $photoBefore['result'];
-    if(isset($params['tags']) || isset($params['tagsAdd']) || isset($params['tagsRemove']))
-    {
-      if($photoBefore)
-      {
-        $existingTags = $photoBefore['tags'];
-        $updatedTags = array();
-        if(isset($params['tags']))
-        {
-          $updatedTags = array_merge($updatedTags, (array)explode(',', $params['tags']));
-        }
-        else
-        {
-          $updatedTags = $existingTags;
-          if(isset($params['tagsAdd']))
-          {
-            $updatedTags = array_merge($updatedTags, (array)explode(',', $params['tagsAdd']));
-            unset($params['tagsAdd']);
-          }
-          if(isset($params['tagsRemove']))
-          {
-            $updatedTags = array_diff($updatedTags, (array)explode(',', $params['tagsRemove']));
-            unset($params['tagsRemove']);
-          }
-          $params['tags'] = implode(',', $updatedTags);
-        }
 
-        $permission = $photoBefore['permission'];
-        if(isset($params['permission']))
-          $permission = $params['permission'];
-        $this->tag->updateTagCounts($existingTags, $updatedTags, $permission, $photoBefore['permission']);
-      }
-    }
 
-    // if a public photo is marked private we delete related activity
-    if(isset($params['permission']) && $params['permission'] == 0 && $params['permission'] != $photoBefore['permission'])
+    // if the permission of a photo changes we have to clean some stuff up
+    if(isset($params['permission']) && $params['permission'] != $photoBefore['permission'])
     {
       $activityObj = new Activity;
       $activityObj->deleteForElement($id, array('photo-upload','photo-update','action-create'));
     }
 
-    if(isset($params['albumsAdd']))
-    {
-      $params['albums'] = implode(',', array_merge($photoBefore['albums'], (array)explode(',', $params['albumsAdd'])));
+      // if no albums or tags are passed we have to manually adjust the counters
+      // the triggers only adjust them if we update the albums on this photo
+      if(!isset($params['tags']) && !empty($photoBefore['tags']))
+        $tagObj->adjustCounters($photoBefore['tags'], $params['permission']);
     }
 
     if(isset($params['albums']))
@@ -814,6 +795,36 @@ class ApiPhotoController extends ApiBaseController
       {
         if(!empty($aId))
           $this->api->invoke("/album/{$aId}/photo/add.json", EpiRoute::httpPost, array('_POST' => array('ids' => $photoId)));
+      }
+    }
+  }
+
+  // To do multiple photoIds we have to have corresponding photoBefores and map them accordingly
+  private function updateTags($tagIds, $photoId, $photoBefore = array())
+  {
+    $tagObj = new Tag;
+    $tagsArr = $tagIds;
+    if(!is_array($tagIds))
+      $tagsArr = (array)explode(',', $tagIds);
+
+    if(!isset($photoBefore['tags']))
+      $photoBefore['tags'] = array();
+    $tagsToRemove = array_diff($photoBefore['tags'], $tagsArr);
+    $tagsToAdd = array_diff($tagsArr, $photoBefore['tags']);
+    if(!empty($tagsToRemove))
+    {
+      foreach($tagsToRemove as $tId)
+      {
+        if(!empty($tId))
+          $tag->removeTagFromPhoto($tId, $photoId);
+      }
+    }
+    if(!empty($tagsToAdd))
+    {
+      foreach($tagsToAdd as $tId)
+      {
+        if(!empty($tId))
+          $tag->addTagToPhoto($tId, $photoId);
       }
     }
   }

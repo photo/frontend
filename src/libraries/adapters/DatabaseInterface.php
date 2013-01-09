@@ -58,6 +58,7 @@ interface DatabaseInterface
   public function postUser($params);
   public function postTag($id, $params);
   public function postTags($params);
+  public function postTagsIncrementer($tags, $value);
   public function postWebhook($id, $params);
   // put methods create but do not update
   public function putGroup($id, $params);
