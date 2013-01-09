@@ -124,13 +124,15 @@
 <script type="tmpl/underscore" id="album-meta">
   <li>
     <a href="/photos/album-<%= id %>/list">
-      <img src="<%= cover.path200x200xCR %>">
+      <% if (!_.isNull(cover)) { %>
+        <img src="<%= cover.path200x200xCR %>">
+      <% } %>
+      <?php if($isAdmin) { ?>
+        <h5 class=" name edit"><%= name %></h5>
+      <?php } else { ?>
+        <h5 class="name"><%= name %></h5>
+      <?php } ?>
     </a>
-    <?php if($isAdmin) { ?>
-      <h5 class=" name edit"><%= name %></h5>
-    <?php } else { ?>
-      <h5 class="name"><%= name %></h5>
-    <?php } ?>
   </li>
 </script>
 
