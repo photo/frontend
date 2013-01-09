@@ -64,6 +64,13 @@ class ApiAlbumController extends ApiBaseController
     if($albums === false)
       return $this->error('Could not retrieve albums', false);
 
+    $albumCountKey = $this->user->isAdmin() ? 'countPrivate' : 'countPublic';
+    foreach($albums as $key => $val)
+    {
+      $albums[$key]['count'] = $val[$albumCountKey];
+      unset($albums[$key]['countPublic'], $albums[$key]['countPrivate']);
+    }
+
     if(!empty($albums))
     {
       $albums[0]['currentPage'] = intval($page);

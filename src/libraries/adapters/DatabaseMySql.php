@@ -141,6 +141,7 @@ class DatabaseMySql implements DatabaseInterface
 
     $resPhoto = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
     $resVersions = $this->deletePhotoVersions($photo);
+    $this->deleteAlbumsFromElement($photo['id'], 'photo');
     $this->deleteTagsFromElement($photo['id'], 'photo');
 
     return ($resPhoto !== false && $resVersions !== false);
@@ -345,8 +346,8 @@ class DatabaseMySql implements DatabaseInterface
     }
     else
     {
-      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `visible`=1 ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
-      $albumsCount = $this->db->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `visible`=1 ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `countPublic`>0 ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+      $albumsCount = $this->db->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `countPublic`>0 ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
     }
 
     if($albums === false)
@@ -910,6 +911,31 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Ajdust the counters on albums
+    *
+    * @param array $params Albums and related attributes to update.
+    * @return boolean
+    */
+  public function postAlbumsIncrementer($albums, $value)
+  {
+    if(empty($albums) || empty($value))
+      return true;
+
+    $value = intval($value);
+    $status = true;
+    foreach($albums as $album)
+    {
+      if(strlen($album) > 0)
+      {
+        $status = $status && $this->db->execute("UPDATE `{$this->mySqlTablePrefix}album` SET `countPublic`=`countPublic`+:value WHERE owner=:owner AND id=:album",
+          array(':value' => $value, ':owner' => $this->owner, ':album' => $album));
+      }
+    }
+
+    return $status;
+  }
+
+  /**
     * Update the information for an existing credential.
     * This method overwrites existing values present in $params.
     *
@@ -1010,6 +1036,10 @@ class DatabaseMySql implements DatabaseInterface
 
     if(!empty($versions))
       $resVersions = $this->postVersions($id, $versions);
+
+    // empty($albums) means remove from all albums
+    if(isset($params['albums']))
+      $this->updateAlbumToPhotoMapping($id, $params['albums']);
 
     // empty($tags) means remove from all tags
     if(isset($params['tags']))
@@ -1236,6 +1266,9 @@ class DatabaseMySql implements DatabaseInterface
     $stmt = $this->sqlInsertExplode($paramsIns, $bindings);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}photo` ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
 
+    if(isset($params['albums']))
+      $this->addAlbumsToElement($id, $params['albums'], 'photo');
+
     if(isset($params['tags']))
       $this->addTagsToElement($id, $params['tags'], 'photo');
 
@@ -1337,14 +1370,18 @@ class DatabaseMySql implements DatabaseInterface
     * Insert albums into the mapping table
     *
     * @param string $id Element id (id of the photo or video)
-    * @param string $albums Album IDs to be added
+    * @param string $albums Album IDs to be added (can also be an array)
     * @param string $type Element type (photo or video)
     * @return boolean
     */
   private function addAlbumsToElement($id, $albums, $type)
   {
-    if(empty($id) || empty($albums) || empty($type))
+    // empty($albums) means remove all
+    if(empty($id) || empty($type))
       return false;
+
+    if(!is_array($albums))
+      $albums = (array)explode(',', $albums);
 
     $hasAlbum = false;
     $sql = "REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`, `type`, `element`, `album`) VALUES";
@@ -1757,17 +1794,16 @@ class DatabaseMySql implements DatabaseInterface
       return $raw;
 
     $raw['cover'] = null;
-    if(!empty($raw['extra']))
+    if(isset($raw['extra']))
     {
-      $extra = json_decode($raw['extra'], 1);
-      if(isset($extra['cover']))
-        $raw['cover'] = $extra['cover'];
+      if(!empty($raw['extra']))
+      {
+        $extra = json_decode($raw['extra'], 1);
+        if(isset($extra['cover']))
+          $raw['cover'] = $extra['cover'];
+      }
+      unset($raw['extra']);
     }
-    if(empty($raw['groups']))
-      $raw['groups'] = array();
-    else
-      $raw['groups'] = (array)explode(',', $raw['groups']);
-    unset($raw['extra']);
     return $raw;
   }
 
@@ -1798,11 +1834,6 @@ class DatabaseMySql implements DatabaseInterface
       $photo['albums'] = (array)explode(',', $photo['albums']);
     else
       $photo['albums'] = array();
-
-    if(isset($photo['groups']) && strlen($photo['groups']) > 0)
-      $photo['groups'] = (array)explode(',', $photo['groups']);
-    else
-      $photo['groups'] = array();
 
     if(isset($photo['tags']) && strlen($photo['tags']) > 0)
       $photo['tags'] = (array)explode(',', $photo['tags']);
@@ -1964,6 +1995,7 @@ class DatabaseMySql implements DatabaseInterface
         case 'extraDatabase':
           $extra[$key] = $value;
           break;
+        case 'albums':
         case 'tags':
           $params[$key] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $value);
           // don't break here

@@ -51,6 +51,7 @@ interface DatabaseInterface
   // post methods update
   public function postAlbum($id, $params);
   public function postAlbumAdd($albumId, $type, $elementIds);
+  public function postAlbumsIncrementer($tags, $value);
   public function postAlbumRemove($albumId, $type, $elementIds);
   public function postCredential($id, $params);
   public function postGroup($id, $params);

@@ -583,39 +583,38 @@ class ApiPhotoController extends ApiBaseController
     if(isset($params['crumb']))
       unset($params['crumb']);
 
+    $activityObj = new Activity;
+    $albumObj = new Album;
     $tagObj = new Tag;
 
-    // diff/manage tag counts - not critical
     $params = $_POST;
     $photoBefore = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
     $photoBefore = $photoBefore['result'];
 
+    if(isset($params['albumsAdd']))
+      $params['albums'] = implode(',', array_unique(array_merge($photoBefore['albums'], (array)explode(',', $params['albumsAdd']))));
+
+    if(isset($params['tagsAdd']))
+      $params['tags'] = implode(',', array_unique(array_merge($photoBefore['tags'], (array)explode(',', $params['tagsAdd']))));
+
+    // since tags can be created adhoc we need to ensure they're here
+    if(isset($params['tags']) && !empty($params['tags']))
+      $tagObj->createBatch($params['tags']);
 
     // if the permission of a photo changes we have to clean some stuff up
     if(isset($params['permission']) && $params['permission'] != $photoBefore['permission'])
     {
-      $activityObj = new Activity;
-      $activityObj->deleteForElement($id, array('photo-upload','photo-update','action-create'));
-    }
+      // if a public photo is marked private we delete related activity
+      if($params['permission'] == 0)
+        $activityObj->deleteForElement($id, array('photo-upload','photo-update','action-create'));
 
       // if no albums or tags are passed we have to manually adjust the counters
       // the triggers only adjust them if we update the albums on this photo
+      if(!isset($params['albums']))
+        $albumObj->adjustCounters($photoBefore['albums'], $params['permission']);
       if(!isset($params['tags']) && !empty($photoBefore['tags']))
         $tagObj->adjustCounters($photoBefore['tags'], $params['permission']);
     }
-
-    if(isset($params['albums']))
-    {
-      $this->updateAlbums($params['albums'], $id, $photoBefore);
-      if(is_array($params['albums']))
-        $params['albums'] = implode(',', $params['albums']);
-    }
-
-    if(isset($params['groups']) && is_array($params['groups']))
-      $params['groups'] = implode(',', $params['groups']);
-
-    if(isset($params['crumb']))
-      unset($params['crumb']);
 
     $photoUpdatedId = $this->photo->update($id, $params);
 
@@ -624,9 +623,7 @@ class ApiPhotoController extends ApiBaseController
       $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
       $photo = $apiResp['result'];
 
-      $post = array('elementId' => $photo['id'], 'type' => 'photo-update', 'data' => $photo);
-      if(isset($params['permission']))
-        $post['permission'] = $params['permission'];
+      $post = array('elementId' => $photoUpdatedId, 'type' => 'photo-update', 'data' => $photo, 'permission' => isset($params['permission']) ? $params['permission'] : 0);
       $this->api->invoke("/{$this->apiVersion}/activity/create.json", EpiRoute::httpPost, array('_POST' => $post));
 
       return $this->success("photo {$id} updated", $photo);
