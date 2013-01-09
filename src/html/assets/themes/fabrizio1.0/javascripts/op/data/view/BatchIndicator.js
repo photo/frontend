@@ -88,7 +88,7 @@
           var tagCount = tags.split(',').length, photoCount = batch.length();
           TBX.notification.show('You successfully added ' + tagCount + ' tag' + (tagCount>1?'s':'') + ' to ' + photoCount + ' photo' + (photoCount>1?'s':'') + '.', 'flash', 'confirm');
         } else {
-          TBX.notification.show('Sorry, an error occured when trying to add tags to your photos.', 'flash', 'confirm');
+          TBX.notification.show('Sorry, an error occured when trying to add tags to your photos.', 'flash', 'error');
         }
       }, 'json', 'post');
     },
