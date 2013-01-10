@@ -73,6 +73,9 @@
       toggleDetails :[68]   // D
     },
     
+    _path: location.pathname,
+    _visible: false,
+
     _indexOf : function(model){
       return _.indexOf(this.store.models, model);
     },
@@ -164,6 +167,7 @@
     },
     
     show : function(item){
+      this._visible = true;
       this._captureDocumentEvents();
       this.$el.fadeIn('fast');
       this.adjustSize();
@@ -171,8 +175,11 @@
     },
     
     hide : function(){
+      var router = TBX.init.pages.photos.router.router;
       this._releaseDocumentEvents();
+      this._visible = false;
       this.$el.fadeOut('fast');
+      router.navigate(this._path, {silent:true});
       return this;
     },
     
@@ -216,16 +223,22 @@
       }
     },
     
-    prev : function(){
-      var i = _.indexOf( this.store.models, this.model ) - 1;
+    prev : function(ev){
+      if(typeof(ev) === 'object' && ev.hasOwnProperty('preventDefault'))
+        ev.preventDefault();
+      var i = _.indexOf( this.store.models, this.model ) - 1, router = TBX.init.pages.photos.router.router, id;
       if( i < 0 ) i = this.store.models.length-1;
-      this.go(i);
+      id = this.store.models[i].get('id');
+      router.navigate('/p/'+id, {trigger: true});
     },
     
-    next : function(){
-      var i = _.indexOf( this.store.models, this.model ) + 1;
+    next : function(ev){
+      if(typeof(ev) === 'object' && ev.hasOwnProperty('preventDefault'))
+        ev.preventDefault();
+      var i = _.indexOf( this.store.models, this.model ) + 1, router = TBX.init.pages.photos.router.router, id;
       if( i > this.store.models.length-1 ) i = 0;
-      this.go(i);
+      id = this.store.models[i].get('id');
+      router.navigate('/p/'+id, {trigger: true});
     },
     
     go : function( index ){
@@ -236,9 +249,13 @@
       // TODO - implement slideshow playing state.
       return this;
     },
-    
+
     toggleDetails : function(){
       this.$el.toggleClass('details-hidden');
+    },
+
+    isVisible: function() {
+      return this._visible;
     }
   });
   
@@ -249,7 +266,7 @@
     return _instance;
   }
   
-  Lightbox.open = function(ev){
+  /*Lightbox.open = function(ev){
     ev.preventDefault();
     
     // get the item from the store
@@ -260,10 +277,28 @@
       
     return Lightbox.getInstance().update(model).show();
     
+  };*/
+
+  Lightbox.open = function(arg){
+    var id, model;
+    if(typeof(arg) === 'event') {
+      arg.preventDefault();
+      id = $(arg.currentTarget).attr('data-id');
+    } else {
+      id = arg;
+    }
+    
+    // get the item from the store
+    model = op.data.store.Photos.get(id);
+      
+    if( !model ) return $.error('No image in store with id '+id);
+      
+    return Lightbox.getInstance().update(model).show();
+    
   };
   
   op.Lightbox = Lightbox;
   
-  $(document).on('click', '.photo-view-modal-click', Lightbox.open);
+  //$(document).on('click', '.photo-view-modal-click', Lightbox.open);
   
 })(jQuery);

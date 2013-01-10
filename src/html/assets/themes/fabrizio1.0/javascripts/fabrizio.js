@@ -225,6 +225,11 @@ var TBX = (function() {
           ev.preventDefault();
           OP.Util.makeRequest('/notification/delete.json', {crumb: TBX.crumb()}, null, 'json');
         },
+        photoModal: function(ev) {
+          ev.preventDefault();
+          var $el = $(ev.target), url = '/p/'+$el.attr('data-id'), router = TBX.init.pages.photos.router.router;
+          router.navigate(url, {trigger:true});
+        },
         selectAll: function(ev) {
           ev.preventDefault();
           var $els = $('.photo-grid .imageContainer .pin.edit');
@@ -401,6 +406,7 @@ var TBX = (function() {
             $(window).scroll(function() { util.scrollCb(_this); });
             _this.load();
             (new op.data.view.BatchIndicator({model:batchModel, el: $batchEl})).render();
+            _this.router.init();
           },
           load: function() {
             var _this = TBX.init.pages.photos; loc = location;
@@ -435,6 +441,33 @@ var TBX = (function() {
             } else {
               $('.load-more').hide();
               _this.end = true;
+            }
+          },
+          router: {
+            router: null,
+            init: function() {
+              var _this = TBX.init.pages.photos.router, appRouter;
+              
+              appRouter = Backbone.Router.extend({
+                  routes: {
+                      "p/:id": "photoModal", // matches http://example.com/#anything-here
+                      "photos/:options/list": "photosList",
+                      "photos/list": "photosList"
+                  }
+              });
+
+              // Initiate the router
+              _this.router = new appRouter;
+
+              _this.router.on('route:photoModal', function(id) {
+                  op.Lightbox.open(id);
+              });
+              _this.router.on('route:photosList', function(id) {
+                op.Lightbox.getInstance().hide();
+              });
+
+              // Start Backbone history a necessary step for bookmarkable URL's
+              Backbone.history.start({pushState: true, silent: true});
             }
           }
         },
