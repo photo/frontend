@@ -445,6 +445,7 @@ var TBX = (function() {
           },
           router: {
             router: null,
+            lightbox: null,
             init: function() {
               var _this = TBX.init.pages.photos.router, appRouter;
               
@@ -460,10 +461,14 @@ var TBX = (function() {
               _this.router = new appRouter;
 
               _this.router.on('route:photoModal', function(id) {
-                  op.Lightbox.open(id);
+                _this = TBX.init.pages.photos.router;
+                if(_this.lightbox === null)
+                  _this.lightbox = op.Lightbox.getInstance();
+                _this.lightbox.open(id);
               });
               _this.router.on('route:photosList', function(id) {
-                op.Lightbox.getInstance().hide();
+                _this = TBX.init.pages.photos.router;
+                _this.lightbox.hide();
               });
 
               // Start Backbone history a necessary step for bookmarkable URL's

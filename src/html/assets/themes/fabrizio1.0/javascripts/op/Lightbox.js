@@ -229,7 +229,8 @@
       var i = _.indexOf( this.store.models, this.model ) - 1, router = TBX.init.pages.photos.router.router, id;
       if( i < 0 ) i = this.store.models.length-1;
       id = this.store.models[i].get('id');
-      router.navigate('/p/'+id, {trigger: true});
+      router.navigate('/p/'+id, {trigger: false});
+      this.go(i);
     },
     
     next : function(ev){
@@ -238,7 +239,8 @@
       var i = _.indexOf( this.store.models, this.model ) + 1, router = TBX.init.pages.photos.router.router, id;
       if( i > this.store.models.length-1 ) i = 0;
       id = this.store.models[i].get('id');
-      router.navigate('/p/'+id, {trigger: true});
+      router.navigate('/p/'+id, {trigger: false});
+      this.go(i);
     },
     
     go : function( index ){
@@ -254,51 +256,31 @@
       this.$el.toggleClass('details-hidden');
     },
 
-    isVisible: function() {
-      return this._visible;
+    open: function(arg) {
+      var id, model;
+      if(typeof(arg) === 'event') {
+        arg.preventDefault();
+        id = $(arg.currentTarget).attr('data-id');
+      } else {
+        id = arg;
+      }
+      
+      // get the item from the store
+      model = op.data.store.Photos.get(id);
+        
+      if( !model ) return $.error('No image in store with id '+id);
+        
+      return this.update(model).show();
     }
   });
   
   Lightbox.getInstance = function(){
+    console.log('instancing');
     if( _instance === undefined ){
       _instance = new Lightbox();
     }
     return _instance;
   }
   
-  /*Lightbox.open = function(ev){
-    ev.preventDefault();
-    
-    // get the item from the store
-    var id = $(ev.currentTarget).attr('data-id')
-      , model = op.data.store.Photos.get(id);
-      
-    if( !model ) return $.error('No image in store with id '+id);
-      
-    return Lightbox.getInstance().update(model).show();
-    
-  };*/
-
-  Lightbox.open = function(arg){
-    var id, model;
-    if(typeof(arg) === 'event') {
-      arg.preventDefault();
-      id = $(arg.currentTarget).attr('data-id');
-    } else {
-      id = arg;
-    }
-    
-    // get the item from the store
-    model = op.data.store.Photos.get(id);
-      
-    if( !model ) return $.error('No image in store with id '+id);
-      
-    return Lightbox.getInstance().update(model).show();
-    
-  };
-  
   op.Lightbox = Lightbox;
-  
-  //$(document).on('click', '.photo-view-modal-click', Lightbox.open);
-  
 })(jQuery);
