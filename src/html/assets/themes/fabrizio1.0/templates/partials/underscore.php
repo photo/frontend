@@ -88,8 +88,8 @@
     <div class="bd">
       <div class="photo">
         <div class="nav">
-          <a href="#" class="prev">&lt;</a>
-          <a href="#" class="next">&gt;</a>
+          <a href="" class="prev">&lt;</a>
+          <a href="" class="next">&gt;</a>
         </div>
       </div>
       <div class="details">
