@@ -2,7 +2,7 @@
 <script type="tmpl/underscore" id="photo-meta">
   <div class="photo-meta">
     <?php if($isAdmin) { ?>
-      <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><%= title || filenameOriginal %></a></h4>
+      <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><i class="icon-pencil"></i> <%= title || filenameOriginal %></a></h4>
       <ul class="info">
         <li><a href="#" title="Comments"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
         <li><a href="#" title="Favorites"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>
@@ -30,7 +30,11 @@
 -->
 
 <script type="tmpl/underscore" id="user-badge-meta">
-  <h4 class="profile-name-meta username"><span class="name <?php if($isAdmin) { ?> edit <?php } ?>"><%= name %></span></h4>
+  <?php if($isAdmin) { ?>
+    <h4 class="profile-name-meta username"><span class="name edit"><i class="icon-pencil"></i> <%= name %></span></h4>
+  <?php } else { ?>
+    <h4 class="profile-name-meta username"><span class="name"><%= name %></span></h4>
+  <?php } ?>
   <div class="tray-wrap">
     <span class="avatar"><img class="avatar profile-pic profile-photo" src="<%= photoUrl %>" /></span>
     <div class="tray">
@@ -64,7 +68,13 @@
 </script>
 
 <script type="tmpl/underscore" id="profile-name-meta">
-  <span class="name <?php if($isAdmin) { ?> edit <?php } ?>" <?php if($isAdmin) { ?>title="Change display name"<?php } ?>><%= name %></span>
+  <?php if($isAdmin) { ?>
+
+    <span class="name edit" title="Change display name"><i class="icon-pencil"></i> <%= name %></span>
+  <?php } else { ?>
+    <span class="name" ><%= name %></span>
+  <?php } ?>
+
 </script>
 
 <script type="tmpl/underscore" id="op-lightbox">
@@ -100,10 +110,12 @@
     <ul>
       <li><i class="icon-eye-open"></i> 110 Views</i></li>
       <li><i class="icon-comment"></i> 7 Comments</i></li>
-      <li><a href="<%= pathDownload %>"><i class="icon-download"></i> Download</i></a></li>
+      <?php if($this->config->site->allowOriginalDownload == 1) { ?>
+        <li><a href="<%= pathDownload %>"><i class="icon-download"></i> Download</i></a></li>
+      <?php } ?>
       <li><i class="icon-heart"></i> 16 Favorites</i></li>
       <li><a href="#"><i class="icon-share"></i> Share</i></a></li>
-      <li><a class="permission<?php echo $isAdmin ? " edit" : "" ?>" href="#"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i> Private</i></a></li>
+      <li><a class="permission<?php if($isAdmin) { ?> edit<?php } ?>" href="#"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i> Private</i></a></li>
     </ul>
   </div>
   <div class="detail-block">
