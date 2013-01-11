@@ -122,9 +122,9 @@
     <div class="title">
       <span class="text"><%= title || filenameOriginal %></span>
       <span class="actions">
-        <a href="#"><i class="icon-heart"></i></a>
+        <!--<a href="#"><i class="icon-heart"></i></a>
         <a href="#"><i class="icon-comments"></i></a>
-        <a href="#"><i class="icon-share"></i></a>
+        <a href="#"><i class="icon-share"></i></a>-->
       </span>
     </div>
     <div class="description">
