@@ -199,6 +199,7 @@
       this.detailView.setModel( model );
       this.loadImage();
       this.$el.find('.header .detail-link').attr('href', model.get('url'));
+      this._preloadNextPrevious(model);
     },
 	
     _imageLoaded : function(id){
@@ -209,6 +210,23 @@
       this.$el.find('.photo img').remove();
       $('<img />').attr('src', $(c).attr('src')).hide().appendTo(this.$el.find('.photo')).fadeIn('fast');
       this.adjustSize();
+    },
+
+    _preloadNextPrevious : function(model) {
+      var next, previous, photos = [];
+      previous = this.store.at(this.store.indexOf(model) - 1);
+      next = this.store.at(this.store.indexOf(model) + 1);
+
+      if(typeof(previous) !== 'undefined') {
+        photos.push(previous.get(this.imagePathKey));
+      }
+      if(typeof(next) !== 'undefined') {
+        photos.push(next.get(this.imagePathKey));
+      }
+
+      if(photos.length > 0) {
+        OP.Util.fire('preload:photos', photos);
+      }
     },
     
     loadImage : function(){
@@ -294,7 +312,6 @@
   });
   
   Lightbox.getInstance = function(){
-    console.log('instancing');
     if( _instance === undefined ){
       _instance = new Lightbox();
     }
