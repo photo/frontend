@@ -6,15 +6,17 @@ var Gallery = (function($) {
   var lastRowWidthRemaining = 0;
   var lastDate = null;
 
-
   // defaults
   var configuration = {
   	'thumbnailSize':'960x180',
-  	'marginsOfImage':6,
+  	'marginsOfImage': 10,
   	'defaultWidthValue':120,
   	'defaultHeightValue':120
   };
 
+  var batchEmpty;
+  
+  
 	/* ------------ PRIVATE functions ------------ */
 
 	/** Utility function that returns a value or the defaultvalue if the value is null */
@@ -29,7 +31,7 @@ var Gallery = (function($) {
   var calendarContainer = $('<div/>'),
       a = $('<a/>');
     calendarContainer.attr('class', 'date-placeholder');
-    a.html('<i class="icon-calendar icon-large""></i> '+phpjs.date('M jS, Y', ts));
+    a.html('<i class="tb-icon-small-calendar tb-icon-light""></i> '+phpjs.date('M jS, Y', ts));
     calendarContainer.append(a);
     return calendarContainer;
   };
@@ -173,10 +175,12 @@ var Gallery = (function($) {
 	 * to the image. 
 	 */
 	var createImageElement = function(parent, item) {
-    var pageObject = opTheme.init.pages.photos;
+    var pageObject = TBX.init.pages.photos;
     var qsRe = /(page|returnSizes)=[^&?]+\&?/g;
     var qs = pageObject.pageLocation.search.replace(qsRe, '');
-		var imageContainer = $('<div class="imageContainer"/>');
+    var pinnedClass = !batchEmpty && OP.Batch.exists(item.id) ? 'pinned' : '';
+    var imageContainer = $('<div class="imageContainer photo-id-'+item.id+' '+pinnedClass+'"/>');
+		
     var d = new Date(item.dateTaken*1000);
 
 		var pathKey = 'path' + configuration['thumbnailSize'];
@@ -189,7 +193,7 @@ var Gallery = (function($) {
 		overflow.css("overflow", "hidden");
 
     var urlParts = parseURL(item.url);
-    if(pageObject.filterOpts !== null && pageObject.filterOpts.length > 0) {
+    if(pageObject.filterOpts !== undefined && pageObject.filterOpts !== null && pageObject.filterOpts.length > 0) {
       if(qs.length === 0)
         urlParts.pathname = urlParts.pathname+'/'+pageObject.filterOpts;
       else
@@ -197,10 +201,13 @@ var Gallery = (function($) {
     }
 		var link = $('<a/>');
     link.attr('href', urlParts.pathname+qs);
+		link.attr("data-id", item.id);
 		
 		var img = $("<img/>");
+		img.attr("data-id", item.id);
 		img.attr("src", item[pathKey]);
-    img.attr('class', 'photo-view-modal-click');
+    //img.attr('class', 'photo-view-modal-click');
+    img.attr('class', 'photoModal');
 		img.attr("title", item.title);
 		img.css("width", "" + $nz(item[pathKey][1], defaultWidthValue) + "px");
 		img.css("height", "" + $nz(item[pathKey][2], defaultHeightValue) + "px");
@@ -217,6 +224,23 @@ var Gallery = (function($) {
     if(currentDate !== lastDate)
       imageContainer.prepend(dateSeparator(item.dateTaken));
     lastDate = currentDate;
+    
+    /**
+     * Add meta information to bottom
+     *
+     * @date 2012-12-11
+     * @author fabrizim
+     */
+    var meta = $('<div class="meta" />').appendTo(imageContainer)
+    // while we could grab this directly from the item,
+    // this should all be derived from the Backbone Store
+    // for the page
+      , model = op.data.store.Photos.get(item.id)
+      , view = new op.data.view.PhotoGallery({model: model, el: meta});
+    
+    view.render();
+    
+    // End meta section
 
 		// fade in the image after load
 		img.bind("load", function () { 
@@ -251,6 +275,9 @@ var Gallery = (function($) {
 		},
 
 		showImages : function(photosContainer, realItems) {
+      // check if the batch queue is empty
+      // we do this here to keep from having to call length for each photo, just for each page
+      batchEmpty = OP.Batch.length() === 0;
 
 			// reduce width by 1px due to layout problem in IE
       var containerWidth = photosContainer.width() - 1;
@@ -275,4 +302,3 @@ var Gallery = (function($) {
 		}
 	}
 })(jQuery);
-

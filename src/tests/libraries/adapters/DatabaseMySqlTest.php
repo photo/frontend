@@ -51,6 +51,31 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
     $this->assertFalse($res, 'The MySql adapter did not return FALSE for deleteAction');
   }
 
+  public function testDeleteAlbumSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(true));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->deleteAlbum('foo');
+    $this->assertTrue($res, 'The MySql adapter did not return TRUE for deleteAlbum');
+  }
+
+  public function testDeleteAlbumFailure()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(false));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->deleteAlbum('foo');
+    $this->assertFalse($res, 'The MySql adapter did not return FALSE for deleteAlbum');
+  }
+
+
   public function testDeletePhotoSuccess()
   {
     $db = $this->getMock('MySqlMock', array('execute'));
@@ -79,6 +104,107 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
   {
     $res = $this->db->deletePhoto(array());
     $this->assertFalse($res, 'The MySql adapter did not return TRUE for deletePhoto when no id attribute exiss');
+  }
+
+  public function testGetAlbumSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('one'));
+    $db->expects($this->any())
+      ->method('one')
+      ->will($this->returnValue(array('name' => 'unittest')));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getAlbum('foo', 'email');
+    $this->assertEquals($res['name'], 'unittest', 'The MySql adapter did not return the album name for getAlbum');
+  }
+
+  public function testGetAlbumWithExtraSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('one'));
+    $db->expects($this->any())
+      ->method('one')
+      ->will($this->returnValue(array('name' => 'unittest', 'extra' => json_encode(array('cover' => 'foo')))));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getAlbum('foo', 'email');
+    $this->assertEquals($res['cover'], 'foo', 'The MySql adapter did not return the album name for getAlbum with extra');
+  }
+
+  public function testGetAlbumFailure()
+  {
+    $db = $this->getMock('MySqlMock', array('one'));
+    $db->expects($this->any())
+      ->method('one')
+      ->will($this->returnValue(false));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getAlbum('foo', 'email');
+    $this->assertFalse($res, 'The MySql adapter did not return FALSE for getAlbum');
+  }
+
+  public function testGetAlbumElementsSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('all'));
+    $db->expects($this->any())
+      ->method('all')
+      ->will($this->onConsecutiveCalls(
+        MySqlMockHelper::getPhotos(2),
+        array('key' => 'foo', 'path' => 'bar'), // getPhotoVersions
+        array('key' => 'foo', 'path' => 'bar') // getPhotoVersions
+      ));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getAlbumElements('id');
+    $this->assertEquals(2, count($res));
+    $this->assertEquals($res[0]['id'], 'foo');
+  }
+
+  public function testGetAlbumElementsFailure()
+  {
+    $db = $this->getMock('MySqlMock', array('all'));
+    $db->expects($this->any())
+      ->method('all')
+      ->will($this->returnValue(false));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getAlbumElements('id');
+    $this->assertFalse($res);
+  }
+
+  public function testGetAlbumsSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('all','one'));
+    $db->expects($this->any())
+      ->method('all')
+      ->will($this->returnValue(array(array('name' => 'unittest'))));
+    $db->expects($this->any())
+      ->method('one')
+      ->will($this->returnValue(array('COUNT(*)' => 2)));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getAlbums('email');
+    $this->assertEquals($res[0]['name'], 'unittest');
+    $this->assertEquals($res[0]['totalRows'], 2);
+  }
+
+  public function testGetAlbumsWithExtrasSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('all','one'));
+    $db->expects($this->any())
+      ->method('all')
+      ->will($this->returnValue(array(
+        array('name' => 'unittest', 'extra' => json_encode(array('cover' => 'foo'))),
+        array('name' => 'unittest', 'extra' => json_encode(array('cover' => 'foo'))),
+    )));
+    $db->expects($this->any())
+      ->method('one')
+      ->will($this->returnValue(array('COUNT(*)' => 2)));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getAlbums('email');
+    $this->assertEquals($res[0]['name'], 'unittest');
+    $this->assertEquals($res[0]['cover'], 'foo', 'The MySql adapter did not return the album name for getAlbum with extra');
+    $this->assertEquals($res[0]['totalRows'], 2);
   }
 
   public function testGetCredentialSuccess()
@@ -238,6 +364,57 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
     $this->assertEquals($res['lastPhotoId'], 'abc', 'The MySql adapter did not return "abc" as the lastPhotoId for getUser');
   }
 
+  public function testGetUserCacheSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('one'));
+    $db->expects($this->once())
+      ->method('one')
+      ->will($this->returnValue(MySqlMockHelper::getUser()));
+    $user2 = MySqlMockHelper::getUser();
+    $user2['id'] = 'user2';
+    $db->expects($this->once())
+      ->method('one')
+      ->will($this->returnValue($user2));
+
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getUser();
+    $this->assertEquals($res['id'], 'foo', 'The MySql adapter did not return "foo" as the id for getUser');
+    
+    // 2nd call should return first value
+    $res = $this->db->getUser();
+    $this->assertEquals($res['id'], 'foo', 'The MySql adapter did not return "foo" as the id for getUser in cached call');
+  }
+
+  public function testGetUserCacheClearSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('one','execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(1));
+    $db->expects($this->at(0))
+      ->method('one')
+      ->will($this->returnValue(MySqlMockHelper::getUser()));
+    $user2 = MySqlMockHelper::getUser();
+    $user2['lastPhotoId'] = 'xyz';
+    // here we set the index to 2 because postUser calls execute on this mock
+    $db->expects($this->at(2))
+      ->method('one')
+      ->will($this->returnValue($user2));
+
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getUser();
+    $this->assertEquals($res['lastPhotoId'], 'abc', 'The MySql adapter did not return "abc" as the id for lastPhotoId');
+
+    // this should clear the cache
+    $this->db->postUser(array('id' => 'bar'));
+    
+    // 2nd call should return second value
+    $res = $this->db->getUser();
+    $this->assertEquals($res['lastPhotoId'], 'xyz', 'The MySql adapter did not return "xyz" as the lastPhotoId since cache should be  cleared');
+  }
+
   public function testGetUserFailure()
   {
     $db = $this->getMock('MySqlMock', array('one'));
@@ -280,6 +457,105 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
 
     $res = $this->db->initialize(false);
     $this->assertFalse($res, 'The MySql adapter did not return FALSE when user already exists');
+  }
+
+  public function testPostAlbumSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(true));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postAlbum('foo', array());
+    $this->assertTrue($res, 'The MySql adapter did not return TRUE for postAlbum');
+  }
+
+  public function testPostAlbumFailure()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(false));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postAlbum('foo', array());
+    $this->assertFalse($res, 'The MySql adapter did not return FALSE for postAlbum');
+  }
+
+  public function testPostAlbumAddSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(true));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postAlbumAdd('id', 'photo', array('foo','bar'));
+    $this->assertTrue($res);
+  }
+
+  public function testPostAlbumAddFailure()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(0));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postAlbumAdd('id', 'photo', array('foo','bar'));
+    $this->assertFalse($res);
+  }
+
+  public function testPostAlbumRemoveSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(true));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postAlbumRemove('id', 'photo', array('foo','bar'));
+    $this->assertTrue($res);
+  }
+
+  public function testPostAlbumRemoveFailure()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(false));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postAlbumRemove('id', 'photo', array('foo','bar'));
+    $this->assertFalse($res);
+  }
+
+  public function testPostAlbumsIncrementerSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(true));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postAlbumsIncrementer(array('id'), 1);
+    $this->assertTrue($res);
+  }
+
+  public function testPostAlbumsIncrementerFailure()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->onConsecutiveCalls(
+        true,
+        false       
+    ));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->postAlbumsIncrementer(array('id1','id2'), 1);
+    $this->assertFalse($res);
   }
 
   public function testPostCredentialSuccess()
@@ -460,6 +736,30 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
 
     $res = $this->db->putAction('foo', array());
     $this->assertFalse($res, 'The MySql adapter did not return FALSE for putAction');
+  }
+
+  public function testPutAlbumSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(true));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putAlbum('foo', array());
+    $this->assertTrue($res);
+  }
+
+  public function testPutAlbumFailure()
+  {
+    $db = $this->getMock('MySqlMock', array('execute'));
+    $db->expects($this->any())
+      ->method('execute')
+      ->will($this->returnValue(false));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->putAlbum('foo', array());
+    $this->assertFalse($res);
   }
 
   public function testPutCredentialSuccess()

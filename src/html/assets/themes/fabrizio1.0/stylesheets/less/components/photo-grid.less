@@ -1,0 +1,104 @@
+.trovebox {
+  .photo-grid {
+    
+    margin: 0px -5px;
+    
+    
+    .photo-grid-hr {
+      background: #ccc;
+      height: 1px;
+      line-height: 1px;
+      margin: 20px 5px 15px;
+    }
+    
+    > .imageContainer {
+      float: left;
+      height: 180px;
+      margin: 5px;
+      position: relative;
+      overflow: hidden;
+      
+      .date-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: rgba(255,255,255,0.8);
+        padding: 6px 5px 4px;
+        line-height: 14px;
+        font-size: 10px;
+        vertical-align: middle;
+        a {
+          color: #666;
+          i {
+            vertical-align: middle;
+          }
+        }
+      }
+      
+      img {
+        max-width: none;
+      }
+      
+      .meta {
+        position: absolute;
+        bottom: -100%;
+        left: 0;
+        width: 100%;
+        background: rgba(0,0,0,0.6);
+        overflow: visible;
+        .transition(bottom 0.2s);
+        .photo-meta {
+          padding: 4px 4px 6px;
+          color: #fff;
+          .title {
+            margin: 0;
+            line-height: 1.3em;
+            padding: 4px 0;
+            font-size: 13px;
+            color: #fff;
+          }
+          ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            li {
+              list-style: none;
+              margin: 0 5px 0 0;
+              display: inline-block;
+              font-size: 11px;
+              white-space: nowrap;
+            }
+          }
+          a {
+            .opacity(80);
+            color: #fff;
+            &:hover {
+              .opacity(100);
+              text-decoration: none;
+            }
+          }
+        }
+      }
+      
+      &:hover, &.editing {
+        .meta {
+          bottom: 0;
+        }
+      }
+      
+      &.editing {
+        overflow: visible;
+      }
+
+      &.pinned:before {
+        content:"";
+        position:absolute;
+        top:0;
+        right:0;
+        border-width:0 20px 20px 0;
+        border-style:solid;
+        border-color:@color_brand #fff;
+      }
+    }
+  }
+}

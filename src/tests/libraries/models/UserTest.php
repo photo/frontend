@@ -13,8 +13,24 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(array('foo')));
   }
 
-  public function testGetAvatarFromEmail()
+  public function testGetAvatarFromEmailFromLibrary()
   {
+    $db = $this->getMock('Db', array('getUser', 'postUser', 'putUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->returnValue(array('id' => 'test@example.com', 'lastPhotoId' => 'abc', 'attrprofilePhoto' => 'http://foo/bar')));
+    $this->user->inject('db', $db);
+    $res = $this->user->getAvatarFromEmail(50, 'test@example.com');
+    $this->assertEquals('http://foo/bar', $res);
+  }
+
+  public function testGetAvatarFromEmailGravatar()
+  {
+    $db = $this->getMock('Db', array('getUser', 'postUser', 'putUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->returnValue(array('id' => 'test@example.com', 'lastPhotoId' => 'abc')));
+    $this->user->inject('db', $db);
     $res = $this->user->getAvatarFromEmail(50, 'test@example.com');
     $this->assertEquals('http://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=50', $res);
   }
@@ -63,6 +79,64 @@ class UserTest extends PHPUnit_Framework_TestCase
     
     $res = $this->user->getEmailAddress();
     $this->assertNull($res);
+  }
+
+  public function testGetUserByEmailFirstCallShouldCacheSuccess()
+  {
+    $db = $this->getMock('Db', array('getUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->onConsecutiveCalls(
+        array('id' => 'test@example.com', 'seq' => 1),
+        array('id' => 'test@example.com', 'seq' => 2)
+      ));
+    $this->user->inject('db', $db);
+    $res = $this->user->getUserByEmail('foo@bar.com');
+    $this->assertEquals(1, $res['seq']);
+
+    $res = $this->user->getUserByEmail('foo@bar.com');
+    $this->assertEquals(1, $res['seq']);
+  }
+
+  public function testGetUserByEmailSkipCacheSuccess()
+  {
+    $db = $this->getMock('Db', array('getUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->onConsecutiveCalls(
+        array('id' => 'test@example.com', 'seq' => 1),
+        array('id' => 'test@example.com', 'seq' => 2)
+      ));
+    $this->user->inject('db', $db);
+    $res = $this->user->getUserByEmail('foo@bar.com');
+    $this->assertEquals(1, $res['seq']);
+
+    $res = $this->user->getUserByEmail('foo@bar.com', false);
+    $this->assertEquals(2, $res['seq']);
+  }
+
+  public function testGetUserByEmailVerifyCacheByHandleSuccess()
+  {
+    $db = $this->getMock('Db', array('getUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->onConsecutiveCalls(
+        array('id' => 'test1@example.com', 'seq' => 1),
+        array('id' => 'test2@example.com', 'seq' => 2)
+      ));
+    $this->user->inject('db', $db);
+    $res = $this->user->getUserByEmail('foo1@bar.com');
+    $this->assertEquals(1, $res['seq']);
+
+    $res = $this->user->getUserByEmail('foo2@bar.com');
+    $this->assertEquals(2, $res['seq']);
+  }
+
+  public function testGetUserByEmailCachedSuccess()
+  {
+    $this->user->inject('userArray', array('foo@bar.com' => '123'));
+    $res = $this->user->getUserByEmail('foo@bar.com');
+    $this->assertEquals('123', $res);
   }
 
   public function testGetNextIdPhoto()
@@ -142,6 +216,12 @@ class UserTest extends PHPUnit_Framework_TestCase
 
     $res = $this->user->getNextId('photo');
     $this->assertFalse($res);
+  }
+
+  public function testGetAttributeNameSuccess()
+  {
+    $res = $this->user->getAttributeName('foobar');
+    $this->assertEquals('attrfoobar', $res);
   }
 
   public function testGetAttributeSuccess()

@@ -10,12 +10,13 @@
   */
 class User extends BaseModel
 {
+  const displayNameDefault = 'OpenPhoto User';
   /**
     * A user object that caches the value once it's been fetched from the remote datasource.
     * @access private
     * @var array
     */
-  protected $user, $credential;
+  protected $user, $userArray = array(), $credential;
 
   /*
    * Constructor
@@ -46,6 +47,14 @@ class User extends BaseModel
     if($email === null)
       $email = $this->session->get('email');
 
+    // TODO return standard avatar
+    if(empty($email))
+      return;
+
+    $user = $this->getUserByEmail($email);
+    if(isset($user['attrprofilePhoto']) && !empty($user['attrprofilePhoto']))
+      return $user['attrprofilePhoto'];
+
     $hash = md5(strtolower(trim($email)));
     return "http://www.gravatar.com/avatar/{$hash}?s={$size}";
   }
@@ -62,6 +71,25 @@ class User extends BaseModel
       return $credential->getEmailFromOAuth();
     else
       return $this->session->get('email');
+  }
+
+  /**
+    * Get a name given an email address
+    *
+    * @return string
+    */
+  public function getNameFromEmail($email = null)
+  {
+    if($email === null)
+      $email = $this->getEmailAddress();
+
+    if(!empty($email))
+    {
+      $user = $this->getUserByEmail($email);
+      if(isset($user['attrprofileName']) && !empty($user['attrprofileName']))
+        return $user['attrprofileName'];
+    }
+    return self::displayNameDefault;
   }
 
   /**
@@ -94,7 +122,7 @@ class User extends BaseModel
     */
   public function getAttribute($name)
   {
-    $name = sprintf('attr%s', $name);
+    $name = $this->getAttributeName($name);
     $user = $this->getUserRecord();
     if($user === false)
       return false;
@@ -105,6 +133,17 @@ class User extends BaseModel
   }
 
   /**
+    * Gets an attribute name
+    * @param string $name The name of the value to retrieve
+    *
+    * @return string
+    */
+  public function getAttributeName($name)
+  {
+    return sprintf('attr%s', $name);
+  }
+
+  /**
     * Get the user record from the remote database.
     * If the record does not exist then attempt to create it before returning.
     * Returns false if no user record could be obtained or crated.
@@ -112,7 +151,7 @@ class User extends BaseModel
     *
     * @return mixed  FALSE on error, array on success
     */
-  public function getUserRecord($cache = true)
+  public function getUserRecord($cache = true, $owner = null)
   {
     // we cache the user entry per request
     if($cache && $this->user)
@@ -141,6 +180,29 @@ class User extends BaseModel
     return $this->user;
   }
 
+  /**
+    * Get the user record by email address.
+    *
+    * @return mixed  FALSE on error, array on success
+    */
+  public function getUserByEmail($email, $cache = true)
+  {
+    if($cache && isset($this->userArray[$email]))
+      return $this->userArray[$email];
+
+    $user = $this->db->getUser($email);
+    if($user)
+      $this->userArray[$email] = $user;
+
+    return $user;
+  }
+
+  /**
+    * Checks if the user is logged in.
+    * Works for Cookie and OAuth requests
+    *
+    * @return boolean
+    */
   public function isLoggedIn()
   {
     $credential = $this->getCredentialObject();
@@ -150,11 +212,23 @@ class User extends BaseModel
       return $this->session->get('email') != '';
   }
 
+  /**
+    * Checks if the logged in user is the owner or an admin
+    * Works for Cookie and OAuth requests
+    *
+    * @return boolean
+    */
   public function isAdmin()
   {
     return $this->isOwner(true);
   }
 
+  /**
+    * Checks if the logged in user is the owner
+    * Works for Cookie and OAuth requests
+    *
+    * @return boolean
+    */
   public function isOwner($includeAdmin = false)
   {
     if(!isset($this->config->user))
@@ -225,7 +299,7 @@ class User extends BaseModel
     */
   public function setAttribute($name, $value)
   {
-    $name = sprintf('attr%s', $name);
+    $name = $this->getAttributeName($name);
     return $this->update(array($name => $value));
   }
 

@@ -800,9 +800,6 @@ class Photo extends BaseModel
       unlink($resp['localFileCopy']);
       if($stored)
       {
-        if(isset($attributes['tags']) && !empty($attributes['tags']))
-          $tagObj->updateTagCounts(array(), (array)explode(',', $attributes['tags']), $attributes['permission'], $attributes['permission']);
-
         $this->logger->info("Photo ({$id}) successfully stored to the database");
         return $id;
       }

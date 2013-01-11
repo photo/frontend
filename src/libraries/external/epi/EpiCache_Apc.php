@@ -7,6 +7,16 @@ class EpiCache_Apc extends EpiCache
     $this->expiry   = !empty($params[0]) ? $params[0] : 3600;
   }
 
+  public function delete($key = null)
+  {
+    if(empty($key))
+      return;
+
+    apc_delete($key);
+    $this->deleteEpiCacheKey($key);
+    return true;
+  }
+
   public function get($key)
   {
     if(empty($key)){

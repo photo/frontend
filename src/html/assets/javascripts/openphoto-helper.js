@@ -70,12 +70,15 @@
       OP.Util.fire('callback:batch-add', r);
     };
 
-    this.add = function(id) {
-      var args = {};
-      if(arguments.length > 1)
-        args = arguments[1];
-      log("[Util][Batch] adding " + id);
-      OU.makeRequest('/photo/'+id+'/view.json', args, self._callbackAdd, 'json', 'get');
+    this.add = function(id/*, photo */) {
+      var photo = arguments[1] || false;
+      if(typeof photo === 'object') {
+        log("[Util][Batch] adding from argument " + id);
+        self._callbackAdd({result: photo});
+      } else {
+        log("[Util][Batch] adding " + id);
+        OU.makeRequest('/photo/'+id+'/view.json', {}, self._callbackAdd, 'json', 'get');
+      }
     };
 
     this.remove = function(id) {
@@ -88,6 +91,18 @@
       this.collection.clear();
     };
 
+    this.length = function() {
+      return this.collection.getLength();
+    };
+
+    this.exists = function(id) {
+      return this.collection.exists(id);
+    };
+
+    this.ids = function() {
+      return this.collection.getIds();
+    };
+
 
     this.collection = (function() {
       var length,
@@ -95,6 +110,7 @@
           namespace = 'items';
 
       items = localStorage.getObject(namespace) || {};
+      length = items.length;
 
       return {
         add: function(key, value) {
@@ -107,6 +123,15 @@
           localStorage.setObject(namespace, {});
           length = 0;
           OP.Util.fire('callback:batch-clear');
+        },
+        exists: function(id) {
+          for (key in items) {
+            if (items.hasOwnProperty(key)) {
+              if(items[key].id == id)
+                return true;
+            }
+          }
+          return false;
         },
         getAll: function() {
           return items;
@@ -121,7 +146,8 @@
         getLength: function() {
           var size = 0, key;
           for (key in items) {
-              if (items.hasOwnProperty(key)) size++;
+            if (items.hasOwnProperty(key))
+              size++;
           }
           return size;
         },
