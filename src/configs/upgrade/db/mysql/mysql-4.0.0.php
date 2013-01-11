@@ -69,6 +69,16 @@ SQL;
 $status = $status && mysql_4_0_0($sql);
 
 $sql = <<<SQL
+  DROP TRIGGER IF EXISTS `{$this->mySqlTablePrefix}increment_album_photo_count`;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  DROP TRIGGER IF EXISTS `{$this->mySqlTablePrefix}decrement_album_photo_count`;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
 DELIMITER ##
 CREATE
 TRIGGER update_album_counts_on_insert
