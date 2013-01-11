@@ -133,13 +133,6 @@ var TBX = (function() {
       fetchAndCache: function(src) {
         $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
       },
-      fetchAndCacheNextPrevious: function() {
-        var nextPhoto = $('img.next-photo'), prevPhoto = $('img.previous-photo');
-        if(prevPhoto.length > 0)
-          OP.Util.fire('preload:photo', {id: prevPhoto.attr('data-id'), sizes:'870x550'});
-        if(nextPhoto.length > 0)
-          OP.Util.fire('preload:photo', {id: nextPhoto.attr('data-id'), sizes:'870x550'});
-      },
       load: function(context) {
         var async = typeof(arguments[1]) === 'undefined' ? true : arguments[1];
         // we define initData at runtime to avoid having to make an HTTP call on load
@@ -193,7 +186,6 @@ var TBX = (function() {
               data: params,
               success: context.loadCb
             });
-            //$.getJSON(api, params, context.loadCb);
           }
         } else {
           delete context.initData;
@@ -242,6 +234,18 @@ var TBX = (function() {
           ev.preventDefault();
           var $els = $('.photo-grid .imageContainer .pin.edit');
           $els.each(callbacks.selectAll);
+        }
+      },
+      custom: {
+        preloadPhotos: function() {
+          if(arguments.length == 0)
+            return;
+
+          for(i in arguments) {
+            if(arguments.hasOwnProperty(i)) { 
+              util.fetchAndCache(arguments[i]);
+            }
+          }
         }
       },
       keydown: { },
@@ -314,6 +318,9 @@ var TBX = (function() {
           TBX.init.pages.photo.init();
         else if(location.pathname === '/photos/upload')
           TBX.init.pages.upload();
+      },
+      attachEvents: function() {
+        OP.Util.on('preload:photos', TBX.handlers.custom.preloadPhotos);
       },
       pages: {
         albums: {
