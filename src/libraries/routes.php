@@ -34,6 +34,7 @@ $routeObj->get('/manage/apps', array('ManageController', 'apps'));
 $routeObj->get('/manage/apps/callback', array('ManageController', 'appsCallback'));
 $routeObj->get('/manage/features', array('ManageController', 'features')); // redirect to /manage/settings
 $routeObj->get('/manage/settings', array('ManageController', 'settings'));
+$routeObj->post('/manage/settings', array('ManageController', 'settingsPost'));
 $routeObj->get('/manage/groups', array('ManageController', 'groups'));
 $routeObj->get('/manage/password/reset/([a-z0-9]{32})', array('ManageController', 'passwordReset'));
 
@@ -83,8 +84,8 @@ $routeObj->get('/tags/list', array('TagController', 'list_')); // view tags
  * Everything in []'s are optional
  * /user/{action}
  */
+$routeObj->get('/user/login', array('UserController', 'login')); // logout
 $routeObj->get('/user/logout', array('UserController', 'logout')); // logout
-$routeObj->get('/user/settings', array('UserController', 'settings'));
 
 /*
  * Webhook endpoints follow the same convention.
@@ -107,11 +108,9 @@ $routeObj->get('/v[1]/oauth/test', array('OAuthController', 'test'));
 $routeObj->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
 
 /*
- * Account endpoints
- * All account endpoints follow the same convention.
- * /account/{action}
+ * HTML endpoints that require logic
  */
-$routeObj->get('/account', array('AccountController', 'home'));
+$routeObj->get('/assets/.*/stylesheets/lessc', array('AssetController', 'lessc'));
 
 if($runUpgrade)
   require $configObj->get('paths')->libraries . '/routes-upgrade.php';

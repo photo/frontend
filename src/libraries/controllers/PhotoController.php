@@ -143,6 +143,7 @@ class PhotoController extends BaseController
       $photos = $this->api->invoke("/photos/{$filterOpts}/list.json", EpiRoute::httpGet, $params);
     else
       $photos = $this->api->invoke("/photos/list.json", EpiRoute::httpGet, $params);
+
     $photos = $photos['result'];
 
     $this->plugin->setData('photos', $photos);

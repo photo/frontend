@@ -63,7 +63,6 @@
 
       <label>Select Database</label>
       <select name="database">
-        <option value="SimpleDb"<?php echo ($database == 'SimpleDb') ? ' selected="selected"' : '' ?>>Amazon SimpleDb</option>
         <option value="MySql"<?php echo ($database == 'MySql') ? ' selected="selected"' : '' ?>>MySQL</option>
       </select>
 
@@ -99,15 +98,6 @@
             <input type="text" name="s3Bucket" id="s3Bucket" size="50" placeholder="Globally unique bucket name" value="<?php $this->utility->safe($s3Bucket); ?>" data-validation="required">
           <?php } else { ?>
             <input type="text" name="s3Bucket" id="s3Bucket" size="50" placeholder="Globally unique bucket name" value="<?php $this->utility->safe($_SERVER['HTTP_HOST']); ?>" data-validation="required">
-          <?php } ?>
-        <?php } ?>
-
-        <?php if($usesSimpleDb) { ?>
-          <label for="simpleDbDomain">Amazon SimpleDb Domain</label>
-          <?php if(isset($simpleDbDomain) && !empty($simpleDbDomain)) { ?>
-            <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" value="<?php $this->utility->safe($simpleDbDomain); ?>" data-validation="required">
-          <?php } else { ?>
-            <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" value="openphoto" data-validation="required">
           <?php } ?>
         <?php } ?>
       <?php } ?>

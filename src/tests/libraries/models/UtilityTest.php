@@ -179,6 +179,13 @@ RES;
     $res = $this->utility->isActiveTab('upload');
     $this->assertTrue($res, '/photos/upload not upload tab');
   }
+
+  public function testGetHostSuccess()
+  {
+    $_SERVER['HTTP_HOST'] = 'foobar';
+    $res = $this->utility->getHost();
+    $this->assertEquals('foobar', $res);
+  }
   
   // TODO implement some sort of test
   public function testIsMobile() {}
@@ -244,6 +251,12 @@ RES;
   {
     $res = $this->utility->safe('Hello " there', false);
     $this->assertEquals('Hello &quot; there', $res, 'content not properly safed');
+  }
+
+  public function testSafeWithTags()
+  {
+    $res = $this->utility->safe('Hello " <a href="">there</a> <script>location.href="http://google.com";</script>', '<a>', false);
+    $this->assertEquals('Hello " <a href="">there</a> location.href="http://google.com";', $res, 'content not properly safed with tags allowed');
   }
 
   // TODO populate this test

@@ -20,7 +20,9 @@ class EpiCache_Memcached extends EpiCache
     if(!$this->connect() || empty($key))
       return false;
 
-    return $this->memcached->delete($key, $timeout);
+    $this->memcached->delete($key, $timeout);
+    $this->deleteEpiCacheKey($key);
+    return true;
   }
 
   public function get($key, $useCache = true)

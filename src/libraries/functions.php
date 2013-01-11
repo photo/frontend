@@ -88,9 +88,6 @@ function getDb(/*$type*/)
 
   switch($type)
   {
-    case 'SimpleDb':
-      $database = new DatabaseSimpleDb();
-      break;
     case 'MySql':
       $database = new DatabaseMySql();
       break;
@@ -209,8 +206,8 @@ function getLogin($provider)
 {
   switch($provider)
   {
-    case 'openphoto':
-      return new LoginOpenPhoto;
+    case 'self':
+      return new LoginSelf;
       break;
     case 'facebook':
       return new LoginFacebook;

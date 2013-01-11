@@ -1,0 +1,68 @@
+/**
+ * Replace the bootstrap buttons with flat "trovebox" styled buttons
+ */
+
+.trovebox {
+  
+  .btn {
+    font-family: @font_primary;
+    text-transform: uppercase;
+    background-image: none;
+    background-color: inherit !important;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 0 0;
+    -moz-box-shadow: 0 0 0;
+    box-shadow: 0 0 0;
+    font-size: 13px;
+    padding: 3px 10px;
+    border-width: 0;
+    font-weight: 300;
+    text-shadow: 1px 1px 1px rgba(255,255,255,.7);
+    &:hover {
+      .transition(none);
+      #gradient > .vertical( rgba(0,0,0,0), rgba(0,0,0,0.1) );
+      background-position: 0 0;
+    }
+    
+  }
+  
+  .btn-brand {
+    background-color: @color_brand !important;
+  }
+  
+  .btn-theme {
+    background-color: @color_theme !important;
+  }
+  
+  .btn-primary, .editable-submit {
+    background-color: green !important;
+  }
+  
+  .btn.editable-cancel {
+    background-color: #dedede !important;
+  }
+  
+  .btn-theme-secondary {
+    background-color: @color_theme_secondary !important;
+    color: @color_light_gray;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.7);
+  }
+  
+  .btn-theme-tertiary {
+    background-color: @color_theme_tertiary !important;
+    color: #fff;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.7);
+  }
+  
+  .btn-dark {
+    background-color: #666263 !important;
+    color: @color_light_gray;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.7);
+  }
+  
+  .btn-arrow:after {
+    content: " ›";
+    font-size: 18px;
+    line-height: 14px;
+  }
+}
