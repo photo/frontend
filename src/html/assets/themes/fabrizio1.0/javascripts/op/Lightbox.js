@@ -61,16 +61,19 @@
   _.extend( Lightbox.prototype, {
 	
     imagePathKey : 'pathBase',
+    //imagePathKey : 'path870x550',
     //imagePathKey : 'pathOriginal',
     
     keys : {
       // we may want to rethink some of these key codes...
       // i think down and up may be good to toggle details / thumbs
-      next      	  :[13, 34, 39, 40],
-      prev      	  :[ 8, 33, 37, 38],
+      next      	  :[34, 39, 40, 74], // up, down, j
+      prev      	  :[33, 37, 38, 75], // left, up, k
+      title         :[84],  // t
+      description   :[68],  // d
       hide      	  :[27],  // escape
-      togglePlay	  :[32],  // spacebar 
-      toggleDetails :[68]   // D
+      togglePlay	  :[32]  // spacebar 
+      //toggleDetails :[68]   // d
     },
     
     _path: location.pathname,
@@ -107,7 +110,7 @@
     
     _captureDocumentEvents : function(){
       $(document).on({
-        'keydown.oplightbox'	:this._bound('keydown')
+        'keyup.oplightbox'	:this._bound('keyup')
       });
       $(window).on({
         'resize.oplightbox'		:this._bound('adjustSize')
@@ -124,7 +127,7 @@
       if( $(e.target).parent()[0] == this.$el[0] ) this.hide();
     },
     
-    keydown : function(e){
+    keyup : function(e){
       var code = e.which || e.keyCode
         , target = e.target || e.srcElement
         , self = this
@@ -237,10 +240,26 @@
       if(typeof(ev) === 'object' && ev.hasOwnProperty('preventDefault'))
         ev.preventDefault();
       var i = _.indexOf( this.store.models, this.model ) + 1, router = TBX.init.pages.photos.router.router, id;
-      if( i > this.store.models.length-1 ) i = 0;
-      id = this.store.models[i].get('id');
-      router.navigate('/p/'+id, {trigger: false});
-      this.go(i);
+      // at the end, load some more synchronously
+      if( i > this.store.models.length-1 ) {
+        TBX.init.pages.photos.load(false);
+      }
+
+      // we check the length again since we append above
+      // once we reach the end the appending stops so this works
+      if( i < this.store.models.length ) {
+        id = this.store.models[i].get('id');
+        router.navigate('/p/'+id, {trigger: false});
+        this.go(i);
+      }
+    },
+
+    description: function(ev) {
+      $('.description .editable-click', this.$el).trigger('click');
+    },
+
+    title: function(ev) {
+      $('.title .editable-click', this.$el).trigger('click');
     },
     
     go : function( index ){

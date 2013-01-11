@@ -141,6 +141,7 @@ var TBX = (function() {
           OP.Util.fire('preload:photo', {id: nextPhoto.attr('data-id'), sizes:'870x550'});
       },
       load: function(context) {
+        var async = typeof(arguments[1]) === 'undefined' ? true : arguments[1];
         // we define initData at runtime to avoid having to make an HTTP call on load
         // all subsequent calls run through the http API
         if(typeof(context.initData) === "undefined") {
@@ -185,7 +186,14 @@ var TBX = (function() {
           if(context.pageCount > context.maxMobilePageCount && util.getDeviceWidth() < 900) {
             location.href = context.pageLocation.pathname + '?' + decodeURIComponent($.param(params));
           } else {
-            $.getJSON(api, params, context.loadCb);
+            $.ajax({
+              async: async,
+              dataType: 'json',
+              url: api,
+              data: params,
+              success: context.loadCb
+            });
+            //$.getJSON(api, params, context.loadCb);
           }
         } else {
           delete context.initData;
@@ -313,7 +321,10 @@ var TBX = (function() {
           filterOpts: typeof(filterOpts) === "undefined" ? undefined : filterOpts,
           page: null,
           pageCount: 0,
-          pageLocation: window.location,
+          pageLocation: {
+            pathname: window.location.pathname,
+            search: window.location.search
+          },
           maxMobilePageCount: 5,
           end: false,
           running: false,
@@ -397,7 +408,10 @@ var TBX = (function() {
           batchModel: new op.data.model.Batch({count: OP.Batch.length()}),
           page: null,
           pageCount: 0,
-          pageLocation: window.location,
+          pageLocation: {
+            pathname: window.location.pathname,
+            search: window.location.search
+          },
           maxMobilePageCount: 5,
           end: false,
           running: false,
@@ -409,8 +423,8 @@ var TBX = (function() {
             _this.router.init();
           },
           load: function() {
-            var _this = TBX.init.pages.photos; loc = location;
-            util.load(_this);
+            var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];
+            util.load(_this, async);
           },
           loadCb: function(response) {
             var items = response.result, _this = TBX.init.pages.photos, infobar = $('.infobar'),
@@ -419,7 +433,7 @@ var TBX = (function() {
                 ui = TBX.ui, i;
 
             op.data.store.Photos.add( items );
-            if(items[0].totalPages >= _this.page) {
+            if(items.length > 0) {
               var thisTaken;
               for(i=0; i<items.length; i++) {
                 thisTaken = parseInt(items[i].dateTaken);
