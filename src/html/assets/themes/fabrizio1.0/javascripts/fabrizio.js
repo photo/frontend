@@ -237,13 +237,13 @@ var TBX = (function() {
         }
       },
       custom: {
-        preloadPhotos: function() {
-          if(arguments.length == 0)
+        preloadPhotos: function(photos) {
+          if(photos.length == 0)
             return;
 
-          for(i in arguments) {
-            if(arguments.hasOwnProperty(i)) { 
-              util.fetchAndCache(arguments[i]);
+          for(i in photos) {
+            if(photos.hasOwnProperty(i)) { 
+              util.fetchAndCache(photos[i]);
             }
           }
         }
