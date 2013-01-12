@@ -696,6 +696,9 @@ var opTheme = (function() {
           opTheme.message.append(markup.message('Your photos were successfully updated.', 'confirm'));
         } else if(response.code == 204) {
           OP.Batch.clear();
+          $.each(response.result, function(index, id){
+            $('.pin[data-id="' + id + '"]').parents('li').fadeOut('fast');
+          });
           opTheme.message.append(markup.message('Your photos were successfully deleted.', 'confirm'));
         } else {
           opTheme.message.append(markup.message('There was a problem updating your photos.', 'error'));
