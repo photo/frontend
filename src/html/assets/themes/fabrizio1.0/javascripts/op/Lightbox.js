@@ -14,12 +14,12 @@
     },
     template: _.template($('#op-lightbox-details').html()),
     editable: {
-      '.title .text' : {
+      '.title.edit .text' : {
         name: 'title',
         title: 'Edit Photo Title',
         placement: 'top',
       },
-      '.description .text' : {
+      '.description.edit .text' : {
         name: 'description',
         type: 'textarea',
         title: 'Edit Photo Description',
@@ -60,6 +60,7 @@
   _.extend( Lightbox.prototype, Backbone.Events, {
 	
     imagePathKey : 'pathBase',
+    //imagePathKey : 'path870x550',
     //imagePathKey : 'pathOriginal',
     
     _initialize : function(){
@@ -72,13 +73,18 @@
     keys : {
       // we may want to rethink some of these key codes...
       // i think down and up may be good to toggle details / thumbs
-      next      	  :[13, 34, 39, 40],
-      prev      	  :[ 8, 33, 37, 38],
+      next      	  :[34, 39, 40, 74], // up, down, j
+      prev      	  :[33, 37, 38, 75], // left, up, k
+      title         :[84],  // t
+      description   :[68],  // d
       hide      	  :[27],  // escape
-      togglePlay	  :[32],  // spacebar 
-      toggleDetails :[68]   // D
+      togglePlay	  :[32]  // spacebar 
+      //toggleDetails :[68]   // d
     },
     
+    _path: location.pathname,
+    _visible: false,
+
     _indexOf : function(model){
       return _.indexOf(this.store.models, model);
     },
@@ -110,7 +116,7 @@
     
     _captureDocumentEvents : function(){
       $(document).on({
-        'keydown.oplightbox'	:this._bound('keydown')
+        'keyup.oplightbox'	:this._bound('keyup')
       });
       $(window).on({
         'resize.oplightbox'		:this._bound('adjustSize')
@@ -127,7 +133,7 @@
       if( $(e.target).parent()[0] == this.$el[0] ) this.hide();
     },
     
-    keydown : function(e){
+    keyup : function(e){
       var code = e.which || e.keyCode
         , target = e.target || e.srcElement
         , self = this
@@ -171,6 +177,7 @@
     
     show : function(item){
       this._initialize();
+      this._visible = true;
       this._captureDocumentEvents();
       this.$el.fadeIn('fast');
       this.adjustSize();
@@ -178,8 +185,11 @@
     },
     
     hide : function(){
+      var router = TBX.init.pages.photos.router.router;
       this._releaseDocumentEvents();
+      this._visible = false;
       this.$el.fadeOut('fast');
+      router.navigate(this._path, {silent:true});
       return this;
     },
     
@@ -198,6 +208,7 @@
       this.detailView.setModel( model );
       this.loadImage();
       this.$el.find('.header .detail-link').attr('href', model.get('url'));
+      this._preloadNextPrevious(model);
     },
 	
     _imageLoaded : function(id){
@@ -208,6 +219,23 @@
       this.$el.find('.photo img').remove();
       $('<img />').attr('src', $(c).attr('src')).hide().appendTo(this.$el.find('.photo')).fadeIn('fast');
       this.adjustSize();
+    },
+
+    _preloadNextPrevious : function(model) {
+      var next, previous, photos = [];
+      previous = this.store.at(this.store.indexOf(model) - 1);
+      next = this.store.at(this.store.indexOf(model) + 1);
+
+      if(typeof(previous) !== 'undefined') {
+        photos.push(previous.get(this.imagePathKey));
+      }
+      if(typeof(next) !== 'undefined') {
+        photos.push(next.get(this.imagePathKey));
+      }
+
+      if(photos.length > 0) {
+        OP.Util.fire('preload:photos', photos);
+      }
     },
     
     loadImage : function(){
@@ -225,16 +253,40 @@
       }
     },
     
-    prev : function(){
-      var i = _.indexOf( this.store.models, this.model ) - 1;
+    prev : function(ev){
+      if(typeof(ev) === 'object' && ev.hasOwnProperty('preventDefault'))
+        ev.preventDefault();
+      var i = _.indexOf( this.store.models, this.model ) - 1, router = TBX.init.pages.photos.router.router, id;
       if( i < 0 ) i = this.store.models.length-1;
+      id = this.store.models[i].get('id');
+      router.navigate('/p/'+id, {trigger: false});
       this.go(i);
     },
     
-    next : function(){
-      var i = _.indexOf( this.store.models, this.model ) + 1;
-      if( i > this.store.models.length-1 ) i = 0;
-      this.go(i);
+    next : function(ev){
+      if(typeof(ev) === 'object' && ev.hasOwnProperty('preventDefault'))
+        ev.preventDefault();
+      var i = _.indexOf( this.store.models, this.model ) + 1, router = TBX.init.pages.photos.router.router, id;
+      // at the end, load some more synchronously
+      if( i > this.store.models.length-1 ) {
+        TBX.init.pages.photos.load(false);
+      }
+
+      // we check the length again since we append above
+      // once we reach the end the appending stops so this works
+      if( i < this.store.models.length ) {
+        id = this.store.models[i].get('id');
+        router.navigate('/p/'+id, {trigger: false});
+        this.go(i);
+      }
+    },
+
+    description: function(ev) {
+      $('.description .editable-click', this.$el).trigger('click');
+    },
+
+    title: function(ev) {
+      $('.title .editable-click', this.$el).trigger('click');
     },
     
     go : function( index ){
@@ -245,9 +297,26 @@
       // TODO - implement slideshow playing state.
       return this;
     },
-    
+
     toggleDetails : function(){
       this.$el.toggleClass('details-hidden');
+    },
+
+    open: function(arg) {
+      var id, model;
+      if(typeof(arg) === 'event') {
+        arg.preventDefault();
+        id = $(arg.currentTarget).attr('data-id');
+      } else {
+        id = arg;
+      }
+      
+      // get the item from the store
+      model = op.data.store.Photos.get(id);
+        
+      if( !model ) return $.error('No image in store with id '+id);
+        
+      return this.update(model).show();
     }
   });
   
@@ -258,21 +327,5 @@
     return _instance;
   }
   
-  Lightbox.open = function(ev){
-    ev.preventDefault();
-    
-    // get the item from the store
-    var id = $(ev.currentTarget).attr('data-id')
-      , model = op.data.store.Photos.get(id);
-      
-    if( !model ) return $.error('No image in store with id '+id);
-      
-    return Lightbox.getInstance().update(model).show();
-    
-  };
-  
   op.Lightbox = Lightbox;
-  
-  $(document).on('click', '.photo-view-modal-click', Lightbox.open);
-  
 })(jQuery);

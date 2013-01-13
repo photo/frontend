@@ -201,11 +201,13 @@ var Gallery = (function($) {
     }
 		var link = $('<a/>');
     link.attr('href', urlParts.pathname+qs);
+		link.attr("data-id", item.id);
 		
 		var img = $("<img/>");
 		img.attr("data-id", item.id);
 		img.attr("src", item[pathKey]);
-    img.attr('class', 'photo-view-modal-click');
+    //img.attr('class', 'photo-view-modal-click');
+    img.attr('class', 'photoModal');
 		img.attr("title", item.title);
 		img.css("width", "" + $nz(item[pathKey][1], defaultWidthValue) + "px");
 		img.css("height", "" + $nz(item[pathKey][2], defaultHeightValue) + "px");
