@@ -94,7 +94,7 @@
       </div>
       <div class="details">
         <div class="toggle">
-          <span class="special-key">D</span>
+          <!--<span class="special-key">D</span>-->
           <span class="hide-details">Hide Details</span>
           <span class="show-details">Show Details</span>
         </div>
