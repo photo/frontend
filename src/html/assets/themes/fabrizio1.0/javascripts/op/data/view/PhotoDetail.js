@@ -76,11 +76,28 @@
     }
   });
   
+  var PhotoMetaView = Backbone.View.extend({
+    template : _.template($('#photo-detail-meta-tmpl').html()),
+    render : function(){
+      $(this.el).html(this.template(this.model.toJSON()));
+      return this;
+    },
+    events : {
+      'click .permission.edit': 'permission'
+    },
+    permission: function(ev) {
+      ev.preventDefault();
+      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model;
+      model.set('permission', model.get('permission') == 0 ? 1 : 0, {silent:false});
+      model.save();
+    }
+  });
+  
   op.ns('data.view').PhotoDetail = op.data.view.Editable.extend({
     initialize: function() {
       Backbone.history.start({pushState: true});
       this.router = new Backbone.Router();
-      this.model.on('change', this.modelChanged, this);
+      this.model.on('change', this.updateViews, this);
       this.on('afterrender', this.onAfterRender, this);
       this.store = op.data.store.Photos;
       this.initialModel = this.model;
@@ -97,17 +114,17 @@
       this.render();
     },
     
-    /**
-     * TODO - need to figure out how to get the user data for the owner of the image
-     *
-     */
     onAfterRender: function(){
+      var self = this;
       this.setupPagination();
       this.updateViews();
+      $(this.el).find('.photo .mag').click(function(e){
+        op.Lightbox.getInstance().open(self.model.get('id'));
+      });
     },
     
     updateModel : function(model){
-      this.model.off(null,null,this);
+      this.model.off(null, null, this);
       this.model = model;
       this.model.on('change', this.updateViews, this);
       this.updateViews();
@@ -123,16 +140,55 @@
       this.updateComments();
       this.updateTitle();
       this.updateDescription();
+      this.updateMeta();
     },
     
     updateTitle : function(){
       var el = $(this.el).find('.photo-title');
-      new TitleView({el:el, model: this.model}).render();
+      if( !this.titleView ){
+        this.titleView = new TitleView({el:el, model: this.model}).render();
+      }
+      else {
+        this.titleView.model = this.model;
+        this.titleView.render();
+      }
     },
     
     updateDescription : function(){
       var el = $(this.el).find('.description');
-      new DescriptionView({el:el, model: this.model}).render();
+      if( !this.descriptionView ){
+        this.descriptionView = new DescriptionView({el:el, model: this.model}).render();
+      }
+      else {
+        this.descriptionView.model = this.model;
+        this.descriptionView.render();
+      }
+    },
+    
+    updateMeta : function(){
+      var el = $(this.el).find('.photo-meta');
+      if( !this.photoMetaView ){
+        this.photoMetaView = new PhotoMetaView({el:el, model: this.model}).render();
+      }
+      else {
+        this.photoMetaView.model = this.model;
+        this.photoMetaView.render();
+      }
+    },
+    
+    updateUserBadge : function(){
+      // update the user badge...
+      var $el = $(this.el).find('.userbadge')
+        , model = op.data.store.Profiles.get(this.model.get('owner')) 
+      
+      if( model ){
+        new op.data.view.UserBadge({el: $el, model: model}).render();
+      }
+    },
+    
+    updateComments : function(){
+      var $el = $(this.el).find('.comments');
+      (new CommentsView({el: $el, model: this.model})).render();
     },
     
     setupPagination : function(){
@@ -270,6 +326,7 @@
       
       $(this.el).find('.pagination .photos .scroller .thumbs')
         .stop()
+        // might be better to use css3 translate3d and transition properties instead
         .animate({'left': (33.33333333*-1*diff)+'%'}, 200)
       
       $(this.el).find('.pagination .photos .scroller .thumbs .thumb').removeClass('active');
@@ -312,21 +369,6 @@
         model.set('prev', response.result.prev);
         self._addMoreFromModel(model, fn);
       }, 'json', 'get');
-    },
-    
-    updateUserBadge : function(){
-      // update the user badge...
-      var $el = $(this.el).find('.userbadge')
-        , model = op.data.store.Profiles.get(this.model.get('owner'))
-      
-      if( model ){
-        (new op.data.view.UserBadge({el: $el, model: model})).render();
-      }
-    },
-    
-    updateComments : function(){
-      var $el = $(this.el).find('.comments');
-      (new CommentsView({el: $el, model: this.model})).render();
     }
   });
 })(jQuery);

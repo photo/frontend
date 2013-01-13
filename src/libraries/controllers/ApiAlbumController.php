@@ -67,7 +67,7 @@ class ApiAlbumController extends ApiBaseController
     $albumCountKey = $this->user->isAdmin() ? 'countPrivate' : 'countPublic';
     foreach($albums as $key => $val)
     {
-      $albums[$key]['count'] = $val[$albumCountKey];
+      $albums[$key]['count'] = @$val[$albumCountKey]; // added the error squelch because i was getting undefined index notices
       unset($albums[$key]['countPublic'], $albums[$key]['countPrivate']);
     }
 
