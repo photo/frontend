@@ -23,7 +23,7 @@ SQL;
 }
 
 $sql = <<<SQL
-  ALTER TABLE `{$this->mySqlTablePrefix}activity` ADD `permission` BOOLEAN NOT NULL AFTER `data` 
+  ALTER TABLE `{$this->mySqlTablePrefix}activity` ADD `permission` BOOLEAN NOT NULL DEFAULT '0' AFTER `data` ;
 ;
 $status = $status && mysql_4_0_0($sql);
 
