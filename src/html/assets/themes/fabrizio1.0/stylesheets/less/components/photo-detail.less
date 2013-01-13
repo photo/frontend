@@ -141,6 +141,9 @@
   .pagination {
     display: table;
     width: 100%;
+    max-width: 660px;
+    margin: 0 auto;
+    position: relative;
     .slider {
       display: table-row;
       .arrow {
@@ -152,9 +155,9 @@
         i {
           position: absolute;
           top: 50%;
+          width: 20px;
           font-size: 18px;
           margin-top: -10px;
-          width: 100%;
           text-align: center;
           color: #999;
           text-shadow: 1px 1px 0 #fff;
@@ -166,6 +169,7 @@
           }
         }
       }
+      
       .photos {
         display: table-cell;
         
@@ -223,6 +227,7 @@
   }
   
   .photo-meta {
+    margin: 20px 0;
     .clearfix();
     font-size: 11px;
     color: #aaa;
