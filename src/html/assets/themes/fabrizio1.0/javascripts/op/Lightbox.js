@@ -54,14 +54,20 @@
     this.cache = {};
     this.store = op.data.store.Photos;
     this.template = _.template($('#op-lightbox').html());
-    this._initView();
-    this._initEvents();
+    this._initialized = false;
   };
   
-  _.extend( Lightbox.prototype, {
+  _.extend( Lightbox.prototype, Backbone.Events, {
 	
     imagePathKey : 'pathBase',
     //imagePathKey : 'pathOriginal',
+    
+    _initialize : function(){
+      if( this._initialized ) return;
+      this._initView();
+      this._initEvents();
+      this._initialized = true;
+    },
     
     keys : {
       // we may want to rethink some of these key codes...
@@ -164,6 +170,7 @@
     },
     
     show : function(item){
+      this._initialize();
       this._captureDocumentEvents();
       this.$el.fadeIn('fast');
       this.adjustSize();
@@ -177,6 +184,7 @@
     },
     
     update : function(model){
+      this._initialize();
       this.$el.addClass('loading');
       this.setModel( model );
       this.$el.find('.photo').find('img').remove();
@@ -186,6 +194,7 @@
 	
     setModel : function(model){
       this.model = model;
+      this.trigger('updatemodel', model);
       this.detailView.setModel( model );
       this.loadImage();
       this.$el.find('.header .detail-link').attr('href', model.get('url'));

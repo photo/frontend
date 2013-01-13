@@ -1,0 +1,223 @@
+.photo-detail {
+  .userbadge {
+    margin-top: 0;
+  }
+  .photo-title {
+    color: #2f2d2e;
+    font-size: 18px;
+    line-height: 1.4em;
+    margin: .4em 0;
+    a {
+      color: inherit;
+      i {
+        color: #ddd;
+        
+      }
+      &:hover {
+        i {
+          color: #aaa;
+          text-decoration: none;
+        }
+      }
+    }
+    
+    .actions {
+      margin-left: 10px;
+      a {
+        font-size: 14px;
+        margin: 3px;
+      }
+    }
+  }
+  
+  .photo {
+    position: relative;
+    border: 1px solid #999;
+    .mag {
+      .opacity(0);
+      .transition(opacity .15s);
+      cursor: pointer;
+      display: block;
+      text-align: center;
+      position: absolute;
+      border-radius: 20px;
+      top: 50%;
+      left: 50%;
+      margin-left: -60px;
+      margin-top: -60px;
+      font-size: 60px;
+      height: 120px;
+      width: 120px;
+      color: #ccc;
+      background: #000;
+      i {
+        line-height: 120px;
+        vertical-align: middle;
+      }
+      
+    }
+    
+    &:hover {
+      .mag {
+        .opacity(75);
+      }
+    }
+  }
+  
+  .description {
+    margin: 1em 0 1em;
+  }
+  
+  .comments {
+    h3 {
+      
+    }
+    
+    ul.comment-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      li {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0;
+        .clearfix();
+        .avatar {
+          float: left;
+          width: 60px;
+          height: 60px;
+          border-radius: 8px;
+        }
+        
+        .comment {
+          margin-left: 90px;
+          background: #f6f6f6;
+          padding: 10px;
+          border-radius: 6px;
+          position: relative;
+          
+          .title {
+            font-weight: bold;
+            font-size: 15px;
+            line-height: 1.3em;
+            margin-bottom: .8em;
+            
+            .date {
+              font-size: 11px;
+              vertical-align: baseline;
+              float: right;
+              font-weight: normal;
+              color: #999;
+            }
+          }
+          
+          &:before {
+            content: ' ';
+            position: absolute;
+            width: 0px;
+            height: 0px;
+            line-height: 0;
+            left: 0;
+            margin-left: -12px;
+            border-right: 12px solid #f6f6f6;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            top: 20px;
+          }
+        }
+      }
+    }
+    
+    form {
+      textarea {
+        width: 100%;
+        .box-sizing(border-box);
+        display: block;
+      }
+    }
+  }
+  
+  .pagination {
+    display: table;
+    width: 100%;
+    .slider {
+      display: table-row;
+      .arrow {
+        background: #ccc;
+        display: table-cell;
+        position: relative;
+        width: 20px;
+        cursor: pointer;
+        i {
+          position: absolute;
+          top: 50%;
+          font-size: 18px;
+          margin-top: -10px;
+          width: 100%;
+          text-align: center;
+          color: #999;
+          text-shadow: 1px 1px 0 #fff;
+        }
+        
+        &:hover {
+          i {
+            color: #666;
+          }
+        }
+      }
+      .photos {
+        display: table-cell;
+        
+        .scroller {
+          margin: 0 1.625%;
+          overflow: hidden;
+          position: relative;
+          
+          .thumbs {
+            position: relative;
+          }
+          
+          .thumb {
+            position: absolute;
+            top: 0;
+            width: 32%;
+            cursor: pointer;
+            
+            .border {
+              overflow: hidden;
+              border: none;
+              img {
+                display: block;
+                width: auto;
+                
+              }
+            }
+            &.active {
+              .border {
+                border: 3px solid #000;
+                .inner {
+                  margin: -3px;
+                }
+              }
+            }
+            /*
+            &:hover {
+              .border {
+                border: 3px solid @color_brand;
+                .inner {
+                  margin: -3px;
+                }
+              }
+            }
+            */
+          }
+          .thumb-shim {
+            .opacity(0);
+            position: relative;
+            cursor: default;
+          }
+        }
+      }
+    }
+  }
+}
