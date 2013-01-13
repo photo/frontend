@@ -10,6 +10,8 @@
       
       var self = this;
       
+      
+      
       // whenever this is re-rendered, check for any old editables
       // and hide them in case the tip is open.
       if( this.editable ) for(var i in this.editable){
@@ -19,9 +21,14 @@
         }
       }
       
+      this.trigger('beforerender', this);
+      
       $(this.el).html(this.template(this.getViewData()));
       
-      if( !this.editable ) return this;
+      if( !this.editable ){
+        this.trigger('afterrender', this);
+        return this;
+      }
       
       for( var i in this.editable ){
         if( this.editable.hasOwnProperty(i) ){
@@ -61,6 +68,7 @@
           if( on ) $el.on( on );
         }
       }
+      this.trigger('afterrender', this);
       return this;
     }
   });

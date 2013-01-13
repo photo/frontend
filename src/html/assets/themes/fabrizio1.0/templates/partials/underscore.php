@@ -35,24 +35,25 @@
     <span class="avatar"><img class="avatar profile-pic profile-photo" src="<%= photoUrl %>" /></span>
     <div class="tray">
       <div class="details">
+        <h5 class="username"><%= name %></h5>
         <ul>
           <li>
             <a href="/photos/list">
-              <i class="icon-picture"></i>
+              <i class="icon-picture" rel="tooltip" title="View Photos" data-placement="bottom"></i>
               <span class="number"><%= counts.photos %></span>
               <span class="title">photos</span>
             </a>
           </li>
           <li>
             <a href="/albums/list">
-              <i class="icon-th-large"></i>
+              <i class="icon-th-large" rel="tooltip" title="View Albums" data-placement="bottom"></i>
               <span class="number"><%= counts.albums %></span>
               <span class="title">albums</span>
             </a>
           </li>
           <li>
             <a href="/tags/list">
-              <i class="icon-tags"></i>
+              <i class="icon-tags" rel="tooltip" title="View Tags" data-placement="bottom"></i>
               <span class="number"><%= counts.tags %></span>
               <span class="title">tags</span>
             </a>
@@ -135,47 +136,35 @@
 </script>
 
 <script type="tmpl/underscore" id="photo-detail-meta">
+  <h1 class="photo-title"></h1>
+  
   <div class="row">
-    <div class="span7">
-      <img src="<%= path870x550 %>" />
-      <br>
-      <?php if($isAdmin) { ?>
-        <a href="#" class="title edit"><%= title %></a>
-        <br>
-        <a href="#" class="description edit"><%= description %></a>
-      <?php } else { ?>
-       <%= title %>
-       <br>
-       <%= description %>
-      <?php } ?>
-    
-       <hr>
-    
-      <% if (!_.isNull(previous)) { %>
-        <% if (previous[0]) { %>
-          <a class="paginate" data-id="<%= previous[0].id %>">
-            <img src="<%= previous[0].path90x90xCR %>">
-          </a>
-        <% } %>
-        <% if (previous[1]) { %>
-          <a class="paginate" data-id="<%= previous[1].id %>">
-            <img src="<%= previous[1].path90x90xCR %>">
-          </a>
-        <% } %>
-      <% } %>
-      --
-      <% if (!_.isNull(next)) { %>
-        <% if (next[0]) { %>
-          <a class="paginate" data-id="<%= next[0].id %>">
-            <img src="<%= next[0].path90x90xCR %>">
-          </a>
-        <% } %>
-        <% if (next[1]) { %>
-          <a class="paginate" data-id="<%= next[1].id %>">
-            <img src="<%= next[1].path90x90xCR %>">
-          </a>
-        <% } %>
-      <% } %>
+    <div class="span9">
+      <div class="photo">
+        <img src="<%= path870x550 %>" />
+        <span class="mag photo-view-modal-click" data-id="<%= id %>"><i class="icon-search"></i></span>
+      </div>
+      <div class="description"></div>
+      <div class="comments"></div>
+      
+    </div>
+    <div class="span3">
+      
+      <div class="userbadge userbadge-light user-badge-meta"></div>
+      
+      <div class="pagination">
+        <div class="slider">
+          <div class="arrow arrow-prev"><i class="icon-angle-left"></i></div>
+
+          <div class="photos">
+            <div class="scroller">
+              <div class="thumbs"></div>
+            </div>
+          </div>
+          <div class="arrow arrow-next"><i class="icon-angle-right"></i></div>
+        </div>
+      </div>
+      
       <ul>
         <% for(var tag in tags) { %>
           <li><%= tags[tag] %></li>
@@ -183,6 +172,50 @@
       </ul>
     </div>
   </div>
+</script>
+
+<script type="tmpl/underscore" id="photo-detail-title-tmpl">
+  <span class="title<?php if($isAdmin) { ?> edit<?php } ?>"><%= title || filenameOriginal %></span>
+  <span class="actions">
+    <a href="#"><i class="icon-heart"></i></a>
+    <a href="#"><i class="icon-comment"></i></a>
+    <a href="#"><i class="icon-share"></i></a>
+  </span>
+</script>
+
+<script type="tmpl/underscore" id="photo-detail-description-tmpl">
+  <span class="text<?php if($isAdmin) { ?> edit<?php } ?>"><%= description %></span>
+</script>
+
+<script type="tmpl/underscore" id="photo-comments-tmpl">
+  <h3><span class="comment-count"><%= this.actions ? actions.length : 0 %></span> Comments...</h3>
+  
+  <ul class="comment-list hide"></ul>
+  
+  <form class="comment-form" action="/action/<%= id %>/photo/create" method="post">
+    <textarea rows="4" name="value"></textarea>
+    <input type="hidden" name="type" value="comment" />
+    <input type="hidden" name="targetUrl" value="<%= window.location %>" />
+    <input type="hidden" name="crumb" value="" />
+    <div class="form-buttons">
+      <button class="btn btn-primary" type="submit">Leave a Comment</button>
+    </div>
+  </form>
+</script>
+
+<script type="tmpl/underscore" id="photo-comment-tmpl">
+  <li>
+    <img src="<%= avatar %>" class="avatar" />
+    <div class="comment">
+      <div class="title">
+        <span class="date"><%= date %></span>
+        <span class="name"><%= name %></span>
+      </div>
+      <div class="value">
+        <%= value %>
+      </div>
+    </div>
+  </li>
 </script>
 
 <script type="tmpl/underscore" id="batch-meta">
