@@ -51,6 +51,7 @@ interface DatabaseInterface
   // post methods update
   public function postAlbum($id, $params);
   public function postAlbumAdd($albumId, $type, $elementIds);
+  public function postAlbumsIncrementer($tags, $value);
   public function postAlbumRemove($albumId, $type, $elementIds);
   public function postCredential($id, $params);
   public function postGroup($id, $params);
@@ -58,6 +59,7 @@ interface DatabaseInterface
   public function postUser($params);
   public function postTag($id, $params);
   public function postTags($params);
+  public function postTagsIncrementer($tags, $value);
   public function postWebhook($id, $params);
   // put methods create but do not update
   public function putGroup($id, $params);

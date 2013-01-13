@@ -133,14 +133,8 @@ var TBX = (function() {
       fetchAndCache: function(src) {
         $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
       },
-      fetchAndCacheNextPrevious: function() {
-        var nextPhoto = $('img.next-photo'), prevPhoto = $('img.previous-photo');
-        if(prevPhoto.length > 0)
-          OP.Util.fire('preload:photo', {id: prevPhoto.attr('data-id'), sizes:'870x550'});
-        if(nextPhoto.length > 0)
-          OP.Util.fire('preload:photo', {id: nextPhoto.attr('data-id'), sizes:'870x550'});
-      },
       load: function(context) {
+        var async = typeof(arguments[1]) === 'undefined' ? true : arguments[1];
         // we define initData at runtime to avoid having to make an HTTP call on load
         // all subsequent calls run through the http API
         if(typeof(context.initData) === "undefined") {
@@ -185,7 +179,13 @@ var TBX = (function() {
           if(context.pageCount > context.maxMobilePageCount && util.getDeviceWidth() < 900) {
             location.href = context.pageLocation.pathname + '?' + decodeURIComponent($.param(params));
           } else {
-            $.getJSON(api, params, context.loadCb);
+            $.ajax({
+              async: async,
+              dataType: 'json',
+              url: api,
+              data: params,
+              success: context.loadCb
+            });
           }
         } else {
           delete context.initData;
@@ -225,10 +225,27 @@ var TBX = (function() {
           ev.preventDefault();
           OP.Util.makeRequest('/notification/delete.json', {crumb: TBX.crumb()}, null, 'json');
         },
+        photoModal: function(ev) {
+          ev.preventDefault();
+          var $el = $(ev.target), url = '/p/'+$el.attr('data-id'), router = TBX.init.pages.photos.router.router;
+          router.navigate(url, {trigger:true});
+        },
         selectAll: function(ev) {
           ev.preventDefault();
           var $els = $('.photo-grid .imageContainer .pin.edit');
           $els.each(callbacks.selectAll);
+        }
+      },
+      custom: {
+        preloadPhotos: function(photos) {
+          if(photos.length == 0)
+            return;
+
+          for(i in photos) {
+            if(photos.hasOwnProperty(i)) { 
+              util.fetchAndCache(photos[i]);
+            }
+          }
         }
       },
       keydown: { },
@@ -304,13 +321,19 @@ var TBX = (function() {
         else if(location.pathname === '/photos/upload')
           TBX.init.pages.upload();
       },
+      attachEvents: function() {
+        OP.Util.on('preload:photos', TBX.handlers.custom.preloadPhotos);
+      },
       pages: {
         albums: {
           initData: typeof(initData) === "undefined" ? undefined : initData,
           filterOpts: typeof(filterOpts) === "undefined" ? undefined : filterOpts,
           page: null,
           pageCount: 0,
-          pageLocation: window.location,
+          pageLocation: {
+            pathname: window.location.pathname,
+            search: window.location.search
+          },
           maxMobilePageCount: 5,
           end: false,
           running: false,
@@ -394,7 +417,10 @@ var TBX = (function() {
           batchModel: new op.data.model.Batch({count: OP.Batch.length()}),
           page: null,
           pageCount: 0,
-          pageLocation: window.location,
+          pageLocation: {
+            pathname: window.location.pathname,
+            search: window.location.search
+          },
           maxMobilePageCount: 5,
           end: false,
           running: false,
@@ -403,10 +429,11 @@ var TBX = (function() {
             $(window).scroll(function() { util.scrollCb(_this); });
             _this.load();
             (new op.data.view.BatchIndicator({model:batchModel, el: $batchEl})).render();
+            _this.router.init();
           },
           load: function() {
-            var _this = TBX.init.pages.photos; loc = location;
-            util.load(_this);
+            var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];
+            util.load(_this, async);
           },
           loadCb: function(response) {
             var items = response.result, _this = TBX.init.pages.photos, infobar = $('.infobar'),
@@ -415,7 +442,7 @@ var TBX = (function() {
                 ui = TBX.ui, i;
 
             op.data.store.Photos.add( items );
-            if(items[0].totalPages >= _this.page) {
+            if(items.length > 0) {
               var thisTaken;
               for(i=0; i<items.length; i++) {
                 thisTaken = parseInt(items[i].dateTaken);
@@ -437,6 +464,38 @@ var TBX = (function() {
             } else {
               $('.load-more').hide();
               _this.end = true;
+            }
+          },
+          router: {
+            router: null,
+            lightbox: null,
+            init: function() {
+              var _this = TBX.init.pages.photos.router, appRouter;
+              
+              appRouter = Backbone.Router.extend({
+                  routes: {
+                      "p/:id": "photoModal", // matches http://example.com/#anything-here
+                      "photos/:options/list": "photosList",
+                      "photos/list": "photosList"
+                  }
+              });
+
+              // Initiate the router
+              _this.router = new appRouter;
+
+              _this.router.on('route:photoModal', function(id) {
+                _this = TBX.init.pages.photos.router;
+                if(_this.lightbox === null)
+                  _this.lightbox = op.Lightbox.getInstance();
+                _this.lightbox.open(id);
+              });
+              _this.router.on('route:photosList', function(id) {
+                _this = TBX.init.pages.photos.router;
+                _this.lightbox.hide();
+              });
+
+              // Start Backbone history a necessary step for bookmarkable URL's
+              Backbone.history.start({pushState: true, silent: true});
             }
           }
         },

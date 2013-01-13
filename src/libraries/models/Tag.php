@@ -15,6 +15,38 @@ class Tag extends BaseModel
     parent::__construct();
   }
 
+  /*
+   * Adjust the counters on a tag when the permission of an element changes
+   *
+   * @param array $tags An array of tags (strings get converted)
+   * @param int $permission Permission of 1 or 0
+   */
+  public function adjustCounters($tags, $permission)
+  {
+    if(!is_array($tags))
+      $tags = (array)explode(',', $tags);
+
+    // if being marked public then increment the public count (private is already being tracked)
+    // if being marked private then derement the public count
+    $value = $permission == 1 ? 1 : -1;
+    $this->db->postTagsIncrementer($tags, $value);
+  }
+
+  /**
+    * Delete a tag.
+    *
+    * @param array $id A string of the tag
+    * @return array Tag object augmented with a "weight" property.
+    */
+  public function createBatch($tags)
+  {
+    if(!is_array($tags))
+      $tags = (array)explode(',', $tags);
+
+    foreach($tags as $tag)
+      $this->update($tag, array());
+  }
+
   /**
     * Delete a tag.
     *
@@ -29,7 +61,7 @@ class Tag extends BaseModel
   /**
     * Get a single tag.
     *
-    * @param tag $tag A string of the tag
+    * @param string $tag A string of the tag
     * @return array Tag object augmented with a "weight" property.
     */
   public function getTag($tag = null)
@@ -48,113 +80,6 @@ class Tag extends BaseModel
   public function getTags($filters = null)
   {
     return $this->db->getTags($filters);
-  }
-
-  /**
-    * Updates count values in tags when an object is updates.
-    * Keeps track of # of objects tagged in the Tag object itself.
-    * First two params are a full set of tags before and after the update.
-    * Generates an array of what tags to increment and decrement
-    * Called by $this->updateTagCounts
-    *
-    * @param array $existingTags The tags previously on the object.
-    * @param array $updatedTags The tags currently being updated on the object.
-    * @param int $permission Permission of the photo.
-    * @return boolean
-    */
-  public function getUpdateTagCountValues($existingTags, $updatedTags, $permission, $priorPermission)
-  {
-    // make sure tags are in array form
-    $existingTags = (array)$existingTags;
-    $updatedTags = (array)$updatedTags;
-    // we increment public photos by 1 only if they are public
-    // if the privacy changes then we add or remove from the increment value
-    $publicIncrement = ($permission == 1) ? 1 : 0;
-    $privacyChangeIncrement = 0;
-    if($priorPermission !== null)
-    {
-      if($priorPermission == 1 && $permission == 0)
-        $privacyChangeIncrement = -1;
-      elseif($priorPermission == 0 && $permission == 1)
-        $privacyChangeIncrement = 1;
-    }
-
-    // here we determine which arrays are new, deleted and already existing
-    // if the tag was removed then we set to -1, +1 if added and 0 if only the privacy changed
-    $tagsToDecrement = array_diff($existingTags, $updatedTags);
-    $tagsToIncrement = array_diff($updatedTags, $existingTags);
-    $tagsToMutateForPrivacy = array_intersect($existingTags, $updatedTags);
-    $tagsToUpdate = array();
-    foreach($tagsToDecrement as $tg)
-      $tagsToUpdate[$this->sanitize($tg)] = -1;
-    foreach($tagsToIncrement as $tg)
-      $tagsToUpdate[$this->sanitize($tg)] = 1;
-    foreach($tagsToMutateForPrivacy as $tg) // these already exist but we may need to update counts if the privacy changed
-      $tagsToUpdate[$this->sanitize($tg)] = 0;
-
-    // get all tags (permission = 0 means all)
-    // store only the tags which are going to be updated from the above loops
-    $tagsFromDb = array();
-    $allTags = $this->db->getTags(array('permission' => 0));
-    if(!empty($allTags))
-    {
-      foreach($allTags as $k => $t)
-      {
-        if(isset($tagsToUpdate[$t['id']]))
-          $tagsFromDb[] = $t;
-      }
-    }
-
-    // track the tags which need to be updated
-    // start with ones which already exist in the database and increment them accordingly
-    $updatedTags = array();
-    foreach($tagsFromDb as $tagFromDb)
-    {
-      $thisTag = $tagFromDb['id'];
-      $changeBy = $tagsToUpdate[$thisTag];
-      $publicCount = $tagFromDb['countPublic']+($changeBy*$publicIncrement);
-
-      // in the event that the tag wasn't added/removed but already existed we have to check if the privacy changed
-      if(in_array($tagFromDb['id'], $tagsToMutateForPrivacy))
-        $publicCount += $privacyChangeIncrement;
-      $updatedTags[] = array(
-        'id' => $thisTag, 
-        'countPrivate' => ($tagFromDb['countPrivate']+$changeBy), 
-        'countPublic' => $publicCount
-      );
-      // unset so we can later loop over tags which didn't already exist
-      unset($tagsToUpdate[$thisTag]);
-    }
-
-    // these are new tags
-    foreach($tagsToUpdate as $tag => $count)
-    {
-      if($count == 0)
-        $this->delete($tag);
-      $updatedTags[] = array('id' => $tag, 'countPrivate' => $count, 'countPublic' => ($count*$publicIncrement));
-    }
-    
-    return $updatedTags;
-  }
-
-  /**
-    * First two params are a full set of tags before and after the update.
-    *
-    * @param array $existingTags The tags previously on the object.
-    * @param array $updatedTags The tags currently being updated on the object.
-    * @param int $permission Permission of the photo.
-    * @return boolean
-    */
-  public function updateTagCounts($existingTags, $updatedTags, $permission, $priorPermission)
-  {
-    $tagsToUpdate = $this->getUpdateTagCountValues($existingTags, $updatedTags, $permission, $priorPermission);
-    foreach($tagsToUpdate as $key => $val)
-    {
-      $tagsToUpdate[$key]['owner'] = $this->owner;
-      $tagsToUpdate[$key]['actor'] = $this->getActor();
-    }
-
-    return $this->db->postTags($tagsToUpdate);
   }
 
   /**

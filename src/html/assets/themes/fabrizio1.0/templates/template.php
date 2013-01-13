@@ -106,6 +106,7 @@
               TBX.notification.show(<?php printf('%s, %s, %s', json_encode($this->utility->safe($note['msg'], '<a>', false)), json_encode($this->utility->safe($note['type'], false)), json_encode($this->utility->safe($note['mode'], false))); ?>);
             <?php } ?>
             TBX.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
+            TBX.init.attachEvents();
           }
         }
       });
