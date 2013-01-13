@@ -106,6 +106,8 @@ class OAuthController extends BaseController
         $consumer = getDb()->getCredential($token);
         $oauth = new OAuth($consumerKey,$consumerSecret,OAUTH_SIG_METHOD_HMACSHA1,OAUTH_AUTH_TYPE_AUTHORIZATION);
         $oauth->setVersion('1.0a');
+        if ($this->config->localfs->sslSelfSigned)
+          $oauth->disableSSLChecks();
         $oauth->setToken($token, $tokenSecret);
         $accessToken = $oauth->getAccessToken(sprintf('%s://%s/v1/oauth/token/access', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST']), null, $verifier);
         $accessToken['oauth_consumer_key'] = $consumerKey;
@@ -135,8 +137,10 @@ class OAuthController extends BaseController
         parse_str($_COOKIE['oauth']);
         $consumer = getDb()->getCredential($oauth_token);
         $oauth = new OAuth($oauth_consumer_key,$oauth_consumer_secret,OAUTH_SIG_METHOD_HMACSHA1,OAUTH_AUTH_TYPE_AUTHORIZATION);
+        if ($this->config->localfs->sslSelfSigned)
+          $oauth->disableSSLChecks();
         $oauth->setToken($oauth_token,$oauth_token_secret);
-        $oauth->fetch(sprintf('http://%s/v1/oauth/test?oauth_consumer_key=%s', $_SERVER['HTTP_HOST'], $oauth_consumer_key));
+        $oauth->fetch(sprintf('%s://%s/v1/oauth/test?oauth_consumer_key=%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], $oauth_consumer_key));
         $response_info = $oauth->getLastResponseInfo();
         header("Content-Type: {$response_info["content_type"]}");
         echo $oauth->getLastResponse();
