@@ -94,6 +94,10 @@
   });
   
   op.ns('data.view').PhotoDetail = op.data.view.Editable.extend({
+    
+    largePath : 'path870x870',
+    thumbPath : 'path180x180xCR',
+    
     initialize: function() {
       Backbone.history.start({pushState: true});
       this.router = new Backbone.Router();
@@ -130,7 +134,7 @@
       this.updateViews();
       // change the main image
       $(this.el).find('.photo img')
-        .attr('src', this.model.get('path870x550'))
+        .attr('src', this.model.get(this.largePath))
       $(this.el).find('.photo .photo-view-modal-click')
         .attr('data-id', this.model.get('id'))
     },
@@ -204,7 +208,7 @@
         .appendTo($(this.el).find('.pagination .photos .scroller .thumbs'));
         
       $('<img />')
-        .attr('src', this.model.get('path90x90xCR'))
+        .attr('src', this.model.get(this.thumbPath))
         .appendTo(shimDiv.find('.inner'))
       
       this.addModel(this.model);
@@ -284,7 +288,7 @@
       var b2 = $('<div class="inner" />').appendTo(b);
       
       var i = $('<img />')
-        .attr('src', model.get('path90x90xCR'))
+        .attr('src', model.get(this.thumbPath))
         .appendTo(b2);
         
       if( this.model == model )
@@ -343,7 +347,11 @@
     loadMore : function( dir ){
       var model
         , self = this
-        , apiParams = {nextprevious:'1', returnSizes:'90x90xCR,870x550'}
+        , sizes = _.map(
+          [this.thumbPath, this.largePath],
+          function(str){ return str.replace(/^path/,''); }
+        ).join(',') 
+        , apiParams = {nextprevious:'1', returnSizes:sizes}
         , endpoint
         , fn = 'next';
         

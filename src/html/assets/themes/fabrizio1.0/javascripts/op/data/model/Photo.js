@@ -12,7 +12,7 @@
               params[i] = changedParams[i];
             }
           }
-          $.post('/photo/'+model.get('id')+'/update.json', params, function(response) {
+          return $.post('/photo/'+model.get('id')+'/update.json', params, function(response) {
             if(response.code === 200) {
               model.trigger('change');
             } else {
@@ -21,7 +21,7 @@
           }, 'json');
           break;
         case 'delete':
-          $.post('/photo/'+model.get('id')+'/delete.json', params, function(response) {
+          return $.post('/photo/'+model.get('id')+'/delete.json', params, function(response) {
             if(response.code === 204) {
               model.trigger('change');
             } else {

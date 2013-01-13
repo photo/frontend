@@ -155,7 +155,7 @@
   <div class="row">
     <div class="span9">
       <div class="photo">
-        <img src="<%= path870x550 %>" />
+        <img src="<%= path870x870 %>" />
         <span class="mag photo-view-modal-click" data-id="<%= id %>"><i class="icon-search"></i></span>
       </div>
       <div class="description"></div>
@@ -237,7 +237,7 @@
 <script type="tmpl/underscore" id="photo-detail-meta-tmpl">
   <ul>
     <li><i class="icon-heart"></i> 16 Favorites</i></li>
-    <li><i class="icon-calendar"></i> Jan 12, 2013</i></li>
+    <li><i class="icon-calendar"></i> <%= phpjs.date('M d, Y', dateTaken) %></i></li>
     <li><i class="icon-comment"></i> 7 Comments</i></li>
     <li><a class="permission<?php if($isAdmin) { ?> edit<?php } ?>" href="#"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i> <%= permission == 0 ? 'Private' : 'Public' %></i></a></li>
     <li><i class="icon-eye-open"></i> 110 Views</i></li>
