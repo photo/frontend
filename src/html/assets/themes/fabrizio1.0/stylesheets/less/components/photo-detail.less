@@ -43,13 +43,14 @@
       border-radius: 20px;
       top: 50%;
       left: 50%;
-      margin-left: -60px;
+      margin-left: -70px;
       margin-top: -60px;
       font-size: 60px;
       height: 120px;
-      width: 120px;
+      width: 140px;
       color: #ccc;
       background: #000;
+      background: rgba(0,0,0,0.9);
       i {
         line-height: 120px;
         vertical-align: middle;
@@ -143,7 +144,7 @@
     .slider {
       display: table-row;
       .arrow {
-        background: #ccc;
+        background: #d3d3d3;
         display: table-cell;
         position: relative;
         width: 20px;
@@ -216,6 +217,58 @@
             position: relative;
             cursor: default;
           }
+        }
+      }
+    }
+  }
+  
+  .photo-meta {
+    .clearfix();
+    font-size: 11px;
+    color: #aaa;
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      li {
+        list-style: none;
+        margin: 0;
+        float: left;
+        width: 50%;
+        a {
+          color: inherit;
+          &:hover {
+            text-decoration: none;
+          }
+        }
+        &:hover {
+          color: #333;
+        }
+      }
+    }
+  }
+  
+  .tags {
+    list-style: none;
+    margin: 20px 0;
+    li {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      float: left;
+      margin-right: 6px;
+      a {
+        display: inline-block;
+        .ie7-inline-block();
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #d3d3d3;
+        color: #777;
+        
+        &:hover {
+          background: @color_brand;
+          color: #333;
+          text-decoration: none;
         }
       }
     }

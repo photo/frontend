@@ -259,7 +259,9 @@
       var i = _.indexOf( this.store.models, this.model ) - 1, router = TBX.init.pages.photos.router.router, id;
       if( i < 0 ) i = this.store.models.length-1;
       id = this.store.models[i].get('id');
-      router.navigate('/p/'+id, {trigger: false});
+      if( !$('body').hasClass('photo-details') ){
+        router.navigate('/p/'+id, {trigger: false});
+      }
       this.go(i);
     },
     
@@ -275,8 +277,10 @@
       // we check the length again since we append above
       // once we reach the end the appending stops so this works
       if( i < this.store.models.length ) {
-        id = this.store.models[i].get('id');
-        router.navigate('/p/'+id, {trigger: false});
+        if( !$('body').hasClass('photo-details') ){
+          id = this.store.models[i].get('id');
+          router.navigate('/p/'+id, {trigger: false});
+        }
         this.go(i);
       }
     },

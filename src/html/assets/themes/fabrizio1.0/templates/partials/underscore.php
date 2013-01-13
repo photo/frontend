@@ -89,8 +89,8 @@
     <div class="bd">
       <div class="photo">
         <div class="nav">
-          <a href="" class="prev">&lt;</a>
-          <a href="" class="next">&gt;</a>
+          <a href="" class="prev"><i class="icon-angle-left"></i></a>
+          <a href="" class="next"><i class="icon-angle-right"></i></a>
         </div>
       </div>
       <div class="details">
@@ -164,7 +164,7 @@
     </div>
     <div class="span3">
       
-      <div class="userbadge userbadge-light user-badge-meta"></div>
+      <div class="userbadge userbadge-light user-badge-meta owner"></div>
       
       <div class="pagination">
         <div class="slider">
@@ -179,9 +179,11 @@
         </div>
       </div>
       
-      <ul>
+      <div class="photo-meta"></div>
+      
+      <ul class="tags">
         <% for(var tag in tags) { %>
-          <li><%= tags[tag] %></li>
+          <li><a href="#"><%= tags[tag] %></a></li>
         <% } %>
       </ul>
     </div>
@@ -230,6 +232,21 @@
       </div>
     </div>
   </li>
+</script>
+
+<script type="tmpl/underscore" id="photo-detail-meta-tmpl">
+  <ul>
+    <li><i class="icon-heart"></i> 16 Favorites</i></li>
+    <li><i class="icon-calendar"></i> Jan 12, 2013</i></li>
+    <li><i class="icon-comment"></i> 7 Comments</i></li>
+    <li><a class="permission<?php if($isAdmin) { ?> edit<?php } ?>" href="#"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i> <%= permission == 0 ? 'Private' : 'Public' %></i></a></li>
+    <li><i class="icon-eye-open"></i> 110 Views</i></li>
+    
+    <?php if($this->config->site->allowOriginalDownload == 1) { ?>
+      <li><a href="<%= pathDownload %>"><i class="icon-download"></i> Download</i></a></li>
+    <?php } ?>
+    
+  </ul>
 </script>
 
 <script type="tmpl/underscore" id="batch-meta">
