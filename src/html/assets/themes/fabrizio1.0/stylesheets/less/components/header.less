@@ -76,14 +76,17 @@ body.trovebox {
           color: @color_header_menu;
           
           i {
+            font-size: 14px;
+            line-height: 1em;
+            vertical-align: top;
             margin-right: .2em;
-            opacity: .6;
+            .opacity(60);
           }
           
           &:hover {
             color: #fff;
             i {
-              opacity: 1;              
+              .opacity(99);
             }
           }
         }
@@ -91,7 +94,7 @@ body.trovebox {
           a, a:hover {
             color: @color_header_menu_active;
             i {
-              opacity: 1;
+              .opacity(99);
             }
           }
         }
@@ -256,17 +259,22 @@ body.trovebox {
       
       > li {
         padding: 0 10px;
-        > a {
+        > a, .help-container a {
           padding: 0;
           color: @color_banner_secondary_font;
           text-shadow: 0 0 0;
           i {
+            color: @color_banner_secondary_font;
             margin-right: .2em;
+          }
+          &:hover {
+            text-decoration: none;
           }
         }
         &.active {
           a, a:hover {
             color: @color_header_menu_active;
+            
           }
         }
         &:first-child {
