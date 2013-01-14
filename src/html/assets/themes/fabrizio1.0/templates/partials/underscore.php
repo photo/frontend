@@ -254,12 +254,13 @@
     <a data-toggle="dropdown" href="#"><i class="tb-icon-light <% if(!loading) { %>icon-cogs<% } else { %>icon-spinner icon-spin<% } %>"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
     <ul class="dropdown-menu">
       <% if (count > 0) { %>
-        <li><a>Batch edit your photos</a></li>
-        <li class="divider"></li>
-        <li><a href="#" class="tags">&nbsp;&middot;&nbsp;Add Tags</a></li>
-        <li><a href="#" class="albums">&nbsp;&middot;&nbsp;Add to Album</a></li>
-        <li><a href="#">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
+        <li><a>Update photo information</a></li>
+        <li><a href="#" class="showForm" data-id="tagsAdd">&nbsp;&middot;&nbsp;Add Tags</a></li>
+        <li><a href="#" class="showForm" data-id="albumsAdd">&nbsp;&middot;&nbsp;Add to Album</a></li>
+        <li><a href="#" class="showForm" data-id="privacy">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
         <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
+        <li class="divider"></li>
+        <li><a>Modify photos</a></li>
         <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>
         <li class="divider"></li>
         <li><a href="#" class="clear">Clear pinned photos</a></li>

@@ -48,6 +48,12 @@
           <li><div class="help-container"><a href="#"><i class="icon-question-sign"></i></div></a>
         </ul>
       </div>
+      <?php if($this->user->isAdmin()) { ?>
+        <div class="container">
+          <div class="row batch-edit-form" style="margin-left:35px; display:none;">
+          </div>
+        </div>
+      <?php } ?>
     </div>
     <div class="notification-meta"></div>
     
