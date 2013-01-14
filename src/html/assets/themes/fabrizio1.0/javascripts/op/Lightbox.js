@@ -14,12 +14,12 @@
     },
     template: _.template($('#op-lightbox-details').html()),
     editable: {
-      '.title .text' : {
+      '.title.edit .text' : {
         name: 'title',
         title: 'Edit Photo Title',
         placement: 'top',
       },
-      '.description .text' : {
+      '.description.edit .text' : {
         name: 'description',
         type: 'textarea',
         title: 'Edit Photo Description',
@@ -54,15 +54,21 @@
     this.cache = {};
     this.store = op.data.store.Photos;
     this.template = _.template($('#op-lightbox').html());
-    this._initView();
-    this._initEvents();
+    this._initialized = false;
   };
   
-  _.extend( Lightbox.prototype, {
+  _.extend( Lightbox.prototype, Backbone.Events, {
 	
     imagePathKey : 'pathBase',
     //imagePathKey : 'path870x550',
     //imagePathKey : 'pathOriginal',
+    
+    _initialize : function(){
+      if( this._initialized ) return;
+      this._initView();
+      this._initEvents();
+      this._initialized = true;
+    },
     
     keys : {
       // we may want to rethink some of these key codes...
@@ -170,6 +176,7 @@
     },
     
     show : function(item){
+      this._initialize();
       this._visible = true;
       this._captureDocumentEvents();
       this.$el.fadeIn('fast');
@@ -187,6 +194,7 @@
     },
     
     update : function(model){
+      this._initialize();
       this.$el.addClass('loading');
       this.setModel( model );
       this.$el.find('.photo').find('img').remove();
@@ -196,6 +204,7 @@
 	
     setModel : function(model){
       this.model = model;
+      this.trigger('updatemodel', model);
       this.detailView.setModel( model );
       this.loadImage();
       this.$el.find('.header .detail-link').attr('href', model.get('url'));
@@ -250,7 +259,9 @@
       var i = _.indexOf( this.store.models, this.model ) - 1, router = TBX.init.pages.photos.router.router, id;
       if( i < 0 ) i = this.store.models.length-1;
       id = this.store.models[i].get('id');
-      router.navigate('/p/'+id, {trigger: false});
+      if( !$('body').hasClass('photo-details') ){
+        router.navigate('/p/'+id, {trigger: false});
+      }
       this.go(i);
     },
     
@@ -266,8 +277,10 @@
       // we check the length again since we append above
       // once we reach the end the appending stops so this works
       if( i < this.store.models.length ) {
-        id = this.store.models[i].get('id');
-        router.navigate('/p/'+id, {trigger: false});
+        if( !$('body').hasClass('photo-details') ){
+          id = this.store.models[i].get('id');
+          router.navigate('/p/'+id, {trigger: false});
+        }
         this.go(i);
       }
     },
