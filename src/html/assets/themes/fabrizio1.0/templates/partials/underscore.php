@@ -259,9 +259,9 @@
         <li><a href="#" class="showForm" data-id="albumsAdd">&nbsp;&middot;&nbsp;Add to Album</a></li>
         <li><a href="#" class="showForm" data-id="privacy">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
         <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
-        <li class="divider"></li>
+        <!--<li class="divider"></li>
         <li><a>Modify photos</a></li>
-        <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>
+        <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>-->
         <li class="divider"></li>
         <li><a href="#" class="clear">Clear pinned photos</a></li>
       <% } else { %>
