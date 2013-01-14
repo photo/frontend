@@ -25,7 +25,7 @@ var TBX = (function() {
       // only if the viewer !== owner do we create two models
       if(viewer !== undefined && owner.isOwner === false)
         op.data.store.Profiles.add(profiles.viewer);
-
+        
       $('.user-badge-meta').each(function(i, el) {
         (new op.data.view.UserBadge({model:op.data.store.Profiles.get(ownerId), el: el})).render();
       });
@@ -305,6 +305,8 @@ var TBX = (function() {
         // TODO cache in local storage
 
         profiles.load();
+        
+        // init tooltips
 
         if(location.pathname === '/')
           TBX.init.pages.front();

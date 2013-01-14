@@ -2,6 +2,7 @@
   op.ns('data.view').UserBadge = op.data.view.Editable.extend({
     initialize: function() {
       this.model.on('change', this.modelChanged, this);
+      this.on('afterrender', this.onAfterRender, this);
     },
     model: this.model,
     className: 'user-badge-meta',
@@ -18,6 +19,9 @@
           return null;
         }
       }
+    },
+    onAfterRender : function(){
+      if($(this.el).hasClass('userbadge-light')) $(this.el).find('[rel=tooltip]').tooltip();
     },
     modelChanged: function() {
       this.render();
