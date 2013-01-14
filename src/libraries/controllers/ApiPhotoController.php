@@ -635,7 +635,6 @@ class ApiPhotoController extends ApiBaseController
   /**
     * Update the data associated with the photo in the remote data store.
     * Parameters to be updated are in _POST
-    * This method also manages updating tag counts
     *
     * @return string Standard JSON envelope
     */
@@ -661,6 +660,25 @@ class ApiPhotoController extends ApiBaseController
       return $this->success(sprintf('%d photos updated', count($ids)), true);
     else
       return $this->error('Error updating one or more photos', false);
+  }
+
+  /**
+    * Form for batch editing
+    *
+    * @return string Standard JSON envelope
+    */
+  public function updateBatchForm()
+  {
+    getAuthentication()->requireAuthentication();
+    $params = $_GET;
+    if($params['action'] == 'albumsAdd')
+    {
+      $albumsResp = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 0)));
+      if($albumsResp['code'] === 200)
+        $params['albums'] = $albumsResp['result'];
+    }
+    $markup = $this->theme->get('partials/batchUpdateForm.php', $params);
+    return $this->success('Batch update form', array('markup' => $markup));
   }
 
   /**
