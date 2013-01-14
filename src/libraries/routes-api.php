@@ -74,6 +74,7 @@ $apiObj->post('/?v?[1-2]?/photo/([a-zA-Z0-9]+)/update.json', array('ApiPhotoCont
 $apiObj->get('/?v?[1-2]?/photo/([a-zA-Z0-9]+)/?(.+)?/view.json', array('ApiPhotoController', 'view'), EpiApi::external); // get a photo's information (/photo/[{options}/]{id}/view.json)
 $apiObj->get('/?v?[1-2]?/photos/?(.+)?/list.json', array('ApiPhotoController', 'list_'), EpiApi::external); // get all photos / optionally filter (/photos[/{options}]/view.json)
 $apiObj->post('/?v?[1-2]?/photos/update.json', array('ApiPhotoController', 'updateBatch'), EpiApi::external); // update multiple photos (/photos/update.json)
+$apiObj->get('/?v?[1-2]?/photos/update.json', array('ApiPhotoController', 'updateBatchForm'), EpiApi::external); // update multiple photos (/photos/update.json)
 $apiObj->post('/?v?[1-2]?/photos/delete.json', array('ApiPhotoController', 'deleteBatch'), EpiApi::external); // delete multiple photos (/photos/delete.json)
 $apiObj->post('/?v?[1-2]?/photo/upload.json', array('ApiPhotoController', 'upload'), EpiApi::external); // upload a photo
 $apiObj->post('/?v?[1-2]?/photos/upload/confirm.json', array('ApiPhotoController', 'uploadConfirm'), EpiApi::external); // confirmaton after upload

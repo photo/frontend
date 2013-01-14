@@ -1,35 +1,27 @@
 (function($){
   op.ns('data.model').Photo = Backbone.Model.extend({
-    sync: function(method, model) {
-      var params = {};
-      params.crumb = TBX.crumb();
+    sync: function(method, model, options) {
+      options.data = {};
+      options.data.crumb = TBX.crumb();
+      options.data.httpCodes='*';
       switch(method) {
+        case 'read':
+          options.url = '/photo/'+model.get('id')+'/view.json';
+          break;
         case 'update':
-          //params = model.toJSON();
+          options.url = '/photo/'+model.get('id')+'/update.json';
           var changedParams = model.changedAttributes();
           for(i in changedParams) {
             if(changedParams.hasOwnProperty(i)) {
-              params[i] = changedParams[i];
+              options.data[i] = changedParams[i];
             }
           }
-          return $.post('/photo/'+model.get('id')+'/update.json', params, function(response) {
-            if(response.code === 200) {
-              model.trigger('change');
-            } else {
-              model.trigger('error');
-            }
-          }, 'json');
           break;
         case 'delete':
-          return $.post('/photo/'+model.get('id')+'/delete.json', params, function(response) {
-            if(response.code === 204) {
-              model.trigger('change');
-            } else {
-              model.trigger('error');
-            }
-          }, 'json');
+          options.url = '/photo/'+model.get('id')+'/delete.json';
           break;
       }
+      return Backbone.sync(method, model, options);
     },
     parse: function(response) {
       return response.result;
