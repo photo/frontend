@@ -4,20 +4,20 @@
     <?php if($isAdmin) { ?>
       <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><i class="icon-pencil"></i> <%= title || filenameOriginal %></a></h4>
       <ul class="info">
-        <!--<li><a href="#" title="Comments"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#" title="Favorites"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>-->
-        <li><a href="#" class="share" title="Share via Facebook, Twitter or Email" data-id="<%= id %>"><i class="icon-share-alt tb-icon-dark"></i> Share</a> &nbsp;</li>
-        <li class="pull-right"><a href="#" title="Delete this photo"><i class="icon-trash tb-icon-dark delete edit" data-id="<%= id %>"></i></li>
-        <li class="pull-right"><a href="#" title="Select for batch editing"><i class="icon-pushpin tb-icon-dark pin edit" data-id="<%= id %>"></i></li>
-        <li class="pull-right"><a href="#" title="Set as your profile photo"><i class="icon-user tb-icon-dark profile edit" data-id="<%= id %>"></i></li>
-        <li class="pull-right"><a href="#" title="Toggle the privacy setting"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %> tb-icon-dark permission edit" data-id="<%= id %>"></i></li>
+        <!--<li><a href="#" title="Comments"><i class="icon-comments"></i> <span class="number">24</span></li>
+        <li><a href="#" title="Favorites"><i class="icon-heart"></i> <span class="number">24</span></li>-->
+        <li><a href="#" class="share" title="Share via Facebook, Twitter or Email" data-id="<%= id %>"><i class="icon-share-alt"></i> Share</a> &nbsp;</li>
+        <li class="pull-right"><a href="#" title="Delete this photo"><i class="icon-trash delete edit" data-id="<%= id %>"></i></li>
+        <li class="pull-right"><a href="#" title="Select for batch editing"><i class="icon-pushpin pin edit" data-id="<%= id %>"></i></li>
+        <li class="pull-right"><a href="#" title="Set as your profile photo"><i class="icon-user profile edit" data-id="<%= id %>"></i></li>
+        <li class="pull-right"><a href="#" title="Toggle the privacy setting"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %> permission edit" data-id="<%= id %>"></i></li>
       </ul>
     <?php } else { ?>
       <h4 class="title"><%= title || filenameOriginal %></h4>
       <ul class="info">
-        <!--<li><a href="#"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>-->
-        <li><a href="#" title="Share via Facebook, Twitter or Email"><i class="icon-share-alt tb-icon-dark"></i> Share</a></li>
+        <!--<li><a href="#"><i class="icon-comments"></i> <span class="number">24</span></li>
+        <li><a href="#"><i class="icon-heart"></i> <span class="number">24</span></li>-->
+        <li><a href="#" title="Share via Facebook, Twitter or Email"><i class="icon-share-alt"></i> Share</a></li>
       </ul>
     <?php } ?>
   </div>
@@ -25,9 +25,6 @@
 <script type="tmpl/underscore" id="profile-photo-meta">
   <img class="profile-pic profile-photo" src="<%= photoUrl %>" />
 </script>
-<!--
-  <img class="profile-pic profile-photo" src="<%= photoUrl %>" />
--->
 
 <script type="tmpl/underscore" id="user-badge-meta">
   <?php if($isAdmin) { ?>
@@ -108,24 +105,29 @@
 </script>
 <script type="tmpl/underscore" id="op-lightbox-details">
   <div class="action-block">
-    <ul>
-      <li><i class="icon-eye-open"></i> 110 Views</i></li>
-      <li><i class="icon-comment"></i> 7 Comments</i></li>
+    <!--<ul>
+      <li><a class="permission<?php if($isAdmin) { ?> edit<?php } ?>" href="#"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i> Private</i></a></li>
       <?php if($this->config->site->allowOriginalDownload == 1) { ?>
         <li><a href="<%= pathDownload %>"><i class="icon-download"></i> Download</i></a></li>
       <?php } ?>
+      <li><i class="icon-eye-open"></i> 110 Views</i></li>
+      <li><i class="icon-comment"></i> 7 Comments</i></li>
       <li><i class="icon-heart"></i> 16 Favorites</i></li>
-      <li><a href="#"><i class="icon-share"></i> Share</i></a></li>
-      <li><a class="permission<?php if($isAdmin) { ?> edit<?php } ?>" href="#"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i> Private</i></a></li>
-    </ul>
+      <li><a href="#"><i class="icon-share-alt"></i> Share</i></a></li>
+    </ul>-->
   </div>
   <div class="detail-block">
     <div class="title">
       <span class="text"><%= title || filenameOriginal %></span>
       <span class="actions">
         <!--<a href="#"><i class="icon-heart"></i></a>
-        <a href="#"><i class="icon-comments"></i></a>
-        <a href="#"><i class="icon-share"></i></a>-->
+        <a href="#"><i class="icon-comments"></i></a>-->
+
+        <a href="#" class="share" data-id="<%= id %>"><i class="icon-share-alt"></i></a>
+        <a href="#" class="permission <?php if($isAdmin) { ?> edit<?php } ?>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
+        <?php if($this->config->site->allowOriginalDownload == 1) { ?>
+          <a href="<%= pathDownload %>"><i class="icon-download"></i></a>
+        <?php } ?>
       </span>
     </div>
     <div class="description">
@@ -196,7 +198,7 @@
   <span class="actions">
     <a href="#"><i class="icon-heart"></i></a>
     <a href="#"><i class="icon-comment"></i></a>
-    <a href="#"><i class="icon-share"></i></a>
+    <a href="#"><i class="icon-share-alt"></i></a>
   </span>
 </script>
 
@@ -293,37 +295,37 @@
     <div id="photo-exif" class="collapsible collapse">
       <div class="c">
         <table cellpadding="0" cellspacing="0" border="0">
-          <% if( exifCameraMake ){ %>
+          <% if( typeof exifCameraMake !== 'undefined' && exifCameraMake.length > 0 ){ %>
             <tr>
               <th>Camera Make</th>
               <td><%= exifCameraMake %></td>
             </tr>
           <% } %>
-          <% if( exifCameraModel ){ %>
+          <% if( typeof exifCameraModel !== 'undefined' && exifCameraModel.length > 0 ){ %>
             <tr>
               <th>Camera Model</th>
               <td><%= exifCameraModel %></td>
             </tr>
           <% } %>
-          <% if( exifExposureTime ){ %>
+          <% if( typeof exifExposureTime !== 'undefined' && exifExposureTime.length > 0 ){ %>
             <tr>
               <th>Exposure Time</th>
               <td><%= exifExposureTime %></td>
             </tr>
           <% } %>
-          <% if( exifFNumber ){ %>
+          <% if( typeof exifFNumber !== 'undefined' && exifFNumber.length > 0 ){ %>
             <tr>
               <th>F Number</th>
               <td><%= exifFNumber %></td>
             </tr>
           <% } %>
-          <% if( exifFocalLength ){ %>
+          <% if( typeof exifFocalLength !== 'undefined' && exifFocalLength.length > 0 ){ %>
             <tr>
               <th>Focal Length</th>
               <td><%= exifFocalLength %></td>
             </tr>
           <% } %>
-          <% if( exifISOSpeed ){ %>
+          <% if( typeof exifISOSpeed !== 'undefined' && exifISOSpeed.length > 0 ){ %>
             <tr>
               <th>ISO Time</th>
               <td><%= exifISOSpeed %></td>
@@ -339,7 +341,7 @@
       <a href="#photo-share" data-toggle="collapse">
         <i class="arrow open icon-angle-down"></i>
         <i class="arrow closed icon-angle-right"></i>
-        <i class="icon-share"></i> Embed &amp; Share
+        <i class="icon-share-alt"></i> Embed &amp; Share
       </a>
     </h3>
     <div id="photo-share" class="collapsible collapse">
@@ -352,7 +354,7 @@
 
 <script type="tmpl/underscore" id="batch-meta">
   <?php if($isAdmin) { ?>
-    <a data-toggle="dropdown" href="#"><i class="tb-icon-light <% if(!loading) { %>icon-cogs<% } else { %>icon-spinner icon-spin<% } %>"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
+    <a data-toggle="dropdown" href="#"><i class="<% if(!loading) { %>icon-cogs<% } else { %>icon-spinner icon-spin<% } %>"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
     <ul class="dropdown-menu">
       <% if (count > 0) { %>
         <li><a>Update photo information</a></li>
@@ -366,7 +368,7 @@
         <li class="divider"></li>
         <li><a href="#" class="clear">Clear pinned photos</a></li>
       <% } else { %>
-        <li><a><i class="tb-icon-light icon-pushpin"></i> Hover over a photo and click the pushpin</a></li>
+        <li><a><i class="icon-pushpin"></i> Hover over a photo and click the pushpin</a></li>
       <% } %>
     </ul>
   <?php } ?>
