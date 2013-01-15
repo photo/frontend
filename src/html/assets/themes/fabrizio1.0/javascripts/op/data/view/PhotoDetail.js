@@ -93,6 +93,14 @@
     }
   });
   
+  var RightsView = Backbone.View.extend({
+    template : _.template($('#photo-detail-rights-tmpl').html()),
+    render : function(){
+      $(this.el).html(this.template(this.model.toJSON()));
+      return this;
+    }
+  });
+  
   var CollapsiblesView = Backbone.View.extend({
     open : {},
     template : _.template($('#photo-detail-collapsibles-tmpl').html()),
@@ -139,6 +147,7 @@
           center: new google.maps.LatLng(lat, lng),
           zoom: 10,
           mapTypeControl: false,
+          streetViewControl: false,
           zoomControl: false,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
@@ -161,7 +170,8 @@
       '.photo-title'  :TitleView,
       '.description'  :DescriptionView,
       '.photo-meta'   :PhotoMetaView,
-      '.collapsibles' :CollapsiblesView
+      '.collapsibles' :CollapsiblesView,
+      '.rights'       :RightsView
     },
     
     initialize: function() {
