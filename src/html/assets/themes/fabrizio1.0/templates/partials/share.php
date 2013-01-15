@@ -13,7 +13,7 @@
         <label class="checkbox">
           <input type="checkbox" checked="checked" name="attachment" value="1"> Send as attachment
         </label>
-        <button class="btn btn-theme-secondary">Send Email</button>
+        <button class="btn btn-brand">Send Email</button>
         <input type="hidden" name="ids" value="<?php $this->utility->safe(implode(',', $ids)); ?>">
         <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
         <input type="hidden" name="httpCodes" value="*">
