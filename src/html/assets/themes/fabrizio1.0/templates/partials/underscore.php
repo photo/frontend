@@ -180,12 +180,13 @@
       </div>
       
       <div class="photo-meta"></div>
-      
-      <ul class="tags">
-        <% for(var tag in tags) { %>
-          <li><a href="#"><%= tags[tag] %></a></li>
-        <% } %>
-      </ul>
+      <ul class="collapsibles"></ul>
+      <div class="rights">
+        <i class="tb-icon-small-cc"></i>
+        <i class="tb-icon-small-cc-by"></i>
+        <i class="tb-icon-small-cc-nd"></i>
+        Some Rights Reserved
+      </div>
     </div>
   </div>
 </script>
@@ -208,6 +209,7 @@
   
   <ul class="comment-list hide"></ul>
   
+  <h3>Your Comment</h3>
   <form class="comment-form" action="/action/<%= id %>/photo/create" method="post">
     <textarea rows="4" name="value"></textarea>
     <input type="hidden" name="type" value="comment" />
@@ -247,6 +249,105 @@
     <?php } ?>
     
   </ul>
+</script>
+
+<script type="tmpl/underscore" id="photo-detail-collapsibles-tmpl">
+  <li>
+    <h3 class="sidebar-heading">
+      <a href="#photo-location" data-toggle="collapse">
+        <i class="arrow open icon-angle-down"></i>
+        <i class="arrow closed icon-angle-right"></i>
+        <i class="icon-globe"></i> Location
+      </a>
+    </h3>
+    <div id="photo-location" class="collapsible collapse">
+      <div class="map-ct"><div class="map"></div></div>
+    </div>
+  </li>
+  <li>
+    <h3 class="sidebar-heading">
+      <a href="#photo-tags" data-toggle="collapse">
+        <i class="arrow open icon-angle-down"></i>
+        <i class="arrow closed icon-angle-right"></i>
+        <i class="icon-tags"></i> Tags
+      </a>
+    </h3>
+    <div id="photo-tags" class="collapsible collapse">
+      <div class="c">
+        <ul class="tags">
+          <% for(var tag in tags) { %>
+            <li><a href="#"><%= tags[tag] %></a></li>
+          <% } %>
+        </ul>
+      </div>
+    </div>
+  </li>
+  <li>
+    <h3 class="sidebar-heading">
+      <a href="#photo-exif" data-toggle="collapse">
+        <i class="arrow open icon-angle-down"></i>
+        <i class="arrow closed icon-angle-right"></i>
+        <i class="icon-camera"></i> Camera Data
+      </a>
+    </h3>
+    <div id="photo-exif" class="collapsible collapse">
+      <div class="c">
+        <table cellpadding="0" cellspacing="0" border="0">
+          <% if( exifCameraMake ){ %>
+            <tr>
+              <th>Camera Make</th>
+              <td><%= exifCameraMake %></td>
+            </tr>
+          <% } %>
+          <% if( exifCameraModel ){ %>
+            <tr>
+              <th>Camera Model</th>
+              <td><%= exifCameraModel %></td>
+            </tr>
+          <% } %>
+          <% if( exifExposureTime ){ %>
+            <tr>
+              <th>Exposure Time</th>
+              <td><%= exifExposureTime %></td>
+            </tr>
+          <% } %>
+          <% if( exifFNumber ){ %>
+            <tr>
+              <th>F Number</th>
+              <td><%= exifFNumber %></td>
+            </tr>
+          <% } %>
+          <% if( exifFocalLength ){ %>
+            <tr>
+              <th>Focal Length</th>
+              <td><%= exifFocalLength %></td>
+            </tr>
+          <% } %>
+          <% if( exifISOSpeed ){ %>
+            <tr>
+              <th>ISO Time</th>
+              <td><%= exifISOSpeed %></td>
+            </tr>
+          <% } %>
+        </table>
+      </div>
+    </div>
+  </li>
+  
+  <li>
+    <h3 class="sidebar-heading">
+      <a href="#photo-share" data-toggle="collapse">
+        <i class="arrow open icon-angle-down"></i>
+        <i class="arrow closed icon-angle-right"></i>
+        <i class="icon-share"></i> Embed &amp; Share
+      </a>
+    </h3>
+    <div id="photo-share" class="collapsible collapse">
+      <div class="c">
+      Share stuff...
+      </div>
+    </div>
+  </li>
 </script>
 
 <script type="tmpl/underscore" id="batch-meta">
