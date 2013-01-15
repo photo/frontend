@@ -17,7 +17,7 @@
       <ul class="info">
         <!--<li><a href="#"><i class="icon-comments"></i> <span class="number">24</span></li>
         <li><a href="#"><i class="icon-heart"></i> <span class="number">24</span></li>-->
-        <li><a href="#" title="Share via Facebook, Twitter or Email"><i class="icon-share-alt"></i> Share</a></li>
+        <!--<li><a href="#" title="Share via Facebook, Twitter or Email"><i class="icon-share-alt"></i> Share</a></li>-->
       </ul>
     <?php } ?>
   </div>
@@ -113,7 +113,9 @@
       <li><i class="icon-eye-open"></i> 110 Views</i></li>
       <li><i class="icon-comment"></i> 7 Comments</i></li>
       <li><i class="icon-heart"></i> 16 Favorites</i></li>
-      <li><a href="#"><i class="icon-share-alt"></i> Share</i></a></li>
+      <?php if($isAdmin) { ?>
+        <li><a href="#"><i class="icon-share-alt"></i> Share</i></a></li>
+      <?php } ?>
     </ul>-->
   </div>
   <div class="detail-block">
@@ -123,7 +125,9 @@
         <!--<a href="#"><i class="icon-heart"></i></a>
         <a href="#"><i class="icon-comments"></i></a>-->
 
-        <a href="#" class="share" data-id="<%= id %>"><i class="icon-share-alt"></i></a>
+        <?php if($isAdmin) { ?>
+          <a href="#" class="share" data-id="<%= id %>"><i class="icon-share-alt"></i></a>
+        <?php } ?>
         <a href="#" class="permission <?php if($isAdmin) { ?> edit<?php } ?>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
         <?php if($this->config->site->allowOriginalDownload == 1) { ?>
           <a href="<%= pathDownload %>"><i class="icon-download"></i></a>
@@ -198,7 +202,9 @@
   <span class="actions">
     <a href="#"><i class="icon-heart"></i></a>
     <a href="#"><i class="icon-comment"></i></a>
-    <a href="#"><i class="icon-share-alt"></i></a>
+    <?php if($isAdmin) { ?>
+      <a href="#"><i class="icon-share-alt"></i></a>
+    <?php } ?>
   </span>
 </script>
 
@@ -341,7 +347,9 @@
       <a href="#photo-share" data-toggle="collapse">
         <i class="arrow open icon-angle-down"></i>
         <i class="arrow closed icon-angle-right"></i>
-        <i class="icon-share-alt"></i> Embed &amp; Share
+        <?php if($isAdmin) { ?>
+          <i class="icon-share-alt"></i> Embed &amp; Share
+        <?php } ?>
       </a>
     </h3>
     <div id="photo-share" class="collapsible collapse">
