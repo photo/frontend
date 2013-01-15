@@ -167,6 +167,19 @@ var TBX = (function() {
         var redirect = $('input[name="r"]', this).val();
         window.location.href = redirect;
       },
+      personaSuccess: function(assertion) {
+        var params = {assertion: assertion};
+        OP.Util.makeRequest('/user/browserid/login.json', params, TBX.callbacks.loginProcessed);
+      },
+      loginProcessed: function(response) {
+        if(response.code != 200) {
+          TBX.notification.show('Sorry, we could not log you in.', 'flash', 'error');
+          return;
+        }
+        
+        var url = $('input[name="r"]', $('form.login')).val();
+        location.href = url;
+      },
       profilesSuccess: function(owner, viewer) {
         var ownerId = owner.id, viewerId = viewer.id;
         profiles.owner = owner;
@@ -251,6 +264,29 @@ var TBX = (function() {
               params = {crumb: TBX.crumb()};
 
           OP.Util.makeRequest(url, params, TBX.callbacks.credentialDelete.bind(el));
+          return false;
+        },
+        loginExternal: function(ev) {
+          ev.preventDefault();
+          var el = $(ev.target);
+          if(el.hasClass('persona')) {
+            navigator.id.getVerifiedEmail(function(assertion) {
+                if (assertion) {
+                  TBX.callbacks.personaSuccess(assertion);
+                } else {
+                  TBX.notification.show('Sorry, something went wrong trying to log you in.', 'flash', 'error');
+                }
+            });
+          } else if(el.hasClass('facebook')) {
+            FB.login(function(response) {
+              if (response.authResponse) {
+                log('User logged in, posting to openphoto host.');
+                OP.Util.makeRequest('/user/facebook/login.json', opTheme.user.base.loginProcessed);
+              } else {
+                log('User cancelled login or did not fully authorize.');
+              }
+            }, {scope: 'email'});
+          }
           return false;
         },
         notificationDelete: function(ev) {

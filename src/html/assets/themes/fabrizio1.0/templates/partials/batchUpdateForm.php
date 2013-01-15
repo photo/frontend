@@ -33,7 +33,7 @@
         </label>
         &nbsp;&nbsp;
       <?php } ?>
-      <button type="submit" class="btn btn-theme-secondary">Save</button> or <a href="#" class="batchHide">cancel</a>
+      <button type="submit" class="btn btn-brand">Save</button> or <a href="#" class="batchHide">cancel</a>
     </form>
   <?php } ?>
 <?php } ?>
