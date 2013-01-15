@@ -20,6 +20,11 @@
                                                                   addCss("/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less")->
                                                                   getUrl(AssetPipeline::css, 'a'); ?>">
     <?php } ?>
+
+    <link rel="shortcut icon" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php $this->theme->asset('image', 'favicon.ico'); ?>">
+    <link rel="apple-touch-icon" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php $this->theme->asset('image', 'apple-touch-icon.png'); ?>">
+    <link rel="apple-touch-icon" sizes="72x72" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php $this->theme->asset('image', 'apple-touch-icon-72x72.png'); ?>">
+    <link rel="apple-touch-icon" sizes="114x114" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php $this->theme->asset('image', 'apple-touch-icon-114x114.png'); ?>">
       
     <!-- <link href="../../assets/css/bootstrap-responsive.css" rel="stylesheet"> -->
 
