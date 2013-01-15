@@ -59,7 +59,8 @@
   
   _.extend( Lightbox.prototype, Backbone.Events, {
 	
-    imagePathKey : 'pathBase',
+    imagePathKey : 'path870x870',
+    //imagePathKey : 'pathBase',
     //imagePathKey : 'path870x550',
     //imagePathKey : 'pathOriginal',
     

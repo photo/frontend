@@ -4,20 +4,21 @@
     <?php if($isAdmin) { ?>
       <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><i class="icon-pencil"></i> <%= title || filenameOriginal %></a></h4>
       <ul class="info">
-        <li><a href="#" title="Comments"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#" title="Favorites"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#" title="Share via Facebook, Twitter or Email"><i class="icon-share-alt tb-icon-dark"></i></li>
-        <li><a href="#" title="Toggle the privacy setting"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %> tb-icon-dark permission edit" data-id="<%= id %>"></i></li>
-        <li><a href="#" title="Set as your profile photo"><i class="icon-user tb-icon-dark profile edit" data-id="<%= id %>"></i></li>
-        <li><a href="#" title="Select for batch editing"><i class="icon-pushpin tb-icon-dark pin edit" data-id="<%= id %>"></i></li>
-        <li><a href="#" title="Delete this photo"><i class="icon-trash tb-icon-dark delete edit" data-id="<%= id %>"></i></li>
+        <!--<li><a href="#" title="Comments"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
+        <li><a href="#" title="Favorites"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>-->
+        <li><a href="#" title="Share via Facebook, Twitter or Email"><i class="icon-share-alt tb-icon-dark"></i> Share</a> &nbsp;</li>
+        <li class="divider"></li>
+        <li class="pull-right"><a href="#" title="Delete this photo"><i class="icon-trash tb-icon-dark delete edit" data-id="<%= id %>"></i></li>
+        <li class="pull-right"><a href="#" title="Select for batch editing"><i class="icon-pushpin tb-icon-dark pin edit" data-id="<%= id %>"></i></li>
+        <li class="pull-right"><a href="#" title="Set as your profile photo"><i class="icon-user tb-icon-dark profile edit" data-id="<%= id %>"></i></li>
+        <li class="pull-right"><a href="#" title="Toggle the privacy setting"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %> tb-icon-dark permission edit" data-id="<%= id %>"></i></li>
       </ul>
     <?php } else { ?>
       <h4 class="title"><%= title || filenameOriginal %></h4>
       <ul class="info">
-        <li><a href="#"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>
-        <li><a href="#"><i class="icon-share-alt tb-icon-dark"></i></li>
+        <!--<li><a href="#"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
+        <li><a href="#"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>-->
+        <li><a href="#" title="Share via Facebook, Twitter or Email"><i class="icon-share-alt tb-icon-dark"></i> Share</a></li>
       </ul>
     <?php } ?>
   </div>
@@ -95,7 +96,7 @@
       </div>
       <div class="details">
         <div class="toggle">
-          <span class="special-key">D</span>
+          <!--<span class="special-key">D</span>-->
           <span class="hide-details">Hide Details</span>
           <span class="show-details">Show Details</span>
         </div>
@@ -355,13 +356,14 @@
     <a data-toggle="dropdown" href="#"><i class="tb-icon-light <% if(!loading) { %>icon-cogs<% } else { %>icon-spinner icon-spin<% } %>"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
     <ul class="dropdown-menu">
       <% if (count > 0) { %>
-        <li><a>Batch edit your photos</a></li>
-        <li class="divider"></li>
-        <li><a href="#" class="tags">&nbsp;&middot;&nbsp;Add Tags</a></li>
-        <li><a href="#" class="albums">&nbsp;&middot;&nbsp;Add to Album</a></li>
-        <li><a href="#">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
+        <li><a>Update photo information</a></li>
+        <li><a href="#" class="showForm" data-id="tagsAdd">&nbsp;&middot;&nbsp;Add Tags</a></li>
+        <li><a href="#" class="showForm" data-id="albumsAdd">&nbsp;&middot;&nbsp;Add to Album</a></li>
+        <li><a href="#" class="showForm" data-id="privacy">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
         <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
-        <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>
+        <!--<li class="divider"></li>
+        <li><a>Modify photos</a></li>
+        <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>-->
         <li class="divider"></li>
         <li><a href="#" class="clear">Clear pinned photos</a></li>
       <% } else { %>
