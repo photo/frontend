@@ -384,7 +384,7 @@ class ApiPhotoController extends ApiBaseController
     $emailer = new Emailer($email);
     $emailer->setRecipients(array_merge(array($email), (array)explode(',', $_POST['recipients'])));
 
-    $body = $_POST['message'];
+    $body = nl2br($_POST['message']);
     if(!isset($_POST['attachment']))
     {
       $body .= sprintf('<p><img src="%s"></p>', $photo['pathBase']);
