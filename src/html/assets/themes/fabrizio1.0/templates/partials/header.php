@@ -50,8 +50,7 @@
       </div>
       <?php if($this->user->isAdmin()) { ?>
         <div class="container">
-          <div class="row batch-edit-form" style="margin-left:35px; display:none;">
-          </div>
+          <div class="row secondary-flyout"></div>
         </div>
       <?php } ?>
     </div>

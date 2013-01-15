@@ -1,100 +1,6 @@
 var TBX = (function() {
-  var callbacks, crumb, log, markup, profiles, pushstate, tags, pathname, util;
+  var crumb, log, markup, profiles, pushstate, tags, pathname, util;
 
-  callbacks = {
-    batch: function(response) { // this is the form params
-      var id, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos;
-      if(response.code === 200) {
-        if(typeof(this.permission) !== 'undefined') {
-          for(i in ids) {
-            if(ids.hasOwnProperty(i)) {
-              id = ids[i];
-              model = store.get(id);
-              if(model)
-                model.fetch();
-            }
-          }
-        }
-        TBX.notification.show('You successfully updated ' + photoCount + ' photo' + (photoCount>1?'s':'') + '.', 'flash', 'confirm');
-      } else {
-        TBX.notification.show('Sorry, an error occured when trying to add tags to your photos.', 'flash', 'error');
-      }
-      $('.batchHide').trigger('click');
-    },
-    credentialDelete: function(response) {
-      if(response.code === 204) {
-        this.closest('tr').slideUp('medium');
-        TBX.notification.show('Your app was successfully deleted.', null, 'error');
-      } else {
-        TBX.notification.show('There was a problem deleting your app.', null, 'error');
-      }
-    },
-    loginSuccess: function() {
-      var redirect = $('input[name="r"]', this).val();
-      window.location.href = redirect;
-    },
-    profilesSuccess: function(owner, viewer) {
-      var ownerId = owner.id, viewerId = viewer.id;
-      profiles.owner = owner;
-      if(viewer !== undefined)
-        profiles.viewer = viewer;
-
-      // create model(s)
-      op.data.store.Profiles.add(profiles.owner);
-      // only if the viewer !== owner do we create two models
-      if(viewer !== undefined && owner.isOwner === false)
-        op.data.store.Profiles.add(profiles.viewer);
-        
-      $('.user-badge-meta').each(function(i, el) {
-        (new op.data.view.UserBadge({model:op.data.store.Profiles.get(ownerId), el: el})).render();
-      });
-      $('.profile-name-meta.owner').each(function(i, el) {
-        (new op.data.view.ProfileName({model:op.data.store.Profiles.get(ownerId), el: el})).render();
-      });
-      $('.profile-photo-meta').each(function(i, el) {
-        (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(ownerId), el: el})).render();
-      });
-      (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(viewerId), el: $('.profile-photo-header-meta')})).render();
-    },
-    selectAll: function(i, el) {
-      var id = $(el).attr('data-id'), photo = op.data.store.Photos.get(id).toJSON();
-      OP.Batch.add(id, photo);
-    },
-    upload: function(ev) {
-      ev.preventDefault();
-      var uploader = $("#uploader").pluploadQueue();
-      if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
-        uploader.start();
-      } else {
-        // TODO something that doesn't suck
-        //opTheme.message.error('Please select at least one photo to upload.');
-      }
-    },
-    uploadCompleteSuccess: function(photoResponse) {
-      photoResponse.crumb = TBX.crumb();
-      $("form.upload").fadeOut('fast', function() {
-        OP.Util.makeRequest('/photos/upload/confirm.json', photoResponse, callbacks.uploadConfirm, 'json', 'post');
-      });
-    },
-    uploadConfirm: function(response) {
-      var $el, container, model, view, item, result = response.result, success = result.data.successPhotos;
-      $(".upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
-      $(".upload-confirm").html(result.tpl).show('fast', function(){
-        if(success.length > 0) {
-          op.data.store.Photos.add(success);
-          container = $('.upload-preview.success');
-          Gallery.showImages(container, success);
-        }
-      });
-    },
-    uploaderReady: function() {
-      var form = $('form.upload');
-      if(typeof OPU === 'object')
-        OPU.init();
-
-      //$("select.typeahead").chosen();
-    }
-  }; // callbacks
   crumb = (function() {
     var value = null;
     return {
@@ -140,7 +46,7 @@ var TBX = (function() {
         var result = response.result, id = result.id, owner = result, viewer = result.viewer || null;
         if(owner.viewer !== undefined)
           delete owner.viewer;
-        callbacks.profilesSuccess(owner, viewer);
+        TBX.callbacks.profilesSuccess(owner, viewer);
       }, 'json');
     }
   }; // profiles
@@ -229,11 +135,114 @@ var TBX = (function() {
 
   return {
     crumb: function() { return crumb.get(); },
+    callbacks: {
+      batch: function(response) { // this is the form params
+        var id, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos;
+        if(response.code === 200) {
+          if(typeof(this.permission) !== 'undefined') {
+            for(i in ids) {
+              if(ids.hasOwnProperty(i)) {
+                id = ids[i];
+                model = store.get(id);
+                if(model)
+                  model.fetch();
+              }
+            }
+          }
+          TBX.notification.show('You successfully updated ' + photoCount + ' photo' + (photoCount>1?'s':'') + '.', 'flash', 'confirm');
+        } else {
+          TBX.notification.show('Sorry, an error occured when trying to add tags to your photos.', 'flash', 'error');
+        }
+        $('.batchHide').trigger('click');
+      },
+      credentialDelete: function(response) {
+        if(response.code === 204) {
+          this.closest('tr').slideUp('medium');
+          TBX.notification.show('Your app was successfully deleted.', null, 'error');
+        } else {
+          TBX.notification.show('There was a problem deleting your app.', null, 'error');
+        }
+      },
+      loginSuccess: function() {
+        var redirect = $('input[name="r"]', this).val();
+        window.location.href = redirect;
+      },
+      profilesSuccess: function(owner, viewer) {
+        var ownerId = owner.id, viewerId = viewer.id;
+        profiles.owner = owner;
+        if(viewer !== undefined)
+          profiles.viewer = viewer;
+
+        // create model(s)
+        op.data.store.Profiles.add(profiles.owner);
+        // only if the viewer !== owner do we create two models
+        if(viewer !== undefined && owner.isOwner === false)
+          op.data.store.Profiles.add(profiles.viewer);
+          
+        $('.user-badge-meta').each(function(i, el) {
+          (new op.data.view.UserBadge({model:op.data.store.Profiles.get(ownerId), el: el})).render();
+        });
+        $('.profile-name-meta.owner').each(function(i, el) {
+          (new op.data.view.ProfileName({model:op.data.store.Profiles.get(ownerId), el: el})).render();
+        });
+        $('.profile-photo-meta').each(function(i, el) {
+          (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(ownerId), el: el})).render();
+        });
+        (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(viewerId), el: $('.profile-photo-header-meta')})).render();
+      },
+      selectAll: function(i, el) {
+        var id = $(el).attr('data-id'), photo = op.data.store.Photos.get(id).toJSON();
+        OP.Batch.add(id, photo);
+      },
+      share: function(response) {
+        var result = response.result;
+        $('.secondary-flyout').html(result.markup).slideDown('fast');
+      },
+      shareEmailSuccess: function(response) {
+        var result = response.result;
+        $('a.batchHide').trigger('click');
+        TBX.notification.show('Your photo was successfully emailed.', 'flash', 'confirm');
+      },
+      upload: function(ev) {
+        ev.preventDefault();
+        var uploader = $("#uploader").pluploadQueue();
+        if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
+          uploader.start();
+        } else {
+          // TODO something that doesn't suck
+          //opTheme.message.error('Please select at least one photo to upload.');
+        }
+      },
+      uploadCompleteSuccess: function(photoResponse) {
+        photoResponse.crumb = TBX.crumb();
+        $("form.upload").fadeOut('fast', function() {
+          OP.Util.makeRequest('/photos/upload/confirm.json', photoResponse, TBX.callbacks.uploadConfirm, 'json', 'post');
+        });
+      },
+      uploadConfirm: function(response) {
+        var $el, container, model, view, item, result = response.result, success = result.data.successPhotos;
+        $(".upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
+        $(".upload-confirm").html(result.tpl).show('fast', function(){
+          if(success.length > 0) {
+            op.data.store.Photos.add(success);
+            container = $('.upload-preview.success');
+            Gallery.showImages(container, success);
+          }
+        });
+      },
+      uploaderReady: function() {
+        var form = $('form.upload');
+        if(typeof OPU === 'object')
+          OPU.init();
+
+        //$("select.typeahead").chosen();
+      }
+    },
     handlers: {
       click: {
         batchHide: function(ev) {
           ev.preventDefault;
-          $('.batch-edit-form').slideUp();
+          $('.secondary-flyout').slideUp('fast');
         },
         credentialDelete: function(ev) {
           ev.preventDefault();
@@ -241,7 +250,7 @@ var TBX = (function() {
               url = el.attr('href')+'.json',
               params = {crumb: TBX.crumb()};
 
-          OP.Util.makeRequest(url, params, callbacks.credentialDelete.bind(el));
+          OP.Util.makeRequest(url, params, TBX.callbacks.credentialDelete.bind(el));
           return false;
         },
         notificationDelete: function(ev) {
@@ -256,7 +265,15 @@ var TBX = (function() {
         selectAll: function(ev) {
           ev.preventDefault();
           var $els = $('.photo-grid .imageContainer .pin.edit');
-          $els.each(callbacks.selectAll);
+          $els.each(TBX.callbacks.selectAll);
+        },
+        sharePopup: function(ev) {
+          ev.preventDefault();
+          var $el = $(ev.target), url = $el.attr('href'), w=575, h=300, l, t, opts;
+          l = parseInt(($(window).width()  - w)  / 2);
+          t = parseInt(($(window).height() - h) / 2);
+          opts = 'location=0,toolbar=0,status=0,width='+w+',height='+h+',left='+l+',top='+t;
+          window.open(url, 'TB', opts);
         }
       },
       custom: {
@@ -277,14 +294,14 @@ var TBX = (function() {
       submit: {
         batch: function(ev) {
           ev.preventDefault();
-          var $form = $(ev.currentTarget), formParams = $form.serializeArray(), batch = OP.Batch, params = {ids: batch.ids().join(','), crumb: TBX.crumb()};
+          var $form = $(ev.target), formParams = $form.serializeArray(), batch = OP.Batch, params = {ids: batch.ids().join(','), crumb: TBX.crumb()};
           $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
           for(i in formParams) {
             if(formParams.hasOwnProperty(i)) {
               params[formParams[i].name] = formParams[i].value;
             }
           }
-          OP.Util.makeRequest('/photos/update.json', params, callbacks.batch.bind(params), 'json', 'post');
+          OP.Util.makeRequest('/photos/update.json', params, TBX.callbacks.batch.bind(params), 'json', 'post');
         },
         login: function(ev) {
           ev.preventDefault();
@@ -297,9 +314,38 @@ var TBX = (function() {
               dataType:'json',
               data:params,
               type:'POST',
-              success: callbacks.loginSuccess,
-              error: function() { console.log('f'); },//opTheme.callback.loginOpenPhotoFailedCb,
+              success: TBX.callbacks.loginSuccess,
+              error: TBX.notification.display.generic.error,
               context: form
+            }
+          );
+        },
+        shareEmail: function(ev) {
+          ev.preventDefault();
+          var $form = $(ev.target),
+              params = $form.serialize()
+              ids = $('input[name="ids"]', $form).val(),
+              recipients = $('input[name="recipients"]', $form).val(),
+              message = $('textarea[name="message"]', $form).val();
+
+          if(recipients.length == 0) {
+            TBX.notification.show('Please specify at least one recipient.', 'flash', 'error');
+            return;
+          } else if(message.length === 0) {
+            TBX.notification.show('Please type in a message.', 'flash', 'error');
+            return;
+          }
+
+          $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
+          $.ajax(
+            {
+              url: '/photos/'+ids+'/share.json',
+              dataType:'json',
+              data:params,
+              type:'POST',
+              success: TBX.callbacks.shareEmailSuccess,
+              error: function() { $('button i', $form).remove(); TBX.notification.display.generic.error(); },
+              context: $form
             }
           );
           return false;
@@ -534,10 +580,10 @@ var TBX = (function() {
           }
         },
         upload: function() {
-          OP.Util.on('upload:complete-success', callbacks.uploadCompleteSuccess);
-          OP.Util.on('upload:complete-failure', callbacks.uploadCompleteFailure);
-          OP.Util.on('upload:uploader-ready', callbacks.uploaderReady);
-          OP.Util.on('submit:photo-upload', callbacks.upload);
+          OP.Util.on('upload:complete-success', TBX.callbacks.uploadCompleteSuccess);
+          OP.Util.on('upload:complete-failure', TBX.callbacks.uploadCompleteFailure);
+          OP.Util.on('upload:uploader-ready', TBX.callbacks.uploaderReady);
+          OP.Util.on('submit:photo-upload', TBX.callbacks.upload);
           OP.Util.fire('upload:uploader-ready');
         }
       }
@@ -562,31 +608,6 @@ var TBX = (function() {
         model.set('mode', mode, {silent:true});
         model.set('type', type, {silent:true});
         model.save();
-      }
-    },
-    message: {
-      append: function(html/*, isStatic*/) {
-        var el = $(".message:first").clone(false),
-            last = $(".message:last"),
-            isStatic = arguments[1] || false;
-
-        // TODO differentiate on type #962
-        el.addClass('alert alert-info').html(html);
-        last.after(el).slideDown();
-        if(!isStatic)
-          el.delay(5000).slideUp(function(){ $(this).remove(); });
-      },
-      confirm: function(messageHtml/*, isStatic*/) {
-        var isStatic = arguments[1] || false, msg = TBX.message;
-        TBX.message.show(messageHtml, 'confirm', isStatic);
-      },
-      error: function(messageHtml/*, isStatic*/) {
-        var isStatic = arguments[1] || false, msg = TBX.message;
-        msg.show(messageHtml, 'error', isStatic);
-      },
-      show: function(messageHtml, type/*, isStatic*/) {
-        var isStatic = arguments[1] || false, msg = TBX.message;
-        msg.append(markup.message(messageHtml, type), isStatic);
       },
       display: {
         generic: {
@@ -595,7 +616,7 @@ var TBX = (function() {
           }
         }
       }
-    }, // message
+    },
     profiles: {
       getOwner: function() {
         return profiles.owner.id;
