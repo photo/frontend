@@ -99,13 +99,13 @@ $routeObj->post('/?1?/webhook/subscribe', array('WebhookController', 'subscribe'
  * All oauth endpoints follow the same convention.
  * /v{version}/oauth/{action}
  */
-$routeObj->get('/v[1]/oauth/authorize', array('OAuthController', 'authorize'));
-$routeObj->post('/v[1]/oauth/authorize', array('OAuthController', 'authorizePost'));
-$routeObj->post('/v[1]/oauth/token/access', array('OAuthController', 'tokenAccess'));
-$routeObj->get('/v[1]/oauth/token/access', array('OAuthController', 'tokenAccess'));
-$routeObj->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenRequest'));
-$routeObj->get('/v[1]/oauth/test', array('OAuthController', 'test'));
-$routeObj->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
+$routeObj->get('/v[1-2]/oauth/authorize', array('OAuthController', 'authorize'));
+$routeObj->post('/v[1-2]/oauth/authorize', array('OAuthController', 'authorizePost'));
+$routeObj->post('/v[1-2]/oauth/token/access', array('OAuthController', 'tokenAccess'));
+$routeObj->get('/v[1-2]/oauth/token/access', array('OAuthController', 'tokenAccess'));
+$routeObj->post('/v[1-2]/oauth/token/request', array('OAuthController', 'tokenRequest'));
+$routeObj->get('/v[1-2]/oauth/test', array('OAuthController', 'test'));
+$routeObj->get('/v[1-2]/oauth/flow', array('OAuthController', 'flow'));
 
 /*
  * HTML endpoints that require logic
