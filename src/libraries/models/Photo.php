@@ -679,6 +679,46 @@ class Photo extends BaseModel
   /**
     * Uploads a new photo to the remote file system and database.
     *
+    * @param string $url URL of the photo to store locally
+    * @return mixed file pointer on success, FALSE on failure
+    */
+  public function storeLocally($url)
+  {
+    $file = tempnam(sys_get_temp_dir(), 'opme-locally-');
+    $fp = fopen($file, 'w');
+    if(!$fp)
+    {
+      $this->logger->warn('Could not create file pointer to store photo locally');
+      return false;
+    }
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_FILE, $fp);
+    $data = curl_exec($ch);
+    $curl_errno = curl_errno($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    curl_close($ch);
+    fclose($fp);
+
+    if($curl_errno !== 0)
+    {
+      $this->logger->warn('Storing photo locally failed due to curl error');
+      return false;
+    }
+
+    if($code != '200')
+    {
+      $this->logger->warn('Fetching of photo to store locally did not return a 200 HTTP response');
+      return false;
+    }
+
+    return $file;
+  }
+
+  /**
+    * Uploads a new photo to the remote file system and database.
+    *
     * @param string $localFile The local file system path to the photo.
     * @param string $name The file name of the photo.
     * @param array $attributes The attributes to save

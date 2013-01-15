@@ -1,5 +1,4 @@
 <?php if(isset($action) && !empty($action)) { ?>
-  <br>
   <?php // a few reasons we don't want to display the standard form ?>
   <?php if(
             ($action === 'albumsAdd' && isset($albums) && count($albums) === 0)
@@ -34,7 +33,7 @@
         </label>
         &nbsp;&nbsp;
       <?php } ?>
-      <button type="submit" class="btn btn-theme-secondary">Save</button> or <a href="#" class="batchHide">cancel</a>
+      <button type="submit" class="btn btn-brand">Save</button> or <a href="#" class="batchHide">cancel</a>
     </form>
   <?php } ?>
 <?php } ?>
