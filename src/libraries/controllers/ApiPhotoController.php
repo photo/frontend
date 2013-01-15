@@ -398,7 +398,9 @@ class ApiPhotoController extends ApiBaseController
       $emailer->addAttachment($localFile, $photo['filenameOriginal']);
     }
 
-    $subject = sprintf('%s has been shared with you', $photo['title']);
+    $subject = sprintf('%s has been shared with you', $photo['filenameOriginal']);
+    if(!empty($photo['title']))
+      $subject = $photo['title'];
     $emailer->setSubject($subject);
     $emailer->setBody(strip_tags($body), $body);
     $emailer->send();
