@@ -27,6 +27,11 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+    <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
+      <title><?php $this->theme->meta('titles', $page); ?></title>
+    <?php } ?>
+    <?php $this->plugin->invoke('renderHead'); ?>
   </head>
 
   <body class="trovebox <?php $this->utility->safe($page); ?>">
@@ -35,6 +40,7 @@
     </div>
 
     <div class="container">
+      <?php $this->plugin->invoke('renderBody'); ?>
       <?php echo $body; ?>
     </div> <!-- /container -->
     <div class="footer">
@@ -174,5 +180,6 @@
         });
       });*/
     -->
+    <?php $this->plugin->invoke('renderFooter'); ?>
   </body>
 </html>
