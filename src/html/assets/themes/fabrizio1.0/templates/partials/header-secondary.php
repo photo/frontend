@@ -1,7 +1,7 @@
           <?php if($this->utility->isActiveTab('photo')) { ?>
             <?php if($this->user->isAdmin()) { ?>
-              <li class="separator-left dropdown batch-meta"></li>
-              <li><a href="#" class="selectAll"><i class="icon-pushpin"></i> Select all</a></li>
+              <li class="separator-left"><a href="#" class="selectAll"><i class="icon-pushpin"></i> Select all</a></li>
+              <li class="dropdown batch-meta"></li>
             <?php } ?>
           <?php } elseif($this->utility->isActiveTab('upload')) {?>
             <li class="separator-left"><a href="#"><i class="icon-camera-retro icon-mobile-phone"></i> iPhone App</a></li>
