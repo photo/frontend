@@ -71,7 +71,7 @@
   
   .comments {
     h3 {
-      
+      font-size: 18px;
     }
     
     ul.comment-list {
@@ -254,8 +254,8 @@
   }
   
   .tags {
+    .clearfix();
     list-style: none;
-    margin: 20px 0;
     li {
       list-style: none;
       padding: 0;
@@ -276,6 +276,76 @@
           text-decoration: none;
         }
       }
+    }
+  }
+  
+  .collapsibles {
+    margin: 20px 0;
+    list-style: none;
+    clear: both;
+    
+    h3 {
+      line-height: 3em;
+      .arrow {
+        float: right;
+      }
+    }
+    
+    li {
+      a {
+        display: block;
+      }
+      .arrow {
+        line-height: 3em;
+      }
+      .open {
+        display: none;
+      }
+      .closed {
+        display: inline-block;
+      }
+    }
+    
+    li.active {
+      .open {
+        display: inline-block;
+      }
+      .closed {
+        display: none;
+      }
+    }
+    
+    .collapsible .c{
+      padding: 10px 0;
+    }
+    
+    .tags {
+      padding: 0;
+      margin: 0;
+    }
+    
+    table {
+      font-size: 11px;
+      color: #666;
+      tr{
+        vertical-align: top;
+        th {
+          padding-right: 8px;
+          white-space: nowrap;
+        }
+      }
+    }
+    
+    .map {
+      height: 120px;
+    }
+  }
+  
+  .rights {
+    color: #999;
+    font-size: 11px;
+    i {
+      .opacity(60);
     }
   }
 }

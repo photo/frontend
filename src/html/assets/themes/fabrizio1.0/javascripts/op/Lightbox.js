@@ -254,20 +254,18 @@
     },
     
     prev : function(ev){
-      if(typeof(ev) === 'object' && ev.hasOwnProperty('preventDefault'))
-        ev.preventDefault();
+      if(ev !== undefined && ev.preventDefault) ev.preventDefault();
       var i = _.indexOf( this.store.models, this.model ) - 1, router = TBX.init.pages.photos.router.router, id;
       if( i < 0 ) i = this.store.models.length-1;
       id = this.store.models[i].get('id');
       if( !$('body').hasClass('photo-details') ){
-        router.navigate('/p/'+id, {trigger: false});
+        //router.navigate('/p/'+id, {trigger: false});
       }
       this.go(i);
     },
     
     next : function(ev){
-      if(typeof(ev) === 'object' && ev.hasOwnProperty('preventDefault'))
-        ev.preventDefault();
+      if(ev !== undefined && ev.preventDefault) ev.preventDefault();
       var i = _.indexOf( this.store.models, this.model ) + 1, router = TBX.init.pages.photos.router.router, id;
       // at the end, load some more synchronously
       if( i > this.store.models.length-1 ) {

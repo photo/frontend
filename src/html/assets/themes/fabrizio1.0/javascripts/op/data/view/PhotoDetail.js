@@ -93,10 +93,76 @@
     }
   });
   
+  var CollapsiblesView = Backbone.View.extend({
+    open : {},
+    template : _.template($('#photo-detail-collapsibles-tmpl').html()),
+    render : function(){
+      var self = this;
+      
+      $(this.el).html(this.template(this.model.toJSON()));
+      $(this.el).find('.collapse').on({
+        'show' : function(e){
+          self.open[$(e.target).attr('id')] = true;
+          $(e.target).parents('.collapsibles li').addClass('active');
+          
+          if( e.target.id == 'photo-location' ){
+            self.updateMap();
+          }
+          
+        },
+        'hide' : function(e){
+          self.open[$(e.target).attr('id')] = false;
+          $(e.target).parents('.collapsibles li').removeClass('active');
+        }
+      });
+      
+      for(var i in this.open ) if( this.open[i] ){
+        $('a[href=#'+i+']').parents('.collapsibles li').addClass('active');
+        $('#'+i).addClass('in');
+        if(i === 'photo-location' ) this.updateMap();
+      }
+      
+      
+      return this;
+    },
+    updateMap : function(){
+      var lat,lng;
+            
+      /**
+       * DEMO
+       */
+      this.model.set('latitude',42.66937, {silent:true});
+      this.model.set('longitude',-71.646664, {silent:true});
+      
+      if((lat=this.model.get('latitude')) && (lng=this.model.get('longitude')) ){
+        var mapOptions = {
+          center: new google.maps.LatLng(lat, lng),
+          zoom: 10,
+          mapTypeControl: false,
+          zoomControl: false,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map($(this.el).find('.map')[0], mapOptions);
+        var marker = new google.maps.Marker({
+          map: map,
+          position: map.getCenter()
+        });
+      }
+    }
+  });
+  
   op.ns('data.view').PhotoDetail = op.data.view.Editable.extend({
     
     largePath : 'path870x870',
     thumbPath : 'path180x180xCR',
+    
+    viewMap : {
+      '.comments'     :CommentsView,
+      '.photo-title'  :TitleView,
+      '.description'  :DescriptionView,
+      '.photo-meta'   :PhotoMetaView,
+      '.collapsibles' :CollapsiblesView
+    },
     
     initialize: function() {
       Backbone.history.start({pushState: true});
@@ -106,6 +172,7 @@
       this.store = op.data.store.Photos;
       this.initialModel = this.model;
       this.thumbs = {};
+      this.views = {};
       var self = this;
       op.Lightbox.getInstance().on('updatemodel', function(model){
         self.go(model.get('id'));
@@ -141,42 +208,22 @@
     
     updateViews : function(){
       this.updateUserBadge();
-      this.updateComments();
-      this.updateTitle();
-      this.updateDescription();
-      this.updateMeta();
+      for(var i in this.viewMap )
+        if( this.viewMap.hasOwnProperty(i) ){
+          this.updateView(i);
+        }
     },
     
-    updateTitle : function(){
-      var el = $(this.el).find('.photo-title');
-      if( !this.titleView ){
-        this.titleView = new TitleView({el:el, model: this.model}).render();
+    updateView : function(name){
+      if( !this.views[name] ){
+        this.views[name] = new this.viewMap[name]({
+          el: $(this.el).find(name),
+          model: this.model
+        }).render();
       }
-      else {
-        this.titleView.model = this.model;
-        this.titleView.render();
-      }
-    },
-    
-    updateDescription : function(){
-      var el = $(this.el).find('.description');
-      if( !this.descriptionView ){
-        this.descriptionView = new DescriptionView({el:el, model: this.model}).render();
-      }
-      else {
-        this.descriptionView.model = this.model;
-        this.descriptionView.render();
-      }
-    },
-    
-    updateMeta : function(){
-      var el = $(this.el).find('.photo-meta');
-      if( !this.photoMetaView ){
-        this.photoMetaView = new PhotoMetaView({el:el, model: this.model}).render();
-      }
-      else {
-        this.photoMetaView.model = this.model;
-        this.photoMetaView.render();
+      else{
+        this.views[name].model = this.model;
+        this.views[name].render();
       }
     },
     
@@ -188,11 +235,6 @@
       if( model ){
         new op.data.view.UserBadge({el: $el, model: model}).render();
       }
-    },
-    
-    updateComments : function(){
-      var $el = $(this.el).find('.comments');
-      (new CommentsView({el: $el, model: this.model})).render();
     },
     
     setupPagination : function(){

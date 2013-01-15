@@ -49,6 +49,7 @@ class GeneralController extends BaseController
     */
   public function home()
   {
+    
     $template = $this->utility->getTemplate('front.php');
     if(!$this->theme->fileExists($template))
       $this->route->redirect($this->url->photosView(null, false));
