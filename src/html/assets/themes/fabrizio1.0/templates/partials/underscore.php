@@ -6,8 +6,7 @@
       <ul class="info">
         <!--<li><a href="#" title="Comments"><i class="icon-comments tb-icon-dark"></i> <span class="number">24</span></li>
         <li><a href="#" title="Favorites"><i class="icon-heart tb-icon-dark"></i> <span class="number">24</span></li>-->
-        <li><a href="#" title="Share via Facebook, Twitter or Email"><i class="icon-share-alt tb-icon-dark"></i> Share</a> &nbsp;</li>
-        <li class="divider"></li>
+        <li><a href="#" class="share" title="Share via Facebook, Twitter or Email" data-id="<%= id %>"><i class="icon-share-alt tb-icon-dark"></i> Share</a> &nbsp;</li>
         <li class="pull-right"><a href="#" title="Delete this photo"><i class="icon-trash tb-icon-dark delete edit" data-id="<%= id %>"></i></li>
         <li class="pull-right"><a href="#" title="Select for batch editing"><i class="icon-pushpin tb-icon-dark pin edit" data-id="<%= id %>"></i></li>
         <li class="pull-right"><a href="#" title="Set as your profile photo"><i class="icon-user tb-icon-dark profile edit" data-id="<%= id %>"></i></li>

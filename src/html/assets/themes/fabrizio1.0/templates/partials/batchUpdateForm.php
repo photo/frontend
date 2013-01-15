@@ -1,5 +1,4 @@
 <?php if(isset($action) && !empty($action)) { ?>
-  <br>
   <?php // a few reasons we don't want to display the standard form ?>
   <?php if(
             ($action === 'albumsAdd' && isset($albums) && count($albums) === 0)
