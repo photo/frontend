@@ -45,7 +45,8 @@
       'click .delete.edit': 'delete',
       'click .permission.edit': 'permission',
       'click .profile.edit': 'profile',
-      'click .pin.edit': 'pin'
+      'click .pin.edit': 'pin',
+      'click .share': 'share'
     },
     delete: function(ev) {
       ev.preventDefault();
@@ -53,13 +54,13 @@
 
       confirmation = confirm('Are you sure you want to delete this photo?');
       if(confirmation)
-        model.destroy({success: this.modelDestroyed, error: TBX.message.display.generic.error});
+        model.destroy({success: this.modelDestroyed, error: TBX.notification.display.generic.error});
     },
     permission: function(ev) {
       ev.preventDefault();
       var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model, permission = model.get('permission') == 0 ? 1 : 0;
       model.set('permission', permission, {silent: true});
-      model.save(null, {error: TBX.message.display.generic.error});
+      model.save(null, {error: TBX.notification.display.generic.error});
     },
     pin: function(ev) {
       ev.preventDefault();
@@ -81,6 +82,11 @@
         viewerModel.set('photoId', id, {silent:true});
         viewerModel.save();
       }
+    },
+    share: function(ev) {
+      ev.preventDefault();
+      var $el = $(ev.currentTarget), id = $el.attr('data-id');
+      OP.Util.makeRequest('/photos/'+id+'/share.json', {}, TBX.callbacks.share, 'json', 'get');
     },
     modelChanged: function() {
       this.render();

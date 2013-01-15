@@ -357,6 +357,60 @@ class ApiPhotoController extends ApiBaseController
     return $this->success(sprintf('Photo %s was successfully replaced.', $id), $photoResp['result']);
   }
 
+  public function share($ids)
+  {
+    $idsArr = (array)explode(',', $ids);
+    $photoResp = $this->api->invoke(sprintf('/photo/%s/view.json', $idsArr[0]), EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200')));
+    if($photoResp['code'] !== 200)
+      return $this->error('Could not get first photo to share.', false);
+
+    $markup = $this->theme->get('partials/share.php', array('photo' => $photoResp['result'], 'ids' => $idsArr, 'crumb' => $this->session->get('crumb')));
+    return $this->success('Photo share form', array('markup' => $markup));
+  }
+
+  public function sharePost($ids)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $email = $this->session->get('email');
+    if(empty($email) || empty($_POST['message']) || empty($_POST['recipients']))
+      return $this->error('Not all parameters were passed in', false);
+
+    $photoResp = $this->api->invoke(sprintf('/photo/%s/view.json', $ids), EpiRoute::httpGet);
+    $photo = $photoResp['result'];
+    if($photoResp['code'] !== 200)
+      return $this->error('Could retrieve photo data', false);
+
+    $emailer = new Emailer($email);
+    $emailer->setRecipients(array_merge(array($email), (array)explode(',', $_POST['recipients'])));
+
+    $body = nl2br($_POST['message']);
+    if(!isset($_POST['attachment']))
+    {
+      $body .= sprintf('<p><img src="%s"></p>', $photo['pathBase']);
+    }
+    else
+    {
+      $localFile = $this->photo->storeLocally($photo['pathBase']);
+      if($localFile === false)
+        return $this->error('Could not complete request', false);
+
+      $emailer->addAttachment($localFile, $photo['filenameOriginal']);
+    }
+
+    $subject = sprintf('%s has been shared with you', $photo['filenameOriginal']);
+    if(!empty($photo['title']))
+      $subject = $photo['title'];
+    $emailer->setSubject($subject);
+    $emailer->setBody(strip_tags($body), $body);
+    $emailer->send();
+
+    if(isset($localFile) && $localFile !== false)
+      unlink($localFile);
+
+    return $this->success('yes', array('ids' => $ids, 'post' => $_POST));  
+  }
+
   /**
     * Transform a photo.
     * Modifies a photo by rotating/BW/etc.

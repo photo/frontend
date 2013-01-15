@@ -45,7 +45,7 @@
       OP.Util.makeRequest('/photos/update.json', params, function(response) {
         var result = response.result;
         model.set('loading', false);
-        $('.batch-edit-form').html(result.markup).slideDown('medium');
+        $('.secondary-flyout').html(result.markup).slideDown('fast');
       }, 'json', 'get');
       return;
     },
