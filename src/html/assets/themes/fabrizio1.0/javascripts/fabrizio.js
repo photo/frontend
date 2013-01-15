@@ -2,10 +2,29 @@ var TBX = (function() {
   var callbacks, crumb, log, markup, profiles, pushstate, tags, pathname, util;
 
   callbacks = {
+    batch: function(response) { // this is the form params
+      var id, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos;
+      if(response.code === 200) {
+        if(typeof(this.permission) !== 'undefined') {
+          for(i in ids) {
+            if(ids.hasOwnProperty(i)) {
+              id = ids[i];
+              model = store.get(id);
+              if(model)
+                model.fetch();
+            }
+          }
+        }
+        TBX.notification.show('You successfully updated ' + photoCount + ' photo' + (photoCount>1?'s':'') + '.', 'flash', 'confirm');
+      } else {
+        TBX.notification.show('Sorry, an error occured when trying to add tags to your photos.', 'flash', 'error');
+      }
+      $('.batchHide').trigger('click');
+    },
     credentialDelete: function(response) {
       if(response.code === 204) {
         this.closest('tr').slideUp('medium');
-        TBX.notification.show('Your app was successfully deleted.');
+        TBX.notification.show('Your app was successfully deleted.', null, 'error');
       } else {
         TBX.notification.show('There was a problem deleting your app.', null, 'error');
       }
@@ -212,6 +231,10 @@ var TBX = (function() {
     crumb: function() { return crumb.get(); },
     handlers: {
       click: {
+        batchHide: function(ev) {
+          ev.preventDefault;
+          $('.batch-edit-form').slideUp();
+        },
         credentialDelete: function(ev) {
           ev.preventDefault();
           var el = $(ev.target),
@@ -252,6 +275,17 @@ var TBX = (function() {
       keyup: { },
       mouseover: { },
       submit: {
+        batch: function(ev) {
+          ev.preventDefault();
+          var $form = $(ev.currentTarget), formParams = $form.serializeArray(), batch = OP.Batch, params = {ids: batch.ids().join(','), crumb: TBX.crumb()};
+          $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
+          for(i in formParams) {
+            if(formParams.hasOwnProperty(i)) {
+              params[formParams[i].name] = formParams[i].value;
+            }
+          }
+          OP.Util.makeRequest('/photos/update.json', params, callbacks.batch.bind(params), 'json', 'post');
+        },
         login: function(ev) {
           ev.preventDefault();
           var form = $(ev.target),
@@ -609,6 +643,13 @@ var TBX = (function() {
       show: function(messageHtml, type/*, isStatic*/) {
         var isStatic = arguments[1] || false, msg = TBX.message;
         msg.append(markup.message(messageHtml, type), isStatic);
+      },
+      display: {
+        generic: {
+          error: function() {
+            TBX.notification.show('Sorry, an unknown error occurred.', 'flash', 'error');
+          }
+        }
       }
     }, // message
     profiles: {
