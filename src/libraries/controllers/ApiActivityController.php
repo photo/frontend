@@ -46,8 +46,9 @@ class ApiActivityController extends ApiBaseController
 
     if($activities !== false)
       return $this->success("User's list of activities", $activities);
-    else
+    else{      
       return $this->error('Could not get activities', false);
+    }
   }
 
   public function purge()
