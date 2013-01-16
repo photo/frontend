@@ -37,4 +37,4 @@
     </form>
   <?php } ?>
 <?php } ?>
-
+<a href="#" class="batchHide close" title="Close this dialog"><i class="icon-remove batchHide"></i></a>

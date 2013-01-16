@@ -254,7 +254,7 @@ var TBX = (function() {
     handlers: {
       click: {
         batchHide: function(ev) {
-          ev.preventDefault;
+          ev.preventDefault();
           $('.secondary-flyout').slideUp('fast');
         },
         credentialDelete: function(ev) {
@@ -300,8 +300,10 @@ var TBX = (function() {
         },
         selectAll: function(ev) {
           ev.preventDefault();
-          var $els = $('.photo-grid .imageContainer .pin.edit');
+          var $els = $('.photo-grid .imageContainer .pin.edit'), batch = OP.Batch, preCount = batch.length(), addedCount;
           $els.each(TBX.callbacks.selectAll);
+          addedCount = batch.length() - preCount;
+          TBX.notification.show(addedCount + ' new photos were <em>added</em> to your <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
         },
         sharePopup: function(ev) {
           ev.preventDefault();
@@ -553,7 +555,7 @@ var TBX = (function() {
           photo: null,
           el: $('.photo-detail'),
           init: function() {
-            var _this = TBX.init.pages.photo;
+            var options, _this = TBX.init.pages.photo;
             if(_this.initData === undefined) {
               return;
             }
@@ -607,7 +609,7 @@ var TBX = (function() {
           end: false,
           running: false,
           init: function() {
-            var routes, _pages = TBX.init.pages, _this = _pages.photos, batchModel = _pages.photos.batchModel, $batchEl = $('.batch-meta');
+            var options, _pages = TBX.init.pages, _this = _pages.photos, batchModel = _pages.photos.batchModel, $batchEl = $('.batch-meta');
             $(window).scroll(function() { util.scrollCb(_this); });
             _this.load();
             (new op.data.view.BatchIndicator({model:batchModel, el: $batchEl})).render();
