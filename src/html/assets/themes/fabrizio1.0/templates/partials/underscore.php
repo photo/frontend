@@ -312,37 +312,37 @@
     <div id="photo-exif" class="collapsible collapse">
       <div class="c">
         <table cellpadding="0" cellspacing="0" border="0">
-          <% if( typeof exifCameraMake !== 'undefined' && exifCameraMake.length > 0 ){ %>
+          <% if( exifCameraMake ){ %>
             <tr>
               <th>Camera Make</th>
               <td><%= exifCameraMake %></td>
             </tr>
           <% } %>
-          <% if( typeof exifCameraModel !== 'undefined' && exifCameraModel.length > 0 ){ %>
+          <% if( exifCameraModel ){ %>
             <tr>
               <th>Camera Model</th>
               <td><%= exifCameraModel %></td>
             </tr>
           <% } %>
-          <% if( typeof exifExposureTime !== 'undefined' && exifExposureTime.length > 0 ){ %>
+          <% if( exifExposureTime ){ %>
             <tr>
               <th>Exposure Time</th>
               <td><%= exifExposureTime %></td>
             </tr>
           <% } %>
-          <% if( typeof exifFNumber !== 'undefined' && exifFNumber.length > 0 ){ %>
+          <% if( exifFNumber ){ %>
             <tr>
               <th>F Number</th>
               <td><%= exifFNumber %></td>
             </tr>
           <% } %>
-          <% if( typeof exifFocalLength !== 'undefined' && exifFocalLength.length > 0 ){ %>
+          <% if( exifFocalLength ){ %>
             <tr>
               <th>Focal Length</th>
               <td><%= exifFocalLength %></td>
             </tr>
           <% } %>
-          <% if( typeof exifISOSpeed !== 'undefined' && exifISOSpeed.length > 0 ){ %>
+          <% if( exifISOSpeed ){ %>
             <tr>
               <th>ISO Time</th>
               <td><%= exifISOSpeed %></td>
