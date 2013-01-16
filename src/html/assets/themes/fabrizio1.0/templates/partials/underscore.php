@@ -169,31 +169,35 @@
       
     </div>
     <div class="span3">
-      
-      <div class="userbadge userbadge-light user-badge-meta owner"></div>
-      
-      <div class="pagination">
-        <div class="slider">
-          <div class="arrow arrow-prev"><i class="icon-angle-left"></i></div>
-
-          <div class="photos">
-            <div class="scroller">
-              <div class="thumbs"></div>
+      <ul class="sidebar">
+        <li>
+          <div class="userbadge userbadge-light user-badge-meta owner"></div>
+        </li>
+        <li>
+          <div class="pagination">
+            <div class="slider">
+              <div class="arrow arrow-prev"><i class="icon-angle-left"></i></div>
+    
+              <div class="photos">
+                <div class="scroller">
+                  <div class="thumbs"></div>
+                </div>
+              </div>
+              <div class="arrow arrow-next"><i class="icon-angle-right"></i></div>
             </div>
           </div>
-          <div class="arrow arrow-next"><i class="icon-angle-right"></i></div>
-        </div>
+        </li>
+        <li>
+          <div class="photo-meta"></div>
+        </li>
+        <li>
+          <ul class="collapsibles"></ul>
+        </li>
+        <li>
+          <div class="rights"></div>
+        </li>
       </div>
-      
-      <div class="photo-meta"></div>
-      <ul class="collapsibles"></ul>
-      <div class="rights">
-        <i class="tb-icon-small-cc"></i>
-        <i class="tb-icon-small-cc-by"></i>
-        <i class="tb-icon-small-cc-nd"></i>
-        Some Rights Reserved
-      </div>
-    </div>
+    </ul>
   </div>
 </script>
 
@@ -257,6 +261,13 @@
     <?php } ?>
     
   </ul>
+</script>
+
+<script type="tmpl/underscore" id="photo-detail-rights-tmpl">
+  <i class="tb-icon-small-cc"></i>
+  <i class="tb-icon-small-cc-by"></i>
+  <i class="tb-icon-small-cc-nd"></i>
+  Some Rights Reserved
 </script>
 
 <script type="tmpl/underscore" id="photo-detail-collapsibles-tmpl">
