@@ -48,7 +48,7 @@
     },
     share: function(ev) {
       ev.preventDefault();
-      var $el = $(ev.currentTarget), id = $el.attr('data-id'), router = TBX.init.pages.photos.router.router;
+      var $el = $(ev.currentTarget), id = $el.attr('data-id'), router = op.data.store.Router;
       OP.Util.makeRequest('/photos/'+id+'/share.json', {}, function(response) {
         router.navigate(op.Lightbox.prototype._path, {trigger: true});
         TBX.callbacks.share(response);
@@ -195,7 +195,7 @@
     },
     
     hide : function(){
-      var router = TBX.init.pages.photos.router.router;
+      var router = op.data.store.Router;
       this._releaseDocumentEvents();
       this._visible = false;
       this.$el.fadeOut('fast');
@@ -265,18 +265,18 @@
     
     prev : function(ev){
       if(ev !== undefined && ev.preventDefault) ev.preventDefault();
-      var i = _.indexOf( this.store.models, this.model ) - 1, router = TBX.init.pages.photos.router.router, id;
+      var i = _.indexOf( this.store.models, this.model ) - 1, router = op.data.store.Router, id;
       if( i < 0 ) i = this.store.models.length-1;
       id = this.store.models[i].get('id');
       if( !$('body').hasClass('photo-details') ){
-        //router.navigate('/p/'+id, {trigger: false});
+        router.navigate('/p/'+id, {trigger: false});
       }
       this.go(i);
     },
     
     next : function(ev){
       if(ev !== undefined && ev.preventDefault) ev.preventDefault();
-      var i = _.indexOf( this.store.models, this.model ) + 1, router = TBX.init.pages.photos.router.router, id;
+      var i = _.indexOf( this.store.models, this.model ) + 1, router = op.data.store.Router, id;
       // at the end, load some more synchronously
       if( i > this.store.models.length-1 ) {
         TBX.init.pages.photos.load(false);
