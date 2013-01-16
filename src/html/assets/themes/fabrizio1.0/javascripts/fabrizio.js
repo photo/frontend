@@ -295,7 +295,7 @@ var TBX = (function() {
         },
         photoModal: function(ev) {
           ev.preventDefault();
-          var $el = $(ev.target), url = '/p/'+$el.attr('data-id'), router = TBX.init.pages.photos.router.router;
+          var $el = $(ev.target), url = '/p/'+$el.attr('data-id'), router = op.data.store.Router;
           router.navigate(url, {trigger:true});
         },
         selectAll: function(ev) {
@@ -597,11 +597,21 @@ var TBX = (function() {
           end: false,
           running: false,
           init: function() {
-            var _pages = TBX.init.pages, _this = _pages.photos, batchModel = _pages.photos.batchModel, $batchEl = $('.batch-meta');
+            var routes, _pages = TBX.init.pages, _this = _pages.photos, batchModel = _pages.photos.batchModel, $batchEl = $('.batch-meta');
             $(window).scroll(function() { util.scrollCb(_this); });
             _this.load();
             (new op.data.view.BatchIndicator({model:batchModel, el: $batchEl})).render();
-            _this.router.init();
+
+            options = {
+              routes: {
+                "p/:id": "photoModal",
+                "photos/:options/list": "photosList",
+                "photos/list": "photosList"
+              },
+            };
+            op.data.store.Router = new op.data.route.Routes(options);
+            // Start Backbone history a necessary step for bookmarkable URL's
+            Backbone.history.start({pushState: true, silent: true});
           },
           load: function() {
             var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];
@@ -636,38 +646,6 @@ var TBX = (function() {
             } else {
               $('.load-more').hide();
               _this.end = true;
-            }
-          },
-          router: {
-            router: null,
-            lightbox: null,
-            init: function() {
-              var _this = TBX.init.pages.photos.router, appRouter;
-              
-              appRouter = Backbone.Router.extend({
-                  routes: {
-                      "p/:id": "photoModal", // matches http://example.com/#anything-here
-                      "photos/:options/list": "photosList",
-                      "photos/list": "photosList"
-                  }
-              });
-
-              // Initiate the router
-              _this.router = new appRouter;
-
-              _this.router.on('route:photoModal', function(id) {
-                _this = TBX.init.pages.photos.router;
-                if(_this.lightbox === null)
-                  _this.lightbox = op.Lightbox.getInstance();
-                _this.lightbox.open(id);
-              });
-              _this.router.on('route:photosList', function(id) {
-                _this = TBX.init.pages.photos.router;
-                _this.lightbox.hide();
-              });
-
-              // Start Backbone history a necessary step for bookmarkable URL's
-              Backbone.history.start({pushState: true, silent: true});
             }
           }
         },
