@@ -393,6 +393,7 @@
         
       this.loadMore( x > c );
       this.updateModel(this.store.get(id));
+      router.navigate('/p/'+id, {trigger: false});
     },
     
     loadMore : function( dir ){
