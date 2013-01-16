@@ -558,6 +558,16 @@ var TBX = (function() {
               return;
             }
 
+            options = {
+              routes: {
+                "p/:id": "photoDetail" 
+              },
+              render: _this.render
+            };
+            op.data.store.Router = new op.data.route.Routes(options);
+            // Start Backbone history a necessary step for bookmarkable URL's
+            Backbone.history.start({pushState: true, silent: true});
+
             _this.photo = initData;
             delete _this.photo.actions;
             _this.render(_this.photo);
