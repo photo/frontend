@@ -175,8 +175,6 @@
     },
     
     initialize: function() {
-      Backbone.history.start({pushState: true});
-      this.router = new Backbone.Router();
       this.model.on('change', this.updateViews, this);
       this.on('afterrender', this.onAfterRender, this);
       this.store = op.data.store.Photos;
@@ -379,6 +377,7 @@
       // get the difference
       var init = _.indexOf( this.store.models, this.initialModel )
         , diff = _.indexOf( this.store.models, this.store.get(id) ) - init
+        , router = op.data.store.Router;
       
       $(this.el).find('.pagination .photos .scroller .thumbs')
         .stop()
