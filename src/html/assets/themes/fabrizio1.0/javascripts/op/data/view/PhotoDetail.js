@@ -93,6 +93,14 @@
     }
   });
   
+  var RightsView = Backbone.View.extend({
+    template : _.template($('#photo-detail-rights-tmpl').html()),
+    render : function(){
+      $(this.el).html(this.template(this.model.toJSON()));
+      return this;
+    }
+  });
+  
   var CollapsiblesView = Backbone.View.extend({
     open : {},
     template : _.template($('#photo-detail-collapsibles-tmpl').html()),
@@ -139,6 +147,7 @@
           center: new google.maps.LatLng(lat, lng),
           zoom: 10,
           mapTypeControl: false,
+          streetViewControl: false,
           zoomControl: false,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
@@ -161,12 +170,11 @@
       '.photo-title'  :TitleView,
       '.description'  :DescriptionView,
       '.photo-meta'   :PhotoMetaView,
-      '.collapsibles' :CollapsiblesView
+      '.collapsibles' :CollapsiblesView,
+      '.rights'       :RightsView
     },
     
     initialize: function() {
-      Backbone.history.start({pushState: true});
-      this.router = new Backbone.Router();
       this.model.on('change', this.updateViews, this);
       this.on('afterrender', this.onAfterRender, this);
       this.store = op.data.store.Photos;
@@ -369,6 +377,7 @@
       // get the difference
       var init = _.indexOf( this.store.models, this.initialModel )
         , diff = _.indexOf( this.store.models, this.store.get(id) ) - init
+        , router = op.data.store.Router;
       
       $(this.el).find('.pagination .photos .scroller .thumbs')
         .stop()
@@ -384,6 +393,7 @@
         
       this.loadMore( x > c );
       this.updateModel(this.store.get(id));
+      router.navigate('/p/'+id, {trigger: false});
     },
     
     loadMore : function( dir ){
