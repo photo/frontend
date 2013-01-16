@@ -1,4 +1,4 @@
-<h4>Share this photo via email or social networks <small>(<a href="#" class="batchHide">close</a>)</small></h4>
+<h4>Share this photo via email or social networks</h4>
 <div class="row">
   <div class="span3 preview">
     <img src="<?php $this->utility->safe($photo['path200x200']); ?>" class="img-polaroid">
@@ -10,9 +10,10 @@
         <strong>Email this photo</strong>
         <input type="text" class="span3" placeholder="a@gmail.com, b@yahoo.com" name="recipients">
         <textarea class="span3" placeholder="Optionally type a message..." name="message"></textarea>
-        <label class="checkbox">
+        <input type="hidden" name="attachment" value="1">
+        <!--<label class="checkbox">
           <input type="checkbox" checked="checked" name="attachment" value="1"> Send as attachment
-        </label>
+        </label>-->
         <button class="btn btn-brand">Send Email</button>
         <input type="hidden" name="ids" value="<?php $this->utility->safe(implode(',', $ids)); ?>">
         <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
@@ -28,3 +29,4 @@
     </ul>
   </div>
 </div>
+<a href="#" class="batchHide close" title="Close this dialog"><i class="icon-remove batchHide"></i></a>
