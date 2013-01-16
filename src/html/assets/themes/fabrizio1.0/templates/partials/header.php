@@ -37,7 +37,7 @@
     <div class="navbar-inner navbar-inner-secondary">
       <div class="container">
         <ul class="nav">
-          <li><a href="#"><i class="icon-home"></i></a></li>
+          <li><a href="/"><i class="icon-home"></i></a></li>
           <li class="separator-left"><span class="profile-name-meta owner"></span></li>
           <?php $this->theme->display('partials/header-secondary.php', array()); ?>
         </ul>
