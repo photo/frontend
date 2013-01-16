@@ -70,6 +70,7 @@
     <script src="<?php $this->theme->asset('javascript', 'phpjs.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'overrides.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/namespace.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/route/Routes.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Album.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Batch.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Notification.js'); ?>"></script>
