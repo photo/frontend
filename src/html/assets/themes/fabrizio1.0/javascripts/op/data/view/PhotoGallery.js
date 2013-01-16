@@ -67,8 +67,10 @@
       var el = $(ev.currentTarget), id = el.attr('data-id'), batch = OP.Batch, photo = op.data.store.Photos.get(id).toJSON();
       if(batch.exists(id)) { // exists, we need to remove
         OP.Batch.remove(id);
+        TBX.notification.show('1 photo was <em>removed</em> from your <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
       } else { // let's add it
         OP.Batch.add(id, photo);
+        TBX.notification.show('1 photo was <em>added</em> from your <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
       }
     },
     profile: function(ev) {
@@ -77,7 +79,7 @@
           ownerModel = op.data.store.Profiles.get(TBX.profiles.getOwner()),
           viewerModel = op.data.store.Profiles.get(TBX.profiles.getViewer());
       ownerModel.set('photoId', id, {silent:true});
-      ownerModel.save();
+      ownerModel.save(null, {error: TBX.notification.display.generic.error, success: function(){ TBX.notification.show('Your profile photo was successfully updated.', 'flash', 'confirm'); }});
       if(TBX.profiles.getOwner() !== TBX.profiles.getViewer()) {
         viewerModel.set('photoId', id, {silent:true});
         viewerModel.save();
