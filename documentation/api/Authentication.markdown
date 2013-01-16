@@ -4,7 +4,7 @@ Authentication using OAuth 1.0a
 ### Using OAuth (1.0a)
 
 A full introduction to OAuth is beyond the scope of the OpenPhoto documentation.
-In all reality you probably don't need to understand the ins and outs of OAuth, just grab one of our libraries.
+In all reality you probably don't need to understand all the ins and outs of OAuth; just grab one of our libraries and start building.
 
 * <a href="https://github.com/photo/openphoto-php">openphoto/openphoto-php</a> - Our PHP language binding.
 * <a href="https://github.com/photo/openphoto-ruby">openphoto/openphoto-ruby</a> - Our Ruby language binding.
