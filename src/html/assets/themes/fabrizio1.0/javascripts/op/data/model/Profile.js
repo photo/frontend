@@ -1,35 +1,25 @@
 (function($){
   /* ------------------------------- Profile ------------------------------- */
   op.ns('data.model').Profile = Backbone.Model.extend({
-    sync: function(method, model) {
-      var params = {};
-      params.crumb = TBX.crumb();
+    sync: function(method, model, options) {
+      options.data = {};
+      options.data.crumb = TBX.crumb();
+      options.data.httpCodes='*';
       switch(method) {
         case 'read':
-          $.get('/user/profile.json', params, function(response) {
-            if(response.code === 200) {
-              model.save(response.result, {silent:true});
-            } else {
-              model.trigger('error');
-            }
-          }, 'json');
+          options.url = '/user/profile.json';
           break;
         case 'update':
+          options.url = '/user/profile.json';
           var changedParams = model.changedAttributes();
           for(i in changedParams) {
             if(changedParams.hasOwnProperty(i)) {
-              params[i] = changedParams[i];
+              options.data[i] = changedParams[i];
             }
           }
-          $.post('/user/profile.json', params, function(response) {
-            if(response.code === 200) {
-              model.set('photoUrl', response.result.photoUrl);
-            } else {
-              model.trigger('error');
-            }
-          }, 'json');
           break;
       }
+      return Backbone.sync(method, model, options);
     },
     parse: function(response) {
       return response.result;
