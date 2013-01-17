@@ -149,6 +149,7 @@
           mapTypeControl: false,
           streetViewControl: false,
           zoomControl: false,
+          scrollwheel: false,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map($(this.el).find('.map')[0], mapOptions);
