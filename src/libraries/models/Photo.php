@@ -560,9 +560,11 @@ class Photo extends BaseModel
     $tagObj = new Tag;
     $attributes = $this->whitelistParams($attributes);
     if(isset($attributes['tags']) && !empty($attributes['tags']))
-    {
       $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
-    }
+
+    foreach($attributes as $key => $val)
+      $attributes[$key] = trim($val);
+
     $status = $this->db->postPhoto($id, $attributes);
     if(!$status)
       return false;
