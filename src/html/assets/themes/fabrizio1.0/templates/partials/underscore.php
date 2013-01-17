@@ -133,10 +133,13 @@
 
         <?php if($isAdmin) { ?>
           <a href="#" class="share" data-id="<%= id %>" title="Share this photo via email, Facebook or Twitter"><i class="icon-share-alt"></i></a>
-        <?php } ?>
-        <a href="#" class="permission <?php if($isAdmin) { ?> edit<?php } ?>" title="Click to make this photo <%= permission == 0 ? 'public' : 'private' %>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
-        <?php if($isAdmin || $this->config->site->allowOriginalDownload == 1) { ?>
           <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
+          <a href="#" class="permission" title="Click to make this photo <%= permission == 0 ? 'public' : 'private' %>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
+        <?php } else { ?>
+          <?php if($this->config->site->allowOriginalDownload == 1) { ?>
+            <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
+          <?php } ?>
+          <i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i>
         <?php } ?>
       </span>
     </div>
