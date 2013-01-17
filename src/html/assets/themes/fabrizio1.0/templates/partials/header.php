@@ -2,18 +2,14 @@
     <div class="navbar-inner navbar-inner-primary">
       <div class="container">
         <h1 class="logo"><a href="/">TroveBox</a></h1>
-        <div class="nav-collapse collapse">
-          <ul class="nav separator-left">
-            <li class="<?php if($this->utility->isActiveTab('photos')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->photosView(); ?>"><i class="icon-picture"></i> Gallery</a></li>
-            <li class="<?php if($this->utility->isActiveTab('albums')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->albumsView(); ?>"><i class="icon-th-large"></i> Albums</a></li>
-            <?php if($this->user->isAdmin()) { ?>
-              <li class="<?php if($this->utility->isActiveTab('upload')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload"></i> Upload</a></li>
-            <?php } ?>
-          </ul>
-        </div><!--/.nav-collapse -->
-        <div class="search-wrap separator-left">
-          <input type="search" name="search" placeholder="Search Tags..."/>
-        </div>
+        
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <a class="btn btn-navbar" data-toggle="collapse" data-target=".primary-navigation">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </a>
+        
         <?php if($this->user->isLoggedIn()) { ?>
           <div class="user">
             <a href="#" class="profile-link profile-photo-header-meta" data-toggle="dropdown"></a>
@@ -32,6 +28,19 @@
             <a href="/user/login?r=<?php $this->utility->safe($_SERVER['REQUEST_URI']); ?>" class="btn btn-theme-secondary">Sign In</a>
           </div>
         <?php } ?>
+        
+        <div class="nav-collapse collapse primary-navigation">
+          <ul class="nav separator-left">
+            <li class="<?php if($this->utility->isActiveTab('photos')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->photosView(); ?>"><i class="icon-picture"></i> Gallery</a></li>
+            <li class="<?php if($this->utility->isActiveTab('albums')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->albumsView(); ?>"><i class="icon-th-large"></i> Albums</a></li>
+            <?php if($this->user->isAdmin()) { ?>
+              <li class="hidden-phone hidden-tablet <?php if($this->utility->isActiveTab('upload')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload"></i> Upload</a></li>
+            <?php } ?>
+          </ul>
+          <div class="search-wrap separator-left">
+            <input type="search" name="search" placeholder="Search Tags..."/>
+          </div>
+        </div><!--/.nav-collapse -->
       </div>
     </div>
     <div class="navbar-inner navbar-inner-secondary">

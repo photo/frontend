@@ -142,11 +142,16 @@ body.trovebox {
       
       
     }
+    .btn-navbar {
+      float: right;
+      padding: 10px;
+      background: @color_theme_tertiary none !important;
+    }
     
     .user {
       height: 32px;
       line-height: 32px;
-      float: right;
+      float: right  ;
       position: relative;
       .btn {
         margin-left: 10px;
@@ -375,5 +380,104 @@ body.trovebox {
   
   .navbar-inner-message {
     
+  }
+}
+
+@media(max-width:979px){
+  .trovebox-banner {
+    position: relative;
+    width: auto;
+    
+    .logo {
+      margin-bottom: 10px;
+    }
+    
+    .navbar-inner {
+      padding: 10px 10px 0;
+    }
+    
+    .separator-left, .separator-right {
+      border: 0;
+      text-shadow: 0 0 0;
+    }
+    
+    .navbar-inner-secondary {
+      display: none;
+    }
+    
+    .navbar-inner-primary {
+      
+      .nav-collapse {
+        margin: 0px -10px;
+        padding-bottom: 0px;
+        background-color: darken( @color_banner_primary, 2% );
+      }
+      
+      .nav {
+        padding: 0;
+        margin: 0;
+        > li {
+          > a {
+            padding: 4px 30px;
+            i {
+              font-size: 14px;
+            }
+          }
+          &.active {
+            a, a:hover {
+              color: @color_header_menu_active;
+              i {
+                .opacity(99);
+              }
+            }
+          }
+        }
+      }
+    
+      .nav .active > a,
+      .nav .active > a:hover,
+      .nav .active > a:focus {
+        background: transparent none;
+        -webkit-box-shadow: 0 0 0;
+        -moz-box-shadow: 0 0 0;
+        -ms-box-shadow: 0 0 0;
+        box-shadow: 0 0 0;
+      }
+      
+      .search-wrap {
+        width: auto;
+        float: none;
+        margin-left: 30px;
+        margin-right: 30px;
+        padding-left: 0;
+        line-height: 30px;
+        padding-top: 2px;
+        padding-bottom: 10px;
+        border: 0;
+        box-shadow: 0 0 0;
+        
+        input[type=search] {
+          box-sizing: border-box;
+          width: 100%;
+          height: auto;
+          font-size: 14px;
+          padding: 4px 6px;
+        }
+      }
+      .active-page-item {
+        position: relative;
+      }
+      .active-page-item:after {
+        display: none;
+      }
+      
+      .logo.active-page-item:after {
+        margin-left: 8px;
+      }
+    }
+    
+  }
+  body.trovebox {
+    padding-top: 0;
   }
 }
