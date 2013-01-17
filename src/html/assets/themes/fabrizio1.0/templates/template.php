@@ -54,6 +54,7 @@
         footer
       </div>
     </div>
+    <?php $this->theme->display('partials/footer.php'); ?>
     <?php $this->theme->display('partials/underscore.php'); ?>
     <!-- Le javascript
     ================================================== -->
