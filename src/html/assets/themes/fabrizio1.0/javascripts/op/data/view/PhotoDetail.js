@@ -149,6 +149,7 @@
           mapTypeControl: false,
           streetViewControl: false,
           zoomControl: false,
+          scrollwheel: false,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map($(this.el).find('.map')[0], mapOptions);
@@ -276,7 +277,7 @@
     
     _addMoreFromModel : function(model, dir){
       if( !dir ) dir = 'next';
-      if( (ar = this.model.get(dir)) && ar.length ){
+      if( (ar = model.get(dir)) && ar.length ){
         for(var i=0; i<ar.length; i++ ){
           var m = new op.data.model.Photo(ar[i]);
           if( ar.length === 1 ){
@@ -286,7 +287,7 @@
         }
       }
       else {
-        this.model[dir==='next'?'_last':'_first'] = true;
+        model[dir==='next'?'_last':'_first'] = true;
       }
     },
     
@@ -382,7 +383,7 @@
       $(this.el).find('.pagination .photos .scroller .thumbs')
         .stop()
         // might be better to use css3 translate3d and transition properties instead
-        .animate({'left': (33.33333333*-1*diff)+'%'}, 200)
+        .animate({'left': (-33.33333333*diff)+'%'}, 200)
       
       $(this.el).find('.pagination .photos .scroller .thumbs .thumb').removeClass('active');
       this.thumbs[id].addClass('active');
@@ -390,7 +391,8 @@
       // lets also get next/prev
       var x = _.indexOf( this.store.models, this.store.get(id) )
         , c = _.indexOf( this.store.models, this.model )
-        
+      
+      
       this.loadMore( x > c );
       this.updateModel(this.store.get(id));
       router.navigate('/p/'+id, {trigger: false});
@@ -425,8 +427,10 @@
         '/photo/'+model.get('id')+'/'+TBX.init.pages.photo.filterOpts+'/view.json' ;
       
       OP.Util.makeRequest(endpoint, apiParams, function(response) {
-        model.set('next', response.result.next);
-        model.set('prev', response.result.prev);
+        if( response.result ){
+          if( response.result.next ) model.set('next', response.result.next);
+          if( response.result.previous ) model.set('previous', response.result.previous);
+        }
         self._addMoreFromModel(model, fn);
       }, 'json', 'get');
     }

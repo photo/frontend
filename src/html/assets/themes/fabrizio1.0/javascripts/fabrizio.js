@@ -98,7 +98,7 @@ var TBX = (function() {
             }
           }
 
-          params.returnSizes = '960x180';
+          params.returnSizes = '960x180,870x870,180x180xCR';
           params.page = context.page;
           // for mobile devices limit the number pages before a full page refresh. See #778
           if(context.pageCount > context.maxMobilePageCount && util.getDeviceWidth() < 900) {
