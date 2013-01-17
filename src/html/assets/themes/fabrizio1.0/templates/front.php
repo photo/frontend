@@ -14,7 +14,7 @@ $this->theme->display('partials/user-badge.php');
 }
 */
 ?>
-<div class="row-fluid">
+<div class="row">
   <div class="span8">
     <h3 class="sidebar-heading activity-list-heading">
       <i class="icon-angle-down"></i>
