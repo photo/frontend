@@ -312,6 +312,16 @@ var TBX = (function() {
           t = parseInt(($(window).height() - h) / 2);
           opts = 'location=0,toolbar=0,status=0,width='+w+',height='+h+',left='+l+',top='+t;
           window.open(url, 'TB', opts);
+        },
+        triggerDownload: function(ev) {
+          ev.preventDefault();
+          var $el = $('.download.trigger'), url = $el.attr('href');
+          location.href = url;
+        },
+        triggerShare: function(ev) { 
+          ev.preventDefault();
+          var $el = $('.share.trigger');
+          $el.trigger('click');
         }
       },
       custom: {
