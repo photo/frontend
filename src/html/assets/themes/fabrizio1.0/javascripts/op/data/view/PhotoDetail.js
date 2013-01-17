@@ -83,13 +83,19 @@
       return this;
     },
     events : {
-      'click .permission.edit': 'permission'
+      'click .permission.edit': 'permission',
+      'click .share': 'share'
     },
     permission: function(ev) {
       ev.preventDefault();
       var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model;
       model.set('permission', model.get('permission') == 0 ? 1 : 0, {silent:false});
       model.save();
+    },
+    share: function(ev) {
+      ev.preventDefault();
+      var $el = $(ev.currentTarget), id = $el.attr('data-id');
+      OP.Util.makeRequest('/photos/'+id+'/share.json', {}, TBX.callbacks.share, 'json', 'get');
     }
   });
   
@@ -164,6 +170,7 @@
   op.ns('data.view').PhotoDetail = op.data.view.Editable.extend({
     
     largePath : 'path870x870',
+    largePhoto : 'photo870x870',
     thumbPath : 'path180x180xCR',
     
     viewMap : {
@@ -210,7 +217,11 @@
       this.updateViews();
       // change the main image
       $(this.el).find('.photo img')
+        .attr('src', 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==')
+        .css('width', this.model.get(this.largePhoto)[1]+'px')
+        .css('height', this.model.get(this.largePhoto)[2]+'px')
         .attr('src', this.model.get(this.largePath))
+
       $(this.el).find('.photo .photo-view-modal-click')
         .attr('data-id', this.model.get('id'))
     },
