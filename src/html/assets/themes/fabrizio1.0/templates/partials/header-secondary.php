@@ -1,4 +1,11 @@
           <?php if($this->utility->isActiveTab('photo')) { ?>
+            <?php if($this->user->isAdmin() || $this->config->site->allowOriginalDownload == 1) { ?>
+              <li class="separator-left"><a href="#" class="triggerDownload"><i class="icon-download triggerDownload"></i> Download</a></li>
+            <?php } ?>
+            <?php if($this->user->isAdmin()) { ?>
+              <li><a href="#" class="triggerShare"><i class="icon-share-alt triggerShare"></i> Share</a></li>
+            <?php } ?>
+          <?php } else if($this->utility->isActiveTab('photos')) { ?>
             <?php if($this->user->isAdmin()) { ?>
               <li class="separator-left"><a href="#" class="selectAll"><i class="icon-pushpin"></i> Select all</a></li>
               <li class="dropdown batch-meta"></li>
