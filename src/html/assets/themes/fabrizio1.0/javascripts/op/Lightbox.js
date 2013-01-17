@@ -14,12 +14,12 @@
     },
     template: _.template($('#op-lightbox-details').html()),
     editable: {
-      '.title.edit .text' : {
+      '.title.edit' : {
         name: 'title',
         title: 'Edit Photo Title',
         placement: 'top',
       },
-      '.description.edit .text' : {
+      '.description.edit' : {
         name: 'description',
         type: 'textarea',
         title: 'Edit Photo Description',

@@ -120,22 +120,34 @@
   </div>
   <div class="detail-block">
     <div class="title">
-      <span class="text"><%= title || filenameOriginal %></span>
+      <span class="text">
+        <?php if($isAdmin) { ?>
+          <a href="#" class="title edit text"><i class="icon-pencil"></i> <%= title || filenameOriginal %></a>
+        <?php } else { ?>
+          <%= title || filenameOriginal %>
+        <?php } ?>
+      </span>
       <span class="actions">
         <!--<a href="#"><i class="icon-heart"></i></a>
         <a href="#"><i class="icon-comments"></i></a>-->
 
         <?php if($isAdmin) { ?>
-          <a href="#" class="share" data-id="<%= id %>"><i class="icon-share-alt"></i></a>
+          <a href="#" class="share" data-id="<%= id %>" title="Share this photo via email, Facebook or Twitter"><i class="icon-share-alt"></i></a>
         <?php } ?>
-        <a href="#" class="permission <?php if($isAdmin) { ?> edit<?php } ?>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
+        <a href="#" class="permission <?php if($isAdmin) { ?> edit<?php } ?>" title="Click to make this photo <%= permission == 0 ? 'public' : 'private' %>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
         <?php if($isAdmin || $this->config->site->allowOriginalDownload == 1) { ?>
-          <a href="<%= pathDownload %>"><i class="icon-download"></i></a>
+          <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
         <?php } ?>
       </span>
     </div>
     <div class="description">
-      <span class="text"><%= description %></span>
+      <span class="text">
+        <?php if($isAdmin) { ?>
+          <a href="#" class="description edit text"><i class="icon-pencil"></i> <%= description %></a>
+        <?php } else { ?>
+          <%= description %>
+        <?php } ?>
+      </span>
     </div>
   </div>
 </script>
