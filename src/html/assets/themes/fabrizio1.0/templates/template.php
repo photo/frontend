@@ -48,12 +48,6 @@
       <?php $this->plugin->invoke('renderBody'); ?>
       <?php echo $body; ?>
     </div> <!-- /container -->
-    <div class="footer">
-      <div class="container">
-        <hr>
-        footer
-      </div>
-    </div>
     <?php $this->theme->display('partials/footer.php'); ?>
     <?php $this->theme->display('partials/underscore.php'); ?>
     <!-- Le javascript
