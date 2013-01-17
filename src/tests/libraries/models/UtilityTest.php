@@ -169,7 +169,11 @@ RES;
 
     $_GET['__route__'] = '/photos/one/two/three';
     $res = $this->utility->isActiveTab('photo');
-    $this->assertTrue($res, '/photos/one/two/three  not photo tab');
+    $this->assertFalse($res);
+
+    $_GET['__route__'] = '/photos/upload';
+    $res = $this->utility->isActiveTab('photo');
+    $this->assertFalse($res);
 
     $_GET['__route__'] = '/tags/list';
     $res = $this->utility->isActiveTab('tags');
