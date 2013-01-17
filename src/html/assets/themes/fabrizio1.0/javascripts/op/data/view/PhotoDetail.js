@@ -148,7 +148,7 @@
           zoom: 10,
           mapTypeControl: false,
           streetViewControl: false,
-          zoomControl: false,
+          zoomControl: true,
           scrollwheel: false,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
