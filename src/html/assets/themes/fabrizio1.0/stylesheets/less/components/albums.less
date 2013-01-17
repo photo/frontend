@@ -1,0 +1,64 @@
+ul.albums {
+  list-style: none;
+  padding: 0;
+  margin: 0 -10px;
+  
+  > li {
+    display: inline-block;
+    width: 20%;
+    > a {
+      display: block;
+      position: relative;
+      text-align: center;
+      
+      .cover {
+        margin: 10px;
+        position: relative;
+        img {
+          position: relative;
+          z-index: 3;
+          max-width: 100%;
+          height: auto;
+          border: 5px solid #fff;
+          .box-shadow(0 0 1px #000);
+          .box-sizing(border-box);
+        }
+        
+        .stack {
+          
+          display: block;
+          position: absolute;
+          z-index: 2;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          background: #fff;  
+          .box-shadow(0 0 1px #000);
+        }
+        .stack1 {
+          .rotate(-3deg);
+        }
+        .stack2 {
+          .rotate(3deg);
+        }
+        
+        
+        h5 {
+          position: absolute;
+          z-index: 5;
+          margin: 0;
+          bottom: 0px;
+          width: 100%;
+          left: 0;
+          background: #fff;
+          .opacity(85);
+          span {
+            display: block;
+            padding: 5px 10px;
+          }
+        }
+      }
+    }
+  }
+}
