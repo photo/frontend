@@ -165,20 +165,20 @@
       
       // check for the image
       if( (c =this.cache[this.model.get('id')]) && c._loaded ){
-      var iw = c.width
-        , ih = c.height
-        , ir = iw / ih
-        , cw = $(window).width()
-        , ch = $(window).height() - this.$el.find('.bd').position().top
-        , cr = cw / ch
-      
-      if( iw < cw && ih < ch ){
-        $photo.width(iw);
-        $photo.height(ih);
-      }
-      else {
-        $photo.css( cr > ir ? {width: iw * ch/ih, height: ch} : {width: cw, height: ih * cw/iw} );
-      }
+        var iw = c.width
+          , ih = c.height
+          , ir = iw / ih
+          , cw = $(window).width()
+          , ch = $(window).height() - this.$el.find('.bd').position().top
+          , cr = cw / ch
+        
+        if( iw < cw && ih < ch ){
+          $photo.width(iw);
+          $photo.height(ih);
+        }
+        else {
+          $photo.css( cr > ir ? {width: iw * ch/ih, height: ch} : {width: cw, height: ih * cw/iw} );
+        }
       }
       else {
         $photo.css({'height': ( $(window).height() - this.$el.find('.bd').position().top )+'px'} );
@@ -252,6 +252,10 @@
       var c;
       this.$el.find('.photo img').remove();
       this.$el.addClass('loading');
+      this.$el.find('.photo')
+        .width($(window).width())
+        .height(($(window).height() - this.$el.find('.bd').position().top )+'px');
+        
       if( !(c = this.cache[this.model.get('id')]) ){
         var c = this.cache[this.model.get('id')] = new Image();
         c.onload = _.bind(this._imageLoaded, this, this.model.get('id'));
