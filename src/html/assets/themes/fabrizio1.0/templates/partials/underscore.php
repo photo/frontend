@@ -161,7 +161,7 @@
   <div class="row">
     <div class="span9">
       <div class="photo">
-        <img src="<%= path870x870 %>" />
+        <img src="<%= path870x870 %>" style="width:<%= photo870x870[1] %>px; height:<%= photo870x870[2] %>px;" />
         <span class="mag photo-view-modal-click" data-id="<%= id %>"><i class="icon-search"></i></span>
       </div>
       <div class="description"></div>
