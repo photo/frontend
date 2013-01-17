@@ -83,13 +83,19 @@
       return this;
     },
     events : {
-      'click .permission.edit': 'permission'
+      'click .permission.edit': 'permission',
+      'click .share': 'share'
     },
     permission: function(ev) {
       ev.preventDefault();
       var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model;
       model.set('permission', model.get('permission') == 0 ? 1 : 0, {silent:false});
       model.save();
+    },
+    share: function(ev) {
+      ev.preventDefault();
+      var $el = $(ev.currentTarget), id = $el.attr('data-id');
+      OP.Util.makeRequest('/photos/'+id+'/share.json', {}, TBX.callbacks.share, 'json', 'get');
     }
   });
   
@@ -211,6 +217,7 @@
       // change the main image
       $(this.el).find('.photo img')
         .attr('src', this.model.get(this.largePath))
+
       $(this.el).find('.photo .photo-view-modal-click')
         .attr('data-id', this.model.get('id'))
     },

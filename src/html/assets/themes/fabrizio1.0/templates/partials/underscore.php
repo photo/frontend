@@ -129,7 +129,7 @@
           <a href="#" class="share" data-id="<%= id %>"><i class="icon-share-alt"></i></a>
         <?php } ?>
         <a href="#" class="permission <?php if($isAdmin) { ?> edit<?php } ?>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
-        <?php if($this->config->site->allowOriginalDownload == 1) { ?>
+        <?php if($isAdmin || $this->config->site->allowOriginalDownload == 1) { ?>
           <a href="<%= pathDownload %>"><i class="icon-download"></i></a>
         <?php } ?>
       </span>
@@ -161,11 +161,11 @@
   <div class="row">
     <div class="span9">
       <div class="photo">
-        <img src="<%= path870x870 %>" />
+        <img src="<%= path870x870 %>"  />
         <span class="mag photo-view-modal-click" data-id="<%= id %>"><i class="icon-search"></i></span>
       </div>
       <div class="description"></div>
-      <div class="comments"></div>
+      <!--<div class="comments"></div>-->
       
     </div>
     <div class="span3">
@@ -204,10 +204,10 @@
 <script type="tmpl/underscore" id="photo-detail-title-tmpl">
   <span class="title<?php if($isAdmin) { ?> edit<?php } ?>"><%= title || filenameOriginal %></span>
   <span class="actions">
-    <a href="#"><i class="icon-heart"></i></a>
-    <a href="#"><i class="icon-comment"></i></a>
+    <!--<a href="#"><i class="icon-heart"></i></a>
+    <a href="#"><i class="icon-comment"></i></a>-->
     <?php if($isAdmin) { ?>
-      <a href="#"><i class="icon-share-alt"></i></a>
+      <a href="#" class="triggerShare"><i class="icon-share-alt triggerShare"></i></a>
     <?php } ?>
   </span>
 </script>
@@ -250,24 +250,39 @@
 
 <script type="tmpl/underscore" id="photo-detail-meta-tmpl">
   <ul>
-    <li><i class="icon-heart"></i> 16 Favorites</i></li>
+    <!--<li><i class="icon-heart"></i> 16 Favorites</i></li>-->
+    <!--<li><i class="icon-comment"></i> 7 Comments</i></li>-->
+    <!--<li><i class="icon-eye-open"></i> 110 Views</i></li>-->
     <li><i class="icon-calendar"></i> <%= phpjs.date('M d, Y', dateTaken) %></i></li>
-    <li><i class="icon-comment"></i> 7 Comments</i></li>
+    <?php if($isAdmin) { ?>
+      <li><a href="#" class="share trigger" data-id="<%= id %>"><i class="icon-share-alt"></i> Share</i></a></li>
+    <?php } ?>
     <li><a class="permission<?php if($isAdmin) { ?> edit<?php } ?>" href="#"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i> <%= permission == 0 ? 'Private' : 'Public' %></i></a></li>
-    <li><i class="icon-eye-open"></i> 110 Views</i></li>
-    
-    <?php if($this->config->site->allowOriginalDownload == 1) { ?>
-      <li><a href="<%= pathDownload %>"><i class="icon-download"></i> Download</i></a></li>
+    <?php if($isAdmin || $this->config->site->allowOriginalDownload == 1) { ?>
+      <li><a href="<%= pathDownload %>" class="download trigger"><i class="icon-download"></i> Download</i></a></li>
     <?php } ?>
     
   </ul>
 </script>
 
 <script type="tmpl/underscore" id="photo-detail-rights-tmpl">
-  <i class="tb-icon-small-cc"></i>
-  <i class="tb-icon-small-cc-by"></i>
-  <i class="tb-icon-small-cc-nd"></i>
-  Some Rights Reserved
+  <% if(license.length === 0) { %>
+    All Rights Reserved
+  <% } else { %>
+    <a title="Creative Commons"><i class="tb-icon-small-cc"></i></a>
+    <% if(license.search('BY') !== -1) { %>
+      <a title="CC BY - Attribution"><i class="tb-icon-small-cc-by"></i></a>
+    <% } %>
+    <% if(license.search('ND') !== -1) { %>
+      <a title="CC ND - No Derivatives"><i class="tb-icon-small-cc-nd"></i></a>
+    <% } %>
+    <% if(license.search('NC') !== -1) { %>
+      <a title="CC NC - Non Commercial"><i class="tb-icon-small-cc-nc"></i></a>
+    <% } %>
+    <% if(license.search('SA') !== -1) { %>
+      <a title="CC SA - Share Alike"><i class="tb-icon-small-cc-sa"></i></a>
+    <% } %>
+  <% } %>
 </script>
 
 <script type="tmpl/underscore" id="photo-detail-collapsibles-tmpl">
@@ -312,37 +327,37 @@
     <div id="photo-exif" class="collapsible collapse">
       <div class="c">
         <table cellpadding="0" cellspacing="0" border="0">
-          <% if( exifCameraMake ){ %>
+          <% if( typeof exifCameraMake !== 'undefined' && exifCameraMake.length > 0 ){ %>
             <tr>
               <th>Camera Make</th>
               <td><%= exifCameraMake %></td>
             </tr>
           <% } %>
-          <% if( exifCameraModel ){ %>
+          <% if( typeof exifCameraModel !== 'undefined' && exifCameraModel.length > 0 ){ %>
             <tr>
               <th>Camera Model</th>
               <td><%= exifCameraModel %></td>
             </tr>
           <% } %>
-          <% if( exifExposureTime ){ %>
+          <% if( typeof exifExposureTime !== 'undefined' && exifExposureTime.length > 0 ){ %>
             <tr>
               <th>Exposure Time</th>
               <td><%= exifExposureTime %></td>
             </tr>
           <% } %>
-          <% if( exifFNumber ){ %>
+          <% if( typeof exifFNumber !== 'undefined' && exifFNumber.length > 0 ){ %>
             <tr>
               <th>F Number</th>
               <td><%= exifFNumber %></td>
             </tr>
           <% } %>
-          <% if( exifFocalLength ){ %>
+          <% if( typeof exifFocalLength !== 'undefined' && exifFocalLength.length > 0 ){ %>
             <tr>
               <th>Focal Length</th>
               <td><%= exifFocalLength %></td>
             </tr>
           <% } %>
-          <% if( exifISOSpeed ){ %>
+          <% if( typeof exifISOSpeed !== 'undefined' && exifISOSpeed.length > 0 ){ %>
             <tr>
               <th>ISO Time</th>
               <td><%= exifISOSpeed %></td>
@@ -353,7 +368,7 @@
     </div>
   </li>
   
-  <li>
+  <!--<li>
     <h3 class="sidebar-heading">
       <a href="#photo-share" data-toggle="collapse">
         <i class="arrow open icon-angle-down"></i>
@@ -367,7 +382,7 @@
       <div class="c">
       Share stuff...
       </div>
-    </div>
+    </div>-->
   </li>
 </script>
 
