@@ -14,7 +14,10 @@ class ApiManageController extends ApiBaseController
     $configFile = $this->utility->getConfigFile();
     $configString = getConfig()->getString($configFile);
     $configArray = parse_ini_string($configString, true);
-    foreach($_POST as $key => $value)
+
+    // set defaults since checkbox values are not passed if unchecked
+    $post = array_merge(array('allowDuplicate' => 0, 'downloadOriginal' => 0, 'hideFromSearchEngines' => 0), $_POST);
+    foreach($post as $key => $value)
     {
       switch($key)
       {
