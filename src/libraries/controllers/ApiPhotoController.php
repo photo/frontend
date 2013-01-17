@@ -145,7 +145,7 @@ class ApiPhotoController extends ApiBaseController
 
     $sizes = array();
     if(isset($_GET['returnSizes']))
-      $sizes = (array)explode(',', $_GET['returnSizes']);
+      $sizes = array_unique((array)explode(',', $_GET['returnSizes']));
 
     foreach($nextPrevious as $topKey => $photos)
     {
@@ -242,7 +242,7 @@ class ApiPhotoController extends ApiBaseController
 
     $sizes = array();
     if(isset($filters['returnSizes']))
-      $sizes = (array)explode(',', $filters['returnSizes']);
+      $sizes = array_unique((array)explode(',', $filters['returnSizes']));
 
     $generate = $requery = false;
     if(isset($_GET['generate']) && $_GET['generate'] == 'true')
@@ -341,7 +341,7 @@ class ApiPhotoController extends ApiBaseController
       unset($attributes['crumb']);
     if(isset($attributes['returnSizes']))
     {
-      $returnSizes = $attributes['returnSizes'];
+      $returnSizes = implode(',', array_unique((array)explode(',', $attributes['returnSizes'])));
       unset($attributes['returnSizes']);
     }
 
@@ -475,7 +475,7 @@ class ApiPhotoController extends ApiBaseController
       unset($attributes['crumb']);
     if(isset($attributes['returnSizes']))
     {
-      $returnSizes = $attributes['returnSizes'];
+      $returnSizes = implode(',', array_unique((array)explode(',', $attributes['returnSizes'])));
       unset($attributes['returnSizes']);
     }
 
@@ -783,7 +783,7 @@ class ApiPhotoController extends ApiBaseController
     $sizes = array();
     if(isset($_GET['returnSizes']))
     {
-      $sizes = (array)explode(',', $_GET['returnSizes']);
+      $sizes = array_unique((array)explode(',', $_GET['returnSizes']));
     }
 
     $photo = $this->pruneSizes($photo, $sizes);
