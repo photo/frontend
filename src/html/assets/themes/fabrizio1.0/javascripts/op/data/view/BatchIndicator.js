@@ -40,14 +40,25 @@
     },
     showForm: function(ev) {
       ev.preventDefault();
-      var $el = $(ev.currentTarget), batch = OP.Batch, params = {}, model = TBX.init.pages.photos.batchModel;
-      model.set('loading', true);
-      params.action = $el.attr('data-id');
-      OP.Util.makeRequest('/photos/update.json', params, function(response) {
-        var result = response.result;
-        model.set('loading', false);
-        $('.secondary-flyout').html(result.markup).slideDown('fast');
-      }, 'json', 'get');
+      var $el = $(ev.currentTarget), batch = OP.Batch, params = {}, model;
+      if($el.hasClass('photo')) {
+        model = TBX.init.pages.photos.batchModel;
+        model.set('loading', true);
+        params.action = $el.attr('data-id');
+        OP.Util.makeRequest('/photos/update.json', params, function(response) {
+          var result = response.result;
+          model.set('loading', false);
+          $('.secondary-flyout').html(result.markup).slideDown('fast');
+        }, 'json', 'get');
+      } else if($el.hasClass('album')) {
+        model = TBX.init.pages.albums.batchModel;
+        model.set('loading', true);
+        OP.Util.makeRequest('/album/form.json', params, function(response) {
+          var result = response.result;
+          model.set('loading', false);
+          $('.secondary-flyout').html(result.markup).slideDown('fast');
+        }, 'json', 'get');
+      }
       return;
     },
     clearCallback: function() {
