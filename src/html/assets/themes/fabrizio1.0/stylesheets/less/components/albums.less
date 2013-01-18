@@ -6,25 +6,26 @@ ul.albums {
   > li {
     display: inline-block;
     width: 20%;
-    > a {
-      display: block;
-      position: relative;
-      text-align: center;
       
-      .cover {
-        margin: 10px;
+    .cover {
+      margin: 10px;
+      position: relative;
+      img {
         position: relative;
-        img {
-          position: relative;
-          width:200px;
-          height:200px;
-          z-index: 3;
-          max-width: 100%;
-          border: 5px solid #fff;
-          .box-shadow(0 0 1px #000);
-          .box-sizing(border-box);
-        }
-        
+        width:200px;
+        height:200px;
+        z-index: 3;
+        max-width: 100%;
+        border: 5px solid #fff;
+        .box-shadow(0 0 1px #000);
+        .box-sizing(border-box);
+      }
+
+      > a {
+        display: block;
+        position: relative;
+        text-align: center;
+      
         .stack {
           
           display: block;
@@ -43,21 +44,21 @@ ul.albums {
         .stack2 {
           .rotate(3deg);
         }
-        
-        
-        h5 {
-          position: absolute;
-          z-index: 5;
-          margin: 0;
-          bottom: 0px;
-          width: 100%;
-          left: 0;
-          background: #fff;
-          .opacity(85);
-          span {
-            display: block;
-            padding: 5px 10px;
-          }
+      }
+      
+      
+      h5 {
+        position: absolute;
+        z-index: 5;
+        margin: 0;
+        bottom: 0px;
+        width: 100%;
+        left: 0;
+        background: #fff;
+        .opacity(85);
+        span {
+          display: block;
+          padding: 10px 20px;
         }
       }
     }
