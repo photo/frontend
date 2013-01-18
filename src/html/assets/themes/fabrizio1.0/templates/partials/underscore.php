@@ -407,23 +407,27 @@
 
 <script type="tmpl/underscore" id="batch-meta">
   <?php if($isAdmin) { ?>
-    <a data-toggle="dropdown" href="#"><i class="<% if(!loading) { %>icon-cogs<% } else { %>icon-spinner icon-spin<% } %>"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
-    <ul class="dropdown-menu">
-      <% if (count > 0) { %>
-        <li><a>Update photo information</a></li>
-        <li><a href="#" class="showForm" data-id="tagsAdd">&nbsp;&middot;&nbsp;Add Tags</a></li>
-        <li><a href="#" class="showForm" data-id="albumsAdd">&nbsp;&middot;&nbsp;Add to Album</a></li>
-        <li><a href="#" class="showForm" data-id="privacy">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
-        <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
-        <!--<li class="divider"></li>
-        <li><a>Modify photos</a></li>
-        <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>-->
-        <li class="divider"></li>
-        <li><a href="#" class="clear">Clear pinned photos</a></li>
-      <% } else { %>
-        <li><a><i class="icon-pushpin"></i> Hover over a photo and click the pushpin</a></li>
-      <% } %>
-    </ul>
+    <?php if($this->utility->isActiveTab('photos')) { ?>
+      <a data-toggle="dropdown" href="#"><i class="<% if(!loading) { %>icon-cogs<% } else { %>icon-spinner icon-spin<% } %>"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
+      <ul class="dropdown-menu">
+        <% if (count > 0) { %>
+          <li><a>Update photo information</a></li>
+          <li><a href="#" class="showForm photo" data-id="tagsAdd">&nbsp;&middot;&nbsp;Add Tags</a></li>
+          <li><a href="#" class="showForm photo" data-id="albumsAdd">&nbsp;&middot;&nbsp;Add to Album</a></li>
+          <li><a href="#" class="showForm photo" data-id="privacy">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
+          <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
+          <!--<li class="divider"></li>
+          <li><a>Modify photos</a></li>
+          <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>-->
+          <li class="divider"></li>
+          <li><a href="#" class="clear">Clear pinned photos</a></li>
+        <% } else { %>
+          <li><a><i class="icon-pushpin"></i> Hover over a photo and click the pushpin</a></li>
+        <% } %>
+      </ul>
+    <?php } else if($this->utility->isActiveTab('albums')) { ?>
+      <a href="#" class="showForm album"><i class="<% if(!loading) { %>icon-plus<% } else { %>icon-spinner icon-spin<% } %>"></i> Create an album</a>
+    <?php } ?>
   <?php } ?>
 </script>
 
