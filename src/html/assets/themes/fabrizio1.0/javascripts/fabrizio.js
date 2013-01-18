@@ -481,7 +481,7 @@ var TBX = (function() {
           init: function() {
             var _pages = TBX.init.pages, _this = _pages.albums;
             $(window).scroll(function() { util.scrollCb(_this); });
-            util.load(_this);
+            _this.load();
           },
           load: function() {
             var _this = TBX.init.pages.albums; loc = location;
@@ -489,15 +489,15 @@ var TBX = (function() {
           },
           loadCb: function(response) {
             var items = response.result, _this = TBX.init.pages.albums;
-            op.data.store.Albums.add( items );
+            for(i in items) {
+              if(items.hasOwnProperty(i))
+                op.data.store.Albums.add( items[i] );
+            }
             if(items.length > 0) {
               _this.addAlbums(items);
               _this.page++;
               _this.pageCount++;
               _this.running = false;
-            } else {
-              $('.load-more').hide();
-              _this.end = true;
             }
           }
         },
