@@ -67,7 +67,7 @@ class ApiAlbumController extends ApiBaseController
     $albumCountKey = $this->user->isAdmin() ? 'countPrivate' : 'countPublic';
     foreach($albums as $key => $val)
     {
-      $albums[$key]['count'] = @$val[$albumCountKey]; // added the error squelch because i was getting undefined index notices
+      $albums[$key]['count'] = $val[$albumCountKey];
       unset($albums[$key]['countPublic'], $albums[$key]['countPrivate']);
     }
 
@@ -151,6 +151,11 @@ class ApiAlbumController extends ApiBaseController
     if(isset($_GET['includeElements']) && $_GET['includeElements'] == '1')
       $includeElements = true;
     $album = $this->album->getAlbum($id, $includeElements);
+
+    $albumCountKey = $this->user->isAdmin() ? 'countPrivate' : 'countPublic';
+    $album['count'] = $album[$albumCountKey];
+    unset($album['countPublic'], $album['countPrivate']);
+
     if($album === false)
       return $this->error('Could not retrieve album', false);
     return $this->success('Album', $album);
