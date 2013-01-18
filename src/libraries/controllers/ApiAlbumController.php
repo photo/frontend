@@ -45,9 +45,7 @@ class ApiAlbumController extends ApiBaseController
 
   public function form()
   {
-    $groupsResp = $this->api->invoke('/groups/list.json', EpiRoute::httpGet);
-    $groups = $groupsResp['result'];
-    $template = $this->template->get(sprintf('%s/manage-album-form.php', $this->config->paths->templates), array('groups' => $groups));;
+    $template = $this->theme->get('partials/album-form.php', array('groups' => $groups));;
     return $this->success('Album form', array('markup' => $template));
   }
 

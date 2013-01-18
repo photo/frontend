@@ -1,4 +1,8 @@
-          <?php if($this->utility->isActiveTab('photo')) { ?>
+          <?php if($this->utility->isActiveTab('albums')) { ?>
+            <?php if($this->user->isAdmin()) { ?>
+              <li class="separator-left batch-meta"></li>
+            <?php } ?>
+          <?php } else if($this->utility->isActiveTab('photo')) { ?>
             <?php if($this->user->isAdmin() || $this->config->site->allowOriginalDownload == 1) { ?>
               <li class="separator-left"><a href="#" class="triggerDownload"><i class="icon-download triggerDownload"></i> Download</a></li>
             <?php } ?>
