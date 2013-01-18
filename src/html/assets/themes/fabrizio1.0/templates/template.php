@@ -79,6 +79,7 @@
     <script src="<?php $this->theme->asset('javascript', 'op/data/store/Photos.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/Editable.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/BatchIndicator.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/view/AlbumPage.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/AlbumCover.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/Notification.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoDetail.js'); ?>"></script>
