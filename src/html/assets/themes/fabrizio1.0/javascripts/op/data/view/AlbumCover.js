@@ -10,7 +10,7 @@
       '.name.edit' : {
         name: 'name',
         placement: 'bottom',
-        title: 'Edit Ablum Name',
+        title: 'Edit Album Name',
         validate : function(value){
           if($.trim(value) == ''){
             return 'Please enter a name';

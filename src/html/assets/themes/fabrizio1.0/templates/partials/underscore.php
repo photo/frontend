@@ -160,12 +160,13 @@
     <div class="cover">
       <% if (!_.isNull(cover)) { %>
         <img src="<%= cover.path200x200xCR %>">
-        <span class="stack stack1"></span>
-        <span class="stack stack2"></span>
-        
+      <% } else { %>
+        <img src="data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
       <% } %>
+      <span class="stack stack1"></span>
+      <span class="stack stack2"></span>
       <?php if($isAdmin) { ?>
-        <h5 class=" name edit"><span><%= name %></span></h5>
+        <h5 class="name edit"><span><%= name %></span></h5>
       <?php } else { ?>
         <h5 class="name"><span><%= name %></span></h5>
       <?php } ?>
