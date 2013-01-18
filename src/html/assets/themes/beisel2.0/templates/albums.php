@@ -35,6 +35,4 @@
       </ul>
     </div>
   </div>
-<?php } else { ?>
-  <?php $this->theme->display('partials/no-content.php', array('type' => 'albums')); ?>
-<?php } ?>
+ç

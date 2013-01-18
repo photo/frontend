@@ -156,18 +156,22 @@
 </script>
 
 <script type="tmpl/underscore" id="album-meta">
-  <li>
-    <a href="/photos/album-<%= id %>/list">
+  <a href="/photos/album-<%= id %>/list">
+    <div class="cover">
       <% if (!_.isNull(cover)) { %>
         <img src="<%= cover.path200x200xCR %>">
+      <% } else { %>
+        <img src="data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
       <% } %>
+      <span class="stack stack1"></span>
+      <span class="stack stack2"></span>
       <?php if($isAdmin) { ?>
-        <h5 class=" name edit"><%= name %></h5>
+        <h5 class="name edit"><span><%= name %></span></h5>
       <?php } else { ?>
-        <h5 class="name"><%= name %></h5>
+        <h5 class="name"><span><%= name %></span></h5>
       <?php } ?>
-    </a>
-  </li>
+    </div>
+  </a>
 </script>
 
 <script type="tmpl/underscore" id="photo-detail-meta">
@@ -342,37 +346,37 @@
     <div id="photo-exif" class="collapsible collapse">
       <div class="c">
         <table cellpadding="0" cellspacing="0" border="0">
-          <% if( typeof exifCameraMake !== 'undefined' && exifCameraMake.length > 0 ){ %>
+          <% if( typeof exifCameraMake !== 'undefined' && exifCameraMake ){ %>
             <tr>
               <th>Camera Make</th>
               <td><%= exifCameraMake %></td>
             </tr>
           <% } %>
-          <% if( typeof exifCameraModel !== 'undefined' && exifCameraModel.length > 0 ){ %>
+          <% if( typeof exifCameraModel !== 'undefined' && exifCameraModel ){ %>
             <tr>
               <th>Camera Model</th>
               <td><%= exifCameraModel %></td>
             </tr>
           <% } %>
-          <% if( typeof exifExposureTime !== 'undefined' && exifExposureTime.length > 0 ){ %>
+          <% if( typeof exifExposureTime !== 'undefined' && exifExposureTime ){ %>
             <tr>
               <th>Exposure Time</th>
               <td><%= exifExposureTime %></td>
             </tr>
           <% } %>
-          <% if( typeof exifFNumber !== 'undefined' && exifFNumber.length > 0 ){ %>
+          <% if( typeof exifFNumber !== 'undefined' && exifFNumber ){ %>
             <tr>
               <th>F Number</th>
               <td><%= exifFNumber %></td>
             </tr>
           <% } %>
-          <% if( typeof exifFocalLength !== 'undefined' && exifFocalLength.length > 0 ){ %>
+          <% if( typeof exifFocalLength !== 'undefined' && exifFocalLength ){ %>
             <tr>
               <th>Focal Length</th>
               <td><%= exifFocalLength %></td>
             </tr>
           <% } %>
-          <% if( typeof exifISOSpeed !== 'undefined' && exifISOSpeed.length > 0 ){ %>
+          <% if( typeof exifISOSpeed !== 'undefined' && exifISOSpeed ){ %>
             <tr>
               <th>ISO Time</th>
               <td><%= exifISOSpeed %></td>
