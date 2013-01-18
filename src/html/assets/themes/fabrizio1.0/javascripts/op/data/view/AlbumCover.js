@@ -9,7 +9,7 @@
     editable    : {
       '.name.edit' : {
         name: 'name',
-        placement: 'bottom',
+        placement: 'top',
         title: 'Edit Album Name',
         validate : function(value){
           if($.trim(value) == ''){

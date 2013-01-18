@@ -156,8 +156,8 @@
 </script>
 
 <script type="tmpl/underscore" id="album-meta">
-  <a href="/photos/album-<%= id %>/list">
-    <div class="cover">
+  <div class="cover">
+    <a href="/photos/album-<%= id %>/list">
       <% if (!_.isNull(cover)) { %>
         <img src="<%= cover.path200x200xCR %>">
       <% } else { %>
@@ -165,13 +165,13 @@
       <% } %>
       <span class="stack stack1"></span>
       <span class="stack stack2"></span>
-      <?php if($isAdmin) { ?>
-        <h5 class="name edit"><span><%= name %></span></h5>
-      <?php } else { ?>
-        <h5 class="name"><span><%= name %></span></h5>
-      <?php } ?>
-    </div>
-  </a>
+    </a>
+    <?php if($isAdmin) { ?>
+      <h5><span class="name edit"><i class="icon-pencil"></i> <%= name %></span></h5>
+    <?php } else { ?>
+      <h5><span class="name"><%= name %></span></h5>
+    <?php } ?>
+  </div>
 </script>
 
 <script type="tmpl/underscore" id="photo-detail-meta">
