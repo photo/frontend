@@ -60,19 +60,21 @@ class ApiPhotoController extends ApiBaseController
     unset($params['ids']);
 
     $retval = true;
-    $deletedIds = array();
+    $batchResults = array('success' => array(), 'failed' => array());
     foreach($ids as $id)
     {
       $response = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/delete.json", EpiRoute::httpPost, array('_POST' => $params));
       $retval = $retval && $response['result'] !== false;
-      if($response['result'] !== false)
-        $deletedIds[] = $id;
+      if($response['result'] === false)
+        $batchResults['failed'][] = $id;
+      else
+        $batchResults['success'][] = $id;
     }
 
     if($retval)
-      return $this->noContent(sprintf('%d photos deleted', count($ids)), $deletedIds);
+      return $this->noContent(sprintf('%d photos deleted', count($ids)), $batchResults);
     else
-      return $this->error('Error deleting one or more photos', false);
+      return $this->error('Error deleting one or more photos', $batchResults);
   }
 
   /**
