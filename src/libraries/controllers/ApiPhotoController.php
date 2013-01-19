@@ -669,16 +669,21 @@ class ApiPhotoController extends ApiBaseController
     unset($params['ids']);
 
     $retval = true;
+    $batchResults = array('success' => array(), 'failed' => array());
     foreach($ids as $id)
     {
       $response = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/update.json", EpiRoute::httpPost, array('_POST' => $params));
       $retval = $retval && $response['result'] !== false;
+      if($response['result'] === false)
+        $batchResults['failed'][] = $id;
+      else
+        $batchResults['success'][] = $id;
     }
 
     if($retval)
-      return $this->success(sprintf('%d photos updated', count($ids)), true);
+      return $this->success(sprintf('%d photos updated', count($ids)), $batchResults);
     else
-      return $this->error('Error updating one or more photos', false);
+      return $this->error('Error updating one or more photos', $batchResults);
   }
 
   /**
