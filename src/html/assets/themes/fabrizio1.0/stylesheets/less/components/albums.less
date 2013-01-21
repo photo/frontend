@@ -35,6 +35,11 @@ ul.albums {
           right: 0;
           background: #fff;  
           .box-shadow(0 0 1px #000);
+          -webkit-transform-origin: 50% 50%;
+          -moz-transform-origin: 50% 50%;
+          -ms-transform-origin: 50% 50%;
+          -o-transform-origin: 50% 50%;
+          transform-origin: 50% 50%;
         }
         .stack1 {
           .rotate(-3deg);
@@ -49,16 +54,30 @@ ul.albums {
           z-index: 5;
           margin: 0;
           bottom: 0px;
+          padding: 0;
           width: 100%;
           left: 0;
-          background: #fff;
-          .opacity(85);
+          
           span {
             display: block;
             padding: 5px 10px;
+            margin: 5px;
+            background: #fff;
+            .opacity(85);
           }
         }
       }
+    }
+  }
+}
+
+@media(max-width:979px){
+  ul.albums {
+    margin: 0;
+    
+    > li {
+      width: 100%;
+      max-width: 220px;
     }
   }
 }
