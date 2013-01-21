@@ -28,6 +28,21 @@ class MySqlMockHelper
     return $photos;
   }
 
+  public static function getShareToken($override = array())
+  {
+    $params = array_merge(array(
+      'id' => 'foo',
+      'owner' => 'owner@owner.com',
+      'actor' => 'actor@actor.com',
+      'type' => 'album',
+      'data' => 'data',
+      'dateExpires' => time()+100,
+      'groups' => 'one,two,three'
+    ), $override);
+
+    return $params;
+  }
+
   public static function getTag($params = null)
   {
     $tag = array(

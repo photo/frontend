@@ -144,6 +144,18 @@ $sql = <<<SQL
 SQL;
 $status = $status && mysql_4_0_0($sql);
 
+$sql = <<<SQL
+  CREATE TABLE `{$this->mySqlTablePrefix}shareToken` (
+    `id` VARCHAR( 10 ) NOT NULL ,
+    `owner` VARCHAR( 127 ) NOT NULL ,
+    `actor` VARCHAR( 127 ) NOT NULL ,
+    `type` ENUM( 'album', 'photo', 'photos', 'video' ) NOT NULL ,
+    `data` VARCHAR( 255 ) NOT NULL ,
+    `dateExpires` INT UNSIGNED NOT NULL ,
+    PRIMARY KEY ( `owner` , `id` )
+  ) ENGINE = InnoDB;
+SQL;
+$status = $status && mysql_4_0_0($sql);
 
 $sql = <<<SQL
   UPDATE `{$this->mySqlTablePrefix}admin` SET `value`=:version WHERE `key`=:key

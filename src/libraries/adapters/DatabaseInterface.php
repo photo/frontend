@@ -20,6 +20,7 @@ interface DatabaseInterface
   public function deleteGroup($id);
   public function deletePhoto($photo);
   public function deletePhotoVersions($photo);
+  public function deleteShareToken($id);
   public function deleteTag($id);
   public function deleteWebhook($id);
   // get methods read
@@ -41,6 +42,8 @@ interface DatabaseInterface
   public function getResourceMap($id);
   public function getUser($owner = null);
   public function getUserByEmailAndPassword($email = null, $password = null);
+  public function getShareToken($id);
+  public function getShareTokens();
   public function getTag($tag);
   public function getTags($filters = array());
   public function getWebhook($id);
@@ -70,6 +73,7 @@ interface DatabaseInterface
   public function putPhoto($id, $params);
   public function putResourceMap($id, $params);
   public function putUser($params);
+  public function putShareToken($id, $params);
   public function putTag($id, $params);
   public function putWebhook($id, $params);
   // general methods
