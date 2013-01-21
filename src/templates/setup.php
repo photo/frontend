@@ -52,7 +52,7 @@
   <div id="setup-step-2"<?php echo ($step != 2) ? ' class="hidden"' : ''?>>
     <form action="/setup/2<?php echo $qs; ?>" method="post">
       <h2>Site Settings <em>(the defaults work just fine<!--<a href="">what's this?</a>-->)</em></h2>
-      <label for="imageLibrary">Select Image Library (see <a href="https://github.com/openphoto/frontend/issues/662" target="_blank">#662</a> if using GD)</label>
+      <label for="imageLibrary">Select Image Library (see <a href="https://github.com/photo/frontend/issues/662" target="_blank">#662</a> if using GD)</label>
       <?php if(isset($imageLibs)) { ?>
         <select name="imageLibrary" id="imageLibrary">
           <?php foreach($imageLibs as $key => $val) { ?>

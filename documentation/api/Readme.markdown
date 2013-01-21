@@ -49,7 +49,7 @@ Every API endpoint returns a JSON response in a [standard envelope](http://theop
 #### Tag endpoints
 1.  [GET /tags/list.json](http://theopenphotoproject.org/documentation/api/GetTags)
     Get a user's tags.
-1.  [POST /tag/:id/create.json](http://theopenphotoproject.org/documentation/api/PostTagCreate)
+1.  [POST /tag/create.json](http://theopenphotoproject.org/documentation/api/PostTagCreate)
     Create a tag for the user.
 1.  [POST /tag/:id/update.json](http://theopenphotoproject.org/documentation/api/PostTagUpdate)
     Modify meta data for a user's tag.

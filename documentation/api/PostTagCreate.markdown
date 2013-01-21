@@ -1,4 +1,4 @@
-Creae Tag
+Create Tag
 =======================
 
 
@@ -46,13 +46,13 @@ _Authentication: required_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -X POST -h current.openphoto.me -e /tag/sunnyvale/create.json -F 'count=10'
+    ./openphoto -p -X POST -h current.openphoto.me -e /tag/create.json -F 'tag=sunnyvale' -F 'count=10'
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])
 
     $client = new OpenPhotoOAuth($host, $consumerKey, $consumerSecret, $oauthToken, $oauthTokenSecret);
-    $response = $client->post("/tag/sunnyvale/create.json", array('count' => 10));
+    $response = $client->post("/tag/create.json", array('tag' => 'sunnyvale', 'count' => 10));
 
 ----------------------------------------
 
@@ -62,7 +62,7 @@ _Authentication: required_
 The response is in a standard [response envelope](http://theopenphotoproject.org/documentation/api/Envelope).
 
 * _message_, A string describing the result. Don't use this for anything but reading.
-* _code_, _200_ on success
+* _code_, _201_ on success
 * _result_, A [Tag][Tag] object or FALSE on error
 
 <a name="sample"></a>
@@ -70,11 +70,11 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
 
     {
       "message":"",
-      "code":200,
-      "result":
+      "code":201,
+      "result":     	
       {
         "id": "mountain",
-        "count": 1
+        "count": 0
       }
     }
 
