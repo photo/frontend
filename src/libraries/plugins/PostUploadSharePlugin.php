@@ -113,7 +113,7 @@ MKP;
     $params['from'] = $this->config->user->email;
     $params['replyto'] = $this->config->user->email;
     $params['date'] = date('r');
-    $params['headers'] = json_encode(array('X-Mailer' => 'OpenPhoto'));
+    $params['headers'] = json_encode(array('X-Mailer' => 'Trovebox'));
     $params['api_user'] = $conf->sendgrid_user;
     $params['api_key'] = $conf->sendgrid_password;
     curl_setopt($ch, CURLOPT_POST, 1);

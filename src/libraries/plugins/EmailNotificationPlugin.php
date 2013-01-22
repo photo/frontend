@@ -43,9 +43,9 @@ BODY;
 See the favorite here: {$action['permalink']}
 BODY;
     }
-    $headers = "From: OpenPhoto Robot <no-reply@openphoto.me>\r\n" .
+    $headers = "From: Trovebox Robot <no-reply@openphoto.me>\r\n" .
         "Reply-To: no-reply@openphoto.me\r\n" .
-        'X-Mailer: OpenPhoto';
+        'X-Mailer: Trovebox';
     mail($email, $subject, $body, $headers);
   }
 }

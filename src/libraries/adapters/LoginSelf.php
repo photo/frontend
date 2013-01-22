@@ -2,7 +2,7 @@
 /**
  * Instance implementation
  *
- * This class defines the functionality defined by LoginInterface for OpenPhoto.
+ * This class defines the functionality defined by LoginInterface for Trovebox.
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
 
