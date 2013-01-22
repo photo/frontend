@@ -518,62 +518,7 @@ var TBX = (function() {
           }
         },
         front: {
-          
-          initData: typeof(initData) === "undefined" ? undefined : initData,
-          filterOpts: typeof(filterOpts) === "undefined" ? undefined : filterOpts,
-          batchModel: new op.data.model.Batch({count: OP.Batch.length()}),
-          page: null,
-          pageCount: 0,
-          pageLocation: {
-            pathname: window.location.pathname,
-            search: window.location.search
-          },
-          maxMobilePageCount: 5,
-          end: false,
-          running: false,
-          init: function() {
-            var _pages = TBX.init.pages, _this = _pages.photos, batchModel = _pages.photos.batchModel, $batchEl = $('.batch-meta');
-            $(window).scroll(function() { util.scrollCb(_this); });
-            _this.load();
-            (new op.data.view.BatchIndicator({model:batchModel, el: $batchEl})).render();
-            _this.router.init();
-          },
-          load: function() {
-            var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];
-            util.load(_this, async);
-          },
-          loadCb: function(response) {
-            var items = response.result, _this = TBX.init.pages.photos, infobar = $('.infobar'),
-                minDate = $('.startdate', infobar), maxDate = $('.enddate', infobar),
-                minDateVal = parseInt(minDate.attr('data-time')), maxDateVal = parseInt(maxDate.attr('data-time')),
-                ui = TBX.ui, i;
-
-            op.data.store.Photos.add( items );
-            if(items.length > 0) {
-              var thisTaken;
-              for(i=0; i<items.length; i++) {
-                thisTaken = parseInt(items[i].dateTaken);
-                if(thisTaken > maxDateVal) {
-                  ui.fadeAndSet(maxDate, phpjs.date('l F jS, Y', thisTaken));
-                  maxDate.attr('data-time', thisTaken);
-                  maxDateVal = thisTaken;
-                } else if(parseInt(items[i].dateTaken) < parseInt(minDate.attr('data-time'))) {
-                  ui.fadeAndSet(minDate, phpjs.date('l F jS, Y', thisTaken));
-                  minDate.attr('data-time', thisTaken);
-                  minDateVal = thisTaken;
-                }
-              }
-
-              Gallery.showImages($(".photo-grid"), items);
-              _this.page++;
-              _this.pageCount++;
-              _this.running = false;
-            } else {
-              $('.load-more').hide();
-              _this.end = true;
-            }
-          }
-          
+          init: function() {}
         },
         photo: {
           initData: typeof(initData) === "undefined" ? undefined : initData,

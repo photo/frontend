@@ -54,7 +54,7 @@
           <?php if($this->user->isAdmin()) { ?>
             <li><a href="/manage/settings"><i class="icon-cog"></i> Site Settings</a></li>
           <?php } ?>
-          <li><div class="help-container"><a href="#"><i class="icon-question-sign"></i></div></a>
+          <li><div class="help-container"><a href="https://trovebox.com/faq"><i class="icon-question-sign"></i></div></a>
         </ul>
       </div>
       <div class="container">
