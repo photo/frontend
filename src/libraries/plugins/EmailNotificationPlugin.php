@@ -43,8 +43,8 @@ BODY;
 See the favorite here: {$action['permalink']}
 BODY;
     }
-    $headers = "From: Trovebox Robot <no-reply@openphoto.me>\r\n" .
-        "Reply-To: no-reply@openphoto.me\r\n" .
+    $headers = "From: Trovebox Robot <no-reply@trovebox.com>\r\n" .
+        "Reply-To: no-reply@trovebox.com\r\n" .
         'X-Mailer: Trovebox';
     mail($email, $subject, $body, $headers);
   }

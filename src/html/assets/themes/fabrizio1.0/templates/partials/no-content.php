@@ -23,7 +23,7 @@
     <?php } else { // default with message appropriate for non logged in user ?>
       <strong class="bigtext">:-(</strong><br/>
       <h1>Sorry, nothing to see here. You might want to sign in.</h1>
-      <p>Start by clicking the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> or <a href="https://openphoto.me"><i class="icon-plus icon-large"></i> register</a> button.</p>
+      <p>Start by clicking the <a href="#" class="login-modal-click"><i class="icon-signin icon-large"></i> sign in</a> or <a href="https://trovebox.com"><i class="icon-plus icon-large"></i> register</a> button.</p>
     <?php } ?>
   <?php } else { // user is logged in ?>
     <?php if($this->user->isAdmin() && $type == 'upload') { // message to upload photos ?>
@@ -37,7 +37,7 @@
     <?php } elseif($type == '403') { // logged in but no access ?>
       <strong class="bigtext">?</strong><br/>
       <h1>The page you are looking for is restricted.</h1>
-      <p>You can <a href="https://openphoto.me"><i class="icon-plus icon-large"></i> register</a> for your own account.</p>
+      <p>You can <a href="https://trovebox.com"><i class="icon-plus icon-large"></i> register</a> for your own account.</p>
       <p>HTTP 403</p>
     <?php } else { // default with message appropriate for owner/visitor ?>
       <strong class="bigtext">:-(</strong><br/>
@@ -45,7 +45,7 @@
       <?php if($this->user->isAdmin()) { ?>
         <p>You can <a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload-alt icon-large"></i> upload photos</a> or <a href="<?php $this->url->manage(); ?>"><i class="icon-upload-alt icon-large"></i> manage your account</a>.</p>
       <?php } else { ?>
-        <p>You can <a href="https://openphoto.me"><i class="icon-plus icon-large"></i> register</a> for your own account.</p>
+        <p>You can <a href="https://trovebox.com"><i class="icon-plus icon-large"></i> register</a> for your own account.</p>
       <?php } ?>
     <?php } ?>
   <?php } ?>
