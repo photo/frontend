@@ -1612,6 +1612,9 @@ class DatabaseMySql implements DatabaseInterface
           case 'permission':
             $where = $this->buildWhere($where, "`permission`='1'");
             break;
+          case 'since':
+            $where = $this->buildWhere($where, sprintf("`dateSortByDay`>'%s'", $this->_($this->dateSortByDay(strtotime($value)))));
+            break;
           case 'sortBy':
             if($value === 'dateTaken,desc')
               $sortBy = 'ORDER BY dateSortByDay DESC';
@@ -1724,6 +1727,21 @@ class DatabaseMySql implements DatabaseInterface
 
     return $value;
   }
+
+  /**
+    * Builds the dateSortByDay string from a timestamp
+    *
+    * @param string $time time to format
+    * @return string
+    */
+  private function dateSortByDay($time)
+  {
+    $invHours = str_pad(intval(23-date('H', $time)), 2, '0', STR_PAD_LEFT);
+    $invMins = str_pad(intval(59-date('i', $time)), 2, '0', STR_PAD_LEFT);
+    $invSecs = str_pad(intval(59-date('s', $time)), 2, '0', STR_PAD_LEFT);
+    return sprintf('%s%s%s%s', date('Ymd', $time), $invHours, $invMins, $invSecs);
+  }
+
 
   /**
     * Delete albums for an element from the mapping table
@@ -2075,10 +2093,8 @@ class DatabaseMySql implements DatabaseInterface
     if(isset($params['dateTaken']))
     {
       // here we seed a field for the default sort order of day descending and time ascending
-      $invHours = str_pad(intval(23-date('H', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
-      $invMins = str_pad(intval(59-date('i', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
-      $invSecs = str_pad(intval(59-date('s', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
-      $bindings[':dateSortByDay'] = sprintf('%s%s%s%s', date('Ymd', $params['dateTaken']), $invHours, $invMins, $invSecs);
+
+      $bindings[':dateSortByDay'] = $this->dateSortByDay($params['dateTaken']);
       $paramsOut['dateSortByDay'] = ':dateSortByDay';
     }
     $paramsOut['::bindings'] = $bindings;
