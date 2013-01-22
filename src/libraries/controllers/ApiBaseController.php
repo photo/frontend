@@ -90,7 +90,15 @@ class ApiBaseController
     */
   public function error($message, $result = null)
   {
-    return $this->json($message, self::statusError, $result);
+    $errorCode = self::statusError;
+    if(!empty($result) && isset($result['code']))
+    {
+      $errorCode = $result['code'];
+      unset($result['code']);
+      if(empty($result))
+        $result = null;
+    }
+    return $this->json($message, $errorCode, $result);
   }
 
   /**
