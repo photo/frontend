@@ -1,28 +1,12 @@
-<?php
-/*
-$this->theme->display('partials/user-badge.php');
-
-?>
-<?php if(!empty($activities)) { ?>
-  <ol>
-    <?php foreach($activities as $activity) { ?>
-        <?php $this->theme->display(sprintf('partials/feed-%s.php', $activity[0]['type']), array('activity' => $activity)); ?>
-      <?php $i++; ?>
-    <?php } ?>
-  </ol>
-<?php
-}
-*/
-?>
 <div class="row">
   <div class="span8">
     <?php $this->theme->display('partials/user-badge.php'); ?>
+    <h3 class="sidebar-heading activity-list-heading">
+      <i class="icon-angle-down"></i>
+      <i class="icon-inbox"></i>
+      Latest Activity
+    </h3>
     <?php if(!empty($activities)) { ?>
-      <h3 class="sidebar-heading activity-list-heading">
-        <i class="icon-angle-down"></i>
-        <i class="icon-inbox"></i>
-        Latest Activity
-      </h3>
       <ul class="activity-list">
         <?php foreach($activities as $activity) { ?>
           <?php if($activity[0]['type'] == 'photo-upload') { ?>
@@ -30,6 +14,8 @@ $this->theme->display('partials/user-badge.php');
           <?php } ?>
         <?php } ?>
       </ul>
+    <?php } else { ?>
+      <h4>No activity. Create some buzz by uploading a photo.</h4> 
     <?php } ?>
   </div>
   <div class="span4">
