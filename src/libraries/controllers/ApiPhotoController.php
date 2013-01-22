@@ -35,8 +35,6 @@ class ApiPhotoController extends ApiBaseController
     {
       $activityObj = new Activity;
       $activityObj->deleteForElement($id, array('photo-upload','photo-update','action-create'));
-
-      $res = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json");
       return $this->noContent('Photo deleted successfully', true);
     }
     else
