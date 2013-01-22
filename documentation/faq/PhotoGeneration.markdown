@@ -7,7 +7,7 @@ By default, when a photo is uploaded there are two versions of that photo which 
 
 The API is capable of returning URLs for any size version of every photo. This is acheived by passing in a parameter named `returnSizes` to the [GET Photos](http://theopenphotoproject.org/documentation/api/GetPhotos) and [GET Photo](http://theopenphotoproject.org/documentation/api/GetPhoto) APIs. This ensures that the response for the photo(s) will include a URL for the size(s) you specify. Here is an example.
 
-    curl "http://current.openphoto.me/photo/63.json?returnSizes=123x123"
+    curl "http://current.trovebox.com/photo/63.json?returnSizes=123x123"
 
 This call returns the following response.
 
@@ -15,7 +15,7 @@ This call returns the following response.
       "code" : 200,
       "message" : "Photo 63",
       "result" : {
-        "appId" : "current.openphoto.me",
+        "appId" : "current.trovebox.com",
         "creativeCommons" : "BY-NC",
         "dateTaken" : "1313010850",
         "dateTakenDay" : "10",
@@ -34,7 +34,7 @@ This call returns the following response.
         "id" : "63",
         "latitude" : "",
         "longitude" : "",
-        "path123x123" : "http://current.openphoto.me/photo/63/create/1a7f0/123x123.jpg",
+        "path123x123" : "http://current.trovebox.com/photo/63/create/1a7f0/123x123.jpg",
         "path200x200" : "http://opmecurrent.s3.amazonaws.com/custom/201108/1313010849-opmeTbrBki_200x200.jpg",
         "pathBase" : "/base/201108/1313010849-opmeTbrBki.jpg",
         "pathOriginal" : "/original/201108/1313010849-opmeTbrBki.jpg",
@@ -50,7 +50,7 @@ This call returns the following response.
 
 The most important keys in the response are `path123x123` and `path200x200`. Either of these URLs will correctly render the photo in the respective size. Notice, however, that the `path123x123` hostname is different from `path200x200`. This is important because this implies that a _123x123_ version of the photo doesn't exist and the API host needs to generate it. The following url will generate the correct version of the photo, store it to the proper file system, saves it to the database and returns it with a content-type of _image/jpeg_.
 
-    http://current.openphoto.me/photo/63/create/1a7f0/123x123.jpg
+    http://current.trovebox.com/photo/63/create/1a7f0/123x123.jpg
 
 It's important to realize that the photo isn't generated and stored until this URL is called. This typically happens when the browser tries to display this photo. Once that has happened then the _123x123_ version exists both in the database and file system and calling the same API again returns a different URL for `path123x123`.
 
@@ -58,7 +58,7 @@ It's important to realize that the photo isn't generated and stored until this U
       "code" : 200,
       "message" : "Photo 63",
       "result" : {
-        "appId" : "current.openphoto.me",
+        "appId" : "current.trovebox.com",
         "creativeCommons" : "BY-NC",
         "dateTaken" : "1313010850",
         "dateTakenDay" : "10",
@@ -95,7 +95,7 @@ The URL for `path123x123` now points to a static resource.
 
 You can specify multiple sizes for the `returnSizes` delimited by commas.
 
-    curl "http://current.openphoto.me/photo/63.json?returnSizes=123x123,300x300xBW"
+    curl "http://current.trovebox.com/photo/63.json?returnSizes=123x123,300x300xBW"
 
 ### Understanding options for returnSizes
 

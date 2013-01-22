@@ -45,7 +45,7 @@ _Authentication: optional_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -h current.openphoto.me -e /photo/b/view.json
+    ./openphoto -p -h current.trovebox.com -e /photo/b/view.json
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])

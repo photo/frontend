@@ -46,7 +46,7 @@ All of the <a href="https://github.com/photo">source for OpenPhoto</a> is availa
 This includes the web application, mobile apps and plugins for Wordpress just to name a few.
 We've also got <a href="http://theopenphotoproject.org/documentation">lots of guides</a> to help you get started.
 
-If you'd rather not install the software yourself you can <a href="http://openphoto.me">sign up for a hosted account</a>.
+If you'd rather not install the software yourself you can <a href="http://trovebox.com">sign up for a hosted account</a>.
 The hosted account may or may not be free depending on the service and what features you use.
 
 ----------------------------------------
