@@ -32,7 +32,7 @@
       <p>Start now by clicking the <a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload-alt icon-large"></i> upload button</a>!</p>
     <?php } else if($this->user->isAdmin() && $type == 'albums') { // message to create albums ?>
       <strong class="bigtext"><i class="icon-th icon-large"></i></strong><br/>
-      <h1>You haven't created an albums on OpenPhoto yet.</h1>
+      <h1>You haven't created an albums on Trovebox yet.</h1>
       <p>Start now by clicking the <a href="<?php $this->url->manageAlbums(); ?>"><i class="icon-th icon-large"></i> manage albums button</a>!</p>
     <?php } elseif($type == '403') { // logged in but no access ?>
       <strong class="bigtext">?</strong><br/>

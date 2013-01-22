@@ -1,7 +1,7 @@
 <div class="manage features">
   <a name="settings"></a>
   <div class="row hero-unit blurb">
-    <h2>Configure your OpenPhoto site</h2>
+    <h2>Configure your Trovebox site</h2>
     <p>
       Don't want users to download your original photos? No problem. Want to allow the same photo to be uploaded twice? You're at the right spot.
     </p>    
@@ -36,7 +36,7 @@
   <div class="row hero-unit blurb">
     <h2>Your OAuth Applications</h2>
     <p>
-      You've granted these applications access to your OpenPhoto account. Clicking <strong>revoke</strong> cannot be undone and you may have to reapprove the application.
+      You've granted these applications access to your Trovebox account. Clicking <strong>revoke</strong> cannot be undone and you may have to reapprove the application.
     </p>
     <p>
       <a href="/v1/oauth/authorize?oauth_callback=<?php $this->utility->safe(sprintf('%s://%s%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], '/manage/apps/callback')); ?>&name=<?php $this->utility->safe(urlencode('Self Generated App')); ?>&tokenType=access" class="btn btn-primary">Create a new app</a>
@@ -74,7 +74,7 @@
   <div class="row hero-unit blurb">
     <h2>Your plugins</h2>
     <p>
-      Plugins help you add more features to your OpenPhoto site. Below is a list of all the available plugins you can activate and configure.
+      Plugins help you add more features to your Trovebox site. Below is a list of all the available plugins you can activate and configure.
     </p>
   </div>
   <table class="table table-striped">
