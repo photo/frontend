@@ -1,0 +1,42 @@
+body.trovebox {
+
+  &.photo-details, &.tags {
+    .tags {
+      .clearfix();
+      list-style: none;
+      li {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        float: left;
+        margin-right: 10px;
+        margin-bottom: 16px;
+        font-size: 120%;
+        a {
+          display: inline-block;
+          .ie7-inline-block();
+          padding: 6px 12px;
+          border-radius: 4px;
+          background: #d3d3d3;
+          color: #777;
+          
+          &:hover {
+            background: @color_brand;
+            color: #333;
+            text-decoration: none;
+          }
+        }
+      }
+    }
+  }
+
+  &.tags {
+    .tags-hr {
+      background: #ccc;
+      height: 1px;
+      line-height: 1px;
+      margin: 20px 5px 15px;
+    }
+
+  }
+}
