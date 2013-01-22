@@ -25,7 +25,7 @@
   </head>
 <body class="<?php echo $page; ?>">
   <header>
-    <h1><div class="offscreen">OpenPhoto</div></h1>
+    <h1><div class="offscreen">Trovebox</div></h1>
   </header>
   <div class="container">
     <?php echo $body; ?>
