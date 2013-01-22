@@ -1,7 +1,7 @@
 Frequently asked questions
 =======================
 
-This is a list of common questions that people have about The OpenPhoto Project.
+This is a list of common questions that people have about The Photo Project.
 If you have one which is not on this list send us a message via <a href="http://twitter.com/photo">Twitter</a> or <a href="mailto:hello@openphoto.me">email</a>.
 
 ### What exactly is OpenPhoto?
