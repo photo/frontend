@@ -34,22 +34,11 @@
         <input type="text" name="tags" class="tags" placeholder="Optional comma separated list">
 
         <div class="control-group">
-          <label class="control-label">Albums <em>(<a href="/album/form" class="album-form-click">create a new one</a>)</em></label>
+          <label class="control-label">Albums</label>
           <select data-placeholder="Select albums for these photos" multiple  name="albums" class="typeahead">
             <?php if(!empty($albums)) { ?>
               <?php foreach($albums as $album) { ?>
                 <option value="<?php $this->utility->safe($album['id']); ?>"><?php $this->utility->safe($album['name']); ?></option>
-              <?php } ?>
-            <?php } ?>
-          </select>
-        </div>
-
-        <div class="control-group">
-          <label class="control-label">Groups <em>(<a href="/group/form" class="group-form-click" target="_blank">create a new one</a>)</em></label>
-          <select data-placeholder="Select groups for these photos" multiple  name="groups" class="typeahead">
-            <?php if(!empty($groups)) { ?>
-              <?php foreach($groups as $group) { ?>
-                <option value="<?php $this->utility->safe($group['id']); ?>"><?php $this->utility->safe($group['name']); ?></option>
               <?php } ?>
             <?php } ?>
           </select>
