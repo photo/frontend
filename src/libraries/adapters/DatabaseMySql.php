@@ -1596,7 +1596,7 @@ class DatabaseMySql implements DatabaseInterface
               $ids[$k] = $this->_($v);
             $where = $this->buildWhere($where, sprintf("`id` IN ('%s')", implode("','", $ids)));
             break;
-          /*case 'groups':
+          case 'groups':
             if(!is_array($value))
               $value = (array)explode(',', $value);
             foreach($value as $k => $v)
@@ -1604,7 +1604,7 @@ class DatabaseMySql implements DatabaseInterface
             $subquery = sprintf("(`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementGroup` WHERE `{$this->mySqlTablePrefix}elementGroup`.`owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
               $this->_($this->owner), 'photo', implode("','", $value));
             $where = $this->buildWhere($where, $subquery);
-            break;*/
+            break;
           case 'page':
             if($value > 1)
               $offset = intval(($limit * $value) - $limit);
