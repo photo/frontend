@@ -221,7 +221,7 @@
 </script>
 
 <script type="tmpl/underscore" id="photo-detail-title-tmpl">
-  <span class="title<?php if($isAdmin) { ?> edit<?php } ?>"><%= title || filenameOriginal %></span>
+  <span class="title<?php if($isAdmin) { ?> edit<?php } ?>"><i class="icon-pencil"></i> <%= title || filenameOriginal %></span>
   <span class="actions">
     <!--<a href="#"><i class="icon-heart"></i></a>
     <a href="#"><i class="icon-comment"></i></a>-->
