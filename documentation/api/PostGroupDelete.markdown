@@ -42,7 +42,7 @@ _None_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -X POST -h current.openphoto.me -e /group/a/delete.json
+    ./openphoto -p -X POST -h current.trovebox.com -e /group/a/delete.json
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])
