@@ -163,6 +163,16 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete a share token from the database
+    *
+    * @param string $id ID of the share token to delete
+    * @return boolean
+    */
+  public function deleteShareToken($id)
+  {
+  }
+
+  /**
     * Delete a tag from the database
     *
     * @param string $id ID of the tag to delete
@@ -633,6 +643,37 @@ class DatabaseMySql implements DatabaseInterface
 
     $resourceMap = $this->normalizeResourceMap($resourceMap);
     return $resourceMap;
+  }
+
+  /**
+    * Get a share token
+    *
+    * @param string $token token to be retrieved
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getShareToken($id)
+  {
+    $token = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `id`=:id", array(':owner' => $this->owner, ':id' => $id));
+
+    if(!$token)
+      return false;
+
+    if($token['dateExpires'] > 0 && $token['dateExpires'] <= time())
+    {
+      getLogger()->info('Sharing token has expired');
+      return false;
+    }
+
+    return $token;
+  }
+
+  /**
+    * Get all share tokens
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getShareTokens()
+  {
   }
 
   /**
@@ -1293,6 +1334,17 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Add a new share token to the database
+    *
+    * @param string $id ID of the token
+    * @param array $params Attributes to create.
+    * @return boolean
+    */
+  public function putShareToken($id, $params)
+  {
+  }
+
+  /**
     * Add a new tag to the database
     * This method does not overwrite existing values present in $params - hence "new tag".
     *
@@ -1522,6 +1574,7 @@ class DatabaseMySql implements DatabaseInterface
     }
     $groupBy = '';
     $sortBy = 'ORDER BY dateSortByDay DESC';
+
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -1543,7 +1596,7 @@ class DatabaseMySql implements DatabaseInterface
               $ids[$k] = $this->_($v);
             $where = $this->buildWhere($where, sprintf("`id` IN ('%s')", implode("','", $ids)));
             break;
-          case 'groups':
+          /*case 'groups':
             if(!is_array($value))
               $value = (array)explode(',', $value);
             foreach($value as $k => $v)
@@ -1551,7 +1604,7 @@ class DatabaseMySql implements DatabaseInterface
             $subquery = sprintf("(`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementGroup` WHERE `{$this->mySqlTablePrefix}elementGroup`.`owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
               $this->_($this->owner), 'photo', implode("','", $value));
             $where = $this->buildWhere($where, $subquery);
-            break;
+            break;*/
           case 'page':
             if($value > 1)
               $offset = intval(($limit * $value) - $limit);

@@ -325,6 +325,55 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
     $this->assertEquals(count($res), 2, 'The MySql adapter did not return 2 photos for getPhotos');
   }
 
+  public function testGetShareTokenSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('one'));
+    $db->expects($this->any())
+      ->method('one')
+      ->will($this->returnValue(MySqlMockHelper::getShareToken()));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getShareToken('foo');
+    $this->assertTrue($res !== false);
+    $this->assertEquals($res['id'], 'foo');
+  }
+
+  public function testGetShareTokenNotExistsFailure()
+  {
+    $db = $this->getMock('MySqlMock', array('one'));
+    $db->expects($this->any())
+      ->method('one')
+      ->will($this->returnValue(false));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getShareToken('foo');
+    $this->assertFalse($res);
+  }
+
+  public function testGetShareTokenNotExpiredSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('one'));
+    $db->expects($this->any())
+      ->method('one')
+      ->will($this->returnValue(MySqlMockHelper::getShareToken(array('dateExpires' => time()+100))));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getShareToken('foo');
+    $this->assertTrue($res !== false);
+  }
+
+  public function testGetShareTokenExpiredFailure()
+  {
+    $db = $this->getMock('MySqlMock', array('one'));
+    $db->expects($this->any())
+      ->method('one')
+      ->will($this->returnValue(MySqlMockHelper::getShareToken(array('dateExpires' => 1))));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getShareToken('foo');
+    $this->assertFalse($res);
+  }
+
   public function testGetTagsSuccess()
   {
     $db = $this->getMock('MySqlMock', array('all'));

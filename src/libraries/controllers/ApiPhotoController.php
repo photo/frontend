@@ -900,24 +900,13 @@ class ApiPhotoController extends ApiBaseController
 
   protected function parseFilters($filterOpts)
   {
-    $groupsObj = new Group;
     // If the user is logged in then we can display photos based on group membership
+    $shareTokenObj = new ShareToken;
+
+    $token = null;
     $permission = 0;
     if($this->user->isAdmin())
-    {
       $permission = 1;
-    }
-    elseif($this->user->isLoggedIn())
-    {
-      $userGroups = $groupsObj->getGroups($this->user->getEmailAddress());
-      if(!empty($userGroups))
-      {
-        $permission = -1;
-        $groupIds = array();
-        foreach($userGroups as $group)
-          $groupIds[] = $group['id'];
-      }
-    }
 
     // This section enables in path parameters which are normally GET
     $pageSize = $this->config->pagination->photos;
@@ -944,6 +933,9 @@ class ApiPhotoController extends ApiBaseController
               continue;
             $filters[$parameterKey] = $parameterValue;
             break;
+          case 'token':
+            $token = $shareTokenObj->get($parameterValue);
+            break;
           default:
             $filters[$parameterKey] = $parameterValue;
             break;
@@ -962,10 +954,21 @@ class ApiPhotoController extends ApiBaseController
     if(isset($filters['protocol']))
       $protocol = $filters['protocol'];
 
+    if($token !== null)
+    {
+      if($token !== false)
+      {
+        switch($token['type'])
+        {
+          case 'album':
+            if(isset($filters['album']) && $filters['album'] == $token['data'])
+              $permission = 1; // set permission to be pubilc for this request
+        }
+      }
+    }
+
     if($permission == 0)
       $filters['permission'] = $permission;
-    elseif($permission == -1)
-      $filters['groups'] = $groupIds;
 
     return array('filters' => $filters, 'pageSize' => $pageSize, 'protocol' => $protocol, 'page' => $page);
   }
