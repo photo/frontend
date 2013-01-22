@@ -1574,6 +1574,7 @@ class DatabaseMySql implements DatabaseInterface
     }
     $groupBy = '';
     $sortBy = 'ORDER BY dateSortByDay DESC';
+
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
