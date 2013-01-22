@@ -4,7 +4,7 @@ Response Envelope
 
 ----------------------------------------
 
-### Standard OpenPhoto API response envelope
+### Standard Trovebox API response envelope
 
 Every API returns a JSON response adhering to the following format.
 
