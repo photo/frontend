@@ -40,9 +40,9 @@ class FacebookLikePlugin extends PluginBase
 
     $utility = new Utility;
     $tags = '';
-    $title = $photo['title'] !== '' ? $photo['title'] : "{$photo['filenameOriginal']} on OpenPhoto";
+    $title = $photo['title'] !== '' ? $photo['title'] : "{$photo['filenameOriginal']} on Trovebox";
     $tags .= $this->addTag('og:site_name', 
-      sprintf('%s OpenPhoto site', 
+      sprintf('%s Trovebox site', 
         ucwords(
           $utility->posessive(
             $utility->getEmailHandle($this->config->user->email, false),
