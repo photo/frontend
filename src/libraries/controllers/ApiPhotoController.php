@@ -454,6 +454,8 @@ class ApiPhotoController extends ApiBaseController
     $tagObj = new Tag;
     $attributes = $_REQUEST;
 
+    $this->plugin->invoke('onPhotoUpload');
+
     // this determines where to get the photo from and populates $localFile and $name
     extract($this->parsePhotoFromRequest());
 
