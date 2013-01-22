@@ -7,9 +7,9 @@
   <?php if($this->user->isAdmin()) { ?>
     <div class="span3">
       <form class="shareEmail">
-        <strong>Email this photo</strong>
+        <strong>Who would you like to email this photo to?</strong>
         <input type="text" class="span3" placeholder="a@gmail.com, b@yahoo.com" name="recipients">
-        <textarea class="span3" placeholder="Optionally type a message..." name="message"></textarea>
+        <textarea class="span3" placeholder="Type a message..." name="message"></textarea>
         <input type="hidden" name="attachment" value="1">
         <!--<label class="checkbox">
           <input type="checkbox" checked="checked" name="attachment" value="1"> Send as attachment
