@@ -34,7 +34,7 @@
         <input type="text" name="tags" class="tags" placeholder="Optional comma separated list">
 
         <div class="control-group">
-          <label class="control-label">Albums <em>(<a href="/album/form" class="album-form-click">create a new one</a>)</em></label>
+          <label class="control-label">Albums</label>
           <select data-placeholder="Select albums for these photos" multiple  name="albums" class="typeahead">
             <?php if(!empty($albums)) { ?>
               <?php foreach($albums as $album) { ?>
