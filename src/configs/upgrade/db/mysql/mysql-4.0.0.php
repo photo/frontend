@@ -109,7 +109,7 @@ $status = $status && mysql_4_0_0($sql);
 $sql = <<<SQL
 DELIMITER ##
 CREATE
-TRIGGER update_album_tag_on_insert
+TRIGGER update_tag_counts_on_insert
 AFTER INSERT ON elementTag
 FOR EACH ROW
 BEGIN
