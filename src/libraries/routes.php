@@ -108,9 +108,15 @@ $routeObj->get('/v[1-2]/oauth/test', array('OAuthController', 'test'));
 $routeObj->get('/v[1-2]/oauth/flow', array('OAuthController', 'flow'));
 
 /*
- * HTML endpoints that require logic
+ * Asset endpoints
+ * All asset endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /assets/cache/:version/:type/:file[,:file]
  */
-$routeObj->get('/assets/.*/stylesheets/lessc', array('AssetController', 'lessc'));
+$routeObj->get('/assets/.*/stylesheets/lessc', array('AssetsController', 'lessc'));
+$routeObj->get('/assets/cache/([^/]+)/(js|css)/(c|m)(/.+)', array('AssetsController', 'get'));
+$routeObj->get('/assets/versioned/[^/]+/(.+)', array('AssetsController', 'staticAsset'));
+
 
 
 if($runUpgrade)
