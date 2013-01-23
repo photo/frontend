@@ -29,9 +29,8 @@ class FileSystemLocal implements FileSystemInterface
 
   /**
     * Deletes a photo (and all generated versions) from the file system.
-    * To get a list of all the files to delete we first have to query the database and find out what versions exist.
     *
-    * @param string $id ID of the photo to delete
+    * @param array $photo The photo to delete
     * @return boolean
     */
   public function deletePhoto($photo)
