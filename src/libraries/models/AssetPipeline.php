@@ -112,6 +112,20 @@ class AssetPipeline
     return $url;
   }
 
+  public function normalizeUrls($file, $contents = null)
+  {
+    if($contents === null)
+      $contents = file_get_contents($file);
+
+    // we only version assets if they are being served from a CDN
+    if(!empty($this->cdnPrefix))
+      $pathToFile = str_replace(array($this->docroot, '/assets/'), array('', $this->cacheDirVersioned), dirname($file));
+    else
+      $pathToFile = str_replace($this->docroot, '', dirname($file));
+
+    return str_replace('../', "{$pathToFile}/../", $contents);
+  }
+
   public function returnHeader($file)
   {
     $header = sprintf('Content-Type: %s', $this->getContentType($file));
@@ -135,17 +149,5 @@ class AssetPipeline
       $this->assets[$type][] = $src;
       $this->assetsRel[$type][] = str_replace($this->docroot, '', $src);
     }
-  }
-
-  private function normalizeUrls($file)
-  {
-    $contents = file_get_contents($file);
-    // we only version assets if they are being served from a CDN
-    if(!empty($this->cdnPrefix))
-      $pathToFile = str_replace(array($this->docroot, '/assets/'), array('', $this->cacheDirVersioned), dirname($file));
-    else
-      $pathToFile = str_replace($this->docroot, '', dirname($file));
-
-    return str_replace('../', "{$pathToFile}/../", $contents);
   }
 }
