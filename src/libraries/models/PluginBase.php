@@ -67,6 +67,8 @@ class PluginBase extends BaseModel
   
   public function renderFooter() { }
 
+  public function renderFooterJavascript() { }
+
   public function routeHandler($route)
   {
     // require authentication for all route urls
