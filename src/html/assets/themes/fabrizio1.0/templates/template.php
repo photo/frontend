@@ -115,6 +115,7 @@
             <?php } ?>
             TBX.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
             TBX.init.attachEvents();
+            <?php $this->plugin->invoke('renderFooterJavascript'); ?>
           }
         }
       });

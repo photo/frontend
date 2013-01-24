@@ -1,7 +1,7 @@
 <?php
 class UserConfig
 {
-  protected $utility, $basePath, $host;
+  protected $utility, $basePath, $host, $baseHost, $rewriteHost;
 
   public function __construct($params = null)
   {
@@ -31,6 +31,9 @@ class UserConfig
           }
         }
       }
+
+      $this->baseHost = $params['site']['baseHost'];
+      $this->rewriteHost = $params['site']['rewriteHost'];
 
       $configParams = array($params['epi']['config']);
       if(isset($params['epiConfigParams']))
@@ -119,7 +122,8 @@ class UserConfig
    */
   private function getConfigFile()
   {
-    $configFile = sprintf('%s/userdata/configs/%s.ini', $this->basePath, $this->host);
+    $host = str_replace($this->rewriteHost, $this->baseHost, $this->host);
+    $configFile = sprintf('%s/userdata/configs/%s.ini', $this->basePath, $host);
     if(!$this->config->exists($configFile))
       return false;
     return $configFile;

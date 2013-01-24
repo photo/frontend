@@ -45,7 +45,7 @@ _Authentication: optional_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -h current.openphoto.me -e /photo/b/nextprevious.json
+    ./openphoto -p -h current.trovebox.com -e /photo/b/nextprevious.json
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])
@@ -117,7 +117,7 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
 
             ],
             "id" : "63",
-            "appId" : "current.openphoto.me",
+            "appId" : "current.trovebox.com",
             "pathBase" : "\/base\/201108\/1313010849-opmeTbrBki.jpg",
             "dateUploadedMonth" : "08",
             "dateTakenMonth" : "08",

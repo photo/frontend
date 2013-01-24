@@ -1,5 +1,5 @@
 <div id="setup">
-  <h1>Create your OpenPhoto site <?php if(empty($qs)) { ?><em><a href="/setup/restart">(start over)</a></em><?php } ?></h1>
+  <h1>Create your Trovebox site <?php if(empty($qs)) { ?><em><a href="/setup/restart">(start over)</a></em><?php } ?></h1>
   <ul class="nav nav-pills">
     <?php for($i = 1; $i <= 3; $i++) { ?>
       <li<?php echo ($step == $i) ? ' class="active"' : ''; ?>><a><?php echo $i; ?></a></li>
@@ -28,7 +28,7 @@
       <label for="email">Email address</label>
       <input type="text" name="email" id="email" placeholder="user@example.com" <?php if(isset($email)) { ?>value="<?php $this->utility->safe($email); ?>"<?php } ?> data-validation="required email">
 
-      <?php if($this->config->site->allowOpenPhotoLogin == 1) { ?>
+      <?php if($this->config->site->allowTroveboxLogin == 1) { ?>
         <label for="email">Password</label>
         <input type="password" name="password" id="password" placeholder="password" <?php if(isset($password)) { ?>value="<?php $this->utility->safe($password); ?>"<?php } ?> data-validation="required">
       <?php } else { ?>
