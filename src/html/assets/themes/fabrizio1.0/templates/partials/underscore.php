@@ -120,42 +120,58 @@
   </div>
   <div class="detail-block">
     <div class="title">
-      <span class="text"><%= title || filenameOriginal %></span>
+      <span class="text">
+        <?php if($isAdmin) { ?>
+          <a href="#" class="title edit text"><i class="icon-pencil"></i> <%= title || filenameOriginal %></a>
+        <?php } else { ?>
+          <%= title || filenameOriginal %>
+        <?php } ?>
+      </span>
       <span class="actions">
         <!--<a href="#"><i class="icon-heart"></i></a>
         <a href="#"><i class="icon-comments"></i></a>-->
 
         <?php if($isAdmin) { ?>
-          <a href="#" class="share" data-id="<%= id %>"><i class="icon-share-alt"></i></a>
-        <?php } ?>
-        <a href="#" class="permission <?php if($isAdmin) { ?> edit<?php } ?>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
-        <?php if($isAdmin || $this->config->site->allowOriginalDownload == 1) { ?>
-          <a href="<%= pathDownload %>"><i class="icon-download"></i></a>
+          <a href="#" class="share" data-id="<%= id %>" title="Share this photo via email, Facebook or Twitter"><i class="icon-share-alt"></i></a>
+          <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
+          <a href="#" class="permission" title="Click to make this photo <%= permission == 0 ? 'public' : 'private' %>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
+        <?php } else { ?>
+          <?php if($this->config->site->allowOriginalDownload == 1) { ?>
+            <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
+          <?php } ?>
+          <i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i>
         <?php } ?>
       </span>
     </div>
     <div class="description">
-      <span class="text"><%= description %></span>
+      <span class="text">
+        <?php if($isAdmin) { ?>
+          <a href="#" class="description edit text"><i class="icon-pencil"></i> <%= description %></a>
+        <?php } else { ?>
+          <%= description %>
+        <?php } ?>
+      </span>
     </div>
   </div>
 </script>
 
 <script type="tmpl/underscore" id="album-meta">
-  <a href="/photos/album-<%= id %>/list">
-    <div class="cover">
+  <div class="cover">
+    <a href="/photos/album-<%= id %>/list">
       <% if (!_.isNull(cover)) { %>
         <img src="<%= cover.path200x200xCR %>">
-        <span class="stack stack1"></span>
-        <span class="stack stack2"></span>
-        
+      <% } else { %>
+        <img src="data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
       <% } %>
-      <?php if($isAdmin) { ?>
-        <h5 class=" name edit"><span><%= name %></span></h5>
-      <?php } else { ?>
-        <h5 class="name"><span><%= name %></span></h5>
-      <?php } ?>
-    </div>
-  </a>
+      <span class="stack stack1"></span>
+      <span class="stack stack2"></span>
+    </a>
+    <?php if($isAdmin) { ?>
+      <h5><span class="name edit"><i class="icon-pencil"></i> <%= name %></span></h5>
+    <?php } else { ?>
+      <h5><span class="name"><%= name %></span></h5>
+    <?php } ?>
+  </div>
 </script>
 
 <script type="tmpl/underscore" id="photo-detail-meta">
@@ -391,23 +407,27 @@
 
 <script type="tmpl/underscore" id="batch-meta">
   <?php if($isAdmin) { ?>
-    <a data-toggle="dropdown" href="#"><i class="<% if(!loading) { %>icon-cogs<% } else { %>icon-spinner icon-spin<% } %>"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
-    <ul class="dropdown-menu">
-      <% if (count > 0) { %>
-        <li><a>Update photo information</a></li>
-        <li><a href="#" class="showForm" data-id="tagsAdd">&nbsp;&middot;&nbsp;Add Tags</a></li>
-        <li><a href="#" class="showForm" data-id="albumsAdd">&nbsp;&middot;&nbsp;Add to Album</a></li>
-        <li><a href="#" class="showForm" data-id="privacy">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
-        <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
-        <!--<li class="divider"></li>
-        <li><a>Modify photos</a></li>
-        <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>-->
-        <li class="divider"></li>
-        <li><a href="#" class="clear">Clear pinned photos</a></li>
-      <% } else { %>
-        <li><a><i class="icon-pushpin"></i> Hover over a photo and click the pushpin</a></li>
-      <% } %>
-    </ul>
+    <?php if($this->utility->isActiveTab('photos')) { ?>
+      <a data-toggle="dropdown" href="#"><i class="<% if(!loading) { %>icon-cogs<% } else { %>icon-spinner icon-spin<% } %>"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
+      <ul class="dropdown-menu">
+        <% if (count > 0) { %>
+          <li><a>Update photo information</a></li>
+          <li><a href="#" class="showForm photo" data-id="tagsAdd">&nbsp;&middot;&nbsp;Add Tags</a></li>
+          <li><a href="#" class="showForm photo" data-id="albumsAdd">&nbsp;&middot;&nbsp;Add to Album</a></li>
+          <li><a href="#" class="showForm photo" data-id="privacy">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
+          <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
+          <!--<li class="divider"></li>
+          <li><a>Modify photos</a></li>
+          <li><a href="#">&nbsp;&middot;&nbsp;Rotate 90&deg; CW</a></li>-->
+          <li class="divider"></li>
+          <li><a href="#" class="clear">Clear pinned photos</a></li>
+        <% } else { %>
+          <li><a><i class="icon-pushpin"></i> Hover over a photo and click the pushpin</a></li>
+        <% } %>
+      </ul>
+    <?php } else if($this->utility->isActiveTab('albums')) { ?>
+      <a href="#" class="showForm album"><i class="<% if(!loading) { %>icon-plus<% } else { %>icon-spinner icon-spin<% } %>"></i> Create an album</a>
+    <?php } ?>
   <?php } ?>
 </script>
 

@@ -136,6 +136,14 @@ var TBX = (function() {
   return {
     crumb: function() { return crumb.get(); },
     callbacks: {
+      albumCreate: function(response) {
+        if(response.code === 201) {
+          TBX.notification.show('Your album was created. You can add photos from your <a href="/photos/list">gallery</a> page from using the <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
+        } else {
+          TBX.notification.show('Sorry, an error occured when trying to create your album.', 'flash', 'error');
+        }
+        $('.batchHide').trigger('click');
+      },
       batch: function(response) { // this is the form params
         var id, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos;
         if(response.code === 200) {
@@ -340,6 +348,12 @@ var TBX = (function() {
       keyup: { },
       mouseover: { },
       submit: {
+        albumCreate: function(ev) {
+          ev.preventDefault();
+          var $form = $(ev.target), params = {name: $('input[name="name"]', $form).val(), crumb: TBX.crumb()};
+          $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
+          OP.Util.makeRequest('/album/create.json', params, TBX.callbacks.albumCreate, 'json', 'post');
+        },
         batch: function(ev) {
           ev.preventDefault();
           var $form = $(ev.target), formParams = $form.serializeArray(), batch = OP.Batch, params = {ids: batch.ids().join(','), crumb: TBX.crumb()};
@@ -456,6 +470,7 @@ var TBX = (function() {
         albums: {
           initData: typeof(initData) === "undefined" ? undefined : initData,
           filterOpts: typeof(filterOpts) === "undefined" ? undefined : filterOpts,
+          batchModel: new op.data.model.Batch(),
           page: null,
           pageCount: 0,
           pageLocation: {
@@ -479,9 +494,10 @@ var TBX = (function() {
             }
           },
           init: function() {
-            var _pages = TBX.init.pages, _this = _pages.albums;
+            var _pages = TBX.init.pages, _this = _pages.albums, batchModel = _pages.albums.batchModel, $batchEl = $('.batch-meta');
+            (new op.data.view.BatchIndicator({model:batchModel, el: $batchEl})).render();
             $(window).scroll(function() { util.scrollCb(_this); });
-            util.load(_this);
+            _this.load();
           },
           load: function() {
             var _this = TBX.init.pages.albums; loc = location;
@@ -489,15 +505,15 @@ var TBX = (function() {
           },
           loadCb: function(response) {
             var items = response.result, _this = TBX.init.pages.albums;
-            op.data.store.Albums.add( items );
+            for(i in items) {
+              if(items.hasOwnProperty(i))
+                op.data.store.Albums.add( items[i] );
+            }
             if(items.length > 0) {
               _this.addAlbums(items);
               _this.page++;
               _this.pageCount++;
               _this.running = false;
-            } else {
-              $('.load-more').hide();
-              _this.end = true;
             }
           }
         },

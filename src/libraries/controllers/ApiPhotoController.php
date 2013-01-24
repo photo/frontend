@@ -731,7 +731,7 @@ class ApiPhotoController extends ApiBaseController
       if($albumsResp['code'] === 200)
         $params['albums'] = $albumsResp['result'];
     }
-    $markup = $this->theme->get('partials/batchUpdateForm.php', $params);
+    $markup = $this->theme->get('partials/batch-update-form.php', $params);
     return $this->success('Batch update form', array('markup' => $markup));
   }
 
