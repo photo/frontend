@@ -43,7 +43,7 @@ _None_
 #### Command Line (using [openphoto-php][openphoto-php])
 
     source secrets.sh
-    ./openphoto -p -h current.openphoto.me -e /groups/list.json
+    ./openphoto -p -h current.trovebox.com -e /groups/list.json
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])

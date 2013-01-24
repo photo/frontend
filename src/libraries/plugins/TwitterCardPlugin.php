@@ -41,12 +41,12 @@ class TwitterCardPlugin extends PluginBase
     $utility = new Utility;
 
     $tags = '';
-    $title = $photo['title'] !== '' ? $photo['title'] : "{$photo['filenameOriginal']} on OpenPhoto";
+    $title = $photo['title'] !== '' ? $photo['title'] : "{$photo['filenameOriginal']} on Trovebox";
     $tags .= $this->addTag('twitter:card', 'photo');
     $tags .= $this->addTag('twitter:site', '@openphoto');
     $tags .= $this->addTag('twitter:url', sprintf('%s://%s%s', $utility->getProtocol(false), $utility->getHost(), $utility->getPath()));
     $tags .= $this->addTag('twitter:title', $title);
-    $tags .= $this->addTag('twitter:description', 'OpenPhoto lets you keep all your photos from different services and mobile devices safe in one spot.');
+    $tags .= $this->addTag('twitter:description', 'Trovebox lets you keep all your photos from different services and mobile devices safe in one spot.');
     $tags .= $this->addTag('twitter:image', $photo['pathBase']);
     $tags .= $this->addTag('twitter:image:width', '1280');
     return $tags;

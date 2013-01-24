@@ -1,7 +1,7 @@
 Frequently asked questions
 =======================
 
-This is a list of common questions that people have about The OpenPhoto Project.
+This is a list of common questions that people have about The Photo Project.
 If you have one which is not on this list send us a message via <a href="http://twitter.com/photo">Twitter</a> or <a href="mailto:hello@openphoto.me">email</a>.
 
 ### What exactly is OpenPhoto?
@@ -46,7 +46,7 @@ All of the <a href="https://github.com/photo">source for OpenPhoto</a> is availa
 This includes the web application, mobile apps and plugins for Wordpress just to name a few.
 We've also got <a href="http://theopenphotoproject.org/documentation">lots of guides</a> to help you get started.
 
-If you'd rather not install the software yourself you can <a href="http://openphoto.me">sign up for a hosted account</a>.
+If you'd rather not install the software yourself you can <a href="http://trovebox.com">sign up for a hosted account</a>.
 The hosted account may or may not be free depending on the service and what features you use.
 
 ----------------------------------------

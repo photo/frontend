@@ -9,7 +9,7 @@
 						<strong>Sign in using Mozilla Persona:</strong><br />
             <img src="<?php $this->theme->asset('image', 'browserid-login.png'); ?>" class="login-click browserid pointer"/>
 					</div>
-          <?php if($this->plugin->isActive('FacebookConnect')) { ?>
+          <?php if($this->plugin->isActive('FacebookConnect') || $this->plugin->isActive('FacebookConnectHosted')) { ?>
             <div class="span6">
               <strong>Sign in using Facebook:</strong><br />
               <img src="<?php $this->theme->asset('image', 'facebook-login.png'); ?>" class="login-click facebook pointer"/>
@@ -33,7 +33,7 @@
                 <input type="password" name="password">
               </fieldset>
         
-              <button class="btn btn-primary">Login</button> or <a href="#" class="manage-password-request-click">enter your email and click to reset</a>
+              <button class="btn btn-primary">Login</button> or <a href="https://openphoto.me/password/forgot">request a new password</a>
             </form>
           </div>
         <?php } ?>
