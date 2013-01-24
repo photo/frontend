@@ -24,7 +24,6 @@
                     <li><a href="<?php $this->url->manageGroups(); ?>"><i class="icon-group icon-large"></i> Groups</a></li>
                     <li><a href="<?php $this->url->manageApps(); ?>"><i class="icon-sitemap icon-large"></i> Applications</a></li>
                     <li><a href="<?php $this->url->manageSettings(); ?>"><i class="icon-wrench icon-large"></i> Settings</a></li>
-                    <li><a href="<?php $this->url->setup(); ?>"><i class="icon-repeat icon-large"></i> Rerun setup</a></li>
                   </ul>
                 </li>
               </ul>

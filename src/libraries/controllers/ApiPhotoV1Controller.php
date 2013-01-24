@@ -16,7 +16,8 @@ class ApiPhotoV1Controller extends ApiPhotoController
       $apiRes['result'][0]['currentPage'] = intval($page);
       $apiRes['result'][0]['currentRows'] = 0;
       $apiRes['result'][0]['pageSize'] = intval($pageSize);
-      $apiRes['result'][0]['totalPages'] = !empty($pageSize) ? ceil($photos[0]['totalRows'] / $pageSize) : 0;
+      $apiRes['result'][0]['totalPages'] = 0;
+      $apiRes['result'][0]['totalRows'] = 0;
     }
 
     return $apiRes;

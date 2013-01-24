@@ -163,6 +163,16 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete a share token from the database
+    *
+    * @param string $id ID of the share token to delete
+    * @return boolean
+    */
+  public function deleteShareToken($id)
+  {
+  }
+
+  /**
     * Delete a tag from the database
     *
     * @param string $id ID of the tag to delete
@@ -633,6 +643,37 @@ class DatabaseMySql implements DatabaseInterface
 
     $resourceMap = $this->normalizeResourceMap($resourceMap);
     return $resourceMap;
+  }
+
+  /**
+    * Get a share token
+    *
+    * @param string $token token to be retrieved
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getShareToken($id)
+  {
+    $token = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `id`=:id", array(':owner' => $this->owner, ':id' => $id));
+
+    if(!$token)
+      return false;
+
+    if($token['dateExpires'] > 0 && $token['dateExpires'] <= time())
+    {
+      getLogger()->info('Sharing token has expired');
+      return false;
+    }
+
+    return $token;
+  }
+
+  /**
+    * Get all share tokens
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getShareTokens()
+  {
   }
 
   /**
@@ -1293,6 +1334,17 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Add a new share token to the database
+    *
+    * @param string $id ID of the token
+    * @param array $params Attributes to create.
+    * @return boolean
+    */
+  public function putShareToken($id, $params)
+  {
+  }
+
+  /**
     * Add a new tag to the database
     * This method does not overwrite existing values present in $params - hence "new tag".
     *
@@ -1522,6 +1574,7 @@ class DatabaseMySql implements DatabaseInterface
     }
     $groupBy = '';
     $sortBy = 'ORDER BY dateSortByDay DESC';
+
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -1558,6 +1611,9 @@ class DatabaseMySql implements DatabaseInterface
             break;
           case 'permission':
             $where = $this->buildWhere($where, "`permission`='1'");
+            break;
+          case 'since':
+            $where = $this->buildWhere($where, sprintf("`dateSortByDay`>'%s'", $this->_($this->dateSortByDay(strtotime($value)))));
             break;
           case 'sortBy':
             if($value === 'dateTaken,desc')
@@ -1671,6 +1727,21 @@ class DatabaseMySql implements DatabaseInterface
 
     return $value;
   }
+
+  /**
+    * Builds the dateSortByDay string from a timestamp
+    *
+    * @param string $time time to format
+    * @return string
+    */
+  private function dateSortByDay($time)
+  {
+    $invHours = str_pad(intval(23-date('H', $time)), 2, '0', STR_PAD_LEFT);
+    $invMins = str_pad(intval(59-date('i', $time)), 2, '0', STR_PAD_LEFT);
+    $invSecs = str_pad(intval(59-date('s', $time)), 2, '0', STR_PAD_LEFT);
+    return sprintf('%s%s%s%s', date('Ymd', $time), $invHours, $invMins, $invSecs);
+  }
+
 
   /**
     * Delete albums for an element from the mapping table
@@ -2022,10 +2093,8 @@ class DatabaseMySql implements DatabaseInterface
     if(isset($params['dateTaken']))
     {
       // here we seed a field for the default sort order of day descending and time ascending
-      $invHours = str_pad(intval(23-date('H', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
-      $invMins = str_pad(intval(59-date('i', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
-      $invSecs = str_pad(intval(59-date('s', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
-      $bindings[':dateSortByDay'] = sprintf('%s%s%s%s', date('Ymd', $params['dateTaken']), $invHours, $invMins, $invSecs);
+
+      $bindings[':dateSortByDay'] = $this->dateSortByDay($params['dateTaken']);
       $paramsOut['dateSortByDay'] = ':dateSortByDay';
     }
     $paramsOut['::bindings'] = $bindings;

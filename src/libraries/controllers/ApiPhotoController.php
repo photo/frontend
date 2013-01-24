@@ -454,6 +454,8 @@ class ApiPhotoController extends ApiBaseController
     $tagObj = new Tag;
     $attributes = $_REQUEST;
 
+    $this->plugin->invoke('onPhotoUpload');
+
     // this determines where to get the photo from and populates $localFile and $name
     extract($this->parsePhotoFromRequest());
 
@@ -489,7 +491,8 @@ class ApiPhotoController extends ApiBaseController
     if($allowDuplicate == '0')
     {
       $hashResp = $this->api->invoke("/{$this->apiVersion}/photos/list.json", EpiRoute::httpGet, array('_GET' => array('hash' => $attributes['hash'])));
-      if($hashResp['result'][0]['totalRows'] > 0)
+      // the second condition is for backwards compatability between v2 and v1. See #1086
+      if(!empty($hashResp['result']) && $hashResp['result'][0]['totalRows'] > 0)
       {
         unlink($localFile);
         return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates pass in allowDuplicate=1', $hashResp['result'][0]);
@@ -601,9 +604,9 @@ class ApiPhotoController extends ApiBaseController
     }
 
     $params['facebookId'] = false;
-    if($this->plugin->isActive('FacebookConnect'))
+    if($this->plugin->isActive('FacebookConnectHosted'))
     {
-      $fbConf = $this->plugin->loadConf('FacebookConnect');
+      $fbConf = $this->plugin->loadConf('FacebookConnectHosted');
       $params['facebookId'] = $fbConf['id'];
     }
 
@@ -900,24 +903,13 @@ class ApiPhotoController extends ApiBaseController
 
   protected function parseFilters($filterOpts)
   {
-    $groupsObj = new Group;
     // If the user is logged in then we can display photos based on group membership
+    $shareTokenObj = new ShareToken;
+
+    $token = null;
     $permission = 0;
     if($this->user->isAdmin())
-    {
       $permission = 1;
-    }
-    elseif($this->user->isLoggedIn())
-    {
-      $userGroups = $groupsObj->getGroups($this->user->getEmailAddress());
-      if(!empty($userGroups))
-      {
-        $permission = -1;
-        $groupIds = array();
-        foreach($userGroups as $group)
-          $groupIds[] = $group['id'];
-      }
-    }
 
     // This section enables in path parameters which are normally GET
     $pageSize = $this->config->pagination->photos;
@@ -944,6 +936,9 @@ class ApiPhotoController extends ApiBaseController
               continue;
             $filters[$parameterKey] = $parameterValue;
             break;
+          case 'token':
+            $token = $shareTokenObj->get($parameterValue);
+            break;
           default:
             $filters[$parameterKey] = $parameterValue;
             break;
@@ -962,10 +957,21 @@ class ApiPhotoController extends ApiBaseController
     if(isset($filters['protocol']))
       $protocol = $filters['protocol'];
 
+    if($token !== null)
+    {
+      if($token !== false)
+      {
+        switch($token['type'])
+        {
+          case 'album':
+            if(isset($filters['album']) && $filters['album'] == $token['data'])
+              $permission = 1; // set permission to be pubilc for this request
+        }
+      }
+    }
+
     if($permission == 0)
       $filters['permission'] = $permission;
-    elseif($permission == -1)
-      $filters['groups'] = $groupIds;
 
     return array('filters' => $filters, 'pageSize' => $pageSize, 'protocol' => $protocol, 'page' => $page);
   }

@@ -70,7 +70,7 @@
         TBX.notification.show('1 photo was <em>removed</em> from your <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
       } else { // let's add it
         OP.Batch.add(id, photo);
-        TBX.notification.show('1 photo was <em>added</em> from your <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
+        TBX.notification.show('1 photo was <em>added</em> to your <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
       }
     },
     profile: function(ev) {

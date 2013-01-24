@@ -1,5 +1,5 @@
 <div id="setup">
-  <h1>Connect your Dropbox to OpenPhoto</h1>
+  <h1>Connect your Dropbox to Trovebox</h1>
   <p>
     <!--If you haven't already created a Dropbox app then <a href="https://www.dropbox.com/developers/apps" target="_blank">click here</a>.-->
     <a href="https://www.dropbox.com/developers/apps" target="_blank">Click here</a> to create a Dropbox app if you haven't already.

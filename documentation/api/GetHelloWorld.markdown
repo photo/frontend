@@ -43,10 +43,10 @@ _Authentication: optional_
 #### Command Line (using [openphoto-php][openphoto-php])
 
     # without authentication
-    ./openphoto -p -h current.openphoto.me -e /hello.json
+    ./openphoto -p -h current.trovebox.com -e /hello.json
 
     # with authentication
-    ./openphoto -p -h current.openphoto.me -e /hello.json -F 'auth=true'
+    ./openphoto -p -h current.trovebox.com -e /hello.json -F 'auth=true'
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])

@@ -5,7 +5,7 @@
       <p>
         <h3>Make sure you trust the site you just came from.</h3>
         If you do not, then simply close this window.
-        Apps let other programs have access to your OpenPhoto account. 
+        Apps let other programs have access to your Trovebox account. 
         You'll want to make sure that you trust the site you just came from.
       </p>
     </div>

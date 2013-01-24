@@ -43,7 +43,7 @@ _Authentication: required_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -X POST -h current.openphoto.me -e /group/create.json -F 'name=My Group' -F 'members=jaisen@jmathai.com'
+    ./openphoto -p -X POST -h current.trovebox.com -e /group/create.json -F 'name=My Group' -F 'members=jaisen@jmathai.com'
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])
