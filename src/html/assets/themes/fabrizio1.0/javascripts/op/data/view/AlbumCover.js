@@ -9,8 +9,8 @@
     editable    : {
       '.name.edit' : {
         name: 'name',
-        placement: 'bottom',
-        title: 'Edit Ablum Name',
+        placement: 'top',
+        title: 'Edit Album Name',
         validate : function(value){
           if($.trim(value) == ''){
             return 'Please enter a name';

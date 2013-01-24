@@ -45,9 +45,7 @@ class ApiAlbumController extends ApiBaseController
 
   public function form()
   {
-    $groupsResp = $this->api->invoke('/groups/list.json', EpiRoute::httpGet);
-    $groups = $groupsResp['result'];
-    $template = $this->template->get(sprintf('%s/manage-album-form.php', $this->config->paths->templates), array('groups' => $groups));;
+    $template = $this->theme->get('partials/album-form.php', array('groups' => $groups));;
     return $this->success('Album form', array('markup' => $template));
   }
 
@@ -67,7 +65,7 @@ class ApiAlbumController extends ApiBaseController
     $albumCountKey = $this->user->isAdmin() ? 'countPrivate' : 'countPublic';
     foreach($albums as $key => $val)
     {
-      $albums[$key]['count'] = @$val[$albumCountKey]; // added the error squelch because i was getting undefined index notices
+      $albums[$key]['count'] = $val[$albumCountKey];
       unset($albums[$key]['countPublic'], $albums[$key]['countPrivate']);
     }
 
@@ -151,6 +149,11 @@ class ApiAlbumController extends ApiBaseController
     if(isset($_GET['includeElements']) && $_GET['includeElements'] == '1')
       $includeElements = true;
     $album = $this->album->getAlbum($id, $includeElements);
+
+    $albumCountKey = $this->user->isAdmin() ? 'countPrivate' : 'countPublic';
+    $album['count'] = $album[$albumCountKey];
+    unset($album['countPublic'], $album['countPrivate']);
+
     if($album === false)
       return $this->error('Could not retrieve album', false);
     return $this->success('Album', $album);
