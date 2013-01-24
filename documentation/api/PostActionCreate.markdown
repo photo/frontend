@@ -48,7 +48,7 @@ _Authentication: required_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -X POST -h current.openphoto.me -e /action/photo/a/create.json -F 'type=comment' -F 'value=Here is my comment' -F 'email=jaisen@jmathai.com'
+    ./openphoto -p -X POST -h current.trovebox.com -e /action/photo/a/create.json -F 'type=comment' -F 'value=Here is my comment' -F 'email=jaisen@jmathai.com'
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])
@@ -76,7 +76,7 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
       "result":
       {
         id: "a",
-        appId: "current.openphoto.me",
+        appId: "current.trovebox.com",
         targetId: "b",
         targetType: "photo",
         email: "jaisen@jmathai.com",

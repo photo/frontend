@@ -16,10 +16,13 @@ class LoginFacebook implements LoginInterface
   public function __construct()
   {
     // requires the FacebookConnect plugin to be enabled
-    $this->isActive = getPlugin()->isActive('FacebookConnect');
+    $this->isActive = getPlugin()->isActive('FacebookConnect') || getPlugin()->isActive('FacebookConnectHosted');
     if($this->isActive)
     {
-      $conf = getPlugin()->loadConf('FacebookConnect');
+      if(getPlugin()->isActive('FacebookConnect'))
+        $conf = getPlugin()->loadConf('FacebookConnect');
+      else
+        $conf = getPlugin()->loadConf('FacebookConnectHosted');
       $this->id = $conf['id'];
       $this->secret = $conf['secret'];
       $this->fb = new Facebook(array('appId' => $this->id, 'secret' => $this->secret));

@@ -118,7 +118,6 @@ $routeObj->get('/assets/cache/([^/]+)/(js|css)/(c|m)(/.+)', array('AssetsControl
 $routeObj->get('/assets/versioned/[^/]+/(.+)', array('AssetsController', 'staticAsset'));
 
 
-
 if($runUpgrade)
   require $configObj->get('paths')->libraries . '/routes-upgrade.php';
 

@@ -43,7 +43,7 @@ _None_
 #### Command Line (using [openphoto-php][openphoto-php])
 
     source secrets.sh
-    ./openphoto -p -X POST -h current.openphoto.me -e /webhook/abcdefghijklmnopqrstuvwxyz/delete.json
+    ./openphoto -p -X POST -h current.trovebox.com -e /webhook/abcdefghijklmnopqrstuvwxyz/delete.json
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])

@@ -63,7 +63,7 @@ class ApiUserController extends ApiBaseController
       $body = $this->template->get($template, array('tokenUrl' => $tokenUrl));
       $emailer = new Emailer;
       $emailer->setRecipients(array($this->config->user->email));
-      $emailer->setSubject('OpenPhoto password reset request');
+      $emailer->setSubject('Trovebox password reset request');
       $emailer->setBody($body);
       $result = $emailer->send();
       if($result > 0)
