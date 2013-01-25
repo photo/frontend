@@ -356,14 +356,16 @@ var TBX = (function() {
         },
         batch: function(ev) {
           ev.preventDefault();
-          var $form = $(ev.target), formParams = $form.serializeArray(), batch = OP.Batch, params = {ids: batch.ids().join(','), crumb: TBX.crumb()};
+          var $form = $(ev.target), url = '/photos/update.json', formParams = $form.serializeArray(), batch = OP.Batch, params = {ids: batch.ids().join(','), crumb: TBX.crumb()};
           $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
           for(i in formParams) {
             if(formParams.hasOwnProperty(i)) {
+              if(formParams[i].name === 'albumsAdd')
+                url = '/album/'+formParams[i].value+'/photo/add.json';
               params[formParams[i].name] = formParams[i].value;
             }
           }
-          OP.Util.makeRequest('/photos/update.json', params, TBX.callbacks.batch.bind(params), 'json', 'post');
+          OP.Util.makeRequest(url, params, TBX.callbacks.batch.bind(params), 'json', 'post');
         },
         login: function(ev) {
           ev.preventDefault();

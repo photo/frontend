@@ -513,6 +513,22 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Get albums for a photo
+    *
+    * @param string $id ID of the photo to retrieve albums for
+    * @return array
+    */
+  public function getPhotoAlbums($id)
+  {
+    $albums = $this->db->all("SELECT `album` FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':owner' => $this->owner, ':element' => $id, ':type' => 'photo'));
+    $retval = array();
+    foreach($albums as $album)
+      $retval[] = $album['album'];
+
+    return $retval;
+  }
+
+  /**
     * Retrieve the next and previous photo surrounding photo with $id
     *
     * @param string $id ID of the photo to get next and previous for
@@ -972,7 +988,6 @@ class DatabaseMySql implements DatabaseInterface
           array(':value' => $value, ':owner' => $this->owner, ':album' => $album));
       }
     }
-
     return $status;
   }
 
@@ -1079,8 +1094,8 @@ class DatabaseMySql implements DatabaseInterface
       $resVersions = $this->postVersions($id, $versions);
 
     // empty($albums) means remove from all albums
-    if(isset($params['albums']))
-      $this->updateAlbumToPhotoMapping($id, $params['albums']);
+    //if(isset($params['albums']))
+    //  $this->updateAlbumToPhotoMapping($id, $params['albums']);
 
     // empty($tags) means remove from all tags
     if(isset($params['tags']))
@@ -1306,9 +1321,6 @@ class DatabaseMySql implements DatabaseInterface
     $bindings = $paramsIns['::bindings'];
     $stmt = $this->sqlInsertExplode($paramsIns, $bindings);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}photo` ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
-
-    if(isset($params['albums']))
-      $this->addAlbumsToElement($id, $params['albums'], 'photo');
 
     if(isset($params['tags']))
       $this->addTagsToElement($id, $params['tags'], 'photo');
