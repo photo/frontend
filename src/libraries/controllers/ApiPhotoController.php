@@ -648,9 +648,6 @@ class ApiPhotoController extends ApiBaseController
     $photoBefore = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
     $photoBefore = $photoBefore['result'];
 
-    if(isset($params['albumsAdd']))
-      $params['albums'] = implode(',', array_unique(array_merge($photoBefore['albums'], (array)explode(',', $params['albumsAdd']))));
-
     if(isset($params['tagsAdd']))
       $params['tags'] = implode(',', array_unique(array_merge($photoBefore['tags'], (array)explode(',', $params['tagsAdd']))));
 
@@ -667,8 +664,8 @@ class ApiPhotoController extends ApiBaseController
 
       // if no albums or tags are passed we have to manually adjust the counters
       // the triggers only adjust them if we update the albums on this photo
-      if(!isset($params['albums']))
-        $albumObj->adjustCounters($photoBefore['albums'], $params['permission']);
+      $albumObj->adjustCounters($this->photo->getAlbumsForPhoto($id), $params['permission']);
+
       if(!isset($params['tags']) && !empty($photoBefore['tags']))
         $tagObj->adjustCounters($photoBefore['tags'], $params['permission']);
     }
