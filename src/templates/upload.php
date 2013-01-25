@@ -68,7 +68,7 @@
         <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
         
         <div class="btn-toolbar">
-          <button type="submit" class="btn btn-primary upload-button">Start uploading</button>
+          <button type="submit" class="btn btn-theme-secondary upload-button">Start uploading</button>
         </div>
       </div>
     </div>
