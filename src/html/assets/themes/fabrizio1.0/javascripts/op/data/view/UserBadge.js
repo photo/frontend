@@ -1,8 +1,16 @@
 (function($){
   op.ns('data.view').UserBadge = op.data.view.Editable.extend({
+    getViewData : function(){
+      return _.extend({}, this.model.toJSON(), {
+        showStorage : this.options.storage === true
+      });
+    },
     initialize: function() {
       this.model.on('change', this.modelChanged, this);
       this.on('afterrender', this.onAfterRender, this);
+      // pull in the html5 data tags
+      this.options = $(this.el).data();
+      
     },
     model: this.model,
     className: 'user-badge-meta',

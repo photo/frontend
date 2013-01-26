@@ -1,6 +1,6 @@
 <div class="row">
   <div class="span8">
-    <?php $this->theme->display('partials/user-badge.php'); ?>
+    <div class="userbadge user-badge-meta"></div>
     <h3 class="sidebar-heading activity-list-heading">
       <i class="icon-angle-down"></i>
       <i class="icon-inbox"></i>

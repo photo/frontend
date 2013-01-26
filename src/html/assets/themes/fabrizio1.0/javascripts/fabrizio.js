@@ -448,6 +448,11 @@ var TBX = (function() {
 
         profiles.load();
         
+        /**
+         * Initialize tags typeahead in the header
+         */
+        new op.data.view.TagSearch({el: $('.trovebox-banner input[name=search]')});
+        
         // init tooltips
 
         if(location.pathname === '/')
@@ -562,7 +567,16 @@ var TBX = (function() {
           render: function(photo) {
             var _this = TBX.init.pages.photo, $el = _this.el;
             op.data.store.Photos.add(photo);
-            (new op.data.view.PhotoDetail({model: op.data.store.Photos.get(photo.id), el: $el})).render();
+            if( !_this.photoDetailView ){
+              _this.photoDetailView = (new op.data.view.PhotoDetail({model: op.data.store.Photos.get(photo.id), el: $el})).render();
+            }
+            else {
+              // instead of rerendering, lets just go to the specific photo
+              // since it assumes it is already part of the store.
+              _this.photoDetailView.go( photo.id );
+              // if there is a lightbox view, close it
+              //op.Lightbox.getInstance().hide();
+            }
           }
         },
         photos: {

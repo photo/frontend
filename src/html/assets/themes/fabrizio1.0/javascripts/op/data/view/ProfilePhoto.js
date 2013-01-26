@@ -1,7 +1,8 @@
 (function($){
   op.ns('data.view').ProfilePhoto = Backbone.View.extend({
     initialize: function() {
-      this.model.on('change', this.modelChanged, this);
+      if( this.model )
+        this.model.on('change', this.modelChanged, this);
     },
     model: this.model,
     className: 'profile-photo-meta',
