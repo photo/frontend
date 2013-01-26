@@ -396,6 +396,17 @@ class Photo extends BaseModel
   }
 
   /**
+    * Returns all albums a photo belongs to
+    *
+    * @param string Photo id
+    * @return array
+    */
+  public function getAlbumsForPhoto($id)
+  {
+    return $this->db->getPhotoAlbums($id);
+  }
+
+  /**
     * Calculate the width and height of a scaled photo
     *
     * @param int $originalWidth The width of the original photo.

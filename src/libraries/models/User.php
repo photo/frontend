@@ -10,7 +10,7 @@
   */
 class User extends BaseModel
 {
-  const displayNameDefault = 'Trovebox User';
+  const displayNameDefault = 'Photo Project User';
   /**
     * A user object that caches the value once it's been fetched from the remote datasource.
     * @access private

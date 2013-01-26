@@ -33,6 +33,7 @@
           <ul class="nav separator-left">
             <li class="<?php if($this->utility->isActiveTab('photos')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->photosView(); ?>"><i class="icon-picture"></i> Gallery</a></li>
             <li class="<?php if($this->utility->isActiveTab('albums')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->albumsView(); ?>"><i class="icon-th-large"></i> Albums</a></li>
+            <li class="<?php if($this->utility->isActiveTab('tags')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->tagsView(); ?>"><i class="icon-tags"></i> Tags</a></li>
             <?php if($this->user->isAdmin()) { ?>
               <li class="hidden-phone hidden-tablet <?php if($this->utility->isActiveTab('upload')) { ?> active active-page-item<?php } ?>"><a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload"></i> Upload</a></li>
             <?php } ?>
