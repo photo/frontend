@@ -1,7 +1,7 @@
     <!-- Logo and Primary Navigation -->
     <div class="navbar-inner navbar-inner-primary">
       <div class="container">
-        <h1 class="logo"><a href="/">TroveBox</a></h1>
+        <h1 class="logo"><a href="/">Trovebox</a></h1>
         
         <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
         <a class="btn btn-navbar" data-toggle="collapse" data-target=".primary-navigation">
