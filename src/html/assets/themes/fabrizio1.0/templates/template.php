@@ -11,13 +11,11 @@
     <link href="/assets/themes/fabrizio1.0/javascripts/x-editable/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet" />
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less" rel="stylesheet">
-      <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
-        <link href="/assets/stylesheets/upload.css" rel="stylesheet">
-      <?php } ?>
     <?php } else { ?>
-      <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->
-                                                                  addCss("/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less")->
-                                                                  getUrl(AssetPipeline::css, 'a'); ?>">
+      <link href="<?php $this->utility->safe($this->config->site->cdnPrefix); ?>/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less" rel="stylesheet">
+    <?php } ?>
+    <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
+      <link href="/assets/stylesheets/upload.css" rel="stylesheet">
     <?php } ?>
 
     <link rel="shortcut icon" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php $this->theme->asset('image', 'favicon.ico'); ?>">
@@ -34,8 +32,6 @@
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
       <title><?php $this->theme->meta('titles', $page); ?></title>
-    <?php } else { ?>
-      <title>The Photo Project</title>
     <?php } ?>
     <?php $this->plugin->invoke('renderHead'); ?>
   </head>
