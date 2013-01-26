@@ -71,12 +71,15 @@
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Notification.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Profile.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/model/Photo.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/model/Tag.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/collection/Album.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/collection/Profile.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/collection/Photo.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/collection/Tag.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/store/Albums.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/store/Profiles.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/store/Photos.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/store/Tags.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/Editable.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/BatchIndicator.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/AlbumPage.js'); ?>"></script>
@@ -86,6 +89,7 @@
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoGallery.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfileName.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfilePhoto.js'); ?>"></script>
+    <script src="<?php $this->theme->asset('javascript', 'op/data/view/TagSearch.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/data/view/UserBadge.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'op/Lightbox.js'); ?>"></script>
     <script src="<?php $this->theme->asset('javascript', 'gallery.js'); ?>"></script>

@@ -62,6 +62,20 @@
         </ul>
       </div>
     </div>
+    <% if( showStorage ){ %>
+    <div class="tray">
+      <div class="details">
+        <ul>
+          <li>
+            <a href="#">
+              <i class="icon-storage"></i>
+              <span class="number"><%= counts.storage || "2.35" %></span>
+              <span class="title">GB used</span>
+            </a>
+          </li>
+      </div>
+    </div>
+    <% } %>
   </div>
 </script>
 
