@@ -37,6 +37,7 @@ interface DatabaseInterface
   public function getGroup($id = null);
   public function getGroups($email = null);
   public function getPhoto($id);
+  public function getPhotoAlbums($id);
   public function getPhotoWithActions($id);
   public function getPhotos($filters = array(), $limit = null, $offset = null);
   public function getResourceMap($id);

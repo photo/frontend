@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>TroveBox </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -12,13 +11,11 @@
     <link href="/assets/themes/fabrizio1.0/javascripts/x-editable/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet" />
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less" rel="stylesheet">
-      <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
-        <link href="/assets/stylesheets/upload.css" rel="stylesheet">
-      <?php } ?>
     <?php } else { ?>
-      <link rel="stylesheet" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->
-                                                                  addCss("/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less")->
-                                                                  getUrl(AssetPipeline::css, 'a'); ?>">
+      <link href="<?php $this->utility->safe($this->config->site->cdnPrefix); ?>/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less" rel="stylesheet">
+    <?php } ?>
+    <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
+      <link href="/assets/stylesheets/upload.css" rel="stylesheet">
     <?php } ?>
 
     <link rel="shortcut icon" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php $this->theme->asset('image', 'favicon.ico'); ?>">

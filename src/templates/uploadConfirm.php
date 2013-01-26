@@ -9,12 +9,21 @@
     Post your photos to <?php if($facebookId) { ?>Facebook or <?php } ?>Twitter.
     <ul class="unstyled upload-share">
       <li>
+<<<<<<< HEAD
         <a href="https://twitter.com/intent/tweet?original_referer=<?php $this->utility->getAbsoluteUrl(''); ?>&text=<?php echo urlencode('I just uploaded some photos on @Trovebox.'); ?>&url=<?php echo urlencode($this->utility->getAbsoluteUrl($url, false)); ?>" class="btn btn-primary popup-click" data-width="575" data-height="400"><i class="icon-twitter icon-large"></i> Share on Twitter</a>
       </li>
       <?php if($facebookId) { ?>
         <li>
           <a href="https://www.facebook.com/dialog/feed?app_id=<?php $this->utility->safe($facebookId); ?>&link=<?php $this->utility->getAbsoluteUrl($url); ?>&picture=<?php $this->utility->safe($successPhotos[0][$this->config->photoSizes->thumbnail]); ?>&name=My+photos+on+Trovebox&description=I+uploaded+some+photos+on+Trovebox.&display=popup" class="btn btn-primary share-facebook-click"
              data-link="<?php $this->utility->getAbsoluteUrl($url); ?>" data-picture="<?php $this->utility->safe($successPhotos[0][$this->config->photoSizes->thumbnail]); ?>" data-name="My photos on Trovebox" data-description="I uploaded some photos on Trovebox." data-display=popup" data-width="450" data-height="300"><i class="icon-facebook icon-large"></i> Share on Facebook</a>
+=======
+        <a href="https://twitter.com/intent/tweet?original_referer=<?php $this->utility->getAbsoluteUrl(''); ?>&text=<?php echo urlencode('I just uploaded some photos on @OpenPhoto.'); ?>&url=<?php echo urlencode($this->utility->getAbsoluteUrl($url, false)); ?>" class="btn btn-theme-secondary sharePopup" data-width="575" data-height="400"><i class="icon-twitter icon-large"></i> Share on Twitter</a>
+      </li>
+      <?php if($facebookId) { ?>
+        <li>
+          <a href="https://www.facebook.com/dialog/feed?app_id=<?php $this->utility->safe($facebookId); ?>&link=<?php $this->utility->getAbsoluteUrl($url); ?>&picture=<?php $this->utility->safe($successPhotos[0][$this->config->photoSizes->thumbnail]); ?>&name=My+photos+on+OpenPhoto&description=I+uploaded+some+photos+on+OpenPhoto.&display=popup" class="btn  btn-theme-secondary share-facebook-click"
+             data-link="<?php $this->utility->getAbsoluteUrl($url); ?>" data-picture="<?php $this->utility->safe($successPhotos[0][$this->config->photoSizes->thumbnail]); ?>" data-name="My photos on OpenPhoto" data-description="I uploaded some photos on OpenPhoto." data-display=popup" data-width="450" data-height="300"><i class="icon-facebook icon-large"></i> Share on Facebook</a>
+>>>>>>> dac2ea146d264f7bd8a013089e4e5fd77083069d
         </li>
       <?php } ?>
     </ul>

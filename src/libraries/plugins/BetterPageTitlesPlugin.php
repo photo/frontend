@@ -14,9 +14,9 @@ class BetterPageTitlesPlugin extends PluginBase
   public function renderHead()
   {
     parent::renderHead();
-    $utility = new Utility;
+    $user = new User;
     $page = $this->plugin->getData('page');
-    $username = $utility->getEmailHandle($this->config->user->email, false);
+    $username = $user->getNameFromEmail($this->config->user->email);
     switch($page)
     {
       case 'photo-detail':
@@ -27,22 +27,22 @@ class BetterPageTitlesPlugin extends PluginBase
         elseif($photo['filenameOriginal'] != '')
           $prefix = sprintf('%s - ', $photo['filenameOriginal']);
     return <<<MKP
-<title>{$prefix}{$username}'s photos - Trovebox</title>
+<title>{$prefix}{$username}'s photos - The Photo Project</title>
 MKP;
         break;
       case 'photos':
     return <<<MKP
-<title>{$username}'s photos - Trovebox</title>
+<title>{$username}'s photos - The Photo Project</title>
 MKP;
         break;
       case 'tags':
     return <<<MKP
-<title>{$username}'s tags - Trovebox</title>
+<title>{$username}'s tags - The Photo Project</title>
 MKP;
         break;
       default:
     return <<<MKP
-<title>{$username}'s Trovebox site - Trovebox</title>
+<title>{$username}'s Photo site - The Photo Project</title>
 MKP;
         break;
     }
