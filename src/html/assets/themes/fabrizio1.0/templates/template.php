@@ -2,7 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>TroveBox </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -35,6 +34,8 @@
 
     <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
       <title><?php $this->theme->meta('titles', $page); ?></title>
+    <?php } else { ?>
+      <title>The Photo Project</title>
     <?php } ?>
     <?php $this->plugin->invoke('renderHead'); ?>
   </head>
