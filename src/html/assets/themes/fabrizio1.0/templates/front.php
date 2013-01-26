@@ -22,16 +22,16 @@
     <ul class="sidebar">
       <li>
         <h3>Download the App!</h3>
-        <p>Take OpenPhoto wherever you go&mdash;download our app for iPhone or Android</p>
+        <p>Take Trovebox wherever you go&mdash;download our app for iPhone or Android</p>
         <p>
-          <a href="#"><img src="<?php echo $this->theme->asset('image', 'download-ios.jpg') ?>" /></a>
+          <a href="https://itunes.apple.com/app/id511845345"><img src="<?php echo $this->theme->asset('image', 'download-ios.jpg') ?>" /></a>
         </p>
         <p>
-          <a href="#"><img src="<?php echo $this->theme->asset('image', 'download-android.jpg') ?>" /></a>
+          <a href="https://play.google.com/store/apps/details?id=me.openphoto.android.app"><img src="<?php echo $this->theme->asset('image', 'download-android.jpg') ?>" /></a>
         </p>
       </li>
       <li>
-        <h3>OpenPhoto Links</h3>
+        <h3>Trovebox Links</h3>
         <p><a href="https://github.com/photo">All our source are belong to you</a></p>
         <p><a href="http://blog.theopenphotoproject.org">Keep up to date on our blog</a></p>
         <p><a href="https://twitter.com/trovebox">Follow us on Twitter</a></p>
