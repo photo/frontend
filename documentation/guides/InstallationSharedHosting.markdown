@@ -20,6 +20,7 @@ This guide assumes you have:
 * Shell or FTP access to your web server
 * An FTP or SSH client
 * A web browser of choice
+* A text editor (optional)
 * An external cloud service account on Amazon or Dropbox (if you want to store your photos there)
 
 
@@ -59,12 +60,12 @@ That's it! OpenPhoto should now be installed. Because there are so many special 
 #### 2. Install any dependencies or modules needed.
 Your webhost may include them by default. Check their documentation. Here's what you'll need:
 
-* The Pecl extension oauth for authentication
+* The Pecl extension `oauth` for authentication
 * ImageMagick or GD for photo rendering
 
 The method of installing these varies by webhost. Some webhosts let you install them by yourself; others will install these for you if you contact them.
 
-#### 3. Create your cloud accounts (optional).
+#### 3. Create your cloud accounts (if you plan on using them).
 Create an account at <a href="https://aws.amazon.com/s3">Amazon AWS</a> or <a href="http://www.dropbox.com">Dropbox</a> if you plan to use them. Create a new bucket (S3) or app (Dropbox). Save your keys since you'll need them soon.  
 
 At Amazon:    
@@ -80,16 +81,26 @@ At Dropbox:
 This will give you a development app to use for your photos. Save your access keys; you'll need them soon.
 
 #### 4. Create a database and user.
-Visit your control panel for managing databases and create a new database and new user for the database. Give the user `CREATE DATABASE` privileges. Remember the hostname (the default should be fine), database name, username, and password. You'll need these during setup.
+Visit your control panel for managing databases and create a new database and new user for the database. Give the user `CREATE DATABASE` privileges if you haven't created the database yet. Remember the hostname (the default should be fine), database name, username, and password. You'll need these during setup.
 
 #### 5. Configure the subdomain or domain.
-You may have to add the domain if you're bringing in a new domain. Consult your webhost's documentation if needed. Depending on your webhost you may have to visit multiple areas of the site to configure everything, or you may have to configure these separately. But here's what you need to set up.
+You may have to add the domain if you're bringing in a new domain. Consult your webhost's documentation if needed. Depending on your webhost you may have to visit multiple areas of the site to configure everything, or you may have to configure these separately. Here's what you need to set up.
 
 * PHP: Select the latest version, FastCGI configuration if available
 * Web directory: OpenPhotoRoot/src/html
 
+If you can't set the web directory to OpenPhotoRoot/src/html through a web interface, you can create an .htaccess file in the root directory. Open a text editor and include the following:
+
+       RewriteEngine on
+       RewriteBase /
+       RewriteCond %{HTTP_HOST} ^your.domain.com$ [NC,OR]
+       RewriteCond %{REQUEST_URI} !src/html/
+       RewriteRule (.*) /src/html/$1 [L]
+       
+Save the file as .htaccess and upload it to the root folder of your site if you haven't already, along with the OpenPhoto folder.
+
 #### 6. Upload OpenPhoto.
-Upload the contents of the downloaded OpenPhoto folder to OpenPhotoRoot if you haven't already done that. You can do this with an FTP or SSH client.
+Upload the contents of the downloaded OpenPhoto folder to the root directory if you haven't already. You can do this with an FTP or SSH client.
         
 #### 7. Create the following directories.
 
@@ -105,8 +116,10 @@ Upload the contents of the downloaded OpenPhoto folder to OpenPhotoRoot if you h
         mkdir OpenPhotoRoot/src/userdata
         chmod 775 OpenPhotoRoot/src/userdata
 
+You can also do this with your FTP client. If you do, the user and group should have read, write, and execute privileges. World should have read and execute privileges.
+
 #### 8. Install OpenPhoto
-After waiting a sufficient amount of time for the subdomain name to propagate, use the browser to connect to the new subdomain.  You should see a setup page for OpenPhoto which will allow you to configure your OpenPhoto project.
+After waiting a sufficient amount of time for the subdomain name to propagate, use the browser to connect to the new subdomain.  You should see a setup page for OpenPhoto which will allow you to configure your OpenPhoto site.
 
 * Enter your email address and select a password.
 
@@ -125,7 +138,10 @@ If the setup page is not colorful and well formatted, then the css and javascrip
 - src/html/assets/cache directory is not writeable by Apache (check your permissions)
 
 #### My webhost doesn't recognize OpenPhotoRoot/src/html as the index directory.
-You can set this in the .htaccess page at OpenPhotoRoot/src. If your webhost lets you set this through the web panel you can also do that there.
+You can set this in the .htaccess page at OpenPhotoRoot. If your webhost lets you set this through the web panel you can also do that there.
 
 #### Error setting up the database
-Double check all the parameters. Check your database control panel and verify that everything is correct. Also double check that the user for your database has permission to create a database.
+Double check all the parameters. Check your database control panel and verify that everything is correct. Also double check that the user for your database has permission to create a database if you haven't already created a database.
+
+####Help! I'm stuck and I have questions!
+If you have questions we're always around to help. We've got several contact options listed on the <a href="http://theopenphotoproject.org/contribute">contribute</a> page.

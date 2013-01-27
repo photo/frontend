@@ -13,16 +13,16 @@ This guide instructs you on how to install OpenPhoto on a Fedora server.
 #### Database and File System Options
 
 ##### MySql 
-You'll need to provide credentials for a MySql database. If the database doesn't already exist it will be created. If the user doesn't have `CREATE DATABASE` permissions then make sure it's already created.
+You'll need to provide credentials for a MySql database. If the database doesn't already exist it will be created. If the user doesn't have `CREATE DATABASE` permissions then make sure to create the database.
 
 ##### AWS
-If you're going to use AWS services then You'll need to be signed up for them.
+If you're going to use AWS services then you'll need to be signed up for them.
 
 * http://aws.amazon.com/simpledb/
 * http://aws.amazon.com/s3/
 
 #### Server Packages and Modules
-Once you've confirmed that your cloud account is setup you can get started on your server. For that you'll need to have _Apache_, _PHP_ and _curl_ installed with a few modules.
+Once you've confirmed that your cloud account is set up, you can get started on your server. For that you'll need to have _Apache_, _PHP_ and _curl_ installed with a few modules.
 
     yum groupinstall 'Development Tools'
     yum groupinstall 'Development Libraries'
@@ -46,7 +46,7 @@ The _Apache 2_ user in Fedora 16 is `apache` so run the following commands to ta
     git clone git://github.com/photo/frontend.git /var/www/yourdomain.com
     chown -R apache: /var/www/yourdomain.com
 
-Assuming that this is a development machine you only need to make the config writable by the user Apache runs as. Most likely `apache`.
+Assuming that this is a development machine you only need to make the config writable by the user Apache runs as. This user is likely `apache`.
 
     mkdir /var/www/yourdomain.com/src/userdata
     mkdir /var/www/yourdomain.com/src/html/photos
@@ -81,8 +81,8 @@ Uncomment:
 
 Comment:
 
-  # 404 Not Found for ini files
-  AliasMatch \.ini$	/404
+    # 404 Not Found for ini files
+    AliasMatch \.ini$	/404
 
 ### PHP
 
