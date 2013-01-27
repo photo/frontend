@@ -8,6 +8,8 @@ With a pro account, you get:
 * Switch storage options as many times as you wish (Free users can switch once)
 * Top level domain support at yourdomain.com
 
+<a href="https://trovebox.com/plans">Check out our chart</a> for the full breakdown.
+
 ## How much does a Pro account cost?
 A Pro account costs $29.99 a year.
 
