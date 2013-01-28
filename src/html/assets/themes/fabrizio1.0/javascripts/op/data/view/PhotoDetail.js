@@ -141,12 +141,6 @@
     },
     updateMap : function(){
       var lat,lng;
-            
-      /**
-       * DEMO
-       */
-      this.model.set('latitude',42.66937, {silent:true});
-      this.model.set('longitude',-71.646664, {silent:true});
       
       if((lat=this.model.get('latitude')) && (lng=this.model.get('longitude')) ){
         var mapOptions = {
