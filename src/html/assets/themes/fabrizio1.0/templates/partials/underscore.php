@@ -324,13 +324,15 @@
 
 <script type="tmpl/underscore" id="photo-detail-collapsibles-tmpl">
   <li>
-    <h3 class="sidebar-heading">
-      <a href="#photo-location" data-toggle="collapse">
-        <i class="arrow open icon-angle-down"></i>
-        <i class="arrow closed icon-angle-right"></i>
-        <i class="icon-globe"></i> Location
-      </a>
-    </h3>
+    <% if( typeof latitude !== 'undefined' && latitude ){ %>
+      <h3 class="sidebar-heading">
+        <a href="#photo-location" data-toggle="collapse">
+          <i class="arrow open icon-angle-down"></i>
+          <i class="arrow closed icon-angle-right"></i>
+          <i class="icon-globe"></i> Location
+        </a>
+      </h3>
+    <% } %>
     <div id="photo-location" class="collapsible collapse">
       <div class="map-ct"><div class="map"></div></div>
     </div>
