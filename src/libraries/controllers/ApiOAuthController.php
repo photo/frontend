@@ -27,6 +27,17 @@ class ApiOAuthController extends ApiBaseController
       return $this->error('Could not delete credential', false);
   }
 
+  public function markup($id)
+  {
+    getAuthentication()->requireAuthentication();
+    $credential = getDb()->getCredential($id);
+    if($credential === false)
+      return $this->error('Failed to get OAuth credential', false);
+
+    $params = array('markup' => $this->theme->get('partials/credential-markup.php', $credential));
+    return $this->success('Markup for oauth credential', $params);
+  }
+
   public function view($id)
   {
     getAuthentication()->requireAuthentication();

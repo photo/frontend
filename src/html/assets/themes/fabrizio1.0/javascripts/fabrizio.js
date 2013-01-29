@@ -1,432 +1,142 @@
-var TBX = (function() {
-  var crumb, log, markup, profiles, pushstate, tags, pathname, util;
+(function($) {
 
-  crumb = (function() {
-    var value = null;
-    return {
-      get: function() {
-        return value;
-      },
-      set: function(crumb) {
-        value = crumb;
-      }
-    };
-  })(); // crumb
-  markup = {
-    message: function(message) { // messageMarkup
-      var cls = '';
-      if(arguments.length > 1) {
-        if(arguments[1] == 'error')
-          cls = 'error';
-        else if(arguments[1] == 'confirm')
-          cls = 'success';
-      }
-      return '<div class="alert-message block-message '+cls+'"><a class="modal-close-click close" href="#">x</a>' + message + '</div>'
-    },
-    modal: function(header, body, footer) { // modalMarkup
-      return '<div class="modal-header">' +
-             '  <a href="#" class="close" data-dismiss="modal">&times;</a>' +
-             '  <h3>'+header+'</h3>' +
-             '</div>' +
-             '<div class="modal-body">' +
-             '  <p>'+body+'</p>' +
-             '</div>' +
-             (footer ? '<div class="modal-footer">' + footer + '</div>' : '');
-    }
-  }; // markup
-  profiles = {
-    owner: { },
-    viewer: { },
-    load: function() {
-      // TODO cache this somehow
-      $.get('/user/profile.json', {includeViewer: '1'}, function(response) {
-        if(response.code !== 200)
-          return;
+  function Fabrizio() {
+    var crumb, log, markup, profiles, pushstate, tags, pathname, util;
 
-        var result = response.result, id = result.id, owner = result, viewer = result.viewer || null;
-        if(owner.viewer !== undefined)
-          delete owner.viewer;
-        TBX.callbacks.profilesSuccess(owner, viewer);
-      }, 'json');
-    }
-  }; // profiles
-  util = (function() {
-    return {
-      getDeviceWidth: function() {
-        return $(window).width();
+    crumb = (function() {
+      var value = null;
+      return {
+        get: function() {
+          return value;
+        },
+        set: function(crumb) {
+          value = crumb;
+        }
+      };
+    })(); // crumb
+    markup = {
+      message: function(message) { // messageMarkup
+        var cls = '';
+        if(arguments.length > 1) {
+          if(arguments[1] == 'error')
+            cls = 'error';
+          else if(arguments[1] == 'confirm')
+            cls = 'success';
+        }
+        return '<div class="alert-message block-message '+cls+'"><a class="modal-close-click close" href="#">x</a>' + message + '</div>'
       },
-      fetchAndCache: function(src) {
-        $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
-      },
-      load: function(context) {
-        var async = typeof(arguments[1]) === 'undefined' ? true : arguments[1];
-        // we define initData at runtime to avoid having to make an HTTP call on load
-        // all subsequent calls run through the http API
-        if(typeof(context.initData) === "undefined") {
-          if(context.end || context.running)
+      modal: function(header, body, footer) { // modalMarkup
+        return '<div class="modal-header">' +
+               '  <a href="#" class="close" data-dismiss="modal">&times;</a>' +
+               '  <h3>'+header+'</h3>' +
+               '</div>' +
+               '<div class="modal-body">' +
+               '  <p>'+body+'</p>' +
+               '</div>' +
+               (footer ? '<div class="modal-footer">' + footer + '</div>' : '');
+      }
+    }; // markup
+    profiles = {
+      owner: {},
+      viewer: {},
+      load: function() {
+        // TODO cache this somehow
+        $.get('/user/profile.json', {includeViewer: '1'}, function(response) {
+          if(response.code !== 200)
             return;
 
-          context.running = true;
-
-          if(context.page === null) {
-            var qsMatch = loc.href.match('page=([0-9]+)');
-            if(qsMatch !== null) {
-              context.page = qsMatch[1];
-            } else {
-              var uriMatch = loc.pathname.match(/\/page-([0-9]+)/);
-              if(uriMatch !== null) {
-                context.page = uriMatch[1];
-              }
-            }
-
-            if(context.page === null)
-              context.page = 1;
-          }
-
-          var api = context.pageLocation.pathname+'.json';
-              params = {}, qs = context.pageLocation.search.replace('?', '');
-          
-          if(qs.length > 0) {
-            var qsKeyValueStrings = qs.split('&'), qsKeyAndValue;
-            for(i in qsKeyValueStrings) {
-              if(qsKeyValueStrings.hasOwnProperty(i)) {
-                qsKeyAndValue = qsKeyValueStrings[i].split('=');
-                if(qsKeyAndValue.length === 2) {
-                  params[qsKeyAndValue[0]] = qsKeyAndValue[1];
-                }
-              }
-            }
-          }
-
-          params.returnSizes = '960x180,870x870,180x180xCR';
-          params.page = context.page;
-          // for mobile devices limit the number pages before a full page refresh. See #778
-          if(context.pageCount > context.maxMobilePageCount && util.getDeviceWidth() < 900) {
-            location.href = context.pageLocation.pathname + '?' + decodeURIComponent($.param(params));
-          } else {
-            $.ajax({
-              async: async,
-              dataType: 'json',
-              url: api,
-              data: params,
-              success: context.loadCb
-            });
-          }
-        } else {
-          delete context.initData;
-          context.page = 1;
-          var response = {code:200, result:initData};
-          context.loadCb(response);
-        }
-      },
-      scrollCb: function(context) {
-        // don't autoload if the width is narrow
-        //  crude way to check if we're on a mobile device
-        //  See #778
-        if(util.getDeviceWidth() < 900)
-          return;
-
-        if($(window).scrollTop() > $(document).height() - $(window).height() - 200){
-          context.load();
-        }
-      },
-    };
-  })(); // util
-
-  return {
-    crumb: function() { return crumb.get(); },
-    callbacks: {
-      albumCreate: function(response) {
-        if(response.code === 201) {
-          TBX.notification.show('Your album was created. You can add photos from your <a href="/photos/list">gallery</a> page from using the <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
-        } else {
-          TBX.notification.show('Sorry, an error occured when trying to create your album.', 'flash', 'error');
-        }
-        $('.batchHide').trigger('click');
-      },
-      batch: function(response) { // this is the form params
-        var id, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos;
-        if(response.code === 200) {
-          if(typeof(this.permission) !== 'undefined') {
-            for(i in ids) {
-              if(ids.hasOwnProperty(i)) {
-                id = ids[i];
-                model = store.get(id);
-                if(model)
-                  model.fetch();
-              }
-            }
-          }
-          TBX.notification.show('You successfully updated ' + photoCount + ' photo' + (photoCount>1?'s':'') + '.', 'flash', 'confirm');
-        } else {
-          TBX.notification.show('Sorry, an error occured when trying to add tags to your photos.', 'flash', 'error');
-        }
-        $('.batchHide').trigger('click');
-      },
-      credentialDelete: function(response) {
-        if(response.code === 204) {
-          this.closest('tr').slideUp('medium');
-          TBX.notification.show('Your app was successfully deleted.', null, 'error');
-        } else {
-          TBX.notification.show('There was a problem deleting your app.', null, 'error');
-        }
-      },
-      loginSuccess: function() {
-        var redirect = $('input[name="r"]', this).val();
-        window.location.href = redirect;
-      },
-      personaSuccess: function(assertion) {
-        var params = {assertion: assertion};
-        OP.Util.makeRequest('/user/browserid/login.json', params, TBX.callbacks.loginProcessed);
-      },
-      loginProcessed: function(response) {
-        if(response.code != 200) {
-          TBX.notification.show('Sorry, we could not log you in.', 'flash', 'error');
-          return;
-        }
-        
-        var url = $('input[name="r"]', $('form.login')).val();
-        location.href = url;
-      },
-      profilesSuccess: function(owner, viewer) {
-        var ownerId = owner.id, viewerId = viewer.id;
-        profiles.owner = owner;
-        if(viewer !== undefined)
-          profiles.viewer = viewer;
-
-        // create model(s)
-        op.data.store.Profiles.add(profiles.owner);
-        // only if the viewer !== owner do we create two models
-        if(viewer !== undefined && owner.isOwner === false)
-          op.data.store.Profiles.add(profiles.viewer);
-          
-        $('.user-badge-meta').each(function(i, el) {
-          (new op.data.view.UserBadge({model:op.data.store.Profiles.get(ownerId), el: el})).render();
-        });
-        $('.profile-name-meta.owner').each(function(i, el) {
-          (new op.data.view.ProfileName({model:op.data.store.Profiles.get(ownerId), el: el})).render();
-        });
-        $('.profile-photo-meta').each(function(i, el) {
-          (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(ownerId), el: el})).render();
-        });
-        (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(viewerId), el: $('.profile-photo-header-meta')})).render();
-      },
-      selectAll: function(i, el) {
-        var id = $(el).attr('data-id'), photo = op.data.store.Photos.get(id).toJSON();
-        OP.Batch.add(id, photo);
-      },
-      share: function(response) {
-        var result = response.result;
-        $('.secondary-flyout').html(result.markup).slideDown('fast');
-      },
-      shareEmailSuccess: function(response) {
-        var result = response.result;
-        $('a.batchHide').trigger('click');
-        TBX.notification.show('Your photo was successfully emailed.', 'flash', 'confirm');
-      },
-      upload: function(ev) {
-        ev.preventDefault();
-        var uploader = $("#uploader").pluploadQueue();
-        if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
-          uploader.start();
-        } else {
-          // TODO something that doesn't suck
-          //opTheme.message.error('Please select at least one photo to upload.');
-        }
-      },
-      uploadCompleteSuccess: function(photoResponse) {
-        photoResponse.crumb = TBX.crumb();
-        $("form.upload").fadeOut('fast', function() {
-          OP.Util.makeRequest('/photos/upload/confirm.json', photoResponse, TBX.callbacks.uploadConfirm, 'json', 'post');
-        });
-      },
-      uploadConfirm: function(response) {
-        var $el, container, model, view, item, result = response.result, success = result.data.successPhotos;
-        $(".upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
-        $(".upload-confirm").html(result.tpl).show('fast', function(){
-          if(success.length > 0) {
-            op.data.store.Photos.add(success);
-            container = $('.upload-preview.success');
-            Gallery.showImages(container, success);
-          }
-        });
-      },
-      uploaderReady: function() {
-        var form = $('form.upload');
-        if(typeof OPU === 'object')
-          OPU.init();
-
-        //$("select.typeahead").chosen();
+          var result = response.result, id = result.id, owner = result, viewer = result.viewer || null;
+          if(owner.viewer !== undefined)
+            delete owner.viewer;
+          TBX.callbacks.profilesSuccess(owner, viewer, profiles);
+        }, 'json');
       }
-    },
-    handlers: {
-      click: {
-        batchHide: function(ev) {
-          ev.preventDefault();
-          $('.secondary-flyout').slideUp('fast');
+    }; // profiles
+    util = (function() {
+      return {
+        getDeviceWidth: function() {
+          return $(window).width();
         },
-        credentialDelete: function(ev) {
-          ev.preventDefault();
-          var el = $(ev.target),
-              url = el.attr('href')+'.json',
-              params = {crumb: TBX.crumb()};
+        fetchAndCache: function(src) {
+          $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
+        },
+        load: function(context) {
+          var async = typeof(arguments[1]) === 'undefined' ? true : arguments[1];
+          // we define initData at runtime to avoid having to make an HTTP call on load
+          // all subsequent calls run through the http API
+          if(typeof(context.initData) === "undefined") {
+            if(context.end || context.running)
+              return;
 
-          OP.Util.makeRequest(url, params, TBX.callbacks.credentialDelete.bind(el));
-          return false;
-        },
-        loginExternal: function(ev) {
-          ev.preventDefault();
-          var el = $(ev.target);
-          if(el.hasClass('persona')) {
-            navigator.id.getVerifiedEmail(function(assertion) {
-                if (assertion) {
-                  TBX.callbacks.personaSuccess(assertion);
-                } else {
-                  TBX.notification.show('Sorry, something went wrong trying to log you in.', 'flash', 'error');
-                }
-            });
-          } else if(el.hasClass('facebook')) {
-            FB.login(function(response) {
-              if (response.authResponse) {
-                log('User logged in, posting to openphoto host.');
-                OP.Util.makeRequest('/user/facebook/login.json', opTheme.user.base.loginProcessed);
+            context.running = true;
+
+            if(context.page === null) {
+              var qsMatch = loc.href.match('page=([0-9]+)');
+              if(qsMatch !== null) {
+                context.page = qsMatch[1];
               } else {
-                log('User cancelled login or did not fully authorize.');
+                var uriMatch = loc.pathname.match(/\/page-([0-9]+)/);
+                if(uriMatch !== null) {
+                  context.page = uriMatch[1];
+                }
               }
-            }, {scope: 'email'});
-          }
-          return false;
-        },
-        notificationDelete: function(ev) {
-          ev.preventDefault();
-          OP.Util.makeRequest('/notification/delete.json', {crumb: TBX.crumb()}, null, 'json');
-        },
-        photoModal: function(ev) {
-          ev.preventDefault();
-          var $el = $(ev.target), url = '/p/'+$el.attr('data-id'), router = op.data.store.Router;
-          router.navigate(url, {trigger:true});
-        },
-        selectAll: function(ev) {
-          ev.preventDefault();
-          var $els = $('.photo-grid .imageContainer .pin.edit'), batch = OP.Batch, preCount = batch.length(), addedCount;
-          $els.each(TBX.callbacks.selectAll);
-          addedCount = batch.length() - preCount;
-          TBX.notification.show(addedCount + ' new photos were <em>added</em> to your <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
-        },
-        sharePopup: function(ev) {
-          ev.preventDefault();
-          var $el = $(ev.target), url = $el.attr('href'), w=575, h=300, l, t, opts;
-          l = parseInt(($(window).width()  - w)  / 2);
-          t = parseInt(($(window).height() - h) / 2);
-          opts = 'location=0,toolbar=0,status=0,width='+w+',height='+h+',left='+l+',top='+t;
-          window.open(url, 'TB', opts);
-        },
-        triggerDownload: function(ev) {
-          ev.preventDefault();
-          var $el = $('.download.trigger'), url = $el.attr('href');
-          location.href = url;
-        },
-        triggerShare: function(ev) { 
-          ev.preventDefault();
-          var $el = $('.share.trigger');
-          $el.trigger('click');
-        }
-      },
-      custom: {
-        preloadPhotos: function(photos) {
-          if(photos.length == 0)
-            return;
 
-          for(i in photos) {
-            if(photos.hasOwnProperty(i)) { 
-              util.fetchAndCache(photos[i]);
+              if(context.page === null)
+                context.page = 1;
             }
-          }
-        }
-      },
-      keydown: { },
-      keyup: { },
-      mouseover: { },
-      submit: {
-        albumCreate: function(ev) {
-          ev.preventDefault();
-          var $form = $(ev.target), params = {name: $('input[name="name"]', $form).val(), crumb: TBX.crumb()};
-          $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
-          OP.Util.makeRequest('/album/create.json', params, TBX.callbacks.albumCreate, 'json', 'post');
-        },
-        batch: function(ev) {
-          ev.preventDefault();
-          var $form = $(ev.target), url = '/photos/update.json', formParams = $form.serializeArray(), batch = OP.Batch, params = {ids: batch.ids().join(','), crumb: TBX.crumb()};
-          $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
-          for(i in formParams) {
-            if(formParams.hasOwnProperty(i)) {
-              if(formParams[i].name === 'albumsAdd')
-                url = '/album/'+formParams[i].value+'/photo/add.json';
-              params[formParams[i].name] = formParams[i].value;
-            }
-          }
-          OP.Util.makeRequest(url, params, TBX.callbacks.batch.bind(params), 'json', 'post');
-        },
-        login: function(ev) {
-          ev.preventDefault();
-          var form = $(ev.target),
-              params = form.serialize();
-          params += '&httpCodes=403';
-          $.ajax(
-            {
-              url: '/user/self/login.json',
-              dataType:'json',
-              data:params,
-              type:'POST',
-              success: TBX.callbacks.loginSuccess,
-              error: TBX.notification.display.generic.error,
-              context: form
-            }
-          );
-        },
-        shareEmail: function(ev) {
-          ev.preventDefault();
-          var $form = $(ev.target),
-              params = $form.serialize()
-              ids = $('input[name="ids"]', $form).val(),
-              recipients = $('input[name="recipients"]', $form).val(),
-              message = $('textarea[name="message"]', $form).val();
 
-          if(recipients.length == 0) {
-            TBX.notification.show('Please specify at least one recipient.', 'flash', 'error');
-            return;
-          } else if(message.length === 0) {
-            TBX.notification.show('Please type in a message.', 'flash', 'error');
-            return;
-          }
-
-          $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
-          $.ajax(
-            {
-              url: '/photos/'+ids+'/share.json',
-              dataType:'json',
-              data:params,
-              type:'POST',
-              success: TBX.callbacks.shareEmailSuccess,
-              error: function() { $('button i', $form).remove(); TBX.notification.display.generic.error(); },
-              context: $form
+            var api = context.pageLocation.pathname+'.json';
+                params = {}, qs = context.pageLocation.search.replace('?', '');
+            
+            if(qs.length > 0) {
+              var qsKeyValueStrings = qs.split('&'), qsKeyAndValue;
+              for(i in qsKeyValueStrings) {
+                if(qsKeyValueStrings.hasOwnProperty(i)) {
+                  qsKeyAndValue = qsKeyValueStrings[i].split('=');
+                  if(qsKeyAndValue.length === 2) {
+                    params[qsKeyAndValue[0]] = qsKeyAndValue[1];
+                  }
+                }
+              }
             }
-          );
-          return false;
-        },
-        upload: function(ev) {
-          ev.preventDefault();
-          var uploader = $("#uploader").pluploadQueue();
-          if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
-            uploader.start();
+
+            params.returnSizes = '960x180,870x870,180x180xCR';
+            params.page = context.page;
+            // for mobile devices limit the number pages before a full page refresh. See #778
+            if(context.pageCount > context.maxMobilePageCount && util.getDeviceWidth() < 900) {
+              location.href = context.pageLocation.pathname + '?' + decodeURIComponent($.param(params));
+            } else {
+              $.ajax({
+                async: async,
+                dataType: 'json',
+                url: api,
+                data: params,
+                success: context.loadCb
+              });
+            }
           } else {
-            // TODO something that doesn't suck
-            //opTheme.message.error('Please select at least one photo to upload.');
+            delete context.initData;
+            context.page = 1;
+            var response = {code:200, result:initData};
+            context.loadCb(response);
           }
-        }
-      }
-    }, // handlers
-    init: {
+        },
+        scrollCb: function(context) {
+          // don't autoload if the width is narrow
+          //  crude way to check if we're on a mobile device
+          //  See #778
+          if(util.getDeviceWidth() < 900)
+            return;
+
+          if($(window).scrollTop() > $(document).height() - $(window).height() - 200){
+            context.load();
+          }
+        },
+      };
+    })(); // util
+
+    this.crumb = function() { return crumb.get(); };
+    this.init = {
       load: function(_crumb) {
         // http://stackoverflow.com/a/6974186
         // http://stackoverflow.com/questions/6421769/popstate-on-pages-load-in-chrome/10651028#10651028
@@ -656,8 +366,8 @@ var TBX = (function() {
           OP.Util.fire('upload:uploader-ready');
         }
       }
-    }, // init
-    notification: {
+    }; // init
+    this.notification = {
       model: new op.data.model.Notification,
       errorIcon: '<i class="icon-warning-sign"></i>',
       successIcon: '<i class="icon-ok"></i>',
@@ -685,14 +395,20 @@ var TBX = (function() {
           }
         }
       }
-    },
-    profiles: {
+    }; // notification
+    this.profiles = {
       getOwner: function() {
         return profiles.owner.id;
       },
       getViewer: function() {
         return profiles.viewer.id;
       }
-    } // profiles
-  };
-})();
+    }; // profiles
+  }
+
+  var _TBX = new Fabrizio;
+  TBX.profiles = _TBX.profiles;
+  TBX.notification = _TBX.notification;
+  TBX.init = _TBX.init;
+  TBX.crumb = _TBX.crumb;
+})(jQuery);

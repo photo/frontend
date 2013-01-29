@@ -83,15 +83,6 @@
             //merge the config with the user specified config
             this.config = this.merge(this.config, config);
 
-            //allow the user to override the eventmap if they wish
-            if (this.config.eventMap) {
-              for (var eType in this.config.eventMap) {
-                if (this.config.eventMap.hasOwnProperty(eType)) {
-                  this.eventMap[eType] = this.merge(this.config.eventMap[eType], this.eventMap[eType]);
-                }
-              }
-            }
-
             // we specify what library type in the .ini file
             // either jQuery or YUI - and then the user can load
             // additional css/js assets by specifying the files in the
@@ -104,6 +95,15 @@
             // get the library plugin file that maps library functions to a normalized
             // naming so that we can use whatever library that is specified
             this.getLibraryPlugin();
+        };
+
+        this.addEventMap = function(eventMap) {
+          this.eventMap = eventMap;
+          for (var eType in this.eventMap) {
+            if (this.eventMap.hasOwnProperty(eType)) {
+              this.eventMap[eType] = this.merge(this.eventMap[eType], this.eventMap[eType]);
+            }
+          }
         };
 
         /**

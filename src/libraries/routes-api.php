@@ -125,6 +125,7 @@ $apiObj->post('/?v?[1-2]?/user/profile.json', array('ApiUserController', 'profil
  * /v{version}/oauth[/{id}]/{action}
  */
 $apiObj->get('/?v?[1-2]?/oauth/([a-zA-Z0-9]+)/view.json', array('ApiOAuthController', 'view'), EpiApi::external);
+$apiObj->get('/?v?[1-2]?/oauth/([a-zA-Z0-9]+)/markup.json', array('ApiOAuthController', 'markup'), EpiApi::external);
 $apiObj->get('/?v?[1-2]?/oauth/list.json', array('ApiOAuthController', 'list_'), EpiApi::external);
 $apiObj->post('/?v?[1-2]?/oauth/([a-zA-Z0-9]+)/delete.json', array('ApiOAuthController', 'delete'), EpiApi::external);
 
