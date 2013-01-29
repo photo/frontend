@@ -24,10 +24,10 @@
         <h3>Download the App!</h3>
         <p>Take OpenPhoto wherever you go&mdash;download our app for iPhone or Android</p>
         <p>
-          <a href="#"><img src="<?php echo $this->theme->asset('image', 'download-ios.jpg') ?>" /></a>
+          <a href="http://bit.ly/trovebox-for-iphone"><img src="<?php echo $this->theme->asset('image', 'download-ios.jpg') ?>" /></a>
         </p>
         <p>
-          <a href="#"><img src="<?php echo $this->theme->asset('image', 'download-android.jpg') ?>" /></a>
+          <a href="http://bit.ly/trovebox-for-android"><img src="<?php echo $this->theme->asset('image', 'download-android.jpg') ?>" /></a>
         </p>
       </li>
       <li>
