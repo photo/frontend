@@ -53,136 +53,75 @@
     <!--<script type="text/javascript" src="<?php $this->theme->asset($this->config->dependencies->javascript); ?>"></script>-->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
-    <script type="text/javascript" src="/assets/javascripts/openphoto-helper.js"></script>
-
-    <script src="<?php $this->theme->asset('javascript', 'underscore-min.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'backbone.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'x-editable/bootstrap-editable/js/bootstrap-editable.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'phpjs.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'overrides.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/namespace.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/route/Routes.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/model/Album.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/model/Batch.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/model/Notification.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/model/Profile.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/model/Photo.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/model/Tag.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/collection/Album.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/collection/Profile.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/collection/Photo.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/collection/Tag.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/store/Albums.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/store/Profiles.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/store/Photos.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/store/Tags.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/view/Editable.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/view/BatchIndicator.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/view/AlbumCover.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/view/Notification.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoDetail.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/view/PhotoGallery.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfileName.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/view/ProfilePhoto.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/view/TagSearch.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/data/view/UserBadge.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'op/Lightbox.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'gallery.js'); ?>"></script>
-    <script src="<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>"></script>
-    <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
-      <?php if(true || $this->config->site->mode === 'dev') { ?>
-        <script src="/assets/javascripts/plupload.js"></script>
-        <script src="/assets/javascripts/plupload.html5.js"></script>
-        <script src="/assets/javascripts/jquery.plupload.queue.js"></script>
-        <script src="/assets/javascripts/openphoto-upload.js"></script>
-      <?php } else { ?>
-        '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'q'); ?>',
-      <?php } ?>
-    <?php } ?>
+    <script type="text/javascript" src=""></script>
 
     <script type="text/javascript">
-      OP.Util.init(jQuery, {
-        eventMap: TBX.handlers,
-        js: {
-          assets: [
-            '<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>'
-          ],
-          onComplete: function() {
-            TBX.notification.init();
-            <?php if($note = $this->notification->get()) { ?>
-              TBX.notification.show(<?php printf('%s, %s, %s', json_encode($this->utility->safe($note['msg'], '<a>', false)), json_encode($this->utility->safe($note['type'], false)), json_encode($this->utility->safe($note['mode'], false))); ?>);
-            <?php } ?>
-            TBX.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
-            TBX.init.attachEvents();
-            <?php $this->plugin->invoke('renderFooterJavascript'); ?>
-          }
-        }
-      });
-    </script>
-    <!--
       OP.Util.init(jQuery, {
         js: {
           assets: [
             <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
-              <?php if($this->config->site->mode === 'dev') { ?>
-                '/assets/javascripts/plupload.js',
-                '/assets/javascripts/plupload.html5.js',
-                '/assets/javascripts/jquery.plupload.queue.js',
-                '/assets/javascripts/openphoto-upload.js',
-              <?php } else { ?>
-                '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->addJs('/assets/javascripts/openphoto-upload.min.js')->getUrl(AssetPipeline::js, 'q'); ?>',
-              <?php } ?>
+              '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
+                addJs('/assets/javascripts/plupload.js', false)->
+                addJs('/assets/javascripts/plupload.html5.js', false)->
+                addJs('/assets/javascripts/jquery.plupload.queue.js', false)->
+                addJs('/assets/javascripts/openphoto-upload.js')->
+                getUrl(AssetPipeline::js, 'a', $this->config->site->mode === 'prod'); ?>',
             <?php } ?>
 
-            <?php if($this->config->site->mode === 'dev') { ?>
-              '/assets/javascripts/openphoto-helper.js',
-              '<?php $this->theme->asset('javascript', 'underscore-min.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'backbone.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'bootstrap.min.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'x-editable/bootstrap-editable/js/bootstrap-editable.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'phpjs.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'data.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'gallery.js'); ?>',
-              '<?php $this->theme->asset('javascript', 'fabrizio.js'); ?>'
-            <?php } else { ?>
               '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
-                                                  addJs('/assets/javascripts/openphoto-helper.min.js')->
-                                                  addJs($this->theme->asset('javascript', 'min/openphoto-theme-full.min.js', false))->
-                                                  // debugging
-                                                  /*addJs($this->theme->asset('javascript', 'min/01-bootstrap.min.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'min/01a-chosen.jquery.min.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'min/06-jquery.history.min.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'min/07-jquery.scrollTo.min.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'min/10-touchSwipe.min.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'min/05-gallery.min.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'min/09-phpjs.min.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'openphoto-theme.js', false))->*/
-                                                  /*addJs($this->theme->asset('javascript', 'bootstrap.min.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'chosen.jquery.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'jquery.history.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'jquery.scrollTo.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'touchSwipe.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'browserupdate.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'gallery.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'phpjs.js', false))->
-                                                  addJs($this->theme->asset('javascript', 'openphoto-theme.js', false))->*/
-                                                  getUrl(AssetPipeline::js, 'aw'); ?>'
-            <?php } ?>
-          ],*/
-          onComplete: function(){ 
-            TBX.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
-          }
-        }
-      });
-      jQuery(function($){
-        $('.example-icon-list li').hover(function(){
-          $(this).find('i').addClass('tb-icon-highlight');
-        }, function(){
-          $(this).find('i').removeClass('tb-icon-highlight');
+                addJs('/assets/javascripts/openphoto-helper.js', false)->
+                addJs($this->theme->asset('javascript', 'underscore-min.js', false))->
+                addJs($this->theme->asset('javascript', 'backbone.js', false))->
+                addJs($this->theme->asset('javascript', 'bootstrap.min.js', false))->
+                addJs($this->theme->asset('javascript', 'x-editable/bootstrap-editable/js/bootstrap-editable.js', false))->
+                addJs($this->theme->asset('javascript', 'phpjs.js', false))->
+                addJs($this->theme->asset('javascript', 'overrides.js', false))->
+                addJs($this->theme->asset('javascript', 'op/namespace.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/route/Routes.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/model/Album.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/model/Batch.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/model/Notification.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/model/Profile.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/model/Photo.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/model/Tag.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/collection/Album.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/collection/Profile.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/collection/Photo.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/collection/Tag.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/store/Albums.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/store/Profiles.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/store/Photos.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/store/Tags.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/view/Editable.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/view/BatchIndicator.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/view/AlbumCover.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/view/Notification.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/view/PhotoDetail.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/view/PhotoGallery.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/view/ProfileName.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/view/ProfilePhoto.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/view/TagSearch.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/view/UserBadge.js', false))->
+                addJs($this->theme->asset('javascript', 'op/Lightbox.js', false))->
+                addJs($this->theme->asset('javascript', 'op/Handlers.js', false))->
+                addJs($this->theme->asset('javascript', 'op/Callbacks.js', false))->
+                addJs($this->theme->asset('javascript', 'gallery.js', false))->
+                addJs($this->theme->asset('javascript', 'fabrizio.js', false))->
+                getUrl(AssetPipeline::js, 'aw', $this->config->site->mode === 'prod'); ?>'
+            ], // assets
+            onComplete: function() {
+              OP.Util.addEventMap(TBX.handlers);
+              TBX.notification.init();
+              <?php if($note = $this->notification->get()) { ?>
+                TBX.notification.show(<?php printf('%s, %s, %s', json_encode($this->utility->safe($note['msg'], '<a>', false)), json_encode($this->utility->safe($note['type'], false)), json_encode($this->utility->safe($note['mode'], false))); ?>);
+              <?php } ?>
+              TBX.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
+              TBX.init.attachEvents();
+              <?php $this->plugin->invoke('renderFooterJavascript'); ?>
+            } // onComplete
+          } // js
         });
-      });*/
-    -->
+    </script>
     <?php $this->plugin->invoke('renderFooter'); ?>
   </body>
 </html>

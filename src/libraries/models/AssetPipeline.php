@@ -95,7 +95,7 @@ class AssetPipeline
 
   }
 
-  public function getUrl($type, $version = null)
+  public function getUrl($type, $version = null, $cache = true)
   {
     // generate the hash and see if the file is on disk
     $url = sprintf('/assets/cache/%s/%s/%s%s', $version, $type, $this->mode, implode(',', $this->assetsRel[$type]));
@@ -104,7 +104,7 @@ class AssetPipeline
       return str_replace($this->docroot, '', $assetPath);
 
     // else we generate the URL which comebines all the URLs together
-    if(is_dir($this->cacheDir) && is_writable($this->cacheDir))
+    if($cache && is_dir($this->cacheDir) && is_writable($this->cacheDir))
     {
       $contents = $this->mode === self::minified ? $this->getMinified($type) : $this->getCombined($type);
       file_put_contents($assetPath, $contents);
