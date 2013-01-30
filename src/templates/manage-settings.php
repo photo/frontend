@@ -32,6 +32,12 @@
           Hide my site from search engines
         </label>
       </div>
+      <div class="controls">
+        <label class="checkbox inline">
+          <input type="checkbox" name="decreaseLocationPrecision" value="1" <?php if($decreaseLocationPrecision) { ?>checked="checked"<?php } ?>>
+          Decrease the accuracy when displaying my photos on a map for others
+        </label>
+      </div>
       
       <div class="btn-toolbar"><button class="btn btn-primary">Save</button></div>
       <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">

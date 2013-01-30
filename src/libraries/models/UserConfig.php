@@ -32,8 +32,8 @@ class UserConfig
         }
       }
 
-      $this->baseHost = @$params['site']['baseHost'];
-      $this->rewriteHost = @$params['site']['rewriteHost'];
+      $this->baseHost = $params['site']['baseHost'];
+      $this->rewriteHost = $params['site']['rewriteHost'];
 
       $configParams = array($params['epi']['config']);
       if(isset($params['epiConfigParams']))
