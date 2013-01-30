@@ -50,10 +50,10 @@
     },
     delete: function(ev) {
       ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model, confirmation;
+      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model, ask;
 
-      confirmation = confirm('Are you sure you want to delete this photo?');
-      if(confirmation)
+      ask = prompt('Type DELETE if you\'d like to delete this photo.');
+      if(ask === 'DELETE')
         model.destroy({success: this.modelDestroyed, error: TBX.notification.display.generic.error});
     },
     permission: function(ev) {

@@ -170,7 +170,7 @@
 </script>
 
 <script type="tmpl/underscore" id="album-meta">
-  <div class="cover">
+  <div class="cover album-<%= id %>">
     <a href="/photos/album-<%= id %>/list">
       <% if (!_.isNull(cover)) { %>
         <img src="<%= cover.path200x200xCR %>">
@@ -181,7 +181,12 @@
       <span class="stack stack2"></span>
     </a>
     <?php if($isAdmin) { ?>
-      <h5><span class="name edit"><i class="icon-pencil"></i> <%= name %></span></h5>
+      <h5>
+        <span>
+          <span class="name edit"><i class="icon-pencil"></i> <%= name %></span>
+          <a href="#"class="delete pull-right" data-id="<%= id %>"><i class="icon-trash"></i></a>
+        </span>
+      </h5>
     <?php } else { ?>
       <h5><span class="name"><%= name %></span></h5>
     <?php } ?>

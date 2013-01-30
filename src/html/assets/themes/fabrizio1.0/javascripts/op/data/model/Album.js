@@ -17,6 +17,9 @@
             }
           }
           break;
+        case 'delete':
+          options.url = '/album/'+model.get('id')+'/delete.json';
+          break;
       }
       return Backbone.sync(method, model, options);
     },
