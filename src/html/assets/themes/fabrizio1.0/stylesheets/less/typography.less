@@ -40,7 +40,9 @@ a.editable-click:hover {
 a:link,
 a:visited,
 a:hover {
-  color: @color_link;
+  &:not(.btn) {
+    color: @color_link;
+  }
 }
 
 a.alt {
