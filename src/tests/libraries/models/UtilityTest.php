@@ -46,6 +46,18 @@ class UtilityTest extends PHPUnit_Framework_TestCase
     $this->assertEquals($res, array(), 'When passing null an empty array should be returned');
   }
 
+  public function testDecreaseGeolocationPrecisionRoundUp()
+  {
+    $res = $this->utility->decreaseGeolocationPrecision(12345.6789);
+    $this->assertEquals(12346, $res, 'decrypted string is not correct');
+  }
+
+  public function testDecreaseGeolocationPrecisionRoundDown()
+  {
+    $res = $this->utility->decreaseGeolocationPrecision(12345.45678);
+    $this->assertEquals(12345, $res, 'decrypted string is not correct');
+  }
+
   public function testDecrypt()
   {
     if (!extension_loaded('mcrypt')) {

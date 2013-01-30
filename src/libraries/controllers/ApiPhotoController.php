@@ -196,7 +196,16 @@ class ApiPhotoController extends ApiBaseController
     foreach($nextPrevious as $topKey => $photos)
     {
       foreach($photos as $innerKey => $photo)
+      {
         $nextPrevious[$topKey][$innerKey] = $this->photo->addApiUrls($photo, $sizes);
+        if(!$this->user->isAdmin() && $this->config->site->decreaseLocationPrecision === '1')
+        {
+          if(isset($nextPrevious[$topKey][$innerKey]['latitude']))
+            $nextPrevious[$topKey][$innerKey]['latitude'] = $this->utility->decreaseGeolocationPrecision($nextPrevious[$topKey][$innerKey]['latitude']);
+          if(isset($nextPrevious[$topKey][$innerKey]['longitude']))
+            $nextPrevious[$topKey][$innerKey]['longitude'] = $this->utility->decreaseGeolocationPrecision($nextPrevious[$topKey][$innerKey]['longitude']);
+        }
+      }
     }
 
     return $this->success("Next/previous for photo {$id}", $nextPrevious);
@@ -282,7 +291,16 @@ class ApiPhotoController extends ApiBaseController
     // we have to merge to retain multiple sizes else the last one overwrites the rest
     // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
     foreach($photos as $key => $photo)
+    {
       $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
+      if(!$this->user->isAdmin() && $this->config->site->decreaseLocationPrecision === '1')
+      {
+        if(isset($photos[$key]['latitude']))
+          $photos[$key]['latitude'] = $this->utility->decreaseGeolocationPrecision($photos[$key]['latitude']);
+        if(isset($photos[$key]['longitude']))
+          $photos[$key]['longitude'] = $this->utility->decreaseGeolocationPrecision($photos[$key]['longitude']);
+      }
+    }
 
     if(!empty($photos))
     {
@@ -836,6 +854,13 @@ class ApiPhotoController extends ApiBaseController
     }
 
     $photo = $this->photo->addApiUrls($photo, $sizes);
+    if(!$this->user->isAdmin() && $this->config->site->decreaseLocationPrecision === '1')
+    {
+      if(isset($photo['latitude']))
+        $photo['latitude'] = $this->utility->decreaseGeolocationPrecision($photo['latitude']);
+      if(isset($photo['longitude']))
+        $photo['longitude'] = $this->utility->decreaseGeolocationPrecision($photo['longitude']);
+    }
     return $this->success("Photo {$id}", $photo);
   }
 

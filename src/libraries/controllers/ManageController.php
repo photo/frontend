@@ -83,6 +83,7 @@ class ManageController extends BaseController
     $params['downloadOriginal'] = $this->config->site->allowOriginalDownload == '1';
     $params['allowDuplicate'] = $this->config->site->allowDuplicate == '1';
     $params['hideFromSearchEngines'] = $this->config->site->hideFromSearchEngines == '1';
+    $params['decreaseLocationPrecision'] = $this->config->site->decreaseLocationPrecision == '1';
     $params['credentials'] = $credentials;
     $params['plugins'] = $plugins;
     $params['crumb'] = $this->session->get('crumb');

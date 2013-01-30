@@ -31,6 +31,12 @@ class Utility
     return $params;
   }
 
+  // http://en.wikipedia.org/wiki/Decimal_degrees
+  public function decreaseGeolocationPrecision($value)
+  {
+    return round($value);
+  }
+
   public function decrypt($string, $secret = null, $salt = null)
   {
     if($secret === null)
@@ -79,17 +85,21 @@ class Utility
     return dirname(dirname(dirname(__FILE__)));
   }
 
-  public function getConfigFile()
+  public function getConfigFile($new = false)
   {
-    $configFile = sprintf('%s/userdata/configs/%s.ini', $this->getBaseDir(), $this->getHost());
+    $configFile = sprintf('%s/userdata/configs/%s.ini', $this->getBaseDir(), $this->getHost($new));
     if(!getConfig()->exists($configFile))
       return false;
     return $configFile;
   }
 
-  public function getHost()
+  public function getHost($new = false)
   {
-    return $_SERVER['HTTP_HOST'];
+    if($new === false)
+      return $_SERVER['HTTP_HOST'];
+
+    $config = getConfig()->get();
+    return str_replace($config->site->rewriteHost, $config->site->baseHost, $_SERVER['HTTP_HOST']);
   }
 
   public function getLicenses($selected = null)
