@@ -81,8 +81,8 @@ $status = $status && mysql_4_0_0($sql);
 $sql = <<<SQL
 DELIMITER ##
 CREATE
-TRIGGER update_album_counts_on_insert
-AFTER INSERT ON elementAlbum
+TRIGGER {$this->mySqlTablePrefix}update_album_counts_on_insert
+AFTER INSERT ON {$this->mySqlTablePrefix}elementAlbum
 FOR EACH ROW
 BEGIN
   SET @countPublic=(SELECT COUNT(*) FROM {$this->mySqlTablePrefix}photo AS p INNER JOIN {$this->mySqlTablePrefix}elementAlbum AS ea ON p.id = ea.element WHERE ea.owner=NEW.owner AND ea.album=NEW.album AND p.owner=NEW.owner AND p.permission='1');
@@ -95,8 +95,8 @@ $status = $status && mysql_4_0_0($sql);
 $sql = <<<SQL
 DELIMITER ##
 CREATE
-TRIGGER update_album_counts_on_delete
-AFTER DELETE ON elementAlbum
+TRIGGER {$this->mySqlTablePrefix}update_album_counts_on_delete
+AFTER DELETE ON {$this->mySqlTablePrefix}elementAlbum
 FOR EACH ROW
 BEGIN
   SET @countPublic=(SELECT COUNT(*) FROM {$this->mySqlTablePrefix}photo AS p INNER JOIN {$this->mySqlTablePrefix}elementAlbum AS ea ON p.id = ea.element WHERE ea.owner=OLD.owner AND ea.album=OLD.album AND p.owner=OLD.owner AND p.permission='1');
@@ -109,8 +109,8 @@ $status = $status && mysql_4_0_0($sql);
 $sql = <<<SQL
 DELIMITER ##
 CREATE
-TRIGGER update_tag_counts_on_insert
-AFTER INSERT ON elementTag
+TRIGGER {$this->mySqlTablePrefix}update_tag_counts_on_insert
+AFTER INSERT ON {$this->mySqlTablePrefix}elementTag
 FOR EACH ROW
 BEGIN
   SET @countPublic=(SELECT COUNT(*) FROM {$this->mySqlTablePrefix}photo AS p INNER JOIN {$this->mySqlTablePrefix}elementTag AS et ON p.id = et.element WHERE et.owner=NEW.owner AND et.tag=NEW.tag AND p.owner=NEW.owner AND p.permission='1');
@@ -123,8 +123,8 @@ $status = $status && mysql_4_0_0($sql);
 $sql = <<<SQL
 DELIMITER ##
 CREATE
-TRIGGER update_tag_counts_on_delete
-AFTER DELETE ON elementTag
+TRIGGER {$this->mySqlTablePrefix}update_tag_counts_on_delete
+AFTER DELETE ON {$this->mySqlTablePrefix}elementTag
 FOR EACH ROW
 BEGIN
   SET @countPublic=(SELECT COUNT(*) FROM {$this->mySqlTablePrefix}photo AS p INNER JOIN {$this->mySqlTablePrefix}elementTag AS et ON p.id = et.element WHERE et.owner=OLD.owner AND et.tag=OLD.tag AND p.owner=OLD.owner AND p.permission='1');
