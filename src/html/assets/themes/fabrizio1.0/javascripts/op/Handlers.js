@@ -108,7 +108,7 @@
 
       for(i in photos) {
         if(photos.hasOwnProperty(i)) { 
-          util.fetchAndCache(photos[i]);
+          TBX.util.fetchAndCache(photos[i]);
         }
       }
     };
