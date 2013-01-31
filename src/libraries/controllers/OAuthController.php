@@ -15,6 +15,13 @@ class OAuthController extends BaseController
   
   public function authorize()
   {
+    $userObj = new User;
+    if(!$userObj->isAdmin())
+    {
+      $this->route->redirect(sprintf('/user/login?r=%s', $_SERVER['REQUEST_URI']));
+      die();
+    }
+
     $callback = null;
     $separator = '?';
 
