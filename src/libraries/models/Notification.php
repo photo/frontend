@@ -35,8 +35,8 @@ class Notification extends BaseModel
   public function get($type = null)
   {
     $current = $this->cache->get($this->key);
-    if(empty($current))
-      return null;
+    if(!is_array($current))
+      return 0;
 
     if($type !== null)
       $fetchType = $type;
@@ -45,7 +45,7 @@ class Notification extends BaseModel
     elseif(!empty($current[self::typeStatic]))
       $fetchType = self::typeStatic;
     else
-      return null;
+      return 0;
 
     if($fetchType === self::typeFlash)
     {
