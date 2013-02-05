@@ -15,8 +15,8 @@
               <li class="dropdown batch-meta"></li>
             <?php } ?>
           <?php } elseif($this->utility->isActiveTab('upload')) {?>
-            <li class="separator-left"><a href="#"><i class="icon-camera-retro icon-mobile-phone"></i> iPhone App</a></li>
-            <li><a href=#"><i class="icon-mobile-phone"></i> Android App</a></li>
+            <li class="separator-left"><a href="http://bit.ly/trovebox-for-iphone"><i class="icon-camera-retro icon-mobile-phone"></i> iPhone App</a></li>
+            <li><a href="http://bit.ly/trovebox-for-android"><i class="icon-mobile-phone"></i> Android App</a></li>
           <?php } elseif($this->utility->isActiveTab('manage')) {?>
             <li class="separator-left"><a href="#settings"><i class="icon-cogs"></i> General Settings</a></li>
             <li><a href="#apps"><i class="icon-briefcase"></i> Applications</a></li>
