@@ -24,10 +24,10 @@
         <h3>Download the App!</h3>
         <p>Take Trovebox wherever you go&mdash;download our app for iPhone or Android</p>
         <p>
-          <a href="https://itunes.apple.com/app/id511845345"><img src="<?php echo $this->theme->asset('image', 'download-ios.jpg') ?>" /></a>
+          <a href="http://bit.ly/trovebox-for-iphone"><img src="<?php echo $this->theme->asset('image', 'download-ios.jpg') ?>" /></a>
         </p>
         <p>
-          <a href="https://play.google.com/store/apps/details?id=me.openphoto.android.app"><img src="<?php echo $this->theme->asset('image', 'download-android.jpg') ?>" /></a>
+          <a href="http://bit.ly/trovebox-for-android"><img src="<?php echo $this->theme->asset('image', 'download-android.jpg') ?>" /></a>
         </p>
       </li>
       <li>
