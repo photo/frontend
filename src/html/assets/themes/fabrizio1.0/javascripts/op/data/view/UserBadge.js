@@ -2,7 +2,7 @@
   op.ns('data.view').UserBadge = op.data.view.Editable.extend({
     getViewData : function(){
       return _.extend({}, this.model.toJSON(), {
-        showStorage : this.options.storage === true
+        showStorage : this.options.showStorage === true
       });
     },
     initialize: function() {
