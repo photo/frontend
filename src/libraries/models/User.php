@@ -37,6 +37,35 @@ class User extends BaseModel
   }
 
   /**
+    * Gets an attribute from the user's entry in the user db
+    * @param string $name The name of the value to retrieve
+    *
+    * @return mixed String on success FALSE on failure
+    */
+  public function getAttribute($name)
+  {
+    $name = $this->getAttributeName($name);
+    $user = $this->getUserRecord();
+    if($user === false)
+      return false;
+
+    if(isset($user[$name]))
+      return $user[$name];
+    return false;
+  }
+
+  /**
+    * Gets an attribute name
+    * @param string $name The name of the value to retrieve
+    *
+    * @return string
+    */
+  public function getAttributeName($name)
+  {
+    return sprintf('attr%s', $name);
+  }
+
+  /**
     * Get an avatar given an email address
     * See http://en.gravatar.com/site/implement/images/ and http://en.gravatar.com/site/implement/hash/
     *
@@ -115,32 +144,12 @@ class User extends BaseModel
   }
 
   /**
-    * Gets an attribute from the user's entry in the user db
-    * @param string $name The name of the value to retrieve
-    *
-    * @return mixed String on success FALSE on failure
+    * Get the total amount of space used
+    * @return int Size in bytes
     */
-  public function getAttribute($name)
+  public function getStorageUsed()
   {
-    $name = $this->getAttributeName($name);
-    $user = $this->getUserRecord();
-    if($user === false)
-      return false;
-
-    if(isset($user[$name]))
-      return $user[$name];
-    return false;
-  }
-
-  /**
-    * Gets an attribute name
-    * @param string $name The name of the value to retrieve
-    *
-    * @return string
-    */
-  public function getAttributeName($name)
-  {
-    return sprintf('attr%s', $name);
+    return $this->db->getStorageUsed();
   }
 
   /**

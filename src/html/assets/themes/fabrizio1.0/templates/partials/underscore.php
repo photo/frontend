@@ -69,10 +69,11 @@
           <li>
             <a href="#">
               <i class="tb-icon-storage"></i>
-              <span class="number"><%= counts.storage || "2.35" %></span>
-              <span class="title">GB used</span>
+              <span class="number"><%= TBX.format.bytes_to(counts.storage).size %></span>
+              <span class="title"><%= TBX.format.bytes_to(counts.storage).unit %> used</span>
             </a>
           </li>
+          <!--
           <li>
             <div class="dropdown dark-dropdown storage-dropdown">
               <a href="#" data-toggle="dropdown">
@@ -85,6 +86,7 @@
               </ul>
             </div>
           </li>
+          -->
         </ul>
       </div>
     </div>

@@ -693,6 +693,17 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Get the total space used
+    *
+    * @return int Size in bytes
+    */
+  public function getStorageUsed()
+  {
+    $res = $this->db->one("SELECT SUM(`size`) AS `KB` FROM `{$this->mySqlTablePrefix}photo` WHERE owner=:owner", array(':owner' => $this->owner));
+    return $res['KB'];
+  }
+
+  /**
     * Get a tag
     * Consistent read set to false
     *

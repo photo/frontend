@@ -165,6 +165,7 @@ class ApiUserController extends ApiBaseController
       $albums = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
       $tags = $this->api->invoke('/tags/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
       $profile['counts'] = array(
+        'storage' => $this->user->getStorageUsed() * 1024, // convert from kilobytes to bytes
         'photos' => empty($photos['result']) ? 0 : $photos['result'][0]['totalRows'], 
         'albums' => empty($albums['result']) ? 0 : $albums['result'][0]['totalRows'],
         'tags' => count($tags['result'])
