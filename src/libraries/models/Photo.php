@@ -621,7 +621,7 @@ class Photo extends BaseModel
           continue;
 
         if($iptckey == 'tags')
-          $attributes[$iptckey] .= implode(',', $iptcval);
+          $attributes['tags'] = implode(',', array_unique(array_merge($attributes['tags'], $iptcval)));
         else if(!isset($attributes[$iptckey])) // do not clobber if already in $attributes #1011
           $attributes[$iptckey] = $iptcval;
       }
