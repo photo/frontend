@@ -11,6 +11,12 @@ class EpiConfig_MySql extends EpiConfig
 
   public function getRecord($file)
   {
+    if($file == '')
+    {
+      EpiException::raise(new EpiConfigException("Configuration file cannot be empty when calling getRecord"));
+      return; // need to simulate same behavior if exceptions are turned off
+    }
+
     $file = $this->getFilePath($file);
     $res = $this->db->one("SELECT * FROM `{$this->table}` WHERE `id`=:file OR `aliasOf`=:aliasOf", array(':file' => $file, ':aliasOf' => $file));
     if(!$res)
@@ -30,6 +36,12 @@ class EpiConfig_MySql extends EpiConfig
 
   public function exists($file)
   {
+    if($file == '')
+    {
+      EpiException::raise(new EpiConfigException("Configuration file cannot be empty when calling exists"));
+      return; // need to simulate same behavior if exceptions are turned off
+    }
+
     $file = $this->getFilePath($file);
     $res = $this->db->one("SELECT * FROM `{$this->table}` WHERE `id`=:file OR `aliasOf`=:aliasOf", array(':file' => $file, ':aliasOf' => $file));
     return $res !== false;
@@ -37,6 +49,12 @@ class EpiConfig_MySql extends EpiConfig
 
   public function isAlias($file)
   {
+    if($file == '')
+    {
+      EpiException::raise(new EpiConfigException("Configuration file cannot be empty when calling isAlias"));
+      return; // need to simulate same behavior if exceptions are turned off
+    }
+
     $file = $this->getFilePath($file);
     $res = $this->db->one("SELECT * FROM `{$this->table}` WHERE `id`=:file OR `aliasOf`=:aliasOf", array(':file' => $file, ':aliasOf' => $file));
     if($res === false)
