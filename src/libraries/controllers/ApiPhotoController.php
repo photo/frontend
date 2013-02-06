@@ -757,6 +757,7 @@ class ApiPhotoController extends ApiBaseController
     * Retrieve a photo from the remote datasource.
     *
     * @param string $id ID of the photo to be viewed.
+    * @param string $options Optional options for rendering this photo.
     * @return string Standard JSON envelope
     */
   public function view($id, $options = null)
@@ -818,11 +819,11 @@ class ApiPhotoController extends ApiBaseController
 
       foreach($sizes as $size)
       {
-        $options = $this->photo->generateFragmentReverse($size);
+        $fragment = $this->photo->generateFragmentReverse($size);
         if($generate && !isset($photo["path{$size}"]))
         {
-          $hash = $this->photo->generateHash($id, $options['width'], $options['height'], $options['options']);
-          $this->photo->generate($id, $hash, $options['width'], $options['width'], $options['options']);
+          $hash = $this->photo->generateHash($id, $fragment['width'], $fragment['height'], $fragment['options']);
+          $this->photo->generate($id, $hash, $fragment['width'], $fragment['width'], $fragment['options']);
           $requery = true;
         }
       }
