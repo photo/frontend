@@ -62,13 +62,13 @@
         </ul>
       </div>
     </div>
-    <% if( 1 || showStorage ){ %>
+    <% if( showStorage ){ %>
     <div class="tray">
       <div class="details">
         <ul>
           <li>
             <a href="#">
-              <i class="icon-storage"></i>
+              <i class="tb-icon-storage"></i>
               <span class="number"><%= counts.storage || "2.35" %></span>
               <span class="title">GB used</span>
             </a>
