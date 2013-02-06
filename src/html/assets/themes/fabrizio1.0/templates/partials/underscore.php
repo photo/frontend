@@ -74,7 +74,7 @@
             </a>
           </li>
           <li>
-            <div class="dropdown storage-dropdown">
+            <div class="dropdown dark-dropdown storage-dropdown">
               <a href="#" data-toggle="dropdown">
                 <i class="tb-icon-storage"></i> Connect Storage <i class="caret"></i></a>
               </a>
