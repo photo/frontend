@@ -117,9 +117,19 @@ class ApiUserController extends ApiBaseController
 
     $utilityObj = new Utility;
     $profile = array();
+
+    $photos = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
+    $albums = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
+    $tags = $this->api->invoke('/tags/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
+
     $owner = array(
       'id' => $utilityObj->getHost(),
       'photoUrl' => $this->user->getAvatarFromEmail(100, $this->config->user->email),
+      'counts' => array(
+        'photos' => empty($photos['result']) ? 0 : $photos['result'][0]['totalRows'], 
+        'albums' => empty($albums['result']) ? 0 : $albums['result'][0]['totalRows'],
+        'tags' => count($tags['result'])
+      ),
       //'photoId' => '',
       'name' => $this->user->getNameFromEmail($this->config->user->email)
     );
@@ -127,7 +137,10 @@ class ApiUserController extends ApiBaseController
     $profile = $owner;
 
     if($this->user->isAdmin())
+    {
       $profile['email'] = $this->user->getEmailAddress();
+      $profile['counts']['storage'] = $this->user->getStorageUsed() * 1024; // convert from kilobytes to bytes
+    }
 
     $profile['isOwner'] = false;
 
@@ -150,7 +163,7 @@ class ApiUserController extends ApiBaseController
         if($viewer !== null)
         {
           $profile['viewer'] = array(
-            'id' => $this->user->isOwner() ? $utilityObj->getHost() : $viewer['id'],
+            'id' => $viewer['id'],
             'photoUrl' => $this->user->getAvatarFromEmail(100, $viewer['id']),
             'name' => $this->user->getNameFromEmail($viewer['id'])
           );
@@ -160,16 +173,6 @@ class ApiUserController extends ApiBaseController
           $profile['viewer'] = array('id' => null, 'photoUrl' => $this->user->getAvatarFromEmail(100, null), 'name' => User::displayNameDefault);
         }
       }
-
-      $photos = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
-      $albums = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
-      $tags = $this->api->invoke('/tags/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
-      $profile['counts'] = array(
-        'storage' => $this->user->getStorageUsed() * 1024, // convert from kilobytes to bytes
-        'photos' => empty($photos['result']) ? 0 : $photos['result'][0]['totalRows'], 
-        'albums' => empty($albums['result']) ? 0 : $albums['result'][0]['totalRows'],
-        'tags' => count($tags['result'])
-      );
     }
 
     return $this->success('User profile', $profile);

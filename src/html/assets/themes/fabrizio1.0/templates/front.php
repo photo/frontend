@@ -1,6 +1,10 @@
 <div class="row">
   <div class="span8">
-    <div class="userbadge user-badge-meta" data-show-storage="true"></div>
+    <?php if($this->user->isAdmin()) { ?>
+      <div class="userbadge user-badge-meta"data-show-storage="true"></div>
+    <?php } else { ?>
+      <div class="userbadge user-badge-meta"></div>
+    <?php } ?>
     <h3 class="sidebar-heading activity-list-heading">
       <i class="icon-angle-down"></i>
       <i class="icon-inbox"></i>
