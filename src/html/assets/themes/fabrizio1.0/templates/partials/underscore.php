@@ -67,11 +67,9 @@
       <div class="details">
         <ul>
           <li>
-            <a href="#">
-              <i class="tb-icon-storage"></i>
-              <span class="number"><%= TBX.format.bytes_to(counts.storage).size %></span>
-              <span class="title"><%= TBX.format.bytes_to(counts.storage).unit %> used</span>
-            </a>
+            <i class="tb-icon-storage"></i>
+            <span class="number"><%= TBX.format.bytes_to(counts.storage).size %></span>
+            <span class="title"><%= TBX.format.bytes_to(counts.storage).unit %> used</span>
           </li>
           <!--
           <li>
