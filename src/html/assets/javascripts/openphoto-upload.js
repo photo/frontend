@@ -96,7 +96,7 @@ OPU = (function() {
                 var uploader = $("#uploader").pluploadQueue(), 
                     form = $('form.upload'),
                     license = $("select[name='license'] :selected", form).val(),
-                    permission = $("input[name='permission']:checked", form).val(),
+                    visible = $("input[name='visible']:checked", form).val(),
                     albums = $("select[name='albums']", form).val(),
                     tags = $("input[name='tags']", form).val(), 
                     // http://stackoverflow.com/a/6116631
@@ -115,7 +115,7 @@ OPU = (function() {
                 
                 uploader.settings.multipart_params.license = license;
                 uploader.settings.multipart_params.tags = tags;
-                uploader.settings.multipart_params.permission = permission;
+                uploader.settings.multipart_params.visible = visible;
                 uploader.settings.multipart_params.albums = albums;
                 uploader.settings.multipart_params.groups = groups;
               }

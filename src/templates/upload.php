@@ -47,11 +47,11 @@
           <label for="tags">Permission</label>
           <div class="controls">
             <label class="radio inline">
-              <input type="radio" name="permission" value="1" checked="checked">
+              <input type="radio" name="visible" value="1" checked="checked">
               <span>Public</span>
             </label>
             <label class="radio inline">
-              <input type="radio" name="permission" value="0">
+              <input type="radio" name="visible" value="0">
               <span>Private</span>
             </label>
           </div>

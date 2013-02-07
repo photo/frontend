@@ -385,11 +385,11 @@ class ApiPhotoController extends ApiBaseController
       $this->plugin->setData('photo', $photo);
       $this->plugin->invoke('onPhotoUploaded');
 
-      $permission = isset($attributes['permission']) ? $attributes['permission'] : 0;
+      $visible = isset($attributes['visible']) ? $attributes['visible'] : 0;
       $this->api->invoke(
         "/{$this->apiVersion}/activity/create.json", 
         EpiRoute::httpPost, 
-        array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
+        array('_POST' => array('type' => 'photo-upload', 'data' => $photo, 'visible' => $visible))
       );
       return $this->created("Photo {$photoId} uploaded successfully", $photo);
     }
