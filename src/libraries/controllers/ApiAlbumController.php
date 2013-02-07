@@ -45,7 +45,7 @@ class ApiAlbumController extends ApiBaseController
 
   public function form()
   {
-    $template = $this->theme->get('partials/album-form.php', array('groups' => $groups));;
+    $template = $this->theme->get('partials/album-form.php');
     return $this->success('Album form', array('markup' => $template));
   }
 
