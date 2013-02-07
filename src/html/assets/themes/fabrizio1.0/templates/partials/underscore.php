@@ -71,20 +71,6 @@
             <span class="number"><%= TBX.format.bytes_to(counts.storage).size %></span>
             <span class="title"><%= TBX.format.bytes_to(counts.storage).unit %> used</span>
           </li>
-          <!--
-          <li>
-            <div class="dropdown dark-dropdown storage-dropdown">
-              <a href="#" data-toggle="dropdown">
-                <i class="tb-icon-storage"></i> Connect Storage <i class="caret"></i></a>
-              </a>
-              <ul class="dropdown-menu">
-                <li><a href="#"><img src="<?php $this->theme->asset('image', 'dropbox-icon.png'); ?>" /> Dropbox</a></li>
-                <li><a href="#"><img src="<?php $this->theme->asset('image', 's3-icon.png'); ?>" /> Amazon S3</a></li>
-                <li><a href="#"><img src="<?php $this->theme->asset('image', 'box-icon.png'); ?>" /> Box.com</a></li>
-              </ul>
-            </div>
-          </li>
-          -->
         </ul>
       </div>
     </div>
