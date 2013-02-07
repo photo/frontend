@@ -65,7 +65,7 @@ class Activity extends BaseModel
 
   private function validateParams($attributes)
   {
-    if(!isset($attributes['owner']) || !isset($attributes['type']) || !isset($attributes['permission']))
+    if(!isset($attributes['owner']) || !isset($attributes['type']) || !isset($attributes['visible']))
       return false;
 
     return true;
