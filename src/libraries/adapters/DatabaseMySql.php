@@ -1635,6 +1635,7 @@ class DatabaseMySql implements DatabaseInterface
           case 'permission':
             $where = $this->buildWhere($where, "`permission`='1'");
             break;
+          case 'since': // deprecate this, only implemented for testing. delete after grepping source @jmathai #592 #973
           case 'takenAfter':
             $where = $this->buildWhere($where, sprintf("`dateSortByDay`>'%s'", $this->_($this->dateSortByDay(strtotime($value)))));
             break;
