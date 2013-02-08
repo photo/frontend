@@ -116,13 +116,12 @@ class ApiUserController extends ApiBaseController
       return $this->notFound('Could not load user profile');
 
     $utilityObj = new Utility;
-    $profile = array();
 
     $photos = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
     $albums = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
     $tags = $this->api->invoke('/tags/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
 
-    $owner = array(
+    $profile = array(
       'id' => $utilityObj->getHost(),
       'photoUrl' => $this->user->getAvatarFromEmail(100, $this->config->user->email),
       'counts' => array(
@@ -134,15 +133,13 @@ class ApiUserController extends ApiBaseController
       'name' => $this->user->getNameFromEmail($this->config->user->email)
     );
 
-    $profile = $owner;
-
     if($this->user->isAdmin())
     {
       $profile['email'] = $this->user->getEmailAddress();
       $profile['counts']['storage'] = $this->user->getStorageUsed() * 1024; // convert from kilobytes to bytes
     }
 
-    $profile['isOwner'] = false;
+    $profile['isOwner'] = $this->user->isAdmin();
 
     // should we include the viewer?
     if(isset($_GET['includeViewer']) && $_GET['includeViewer'] == '1')
