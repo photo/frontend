@@ -11,5 +11,6 @@ src/configs/generated/*
 src/html/photos/**/*
 src/html/assets/cache
 src/plugins/*
+src/libraries/plugins/*
 src/userdata/**/*
 !default
