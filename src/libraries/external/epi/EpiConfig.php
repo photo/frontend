@@ -5,7 +5,8 @@ class EpiConfig
   const MYSQL = 'EpiConfig_MySql';
   private static $employ;
   protected static $instances;
-  protected $config;
+  protected $config, $cacheObj, $cacheMask;
+
   public function __construct()
   {
     $this->config = new stdClass;
@@ -43,6 +44,30 @@ class EpiConfig
   {
     $config = parse_ini_string($iniAsString, true);
     $this->mergeConfig($config);
+  }
+
+  protected function cache(/*$key[, $value]*/)
+  {
+    $argCnt = func_num_args();
+    $hash = sha1(sprintf('%s~%s~%s', 'epiconfig', func_get_arg(0), date($this->cacheMask)));
+    if($argCnt === 1)
+    {
+      $val = $this->cacheObj->get($hash);
+      if($val)
+        return $val;
+    }
+    elseif($argCnt === 2)
+    {
+      $value = func_get_arg(1);
+      if($value === null)
+        $this->cacheObj->delete($hash);
+      else
+        $this->cacheObj->set($hash, func_get_arg(1));
+
+      return null;
+    }
+
+    return null;
   }
 
   protected function mergeConfig($config)
