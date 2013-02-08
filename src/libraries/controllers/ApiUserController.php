@@ -149,7 +149,7 @@ class ApiUserController extends ApiBaseController
       // else we have to build the viewer array
       if($this->user->isOwner())
       {
-        $profile['viewer'] = $owner;
+        $profile['viewer'] = $profile;
       }
       else
       {
