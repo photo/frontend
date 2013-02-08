@@ -1635,8 +1635,17 @@ class DatabaseMySql implements DatabaseInterface
           case 'permission':
             $where = $this->buildWhere($where, "`permission`='1'");
             break;
-          case 'since':
+          case 'takenAfter':
             $where = $this->buildWhere($where, sprintf("`dateSortByDay`>'%s'", $this->_($this->dateSortByDay(strtotime($value)))));
+            break;
+          case 'takenBefore':
+            $where = $this->buildWhere($where, sprintf("`dateSortByDay`<'%s'", $this->_($this->dateSortByDay(strtotime($value)))));
+            break;
+          case 'uploadedAfter':
+            $where = $this->buildWhere($where, sprintf("`dateUploaded`>'%s'", $this->_(strtotime($value))));
+            break;
+          case 'uploadedBefore':
+            $where = $this->buildWhere($where, sprintf("`dateUploaded`<'%s'", $this->_(strtotime($value))));
             break;
           case 'sortBy':
             if($value === 'dateTaken,desc')

@@ -68,12 +68,13 @@ if($hasConfig && !$runSetup)
   $runUpgrade = false;
   if(!getUpgrade()->isCurrent())
     $runUpgrade = true;
-  require $configObj->get('paths')->libraries . '/routes.php';
 
   Request::setApiVersion();
 
   // initializes plugins
   getPlugin()->load();
+
+  require $configObj->get('paths')->libraries . '/routes.php';
 }
 else
 {
