@@ -7,25 +7,11 @@ class EpiConfig_MySql extends EpiConfig
     parent::__construct();
     $this->db = EpiDatabase::getInstance('mysql', $params['database'], $params['host'], $params['username'], $params['password']);
     $this->table = $params['table'];
-  }
-
-  public function getRecord($file)
-  {
-    if($file == '')
+    if(isset($params['cacheMask']) && $params['cacheMask'])
     {
-      EpiException::raise(new EpiConfigException("Configuration file cannot be empty when calling getRecord"));
-      return; // need to simulate same behavior if exceptions are turned off
+      $this->cacheMask = $params['cacheMask'];
+      $this->cacheObj = getCache();
     }
-
-    $file = $this->getFilePath($file);
-    $res = $this->db->one("SELECT * FROM `{$this->table}` WHERE `id`=:file OR `aliasOf`=:aliasOf", array(':file' => $file, ':aliasOf' => $file));
-    if(!$res)
-    {
-      EpiException::raise(new EpiConfigException("Config file ({$file}) does not exist in db"));
-      return; // need to simulate same behavior if exceptions are turned off
-    }
-
-    return $res;
   }
 
   public function getString($file)
@@ -123,11 +109,45 @@ class EpiConfig_MySql extends EpiConfig
     {
       $res = $this->db->execute("INSERT INTO `{$this->table}` (`id`, `value`, `aliasOf`) VALUES(:file, :value, :aliasOf)", array(':file' => $file, ':value' => $string, ':aliasOf' => $aliasOf));
     }
+
+    // delete the cached entry
+    if($this->cacheObj)
+      $this->cache($file, null);
+
     return $res !== false;
   }
 
   private function getFilePath($file)
   {
     return basename($file);
+  }
+
+  public function getRecord($file)
+  {
+    if($file == '')
+    {
+      EpiException::raise(new EpiConfigException("Configuration file cannot be empty when calling getRecord"));
+      return; // need to simulate same behavior if exceptions are turned off
+    }
+
+    $file = $this->getFilePath($file);
+    if($this->cacheObj)
+    {
+      $value = $this->cache($file);
+      if($value !== null)
+        return $value;
+    }
+
+    $res = $this->db->one("SELECT * FROM `{$this->table}` WHERE `id`=:file OR `aliasOf`=:aliasOf", array(':file' => $file, ':aliasOf' => $file));
+    if(!$res)
+    {
+      EpiException::raise(new EpiConfigException("Config file ({$file}) does not exist in db"));
+      return; // need to simulate same behavior if exceptions are turned off
+    }
+
+    if($this->cacheObj)
+      $this->cache($file, $res);
+
+    return $res;
   }
 }
