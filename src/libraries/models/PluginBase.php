@@ -35,6 +35,7 @@ class PluginBase extends BaseModel
   }
 
   public function defineRoutes() { }
+  public function defineApis() { }
 
   public function getConf()
   {
