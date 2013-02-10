@@ -56,8 +56,13 @@
     };
     this.click.photoModal = function(ev) {
       ev.preventDefault();
-      var $el = $(ev.target), url = '/p/'+$el.attr('data-id'), router = op.data.store.Router;
-      router.navigate(url, {trigger:true});
+      var $el = $(ev.target), $container = $el.closest('.imageContainer'), $pin = $('.pin.edit', $container), url = '/p/'+$el.attr('data-id'), router = op.data.store.Router;
+      // alt+click pins the photo
+      if(ev.altKey && $pin.length > 0) {
+        $pin.trigger('click');
+      } else {
+        router.navigate(url, {trigger:true});
+      }
     };
     this.click.pluginStatusToggle = function(ev) {
       ev.preventDefault();
