@@ -436,8 +436,8 @@
       <ul class="dropdown-menu">
         <% if (count > 0) { %>
           <li><a>Update photo information</a></li>
-          <li><a href="#" class="showForm photo" data-id="tagsAdd">&nbsp;&middot;&nbsp;Add Tags</a></li>
-          <li><a href="#" class="showForm photo" data-id="albumsAdd">&nbsp;&middot;&nbsp;Add to Album</a></li>
+          <li><a href="#" class="showForm photo" data-id="tags">&nbsp;&middot;&nbsp;Manage Tags</a></li>
+          <li><a href="#" class="showForm photo" data-id="albums">&nbsp;&middot;&nbsp;Manage Albums</a></li>
           <li><a href="#" class="showForm photo" data-id="privacy">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
           <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
           <!--<li class="divider"></li>

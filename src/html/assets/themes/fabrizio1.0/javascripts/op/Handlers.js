@@ -136,10 +136,27 @@
         if(formParams.hasOwnProperty(i)) {
           if(formParams[i].name === 'albumsAdd')
             url = '/album/'+formParams[i].value+'/photo/add.json';
+          else if(formParams[i].name === 'albumsRemove')
+            url = '/album/'+formParams[i].value+'/photo/remove.json';
           params[formParams[i].name] = formParams[i].value;
         }
       }
       OP.Util.makeRequest(url, params, TBX.callbacks.batch.bind(params), 'json', 'post');
+    };
+    this.click.batchAlbumMode = function(ev) {
+      var $el = $(ev.target), $form = $el.closest('form'), $albums = $('select.albums', $form);
+      if($el.val() === 'add')
+        $albums.attr('name', 'albumsAdd');
+      else
+        $albums.attr('name', 'albumsRemove');
+      console.log($albums);
+    };
+    this.click.batchTagMode = function(ev) {
+      var $el = $(ev.target), $form = $el.closest('form'), $tags = $('input.tags', $form);
+      if($el.val() === 'add')
+        $tags.attr('name', 'tagsAdd');
+      else
+        $tags.attr('name', 'tagsRemove');
     };
     this.submit.login = function(ev) {
       ev.preventDefault();

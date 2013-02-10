@@ -668,6 +668,8 @@ class ApiPhotoController extends ApiBaseController
 
     if(isset($params['tagsAdd']))
       $params['tags'] = implode(',', array_unique(array_merge($photoBefore['tags'], (array)explode(',', $params['tagsAdd']))));
+    if(isset($params['tagsRemove']))
+      $params['tags'] = implode(',', array_unique(array_diff($photoBefore['tags'], (array)explode(',', $params['tagsRemove']))));
 
     // since tags can be created adhoc we need to ensure they're here
     if(isset($params['tags']) && !empty($params['tags']))
@@ -743,7 +745,7 @@ class ApiPhotoController extends ApiBaseController
   {
     getAuthentication()->requireAuthentication();
     $params = $_GET;
-    if($params['action'] == 'albumsAdd')
+    if($params['action'] == 'albums')
     {
       $albumsResp = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 0)));
       if($albumsResp['code'] === 200)
