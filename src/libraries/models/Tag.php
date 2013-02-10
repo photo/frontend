@@ -7,7 +7,7 @@
  */
 class Tag extends BaseModel
 {
-  /*
+  /**
    * Constructor
    */
   public function __construct()
@@ -15,7 +15,7 @@ class Tag extends BaseModel
     parent::__construct();
   }
 
-  /*
+  /**
    * Adjust the counters on a tag when the permission of an element changes
    *
    * @param array $tags An array of tags (strings get converted)
@@ -33,10 +33,9 @@ class Tag extends BaseModel
   }
 
   /**
-    * Delete a tag.
+    * Add a batch of tags.
     *
-    * @param array $id A string of the tag
-    * @return array Tag object augmented with a "weight" property.
+    * @param array $tags An array of tags (strings get converted)
     */
   public function createBatch($tags)
   {

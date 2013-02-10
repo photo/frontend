@@ -6,7 +6,7 @@
     <p>
       There are a few reasons you might be seeing this page:
       <ul>
-        <li>You're trying to access a private photo you don't have access to veiw.</li>
+        <li>You're trying to access a private photo you don't have access to view.</li>
         <li>You need to log in as the correct user to access the page.</li>
       </ul>
     </p>
