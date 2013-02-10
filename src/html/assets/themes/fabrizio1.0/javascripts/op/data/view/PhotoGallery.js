@@ -2,6 +2,7 @@
   op.ns('data.view').PhotoGallery = op.data.view.Editable.extend({
     initialize: function() {
       this.model.on('change', this.modelChanged, this);
+      OP.Util.on('callback:photo-destroy', this.modelDestroyed);
       OP.Util.on('callback:batch-remove', this.batchRemove);
       OP.Util.on('callback:batch-add', this.batchAdd);
     },

@@ -134,10 +134,20 @@
       $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
       for(i in formParams) {
         if(formParams.hasOwnProperty(i)) {
-          if(formParams[i].name === 'albumsAdd')
+          if(formParams[i].name === 'albumsAdd') {
             url = '/album/'+formParams[i].value+'/photo/add.json';
-          else if(formParams[i].name === 'albumsRemove')
+          } else if(formParams[i].name === 'albumsRemove') {
             url = '/album/'+formParams[i].value+'/photo/remove.json';
+          } else if(formParams[i].name === 'delete') {
+            if($('input[name="confirm"]', $form).attr('checked') === 'checked' && $('input[name="confirm2"]', $form).attr('checked') === 'checked') {
+              url = '/photos/delete.json';
+            } else {
+              TBX.notification.show("Check the appropriate checkboxes so we know you're serious.", 'flash', 'error');
+              $($('button i', $form)[0]).remove();
+              return; // don't continue
+            }
+          }
+
           params[formParams[i].name] = formParams[i].value;
         }
       }
@@ -149,7 +159,6 @@
         $albums.attr('name', 'albumsAdd');
       else
         $albums.attr('name', 'albumsRemove');
-      console.log($albums);
     };
     this.click.batchTagMode = function(ev) {
       var $el = $(ev.target), $form = $el.closest('form'), $tags = $('input.tags', $form);

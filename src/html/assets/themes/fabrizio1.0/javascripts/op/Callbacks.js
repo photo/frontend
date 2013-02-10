@@ -13,20 +13,24 @@
     },
     this.batch = function(response) { // this is the form params
       var id, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos;
-      if(response.code === 200) {
-        if(typeof(this.permission) !== 'undefined') {
-          for(i in ids) {
-            if(ids.hasOwnProperty(i)) {
-              id = ids[i];
-              model = store.get(id);
-              if(model)
+      if(response.code === 200 || response.code === 204) {
+        for(i in ids) {
+          if(ids.hasOwnProperty(i)) {
+            id = ids[i];
+            model = store.get(id);
+            if(model) {
+              // on update we fetch, on delete we destroy
+              if(response.code === 200) {
                 model.fetch();
+              } else {
+                OP.Util.fire('callback:photo-destroy', model);
+              }
             }
           }
         }
-        TBX.notification.show('You successfully updated ' + photoCount + ' photo' + (photoCount>1?'s':'') + '.', 'flash', 'confirm');
+        TBX.notification.show(photoCount + ' photo' + (photoCount>1?'s were':'was') + ' updated.', 'flash', 'confirm');
       } else {
-        TBX.notification.show('Sorry, an error occured when trying to add tags to your photos.', 'flash', 'error');
+        TBX.notification.show('Sorry, an error occured when trying to update your photos.', 'flash', 'error');
       }
       $('.batchHide').trigger('click');
     },
