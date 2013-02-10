@@ -3,19 +3,6 @@
     initialize: function() {
       this.model.on('change', this.modelChanged, this);
       OP.Util.on('callback:batch-clear', this.clearCallback);
-      OP.Util.on('batchindicator:add-photos-to-album', this.addPhotosToAlbum);
-    },
-    addPhotosToAlbum: function(args) {
-      var ids = args.ids, albumIds = args.albumIds, photoCount = ids.split(',').length;
-      OP.Util.makeRequest('/photos/update.json', {crumb: TBX.crumb(), albumsAdd: albumIds, ids: ids}, function(response) {
-        var model = TBX.init.pages.photos.batchModel;
-        model.set('loading', false);
-        if(response.code === 200) {
-          TBX.notification.show('You successfully added ' + photoCount + ' photo' + (photoCount>1?'s':'') + ' to your album.', 'flash', 'confirm');
-        } else {
-          TBX.notification.show('Sorry, an error occured when trying to add photos to your album.', 'flash', 'error');
-        }
-      }, 'json', 'post');
     },
     model: this.model,
     className: 'batch-meta',

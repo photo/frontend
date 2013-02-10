@@ -47,10 +47,14 @@ class AssetsController extends BaseController
     }
 
     $f = $_GET['f'];
+
+    header('Content-type: text/css');
+    header(sprintf('Last-Modified: %s GMT', gmdate('D, d M Y H:i:s', strtotime('-1 year')))); 
+    header(sprintf('Etag: %s', md5(sprintf('%s~%s', $key, $f))));
+
     if(!is_array($f))
       $f = (array)explode(',', $f);
 
-    header('Content-type: text/css');
     $theme = getTheme();
     $less = new lessc;
     foreach($f as $file)

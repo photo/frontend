@@ -972,8 +972,9 @@ class DatabaseMySql implements DatabaseInterface
     $res = true;
     foreach($elementIds as $elementId)
     {
-      $res = $res && $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `element`=:elementId AND `album`=:albumId AND `type`=:type",
+      $tmpRes = $res && $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `element`=:elementId AND `album`=:albumId AND `type`=:type",
         array(':owner' => $this->owner, ':elementId' => $elementId, ':albumId' => $albumId, ':type' => $type));
+      $res = $res && $tmpRes !== false;
     }
     return $res !== false;
   }

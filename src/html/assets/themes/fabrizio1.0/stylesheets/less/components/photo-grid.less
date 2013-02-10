@@ -13,6 +13,12 @@
     }
     
     > .imageContainer {
+      // keep this from being selected
+      // useful for alt+click
+      -webkit-user-select: none; // webkit (safari, chrome) browsers
+      -moz-user-select: none; // mozilla browsers
+      -khtml-user-select: none; // webkit (konqueror) browsers
+
       float: left;
       height: 180px;
       margin: 5px;

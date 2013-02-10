@@ -1,3 +1,4 @@
+<?php $buttonLabel = 'Save'; ?>
 <?php if(isset($action) && !empty($action)) { ?>
   <?php // a few reasons we don't want to display the standard form ?>
   <?php if(
@@ -24,6 +25,23 @@
           </label>
           <label class="radio inline">
             <input type="radio" name="mode" value="remove" class="batchTagMode"> Remove 
+          </label>
+        </div>
+      <?php } elseif($action == 'delete') { ?>
+        <input type="hidden" name="delete" value="1">
+        <?php $buttonLabel = "I'm absolutely sure"; ?>
+        <h4>Are you sure you'd like to delete these photos?</h4>
+        <div class="row">
+          <div class="alert alert-warning span4"><i class="icon-warning-sign"></i>This action cannot be undone</div>
+        </div>
+        <div class="control-group">
+          <label class="checkbox">
+            <input type="checkbox" name="confirm" value="1"> I'm sure 
+          </label>
+        </div>
+        <div class="control-group">
+          <label class="checkbox">
+            <input type="checkbox" name="confirm2" value="remove"> I'm really sure 
           </label>
         </div>
       <?php } elseif($action == 'albums') { ?>
@@ -53,7 +71,7 @@
         </label>
         &nbsp;&nbsp;
       <?php } ?>
-      <button type="submit" class="btn btn-brand">Save</button> or <a href="#" class="batchHide">cancel</a>
+      <button type="submit" class="btn btn-brand"><?php $this->utility->safe($buttonLabel); ?></button> or <a href="#" class="batchHide">cancel</a>
     </form>
   <?php } ?>
 <?php } ?>
