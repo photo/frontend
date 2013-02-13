@@ -140,23 +140,12 @@
       return this;
     },
     updateMap : function(){
-      var lat,lng;
+      var lat,lng,$mapEl;
+
       
       if((lat=this.model.get('latitude')) && (lng=this.model.get('longitude')) ){
-        var mapOptions = {
-          center: new google.maps.LatLng(lat, lng),
-          zoom: 10,
-          mapTypeControl: false,
-          streetViewControl: false,
-          zoomControl: true,
-          scrollwheel: false,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        var map = new google.maps.Map($(this.el).find('.map')[0], mapOptions);
-        var marker = new google.maps.Marker({
-          map: map,
-          position: map.getCenter()
-        });
+        $mapEl = $($(this.el).find('.map')[0]);
+        $mapEl.html('<img src="/map/'+lat+'/'+lng+'/7/275x160/roadmap/map.png">');
       }
     }
   });

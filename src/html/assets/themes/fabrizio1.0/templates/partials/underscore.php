@@ -338,7 +338,7 @@
       </h3>
     <% } %>
     <div id="photo-location" class="collapsible collapse">
-      <div class="map-ct"><div class="map"></div></div>
+      <div class="map"></div>
     </div>
   </li>
   <li>
