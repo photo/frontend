@@ -6,9 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     
-    <!-- link href="../../assets/css/bootstrap.css" rel="stylesheet" -->
-    <!--<link href="../../theme/style/dev.css.php" rel="stylesheet">-->
-    <link href="/assets/themes/fabrizio1.0/javascripts/x-editable/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet" />
+    <link href="//fonts.googleapis.com/css?family=Lato:300,400,700,300italic,400italic,700italic&.css" rel="stylesheet">
     <?php if($this->config->site->mode === 'dev') { ?>
       <link href="/assets/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less" rel="stylesheet">
     <?php } else { ?>
