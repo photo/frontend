@@ -12,7 +12,7 @@ class MapController extends BaseController
 
     header('Content-type: image/png');
     header(sprintf('Last-Modified: %s GMT', gmdate('D, d M Y H:i:s', strtotime('-1 year')))); 
-    header(sprintf('Etag: %s', md5(sprintf('%s~%s', $key, $f))));
+    header(sprintf('Etag: %s', md5($mapUrl)));
 
     $ch = curl_init($mapUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
