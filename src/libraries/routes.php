@@ -109,6 +109,11 @@ $routeObj->get('/v[1-2]/oauth/test', array('OAuthController', 'test'));
 $routeObj->get('/v[1-2]/oauth/flow', array('OAuthController', 'flow'));
 
 /*
+ * Map API to route through to map adapter
+ */
+$routeObj->get('/map/([0-9.-]+)/([0-9.-]+)/([0-9]+)/([0-9]+x[0-9]+)/(.+)/map.png', array('MapController', 'render')); // /map/;lat/:lon/:zoom/:size/:type/map.jpg
+
+/*
  * Asset endpoints
  * All asset endpoints follow the same convention.
  * Everything in []'s are optional
