@@ -102,12 +102,13 @@
                 addJs($this->theme->asset('javascript', 'op/data/view/UserBadge.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Lightbox.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Util.js', false))->
+                addJs($this->theme->asset('javascript', 'op/Strings.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Handlers.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Callbacks.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Format.js', false))->
                 addJs($this->theme->asset('javascript', 'gallery.js', false))->
                 addJs($this->theme->asset('javascript', 'fabrizio.js', false))->
-                getUrl(AssetPipeline::js, 'bb', $this->config->site->mode === 'prod'); ?>'
+                getUrl(AssetPipeline::js, 'bc', $this->config->site->mode === 'prod'); ?>'
             ], // assets
             onComplete: function() {
               OP.Util.addEventMap(TBX.handlers);

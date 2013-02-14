@@ -3,6 +3,8 @@
     TBX = {};
   
   function Handlers() {
+    var state = {};
+
     // CLICK
     this.click = {};
     this.click.batchHide = function(ev) {
@@ -56,10 +58,27 @@
     };
     this.click.photoModal = function(ev) {
       ev.preventDefault();
-      var $el = $(ev.target), $container = $el.closest('.imageContainer'), $pin = $('.pin.edit', $container), url = '/p/'+$el.attr('data-id'), router = op.data.store.Router;
-      // alt+click pins the photo
-      if(ev.altKey && $pin.length > 0) {
+      var $el = $(ev.target), id = $el.attr('data-id'), $container = $el.closest('.imageContainer'), $pin = $('.pin.edit', $container), url = '/p/'+id, router = op.data.store.Router;
+      
+      if(ev.altKey && $pin.length > 0) { // alt+click pins the photo
         $pin.trigger('click');
+      } else if (ev.shiftKey && $pin.length > 0){ // shift+click pins a range of photos
+        // if state.shiftId is undefined then we start the range
+        //  else we complete it
+        if(typeof(state.shiftId) === 'undefined') {
+          state.shiftId = id;
+        } else {
+          //  if the start and end are the same we omit
+          if(id == state.shiftId)
+            return;
+
+          var $start = $('.imageContainer.photo-id-'+state.shiftId), $end = $container, range = $.merge([$start, $end], $start.nextUntil($end));
+          for(i in range) {
+            if(range.hasOwnProperty(i))
+              $('.pin.edit', range[i]).trigger('click');
+          }
+          delete state.shiftId;
+        }
       } else {
         router.navigate(url, {trigger:true});
       }
@@ -82,10 +101,9 @@
     };
     this.click.selectAll = function(ev) {
       ev.preventDefault();
-      var $els = $('.photo-grid .imageContainer .pin.edit'), batch = OP.Batch, preCount = batch.length(), addedCount;
+      var $els = $('.photo-grid .imageContainer .pin.edit'), batch = OP.Batch, count = batch.length();
       $els.each(TBX.callbacks.selectAll);
-      addedCount = batch.length() - preCount;
-      TBX.notification.show(addedCount + ' new photos were <em>added</em> to your <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
+      TBX.notification.show(TBX.format.sprintf(TBX.strings.batchConfirm, count, count > 1 ? 's' : ''), 'flash', 'confirm');
     };
     this.click.sharePopup = function(ev) {
       ev.preventDefault();
