@@ -65,14 +65,14 @@
     },
     pin: function(ev) {
       ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), batch = OP.Batch, photo = op.data.store.Photos.get(id).toJSON();
-      if(batch.exists(id)) { // exists, we need to remove
-        OP.Batch.remove(id);
-        TBX.notification.show('1 photo was <em>removed</em> from your <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
-      } else { // let's add it
-        OP.Batch.add(id, photo);
-        TBX.notification.show('1 photo was <em>added</em> to your <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
-      }
+      var el = $(ev.currentTarget), id = el.attr('data-id'), batch = OP.Batch, count, photo = op.data.store.Photos.get(id).toJSON();
+      if(batch.exists(id)) // exists, we need to remove
+        batch.remove(id);
+      else // let's add it
+        batch.add(id, photo);
+
+      count = batch.length();
+      TBX.notification.show(TBX.format.sprintf(TBX.strings.batchConfirm, count, count > 1 ? 's' : ''), 'flash', 'confirm');
     },
     profile: function(ev) {
       ev.preventDefault();

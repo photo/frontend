@@ -16,14 +16,14 @@
     },
     clear: function(ev) {
       ev.preventDefault();
-      var el = $(ev.currentTarget), batch = OP.Batch, ids = batch.ids(), count = batch.length();
+      var el = $(ev.currentTarget), batch = OP.Batch, ids = batch.ids();
 
       // we have to fire this to clear the "pins" in the PhotoGallery view
       for(i in ids)
         OP.Util.fire('callback:batch-remove', ids[i]);
 
       batch.clear();
-      TBX.notification.show(count + ' photos were <em>removed</em> from your <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
+      TBX.notification.show(TBX.format.sprintf(TBX.strings.batchConfirm, 0, 's'), 'flash', 'confirm');
     },
     showForm: function(ev) {
       ev.preventDefault();
