@@ -137,6 +137,7 @@ class ApiUserController extends ApiBaseController
     {
       $profile['email'] = $this->user->getEmailAddress();
       $profile['counts']['storage'] = $this->user->getStorageUsed() * 1024; // convert from kilobytes to bytes
+      $profile['counts']['storage_str'] = strval($this->user->getStorageUsed() * 1024); // workaround for bug in ios json parser #1150
     }
 
     $profile['isOwner'] = $this->user->isAdmin();
