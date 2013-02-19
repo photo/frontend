@@ -353,7 +353,7 @@
       <div class="c">
         <ul class="tags">
           <% for(var tag in tags) { %>
-            <li><a href="#"><%= tags[tag] %></a></li>
+            <li><a href="/photos/tags-<%= tags[tag] %>/list"><%= tags[tag] %></a></li>
           <% } %>
         </ul>
       </div>
