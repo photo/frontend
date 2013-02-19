@@ -15,6 +15,7 @@ class Epi
     'api' => array('EpiApi.php', 'route'),
     'base' => array('EpiException.php'),
     'curl' => array('EpiCurl.php'),
+    'debug' => array('EpiDebug.php'),
     'route'  => array('base', 'EpiRoute.php'),
     'template' => array('base', 'EpiTemplate.php'),
     'cache' => array('base', 'EpiCache.php', 'cache-apc', 'cache-file', 'cache-memcached'),
