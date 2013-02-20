@@ -51,7 +51,14 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script type="text/javascript" src="<?php $this->utility->safe($this->config->site->cdnPrefix); ?><?php $this->theme->asset('util'); ?>"></script>
+
+    <script type="text/javascript" src="<?php $this->utility->safe($this->config->site->cdnPrefix); ?><?php ; ?>"></script>
+
+    <script type="text/javascript" src="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
+      addJs('/assets/javascripts/openphoto-util.js', false)->
+      addJs('/assets/javascripts/openphoto-helper.js', false)->
+      getUrl(AssetPipeline::js, $this->config->site->mediaVersion, $this->config->site->mode === 'prod'); ?>">
+    </script>
 
     <script type="text/javascript">
       OP.Util.init(jQuery, {
@@ -67,7 +74,6 @@
             <?php } ?>
 
               '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
-                addJs('/assets/javascripts/openphoto-helper.js', false)->
                 addJs($this->theme->asset('javascript', 'underscore-min.js', false))->
                 addJs($this->theme->asset('javascript', 'backbone.js', false))->
                 addJs($this->theme->asset('javascript', 'bootstrap.min.js', false))->
