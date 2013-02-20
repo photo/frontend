@@ -239,6 +239,23 @@
       );
       return false;
     };
+    this.submit.search = function(ev) {
+      ev.preventDefault();
+      var $form = $(ev.target), $button = $('button', $form), query = $('input[type="search"]', $form).val(), albums = OP.Album.getAlbums(), 
+          albumSearch = _.where(albums, {name: query.replace(/,+$/, '')}), isAlbum  = albumSearch.length > 0, url;
+      if(query === '')
+        return;
+
+      $button.html('<i class="icon-spinner icon-spin"></i>');
+      // trim leading and trailing commas and spaces in between
+      if(isAlbum) {
+        url = TBX.format.sprintf('/photos/album-%s/list', albumSearch[0].id);
+      } else {
+        query = query.replace(/^,\W*|,\W*$/g, '').replace(/\W*,\W*/, ',');
+        url = TBX.format.sprintf('/photos/tags-%s/list', query);
+      }
+      location.href = url;
+    };
     this.submit.upload = function(ev) {
       ev.preventDefault();
       var uploader = $("#uploader").pluploadQueue();
