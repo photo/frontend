@@ -26,16 +26,19 @@
     },
     highlighter: function (item) {
       var query = TBX.util.tagExtractor(this.query).replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&'), icon,
-        isTag = _.where(OP.Tag.getTags(), {'id': item}).length > 0, isAlbum = _.where(OP.Album.getAlbums(), {'name': item}).length > 0;
+        tag = _.where(OP.Tag.getTags(), {'id': item}), album = _.where(OP.Album.getAlbums(), {'name': item});
 
-      if(isTag)
+      if(tag.length > 0) {
         icon = '<i class="icon-tags"></i> ';
-      else if(isAlbum)
+        count = tag[0].count;
+      } else if(album.length > 0) {
         icon = '<i class="icon-th-large"></i> ';
+        count = album[0].count;
+      }
 
-      return icon + item.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
+      return  ' <span class="badge badge-inverse pull-right">'+count+'</span>' + icon + item.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
         return '<strong>' + match + '</strong>'
-      })
+      });
     }
   });
 })(jQuery);
