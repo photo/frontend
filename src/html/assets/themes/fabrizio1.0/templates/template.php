@@ -44,14 +44,14 @@
       <?php echo $body; ?>
     </div> <!-- /container -->
     <?php $this->theme->display('partials/footer.php'); ?>
+
     <?php $this->theme->display('partials/underscore.php'); ?>
+
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <!--<script type="text/javascript" src="<?php $this->theme->asset($this->config->dependencies->javascript); ?>"></script>-->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script type="text/javascript" src="<?php $this->theme->asset('util'); ?>"></script>
-    <script type="text/javascript" src=""></script>
+    <script type="text/javascript" src="<?php $this->utility->safe($this->config->site->cdnPrefix); ?><?php $this->theme->asset('util'); ?>"></script>
 
     <script type="text/javascript">
       OP.Util.init(jQuery, {

@@ -16,6 +16,53 @@
       lib = OP.Util.lib,
       log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } };
 
+
+  function Album() {
+    var self = this,
+        albums,
+        lastModified,
+        namespace = 'albums',
+        initCb,
+        getTime;
+
+    getTime = function() {
+      return Date.now() / 1000;
+    };
+
+    initCb = function(response) {
+      var albumObjects = response.result,
+          code = response.code;
+
+      albums = [];
+      if(code !== 200 || albumObjects === false)
+        return;
+      for(var i=0; i<albumObjects.length; i++) {
+        if(albumObjects[i].id != '')
+          albums.push(albumObjects[i]);
+      }
+
+      lastModified = getTime();
+      localStorage.setObject(namespace, albums);
+      localStorage.setItem(namespace+'-lastModified', lastModified);
+      OP.Util.fire('callback:albums-initialized');
+      OP.Util.fire('callback:albums-updated');
+    };
+    
+    this.init = function() {
+      var force = arguments[0] || false;
+      albums = localStorage.getObject(namespace) || null;
+      lastModified = parseInt(localStorage.getItem(namespace+'-lastModified')) || 0;
+      if(force || albums === null || albums.length === 0 || lastModified < (getTime()-1800))
+        OP.Util.makeRequest('/albums/list.json', {pageSize: 0}, initCb, 'json', 'get');
+      else
+        OP.Util.fire('callback:albums-initialized');
+    };
+    
+    this.getAlbums = function() {
+      return albums;
+    };
+  }
+
   function Tag() {
     var self = this,
         tags,
@@ -37,7 +84,7 @@
         return;
       for(var i=0; i<tagObjects.length; i++) {
         if(tagObjects[i].id != '')
-          tags.push(tagObjects[i].id);
+          tags.push(tagObjects[i]);
       }
 
       lastModified = getTime();
@@ -163,4 +210,5 @@
   //store the util instance
   OP.Batch = new Batch();
   OP.Tag = new Tag();
+  OP.Album = new Album();
 }());

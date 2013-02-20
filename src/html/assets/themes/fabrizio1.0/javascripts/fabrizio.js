@@ -144,6 +144,7 @@
 
         crumb.set(_crumb);
         OP.Tag.init();
+        OP.Album.init();
         pathname = location.pathname;
 
         /* jm History.Adapter.bind(window,'statechange',function(){
@@ -163,7 +164,7 @@
         /**
          * Initialize tags typeahead in the header
          */
-        new op.data.view.TagSearch({el: $('.trovebox-banner input[name=search]')});
+        new op.data.view.TagSearch({el: $('.trovebox-banner input[type=search]')});
         
         // init tooltips
 

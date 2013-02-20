@@ -39,7 +39,10 @@
             <?php } ?>
           </ul>
           <div class="search-wrap separator-left">
-            <input type="search" name="search" placeholder="Search Tags..."/>
+            <form class="form-inline search" action="/photos/list">
+              <input type="search" class="search-query" name="tags" placeholder="Search Tags or Albums..." autocomplete="off">
+              <button type="submit" class="btn btn-theme-secondary"><i class="icon-search"></i></button>
+            </form>
           </div>
         </div><!--/.nav-collapse -->
       </div>
