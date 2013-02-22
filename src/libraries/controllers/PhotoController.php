@@ -241,7 +241,11 @@ class PhotoController extends BaseController
     */
   public function view($id, $options = null)
   {
-    $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
+    if($options === null)
+      $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
+    else
+      $apiResp = $this->api->invoke("/photo/{$id}/{$options}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
+
     if($apiResp['code'] === 200)
     {
       $detailDimensions = explode('x', $this->config->photoSizes->detail);

@@ -20,7 +20,8 @@
       }
     },
     events: {
-      'click .delete': 'delete'
+      'click .delete': 'delete',
+      'click .share': 'share'
     },
     modelChanged: function() {
       this.render();
@@ -37,6 +38,11 @@
         model.destroy({success: this.modelDestroyed.bind(model), error: TBX.notification.display.generic.error});
       else
         TBX.notification.show('Your request to delete ' + model.get('name') + ' was cancelled.', 'flash', 'error');
+    },
+    share: function(ev) {
+      ev.preventDefault();
+      var $el = $(ev.currentTarget), id = $el.attr('data-id');
+      OP.Util.makeRequest('/share/album/'+id+'/view.json', {crumb: TBX.crumb()}, TBX.callbacks.share, 'json', 'get');
     }
   });
 })(jQuery);

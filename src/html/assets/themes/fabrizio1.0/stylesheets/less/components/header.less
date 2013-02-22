@@ -369,6 +369,30 @@ body.trovebox {
 
       .preview {
         text-align:center;
+        margin-bottom:10px;
+
+        @import "stack";
+
+        .cover {
+          position:relative;
+          width:200px;
+          height:200px;
+          margin:auto;
+
+          img {
+            width:190px;
+            height:190px;
+            z-index:100;
+            position:absolute;
+            right:-10px;
+          }
+        }
+
+        small {
+          display:block;
+          padding-top:5px;
+          font-weight:bold;
+        }
       }
 
       .social ul li {

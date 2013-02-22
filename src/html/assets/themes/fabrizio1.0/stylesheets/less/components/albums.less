@@ -43,26 +43,14 @@
             position: relative;
             text-align: center;
           
-            .stack {
-              
-              display: block;
-              position: absolute;
-              z-index: 2;
-              top: 0;
-              left: 0;
-              bottom: 0;
-              right: 0;
-              background: #fff;  
-              .box-shadow(0 0 1px #000);
-            }
-            .stack1 {
-              .rotate(-3deg);
-            }
-            .stack2 {
-              .rotate(3deg);
-            }
+            @import "stack";
           }
           
+          &:hover {
+            .icons {
+              height:22px;
+            }
+          }
           
           h5 {
             position: absolute;
@@ -76,6 +64,21 @@
             >span{
               display:block;
               padding: 10px 20px;
+
+              .icons {
+                overflow:hidden;
+                height:0;
+                -webkit-transition:all .1s ease-in-out;
+                -moz-transition:all .1s ease-in-out;
+                -o-transition:all .1s ease-in-out;
+                transition:all .1s ease-in-out;
+                font-size: 11px;
+                line-height:20px;
+
+                a {
+                  text-decoration:none;
+                }
+              }
             }
           }
         }

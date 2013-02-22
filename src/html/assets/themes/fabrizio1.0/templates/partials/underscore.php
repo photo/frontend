@@ -182,12 +182,15 @@
     <?php if($isAdmin) { ?>
       <h5>
         <span>
-          <span class="name edit"><i class="icon-pencil"></i> <%= name %></span>
-          <a href="#"class="delete pull-right" data-id="<%= id %>"><i class="icon-trash"></i></a>
+          <span class="name edit" title="<%= name %>"><i class="icon-pencil"></i> <%= name %></span>
+          <div class="icons">
+            <a href="#" class="share" data-id="<%= id %>" title="Share this album"><i class="icon-share"></i> Share</a>
+            <a href="#" class="delete pull-right" data-id="<%= id %>" title="Delete this album"><i class="icon-trash"></i></a>
+          </div>
         </span>
       </h5>
     <?php } else { ?>
-      <h5><span class="name"><%= name %></span></h5>
+      <h5><span class="name" title="<%= name %>"><%= name %></span></h5>
     <?php } ?>
   </div>
 </script>

@@ -152,7 +152,8 @@ $sql = <<<SQL
     `type` ENUM( 'album', 'photo', 'photos', 'video' ) NOT NULL ,
     `data` VARCHAR( 255 ) NOT NULL ,
     `dateExpires` INT UNSIGNED NOT NULL ,
-    PRIMARY KEY ( `owner` , `id` )
+    PRIMARY KEY ( `owner` , `id` ),
+    UNIQUE KEY `owner` (`owner`,`type`,`data`)
   ) ENGINE = InnoDB;
 SQL;
 $status = $status && mysql_4_0_0($sql);
