@@ -122,6 +122,11 @@
     },
     this.share = function(response) {
       var result = response.result;
+      if(response.code !== 200) {
+        TBX.notification.show('There was a problem generating your sharing token.', 'flash', 'error');
+        return;
+      }
+
       $('.secondary-flyout').html(result.markup).slideDown('fast');
     },
     this.shareEmailSuccess = function(response) {

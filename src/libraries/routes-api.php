@@ -74,7 +74,7 @@ $apiObj->post('/?v?[1-2]?/photo/([a-zA-Z0-9]+)/update.json', array('ApiPhotoCont
 $apiObj->get('/?v?[1-2]?/photo/([a-zA-Z0-9]+)/?(.+)?/view.json', array('ApiPhotoController', 'view'), EpiApi::external); // get a photo's information (/photo/[{options}/]{id}/view.json)
 $apiObj->get('/?v?[1-2]?/photos/?(.+)?/list.json', array('ApiPhotoController', 'list_'), EpiApi::external); // get all photos / optionally filter (/photos[/{options}]/view.json)
 $apiObj->get('/?v?[1-2]?/photos/(.+)/share.json', array('ApiPhotoController', 'share'), EpiApi::external); // get all photos / optionally filter (/photos[/{options}]/view.json)
-$apiObj->post('/?v?[1-2]?/photos/(.+)/share.json', array('ApiPhotoController', 'sharePost'), EpiApi::external); // get all photos / optionally filter (/photos[/{options}]/view.json)
+$apiObj->post('/?v?[1-2]?/photos/(.+)/share.json', array('ApiPhotoController', 'sharePost'), EpiApi::external); // get all photos / optionally filter (/photo/:id/delete.json)
 $apiObj->post('/?v?[1-2]?/photos/delete.json', array('ApiPhotoController', 'deleteBatch'), EpiApi::external); // delete multiple photos (/photos/delete.json)
 $apiObj->post('/?v?[1-2]?/photos/update.json', array('ApiPhotoController', 'updateBatch'), EpiApi::external); // update multiple photos (/photos/update.json)
 $apiObj->get('/?v?[1-2]?/photos/update.json', array('ApiPhotoController', 'updateBatchForm'), EpiApi::external); // update multiple photos (/photos/update.json)
@@ -84,6 +84,12 @@ $apiObj->get('/?v?[1-2]?/photo/([a-zA-Z0-9]+)/url/(\d+)x(\d+)x?([A-Zx]*)?.json',
 $apiObj->get('/?v?[1-2]?/photo/([a-zA-Z0-9]+)/nextprevious/?(.+)?.json', array('ApiPhotoController', 'nextPrevious'), EpiApi::external); // get a photo's next/previous (/photo/{id}/nextprevious[/{options}].json)
 //$apiObj->post('/photo/([a-zA-Z0-9]+)/create/([a-z0-9]+)/([0-9]+)x([0-9]+)x?(.*).json', array('ApiPhotoController', 'dynamic'), EpiApi::external);
 $apiObj->post('/?v?[1-2]?/photo/([a-zA-Z0-9]+)/transform.json', array('ApiPhotoController', 'transform'), EpiApi::external); // transform a photo
+
+/*
+ * Share endpoints
+ */
+$apiObj->get('/?v?[1-2]?/share/(album|photo)/(.+)/view.json', array('ApiShareController', 'view'), EpiApi::external); // sharing form (/share/:type]/:ids/view.json)
+$apiObj->post('/?v?[1-2]?/share/(album|photo)/(.+)/send.json', array('ApiShareController', 'send'), EpiApi::external); // send share email (/shrae/:type/:ids/send.json)
 
 /*
  * Tag endpoints
@@ -96,6 +102,17 @@ $apiObj->post('/?v?[1-2]?/tag/(.+)/delete.json', array('ApiTagController', 'dele
 $apiObj->post('/?v?[1-2]?/tag/(.+)/update.json', array('ApiTagController', 'update'), EpiApi::external); // post a tag (/tag/{id}/update.json)
 $apiObj->get('/?v?[1-2]?/tag/(.+)/view.json', array('ApiTagController', 'view'), EpiApi::external); // retrieve tags
 $apiObj->get('/?v?[1-2]?/tags/list.json', array('ApiTagController', 'list_'), EpiApi::external); // retrieve tags
+
+/*
+ * Token endpoints
+ * All token endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /tag[s][/{id}/]{action}.json
+ */
+$apiObj->post('/?v?[1-2]?/token/(album|photo)/([a-zA-Z0-9]+)/create.json', array('ApiTokenController', 'create'), EpiApi::external); // create a sharing token (/token/:type/:data/create.json)
+$apiObj->post('/?v?[1-2]?/token/([a-zA-Z0-9]+)/delete.json', array('ApiTokenController', 'delete'), EpiApi::external); // delete a sharing token (/token/:id/delete.json)
+$apiObj->get('/?v?[1-2]?/token/([a-zA-Z0-9]+)/view.json', array('ApiTokenController', 'view'), EpiApi::external); // get an existing sharing token (/token/:id/view.json)
+$apiObj->get('/?v?[1-2]?/token/(album|photo)/([a-zA-Z0-9]+)/list.json', array('ApiTokenController', 'listByTarget'), EpiApi::external); // list sharing tokens for a target (/token/:type/:data/view.json)
 
 /*
  * Resource mapping endpoints

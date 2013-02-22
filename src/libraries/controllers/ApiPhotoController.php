@@ -375,60 +375,6 @@ class ApiPhotoController extends ApiBaseController
     return $this->success(sprintf('Photo %s was successfully replaced.', $id), $photoResp['result']);
   }
 
-  public function share($ids)
-  {
-    $idsArr = (array)explode(',', $ids);
-    $photoResp = $this->api->invoke(sprintf('/photo/%s/view.json', $idsArr[0]), EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200')));
-    if($photoResp['code'] !== 200)
-      return $this->error('Could not get first photo to share.', false);
-
-    $markup = $this->theme->get('partials/share.php', array('photo' => $photoResp['result'], 'ids' => $idsArr, 'crumb' => $this->session->get('crumb')));
-    return $this->success('Photo share form', array('markup' => $markup));
-  }
-
-  public function sharePost($ids)
-  {
-    getAuthentication()->requireAuthentication();
-    getAuthentication()->requireCrumb();
-    $email = $this->session->get('email');
-    if(empty($email) || empty($_POST['message']) || empty($_POST['recipients']))
-      return $this->error('Not all parameters were passed in', false);
-
-    $photoResp = $this->api->invoke(sprintf('/photo/%s/view.json', $ids), EpiRoute::httpGet);
-    $photo = $photoResp['result'];
-    if($photoResp['code'] !== 200)
-      return $this->error('Could retrieve photo data', false);
-
-    $emailer = new Emailer($email);
-    $emailer->setRecipients(array_merge(array($email), (array)explode(',', $_POST['recipients'])));
-
-    $body = nl2br($_POST['message']);
-    if(!isset($_POST['attachment']))
-    {
-      $body .= sprintf('<p><img src="%s"></p>', $photo['pathBase']);
-    }
-    else
-    {
-      $localFile = $this->photo->storeLocally($photo['pathBase']);
-      if($localFile === false)
-        return $this->error('Could not complete request', false);
-
-      $emailer->addAttachment($localFile, $photo['filenameOriginal']);
-    }
-
-    $subject = sprintf('%s has been shared with you', $photo['filenameOriginal']);
-    if(!empty($photo['title']))
-      $subject = $photo['title'];
-    $emailer->setSubject($subject);
-    $emailer->setBody(strip_tags($body), $body);
-    $emailer->send();
-
-    if(isset($localFile) && $localFile !== false)
-      unlink($localFile);
-
-    return $this->success('yes', array('ids' => $ids, 'post' => $_POST));  
-  }
-
   /**
     * Transform a photo.
     * Modifies a photo by rotating/BW/etc.
@@ -770,6 +716,12 @@ class ApiPhotoController extends ApiBaseController
     else
       $photo = $db->getPhoto($id);
 
+    $optionsArr = array();
+    if(!empty($options))
+    {
+      $optionsArr = $this->parseFilters($options);
+    }
+
     // check permissions
     if(!isset($photo['id']))
     {
@@ -777,7 +729,17 @@ class ApiPhotoController extends ApiBaseController
     }
     elseif(!$this->user->isAdmin())
     {
-      if($photo['permission'] == 0)
+      // we check to see if there's a token and verify that it's valid
+      $validToken = false;
+      if(!empty($optionsArr['token']))
+      {
+        if($optionsArr['token'] !== false && $optionsArr['token']['type'] === 'photo' && $optionsArr['token']['data'] == $id)
+          $validToken = true;
+      }
+
+      // if no valid token is found and the photo's permission is 0 then we
+      //  enforce privacy
+      if($validToken === false && $photo['permission'] == 0)
       {
         if(!$this->user->isLoggedIn() || (isset($photo['groups']) && empty($photo['groups'])))
           return $this->notFound("Photo {$id} not found", false);
@@ -820,11 +782,11 @@ class ApiPhotoController extends ApiBaseController
 
       foreach($sizes as $size)
       {
-        $options = $this->photo->generateFragmentReverse($size);
+        $opts = $this->photo->generateFragmentReverse($size);
         if($generate && !isset($photo["path{$size}"]))
         {
-          $hash = $this->photo->generateHash($id, $options['width'], $options['height'], $options['options']);
-          $this->photo->generate($id, $hash, $options['width'], $options['width'], $options['options']);
+          $hash = $this->photo->generateHash($id, $opts['width'], $opts['height'], $opts['options']);
+          $this->photo->generate($id, $hash, $opts['width'], $opts['width'], $opts['options']);
           $requery = true;
         }
       }
@@ -987,9 +949,18 @@ class ApiPhotoController extends ApiBaseController
       {
         switch($token['type'])
         {
+          // if it's a token album then we make sure it's an album page by 
+          //  checking $filters['album']. this works because even on a photo
+          //  detail page we might be in an album context
+          // we don't do this for a single photo because it could lead to 
+          //  inadvertently leaking an entire album by passing a album token
+          //  but looking at a random photo (that might not belong to the album.
+          //  in this case the only protection is next/previous but the details 
+          //  are leaked
           case 'album':
             if(isset($filters['album']) && $filters['album'] == $token['data'])
               $permission = 1; // set permission to be pubilc for this request
+            break;
         }
       }
     }
@@ -997,7 +968,7 @@ class ApiPhotoController extends ApiBaseController
     if($permission == 0)
       $filters['permission'] = $permission;
 
-    return array('filters' => $filters, 'pageSize' => $pageSize, 'protocol' => $protocol, 'page' => $page);
+    return array('filters' => $filters, 'token' => $token, 'pageSize' => $pageSize, 'protocol' => $protocol, 'page' => $page);
   }
 
   /**

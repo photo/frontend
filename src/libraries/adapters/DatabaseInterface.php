@@ -44,6 +44,7 @@ interface DatabaseInterface
   public function getUser($owner = null);
   public function getUserByEmailAndPassword($email = null, $password = null);
   public function getShareToken($id);
+  public function getShareTokensByTarget($type, $data);
   public function getShareTokens();
   public function getStorageUsed();
   public function getTag($tag);

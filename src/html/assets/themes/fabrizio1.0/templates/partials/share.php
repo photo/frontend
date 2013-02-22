@@ -1,8 +1,17 @@
-<h4>Share this photo via email or social networks</h4>
+<?php $typeName = $type === 'photos' ? 'photo' : 'album'; ?>
+<h4>Share this <?php $this->utility->safe($typeName); ?> via email or social networks</h4>
 <div class="row">
   <div class="span3 preview">
-    <img src="<?php $this->utility->safe($photo['path200x200']); ?>" class="img-polaroid">
-    <small><?php $this->utility->safe($photo['url']); ?></small>
+    <?php if($type === 'album') { ?>
+      <div class="cover">
+        <span class="stack stack1"></span>
+        <span class="stack stack2"></span>
+        <img src="<?php $this->utility->safe($photo); ?>" class="img-polaroid">
+      </div>
+    <?php } else { ?>
+      <img src="<?php $this->utility->safe($photo); ?>" class="img-polaroid">
+    <?php } ?>
+    <small><?php $this->utility->safe($url); ?></small>
   </div>
   <?php if($this->user->isAdmin()) { ?>
     <div class="span3">
@@ -22,11 +31,23 @@
     </div>
   <?php } ?>
   <div class="span3 offset1 social">
-    <strong>Or share on the following sites</strong>
+    <strong>Share using Facebook, Twitter or IM</strong>
+    <p>
+      <?php if($type === 'photo') { ?>
+        <small><i class="icon-lock"></i> Your photo is private. Anyone with this link can view it.</small>
+      <?php } else { ?>
+        <small><i class="icon-lock"></i> Anyone with this link can view all photos in this album.</small>
+      <?php } ?>
+    </p>
     <ul class="unstyled">
-      <li><a href="https://twitter.com/share?text=<?php echo urlencode('View my photo shared via @Trovebox.'); ?>&url=<?php echo urlencode($photo['url']); ?>" class="sharePopup btn btn-theme-secondary" target="blank"><i class="icon-twitter"></i> Post to Twitter</a></li>
-      <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($photo['url']); ?>" class="sharePopup btn btn-theme-secondary"><i class="icon-facebook"></i> Post to Facebook</a></li>
+      <li><a href="https://twitter.com/share?text=<?php echo urlencode('View my photo shared via @Trovebox.'); ?>&url=<?php echo urlencode($url); ?>" class="sharePopup btn btn-theme-secondary" target="blank"><i class="icon-twitter"></i> Post to Twitter</a></li>
+      <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" class="sharePopup btn btn-theme-secondary"><i class="icon-facebook"></i> Post to Facebook</a></li>
     </ul>
+    <small>
+      <i class="icon-lock"></i>
+      This link contains a sharing token.
+      It's an easy way to share photos without requiring them to be public.
+    </small>
   </div>
 </div>
 <a href="#" class="batchHide close" title="Close this dialog"><i class="icon-remove batchHide"></i></a>

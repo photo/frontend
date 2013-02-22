@@ -228,7 +228,7 @@
       $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
       $.ajax(
         {
-          url: '/photos/'+ids+'/share.json',
+          url: '/photo/'+ids+'/share.json',
           dataType:'json',
           data:params,
           type:'POST',

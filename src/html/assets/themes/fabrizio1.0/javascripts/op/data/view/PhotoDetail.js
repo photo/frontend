@@ -95,7 +95,7 @@
     share: function(ev) {
       ev.preventDefault();
       var $el = $(ev.currentTarget), id = $el.attr('data-id');
-      OP.Util.makeRequest('/photos/'+id+'/share.json', {}, TBX.callbacks.share, 'json', 'get');
+      OP.Util.makeRequest('/share/photo/'+id+'/view.json', {crumb: TBX.crumb()}, TBX.callbacks.share, 'json', 'get');
     }
   });
   

@@ -170,6 +170,8 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function deleteShareToken($id)
   {
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `id`=:id", array(':owner' => $this->owner, ':id' => $id));
+    return $res !== 1;
   }
 
   /**
@@ -681,6 +683,27 @@ class DatabaseMySql implements DatabaseInterface
     }
 
     return $token;
+  }
+
+  /**
+    * Get all share token by type and target
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getShareTokensByTarget($type, $data)
+  {
+    $tokens = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `type`=:type AND `data`=:data", array(':owner' => $this->owner, ':type' => $type, ':data' => $data));
+
+    if($tokens === false)
+      return false;
+
+    foreach($tokens as $key => $value)
+    {
+      if($value['dateExpires'] > 0 && $value['dateExpires'] <= time())
+        unset($tokens[$key]);
+    }
+
+    return $tokens;
   }
 
   /**
@@ -1366,6 +1389,15 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putShareToken($id, $params)
   {
+    $dateExpires = 0;
+    if(isset($params['dateExpires']))
+      $dateExpires = $params['dateExpires'];
+
+    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}shareToken` (`id`, `owner`, `actor`, `type`, `data`, `dateExpires`) 
+      VALUES(:id, :owner, :actor, :type, :data, :dateExpires)",
+      array(':id' => $id, ':owner' => $this->owner, ':actor' => $this->getActor(), ':type' => $params['type'], ':data' => $params['data'], ':dateExpires' => $dateExpires));
+    return  ($result !== false);
+
   }
 
   /**
