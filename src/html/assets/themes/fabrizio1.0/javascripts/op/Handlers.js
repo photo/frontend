@@ -213,7 +213,9 @@
       ev.preventDefault();
       var $form = $(ev.target),
           params = $form.serialize()
-          ids = $('input[name="ids"]', $form).val(),
+          data = $('input[name="data"]', $form).val(),
+          type = $('input[name="type"]', $form).val(),
+          url = $('input[name="url"]', $form).val(),
           recipients = $('input[name="recipients"]', $form).val(),
           message = $('textarea[name="message"]', $form).val();
 
@@ -226,9 +228,10 @@
       }
 
       $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
+      console.log(data);
       $.ajax(
         {
-          url: '/photo/'+ids+'/share.json',
+          url: '/share/'+type+'/'+data+'/send.json',
           dataType:'json',
           data:params,
           type:'POST',
