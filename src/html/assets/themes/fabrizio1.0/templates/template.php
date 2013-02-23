@@ -13,7 +13,7 @@
       <link href="<?php $this->utility->safe($this->config->site->cdnPrefix); ?>/assets/versioned/<?php $this->utility->safe($this->config->site->mediaVersion); ?>/themes/fabrizio1.0/stylesheets/lessc?f=less/index.less" rel="stylesheet">
     <?php } ?>
     <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
-      <link href="/assets/stylesheets/upload.css" rel="stylesheet">
+    <link href="<?php $this->utility->safe($this->config->site->cdnPrefix); ?>/assets/versioned/<?php $this->utility->safe($this->config->site->mediaVersion); ?>/stylesheets/upload.css" rel="stylesheet">
     <?php } ?>
 
     <link rel="shortcut icon" href="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php $this->theme->asset('image', 'favicon.ico'); ?>">

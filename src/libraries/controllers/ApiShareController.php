@@ -58,7 +58,7 @@ class ApiShareController extends ApiController
     return $this->success('Photo share form', array('markup' => $markup));
   }
 
-  public function send($ids, $type)
+  public function send($type, $data)
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
@@ -66,13 +66,45 @@ class ApiShareController extends ApiController
     if(empty($email) || empty($_POST['message']) || empty($_POST['recipients']))
       return $this->error('Not all parameters were passed in', false);
 
-    $photoResp = $this->api->invoke(sprintf('/photo/%s/view.json', $ids), EpiRoute::httpGet);
+    $emailer = new Emailer($email);
+    $emailer->setRecipients(array_merge(array($email), (array)explode(',', $_POST['recipients'])));
+
+    if($type === 'photo')
+      $status = $this->sendPhotoEmail($data, &$emailer);
+    else
+      $status = $this->sendAlbumEmail($data, &$emailer);
+
+    if(!$status)
+      return $this->error('Could not complete request', false);
+
+    return $this->success('yes', array('data' => $data, 'post' => $_POST)); 
+  }
+
+  private function sendAlbumEmail($data, &$emailer)
+  {
+    $albumResp = $this->api->invoke(sprintf('/album/%s/view.json', $data), EpiRoute::httpGet);
+    $album = $albumResp['result'];
+    if($albumResp['code'] !== 200)
+      return false;
+
+    $body = nl2br($_POST['message']);
+    $body .= sprintf('<p><img src="%s" style="padding:3px; border:solid 1px #ccc;"></p>', $album['cover']['path200x200xCR']);
+    $body .= sprintf("\n<br><br>Click the link below to view the album.<br>\n%s", $_POST['url']);
+
+    $subject = sprintf('The album "%s" has been shared with you', $album['name']);
+    $emailer->setSubject($subject);
+    $emailer->setBody(strip_tags($body), $body);
+    $emailer->send();
+
+    return true;
+  }
+
+  private function sendPhotoEmail($data, &$emailer)
+  {
+    $photoResp = $this->api->invoke(sprintf('/photo/%s/view.json', $data), EpiRoute::httpGet);
     $photo = $photoResp['result'];
     if($photoResp['code'] !== 200)
       return $this->error('Could retrieve photo data', false);
-
-    $emailer = new Emailer($email);
-    $emailer->setRecipients(array_merge(array($email), (array)explode(',', $_POST['recipients'])));
 
     $body = nl2br($_POST['message']);
     if(!isset($_POST['attachment']))
@@ -81,14 +113,15 @@ class ApiShareController extends ApiController
     }
     else
     {
-      $localFile = $this->photo->storeLocally($photo['pathBase']);
+      $photoObj = new Photo;
+      $localFile = $photoObj->storeLocally($photo['pathBase']);
       if($localFile === false)
-        return $this->error('Could not complete request', false);
+        return false;
 
       $emailer->addAttachment($localFile, $photo['filenameOriginal']);
     }
 
-    $subject = sprintf('%s has been shared with you', $photo['filenameOriginal']);
+    $subject = sprintf('The photo "%s" has been shared with you', $photo['filenameOriginal']);
     if(!empty($photo['title']))
       $subject = $photo['title'];
     $emailer->setSubject($subject);
@@ -98,6 +131,6 @@ class ApiShareController extends ApiController
     if(isset($localFile) && $localFile !== false)
       unlink($localFile);
 
-    return $this->success('yes', array('ids' => $ids, 'post' => $_POST));  
+    return true;
   }
 }
