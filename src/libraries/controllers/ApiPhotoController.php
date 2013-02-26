@@ -502,27 +502,32 @@ class ApiPhotoController extends ApiBaseController
 
       $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => array('returnSizes' => implode(',', $sizes))));
       $photo = $apiResp['result'];
+      $permission = isset($attributes['permission']) ? $attributes['permission'] : 0;
 
-      $webhookApi = $this->api->invoke("/{$this->apiVersion}/webhooks/photo.upload/list.json", EpiRoute::httpGet);
-      if(!empty($webhookApi['result']) && is_array($webhookApi['result']))
+      if($photo)
       {
-        $photoAsArgs = $photo;
-        $photoAsArgs['tags'] = implode(',', $photoAsArgs['tags']);
-        foreach($webhookApi['result'] as $key => $hook)
+        $webhookApi = $this->api->invoke("/{$this->apiVersion}/webhooks/photo.upload/list.json", EpiRoute::httpGet);
+        if(!empty($webhookApi['result']) && is_array($webhookApi['result']))
         {
-          $httpObj->fireAndForget($hook['callback'], 'POST', $photoAsArgs);
-          $this->logger->info(sprintf('Webhook callback executing for photo.upload: %s', $hook['callback']));
+          $photoAsArgs = $photo;
+          $photoAsArgs['tags'] = implode(',', $photoAsArgs['tags']);
+          foreach($webhookApi['result'] as $key => $hook)
+          {
+            $httpObj->fireAndForget($hook['callback'], 'POST', $photoAsArgs);
+            $this->logger->info(sprintf('Webhook callback executing for photo.upload: %s', $hook['callback']));
+          }
         }
+
+        $this->api->invoke(
+          "/{$this->apiVersion}/activity/create.json", 
+          EpiRoute::httpPost, 
+          array('_POST' => array('elementId' => $photoId, 'type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
+        );
       }
+
       $this->plugin->setData('photo', $photo);
       $this->plugin->invoke('onPhotoUploaded');
 
-      $permission = isset($attributes['permission']) ? $attributes['permission'] : 0;
-      $this->api->invoke(
-        "/{$this->apiVersion}/activity/create.json", 
-        EpiRoute::httpPost, 
-        array('_POST' => array('elementId' => $photo['id'], 'type' => 'photo-upload', 'data' => $photo, 'permission' => $permission))
-      );
       $this->user->setAttribute('stickyPermission', $permission);
       $this->user->setAttribute('stickyLicense', $photo['license']);
       return $this->created("Photo {$photoId} uploaded successfully", $photo);
