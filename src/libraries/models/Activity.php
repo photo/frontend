@@ -21,6 +21,12 @@ class Activity extends BaseModel
 
   public function create($elementId, $attributes)
   {
+    if(empty($elementId) || empty($attributes))
+    {
+      $this->logger->warn('When creating an activity one of the following attributes were not passed, elementId or attributes');
+      return false;
+    }
+
     $attributes = array_merge($this->getDefaultAttributes(), $attributes);
     $attributes = $this->whitelistParams($attributes);
     if(!$this->validateParams($attributes))
