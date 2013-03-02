@@ -247,6 +247,15 @@ SQL;
 SQL;
   mysql_base($sql);
 
+  $sql = <<<SQL
+  CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}relationship` (
+    `actor` varchar(127) NOT NULL,
+    `follows` varchar(127) NOT NULL,
+    `dateCreated` datetime NOT NULL,
+    PRIMARY KEY (`actor`,`follows`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+  mysql_base($sql);
 
   $sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}resourceMap` (

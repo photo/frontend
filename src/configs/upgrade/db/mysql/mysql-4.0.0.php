@@ -23,6 +23,16 @@ SQL;
 }
 
 $sql = <<<SQL
+  CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}relationship` (
+    `actor` varchar(127) NOT NULL,
+    `follows` varchar(127) NOT NULL,
+    `dateCreated` datetime NOT NULL,
+    PRIMARY KEY (`actor`,`follows`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+mysql_4_0_0($sql);
+
+$sql = <<<SQL
   ALTER TABLE `{$this->mySqlTablePrefix}activity` ADD `permission` BOOLEAN NOT NULL DEFAULT '0' AFTER `data` ;
 ;
 $status = $status && mysql_4_0_0($sql);

@@ -23,7 +23,11 @@
   </div>
 </script>
 <script type="tmpl/underscore" id="profile-photo-meta">
-  <img class="profile-pic profile-photo" src="<%= photoUrl %>" />
+  <% if(photoUrl.search('gravatar.com') == -1) { %>
+    <img class="profile-pic profile-photo" src="<%= photoUrl %>" />
+  <% } else { %>
+    <i class="icon-user profile-pic profile-photo"></i>
+  <% } %>
 </script>
 
 <script type="tmpl/underscore" id="user-badge-meta">
@@ -33,7 +37,13 @@
     <h4 class="profile-name-meta username"><span class="name"><%= name %></span></h4>
   <?php } ?>
   <div class="tray-wrap">
-    <span class="avatar"><img class="avatar profile-pic profile-photo" src="<%= photoUrl %>" /></span>
+    <span class="avatar">
+      <% if(photoUrl.search('gravatar.com') == -1) { %>
+        <img class="avatar profile-pic profile-photo" src="<%= photoUrl %>" />
+      <% } else { %>
+        <i class="icon-user profile-pic profile-photo"></i>
+      <% } %>
+    </span>
     <div class="tray">
       <div class="details">
         <h5 class="username"><%= name %></h5>
