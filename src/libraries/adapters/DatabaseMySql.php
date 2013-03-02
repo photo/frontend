@@ -163,6 +163,18 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete a relationship from the database
+    *
+    * @param string $target email of the relationship to delete
+    * @return boolean
+    */
+  public function deleteRelationship($target)
+  {
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}relationship` WHERE `actor`=:actor AND `follows`=:follows", array(':actor' => $this->getActor(), ':follows' => $target));
+    return $res !== 1;
+  }
+
+  /**
     * Delete a share token from the database
     *
     * @param string $id ID of the share token to delete
@@ -661,6 +673,18 @@ class DatabaseMySql implements DatabaseInterface
 
     $resourceMap = $this->normalizeResourceMap($resourceMap);
     return $resourceMap;
+  }
+
+  /**
+    * Get a single relationship
+    *
+    * @param string $target email to fetch relationship to
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getRelationship($target)
+  {
+    $relationship = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}relationship` WHERE `actor`=:actor AND `follows`=:follows", array(':actor' => $this->getActor(), ':follows' => $target));
+    return $relationship;
   }
 
   /**

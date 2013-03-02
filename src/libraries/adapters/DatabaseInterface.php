@@ -20,6 +20,7 @@ interface DatabaseInterface
   public function deleteGroup($id);
   public function deletePhoto($photo);
   public function deletePhotoVersions($photo);
+  public function deleteRelationship($target);
   public function deleteShareToken($id);
   public function deleteTag($id);
   public function deleteWebhook($id);
@@ -43,6 +44,7 @@ interface DatabaseInterface
   public function getResourceMap($id);
   public function getUser($owner = null);
   public function getUserByEmailAndPassword($email = null, $password = null);
+  public function getRelationship($target);
   public function getShareToken($id);
   public function getShareTokensByTarget($type, $data);
   public function getShareTokens();
