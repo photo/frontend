@@ -6,10 +6,18 @@
     
     margin: 10px 0;
     
-    .avatar img {
-      height: @badge_height;
-      border-radius: 10px;
-      vertical-align: middle;
+    .avatar {
+      // don't use gravatar
+      i {
+        font-size:@badge_height;
+        line-height: @badge_height;
+        vertical-align: middle;
+      }
+      img {
+        height: @badge_height;
+        border-radius: 10px;
+        vertical-align: middle;
+      }
     }
     
     .tray-wrap {
