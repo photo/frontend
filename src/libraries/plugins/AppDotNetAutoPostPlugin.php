@@ -32,7 +32,7 @@ class AppDotNetAutoPostPlugin extends PluginBase
     $data = array(
       'annotations' => array(
         array(
-          'type' => 'com.trovebox',
+          'type' => 'net.app.core.oembed',
           'value' => array(
             'type' => 'photo',
             'version' => '1.0',
@@ -42,7 +42,7 @@ class AppDotNetAutoPostPlugin extends PluginBase
             'provider_url' => 'https://trovebox.com',
             'thumbnail_url' => $photo['path100x100xCR'],
             'thumbnail_width' => 100,
-            'thumbnail_width' => 100
+            'thumbnail_height' => 100
           )
         )
       )
