@@ -134,6 +134,9 @@ function getFs(/*$type, $useCache*/)
     case 'LocalDropbox':
       $fs = new FileSystemLocalDropbox();
       break;
+    case 'LocalAppDotNet':
+      $fs = new FileSystemLocalAppDotNet();
+      break;
     case 'S3':
       $fs = new FileSystemS3();
       break;
