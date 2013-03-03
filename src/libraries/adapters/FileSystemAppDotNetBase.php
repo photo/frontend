@@ -48,7 +48,6 @@ class FileSystemAppDotNetBase
     try
     {
       $file = $this->adn->getFile($fileId);
-      error_log(var_export($file, 1));
       if(empty($file))
       {
         getLogger()->warn(sprintf('Could not retrieve file %s from ADN with file id %s', $photo['id'], $fileId));
@@ -185,7 +184,6 @@ class FileSystemAppDotNetBase
     {
       $file = $this->adn->createFile($localFile, array('metadata' => 'com.trovebox', 'name' => $destinationName));
       $this->metaDataMap[$localFile] = array('adnFileId' => $file['id']);
-      error_log(var_export($this->metaDataMap, 1));
       getLogger()->info(sprintf('Successfully stored file (%s) on ADN.', $destinationName));
       return true;
     }

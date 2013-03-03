@@ -5,7 +5,7 @@
  * This class defines the functionality defined by FileSystemInterface for a plain Filesystem.
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class FileSystemLocalS3 extends FileSystemLocal implements FileSystemInterface
+class FileSystemS3AppDotNet extends FileSystemS3 implements FileSystemInterface
 {
   private $root;
   private $urlBase;
@@ -86,10 +86,10 @@ class FileSystemLocalS3 extends FileSystemLocal implements FileSystemInterface
     * Get the hostname for the remote filesystem to be used in constructing public URLs.
     * @return string
     */
-  public function getHost()
+  /*public function getHost()
   {
     return $this->host;
-  }
+  }*/
 
   /**
     * Return any meta data which needs to be stored in the photo record
