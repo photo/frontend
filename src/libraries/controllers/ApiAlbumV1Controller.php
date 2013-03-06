@@ -22,6 +22,13 @@ class ApiAlbumV1Controller extends ApiAlbumController
     if($albums === false)
       return $this->error('Could not retrieve albums', false);
 
+    $albumCountKey = $this->user->isAdmin() ? 'countPrivate' : 'countPublic';
+    foreach($albums as $key => $val)
+    {
+      $albums[$key]['count'] = $val[$albumCountKey];
+      unset($albums[$key]['countPublic'], $albums[$key]['countPrivate']);
+    }
+
     return $this->success('List of albums', $albums);
   }
 }
