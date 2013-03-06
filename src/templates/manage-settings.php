@@ -55,7 +55,7 @@
       </p>
       <div class="controls">
         <?php for($i=0; $i<4; $i++) { ?>
-          <input type="text" <?php if(isset($admins[$i])) { ?> name="admins[<?php echo $i; ?>]" value="<?php $this->utility->safe($admins[$i]); ?>" <?php } ?> placeholder="user<?php echo ($i+1); ?>@example.com">
+          <input type="text" name="admins[<?php echo $i; ?>]" <?php if(isset($admins[$i])) { ?> value="<?php $this->utility->safe($admins[$i]); ?>" <?php } ?> placeholder="user<?php echo ($i+1); ?>@example.com">
         <?php } ?>
       </div>
       <div class="btn-toolbar"><button class="btn btn-primary">Save</button></div>
