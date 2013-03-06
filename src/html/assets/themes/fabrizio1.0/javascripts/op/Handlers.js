@@ -58,7 +58,7 @@
     };
     this.click.photoModal = function(ev) {
       ev.preventDefault();
-      var $el = $(ev.target), id = $el.attr('data-id'), $container = $el.closest('.imageContainer'), $pin = $('.pin.edit', $container), url = '/p/'+id, router = op.data.store.Router;
+      var $el = $(ev.target), id = $el.attr('data-id'), $a = $el.closest('a'), $container = $el.closest('.imageContainer'), $pin = $('.pin.edit', $container), url = $a.attr('href'), router = op.data.store.Router;
       
       if(ev.altKey && $pin.length > 0) { // alt+click pins the photo
         $pin.trigger('click');

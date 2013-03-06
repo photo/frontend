@@ -154,6 +154,7 @@
     
     largePath : 'path870x870',
     thumbPath : 'path180x180xCR',
+    _filter: location.pathname.replace('/p/', '/').replace('/photo/', '/').replace('/view', ''),
     
     viewMap : {
       '.comments'     :CommentsView,
@@ -385,7 +386,7 @@
       
       this.loadMore( x > c );
       this.updateModel(this.store.get(id));
-      router.navigate('/p/'+id, {trigger: false});
+      router.navigate('/p/'+id+this._filter, {trigger: false});
     },
     
     loadMore : function( dir ){
