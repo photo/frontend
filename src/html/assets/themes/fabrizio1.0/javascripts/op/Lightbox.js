@@ -93,6 +93,7 @@
     },
     
     _path: location.pathname,
+    _filter: location.pathname.replace('/p/', '/').replace('/photos/', '/').replace('/list', ''),
     _visible: false,
 
     _indexOf : function(model){
@@ -273,7 +274,7 @@
       if( i < 0 ) i = this.store.models.length-1;
       id = this.store.models[i].get('id');
       if( !$('body').hasClass('photo-details') ){
-        router.navigate('/p/'+id, {trigger: false});
+        router.navigate('/p/'+id+this._filter, {trigger: false});
       }
       this.go(i);
     },
@@ -291,7 +292,7 @@
       if( i < this.store.models.length ) {
         if( !$('body').hasClass('photo-details') ){
           id = this.store.models[i].get('id');
-          router.navigate('/p/'+id, {trigger: false});
+          router.navigate('/p/'+id+this._filter, {trigger: false});
         }
         this.go(i);
       }

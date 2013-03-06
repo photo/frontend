@@ -738,8 +738,15 @@ class ApiPhotoController extends ApiBaseController
       $validToken = false;
       if(!empty($optionsArr['token']))
       {
-        if($optionsArr['token'] !== false && $optionsArr['token']['type'] === 'photo' && $optionsArr['token']['data'] == $id)
-          $validToken = true;
+        if($optionsArr['token'] !== false)
+        {
+          // if the token is valid then we check if the token applies to this photo
+          //  or if the token applies to an album this photo is contained in
+          if($optionsArr['token']['type'] === 'photo' && $optionsArr['token']['data'] == $id)
+            $validToken = true;
+          elseif($optionsArr['token']['type'] === 'album' && in_array($optionsArr['token']['data'], $this->photo->getAlbumsForPhoto($id)))
+            $validToken = true;
+        }
       }
 
       // if no valid token is found and the photo's permission is 0 then we

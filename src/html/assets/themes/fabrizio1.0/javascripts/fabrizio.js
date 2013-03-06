@@ -287,8 +287,6 @@
               // instead of rerendering, lets just go to the specific photo
               // since it assumes it is already part of the store.
               _this.photoDetailView.go( photo.id );
-              // if there is a lightbox view, close it
-              //op.Lightbox.getInstance().hide();
             }
           }
         },
@@ -315,8 +313,9 @@
             options = {
               routes: {
                 "p/:id": "photoModal",
-                "photos/:options/list": "photosList",
-                "photos/list": "photosList"
+                "p/:id/*path": "photoModal",
+                "photos/list": "photosList",
+                "photos/*path/list": "photosList"
               },
             };
             op.data.store.Router = new op.data.route.Routes(options);
