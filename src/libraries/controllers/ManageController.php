@@ -86,6 +86,9 @@ class ManageController extends BaseController
     $params['decreaseLocationPrecision'] = $this->config->site->decreaseLocationPrecision == '1';
     $params['credentials'] = $credentials;
     $params['plugins'] = $plugins;
+    $params['admins'] = array();
+    if(isset($this->config->user->admins))
+      $params['admins'] = (array)explode(',', $this->config->user->admins);
     $params['crumb'] = $this->session->get('crumb');
     $bodyTemplate = sprintf('%s/manage-settings.php', $this->config->paths->templates);
     $body = $this->template->get($bodyTemplate, $params);

@@ -363,7 +363,7 @@ class DatabaseMySql implements DatabaseInterface
     $limit = (int)$limit;
     $offset = (int)$offset;
 
-    if($this->owner === $email)
+    if($this->owner === $email || $this->getActor() === $email)
     {
       $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
       $albumsCount = $this->db->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner ORDER BY `name`", array(':owner' => $this->owner));
@@ -999,8 +999,8 @@ class DatabaseMySql implements DatabaseInterface
     $res = true;
     foreach($elementIds as $elementId)
     {
-      $tmpRes = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`,`type`,`element`,`album`) VALUES(:owner,:type,:elementId,:albumId)",
-        array(':owner' => $this->owner, ':type' => $type, ':elementId' => $elementId, ':albumId' => $albumId));
+      $tmpRes = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`,`actor`,`type`,`element`,`album`) VALUES(:owner,:actor,:type,:elementId,:albumId)",
+        array(':owner' => $this->owner, ':actor' => $this->getActor(), ':type' => $type, ':elementId' => $elementId, ':albumId' => $albumId));
       $res = $res && $tmpRes !== 0;
     }
     return $res !== false;

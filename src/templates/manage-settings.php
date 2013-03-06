@@ -45,6 +45,25 @@
   </div>
 </div>
 
+<a name="admins"></a>
+<div class="row">
+  <div class="span6">
+    <form method="post" action="/manage/settings">
+      <h3>Collaborators</h3>
+      <p>
+        Enter email addresses for others you'd like to collaborate with you. These users will have full access to your account. They can log in using Mozilla Persona.
+      </p>
+      <div class="controls">
+        <?php for($i=0; $i<4; $i++) { ?>
+          <input type="text" <?php if(isset($admins[$i])) { ?> name="admins[<?php echo $i; ?>]" value="<?php $this->utility->safe($admins[$i]); ?>" <?php } ?> placeholder="user<?php echo ($i+1); ?>@example.com">
+        <?php } ?>
+      </div>
+      <div class="btn-toolbar"><button class="btn btn-primary">Save</button></div>
+      <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
+    </form>
+  </div>
+</div>
+
 <a name="apps"></a>
 <div class="row">
   <div class="span12">

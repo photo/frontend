@@ -21,6 +21,9 @@ class ApiManageController extends ApiBaseController
     {
       switch($key)
       {
+        case 'admins':
+          $configArray['user']['admins'] = implode(',', (array)$value);
+          break;
         case 'allowDuplicate':
           $configArray['site']['allowDuplicate'] = (string)intval($value);
           break;
