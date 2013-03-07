@@ -111,10 +111,10 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
     $db = $this->getMock('MySqlMock', array('one'));
     $db->expects($this->any())
       ->method('one')
-      ->will($this->returnValue(array('name' => 'unittest')));
+      ->will($this->returnValue(array('name' => 'unittest', 'countPublic' => '1')));
     $this->db->inject('db', $db);
 
-    $res = $this->db->getAlbum('foo', 'email');
+    $res = $this->db->getAlbum('foo', 'test@example.com');
     $this->assertEquals($res['name'], 'unittest', 'The MySql adapter did not return the album name for getAlbum');
   }
 
@@ -123,11 +123,23 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
     $db = $this->getMock('MySqlMock', array('one'));
     $db->expects($this->any())
       ->method('one')
-      ->will($this->returnValue(array('name' => 'unittest', 'extra' => json_encode(array('cover' => 'foo')))));
+      ->will($this->returnValue(array('name' => 'unittest', 'countPublic' => '1', 'extra' => json_encode(array('cover' => 'foo')))));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getAlbum('foo', 'test@example.com');
+    $this->assertEquals($res['cover'], 'foo', 'The MySql adapter did not return the album name for getAlbum with extra');
+  }
+
+  public function testGetAlbumPrivateOnlyFailure()
+  {
+    $db = $this->getMock('MySqlMock', array('one'));
+    $db->expects($this->any())
+      ->method('one')
+      ->will($this->returnValue(array('name' => 'unittest', 'countPublic' => '0')));
     $this->db->inject('db', $db);
 
     $res = $this->db->getAlbum('foo', 'email');
-    $this->assertEquals($res['cover'], 'foo', 'The MySql adapter did not return the album name for getAlbum with extra');
+    $this->assertFalse($res, 'The MySql adapter should return false when countPublic is 0 and non admin');
   }
 
   public function testGetAlbumFailure()

@@ -150,12 +150,13 @@ class ApiAlbumController extends ApiBaseController
       $includeElements = true;
     $album = $this->album->getAlbum($id, $includeElements);
 
+    if($album === false)
+      return $this->error('Could not retrieve album', false);
+
     $albumCountKey = $this->user->isAdmin() ? 'countPrivate' : 'countPublic';
     $album['count'] = $album[$albumCountKey];
     unset($album['countPublic'], $album['countPrivate']);
 
-    if($album === false)
-      return $this->error('Could not retrieve album', false);
     return $this->success('Album', $album);
   }
 }

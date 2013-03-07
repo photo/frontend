@@ -320,6 +320,8 @@ class DatabaseMySql implements DatabaseInterface
 
     if($album === false)
       return false;
+    else if((empty($email) || $this->owner !== $email || $this->getActor() !== $email) && $album['countPublic'] == 0)
+      return false;
 
     $album = $this->normalizeAlbum($album);
     return $album;
@@ -363,7 +365,7 @@ class DatabaseMySql implements DatabaseInterface
     $limit = (int)$limit;
     $offset = (int)$offset;
 
-    if($this->owner === $email || $this->getActor() === $email)
+    if(!empty($email) && ($this->owner === $email || $this->getActor() === $email))
     {
       $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
       $albumsCount = $this->db->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner ORDER BY `name`", array(':owner' => $this->owner));
