@@ -576,6 +576,10 @@ class Photo extends BaseModel
     foreach($attributes as $key => $val)
       $attributes[$key] = trim($val);
 
+    // since tags can be created adhoc we need to ensure they're here
+    if(isset($attributes['tags']) && !empty($attributes['tags']))
+      $tagObj->createBatch($attributes['tags']);
+
     $status = $this->db->postPhoto($id, $attributes);
     if(!$status)
       return false;
@@ -652,6 +656,10 @@ class Photo extends BaseModel
       $exiftran = $this->config->modules->exiftran;
       if(is_executable($exiftran))
         exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
+
+      $tagObj = new Tag;
+      if(isset($attributes['tags']) && !empty($attributes['tags']))
+        $tagObj->createBatch($attributes['tags']);
 
       $photo = $this->db->getPhoto($id);
 
@@ -823,6 +831,10 @@ class Photo extends BaseModel
         $attributes['longitude'] = floatval($exif['longitude']);
       if(isset($attributes['tags']) && !empty($attributes['tags']))
         $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
+
+    // since tags can be created adhoc we need to ensure they're here
+      if(isset($attributes['tags']) && !empty($attributes['tags']))
+        $tagObj->createBatch($attributes['tags']);
 
       $attributes['owner'] = $this->owner;
       $attributes['actor'] = $this->getActor();
