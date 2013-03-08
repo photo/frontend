@@ -342,14 +342,6 @@ class ApiPhotoController extends ApiBaseController
         return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates pass in allowDuplicate=1', false);
     }
 
-    // auto rotation is enabled by default but requires exiftran
-    if(!isset($attributes['allowAutoRotate']) || $attributes['allowAutoRotate'] != '0')
-    {
-      $exiftran = $this->config->modules->exiftran;
-      if(is_executable($exiftran))
-        exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
-    }
-
     // TODO put this in a whitelist function (see upload())
     if(isset($attributes['__route__']))
       unset($attributes['__route__']);
@@ -456,14 +448,6 @@ class ApiPhotoController extends ApiBaseController
         unlink($localFile);
         return $this->conflict('This photo already exists based on a sha1 hash. To allow duplicates pass in allowDuplicate=1', $hashResp['result'][0]);
       }
-    }
-
-    // auto rotation is enabled by default but requires exiftran
-    if(!isset($attributes['allowAutoRotate']) || $attributes['allowAutoRotate'] != '0')
-    {
-      $exiftran = $this->config->modules->exiftran;
-      if(is_executable($exiftran))
-        exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
     }
 
     $photoId = $this->photo->upload($localFile, $name, $attributes);

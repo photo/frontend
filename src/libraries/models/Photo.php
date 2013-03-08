@@ -460,7 +460,7 @@ class Photo extends BaseModel
     * @param $photo Path to the photo.
     * @return array
     */
-  public function readExif($photo)
+  protected function readExif($photo, $allowAutoRotate)
   {
     $exif = @exif_read_data($photo);
     if(!$exif)
@@ -483,10 +483,32 @@ class Photo extends BaseModel
     }
     $dateTaken = $parsedDate;    
 
-    $exif_array = array('dateTaken' => $dateTaken, 'width' => $size[0],
-      'height' => $size[1], 'cameraModel' => @$exif['Model'],
+    $width = $size[0];
+    $height = $size[1];
+
+    // Since we stopped auto rotating originals we have to use the Orientation from
+    //  exif and if this photo was autorotated
+    // Gh-1031 Gh-1149
+    if($this->autoRotateEnabled($allowAutoRotate))
+    {
+      // http://recursive-design.com/blog/2012/07/28/exif-orientation-handling-is-a-ghetto/
+      switch($exif['Orientation'])
+      {
+        case '6':
+        case '8':
+        case '5':
+        case '7':
+          $width = $size[1];
+          $height = $size[0];
+          break;
+      }
+    }
+
+    $exif_array = array('dateTaken' => $dateTaken, 'width' => $width,
+      'height' => $height, 'cameraModel' => @$exif['Model'],
       'cameraMake' => @$exif['Make'],
       'ISO' => @$exif['ISOSpeedRatings'],
+      'Orientation' => @$exif['Orientation'],
       'exposureTime' => @$exif['ExposureTime']);
 
     if(isset($exif['GPSLongitude'])) {
@@ -596,7 +618,8 @@ class Photo extends BaseModel
       return false;
     }
 
-    $exif = $this->readExif($localFile);
+    $allowAutoRotate = isset($attributes['allowAutoRotate']) ? $attributes['allowAutoRotate'] : '1';
+    $exif = $this->readExif($localFile, $allowAutoRotate);
     $iptc = $this->readIptc($localFile);
 
     if(isset($attributes['dateTaken']) && !empty($attributes['dateTaken']))
@@ -606,7 +629,7 @@ class Photo extends BaseModel
     else
       $dateTaken = time();
 
-    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile, $dateTaken);
+    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile, $dateTaken, $allowAutoRotate);
     $paths = $resp['paths'];
 
     $attributes = array_merge($this->whitelistParams($attributes), $resp['paths']);
@@ -652,10 +675,6 @@ class Photo extends BaseModel
       $attributes['size'] = intval(filesize($localFile)/1024);
       $attributes['host'] = $this->fs->getHost();
       $attributes['filenameOriginal'] = $name;
-
-      $exiftran = $this->config->modules->exiftran;
-      if(is_executable($exiftran))
-        exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
 
       $tagObj = new Tag;
       if(isset($attributes['tags']) && !empty($attributes['tags']))
@@ -763,7 +782,8 @@ class Photo extends BaseModel
     $tagObj = new Tag;
     $filenameOriginal = $name;
 
-    $exif = $this->readExif($localFile);
+    $allowAutoRotate = isset($attributes['allowAutoRotate']) ? $attributes['allowAutoRotate'] : '1';
+    $exif = $this->readExif($localFile, $allowAutoRotate);
     $iptc = $this->readIptc($localFile);
 
     if(isset($attributes['dateTaken']) && !empty($attributes['dateTaken']))
@@ -773,7 +793,7 @@ class Photo extends BaseModel
     else
       $dateTaken = time();
 
-    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile, $dateTaken);
+    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile, $dateTaken, $allowAutoRotate);
     $paths = $resp['paths'];
 
     $attributes = $this->whitelistParams($attributes);
@@ -979,7 +999,22 @@ class Photo extends BaseModel
     return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
   }
 
-  private function createAndStoreBaseAndOriginal($name, $localFile, $dateTaken)
+  private function autoRotate($file, $allowAutoRotate = false)
+  {
+    if($this->autoRotateEnabled($allowAutoRotate))
+    {
+      exec(sprintf('%s -ai %s', $this->config->modules->exiftran, escapeshellarg($file)));
+    }
+  }
+
+  protected function autoRotateEnabled($allowAutoRotate)
+  {
+    if($allowAutoRotate != '0' && is_executable($this->config->modules->exiftran))
+      return true;
+    return false;
+  }
+
+  private function createAndStoreBaseAndOriginal($name, $localFile, $dateTaken, $allowAutoRotate)
   {
     $paths = $this->generatePaths($name, $dateTaken);
 
@@ -987,6 +1022,8 @@ class Photo extends BaseModel
     $localFileCopy = "{$localFile}-copy";
     $this->logger->info("Making a local copy of the uploaded image. {$localFile} to {$localFileCopy}");
     copy($localFile, $localFileCopy);
+
+    $this->autoRotate($localFileCopy, $allowAutoRotate);
     
     $baseImage = $this->image->load($localFileCopy);
     if(!$baseImage)
