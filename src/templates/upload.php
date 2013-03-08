@@ -30,12 +30,11 @@
         <h3>Use these settings.</h3>
         <br>
         <label for="tags">Tags</label>
-        <!--<select class="typeahead-tags tags tags-autocomplete"  data-placeholder="Select tags for these photos" multiple  name="tags"></select>-->
         <input type="text" name="tags" class="tags" placeholder="Optional comma separated list">
 
         <div class="control-group">
           <label class="control-label">Albums</label>
-          <select data-placeholder="Select albums for these photos" multiple  name="albums" class="typeahead">
+          <select data-placeholder="Select albums for these photos" name="albums" class="typeahead">
             <?php if(!empty($albums)) { ?>
               <?php foreach($albums as $album) { ?>
                 <option value="<?php $this->utility->safe($album['id']); ?>"><?php $this->utility->safe($album['name']); ?></option>
