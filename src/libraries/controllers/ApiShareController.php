@@ -70,9 +70,9 @@ class ApiShareController extends ApiController
     $emailer->setRecipients(array_merge(array($email), (array)explode(',', $_POST['recipients'])));
 
     if($type === 'photo')
-      $status = $this->sendPhotoEmail($data, &$emailer);
+      $status = $this->sendPhotoEmail($data, $emailer);
     else
-      $status = $this->sendAlbumEmail($data, &$emailer);
+      $status = $this->sendAlbumEmail($data, $emailer);
 
     if(!$status)
       return $this->error('Could not complete request', false);
@@ -80,7 +80,7 @@ class ApiShareController extends ApiController
     return $this->success('yes', array('data' => $data, 'post' => $_POST)); 
   }
 
-  private function sendAlbumEmail($data, &$emailer)
+  private function sendAlbumEmail($data, $emailer)
   {
     $albumResp = $this->api->invoke(sprintf('/album/%s/view.json', $data), EpiRoute::httpGet);
     $album = $albumResp['result'];
@@ -99,7 +99,7 @@ class ApiShareController extends ApiController
     return true;
   }
 
-  private function sendPhotoEmail($data, &$emailer)
+  private function sendPhotoEmail($data, $emailer)
   {
     $photoResp = $this->api->invoke(sprintf('/photo/%s/view.json', $data), EpiRoute::httpGet);
     $photo = $photoResp['result'];
