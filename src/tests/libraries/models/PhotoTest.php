@@ -1,14 +1,29 @@
 <?php
+class PhotoWrapper extends Photo
+{
+  public function readExif($file, $allowAutoRotate)
+  {
+    return parent::readExif($file, $allowAutoRotate);
+  }
+
+  public function autoRotateEnabled($allowAutoRotate)
+  {
+    return parent::autoRotateEnabled($allowAutoRotate);
+  }
+}
+
 class PhotoTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()
   {
     $_SERVER['HTTP_HOST'] = 'foobar';
     $params = array('user' => new FauxObject, 'utility' => new stdClass, 'url' => new stdClass, 'image' => new FauxObject);
-    $this->photo = new Photo($params);;
+    $this->photo = new PhotoWrapper($params);
     $config = new stdClass;
     $config->site = new stdClass;
     $config->site->allowOriginalDownload = 1;
+    $config->modules = new stdClass;
+    $config->modules->exiftran = exec('which exiftran');
     $secrets = new stdClass;
     $secrets->secret = 'secret';
     $config->secrets = $secrets;
@@ -16,7 +31,11 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
     $this->photoData = array(
       'id'=>'a','title'=>'title','host'=>'host','width'=>1100,'height'=>2000,
-      'pathOriginal'=>'/path/original','pathBase'=>'/path/base','path10x10'=>'/path/foo10x10');
+      'pathOriginal'=>'/path/original','pathBase'=>'/path/base','path10x10'=>'/path/foo10x10'
+    );
+
+    $this->landscape = sprintf('%s/helpers/files/landscape.jpg', dirname(dirname(dirname(__FILE__))));
+    $this->portrait = sprintf('%s/helpers/files/portrait.jpg', dirname(dirname(dirname(__FILE__))));
   }
 
   public function testAddApiUrls()
@@ -505,5 +524,35 @@ class PhotoTest extends PHPUnit_Framework_TestCase
   {
     $res = $this->photo->getRealDimensions(100, 100, 200, 500);
     $this->assertEquals($res, array('width'=>200, 'height'=>200));
+  }
+
+  public function testReadExifAutoRotateDisabledSuccess()
+  {
+    $exif = $this->photo->readExif($this->landscape, '0');
+    $size = getimagesize($this->landscape);
+    $this->assertEquals($size[0], $exif['width']);
+
+    $exif = $this->photo->readExif($this->portrait, '0');
+    $size = getimagesize($this->portrait);
+
+    $this->assertEquals($size[0], $exif['width']);
+  }
+
+  public function testReadExifAutoRotateEnabledSuccess()
+  {
+    if(!$this->photo->autoRotateEnabled('1'))
+    {
+      $this->markTestSkipped('Auto rotate not enabled. Perhaps exiftran is missing.');
+      return;
+    }
+
+    $exif = $this->photo->readExif($this->landscape, '1');
+    $size = getimagesize($this->landscape);
+    $this->assertEquals($size[0], $exif['width']);
+
+    $exif = $this->photo->readExif($this->portrait, '1');
+    $size = getimagesize($this->portrait);
+
+    $this->assertEquals($size[1], $exif['width']);
   }
 }
