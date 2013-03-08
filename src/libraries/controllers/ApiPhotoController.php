@@ -363,10 +363,6 @@ class ApiPhotoController extends ApiBaseController
       unset($attributes['returnSizes']);
     }
 
-    $tagObj = new Tag;
-    if(isset($attributes['tags']) && !empty($attributes['tags']))
-      $tagObj->createBatch($attributes['tags']);
-
     $status = $this->photo->replace($id, $localFile, $name, $attributes);
     if(!$status)
       return $this->error(sprintf('Could not complete the replacement of photo %s', $id), false);
@@ -415,7 +411,6 @@ class ApiPhotoController extends ApiBaseController
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
     $httpObj = new Http;
-    $tagObj = new Tag;
     $attributes = $_REQUEST;
 
     $this->plugin->invoke('onPhotoUpload');
@@ -470,9 +465,6 @@ class ApiPhotoController extends ApiBaseController
       if(is_executable($exiftran))
         exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
     }
-
-    if(isset($attributes['tags']) && !empty($attributes['tags']))
-      $tagObj->createBatch($attributes['tags']);
 
     $photoId = $this->photo->upload($localFile, $name, $attributes);
 
@@ -621,10 +613,6 @@ class ApiPhotoController extends ApiBaseController
       $params['tags'] = implode(',', array_unique(array_merge($photoBefore['tags'], (array)explode(',', $params['tagsAdd']))));
     if(isset($params['tagsRemove']))
       $params['tags'] = implode(',', array_unique(array_diff($photoBefore['tags'], (array)explode(',', $params['tagsRemove']))));
-
-    // since tags can be created adhoc we need to ensure they're here
-    if(isset($params['tags']) && !empty($params['tags']))
-      $tagObj->createBatch($params['tags']);
 
     // if the permission of a photo changes we have to clean some stuff up
     if(isset($params['permission']) && $params['permission'] != $photoBefore['permission'])
