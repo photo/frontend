@@ -108,8 +108,6 @@ OPU = (function() {
 
                 if(typeof(albums) === "undefined")
                   albums = '';
-                else if(albums !== null)
-                  albums = albums.join(',');
 
                 if(typeof(groups) === "undefined")
                   groups = '';
