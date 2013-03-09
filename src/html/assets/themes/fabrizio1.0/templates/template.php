@@ -51,9 +51,6 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-
-    <script type="text/javascript" src="<?php $this->utility->safe($this->config->site->cdnPrefix); ?><?php ; ?>"></script>
-
     <script type="text/javascript" src="<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
       addJs('/assets/javascripts/openphoto-util.js', false)->
       addJs('/assets/javascripts/openphoto-helper.js', false)->
@@ -70,7 +67,7 @@
                 addJs('/assets/javascripts/plupload.html5.js', false)->
                 addJs('/assets/javascripts/jquery.plupload.queue.js', false)->
                 addJs('/assets/javascripts/openphoto-upload.js')->
-                getUrl(AssetPipeline::js, 'a', $this->config->site->mode === 'prod'); ?>',
+                getUrl(AssetPipeline::js, $this->config->site->mediaVersion, $this->config->site->mode === 'prod'); ?>',
             <?php } ?>
 
               '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
