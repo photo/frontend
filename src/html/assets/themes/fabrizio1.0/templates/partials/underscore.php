@@ -103,7 +103,7 @@
     <div class="header">
       <div class="container">
         <div class="logo"></div>
-        <a class="detail-link" href="#">Full Details</a>
+        <a class="detail-link" href="">Full Details</a>
       </div>
     </div>
     <div class="bd">

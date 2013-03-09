@@ -218,7 +218,7 @@
       this.trigger('updatemodel', model);
       this.detailView.setModel( model );
       this.loadImage();
-      this.$el.find('.header .detail-link').attr('href', model.get('url'));
+      //this.$el.find('.header .detail-link').attr('href', model.get('url'));
       this._preloadNextPrevious(model);
     },
 	
