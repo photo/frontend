@@ -9,10 +9,10 @@
             <?php if($this->user->isAdmin()) { ?>
               <li><a href="#" class="triggerShare"><i class="icon-share-alt triggerShare"></i> Share</a></li>
             <?php } ?>
-          <?php } else if($this->utility->isActiveTab('photos')) { ?>
+          <?php } else if($this->utility->isActiveTab('photos') || $this->utility->isActiveTab('upload')) { ?>
             <?php if($this->user->isAdmin()) { ?>
-              <li class="separator-left"><a href="#" class="selectAll"><i class="icon-pushpin"></i> Select all</a></li>
-              <li class="dropdown batch-meta"></li>
+              <li class="batch separator-left"><a href="#" class="selectAll"><i class="icon-pushpin"></i> Select all</a></li>
+              <li class="batch dropdown batch-meta"></li>
             <?php } ?>
           <?php } elseif($this->utility->isActiveTab('upload')) {?>
             <li class="separator-left"><a href="http://bit.ly/trovebox-for-iphone"><i class="icon-camera-retro icon-mobile-phone"></i> iPhone App</a></li>

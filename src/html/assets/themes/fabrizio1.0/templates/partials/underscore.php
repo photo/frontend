@@ -444,7 +444,7 @@
 
 <script type="tmpl/underscore" id="batch-meta">
   <?php if($isAdmin) { ?>
-    <?php if($this->utility->isActiveTab('photos')) { ?>
+    <?php if($this->utility->isActiveTab('photos') || $this->utility->isActiveTab('upload')) { ?>
       <a data-toggle="dropdown" href="#"><i class="<% if(!loading) { %>icon-cogs<% } else { %>icon-spinner icon-spin<% } %>"></i> Batch Edit <% if (count > 0) { %><span class="badge badge-important"><%= count %></span><% } %></a>
       <ul class="dropdown-menu">
         <% if (count > 0) { %>
