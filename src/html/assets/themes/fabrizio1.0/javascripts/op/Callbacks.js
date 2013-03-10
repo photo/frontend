@@ -155,6 +155,9 @@
       $(".upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
       $(".upload-confirm").html(result.tpl).show('fast', function(){
         if(success.length > 0) {
+          var batchModel = TBX.init.pages.photos.batchModel, $batchEl = $('.batch-meta');
+          $('body').addClass('upload-confirm');
+          (new op.data.view.BatchIndicator({model:batchModel, el: $batchEl})).render();
           op.data.store.Photos.add(success);
           container = $('.upload-preview.success');
           Gallery.showImages(container, success);

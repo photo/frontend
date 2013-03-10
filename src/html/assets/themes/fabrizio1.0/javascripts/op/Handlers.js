@@ -265,8 +265,7 @@
       if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
         uploader.start();
       } else {
-        // TODO something that doesn't suck
-        //opTheme.message.error('Please select at least one photo to upload.');
+        TBX.notification.show('The upload widget could not be loaded. Try refreshing this page.', 'flash', 'error');
       }
     };
   }
