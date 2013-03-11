@@ -32,16 +32,19 @@
         <label for="tags">Tags</label>
         <input type="text" name="tags" class="tags" placeholder="Optional comma separated list">
 
-        <div class="control-group">
-          <label class="control-label">Albums</label>
-          <select data-placeholder="Select albums for these photos" name="albums" class="typeahead">
-            <?php if(!empty($albums)) { ?>
+        <?php if(!empty($albums)) { ?>
+          <div class="control-group">
+            <label class="control-label">Albums</label>
+            <select data-placeholder="Select albums for these photos" name="albums" class="typeahead">
+              <option value="">If you'd like, choose an album</option>
               <?php foreach($albums as $album) { ?>
                 <option value="<?php $this->utility->safe($album['id']); ?>"><?php $this->utility->safe($album['name']); ?></option>
               <?php } ?>
-            <?php } ?>
-          </select>
-        </div>
+            </select>
+          </div>
+        <?php } else { ?>
+          <input type="hidden" name="albums" value=""> 
+        <?php } ?>
 
         <div class="control-group">
           <label for="tags">Permission</label>
