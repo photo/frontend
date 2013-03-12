@@ -128,6 +128,9 @@ function getFs(/*$type, $useCache*/)
 
   switch($type)
   {
+    case 'InternetArchive':
+      $fs = new FileSystemInternetArchive();
+      break;
     case 'Local':
       $fs = new FileSystemLocal();
       break;

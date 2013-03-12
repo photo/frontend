@@ -292,6 +292,11 @@ class FileSystemS3 implements FileSystemInterface
     $this->fs->enable_path_style();
   }
 
+  public function setSSL($bool)
+  {
+    $this->fs->use_ssl = $bool;
+  }
+
   public function setUploadType($type)
   {
     $this->uploadType = $type;
@@ -304,6 +309,14 @@ class FileSystemS3 implements FileSystemInterface
       $opts['fileUpload'] = $localFile;
     elseif($this->uploadType === self::uploadTypeInline)
       $opts['body'] = file_get_contents($localFile);
+
+    if(isset($this->headers))
+    {
+      if(isset($opt['headers']))
+        $opts['headers'] = array_merge($this->headers, $opts['headers']);
+      else
+        $opts['headers'] = $this->headers;
+    }
     
     return $opts;
   }
