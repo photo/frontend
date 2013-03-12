@@ -4,8 +4,16 @@
   
   function Callbacks() {
     this.albumCreate = function(response) {
+      var result = response.result;
       if(response.code === 201) {
-        TBX.notification.show('Your album was created. You can add photos from your <a href="/photos/list">gallery</a> page from using the <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
+        // if we're on the upload form then we insert into the selection list
+        var $sel = $('form.upload select[name="albums"]');
+        if($sel.length === 1) {
+          $sel.append($('<option>', {value: result.id, text: result.name, selected: 'selected'}));
+          TBX.notification.show('Your album was created so we\'ve gone ahead and selected it for you.', 'flash', 'confirm');
+        } else {
+          TBX.notification.show('Your album was created. You can add photos from your <a href="/photos/list">gallery</a> page from using the <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
+        }
       } else {
         TBX.notification.show('Sorry, an error occured when trying to create your album.', 'flash', 'error');
       }

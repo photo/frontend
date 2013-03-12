@@ -116,7 +116,7 @@
     };
     this.click.showBatchForm = function(ev) {
       ev.preventDefault();
-      var $el = $(ev.currentTarget), params = {}, model;
+      var $el = $(ev.target), params = {}, model;
       if($el.hasClass('photo')) {
         model = TBX.init.pages.photos.batchModel;
         model.set('loading', true);
