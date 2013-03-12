@@ -12,7 +12,7 @@
       $('.batchHide').trigger('click');
     },
     this.batch = function(response) { // this is the form params
-      var id, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos;
+      var id, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos, action = response.code === 204 ? 'deleted' : 'updated';
       if(response.code === 200 || response.code === 204) {
         for(i in ids) {
           if(ids.hasOwnProperty(i)) {
@@ -28,7 +28,16 @@
             }
           }
         }
-        TBX.notification.show(photoCount + ' photo' + (photoCount>1?'s were':'was') + ' updated.', 'flash', 'confirm');
+
+        // deleted, let's clear the batch queue
+        if(response.code === 204) {
+          var delIds = _.intersection(ids, OP.Batch.ids());
+          for(i in delIds) {
+            OP.Batch.remove(OP.Batch.getKey(delIds[i]));
+          }
+        }
+
+        TBX.notification.show(photoCount + ' photo ' + (photoCount>1?'s were':'was') + ' ' + action + '.', 'flash', 'confirm');
       } else {
         TBX.notification.show('Sorry, an error occured when trying to update your photos.', 'flash', 'error');
       }

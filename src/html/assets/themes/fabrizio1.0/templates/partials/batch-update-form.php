@@ -30,7 +30,7 @@
       <?php } elseif($action == 'delete') { ?>
         <input type="hidden" name="delete" value="1">
         <?php $buttonLabel = "I'm absolutely sure"; ?>
-        <h4>Are you sure you'd like to delete these photos?</h4>
+        <h4>Are you sure you'd like to delete <?php if(isset($ids)) { ?>this photo<?php } else { ?> these photos<?php } ?>?</h4>
         <div class="row">
           <div class="alert alert-warning span4"><i class="icon-warning-sign"></i>This action cannot be undone</div>
         </div>
@@ -72,6 +72,9 @@
         &nbsp;&nbsp;
       <?php } ?>
       <button type="submit" class="btn btn-brand"><?php $this->utility->safe($buttonLabel); ?></button> or <a href="#" class="batchHide">cancel</a>
+      <?php if(isset($ids)) { ?>
+        <input type="hidden" name="ids" value="<?php $this->utility->safe($ids); ?>">
+      <?php } ?>
     </form>
   <?php } ?>
 <?php } ?>

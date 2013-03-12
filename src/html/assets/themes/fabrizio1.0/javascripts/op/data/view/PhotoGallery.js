@@ -50,12 +50,7 @@
       'click .share': 'share'
     },
     delete: function(ev) {
-      ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model, ask;
-
-      ask = prompt('Type DELETE if you\'d like to delete this photo.');
-      if(ask === 'DELETE')
-        model.destroy({success: this.modelDestroyed, error: TBX.notification.display.generic.error});
+      TBX.handlers.click.showBatchForm(ev);
     },
     permission: function(ev) {
       ev.preventDefault();
