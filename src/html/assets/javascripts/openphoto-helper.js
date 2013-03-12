@@ -143,7 +143,11 @@
     };
 
     this.exists = function(id) {
-      return this.collection.exists(id);
+      return this.collection.getKeyOfValue(id) !== false;
+    };
+
+    this.getKey = function(id) {
+      return this.collection.getKeyOfValue(id);
     };
 
     this.ids = function() {
@@ -166,19 +170,15 @@
           length++;
         },
         clear: function() {
+          for (key in items) {
+            if (items.hasOwnProperty(key)) {
+              OP.Util.fire('callback:batch-remove', items[key].id);
+            }
+          }
           items = {};
           localStorage.setObject(namespace, {});
           length = 0;
           OP.Util.fire('callback:batch-clear');
-        },
-        exists: function(id) {
-          for (key in items) {
-            if (items.hasOwnProperty(key)) {
-              if(items[key].id == id)
-                return true;
-            }
-          }
-          return false;
         },
         getAll: function() {
           return items;
@@ -189,6 +189,15 @@
             retval.push(i);
           }
           return retval;
+        },
+        getKeyOfValue: function(id) {
+          for (key in items) {
+            if (items.hasOwnProperty(key)) {
+              if(items[key].id == id)
+                return key;
+            }
+          }
+          return false;
         },
         getLength: function() {
           var size = 0, key;

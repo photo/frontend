@@ -7,7 +7,7 @@
         <!--<li><a href="#" title="Comments"><i class="icon-comments"></i> <span class="number">24</span></li>
         <li><a href="#" title="Favorites"><i class="icon-heart"></i> <span class="number">24</span></li>-->
         <li><a href="#" class="share" title="Share via Facebook, Twitter or Email" data-id="<%= id %>"><i class="icon-share-alt"></i> Share</a> &nbsp;</li>
-        <li class="pull-right"><a href="#" title="Delete this photo"><i class="icon-trash delete edit" data-id="<%= id %>"></i></li>
+        <li class="pull-right"><a href="#" title="Delete this photo"><i class="icon-trash photo delete edit" data-action="delete" data-ids="<%= id %>"></i></li>
         <li class="pull-right"><a href="#" title="Select for batch editing"><i class="icon-pushpin pin edit" data-id="<%= id %>"></i></li>
         <li class="pull-right"><a href="#" title="Set as your profile photo"><i class="icon-user profile edit" data-id="<%= id %>"></i></li>
         <li class="pull-right"><a href="#" title="Toggle the privacy setting"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %> permission edit" data-id="<%= id %>"></i></li>
@@ -449,10 +449,10 @@
       <ul class="dropdown-menu">
         <% if (count > 0) { %>
           <li><a>Update photo information</a></li>
-          <li><a href="#" class="showForm photo" data-id="tags">&nbsp;&middot;&nbsp;Manage Tags</a></li>
-          <li><a href="#" class="showForm photo" data-id="albums">&nbsp;&middot;&nbsp;Manage Albums</a></li>
-          <li><a href="#" class="showForm photo" data-id="privacy">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
-          <li><a href="#" class="showForm photo" data-id="delete">&nbsp;&middot;&nbsp;Delete</a></li>
+          <li><a href="#" class="showBatchForm photo" data-action="tags">&nbsp;&middot;&nbsp;Manage Tags</a></li>
+          <li><a href="#" class="showBatchForm photo" data-action="albums">&nbsp;&middot;&nbsp;Manage Albums</a></li>
+          <li><a href="#" class="showBatchForm photo" data-action="privacy">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
+          <li><a href="#" class="showBatchForm photo" data-action="delete">&nbsp;&middot;&nbsp;Delete</a></li>
           <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
           <!--<li class="divider"></li>
           <li><a>Modify photos</a></li>

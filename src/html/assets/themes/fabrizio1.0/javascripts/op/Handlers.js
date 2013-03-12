@@ -113,6 +113,32 @@
       opts = 'location=0,toolbar=0,status=0,width='+w+',height='+h+',left='+l+',top='+t;
       window.open(url, 'TB', opts);
     };
+    this.click.showBatchForm = function(ev) {
+      ev.preventDefault();
+      var $el = $(ev.currentTarget), params = {}, model;
+      if($el.hasClass('photo')) {
+        model = TBX.init.pages.photos.batchModel;
+        model.set('loading', true);
+        params.action = $el.attr('data-action');
+        // we allow overriding the batch queue by passing in an id
+        if($el.attr('data-ids'))
+          params.ids = $el.attr('data-ids');
+        OP.Util.makeRequest('/photos/update.json', params, function(response) {
+          var result = response.result;
+          model.set('loading', false);
+          $('.secondary-flyout').html(result.markup).slideDown('fast');
+        }, 'json', 'get');
+      } else if($el.hasClass('album')) {
+        model = TBX.init.pages.albums.batchModel;
+        model.set('loading', true);
+        OP.Util.makeRequest('/album/form.json', params, function(response) {
+          var result = response.result;
+          model.set('loading', false);
+          $('.secondary-flyout').html(result.markup).slideDown('fast');
+        }, 'json', 'get');
+      }
+      return;
+    };
     this.click.triggerDownload = function(ev) {
       ev.preventDefault();
       var $el = $('.download.trigger'), url = $el.attr('href');
@@ -152,6 +178,10 @@
       $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
       for(i in formParams) {
         if(formParams.hasOwnProperty(i)) {
+          // we allow the batch ids to be overridden by a parameter named ids
+          if(formParams[i].name === 'ids')
+            params.ids = formParams[i].value;
+
           if(formParams[i].name === 'albumsAdd') {
             url = '/album/'+formParams[i].value+'/photo/add.json';
           } else if(formParams[i].name === 'albumsRemove') {
@@ -228,7 +258,6 @@
       }
 
       $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
-      console.log(data);
       $.ajax(
         {
           url: '/share/'+type+'/'+data+'/send.json',
