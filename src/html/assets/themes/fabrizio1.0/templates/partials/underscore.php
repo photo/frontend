@@ -464,7 +464,7 @@
         <% } %>
       </ul>
     <?php } else if($this->utility->isActiveTab('albums')) { ?>
-      <a href="#" class="showForm album"><i class="<% if(!loading) { %>icon-plus<% } else { %>icon-spinner icon-spin<% } %>"></i> Create an album</a>
+      <a href="#" class="showBatchForm album"><i class="<% if(!loading) { %>icon-plus<% } else { %>icon-spinner icon-spin<% } %>"></i> Create an album</a>
     <?php } ?>
   <?php } ?>
 </script>
