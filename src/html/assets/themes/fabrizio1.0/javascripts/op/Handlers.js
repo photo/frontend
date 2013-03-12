@@ -101,8 +101,9 @@
     };
     this.click.selectAll = function(ev) {
       ev.preventDefault();
-      var $els = $('.photo-grid .imageContainer .pin.edit'), batch = OP.Batch, count = batch.length();
+      var $els = $('.photo-grid .imageContainer .pin.edit'), batch = OP.Batch, count;
       $els.each(TBX.callbacks.selectAll);
+      count = batch.length();
       TBX.notification.show(TBX.format.sprintf(TBX.strings.batchConfirm, count, count > 1 ? 's' : ''), 'flash', 'confirm');
     };
     this.click.sharePopup = function(ev) {
