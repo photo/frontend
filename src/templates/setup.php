@@ -126,8 +126,10 @@
         <input type="hidden" name="dropboxFolder" value="<?php $this->utility->safe($dropboxFolder); ?>">
       <?php } ?>
 
-      <strong>Important!</strong> You'll need to create the triggers in this gist.
-      <script src="https://gist.github.com/jmathai/5165811.js"></script>
+      <p>
+        <strong>Important!</strong> You'll need to create the triggers in this gist. (<a href="https://gist.github.com/jmathai/5165811">https://gist.github.com/jmathai/5165811</a>)
+        <script src="https://gist.github.com/jmathai/5165811.js"></script>
+      </p>
 
       <div class="btn-toolbar">
         <?php if(isset($_GET['edit'])) { ?><a class="btn" href="/">Cancel</a><?php } ?>
