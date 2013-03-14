@@ -23,6 +23,16 @@ SQL;
 }
 
 $sql = <<<SQL
+ ALTER TABLE `{$this->mySqlTablePrefix}album` ADD `countPublic` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `extra` ;
+SQL;
+mysql_4_0_0($sql);
+
+$sql = <<<SQL
+ ALTER TABLE `activity` ADD `elementId` VARCHAR( 6 ) NOT NULL AFTER `type` 
+SQL;
+mysql_4_0_0($sql);
+
+$sql = <<<SQL
   CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}relationship` (
     `actor` varchar(127) NOT NULL,
     `follows` varchar(127) NOT NULL,
@@ -33,15 +43,9 @@ SQL;
 mysql_4_0_0($sql);
 
 $sql = <<<SQL
-  ALTER TABLE `{$this->mySqlTablePrefix}activity` ADD `permission` BOOLEAN NOT NULL DEFAULT '0' AFTER `data` ;
-;
-$status = $status && mysql_4_0_0($sql);
-
-$sql = <<<SQL
   ALTER TABLE `{$this->mySqlTablePrefix}activity` ADD `elementId` VARCHAR( 6 ) NOT NULL AFTER `type`;
 SQL;
 $status = $status && mysql_4_0_0($sql);
-
 
 $sql = <<<SQL
   ALTER TABLE `{$this->mySqlTablePrefix}activity` DROP PRIMARY KEY , ADD PRIMARY KEY ( `owner` , `id` ) ;
@@ -74,9 +78,25 @@ SQL;
 $status = $status && mysql_4_0_0($sql);
 
 $sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}photo` DROP INDEX `id` , ADD UNIQUE `owner` ( `owner` , `id` ) 
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}tag` DROP INDEX `id` , ADD UNIQUE `owner` ( `owner` , `id` ) 
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}webhook` DROP INDEX `id` , ADD UNIQUE `owner` ( `owner` , `id` ) 
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
   ALTER TABLE `{$this->mySqlTablePrefix}album` DROP `visible` ;
 SQL;
 $status = $status && mysql_4_0_0($sql);
+
 
 $sql = <<<SQL
   DROP TRIGGER IF EXISTS `{$this->mySqlTablePrefix}increment_album_photo_count`;
