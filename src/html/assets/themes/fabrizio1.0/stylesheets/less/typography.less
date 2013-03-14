@@ -1,0 +1,55 @@
+body {
+  font-family: @font_primary;
+}
+
+h1,h2,h3,h4,h5,h6{
+  color: @color_theme;
+  font-family: @font_primary;
+}
+
+.badge {
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 100;
+  vertical-align: top;
+  line-height: 13px;
+}
+
+.badge-important {
+  background-color: #dc3308;
+  box-shadow: 1px 1px 1px #fff;
+}
+
+.editable-click, 
+a.editable-click, 
+a.editable-click:hover {
+  text-decoration: none;
+  border-bottom-width: 0;
+  cursor: pointer;
+}
+
+.editable-empty, .editable-empty:hover {
+  font-style: italic;
+  color: #666;
+  text-decoration: none;
+  border-bottom: 1px dashed #ccc;
+  cursor: pointer;
+}
+
+a:link,
+a:visited,
+a:hover {
+  &:not(.btn) {
+    color: @color_link;
+  }
+}
+
+a.alt {
+  color: #999;
+  text-decoration: underline;
+}
+
+.notice-text {
+  color: @color_notice;
+}

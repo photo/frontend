@@ -9,7 +9,7 @@ class Credential extends BaseModel
   const statusActive = '1';
 
   const nonceCacheKey = 'oauthTimestamps';
-  public $oauthException, $oauthParams, $provider, $sendHeadersOnError = true;
+  public $oauthException, $oauthParams, $provider, $sendHeadersOnError = true, $isUnitTest = false;
   private static $consumer = null, $requestStatus = null;
 
   /**
@@ -23,18 +23,29 @@ class Credential extends BaseModel
     else
       $this->utility = new Utility;
 
+    if(isset($params['db']))
+      $this->db = $params['db'];
+
+    $oauthParams = array('oauth_consumer_key' => '');
+    if($this->isOAuthRequest())
+    {
+      $oauthParams = $this->getOAuthParameters();
+      // seed the consumer (see #929 and #950)
+      $this->getConsumer($oauthParams['oauth_consumer_key']);
+    }
+    
     if(class_exists('OAuthProvider'))
-      $this->provider = new OAuthProvider($this->getOAuthParameters());
+      $this->provider = new OAuthProvider($oauthParams);
   }
 
   /**
-    * Add an oauth credential for this user
+    * Create an oauth credential for this user
     *
     * @param string $name Human readable name for this credential
     * @param array $params Array of permissions
     * @return mixed Credential ID on success, false on failure
     */
-  public function add($name, $permissions = array('read'))
+  public function create($name, $permissions = array('read'))
   {
     if(!class_exists('OAuthProvider'))
     {
@@ -46,6 +57,8 @@ class Credential extends BaseModel
     $randomUser = bin2hex($this->provider->generateToken(20));
     $id = substr($randomConsumer, 0, 30);
     $params = array(
+      'owner' => $this->owner,
+      'actor' => $this->getActor(),
       'name' => $name,
       'clientSecret' => substr($randomConsumer, -10),
       'userToken' => substr($randomUser, 0, 30),
@@ -54,7 +67,7 @@ class Credential extends BaseModel
       'verifier' => substr($randomConsumer, 30, 10),
       'type' => self::typeUnauthorizedRequest,
       'status' => self::statusActive,
-	  'dateCreated' => time()
+      'dateCreated' => time()
     );
     $res = $this->db->putCredential($id, $params);
     if($res)
@@ -101,7 +114,11 @@ class Credential extends BaseModel
       $this->provider->tokenHandler(array($this,'checkToken'));
       $this->provider->setParam('__route__', null);
       $this->provider->setRequestTokenPath('/v1/oauth/token/request'); // No token needed for this end point
-      $this->provider->checkOAuthRequest();
+      // unit test requires HTTP method context #929
+      if($this->isUnitTest === true)
+        $this->provider->checkOAuthRequest(null, OAUTH_HTTP_METHOD_GET);
+      else
+        $this->provider->checkOAuthRequest();
       self::$requestStatus = true;
     }
     catch(OAuthException $e)

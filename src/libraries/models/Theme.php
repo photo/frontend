@@ -7,12 +7,13 @@
  */
 class Theme
 {
-  const themeDefault = 'default';
+  const themeDefault = 'fabrizio1.0';
   private $template, $theme, $themeDir, $themeDirWeb, $user;
 
   public function __construct()
   {
     $this->template = getTemplate();
+    $this->template->notification = new Notification;
     $this->theme = getConfig()->get('defaults')->theme;
     $behavior = getConfig()->get('behavior');
     $themeConfig = getConfig()->get('theme');
@@ -36,27 +37,29 @@ class Theme
   public function asset($type, $filename = '', $write = true)
   {
     $utilityObj = new Utility;
+    $mediaVersion = getConfig()->get('site')->mediaVersion;
+    $themeDir = str_replace('/xxxxassets/', sprintf('/assets/versioned/%s/', $mediaVersion), $this->themeDirWeb);
     $filename = "/{$filename}";
     switch($type)
     {
       case 'base':
-        return $utilityObj->returnValue("{$this->themeDirWeb}{$filename}", $write);
+        return $utilityObj->returnValue("{$themeDir}{$filename}", $write);
         break;
       case 'image':
-        return $utilityObj->returnValue("{$this->themeDirWeb}/images{$filename}", $write);
+        return $utilityObj->returnValue("{$themeDir}/images{$filename}", $write);
         break;
       case 'javascript':
-        return $utilityObj->returnValue("{$this->themeDirWeb}/javascripts{$filename}", $write);
+        return $utilityObj->returnValue("{$themeDir}/javascripts{$filename}", $write);
         break;
       case 'stylesheet':
-        return $utilityObj->returnValue("{$this->themeDirWeb}/stylesheets{$filename}", $write);
+        return $utilityObj->returnValue("{$themeDir}/stylesheets{$filename}", $write);
         break;
       //
       case 'jquery':
         return $utilityObj->returnValue('/assets/javascripts/jquery-1.7.2.min.js', $write);
         break;
       case 'util':
-        return $utilityObj->returnValue('/assets/javascripts/openphoto-util.js', $write);
+        return $utilityObj->returnValue(sprintf('/assets/versioned/%s/javascripts/openphoto-util.js', $mediaVersion), $write);
         break;
     }
   }
@@ -109,7 +112,7 @@ class Theme
   public function setTheme($theme = null)
   {
     if($theme === null)
-      $theme = 'beisel2.0';
+      $theme = self::themeDefault;
     $this->theme = $theme;
     $this->themeDir = sprintf('%s/%s', dirname($this->themeDir), $this->theme);
     $this->themeDirWeb = sprintf('%s/%s', dirname($this->themeDirWeb), $this->theme);

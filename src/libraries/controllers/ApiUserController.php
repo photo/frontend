@@ -57,13 +57,13 @@ class ApiUserController extends ApiBaseController
     {
       $token = md5(rand(10000,100000));
       $tokenUrl = sprintf('%s://%s/manage/password/reset/%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], $token);
-      $this->user->update(array('passwordToken' => $token));
+      $this->user->setAttribute('passwordToken', $token);
       $templateObj = getTemplate();
       $template = sprintf('%s/email/password-reset.php', $this->config->paths->templates);
       $body = $this->template->get($template, array('tokenUrl' => $tokenUrl));
       $emailer = new Emailer;
       $emailer->setRecipients(array($this->config->user->email));
-      $emailer->setSubject('OpenPhoto password reset request');
+      $emailer->setSubject('Trovebox password reset request');
       $emailer->setBody($body);
       $result = $emailer->send();
       if($result > 0)
@@ -96,28 +96,123 @@ class ApiUserController extends ApiBaseController
     elseif($password !== $passwordConfirm)
       return $this->error('Password confirmation did not match.', false);
 
-    $this->user->update(array('password' => $password, 'passwordToken' => null));
+    $this->user->update(array('password' => $password));
+    $this->user->setAttribute('passwordToken', null);
     return $this->success('Password was updated successfully.', true);
   }
 
   /**
-    * Update a group
+    * Return profile information for the site and the viewer
+    * TODO: separate the viewer into a separate API and call it from here
+    *  for backwards compatability
     *
-    * @param string $id id of the group to update
     * @return string Standard JSON envelope
     */
-  public function postGroup($id = null)
+  public function profile()
   {
-    getAuthentication()->requireAuthentication();
+    $email = $this->user->getEmailAddress();
+    $user = $this->user->getUserRecord();
+    if(empty($user))
+      return $this->notFound('Could not load user profile');
 
-    if(!$id)
-      $id = $this->user->getNextId('group');
+    $utilityObj = new Utility;
 
-    $res = getDb()->postGroup($id, $_POST);
+    $photos = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
+    $albums = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
+    $tags = $this->api->invoke('/tags/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => 1)));
 
-    if($res)
-      return $this->success("Group {$id} was updated", array_merge(array('id' => $id), $_POST));
-    else
-      return $this->error("Could not updated group {$id}", false);
+    $profile = array(
+      'id' => $utilityObj->getHost(),
+      'photoUrl' => $this->user->getAvatarFromEmail(100, $this->config->user->email),
+      'counts' => array(
+        'photos' => empty($photos['result']) ? 0 : $photos['result'][0]['totalRows'], 
+        'albums' => empty($albums['result']) ? 0 : $albums['result'][0]['totalRows'],
+        'tags' => count($tags['result'])
+      ),
+      //'photoId' => '',
+      'name' => $this->user->getNameFromEmail($this->config->user->email)
+    );
+
+    if($this->user->isAdmin())
+    {
+      $profile['email'] = $this->user->getEmailAddress();
+      $profile['counts']['storage'] = $this->user->getStorageUsed() * 1024; // convert from kilobytes to bytes
+      $profile['counts']['storage_str'] = strval($this->user->getStorageUsed() * 1024); // workaround for bug in ios json parser #1150
+    }
+
+    $profile['isOwner'] = $this->user->isAdmin();
+
+    // should we include the viewer?
+    if(isset($_GET['includeViewer']) && $_GET['includeViewer'] == '1')
+    {
+      // check if the viewer == owner
+      // if so then we just copy the owner in
+      // else we have to build the viewer array
+      if($this->user->isOwner())
+      {
+        $profile['viewer'] = $profile;
+      }
+      else
+      {
+        $viewer = null;
+        if($email !== null)
+          $viewer = $this->user->getUserByEmail($email);
+
+        if($viewer !== null)
+        {
+          $profile['viewer'] = array(
+            'id' => $viewer['id'],
+            'photoUrl' => $this->user->getAvatarFromEmail(100, $viewer['id']),
+            'name' => $this->user->getNameFromEmail($viewer['id'])
+          );
+        }
+        else
+        {
+          $profile['viewer'] = array('id' => null, 'photoUrl' => $this->user->getAvatarFromEmail(100, null), 'name' => User::displayNameDefault);
+        }
+      }
+    }
+
+    return $this->success('User profile', $profile);
+  }
+
+  public function profilePost()
+  {
+    getAuthentication()->requireAuthentication(true);
+    getAuthentication()->requireCrumb();
+    $params = array();
+    if(isset($_POST['photoId']))
+    {
+      $photoAttribute = $this->user->getAttributeName('profilePhoto');
+      if($_POST['photoId'] == '')
+      {
+        $params[$photoAttribute] = null;
+      }
+      else
+      {
+        $apiResp = $this->api->invoke(sprintf('/photo/%s/view.json', $_POST['photoId']), EpiRoute::httpGet, array('_GET' => array('returnSizes' => '100x100xCR', 'generate' => 'true')));
+        if($apiResp['code'] !== 200)
+          return $this->error('Could not fetch profile photo', false);
+
+        $params[$photoAttribute] = $apiResp['result']['path100x100xCR'];
+      }
+    }
+
+    if(isset($_POST['name']))
+    {
+      $params[$this->user->getAttributeName('profileName')] = strip_tags($_POST['name']);
+    }
+
+    if(!empty($params))
+    {
+      if(!$this->user->update($params))
+        return $this->error('Could not update profile', false);
+    }
+
+    $apiUserResp = $this->api->invoke('/user/profile.json', EpiRoute::httpGet);
+    if($apiUserResp['code'] !== 200)
+      return $this->error('Profile updated but could not retrieve', false);
+
+    return $this->success('Profile updated', $apiUserResp['result']);
   }
 }

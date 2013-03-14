@@ -42,7 +42,7 @@ _None_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -h current.openphoto.me -e /tags/list.json
+    ./openphoto -p -h current.trovebox.com -e /tags/list.json
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])

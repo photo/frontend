@@ -52,6 +52,7 @@ Index:
   09.03. Photos details
   09.04. Tags
   09.05. Manage
+  09.06. Account
 10. Responsive definitions
 	10.01. screen width max. 480px
 	10.02. screen width max. 767px
@@ -4356,7 +4357,11 @@ body.tags div.tags .tag-list {
 }
 .manage.applications table td {
   width: 50%;
+}
 
+/* 09.06. Account ----------------------------------------------------------- */
+.account .inset {
+  margin:5px 0 0 20px;
 }
 .manage.applications .credential-date {
   font-size:smaller;

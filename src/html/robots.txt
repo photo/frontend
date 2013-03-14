@@ -1,6 +1,0 @@
-User-Agent: *
-Disallow: /photos/
-Disallow: /original/
-Disallow: /custom/
-Disallow: /base/
-Disallow: /assets/

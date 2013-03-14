@@ -843,7 +843,8 @@ class AmazonS3 extends CFRuntime
 		{
 			case self::REGION_US_E1: // Northern Virginia
 				$this->set_hostname(self::DEFAULT_URL);
-				$this->enable_path_style(false);
+				// This breaks DreamObjects support #1000
+				//$this->enable_path_style(false);
 				break;
 
 			case self::REGION_EU_W1: // Ireland

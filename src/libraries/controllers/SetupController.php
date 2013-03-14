@@ -298,12 +298,11 @@ class SetupController extends BaseController
     $appId = getSession()->get('appId');
     $database = getSession()->get('database');
     $filesystem = getSession()->get('fileSystem');
-    $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
+    $usesAws = (preg_match('/S3|DreamObjects/', getSession()->get('fileSystem'))) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
-    $usesS3 = (stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
+    $usesS3 = (preg_match('/S3|DreamObjects/', getSession()->get('fileSystem')) !== false) ? true : false;
     $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
-    $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
 
     $dropboxKey = getSession()->get('dropboxKey');
     if(!empty($dropboxKey))
@@ -337,7 +336,6 @@ class SetupController extends BaseController
     if(getConfig()->get('aws') != null)
     {
       $s3Bucket = getConfig()->get('aws')->s3BucketName;
-      $simpleDbDomain = getConfig()->get('aws')->simpleDbDomain;
     }
 
     if(getConfig()->get('mysql') != null)
@@ -374,8 +372,8 @@ class SetupController extends BaseController
     // copied to/from setup3Post()
     $body = $this->template->get($template, array('step' => $step, 'password' => $password,'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3,
-      'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
-      'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
+      'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
+      'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
       'mySqlPassword' => $mySqlPassword, 'mySqlTablePrefix' => $mySqlTablePrefix, 'fsRoot' => $fsRoot, 'fsHost' => $fsHost,
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
@@ -399,11 +397,10 @@ class SetupController extends BaseController
     $filesystem = getSession()->get('fileSystem');
     $appId = getSession()->get('appId');
     $password = getSession()->get('password');
-    $usesAws = (getSession()->get('database') == 'SimpleDb' || stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
+    $usesAws = (preg_match('/S3|DreamObjects/', $filesystem)) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
-    $usesSimpleDb = (getSession()->get('database') == 'SimpleDb') ? true : false;
     $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
-    $usesS3 = (stristr(getSession()->get('fileSystem'), 'S3') !== false) ? true : false;
+    $usesS3 = (preg_match('/S3|DreamObjects/', $filesystem) !== false) ? true : false;
     $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
     $awsErrors = false;
     $mySqlErrors = false;
@@ -426,12 +423,6 @@ class SetupController extends BaseController
       {
         $s3Bucket = $_POST['s3Bucket'];
         $input[] = array('Amazon S3 Bucket Name', $s3Bucket, 'required');
-      }
-
-      if($usesSimpleDb)
-      {
-        $simpleDbDomain = $_POST['simpleDbDomain'];
-        $input[] = array('Amazon SimpleDb Domain', $simpleDbDomain, 'required');
       }
 
       $awsErrors = getForm()->hasErrors($input);
@@ -489,13 +480,10 @@ class SetupController extends BaseController
         {
           getSession()->set('s3BucketName', $s3Bucket);
           $aws->s3BucketName = $s3Bucket;
-          $aws->s3Host = "{$s3Bucket}.s3.amazonaws.com";
-        }
-
-        if($usesSimpleDb)
-        {
-          getSession()->set('simpleDbDomain', $simpleDbDomain);
-          $aws->simpleDbDomain = $simpleDbDomain;
+          if($filesystem === 'DreamObjects')
+            $aws->s3Host = "{$s3Bucket}.objects.dreamhost.com";
+          else
+            $aws->s3Host = "{$s3Bucket}.s3.amazonaws.com";
         }
       }
       if($usesMySql)
@@ -574,9 +562,7 @@ class SetupController extends BaseController
       }
       if(!$dbObj->initialize($isEditMode))
       {
-        if($usesSimpleDb)
-          $dbErrors[] = 'We were unable to initialize your SimpleDb domains.<ul><li>Make sure you\'re <a href="http://aws.amazon.com/simpledb/">signed up for AWS SimpleDb</a>.</li><li>Double check your AWS credentials.</li><li>SimpleDb domains cannot contain special characters such as periods.</li><li>Sometimes the SimpleDb create domain API is unstable. Try again later or check the error log if you have access to it.</li></ul>';
-        else if($usesMySql)
+        if($usesMySql)
           $dbErrors[] = 'We were unable to initialize your account in MySql. <ul><li>Please verify that the host, username and password are correct and have proper permissions to create a database.</li><li>Make sure your email address is not already in use.</li></ul>';
         else
           $dbErrors[] = 'An unknown error occurred while setting up your database. Check your error logsto see if there\'s more information about the error.';
@@ -647,8 +633,8 @@ class SetupController extends BaseController
     // copied to/from setup3()
     $body = $this->template->get($template, array('step' => $step, 'password' => $password,'themes' => $themes, 'usesAws' => $usesAws, 'usesMySql' => $usesMySql,
       'database' => $database, 'filesystem' => $filesystem, 'usesLocalFs' => $usesLocalFs, 'usesS3' => $usesS3,
-      'usesSimpleDb' => $usesSimpleDb, 'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
-      'simpleDbDomain' => $simpleDbDomain, 'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
+      'awsKey' => $awsKey, 'awsSecret' => $awsSecret, 's3Bucket' => $s3Bucket,
+      'mySqlHost' => $mySqlHost, 'mySqlUser' => $mySqlUser, 'mySqlDb' => $mySqlDb,
       'mySqlPassword' => $mySqlPassword, 'mySqlTablePrefix' => $mySqlTablePrefix, 'fsRoot' => $fsRoot, 'fsHost' => $fsHost,
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
@@ -687,7 +673,7 @@ class SetupController extends BaseController
 
   private function getDefaultConfigParams()
   {
-    return array('themes' => array(), 'awsKey' => '', 'awsSecret' => '', 's3Bucket' => '', 'simpleDbDomain' => '', 'mySqlHost' => '',
+    return array('themes' => array(), 'awsKey' => '', 'awsSecret' => '', 's3Bucket' => '', 'mySqlHost' => '',
       'mySqlUser' => '', 'mySqlPassword' => '', 'mySqlDb' => '', 'mySqlTablePrefix' => '',
       'fsRoot' => '', 'fsHost' => '', 'dropboxFolder' => '', 'dropboxKey' => '', 'dropboxSecret' => '',
       'dropboxKey' => '', 'dropboxToken' => '', 'dropboxTokenSecret' => '', 'errors' => '');
@@ -782,7 +768,6 @@ class SetupController extends BaseController
       '{awsSecret}' => "",
       '{s3Bucket}' => getSession()->get('s3BucketName'),
       '{s3Host}' => getSession()->get('s3BucketName') . '.s3.amazonaws.com',
-      '{simpleDbDomain}' => "",
       '{mySqlHost}' => "",
       '{mySqlUser}' => "",
       '{mySqlPassword}' => "",
@@ -805,7 +790,7 @@ class SetupController extends BaseController
     //   flowDropboxKey, flowDropboxSecret, mySqlPassword, mySqlUser, password, secret, step
     // It is safer to explicitly list keys that are ok to log, rather than exclude those that are
     // sensitive, as one might forget to exclude new keys.
-    $settingsToLog = array('step', 'appId', 'ownerEmail', 'isEditMode', 'theme', 'imageLibrary', 'database', 'simpleDbDomain', 'mySqlDb', 'mySqlHost', 'mySqlTablePrefix', 'fileSystem', 'fsHost', 'fsRoot', 'dropboxFolder', 'flowDropboxFolder', 's3BucketName');
+    $settingsToLog = array('step', 'appId', 'ownerEmail', 'isEditMode', 'theme', 'imageLibrary', 'database', 'mySqlDb', 'mySqlHost', 'mySqlTablePrefix', 'fileSystem', 'fsHost', 'fsRoot', 'dropboxFolder', 'flowDropboxFolder', 's3BucketName');
 
     $pReplace = array();
     $session = getSession()->getAll();

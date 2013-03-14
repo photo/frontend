@@ -16,7 +16,7 @@
       </form>
     </div>
   </li>
-  <?php if($this->user->isOwner()) { ?>
+  <?php if($this->user->isAdmin()) { ?>
     <li id="nav-upload" <?php if($this->utility->isActiveTab('search')) { ?> class="on" <?php } ?>>
       <a href="<?php $this->url->photosUpload(); ?>"><i class="icon-upload-alt"></i>Upload</a>
     </li>
@@ -33,7 +33,7 @@
     </li>
   <?php } else { ?>
     <li id="nav-signin">
-      <button type="button" class="login-click browserid"><img src="https://browserid.org/i/sign_in_blue.png" alt="Signin to OpenPhoto" class="login-click browserid"></button>
+      <button type="button" class="login-click browserid"><img src="https://login.persona.org/i/sign_in_blue.png" alt="Signin to OpenPhoto" class="login-click browserid"></button>
     </li>
   <?php } ?>
 </ul>

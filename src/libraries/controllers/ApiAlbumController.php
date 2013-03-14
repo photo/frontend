@@ -6,8 +6,6 @@
   */
 class ApiAlbumController extends ApiBaseController
 {
-  private $pageSize = 8;
-
   /**
     * Call the parent constructor
     *
@@ -24,7 +22,6 @@ class ApiAlbumController extends ApiBaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-
     $albumId = $this->album->create($_POST);
     if($albumId)
     {
@@ -48,32 +45,46 @@ class ApiAlbumController extends ApiBaseController
 
   public function form()
   {
-    $groupsResp = $this->api->invoke('/groups/list.json', EpiRoute::httpGet);
-    $groups = $groupsResp['result'];
-    $template = $this->template->get(sprintf('%s/manage-album-form.php', $this->config->paths->templates), array('groups' => $groups));;
+    $template = $this->theme->get('partials/album-form.php');
     return $this->success('Album form', array('markup' => $template));
   }
 
   public function list_()
   {
-    $limit = $this->pageSize;
-    $offset = null;
+    $pageSize = $this->config->pagination->albums;
+    $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
     if(isset($_GET['pageSize']))
-      $limit = (int)$_GET['pageSize'];
-    if(isset($_GET['page']))
-      $offset = intval($limit * (int)$_GET['page'] - $limit);
+      $pageSize = (int)$_GET['pageSize'];
+
+    $offset = ($pageSize * $page) - $pageSize;
     // model passes on the email
-    $albums = $this->album->getAlbums(null, $limit, $offset);
+    $albums = $this->album->getAlbums(null, $pageSize, $offset);
     if($albums === false)
       return $this->error('Could not retrieve albums', false);
+
+    $albumCountKey = $this->user->isAdmin() ? 'countPrivate' : 'countPublic';
+    foreach($albums as $key => $val)
+    {
+      $albums[$key]['count'] = $val[$albumCountKey];
+      unset($albums[$key]['countPublic'], $albums[$key]['countPrivate']);
+    }
+
+    if(!empty($albums))
+    {
+      $albums[0]['currentPage'] = intval($page);
+      $albums[0]['currentRows'] = count($albums);
+      $albums[0]['pageSize'] = intval($pageSize);
+      $albums[0]['totalPages'] = !empty($pageSize) ? ceil($albums[0]['totalRows'] / $pageSize) : 0;
+    }
+
     return $this->success('List of albums', $albums);
   }
 
   public function updateIndex($albumId, $type, $action)
   {
-    $this->logger->info(sprintf('Calling ApiAlbumController::updateIndex with %s, %s, %s', $albumId, $type, $action));
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
+    $this->logger->info(sprintf('Calling ApiAlbumController::updateIndex with %s, %s, %s', $albumId, $type, $action));
 
     if(!isset($_POST['ids']) || empty($_POST['ids']))
       return $this->error('Please provide ids', false);
@@ -128,14 +139,24 @@ class ApiAlbumController extends ApiBaseController
     if(!$status)
       return $this->error('Could not update album', false);
 
-    return $this->success('Album updated', true);
+    $albumResp = $this->api->invoke("/{$this->apiVersion}/album/{$id}/view.json", EpiRoute::httpGet);
+    return $this->success('Album {$id} updated', $albumResp['result']);
   }
 
   public function view($id)
   {
-    $album = $this->album->getAlbum($id);
+    $includeElements = false;
+    if(isset($_GET['includeElements']) && $_GET['includeElements'] == '1')
+      $includeElements = true;
+    $album = $this->album->getAlbum($id, $includeElements);
+
     if($album === false)
       return $this->error('Could not retrieve album', false);
+
+    $albumCountKey = $this->user->isAdmin() ? 'countPrivate' : 'countPublic';
+    $album['count'] = $album[$albumCountKey];
+    unset($album['countPublic'], $album['countPrivate']);
+
     return $this->success('Album', $album);
   }
 }

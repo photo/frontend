@@ -28,7 +28,7 @@ For example, the tag `sunnyvale` can have a `latitude` and `longitude` property.
 
 ### Schema description
 
-  * id, Base 36 value of a base 10 auto-incremented value
+  * id, [Base 32](http://en.wikipedia.org/wiki/Base32#base32hex) value of a base 10 auto-incremented value
   * count, The number of objects with this tag
   * email, Email address if applicable
   * latitude, Latitude if applicable

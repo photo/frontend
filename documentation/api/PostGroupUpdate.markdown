@@ -43,7 +43,7 @@ _Authentication: required_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -X POST -h current.openphoto.me -e /group/a/update.json -F 'members=jaisen@jmathai.com'
+    ./openphoto -p -X POST -h current.trovebox.com -e /group/a/update.json -F 'members=jaisen@jmathai.com'
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])
@@ -71,7 +71,7 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
       "result":
       {
         id: 'a',
-        appId: 'current.openphoto.me',
+        appId: 'current.trovebox.com',
         name: 'My Group',
         members: ['jaisen@jmathai.com']
       }

@@ -1,7 +1,7 @@
 <?php
 class Request
 {
-  private static $latestVersion='v1', $latestMinorVersion = 0, $version = null;
+  private static $latestVersion='v2', $latestMinorVersion = 0, $version = null;
 
   public static function getApiVersion()
   {

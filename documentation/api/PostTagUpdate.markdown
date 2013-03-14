@@ -45,7 +45,7 @@ _Authentication: required_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -X POST -h current.openphoto.me -e /tag/sunnyvale/update.json -F 'count=10'
+    ./openphoto -p -X POST -h current.trovebox.com -e /tag/sunnyvale/update.json -F 'count=10'
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])

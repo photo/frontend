@@ -12,7 +12,6 @@
 
     //constants
     var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
-        BROWSER_ID_SRC = 'https://browserid.org/include.js',
         log = function(msg) { if(typeof(console) !== 'undefined' && typeof(console.log) !== 'undefined') {  console.log(msg); } };
 
     /**
@@ -84,15 +83,6 @@
             //merge the config with the user specified config
             this.config = this.merge(this.config, config);
 
-            //allow the user to override the eventmap if they wish
-            if (this.config.eventMap) {
-              for (var eType in this.config.eventMap) {
-                if (this.config.eventMap.hasOwnProperty(eType)) {
-                  this.eventMap[eType] = this.merge(this.config.eventMap[eType], this.eventMap[eType]);
-                }
-              }
-            }
-
             // we specify what library type in the .ini file
             // either jQuery or YUI - and then the user can load
             // additional css/js assets by specifying the files in the
@@ -105,6 +95,15 @@
             // get the library plugin file that maps library functions to a normalized
             // naming so that we can use whatever library that is specified
             this.getLibraryPlugin();
+        };
+
+        this.addEventMap = function(eventMap) {
+          this.eventMap = eventMap;
+          for (var eType in this.eventMap) {
+            if (this.eventMap.hasOwnProperty(eType)) {
+              this.eventMap[eType] = this.merge(this.eventMap[eType], this.eventMap[eType]);
+            }
+          }
         };
 
         /**
@@ -149,7 +148,6 @@
         * @method onviewevent
         */
         this.onviewevent = function(e) {
-
             log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
@@ -163,7 +161,7 @@
                 if (map !== undefined && map[cls]) {
                     //do not prevent the default action, let the callback
                     //function do it if it wants
-                    this.fire( map[cls], e);
+                    map[cls](e, targ);
                 }
             }
         };
@@ -222,7 +220,7 @@
         */
         this.onmouseevent = function(e) {
             
-            log('[Util] ' + e.type + ': ' + e.target);
+            //log('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -262,7 +260,6 @@
 
             //load the script and attach the event handlers onload
             this.loadScript(url, this._init, this);
-            this.loadScript(BROWSER_ID_SRC);
 
         };
 

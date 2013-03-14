@@ -10,9 +10,10 @@ interface FileSystemInterface
   public function deletePhoto($photo);
   public function downloadPhoto($photo);
   public function getPhoto($filename);
-  public function putPhoto($localFile, $remoteFile);
+  public function putPhoto($localFile, $remoteFile, $dateTaken);
   public function putPhotos($files);
   public function getHost();
+  public function getMetaData($localFile);
   public function initialize($isEditMode);
   public function identity();
   public function executeScript($file, $filesysem);

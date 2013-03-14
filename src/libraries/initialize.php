@@ -15,7 +15,7 @@ Epi::setSetting('exceptions', true);
 Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
 Epi::setPath('view', '');
-Epi::init('api','cache','config','curl','form','logger','route','session','template','database');
+Epi::init('api','debug','cache','config','curl','form','logger','route','session','template','database');
 
 $routeObj = getRoute();
 $apiObj = getApi();
@@ -68,12 +68,13 @@ if($hasConfig && !$runSetup)
   $runUpgrade = false;
   if(!getUpgrade()->isCurrent())
     $runUpgrade = true;
-  require $configObj->get('paths')->libraries . '/routes.php';
 
   Request::setApiVersion();
 
   // initializes plugins
   getPlugin()->load();
+
+  require $configObj->get('paths')->libraries . '/routes.php';
 }
 else
 {

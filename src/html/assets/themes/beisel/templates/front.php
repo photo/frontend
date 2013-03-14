@@ -13,7 +13,7 @@
 <?php */ ?>
 
 <?php if($photos[0]['totalRows'] == 0) { ?>
-  <?php if($this->user->isOwner()) { ?>
+  <?php if($this->user->isAdmin()) { ?>
     <a href="<?php $this->url->photoUpload(); ?>" class="link" title="Start uploading now!"><img src="<?php $this->theme->asset('image', 'front.png'); ?>" class="front" /></a>
     <h1>Oh no, you haven't uploaded any photos yet. <a href="<?php $this->url->photoUpload(); ?>" class="link">Start Now</h1>
   <?php } else { ?>

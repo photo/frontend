@@ -1,0 +1,132 @@
+.content {
+  padding-top: 20px;
+}
+
+.editable-container{
+  padding: 0;
+  
+  &.bottom{
+    .arrow {
+      border-bottom-color: #f7f7f7;
+    }
+  }
+  
+  .editable-buttons {
+    i {
+      line-height: 1em;
+    }
+  }
+}
+
+.sidebar-heading {
+  text-transform: uppercase;
+  font-size: 13px;
+  line-height: 2em;
+  color: #666;
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid #ccc;
+  font-weight: 500;
+  a {
+    color: inherit;
+    &:hover {
+      text-decoration: none;
+    }
+  }
+}
+
+.sidebar {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #666;
+  > li {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px;
+    font-size: 12px;
+    line-height: 1.5em;
+    h3 {
+      color: #000;
+      text-transform: uppercase;
+      font-size: 12px;
+      line-height: 3em;
+      margin: 0;
+      border-top: 1px solid #ccc;
+      font-weight: 500;
+    }
+  }
+}
+
+table.left-header {
+  td:first-child {
+    font-weight:bold;
+    padding-right:20px;
+    text-align:right;
+  }
+}
+
+.offscreen {
+  position:absolute;
+  top:-1000px;
+  left:-1000px;
+}
+
+[class=icon*]{
+  font-weight: 300;
+}
+
+.dropdown-menu {
+  z-index: 1050;
+}
+
+.typeahead .active > a{
+  color: #333 !important;
+  #gradient > .vertical( @color_brand, darken( @color_brand, 5%) );
+}
+
+.dark-dropdown {
+  margin-left: 10px;
+  > a {
+    position: relative;
+    
+  }
+  .dropdown-menu {
+    top: -12px;
+    left: -12px;
+    
+    min-width: 100%;
+    background: #221f20;
+    padding: 2.2em 12px 10px;
+    li {
+      font-size: 12px;
+      margin-left: -12px;
+      margin-right: -12px;
+      a {
+        padding-left: 12px;
+        padding-right: 12px;
+        text-align: left;
+        color: #fff !important;
+        vertical-align: middle;
+        line-height: 20px;
+        
+        > img {
+          margin-right: 6px;
+          vertical-align: middle;
+        }
+        &:hover, &:focus {
+          background: @color_brand none;
+          color: #333 !important;
+        }
+      }
+    }
+  }
+  
+  &.open > a {
+    color: #fff !important;
+    z-index: 1051;
+    .caret {
+      color: #ccc;
+    }
+  }
+}

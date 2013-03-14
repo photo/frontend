@@ -55,7 +55,7 @@ class ImageImageMagick extends ImageAbstract
   public function scale($width, $height, $maintainAspectRatio = true)
   {
     if($maintainAspectRatio)
-      $this->image->scaleImage(intval($width), intval($height), true);
+      $this->image->resizeImage(intval($width), intval($height), imagick::FILTER_LANCZOS, 0.8, true);
     else
       $this->image->cropThumbnailImage(intval($width), intval($height));
   }

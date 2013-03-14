@@ -28,14 +28,14 @@ class ApiGroupController extends ApiBaseController
   public function create()
   {
     getAuthentication()->requireAuthentication();
-    // TODO add crumb check
+    getAuthentication()->requireCrumb();
     $groupId = $this->group->create($_POST);
 
     if($groupId !== false)
     {
       $res = $this->api->invoke(sprintf('/%s/group/%s/view.json', $this->apiVersion, $groupId), EpiRoute::httpGet);
       if($res['code'] === 200)
-        return $this->created('Groups for this user', $res['result']);
+        return $this->created('Group successfully created', $res['result']);
     }
 
     return $this->error('Could not create a group', false);
@@ -97,7 +97,7 @@ class ApiGroupController extends ApiBaseController
     getAuthentication()->requireAuthentication();
 
     $userObj = new User;
-    if(!$userObj->isOwner())
+    if(!$userObj->isAdmin())
       return $this->forbidden('You do not have permission to access this API.', false);
 
     $groups = $this->group->getGroups();

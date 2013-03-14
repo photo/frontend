@@ -10,12 +10,13 @@
   */
 class User extends BaseModel
 {
+  const displayNameDefault = 'Photo Project User';
   /**
     * A user object that caches the value once it's been fetched from the remote datasource.
     * @access private
     * @var array
     */
-  protected $user, $credential;
+  protected $user, $userArray = array(), $credential;
 
   /*
    * Constructor
@@ -36,6 +37,35 @@ class User extends BaseModel
   }
 
   /**
+    * Gets an attribute from the user's entry in the user db
+    * @param string $name The name of the value to retrieve
+    *
+    * @return mixed String on success FALSE on failure
+    */
+  public function getAttribute($name)
+  {
+    $name = $this->getAttributeName($name);
+    $user = $this->getUserRecord();
+    if($user === false)
+      return false;
+
+    if(isset($user[$name]))
+      return $user[$name];
+    return false;
+  }
+
+  /**
+    * Gets an attribute name
+    * @param string $name The name of the value to retrieve
+    *
+    * @return string
+    */
+  public function getAttributeName($name)
+  {
+    return sprintf('attr%s', $name);
+  }
+
+  /**
     * Get an avatar given an email address
     * See http://en.gravatar.com/site/implement/images/ and http://en.gravatar.com/site/implement/hash/
     *
@@ -45,6 +75,14 @@ class User extends BaseModel
   {
     if($email === null)
       $email = $this->session->get('email');
+
+    // TODO return standard avatar
+    if(empty($email))
+      return;
+
+    $user = $this->getUserByEmail($email);
+    if(isset($user['attrprofilePhoto']) && !empty($user['attrprofilePhoto']))
+      return $user['attrprofilePhoto'];
 
     $hash = md5(strtolower(trim($email)));
     return "http://www.gravatar.com/avatar/{$hash}?s={$size}";
@@ -65,6 +103,25 @@ class User extends BaseModel
   }
 
   /**
+    * Get a name given an email address
+    *
+    * @return string
+    */
+  public function getNameFromEmail($email = null)
+  {
+    if($email === null)
+      $email = $this->getEmailAddress();
+
+    if(!empty($email))
+    {
+      $user = $this->getUserByEmail($email);
+      if(isset($user['attrprofileName']) && !empty($user['attrprofileName']))
+        return $user['attrprofileName'];
+    }
+    return self::displayNameDefault;
+  }
+
+  /**
     * Get the next ID to be used for a action, group or photo.
     * The ID is a base 32 string that represents an autoincrementing integer.
     * @return string
@@ -82,30 +139,17 @@ class User extends BaseModel
     $nextIntId = base_convert($user[$key], 31, 10) + 1;
     $nextId = base_convert($nextIntId, 10, 31);
 
-    /*$nextId = $this->getAttribute($type);
-    if($nextId === false)
-      $nextId = '';
-    $nextIntId = base_convert($nextId, 31, 10) + 1;
-    $nextId = base_convert($nextIntId, 10, 31);*/
     $this->update(array($key => $nextId));
     return $nextId;
   }
 
   /**
-    * Gets an attribute from the user's entry in the user db
-    * @param string $name The name of the value to retrieve
-    *
-    * @return mixed String on success FALSE on failure
+    * Get the total amount of space used
+    * @return int Size in bytes
     */
-  public function getAttribute($name)
+  public function getStorageUsed()
   {
-    $user = $this->getUserRecord();
-    if($user === false)
-      return false;
-
-    if(isset($user[$name]))
-      return $user[$name];
-    return false;
+    return $this->db->getStorageUsed();
   }
 
   /**
@@ -116,10 +160,10 @@ class User extends BaseModel
     *
     * @return mixed  FALSE on error, array on success
     */
-  public function getUserRecord()
+  public function getUserRecord($cache = true, $owner = null)
   {
     // we cache the user entry per request
-    if($this->user)
+    if($cache && $this->user)
       return $this->user;
 
     $res = $this->db->getUser();
@@ -145,6 +189,29 @@ class User extends BaseModel
     return $this->user;
   }
 
+  /**
+    * Get the user record by email address.
+    *
+    * @return mixed  FALSE on error, array on success
+    */
+  public function getUserByEmail($email, $cache = true)
+  {
+    if($cache && isset($this->userArray[$email]))
+      return $this->userArray[$email];
+
+    $user = $this->db->getUser($email);
+    if($user)
+      $this->userArray[$email] = $user;
+
+    return $user;
+  }
+
+  /**
+    * Checks if the user is logged in.
+    * Works for Cookie and OAuth requests
+    *
+    * @return boolean
+    */
   public function isLoggedIn()
   {
     $credential = $this->getCredentialObject();
@@ -154,7 +221,24 @@ class User extends BaseModel
       return $this->session->get('email') != '';
   }
 
-  public function isOwner()
+  /**
+    * Checks if the logged in user is the owner or an admin
+    * Works for Cookie and OAuth requests
+    *
+    * @return boolean
+    */
+  public function isAdmin()
+  {
+    return $this->isOwner(true);
+  }
+
+  /**
+    * Checks if the logged in user is the owner
+    * Works for Cookie and OAuth requests
+    *
+    * @return boolean
+    */
+  public function isOwner($includeAdmin = false)
   {
     if(!isset($this->config->user))
       return false;
@@ -179,7 +263,7 @@ class User extends BaseModel
       if($isOwner)
         return true;
 
-      if(isset($user->admins))
+      if($includeAdmin && isset($user->admins))
       {
         $admins = (array)explode(',', $user->admins);
         if(array_search(strtolower($loggedInEmail), array_map('strtolower', $admins)) !== false)
@@ -218,6 +302,17 @@ class User extends BaseModel
   }
 
   /**
+    * Set an attribute.
+    *
+    * @return boolean
+    */
+  public function setAttribute($name, $value)
+  {
+    $name = $this->getAttributeName($name);
+    return $this->update(array($name => $value));
+  }
+
+  /**
     * Set the session email.
     *
     * @return void
@@ -226,7 +321,7 @@ class User extends BaseModel
   {
     $this->session->set('email', $email);
     $this->session->set('crumb', md5($this->config->secrets->secret . time()));
-    if($this->isOwner())
+    if($this->isAdmin())
       $this->session->set('site', $_SERVER['HTTP_HOST']);
   }
 
@@ -251,6 +346,9 @@ class User extends BaseModel
       else
         unset($params['password']);
     }
+
+    // update cache
+    $this->getUserRecord(false);
     // TODO check $params against a whitelist
     return $this->db->postUser($params);
   }

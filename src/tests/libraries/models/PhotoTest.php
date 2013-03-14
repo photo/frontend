@@ -1,14 +1,29 @@
 <?php
+class PhotoWrapper extends Photo
+{
+  public function readExif($file, $allowAutoRotate)
+  {
+    return parent::readExif($file, $allowAutoRotate);
+  }
+
+  public function autoRotateEnabled($allowAutoRotate)
+  {
+    return parent::autoRotateEnabled($allowAutoRotate);
+  }
+}
+
 class PhotoTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()
   {
     $_SERVER['HTTP_HOST'] = 'foobar';
     $params = array('user' => new FauxObject, 'utility' => new stdClass, 'url' => new stdClass, 'image' => new FauxObject);
-    $this->photo = new Photo($params);;
+    $this->photo = new PhotoWrapper($params);
     $config = new stdClass;
     $config->site = new stdClass;
     $config->site->allowOriginalDownload = 1;
+    $config->modules = new stdClass;
+    $config->modules->exiftran = exec('which exiftran');
     $secrets = new stdClass;
     $secrets->secret = 'secret';
     $config->secrets = $secrets;
@@ -16,7 +31,11 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
     $this->photoData = array(
       'id'=>'a','title'=>'title','host'=>'host','width'=>1100,'height'=>2000,
-      'pathOriginal'=>'/path/original','pathBase'=>'/path/base','path10x10'=>'/path/foo10x10');
+      'pathOriginal'=>'/path/original','pathBase'=>'/path/base','path10x10'=>'/path/foo10x10'
+    );
+
+    $this->landscape = sprintf('%s/helpers/files/landscape.jpg', dirname(dirname(dirname(__FILE__))));
+    $this->portrait = sprintf('%s/helpers/files/portrait.jpg', dirname(dirname(dirname(__FILE__))));
   }
 
   public function testAddApiUrls()
@@ -78,6 +97,7 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
     $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
     $this->assertTrue(isset($res['pathOriginal']));
+    $this->assertTrue(isset($res['pathDownload']));
   }
 
   public function testAddApiUrlsOriginalAsNonOwner()
@@ -103,6 +123,7 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
     $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
     $this->assertTrue(isset($res['pathOriginal']));
+    $this->assertTrue(isset($res['pathDownload']));
   }
 
   public function testAddApiUrlsOriginalNotAllowed()
@@ -128,6 +149,7 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
     $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
     $this->assertFalse(isset($res['pathOriginal']));
+    $this->assertFalse(isset($res['pathDownload']));
   }
 
   public function testDeleteCouldNotGetPhoto()
@@ -203,6 +225,78 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $this->assertTrue($res, 'delete should return TRUE on success');
   }
 
+  public function testDeleteSourceSuccess()
+  {
+    $db = $this->getMock('db', array('getPhoto', 'deletePhotoVersions'));
+    $db->expects($this->any())
+      ->method('getPhoto')
+      ->will($this->returnValue(true));
+    $db->expects($this->any())
+      ->method('deletePhotoVersions')
+      ->will($this->returnValue(true));
+    $fs = $this->getMock('fs', array('deletePhoto'));
+    $fs->expects($this->any())
+      ->method('deletePhoto')
+      ->will($this->returnValue(true));
+    $this->photo->inject('db', $db);
+    $this->photo->inject('fs', $fs);
+
+    $res = $this->photo->deleteSourceFiles('foo');
+    $this->assertTrue($res);
+  }
+
+  public function testDeleteSourceCouldNotGetPhoto()
+  {
+    $db = $this->getMock('db', array('getPhoto'));
+    $db->expects($this->any())
+      ->method('getPhoto')
+      ->will($this->returnValue(false));
+    $this->photo->inject('db', $db);
+
+    $res = $this->photo->deleteSourceFiles('foo');
+    $this->assertFalse($res);
+  }
+
+  public function testDeleteSourceCouldNotDeletePhoto()
+  {
+    $db = $this->getMock('db', array('getPhoto', 'deletePhotoVersions'));
+    $db->expects($this->any())
+      ->method('getPhoto')
+      ->will($this->returnValue(true));
+    $db->expects($this->any())
+      ->method('deletePhotoVersions')
+      ->will($this->returnValue(false));
+    $fs = $this->getMock('fs', array('deletePhoto'));
+    $fs->expects($this->any())
+      ->method('deletePhoto')
+      ->will($this->returnValue(false));
+    $this->photo->inject('db', $db);
+    $this->photo->inject('fs', $fs);
+
+    $res = $this->photo->deleteSourceFiles('foo');
+    $this->assertFalse($res);
+  }
+
+  public function testDeleteSourceCouldNotDeletePhotoVersionsDb()
+  {
+    $db = $this->getMock('db', array('getPhoto', 'deletePhotoVersions'));
+    $db->expects($this->any())
+      ->method('getPhoto')
+      ->will($this->returnValue(true));
+    $db->expects($this->any())
+      ->method('deletePhotoVersions')
+      ->will($this->returnValue(false));
+    $fs = $this->getMock('fs', array('deletePhoto'));
+    $fs->expects($this->any())
+      ->method('deletePhoto')
+      ->will($this->returnValue(false));
+    $this->photo->inject('db', $db);
+    $this->photo->inject('fs', $fs);
+
+    $res = $this->photo->deleteSourceFiles('foo');
+    $this->assertFalse($res);
+  }
+
   public function testGenerateCustomKey()
   {
     $res = $this->photo->generateCustomKey(10, 15, 'CR');
@@ -259,7 +353,7 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $db = $this->getMock('db', array('getPhoto','postPhoto'));
     $db->expects($this->any())
       ->method('getPhoto')
-      ->will($this->returnValue(array('pathBase' => 'foo')));
+      ->will($this->returnValue(array('pathBase' => 'foo', 'dateTaken' => 1234)));
     $db->expects($this->any())
       ->method('postPhoto')
       ->will($this->returnValue(true));
@@ -281,7 +375,7 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $db = $this->getMock('db', array('getPhoto','postPhoto'));
     $db->expects($this->any())
       ->method('getPhoto')
-      ->will($this->returnValue(true));
+      ->will($this->returnValue(array('pathBase' => 'foo', 'dateTaken' => 1234)));
     $db->expects($this->any())
       ->method('postPhoto')
       ->will($this->returnValue(false));
@@ -303,7 +397,7 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $db = $this->getMock('db', array('getPhoto','postPhoto'));
     $db->expects($this->any())
       ->method('getPhoto')
-      ->will($this->returnValue(true));
+      ->will($this->returnValue(array('pathBase' => 'foo', 'dateTaken' => 1234)));
     $db->expects($this->any())
       ->method('postPhoto')
       ->will($this->returnValue(true));
@@ -352,11 +446,25 @@ class PhotoTest extends PHPUnit_Framework_TestCase
   {
     // This *should* work
     $now = time();
-    $ym = date('Ym');
-    $res = $this->photo->generatePaths('foobar');
-    $this->assertNotEquals("/original/{$ym}/{$now}-foobar", $res['pathOriginal'], 'original path not correct, if it is a timestamp mismatch - ignore');
-    $this->assertTrue(preg_match("#/original/{$ym}/[a-z0-9]{13}-foobar#", $res['pathOriginal']) == 1, 'original path not correct, if it is a timestamp mismatch - ignore');
-    $this->assertTrue(preg_match("#/base/{$ym}/[a-z0-9]{6}-foobar#", $res['pathBase']) == 1, 'base path not correct, if it is a timestamp mismatch - ignore');
+    $ym = date('Ym', strtotime('1/1/2000'));
+    $res = $this->photo->generatePaths('foobar.jpg', strtotime('1/1/2000'));
+    $this->assertNotEquals("/original/{$ym}/{$now}-foobar.jpg", $res['pathOriginal'], 'original path not correct, if it is a timestamp mismatch - ignore');
+    $this->assertTrue(preg_match("#/original/{$ym}/foobar-[a-z0-9]{13}\.jpg#", $res['pathOriginal']) == 1, 'original path not correct, if it is a timestamp mismatch - ignore');
+    $this->assertTrue(preg_match("#/base/{$ym}/foobar-[a-z0-9]{6}\.jpg#", $res['pathBase']) == 1, 'base path not correct, if it is a timestamp mismatch - ignore');
+  }
+
+  public function testGenerateUrlBase()
+  {
+    $user = $this->getMock('Url', array('isOwner'));
+    $user->expects($this->any())
+      ->method('isOwner')
+      ->will($this->returnValue(true));
+    $this->photo->inject('user', $user);
+
+    $res = $this->photo->generateUrlBaseOrOriginal($this->photoData, 'base');
+    $this->assertEquals('http://host/path/base', $res);
+    $res = $this->photo->generateUrlBaseOrOriginal($this->photoData, 'base', 'https');
+    $this->assertEquals('https://host/path/base', $res);
   }
 
   public function testGenerateUrlOriginal()
@@ -367,9 +475,9 @@ class PhotoTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(true));
     $this->photo->inject('user', $user);
 
-    $res = $this->photo->generateUrlOriginal($this->photoData);
+    $res = $this->photo->generateUrlBaseOrOriginal($this->photoData, 'original');
     $this->assertEquals('http://host/path/original', $res);
-    $res = $this->photo->generateUrlOriginal($this->photoData, 'https');
+    $res = $this->photo->generateUrlBaseOrOriginal($this->photoData, 'original', 'https');
     $this->assertEquals('https://host/path/original', $res);
   }
 
@@ -416,5 +524,35 @@ class PhotoTest extends PHPUnit_Framework_TestCase
   {
     $res = $this->photo->getRealDimensions(100, 100, 200, 500);
     $this->assertEquals($res, array('width'=>200, 'height'=>200));
+  }
+
+  public function testReadExifAutoRotateDisabledSuccess()
+  {
+    $exif = $this->photo->readExif($this->landscape, '0');
+    $size = getimagesize($this->landscape);
+    $this->assertEquals($size[0], $exif['width']);
+
+    $exif = $this->photo->readExif($this->portrait, '0');
+    $size = getimagesize($this->portrait);
+
+    $this->assertEquals($size[0], $exif['width']);
+  }
+
+  public function testReadExifAutoRotateEnabledSuccess()
+  {
+    if(!$this->photo->autoRotateEnabled('1'))
+    {
+      $this->markTestSkipped('Auto rotate not enabled. Perhaps exiftran is missing.');
+      return;
+    }
+
+    $exif = $this->photo->readExif($this->landscape, '1');
+    $size = getimagesize($this->landscape);
+    $this->assertEquals($size[0], $exif['width']);
+
+    $exif = $this->photo->readExif($this->portrait, '1');
+    $size = getimagesize($this->portrait);
+
+    $this->assertEquals($size[1], $exif['width']);
   }
 }

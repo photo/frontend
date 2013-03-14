@@ -43,18 +43,37 @@ class FileSystemDropboxBase
     return true;
   }
 
-  public function getFileUrl($photo)
+  public function getFileUrl($photo, $key = 'dateTaken')
   {
-    $directory = urlencode(date($this->directoryMask, $photo['dateTaken']));
+    $directory = urlencode(date($this->directoryMask, $photo[$key]));
     try
     {
       return $this->dropbox->getFileUrl(sprintf('%s/%s/%s', $this->dropboxFolder, $directory, basename($photo['pathOriginal'])));
     }
     catch(Exception $e)
     {
-      getLogger()->crit(sprintf('Could not get Dropbox file URL (%s). Message: %s', $photo['id'], $e->getMessage()));
+      getLogger()->crit(sprintf('Could not get Dropbox file URL using %s (%s). Message: %s', $key, $photo['id'], $e->getMessage()));
       return false;
     }
+  }
+
+  // Gh-1012
+  //  Since we originally used dateUploaded this ensures backwards compatability
+  public function getFilePointer($photo)
+  {
+    $url = $this->getFileUrl($photo, 'dateTaken');
+    $fp = fopen($url, 'r');
+    if(!$fp)
+    {
+      getLogger()->warn(sprintf('Could not load photo %s from dateTaken location. %s', $photo['id'], $url));
+      $url = $this->getFileUrl($photo, 'dateUploaded');
+      $fp = fopen($url, 'r');
+
+      if(!$fp)
+        getLogger()->warn(sprintf('Could not load photo %s from dateUploaded location. %s', $photo['id'], $url));
+    }
+
+    return $fp;
   }
 
   public function diagnostics()
@@ -118,7 +137,7 @@ class FileSystemDropboxBase
     return $dropboxStatus;
   }
 
-  public function putPhoto($localFile, $remoteFile)
+  public function putPhoto($localFile, $remoteFile, $dateTaken)
   {
     if(isset($_POST['uploadSource']) && $_POST['uploadSource'] === 'dropbox')
       return true;
@@ -131,9 +150,7 @@ class FileSystemDropboxBase
 
     if(strpos($remoteFile, '/original/') !== false)
     {
-      $photoObj = new Photo;
-      $exif = $photoObj->readExif($localFile);
-      $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
+      $directory = urlencode(date($this->directoryMask, $dateTaken));
       if(!$this->putFileInDirectory($directory, $localFile, basename($remoteFile)))
         return false;
     }
@@ -147,12 +164,12 @@ class FileSystemDropboxBase
 
     foreach($files as $file)
     {
-      list($localFile, $remoteFile) = each($file);
+      list($localFile, $remoteFileArr) = each($file);
+      $remoteFile = $remoteFileArr[0];
+      $dateTaken = $remoteFileArr[1];
       if(strpos($remoteFile, '/original/') !== false && file_exists($localFile))
       {
-        $photoObj = new Photo;
-        $exif = $photoObj->readExif($localFile);
-        $directory = urlencode(date($this->directoryMask, $exif['dateTaken']));
+        $directory = urlencode(date($this->directoryMask, $dateTaken));
         if(!$this->putFileInDirectory($directory, $localFile, basename($remoteFile)))
           return false;
       }

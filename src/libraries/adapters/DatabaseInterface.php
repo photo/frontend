@@ -13,11 +13,15 @@ interface DatabaseInterface
   public function diagnostics();
   // delete methods can delete or toggle status
   public function deleteAction($id);
+  public function deleteActivities();
+  public function deleteActivitiesForElement($elementId, $types);
   public function deleteAlbum($id);
   public function deleteCredential($id);
   public function deleteGroup($id);
   public function deletePhoto($photo);
   public function deletePhotoVersions($photo);
+  public function deleteRelationship($target);
+  public function deleteShareToken($id);
   public function deleteTag($id);
   public function deleteWebhook($id);
   // get methods read
@@ -34,11 +38,17 @@ interface DatabaseInterface
   public function getGroup($id = null);
   public function getGroups($email = null);
   public function getPhoto($id);
+  public function getPhotoAlbums($id);
   public function getPhotoWithActions($id);
   public function getPhotos($filters = array(), $limit = null, $offset = null);
   public function getResourceMap($id);
   public function getUser($owner = null);
   public function getUserByEmailAndPassword($email = null, $password = null);
+  public function getRelationship($target);
+  public function getShareToken($id);
+  public function getShareTokensByTarget($type, $data);
+  public function getShareTokens();
+  public function getStorageUsed();
   public function getTag($tag);
   public function getTags($filters = array());
   public function getWebhook($id);
@@ -49,6 +59,7 @@ interface DatabaseInterface
   // post methods update
   public function postAlbum($id, $params);
   public function postAlbumAdd($albumId, $type, $elementIds);
+  public function postAlbumsIncrementer($tags, $value);
   public function postAlbumRemove($albumId, $type, $elementIds);
   public function postCredential($id, $params);
   public function postGroup($id, $params);
@@ -56,16 +67,18 @@ interface DatabaseInterface
   public function postUser($params);
   public function postTag($id, $params);
   public function postTags($params);
+  public function postTagsIncrementer($tags, $value);
   public function postWebhook($id, $params);
   // put methods create but do not update
   public function putGroup($id, $params);
   public function putAction($id, $params);
-  public function putActivity($id, $params);
+  public function putActivity($id, $elementId, $params);
   public function putAlbum($id, $params);
   public function putCredential($id, $params);
   public function putPhoto($id, $params);
   public function putResourceMap($id, $params);
   public function putUser($params);
+  public function putShareToken($id, $params);
   public function putTag($id, $params);
   public function putWebhook($id, $params);
   // general methods

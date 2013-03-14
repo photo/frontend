@@ -9,14 +9,14 @@
       <div class="image-pagination">
         <?php if(!empty($photo['previous'])) { ?>
           <div class="previous">
-            <a href="<?php $this->url->photoView($photo['previous']['id'], $options); ?>" style="background:url(<?php $this->url->photoUrl($photo['previous'], $this->config->photoSizes->nextPrevious); ?>) top left no-repeat;"><span class="audible">Go to previous photo</span></a>
+            <a href="<?php $this->url->photoView($photo['previous'][0]['id'], $options); ?>" style="background:url(<?php $this->url->photoUrl($photo['previous'][0], $this->config->photoSizes->nextPrevious); ?>) top left no-repeat;"><span class="audible">Go to previous photo</span></a>
           </div>
         <?php } else { ?>
           <div class="empty"></div>
         <?php } ?>
         <?php if(!empty($photo['next'])) { ?>
           <div class="next">
-            <a href="<?php $this->url->photoView($photo['next']['id'], $options); ?>" style="background:url(<?php $this->url->photoUrl($photo['next'], $this->config->photoSizes->nextPrevious); ?>) top left no-repeat"><span class="audible">Go to next photo</span></a>
+            <a href="<?php $this->url->photoView($photo['next'][0]['id'], $options); ?>" style="background:url(<?php $this->url->photoUrl($photo['next'][0], $this->config->photoSizes->nextPrevious); ?>) top left no-repeat"><span class="audible">Go to next photo</span></a>
           </div>
         <?php } else { ?>
           <div class="empty"></div>
@@ -73,7 +73,7 @@
         <?php } ?>
         <div class="date">
           <?php echo $this->utility->dateLong($action['datePosted']); ?>
-          <?php if($this->user->isOwner()) { ?>
+          <?php if($this->user->isAdmin()) { ?>
             <form method="post" action="<?php $this->url->actionDelete($action['id']); ?>">
               <input type="hidden" name="crumb" value="<?php echo $crumb; ?>">
               (<a href="<?php $this->url->actionDelete($action['id']); ?>" class="action-delete-click" data-id="<?php $this->utility->safe($action['id']); ?>">delete</a>)

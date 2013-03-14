@@ -31,6 +31,12 @@ class Utility
     return $params;
   }
 
+  // http://en.wikipedia.org/wiki/Decimal_degrees
+  public function decreaseGeolocationPrecision($value)
+  {
+    return round($value);
+  }
+
   public function decrypt($string, $secret = null, $salt = null)
   {
     if($secret === null)
@@ -79,17 +85,21 @@ class Utility
     return dirname(dirname(dirname(__FILE__)));
   }
 
-  public function getConfigFile()
+  public function getConfigFile($new = false)
   {
-    $configFile = sprintf('%s/userdata/configs/%s.ini', $this->getBaseDir(), $this->getHost());
+    $configFile = sprintf('%s/userdata/configs/%s.ini', $this->getBaseDir(), $this->getHost($new));
     if(!getConfig()->exists($configFile))
       return false;
     return $configFile;
   }
 
-  public function getHost()
+  public function getHost($new = false)
   {
-    return $_SERVER['HTTP_HOST'];
+    if($new === false)
+      return $_SERVER['HTTP_HOST'];
+
+    $config = getConfig()->get();
+    return str_replace($config->site->rewriteHost, $config->site->baseHost, $_SERVER['HTTP_HOST']);
   }
 
   public function getLicenses($selected = null)
@@ -114,6 +124,11 @@ class Utility
       $this->licenses['']['selected'] = true;
 
     return $this->licenses;
+  }
+
+  public function getPath()
+  {
+    return $_SERVER['REDIRECT_URL'];
   }
 
   public function dateLong($ts, $write = true)
@@ -214,8 +229,12 @@ class Utility
         return false;
         break;
       case 'photo':
+        if(!empty($route) && (preg_match('#^/photo/#', $route) || preg_match('#^/p/.+#', $route)))
+          return true;
+        return false;
+        break;
       case 'photos':
-        if(!empty($route) && preg_match('#^/photo#', $route) && !preg_match('#^/photos/upload#', $route))
+        if(!empty($route) && (preg_match('#^/photos/#', $route) && !preg_match('#^/photos/upload#', $route)))
           return true;
         return false;
         break;
@@ -331,9 +350,23 @@ class Utility
       return $value;
   }
 
-  public function safe($string, $write = true)
+  public function safe($string/*[, $allowedTags], $write = true*/)
   {
-    return $this->returnValue(htmlspecialchars($string), $write);
+    $argCnt = func_num_args();
+    if($argCnt === 1)
+      return $this->returnValue(htmlspecialchars($string), true);
+
+    $args = func_get_args();
+    if(gettype($args[1]) == 'string')
+    {
+      $write = $argCnt == 3 ? $args[2] : true;
+      return $this->returnValue(strip_tags($string, $args[1]), $write);
+    }
+    else
+    {
+      $write = $argCnt == 2 ? $args[1] : true;
+      return $this->returnValue(htmlspecialchars($string), $write);
+    }
   }
 
   public function mapLinkUrl($latitude, $longitude, $zoom, $write = true)

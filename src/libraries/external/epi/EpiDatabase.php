@@ -141,7 +141,9 @@ class EpiDatabase
       if($this->_name != '')
         $dsn .= sprintf(';dbname=%s', $this->_name);
       $dsn .= ';charset=utf8';
-      $this->dbh = new PDO($dsn, $this->_user, $this->_pass);
+      $this->dbh = new PDO($dsn, $this->_user, $this->_pass, array(
+        PDO::ATTR_PERSISTENT => true
+      ));
       $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     catch(Exception $e)

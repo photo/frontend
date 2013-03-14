@@ -7,6 +7,8 @@
   */
 class AssetsController extends BaseController
 {
+  private $types, $pipeline;
+
   /**
     * Call the parent constructor
     *
@@ -15,28 +17,60 @@ class AssetsController extends BaseController
   public function __construct()
   {
     parent::__construct();
+    $this->pipeline = getAssetPipeline();
   }
 
-  public function get($type, $compression, $files)
+  public function get($version, $type, $compression, $files)
   {
     $files = (array)explode(',', $files);
-    $pipeline = getAssetPipeline();
     foreach($files as $file)
     {
       if($type === 'css')
-        $pipeline->addCss($file);
+        $this->pipeline->addCss($file);
       elseif($type === 'js')
-        $pipeline->addJs($file);
+        $this->pipeline->addJs($file);
     }
 
-    if($type === 'css')
-      header('Content-type: text/css');
-    elseif($type === 'js')
-      header('Content-type: text/javascript');
-
+    $this->pipeline->returnHeader($files[0]);
     if($compression === 'm')
-      echo $pipeline->getMinified($type);
+      echo $this->pipeline->getMinified($type, $version);
     elseif($compression === 'c')
-      echo $pipeline->getCombined($type);
+      echo $this->pipeline->getCombined($type, $version);
   }
+
+  public function lessc()
+  {
+    if(!isset($_GET['f']))
+    {
+      $this->route->run('/error/404');
+      return;
+    }
+
+    $f = $_GET['f'];
+
+    header('Content-type: text/css');
+    header(sprintf('Last-Modified: %s GMT', gmdate('D, d M Y H:i:s', strtotime('-1 year')))); 
+    header(sprintf('Etag: %s', md5(sprintf('%s~%s', $key, $f))));
+
+    if(!is_array($f))
+      $f = (array)explode(',', $f);
+
+    $theme = getTheme();
+    $less = new lessc;
+    foreach($f as $file)
+    {
+      $fullPath = realpath(sprintf('%s/%s/stylesheets/%s', $this->config->paths->themes, $theme->getThemeName(), $file));
+      if(file_exists($fullPath) && preg_match('/\.less$/', $file) === 1 && strpos($fullPath, $this->config->paths->themes) === 0)
+        echo $this->pipeline->normalizeUrls(dirname($fullPath), $less->compileFile($fullPath));
+    }
+  }
+
+  public function staticAsset($file)
+  {
+    $this->pipeline->returnHeader($file);
+    readfile(sprintf('%s/assets/%s', $this->config->paths->docroot, $file));
+    die();
+  }
+
+
 }

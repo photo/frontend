@@ -327,9 +327,10 @@ var opTheme = (function() {
       credentialDelete: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
-            url = el.attr('href')+'.json';
+            url = el.attr('href')+'.json',
+            params = {crumb: crumb.get()};
 
-        OP.Util.makeRequest(url, {}, function(response) {
+        OP.Util.makeRequest(url, params, function(response) {
           if(response.code === 204) {
             el.parent().parent().slideUp('medium', function() { this.remove(); });
             opTheme.message.confirm('Application successfully deleted.');
@@ -385,8 +386,10 @@ var opTheme = (function() {
       },
       groupEmailRemove: function(ev) {
         ev.preventDefault();
-        var el = $(ev.target).parent().parent();
+        var el = $(ev.target).parent().parent(),
+            form = el.closest('form');
         el.remove();
+        form.submit();
       },
       groupForm: function(ev) {
         ev.preventDefault();
@@ -412,7 +415,7 @@ var opTheme = (function() {
         var form = $(ev.target),
             url = form.attr('action')+'.json',
             isCreate = (url.search('create') > -1),
-            isDynamic = $('input[name="dynamic"]', form).val(),
+            isDynamic = $('input[name="dynamic"]', form).val() == "1",
             emails,
             params = {name: $('input[name="name"]', form).val()};
 
@@ -428,12 +431,13 @@ var opTheme = (function() {
         OP.Util.makeRequest(url, params, function(response) {
           var form = form;
           if(response.code === 200 || response.code === 201) {
-            if(isDynamic)
+            if(isDynamic) {
               opTheme.callback.groupPostDynamicCb(form, response.result);
-            else if(isCreate)
-              location.href = '/manage/groups?m=group-created';
-            else
+            } else if(isCreate) {
+              window.location.href = '/manage/groups?m=group-created&rnd='+Math.random()+'#group-'+response.result.id;
+            } else {
               opTheme.message.confirm('Group updated successfully.');
+            }
           } else {
             opTheme.message.error('Could not update group.');
           }
@@ -761,8 +765,9 @@ var opTheme = (function() {
       pluginStatusToggle: function(ev) {
         ev.preventDefault();
         var el = $(ev.target),
-            url = el.attr('href')+'.json';
-        OP.Util.makeRequest(url, {}, function(response){
+            url = el.attr('href')+'.json',
+            params = {crumb: crumb.get()};
+        OP.Util.makeRequest(url, params, function(response){
           var a = $(el),
               div = a.parent(),
               container = div.parent();
@@ -814,14 +819,14 @@ var opTheme = (function() {
       searchByTags: function(ev) {
         ev.preventDefault();
         var form = $(ev.target),
-          tags = $($('select[name=tags]', form)[0]).val().join(','),
+          tags = $('select[name=tags]', form).val().join(','), // TODO do we need the nested jquery objects?
           url = form.attr('action');
 
         if(tags.length > 0) {
           if(url.search('/list') > 0) {
             location.href = url.replace('/list', '')+'/tags-'+tags+'/list';
           } else {
-            form.submit();
+            location.href = url + '?tags=' + tags;
           }
         }
         return false;
@@ -855,18 +860,22 @@ var opTheme = (function() {
         $(".typeahead-tags").html(markup).chosen();
       },
       uploadCompleteSuccess: function(photoResponse) {
+        photoResponse.crumb = crumb.get();
         $("form.upload").fadeOut('fast', function() {
           OP.Util.makeRequest('/photos/upload/confirm.json', photoResponse, opTheme.callback.uploadConfirm, 'json', 'post');
-        });
-      },
-      uploadCompleteFailure: function() {
-        $("form.upload").fadeOut('fast', function() {
-          $(".upload-progress").fadeOut('fast', function() { $(".upload-warning .failed").html(failed); $(".upload-warning .total").html(total); $(".upload-warning").fadeIn('fast'); });
         });
       },
       uploadConfirm: function(response) {
         $("body.upload .upload-container").fadeOut('fast', function() { $(".upload-confirm").fadeIn('fast'); });
         $("body.upload .upload-confirm").html(response.result).show('fast');
+      },
+      uploaderReady: function() {
+        var form = $('form.upload');
+        if(typeof OPU === 'object')
+          OPU.init();
+
+        $("select.typeahead").chosen();
+        //$('select.typeahead-tags').chosen({create_option:true,persistent_create_option:true})
       },
       webhookDelete: function(ev) {
         ev.preventDefault();
@@ -888,7 +897,8 @@ var opTheme = (function() {
     init: {
       load: function(_crumb) {
         // http://stackoverflow.com/a/6974186
-        var popped = ('state' in window.history), initialURL = location.href;
+        // http://stackoverflow.com/questions/6421769/popstate-on-pages-load-in-chrome/10651028#10651028
+        var popped = ('state' in window.history && window.history.state !== null), initialURL = location.href;
 
         crumb.set(_crumb);
         OP.Tag.init();
@@ -976,6 +986,7 @@ var opTheme = (function() {
 
         OP.Util.on('upload:complete-success', opTheme.callback.uploadCompleteSuccess);
         OP.Util.on('upload:complete-failure', opTheme.callback.uploadCompleteFailure);
+        OP.Util.on('upload:uploader-ready', opTheme.callback.uploaderReady);
 
         OP.Util.on('tags:autocomplete', opTheme.callback.tagsAutocomplete);
 
@@ -1025,7 +1036,6 @@ var opTheme = (function() {
             els.each(function(i, el) {
               el = $(el);
               cls = el.attr('class');
-              console.log(cls);
               parts = cls.match(/ photo-([a-z0-9]+)/);
               if(parts.length == 2) {
                 if(ids[parts[1]] !== undefined)
@@ -1155,32 +1165,34 @@ var opTheme = (function() {
           }
         },
         upload: function() {
-          var form = $('form.upload');
-          if(typeof OPU === 'object')
-            OPU.init();
-
-          $("select.typeahead").chosen();
-          //$('select.typeahead-tags').chosen({create_option:true,persistent_create_option:true})
+          OP.Util.fire('upload:uploader-ready');
         }
       }
     }, // init
     
     message: {
-      append: function(html) {
+      append: function(html/*, isStatic*/) {
         var el = $(".message:first").clone(false),
-            last = $(".message:last");
+            last = $(".message:last"),
+            isStatic = arguments[1] || false;
 
+        // TODO differentiate on type #962
         el.addClass('alert alert-info').html(html);
         last.after(el).slideDown();
+        if(!isStatic)
+          el.delay(5000).slideUp(function(){ $(this).remove(); });
       },
-      confirm: function(messageHtml) {
-        opTheme.message.show(messageHtml, 'confirm');
+      confirm: function(messageHtml/*, isStatic*/) {
+        var isStatic = arguments[1] || false;
+        opTheme.message.show(messageHtml, 'confirm', isStatic);
       },
-      error: function(messageHtml) {
-        opTheme.message.show(messageHtml, 'error');
+      error: function(messageHtml/*, isStatic*/) {
+        var isStatic = arguments[1] || false;
+        opTheme.message.show(messageHtml, 'error', isStatic);
       },
-      show: function(messageHtml, type) {
-        opTheme.message.append(markup.message(messageHtml, type));
+      show: function(messageHtml, type/*, isStatic*/) {
+        var isStatic = arguments[2] || false;
+        opTheme.message.append(markup.message(messageHtml, type), isStatic);
       }
     }, // message
     ui: {
@@ -1260,7 +1272,7 @@ var opTheme = (function() {
                 '  <div><a class="btn small info batch-modal-click" data-controls-modal="modal" data-backdrop="static">Batch edit</a>&nbsp;<a href="#" class="btn small pin-clear-click">Or clear pins</a></div>'
               ) +
             '</div>'
-          );
+          , true);
         }
       },
       fadeAndSet: function(el, html) {

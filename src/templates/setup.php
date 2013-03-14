@@ -1,5 +1,5 @@
 <div id="setup">
-  <h1>Create your OpenPhoto site <?php if(empty($qs)) { ?><em><a href="/setup/restart">(start over)</a></em><?php } ?></h1>
+  <h1>Create your Trovebox site <?php if(empty($qs)) { ?><em><a href="/setup/restart">(start over)</a></em><?php } ?></h1>
   <ul class="nav nav-pills">
     <?php for($i = 1; $i <= 3; $i++) { ?>
       <li<?php echo ($step == $i) ? ' class="active"' : ''; ?>><a><?php echo $i; ?></a></li>
@@ -28,19 +28,14 @@
       <label for="email">Email address</label>
       <input type="text" name="email" id="email" placeholder="user@example.com" <?php if(isset($email)) { ?>value="<?php $this->utility->safe($email); ?>"<?php } ?> data-validation="required email">
 
-      <?php if($this->config->site->allowOpenPhotoLogin == 1) { ?>
+      <?php if($this->config->site->allowTroveboxLogin == 1) { ?>
         <label for="email">Password</label>
         <input type="password" name="password" id="password" placeholder="password" <?php if(isset($password)) { ?>value="<?php $this->utility->safe($password); ?>"<?php } ?> data-validation="required">
       <?php } else { ?>
         <input type="hidden" name="password" value="">
       <?php } ?>
 
-      <label for="theme">Select a Theme</label>
-      <select name="theme">
-        <?php foreach($themes as $thisTheme) { ?>
-          <option value="<?php $this->utility->safe($thisTheme); ?>" <?php if($theme == $thisTheme){ ?> selected="selected" <?php } ?>><?php echo ucwords($this->utility->safe($thisTheme, false)); ?></option>
-        <?php } ?>
-      </select>
+      <input type="hidden" name="theme" value="fabrizio1.0">
 
       <div class="btn-toolbar">
         <?php if(isset($_GET['edit'])) { ?><a class="btn" href="/">Cancel</a><?php } ?>
@@ -61,11 +56,7 @@
         </select>
       <?php } ?>
 
-      <label>Select Database</label>
-      <select name="database">
-        <option value="SimpleDb"<?php echo ($database == 'SimpleDb') ? ' selected="selected"' : '' ?>>Amazon SimpleDb</option>
-        <option value="MySql"<?php echo ($database == 'MySql') ? ' selected="selected"' : '' ?>>MySQL</option>
-      </select>
+      <input type="hidden" name="database" value="MySql">
 
       <label for="fileSystem">Select File System</label>
       <select name="fileSystem">
@@ -73,6 +64,7 @@
         <option value="S3Dropbox"<?php echo ($filesystem == 'S3Dropbox') ? ' selected="selected"' : '' ?>>Amazon S3 + Dropbox</option>
         <option value="Local"<?php echo ($filesystem == 'Local') ? ' selected="selected"' : '' ?>>Local filesystem</option>
         <option value="LocalDropbox"<?php echo ($filesystem == 'LocalDropbox') ? ' selected="selected"' : '' ?>>Local filesystem + Dropbox</option>
+        <option value="DreamObjects"<?php echo ($filesystem == 'DreamObjects') ? ' selected="selected"' : '' ?>>DreamObjects</option>
       </select>
 
       <div class="btn-toolbar">
@@ -100,34 +92,24 @@
             <input type="text" name="s3Bucket" id="s3Bucket" size="50" placeholder="Globally unique bucket name" value="<?php $this->utility->safe($_SERVER['HTTP_HOST']); ?>" data-validation="required">
           <?php } ?>
         <?php } ?>
-
-        <?php if($usesSimpleDb) { ?>
-          <label for="simpleDbDomain">Amazon SimpleDb Domain</label>
-          <?php if(isset($simpleDbDomain) && !empty($simpleDbDomain)) { ?>
-            <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" value="<?php $this->utility->safe($simpleDbDomain); ?>" data-validation="required">
-          <?php } else { ?>
-            <input type="text" name="simpleDbDomain" id="simpleDbDomain" size="50" placeholder="SimpleDb domain name (i.e. openphoto)" value="openphoto" data-validation="required">
-          <?php } ?>
-        <?php } ?>
       <?php } ?>
-      <?php if(isset($usesMySql) && !empty($usesMySql)) { ?>
-        <h3>Enter your MySQL credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
+      <h3>Enter your MySQL credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
 
-        <label for="mySqlHost">MySQL Host <em>(port is optional)</em></label>
-        <input type="text" name="mySqlHost" id="mySqlHost" placeholder="Your MySql host (i.e. 127.0.0.1:3306)" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlHost; ?>">
+      <label for="mySqlHost">MySQL Host <em>(port is optional)</em></label>
+      <input type="text" name="mySqlHost" id="mySqlHost" placeholder="Your MySql host (i.e. 127.0.0.1:3306)" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlHost; ?>">
 
-        <label for="mySqlUser">MySQL Username</label>
-        <input type="text" name="mySqlUser" id="mySqlUser" placeholder="Your MySql username" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlUser; ?>">
+      <label for="mySqlUser">MySQL Username</label>
+      <input type="text" name="mySqlUser" id="mySqlUser" placeholder="Your MySql username" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlUser; ?>">
 
-        <label for="mySqlPassword">MySQL Password</label>
-        <input type="password" name="mySqlPassword" id="mySqlPassword" placeholder="Your MySql password" size="50" autocomplete="off" value="<?php echo $mySqlPassword; ?>">
+      <label for="mySqlPassword">MySQL Password</label>
+      <input type="password" name="mySqlPassword" id="mySqlPassword" placeholder="Your MySql password" size="50" autocomplete="off" value="<?php echo $mySqlPassword; ?>">
 
-        <label for="mySqlDb">MySQL Database <em>(make sure this database already exists)</em></label>
-        <input type="text" name="mySqlDb" placeholder="Name of your MySql database" id="mySqlDb" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlDb; ?>">
+      <label for="mySqlDb">MySQL Database <em>(make sure this database already exists)</em></label>
+      <input type="text" name="mySqlDb" placeholder="Name of your MySql database" id="mySqlDb" size="50" autocomplete="off" data-validation="required" value="<?php echo $mySqlDb; ?>">
 
-        <label for="mySqlTablePrefix">Table prefix <em>(optional)</em></label>
-        <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
-      <?php } ?>
+      <label for="mySqlTablePrefix">Table prefix <em>(optional)</em></label>
+      <input type="text" name="mySqlTablePrefix" placeholder="A prefix for all OpenPhoto tables" id="mySqlTablePrefix" size="50" autocomplete="off" value="<?php echo $mySqlTablePrefix; ?>">
+
       <?php if((isset($usesLocalFs) && !empty($usesLocalFs))) { ?>
         <h3>Enter your local file system credentials <!--<em>(<a href="">what's this?</a>)</em>--></h3>
         <label for="fsRoot">File system root <em>(Must be writable by Apache user)</em></label>
@@ -143,6 +125,12 @@
         <input type="hidden" name="dropboxTokenSecret" value="<?php $this->utility->safe($dropboxTokenSecret); ?>">
         <input type="hidden" name="dropboxFolder" value="<?php $this->utility->safe($dropboxFolder); ?>">
       <?php } ?>
+
+      <p>
+        <strong>Important!</strong> You'll need to create the triggers in this gist. (<a href="https://gist.github.com/jmathai/5165811">https://gist.github.com/jmathai/5165811</a>)
+        <script src="https://gist.github.com/jmathai/5165811.js"></script>
+      </p>
+
       <div class="btn-toolbar">
         <?php if(isset($_GET['edit'])) { ?><a class="btn" href="/">Cancel</a><?php } ?>
         <button type="submit" class="btn btn-primary">Complete setup</button>

@@ -22,7 +22,7 @@ class ApiPluginController extends ApiBaseController
     $pluginObj = getPlugin();
     $pluginsAll = $pluginObj->getAll();
     $pluginsActive = $pluginObj->getActive();
-    $pluginWhitelist = getConfig()->get('site')->pluginWhitelist;
+    $pluginWhitelist = getConfig()->get('plugins')->pluginWhitelist;
     if($pluginWhitelist)
       $pluginWhitelist = (array)explode(',', $pluginWhitelist);
 
@@ -39,6 +39,7 @@ class ApiPluginController extends ApiBaseController
   public function update($plugin)
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
     $params = $_POST;
     $pluginObj = getPlugin();
     $conf = $pluginObj->loadConf($plugin);
@@ -62,6 +63,7 @@ class ApiPluginController extends ApiBaseController
   public function updateStatus($plugin, $status)
   {
     getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
     $siteConfig = getUserConfig()->getSiteSettings();
     $plugins = (array)explode(',', $siteConfig['plugins']['activePlugins']);
     switch($status)
@@ -92,7 +94,6 @@ class ApiPluginController extends ApiBaseController
   public function view($plugin)
   {
     getAuthentication()->requireAuthentication();
-    getAuthentication()->requireCrumb();
     $siteConfig = getUserConfig()->getSiteSettings();
     $plugins = (array)explode(',', $siteConfig['plugins']['activePlugins']);
     if(!in_array($plugin, $plugins))

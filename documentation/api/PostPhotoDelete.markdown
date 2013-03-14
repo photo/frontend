@@ -16,9 +16,9 @@ Delete Photo
 ----------------------------------------
 
 <a name="purpose"></a>
-### Purpose of the delete action API
+### Purpose of the delete photo API
 
-Use this API to delete an action.
+Use this API to delete an photo.
 
 ----------------------------------------
 
@@ -27,7 +27,7 @@ Use this API to delete an action.
 
 _Authentication: required_
 
-    POST /action/:id/delete.json
+    POST /photo/:id/delete.json
 
 <a name="parameters"></a>
 ### Parameters
@@ -42,13 +42,13 @@ _None_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -X POST -h current.openphoto.me -e /action/a/delete.json
+    ./openphoto -p -X POST -h current.trovebox.com -e /photo/a/delete.json
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])
 
     $client = new OpenPhotoOAuth($host, $consumerKey, $consumerSecret, $oauthToken, $oauthTokenSecret);
-    $response = $client->post("/action/a/delete.json");
+    $response = $client->post("/photo/a/delete.json");
 
 ----------------------------------------
 

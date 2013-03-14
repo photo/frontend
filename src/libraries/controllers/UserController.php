@@ -14,7 +14,21 @@ class UserController extends BaseController
   public function __construct()
   {
     parent::__construct();
-    $this->theme->setTheme(); // defaults
+  }
+
+  /**
+    * Login page
+    *
+    * @return void
+    */
+  public function login()
+  {
+    $userObj = new User;
+    $redirect = '/';
+    if(isset($_GET['r']) && strpos($_GET['r'], '/') === 0)
+      $redirect = $_GET['r'];
+    $body = $this->theme->get('login.php', array('r' => $redirect));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'settings'));
   }
 
   /**
@@ -44,39 +58,5 @@ class UserController extends BaseController
   {
     $res = $this->api->invoke('/user/logout.json', EpiRoute::httpGet);
     $this->route->redirect('/');
-  }
-
-  /**
-    * Generate a mobiel passphrase.
-    *
-    * @return void
-    */
-  public function mobilePassphrase()
-  {
-    getAuthentication()->requireAuthentication();
-    $userObj = new User;
-    $userObj->setMobilePassphrase();
-    $this->route->redirect('/user/settings');
-  }
-
-  /**
-    * User's settings page
-    *
-    * @return void
-    */
-  public function settings()
-  {
-    getAuthentication()->requireAuthentication();
-    $userObj = new User;
-    $credentials = $this->api->invoke('/oauth/list.json', EpiRoute::httpGet);
-    $groups = $this->api->invoke('/groups/list.json', EpiRoute::httpGet);
-    $webhooks = $this->api->invoke('/webhooks/list.json', EpiRoute::httpGet);
-    $plugins = $this->api->invoke('/plugins/list.json', EpiRoute::httpGet);
-    $mobilePassphrase = $userObj->getMobilePassphrase();
-    if(!empty($mobilePassphrase))
-      $mobilePassphrase['minutes'] = ceil(($mobilePassphrase['expiresAt']-time())/60);
-    $template = sprintf('%s/settings.php', $this->config->paths->templates);
-    $body = $this->template->get($template, array('crumb' => getSession()->get('crumb'), 'plugins' => $plugins['result'], 'credentials' => $credentials['result'], 'webhooks' => $webhooks['result'], 'groups' => $groups['result'], 'mobilePassphrase' => $mobilePassphrase));
-    $this->theme->display('template.php', array('body' => $body, 'page' => 'settings'));
   }
 }

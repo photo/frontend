@@ -1,6 +1,4 @@
 <div class="manage password">
-  <?php echo $navigation; ?>
-
   <form class="well" method="post">
     <h2>So you forgot your password, huh?</h2>
     <p>

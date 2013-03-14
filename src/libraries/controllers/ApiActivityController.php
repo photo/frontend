@@ -20,7 +20,16 @@ class ApiActivityController extends ApiBaseController
 
   public function create()
   {
-    $status = $this->activity->create($_POST);
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $attributes = $_POST;
+    if(isset($attributes['crumb']))
+      unset($attributes['crumb']);
+
+    $elementId = $attributes['elementId'];
+    unset($attributes['elementId']);
+
+    $status = $this->activity->create($elementId, $attributes);
     if($status !== false)
       return $this->success('Created activity for user', true);
     else
@@ -37,8 +46,20 @@ class ApiActivityController extends ApiBaseController
 
     if($activities !== false)
       return $this->success("User's list of activities", $activities);
-    else
+    else{      
       return $this->error('Could not get activities', false);
+    }
+  }
+
+  public function purge()
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $status = $this->activity->purge();
+    if($status !== false)
+      return $this->success('Purged user activities', true);
+    else
+      return $this->error('Purged user activities', false);
   }
 
   public function view($id)

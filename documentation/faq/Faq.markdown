@@ -1,7 +1,8 @@
 Frequently Asked Questions
 =======================
 
-Here are some questions that people have about The OpenPhoto Project. If you have one that's not on this list send us a message via <a href="https://twitter.com/OpenPhoto">Twitter</a> or <a href="mailto:support@openphoto.me">email</a>.
+This is a list of common questions that people have about The Photo Project.
+If you have one which is not on this list send us a message via <a href="http://twitter.com/photo">Twitter</a> or <a href="mailto:hello@openphoto.me">email</a>.
 
 ### What is OpenPhoto?
 OpenPhoto is a photo hosting service that puts you in control. It lets you import, archive, and organize your photos on OpenPhoto's servers or your personal cloud accounts such as Dropbox or Amazon S3. Your choice.
@@ -49,8 +50,8 @@ Not directly through OpenPhoto, but you can use sites like ifttt or Pi.pe that w
 
 ## Photo Management
 
-### How do I upload a photo?
-Go to your OpenPhoto site (it'll look like yourusername.openphoto.me) and click Upload. Click Add Photos and add the photos you'd like to upload. You can also add attributes that'll apply to all the photos uploaded in that batch, such as a tag, an album, a privacy setting, or a license.
+If you'd rather not install the software yourself you can <a href="http://trovebox.com">sign up for a hosted account</a>.
+The hosted account may or may not be free depending on the service and what features you use.
 
 ### How do I delete a photo?
 Visit Photos under the Manage dropdown menu at your OpenPhoto site while logged in. From there, hover over the photo(s) you want to delete and click the checkmark that appears. Click Batch Edit and select Delete.

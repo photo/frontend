@@ -53,7 +53,7 @@ _Authentication: required_
 #### Command Line (using [openphoto-php][openphoto-php])
 
     source secrets.sh
-    ./openphoto -p -X POST -h current.openphoto.me -e /photo/a/update.json -F 'title=My Photo Title' -F 'tags=sunnyvale,downtown'
+    ./openphoto -p -X POST -h current.trovebox.com -e /photo/a/update.json -F 'title=My Photo Title' -F 'tags=sunnyvale,downtown'
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])

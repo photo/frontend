@@ -1,10 +1,4 @@
 <?php
-class EpiRoute
-{
-  const httpGet = 'GET';
-  const httpPost = 'POST';
-}
-
 class UtilityTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()
@@ -50,6 +44,18 @@ class UtilityTest extends PHPUnit_Framework_TestCase
   {
     $res = $this->utility->callApis(null, 1/*not null*/);
     $this->assertEquals($res, array(), 'When passing null an empty array should be returned');
+  }
+
+  public function testDecreaseGeolocationPrecisionRoundUp()
+  {
+    $res = $this->utility->decreaseGeolocationPrecision(12345.6789);
+    $this->assertEquals(12346, $res, 'decrypted string is not correct');
+  }
+
+  public function testDecreaseGeolocationPrecisionRoundDown()
+  {
+    $res = $this->utility->decreaseGeolocationPrecision(12345.45678);
+    $this->assertEquals(12345, $res, 'decrypted string is not correct');
   }
 
   public function testDecrypt()
@@ -175,7 +181,11 @@ RES;
 
     $_GET['__route__'] = '/photos/one/two/three';
     $res = $this->utility->isActiveTab('photo');
-    $this->assertTrue($res, '/photos/one/two/three  not photo tab');
+    $this->assertFalse($res);
+
+    $_GET['__route__'] = '/photos/upload';
+    $res = $this->utility->isActiveTab('photo');
+    $this->assertFalse($res);
 
     $_GET['__route__'] = '/tags/list';
     $res = $this->utility->isActiveTab('tags');
@@ -184,6 +194,13 @@ RES;
     $_GET['__route__'] = '/photos/upload';
     $res = $this->utility->isActiveTab('upload');
     $this->assertTrue($res, '/photos/upload not upload tab');
+  }
+
+  public function testGetHostSuccess()
+  {
+    $_SERVER['HTTP_HOST'] = 'foobar';
+    $res = $this->utility->getHost();
+    $this->assertEquals('foobar', $res);
   }
   
   // TODO implement some sort of test
@@ -250,6 +267,12 @@ RES;
   {
     $res = $this->utility->safe('Hello " there', false);
     $this->assertEquals('Hello &quot; there', $res, 'content not properly safed');
+  }
+
+  public function testSafeWithTags()
+  {
+    $res = $this->utility->safe('Hello " <a href="">there</a> <script>location.href="http://google.com";</script>', '<a>', false);
+    $this->assertEquals('Hello " <a href="">there</a> location.href="http://google.com";', $res, 'content not properly safed with tags allowed');
   }
 
   // TODO populate this test

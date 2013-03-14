@@ -49,11 +49,12 @@ class GeneralController extends BaseController
     */
   public function home()
   {
+    
     $template = $this->utility->getTemplate('front.php');
     if(!$this->theme->fileExists($template))
       $this->route->redirect($this->url->photosView(null, false));
 
-    $apisToCall = getConfig()->get('frontApis');
+    $apisToCall = $this->config->frontApis;
     $params = $this->utility->callApis($apisToCall);
     $body = $this->theme->get($template, $params);
     $this->plugin->setData('page', 'front');
@@ -69,5 +70,32 @@ class GeneralController extends BaseController
   {
     $this->theme->setTheme(); // defaults
     $this->theme->display($this->utility->getTemplate('maintenance.php'));
+  }
+
+  /**
+    * Options calls for XHR
+    *
+    * @return string Standard JSON envelope
+    */
+  public function options()
+  {
+    header('Access-Control-Allow-Headers: X-Requested-With');
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Max-Age: 60');
+    die();
+  }
+
+  /**
+   * Robots.txt
+   * @return string Robots.txt file
+   */
+  public function robots()
+  {
+    $params = array(
+      'hideFromSearchEngines' => $this->config->site->hideFromSearchEngines,
+      'hideFromTwitterBot' => false
+    );
+    $template = sprintf('%s/robots.txt', $this->config->paths->templates);
+    $this->template->display($template, $params);
   }
 }

@@ -1,0 +1,138 @@
+/**
+ * TroveBox User Badge
+ */
+.trovebox {
+  .userbadge {
+    
+    margin: 10px 0;
+    
+    .avatar {
+      // don't use gravatar
+      i {
+        font-size:@badge_height;
+        line-height: @badge_height;
+        vertical-align: middle;
+      }
+      img {
+        height: @badge_height;
+        border-radius: 10px;
+        vertical-align: middle;
+      }
+    }
+    
+    .tray-wrap {
+      
+      
+      .tray {
+        display: inline-block;
+        margin: 0 0 0 20px;
+        border-left: 1px solid #ccc;
+        height: @badge_height;
+        line-height: @badge_height;
+      
+        .details {
+          vertical-align: middle;
+          display: inline-block;
+          padding: 0;
+          margin: 0;
+          
+          h5 {
+            padding: 0 0 0 20px;
+            display: none;
+            line-height: 1.1em;
+            font-size: 1.2em;
+            margin: 0 0 8px;
+          }
+          
+          > ul {
+            display: block;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            line-height: 0;
+          
+            > li {
+              text-align: center;
+              line-height: 1.2em;
+              list-style: none;
+              display: inline-block;
+              vertical-align: middle;
+              margin-left: 20px;
+              
+              i {
+                font-size: 19px;
+                .opacity(70);
+              }
+              
+              .number {
+                font-size: 1.3em;
+                line-height: 1.4em;
+              }
+              
+              .title {
+                font-size: .8em;
+                line-height: 1.2em;
+              }
+              
+              .number, .title {
+                display: block;
+              }
+              
+              a {
+                color: inherit;
+                &:hover {
+                  color: inherit;
+                  text-decoration: none;
+                  i {
+                    .opacity(100);
+                  }
+                  
+                  .title {
+                    color: @color_brand;
+                  }
+                }
+              }
+            }  
+          }
+        }
+      }
+    }
+    
+    &.userbadge-light {
+      h4 {
+        display: none;
+      }
+      .tray-wrap {
+        .tray {
+          margin-left: 10px;
+          .details {
+            h5 {
+              display: block;
+              font-weight: normal;
+              font-size: 15px;
+              padding-left: 12px;
+            }
+            
+            > ul {
+              margin-left: 10px;
+              > li {
+                font-size: 14px;
+                line-height: 1em;
+                margin-left: 2px;
+                .number, .title {
+                  display: none;
+                }
+                > a {
+                  i {
+                    font-size: 14px;
+                    
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -20,7 +20,7 @@
   <br clear="all">
   <span class="paginationbottom"><?php $this->theme->display('partials/pagination.php', array_merge($pages, array('labelPosition' => 'bottom'))); ?></span>
 <?php } else { ?>
-  <?php if($this->user->isOwner()) { ?>
+  <?php if($this->user->isAdmin()) { ?>
     <a href="<?php $this->url->photoUpload(); ?>" class="link" title="Start uploading now!"><img src="<?php $this->theme->asset('image', 'front.png'); ?>" class="front" /></a>
     <h1>There don't seem to be any photos. You should <a href="<?php $this->url->photosUpload(); ?>" class="link">upload</a> some.</h1>
     <p>

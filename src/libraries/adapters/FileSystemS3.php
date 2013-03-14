@@ -12,7 +12,9 @@ class FileSystemS3 implements FileSystemInterface
     * @access private
     * @var array
     */
-  private $bucket, $config, $fs;
+  const uploadTypeAttach = 'attachment';
+  const uploadTypeInline = 'inline';
+  private $bucket, $config, $fs, $uploadType = self::uploadTypeAttach;
 
   /**
     * Constructor
@@ -137,8 +139,9 @@ class FileSystemS3 implements FileSystemInterface
     * @param string $acl Permission setting for this photo.
     * @return boolean
     */
-  public function putPhoto($localFile, $remoteFile, $acl = AmazonS3::ACL_PUBLIC)
+  public function putPhoto($localFile, $remoteFile, $dateTaken)
   {
+    $acl = AmazonS3::ACL_PUBLIC;
     if(!file_exists($localFile))
     {
       getLogger()->warn("The photo {$localFile} does not exist so putPhoto failed");
@@ -146,7 +149,7 @@ class FileSystemS3 implements FileSystemInterface
     }
 
     $remoteFile = $this->normalizePath($remoteFile);
-    $opts = array('fileUpload' => $localFile, 'acl' => $acl, 'contentType' => 'image/jpeg');
+    $opts = $this->getUploadOpts($localFile, $acl);
     $res = $this->fs->create_object($this->bucket, $remoteFile, $opts);
     if(!$res->isOK())
       getLogger()->crit('Could not put photo on the file system: ' . var_export($res, 1));
@@ -162,13 +165,16 @@ class FileSystemS3 implements FileSystemInterface
     * @param string $acl Permission setting for this photo.
     * @return boolean
     */
-  public function putPhotos($files, $acl = AmazonS3::ACL_PUBLIC)
+  public function putPhotos($files)
   {
+    $acl = AmazonS3::ACL_PUBLIC;
     $queue = $this->getBatchRequest();
     foreach($files as $file)
     {
-      list($localFile, $remoteFile) = each($file);
-      $opts = array('fileUpload' => $localFile, 'acl' => $acl, 'contentType' => 'image/jpeg');
+      list($localFile, $remoteFileArr) = each($file);
+      $remoteFile = $remoteFileArr[0];
+      $dateTaken = $remoteFileArr[1];
+      $opts = $this->getUploadOpts($localFile, $acl);
       $remoteFile = $this->normalizePath($remoteFile);
       $this->fs->batch($queue)->create_object($this->bucket, $remoteFile, $opts);
     }
@@ -201,6 +207,15 @@ class FileSystemS3 implements FileSystemInterface
   }
 
   /**
+    * Return any meta data which needs to be stored in the photo record
+    * @return array
+    */
+  public function getMetaData($localFile)
+  {
+    return array();
+  }
+
+  /**
     * Initialize the remote file system by creating buckets and setting permissions and settings.
     * This is called from the Setup controller.
     * @return boolean
@@ -226,6 +241,7 @@ class FileSystemS3 implements FileSystemInterface
       }
     }
 
+    // DreamObjects doesn't seem to support this #1000
     // TODO add versioning?
     // Set a policy for this bucket only
     $policy = new CFPolicy($this->fs, array(
@@ -267,5 +283,41 @@ class FileSystemS3 implements FileSystemInterface
   public function normalizePath($path)
   {
     return preg_replace('/^\/+/', '', $path);
+  }
+
+  public function setHostname($hostname)
+  {
+    $this->fs->set_hostname($hostname);
+    $this->fs->allow_hostname_override(false);
+    $this->fs->enable_path_style();
+  }
+
+  public function setSSL($bool)
+  {
+    $this->fs->use_ssl = $bool;
+  }
+
+  public function setUploadType($type)
+  {
+    $this->uploadType = $type;
+  }
+
+  public function getUploadOpts($localFile, $acl)
+  {
+    $opts = array('acl' => $acl, 'contentType' => 'image/jpeg');
+    if($this->uploadType === self::uploadTypeAttach)
+      $opts['fileUpload'] = $localFile;
+    elseif($this->uploadType === self::uploadTypeInline)
+      $opts['body'] = file_get_contents($localFile);
+
+    if(isset($this->headers))
+    {
+      if(isset($opt['headers']))
+        $opts['headers'] = array_merge($this->headers, $opts['headers']);
+      else
+        $opts['headers'] = $this->headers;
+    }
+    
+    return $opts;
   }
 }

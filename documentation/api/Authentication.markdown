@@ -3,8 +3,8 @@ Authentication using OAuth 1.0a
 
 ### Using OAuth (1.0a)
 
-A full introduction to OAuth is beyond the scope of the OpenPhoto documentation.
-In all reality you probably don't need to understand all the ins and outs of OAuth; just grab one of our libraries and start building.
+A full introduction to OAuth is beyond the scope of the Trovebox documentation.
+In all reality you probably don't need to understand the ins and outs of OAuth, just grab one of our libraries.
 
 * <a href="https://github.com/photo/openphoto-php">openphoto/openphoto-php</a> - Our PHP language binding.
 * <a href="https://github.com/photo/openphoto-ruby">openphoto/openphoto-ruby</a> - Our Ruby language binding.
@@ -14,9 +14,9 @@ In all reality you probably don't need to understand all the ins and outs of OAu
 
 ### Obtaining a consumer key and secret
 
-Since OpenPhoto is distributed the flow to obtain a consumer key and secret differs slightly from typical OAuth applications.
+Since Trovebox is distributed the flow to obtain a consumer key and secret differs slightly from typical OAuth applications.
 Typically you would sign up for an application ID and be given a key and secret to be used with your app.
-OpenPhoto differs because the host you'll be sending requests to is arbitrary and there's no central application repository.
+Trovebox differs because the host you'll be sending requests to is arbitrary and there's no central application repository.
 
 ### Resources on the web
 

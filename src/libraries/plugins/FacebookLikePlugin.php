@@ -15,12 +15,34 @@ class FacebookLikePlugin extends PluginBase
 
   public function renderHead()
   {
+    $page = $this->plugin->getData('page');
+    if($page !== 'photos' && $page !== 'photo-detail' && $page !== 'albums')
+      return;
+
+    $photo = null;
+    if($page === 'photos')
+    {
+      $photo = array_shift($this->plugin->getData('photos'));
+    }
+    elseif($page === 'photo-detail')
+    {
+      $photo = $this->plugin->getData('photo');
+    }
+    elseif($page === 'albums')
+    {
+      $albums = $this->plugin->getData('albums');
+      if(count($albums) > 0 && !empty($albums[0]['cover']))
+        $photo = $albums[0]['cover'];
+    }
+
+    if(empty($photo))
+      return;
+
     $utility = new Utility;
-    $photo = $this->plugin->getData('photo');
     $tags = '';
-    $title = $photo['title'] !== '' ? $photo['title'] : "{$photo['filenameOriginal']} on OpenPhoto";
+    $title = $photo['title'] !== '' ? $photo['title'] : "{$photo['filenameOriginal']} on Trovebox";
     $tags .= $this->addTag('og:site_name', 
-      sprintf('%s OpenPhoto site', 
+      sprintf('%s Trovebox site', 
         ucwords(
           $utility->posessive(
             $utility->getEmailHandle($this->config->user->email, false),
@@ -56,6 +78,7 @@ MKP;
       $value = htmlspecialchars($value);
       return <<<MKP
 <meta property="{$name}" content="{$value}"/>
+
 MKP;
     }
   }
