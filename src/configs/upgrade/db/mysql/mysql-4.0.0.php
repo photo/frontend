@@ -97,7 +97,6 @@ $sql = <<<SQL
 SQL;
 $status = $status && mysql_4_0_0($sql);
 
-
 $sql = <<<SQL
   DROP TRIGGER IF EXISTS `{$this->mySqlTablePrefix}increment_album_photo_count`;
 SQL;
@@ -209,5 +208,3 @@ function mysql_4_0_0($sql, $params = array())
 }
 
 return $status;
-
-

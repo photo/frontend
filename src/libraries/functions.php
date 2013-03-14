@@ -155,9 +155,6 @@ function getFs(/*$type, $useCache*/)
     case 'S3Dropbox':
       $fs = new FileSystemS3Dropbox();
       break;
-    case 'S3Nirvanix':
-      $fs = new FileSystemS3Nirvanix();
-      break;
     case 'DreamObjects':
       $fs = new FileSystemDreamObjects();
       break;
