@@ -67,7 +67,6 @@ SQL;
     `extra` text,
     `countPublic` int(10) unsigned NOT NULL DEFAULT '0',
     `countPrivate` int(10) unsigned NOT NULL DEFAULT '0',
-    `visible` tinyint(1) NOT NULL DEFAULT '1',
     PRIMARY KEY `owner` (`owner`,`id`)
   ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SQL;
@@ -127,44 +126,6 @@ SQL;
     UNIQUE KEY `id` (`owner`,`type`,`element`,`album`),
     INDEX (`owner`,`album`)
   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-SQL;
-  mysql_base($sql);
-
-  $sql = <<<SQL
-    DROP TRIGGER IF EXISTS `{$this->mySqlTablePrefix}increment_album_photo_count`;
-SQL;
-  mysql_base($sql);
-
-  $sql = <<<SQL
-DELIMITER ##
-CREATE
-TRIGGER update_album_counts_on_insert
-AFTER INSERT ON elementAlbum
-FOR EACH ROW
-BEGIN
-  SET @countPublic=(SELECT COUNT(*) FROM {$this->mySqlTablePrefix}photo AS p INNER JOIN {$this->mySqlTablePrefix}elementAlbum AS ea ON p.id = ea.element WHERE ea.owner=NEW.owner AND ea.album=NEW.album AND p.owner=NEW.owner AND p.permission='1');
-  SET @countPrivate=(SELECT COUNT(*) FROM {$this->mySqlTablePrefix}photo AS p INNER JOIN {$this->mySqlTablePrefix}elementAlbum AS ea ON p.id = ea.element WHERE ea.owner=NEW.owner AND ea.album=NEW.album AND p.owner=NEW.owner);
-  UPDATE {$this->mySqlTablePrefix}album SET countPublic=@countPublic, countPrivate=@countPrivate WHERE owner=NEW.owner AND id=NEW.album;
-END##
-SQL;
-  mysql_base($sql);
-
-  $sql = <<<SQL
-    DROP TRIGGER IF EXISTS `{$this->mySqlTablePrefix}decrement_album_photo_count`;
-SQL;
-  mysql_base($sql);
-
-  $sql = <<<SQL
-DELIMITER ##
-CREATE
-TRIGGER update_album_counts_on_delete
-AFTER DELETE ON elementAlbum
-FOR EACH ROW
-BEGIN
-  SET @countPublic=(SELECT COUNT(*) FROM {$this->mySqlTablePrefix}photo AS p INNER JOIN {$this->mySqlTablePrefix}elementAlbum AS ea ON p.id = ea.element WHERE ea.owner=OLD.owner AND ea.album=OLD.album AND p.owner=OLD.owner AND p.permission='1');
-  SET @countPrivate=(SELECT COUNT(*) FROM {$this->mySqlTablePrefix}photo AS p INNER JOIN {$this->mySqlTablePrefix}elementAlbum AS ea ON p.id = ea.element WHERE ea.owner=OLD.owner AND ea.album=OLD.album AND p.owner=OLD.owner);
-  UPDATE {$this->mySqlTablePrefix}album SET countPublic=@countPublic, countPrivate=@countPrivate WHERE owner=OLD.owner AND id=OLD.album;
-END##
 SQL;
   mysql_base($sql);
 
