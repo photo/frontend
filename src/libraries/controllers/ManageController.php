@@ -24,51 +24,34 @@ class ManageController extends BaseController
 
   public function albums()
   {
-    // TODO add pagination to albums
-    $albumsResp = $this->api->invoke('/albums/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => PHP_INT_MAX)));
-    $albums = $albumsResp['result'];
-    $groupsResp = $this->api->invoke('/groups/list.json');
-    $groups = $groupsResp['result'];
-    $albumAddForm = $this->template->get(sprintf('%s/manage-album-form.php', $this->config->paths->templates), array('groups' => $groups));
-    $bodyTemplate = sprintf('%s/manage-albums.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('albums' => $albums, 'albumAddForm' => $albumAddForm, 'groups' => $groups, 'crumb' => $this->session->get('crumb')));
-    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
+    $this->route->redirect('/albums/list');
   }
 
   public function apps()
   {
-    $credentialsResp = $this->api->invoke('/oauth/list.json');
-    $credentials = $credentialsResp['result'];
-    $pluginsResp = $this->api->invoke('/plugins/list.json');
-    $plugins = $pluginsResp['result'];
-    $bodyTemplate = sprintf('%s/manage-apps.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('credentials' => $credentials, 'plugins' => $plugins, 'crumb' => $this->session->get('crumb')));
-    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-apps'));
+    $this->route->redirect('/manage/settings#apps');
   }
 
   public function appsCallback()
   {
-    $this->route->redirect('/manage/apps?m=app-created');
+    $notification = new Notification;
+    $notification->add('Your app has been successfully created. Take a look at <a href="#apps">your apps</a>.', Notification::typeFlash);
+    $this->route->redirect('/manage/settings#apps');
   }
 
   public function features()
   {
-    $this->route->redirect('/manage/settings');
+    $this->route->redirect('/manage/settings#settings');
   }
 
   public function home()
   {
-    $this->route->redirect('/manage/photos');
+    $this->route->redirect('/manage/settings');
   }
 
   public function groups()
   {
-    $groupsResp = $this->api->invoke('/groups/list.json');
-    $groups = $groupsResp['result'];
-    $groupAddForm = $this->template->get(sprintf('%s/manage-group-form.php', $this->config->paths->templates), array('groups' => $groups));
-    $bodyTemplate = sprintf('%s/manage-groups.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('groupAddForm' => $groupAddForm, 'groups' => $groups, 'crumb' => getSession()->get('crumb')));
-    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-groups'));
+    $this->route->redirect('/manage/settings');
   }
 
   public function passwordReset($token)
@@ -88,33 +71,39 @@ class ManageController extends BaseController
 
   public function photos()
   {
-    $photosApiParams = array('_GET' => array_merge($_GET, array('returnSizes' => '160x160', 'pageSize' => 18)));
-    $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, $photosApiParams);
-    $photos = $photosResp['result'];
-
-    $pages = array('pages' => array());
-    if(!empty($photos))
-    {
-      $pages['pages'] = $this->utility->getPaginationParams($photos[0]['currentPage'], $photos[0]['totalPages'], $this->config->pagination->pagesToDisplay);
-      $pages['currentPage'] = $photos[0]['currentPage'];
-      $pages['totalPages'] = $photos[0]['totalPages'];
-      $pages['requestUri'] = $_SERVER['REQUEST_URI'];
-    }
-    $pagination = $this->theme->get('partials/pagination.php', $pages);
-
-    $bodyTemplate = sprintf('%s/manage-photos.php', $this->config->paths->templates);
-    $body = $this->template->get($bodyTemplate, array('photos' => $photos, 'pagination' => $pagination, 'crumb' => getSession()->get('crumb')));
-    $this->theme->display('template.php', array('body' => $body, 'page' => 'manage'));
+    $this->route->redirect('/photos/list');
   }
 
   public function settings()
   {
+    $credentialsResp = $this->api->invoke('/oauth/list.json');
+    $credentials = $credentialsResp['result'];
+    $pluginsResp = $this->api->invoke('/plugins/list.json');
+    $plugins = $pluginsResp['result'];
     $params['downloadOriginal'] = $this->config->site->allowOriginalDownload == '1';
     $params['allowDuplicate'] = $this->config->site->allowDuplicate == '1';
     $params['hideFromSearchEngines'] = $this->config->site->hideFromSearchEngines == '1';
+    $params['decreaseLocationPrecision'] = $this->config->site->decreaseLocationPrecision == '1';
+    $params['credentials'] = $credentials;
+    $params['plugins'] = $plugins;
+    $params['admins'] = array();
+    if(isset($this->config->user->admins))
+      $params['admins'] = (array)explode(',', $this->config->user->admins);
     $params['crumb'] = $this->session->get('crumb');
     $bodyTemplate = sprintf('%s/manage-settings.php', $this->config->paths->templates);
     $body = $this->template->get($bodyTemplate, $params);
     $this->theme->display('template.php', array('body' => $body, 'page' => 'manage-settings'));
+  }
+
+  public function settingsPost()
+  {
+    $notification = new Notification;
+    $resp = $this->api->invoke('/manage/settings.json', EpiRoute::httpPost);
+    if($resp['code'] === 200)
+      $notification->add('Your settings were successfully saved.', Notification::typeFlash, Notification::modeConfirm);
+    else
+      $notification->add('There was a problem updating your settings.', Notification::typeFlash, Notification::modeError);
+
+    $this->route->redirect('/manage/settings');
   }
 }

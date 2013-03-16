@@ -49,6 +49,7 @@ class GeneralController extends BaseController
     */
   public function home()
   {
+    
     $template = $this->utility->getTemplate('front.php');
     if(!$this->theme->fileExists($template))
       $this->route->redirect($this->url->photosView(null, false));
@@ -69,6 +70,19 @@ class GeneralController extends BaseController
   {
     $this->theme->setTheme(); // defaults
     $this->theme->display($this->utility->getTemplate('maintenance.php'));
+  }
+
+  /**
+    * Options calls for XHR
+    *
+    * @return string Standard JSON envelope
+    */
+  public function options()
+  {
+    header('Access-Control-Allow-Headers: X-Requested-With');
+    header('Access-Control-Allow-Origin: *');
+    header('Access-Control-Max-Age: 60');
+    die();
   }
 
   /**

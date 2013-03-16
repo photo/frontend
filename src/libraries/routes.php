@@ -13,6 +13,7 @@ if($configObj->get('site')->maintenance == 1)
  * General pages like robots.txt
  */
 $routeObj->get('/robots.txt', array('GeneralController', 'robots')); // robots.txt
+$routeObj->options('/.*', array('GeneralController', 'options')); // OPTIONS call
 
 /*
  * Action endpoints
@@ -33,6 +34,7 @@ $routeObj->get('/manage/apps', array('ManageController', 'apps'));
 $routeObj->get('/manage/apps/callback', array('ManageController', 'appsCallback'));
 $routeObj->get('/manage/features', array('ManageController', 'features')); // redirect to /manage/settings
 $routeObj->get('/manage/settings', array('ManageController', 'settings'));
+$routeObj->post('/manage/settings', array('ManageController', 'settingsPost'));
 $routeObj->get('/manage/groups', array('ManageController', 'groups'));
 $routeObj->get('/manage/password/reset/([a-z0-9]{32})', array('ManageController', 'passwordReset'));
 
@@ -66,7 +68,8 @@ $routeObj->get('/photos/?(.+)?/list', array('PhotoController', 'list_')); // vie
  * Everything in []'s are optional
  * /s[/{id}]/{action}
  */
-$routeObj->get('/?v?1?/s/([a-z0-9]+)', array('ResourceMapController', 'render'), EpiApi::external); // create a resource map (/s/{id}/view.json)
+// the optional trailing slash is because the twitter popup appends it to the url automatically
+$routeObj->get('/?v?1?/s/([a-z0-9]+)/?', array('ResourceMapController', 'render'), EpiApi::external); // create a resource map (/s/{id}/view.json)
 
 /*
  * Tag endpoints
@@ -82,8 +85,8 @@ $routeObj->get('/tags/list', array('TagController', 'list_')); // view tags
  * Everything in []'s are optional
  * /user/{action}
  */
+$routeObj->get('/user/login', array('UserController', 'login')); // logout
 $routeObj->get('/user/logout', array('UserController', 'logout')); // logout
-$routeObj->get('/user/settings', array('UserController', 'settings'));
 
 /*
  * Webhook endpoints follow the same convention.
@@ -97,13 +100,29 @@ $routeObj->post('/?1?/webhook/subscribe', array('WebhookController', 'subscribe'
  * All oauth endpoints follow the same convention.
  * /v{version}/oauth/{action}
  */
-$routeObj->get('/v[1]/oauth/authorize', array('OAuthController', 'authorize'));
-$routeObj->post('/v[1]/oauth/authorize', array('OAuthController', 'authorizePost'));
-$routeObj->post('/v[1]/oauth/token/access', array('OAuthController', 'tokenAccess'));
-$routeObj->get('/v[1]/oauth/token/access', array('OAuthController', 'tokenAccess'));
-$routeObj->post('/v[1]/oauth/token/request', array('OAuthController', 'tokenRequest'));
-$routeObj->get('/v[1]/oauth/test', array('OAuthController', 'test'));
-$routeObj->get('/v[1]/oauth/flow', array('OAuthController', 'flow'));
+$routeObj->get('/v[1-2]/oauth/authorize', array('OAuthController', 'authorize'));
+$routeObj->post('/v[1-2]/oauth/authorize', array('OAuthController', 'authorizePost'));
+$routeObj->post('/v[1-2]/oauth/token/access', array('OAuthController', 'tokenAccess'));
+$routeObj->get('/v[1-2]/oauth/token/access', array('OAuthController', 'tokenAccess'));
+$routeObj->post('/v[1-2]/oauth/token/request', array('OAuthController', 'tokenRequest'));
+$routeObj->get('/v[1-2]/oauth/test', array('OAuthController', 'test'));
+$routeObj->get('/v[1-2]/oauth/flow', array('OAuthController', 'flow'));
+
+/*
+ * Map API to route through to map adapter
+ */
+$routeObj->get('/map/([0-9.-]+)/([0-9.-]+)/([0-9]+)/([0-9]+x[0-9]+)/(.+)/map.png', array('MapController', 'render')); // /map/;lat/:lon/:zoom/:size/:type/map.jpg
+
+/*
+ * Asset endpoints
+ * All asset endpoints follow the same convention.
+ * Everything in []'s are optional
+ * /assets/cache/:version/:type/:file[,:file]
+ */
+$routeObj->get('/assets/.*/stylesheets/lessc', array('AssetsController', 'lessc'));
+$routeObj->get('/assets/cache/([^/]+)/(js|css)/(c|m)(/.+)', array('AssetsController', 'get'));
+$routeObj->get('/assets/versioned/[^/]+/(.+)', array('AssetsController', 'staticAsset'));
+
 
 if($runUpgrade)
   require $configObj->get('paths')->libraries . '/routes-upgrade.php';

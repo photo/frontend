@@ -1,0 +1,213 @@
+@grid_unit: 26px;
+
+.tb-icon-position(@x,@y){
+  background-position: @x * @grid_unit * -1 @y * @grid_unit * -1;
+}
+
+.tb-icon,
+[class^="tb-icon-"],
+[class*=" tb-icon-"] {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  *margin-right: .3em;
+  line-height: 16px;
+  vertical-align: text-top;
+  background-image: url("../images/icons-dark.png");
+  background-position: 0 0;
+  background-repeat: no-repeat;
+}
+
+.tb-icon-small,
+[class^="tb-icon-small-"],
+[class*=" tb-icon-small-"] {
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+}
+
+.tb-icon-dark {
+  background-image: url("../images/icons-light.png");
+}
+
+.tb-icon-light {
+  background-image: url("../images/icons-dark.png");
+}
+
+.tb-icon-highlight {
+  background-image: url("../images/icons-yellow.png");
+}
+
+/**
+ * Standard Size Icons (16x16)
+ */
+.tb-icon-maximize {
+  .tb-icon-position(0,0);
+}
+
+.tb-icon-gear{
+  .tb-icon-position(0,1);
+}
+
+.tb-icon-pin{
+  .tb-icon-position(0,2);
+}
+
+.tb-icon-upload {
+  .tb-icon-position(0,3);
+}
+
+.tb-icon-plus {
+  .tb-icon-position(0,4);
+}
+
+.tb-icon-heart {
+  .tb-icon-position(0,5);
+}
+
+.tb-icon-comment {
+  .tb-icon-position(0,6);
+}
+
+.tb-icon-albums{
+  .tb-icon-position(0,7);
+}
+
+.tb-icon-camera{
+  .tb-icon-position(0,8);
+}
+
+.tb-icon-chart{
+  .tb-icon-position(0,9);
+}
+
+.tb-icon-tag{
+  .tb-icon-position(0,10);
+}
+
+.tb-icon-home{
+  .tb-icon-position(1,0);
+}
+
+.tb-icon-gallery {
+  .tb-icon-position(1,1);
+}
+
+.tb-icon-user {
+  .tb-icon-position(1,2);
+}
+
+.tb-icon-mag {
+  .tb-icon-position(1,3);
+}
+
+.tb-icon-storage {
+  .tb-icon-position(1,4);
+}
+
+.tb-icon-keyhole {
+  .tb-icon-position(1,5);
+}
+
+.tb-icon-play {
+  .tb-icon-position(1,6);
+}
+
+.tb-icon-help {
+  .tb-icon-position(1,7);
+}
+
+/**
+ * Small Size Icons (14x14)
+ */
+.tb-icon-small-maximize {
+  .tb-icon-position(3,0);
+}
+
+.tb-icon-small-minimize {
+  .tb-icon-position(3,1);
+}
+
+.tb-icon-small-pin {
+  .tb-icon-position(3,2);
+}
+
+.tb-icon-small-unlocked {
+  .tb-icon-position(3,3);
+}
+
+.tb-icon-small-locked {
+  .tb-icon-position(3,4);
+}
+
+.tb-icon-small-heart {
+  .tb-icon-position(3,5);
+}
+
+.tb-icon-small-comment {
+  .tb-icon-position(3,6);
+}
+
+.tb-icon-small-pencil {
+  .tb-icon-position(3,7);
+}
+
+.tb-icon-small-albums {
+  .tb-icon-position(4,0);
+}
+
+.tb-icon-small-camera {
+  .tb-icon-position(4,1);
+}
+
+.tb-icon-small-eye {
+  .tb-icon-position(4,2);
+}
+
+.tb-icon-small-download {
+  .tb-icon-position(4,3);
+}
+
+.tb-icon-small-profile {
+  .tb-icon-position(4,4);
+}
+
+.tb-icon-small-calendar {
+  .tb-icon-position(4,5);
+}
+
+.tb-icon-small-tag {
+  .tb-icon-position(4,6);
+}
+
+.tb-icon-small-copyright {
+  .tb-icon-position(5,0);
+}
+
+.tb-icon-small-cc {
+  .tb-icon-position(5,1);
+}
+
+.tb-icon-small-cc-by {
+  .tb-icon-position(5,2);
+}
+
+.tb-icon-small-cc-nd {
+  .tb-icon-position(5,3);
+}
+
+.tb-icon-small-cc-sa {
+  .tb-icon-position(5,4);
+}
+
+.tb-icon-small-cc-nc {
+  .tb-icon-position(5,5);
+}
+
+.tb-icon-small-cross {
+  .tb-icon-position(7,0);
+}
+
+.tb-icon-small-arrow-down {
+  .tb-icon-position(7,1);
+}

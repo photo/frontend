@@ -12,7 +12,7 @@ class DatabaseMySql implements DatabaseInterface
     * Member variables holding the names to the SimpleDb domains needed and the database object itself.
     * @access private
     */
-  private $config, $errors = array(), $owner, $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
+  private $actor, $cache = array(), $config, $errors = array(), $isOwner, $isAdmin, $owner, $mySqlDb, $mySqlHost, $mySqlUser, $mySqlPassword, $mySqlTablePrefix;
 
   /**
     * Constructor
@@ -55,6 +55,36 @@ class DatabaseMySql implements DatabaseInterface
   {
     $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}action` WHERE `id`=:id AND `owner`=:owner", array(':id' => $id, ':owner' => $this->owner));
     return ($res !== false);
+  }
+
+  /**
+    * Delete all activity for a user
+    *
+    * @return boolean
+    */
+  public function deleteActivities()
+  {
+    $result = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE `owner`=:owner", array(':owner' => $this->owner));
+    return ($result !== false);
+  }
+
+  /**
+    * Delete activities pertaining to an element
+    *
+    * @param string $elementId ID of the photo whose activity should be deleted
+    * @param Array $types the types of activity to be deleted
+    *
+    * @return boolean
+    */
+  public function deleteActivitiesForElement($elementId, $types)
+  {
+    foreach($types as $key => $val)
+      $types[$key] = $this->_($val);
+    
+    $typesStr = "'".implode("','", $types)."'";
+    $result = $this->db->execute($sql = "DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE `owner`=:owner AND `type` IN({$typesStr}) AND `elementId`=:elementId", 
+      array(':owner' => $this->owner, ':elementId' => $elementId));
+    return ($result !== false);
   }
 
   /**
@@ -111,6 +141,8 @@ class DatabaseMySql implements DatabaseInterface
 
     $resPhoto = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
     $resVersions = $this->deletePhotoVersions($photo);
+    $this->deleteAlbumsFromElement($photo['id'], 'photo');
+    $this->deleteTagsFromElement($photo['id'], 'photo');
 
     return ($resPhoto !== false && $resVersions !== false);
   }
@@ -128,6 +160,30 @@ class DatabaseMySql implements DatabaseInterface
 
     $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photoVersion` WHERE `owner`=:owner AND `id`=:id", array(':id' => $photo['id'], ':owner' => $this->owner));
     return $res !== false;
+  }
+
+  /**
+    * Delete a relationship from the database
+    *
+    * @param string $target email of the relationship to delete
+    * @return boolean
+    */
+  public function deleteRelationship($target)
+  {
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}relationship` WHERE `actor`=:actor AND `follows`=:follows", array(':actor' => $this->getActor(), ':follows' => $target));
+    return $res !== 1;
+  }
+
+  /**
+    * Delete a share token from the database
+    *
+    * @param string $id ID of the share token to delete
+    * @return boolean
+    */
+  public function deleteShareToken($id)
+  {
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `id`=:id", array(':owner' => $this->owner, ':id' => $id));
+    return $res !== 1;
   }
 
   /**
@@ -264,6 +320,8 @@ class DatabaseMySql implements DatabaseInterface
 
     if($album === false)
       return false;
+    else if((empty($email) || $this->owner !== $email || $this->getActor() !== $email) && $album['countPublic'] == 0)
+      return false;
 
     $album = $this->normalizeAlbum($album);
     return $album;
@@ -308,11 +366,16 @@ class DatabaseMySql implements DatabaseInterface
     $limit = (int)$limit;
     $offset = (int)$offset;
 
-    if($this->owner === $email)
+    if(!empty($email) && ($this->owner === $email || $this->getActor() === $email))
+    {
       $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+      $albumsCount = $this->db->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner ORDER BY `name`", array(':owner' => $this->owner));
+    }
     else
-      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `visible`=1 ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
-
+    {
+      $albums = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `countPublic`>0 ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+      $albumsCount = $this->db->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `countPublic`>0 ORDER BY `name` LIMIT {$offset}, {$limit}", array(':owner' => $this->owner));
+    }
 
     if($albums === false)
       return false;
@@ -320,6 +383,9 @@ class DatabaseMySql implements DatabaseInterface
     foreach($albums as $key => $album)
       $albums[$key] = $this->normalizeAlbum($album);
     
+    if(!empty($albums))
+      $albums[0]['totalRows'] = intval($albumsCount['COUNT(*)']);
+
     return $albums;
   }
 
@@ -464,6 +530,22 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Get albums for a photo
+    *
+    * @param string $id ID of the photo to retrieve albums for
+    * @return array
+    */
+  public function getPhotoAlbums($id)
+  {
+    $albums = $this->db->all("SELECT `album` FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':owner' => $this->owner, ':element' => $id, ':type' => 'photo'));
+    $retval = array();
+    foreach($albums as $album)
+      $retval[] = $album['album'];
+
+    return $retval;
+  }
+
+  /**
     * Retrieve the next and previous photo surrounding photo with $id
     *
     * @param string $id ID of the photo to get next and previous for
@@ -568,12 +650,14 @@ class DatabaseMySql implements DatabaseInterface
     for($i = 0; $i < count($photos); $i++)
       $photos[$i] = $this->normalizePhoto($photos[$i]);
 
-    $photos[0]['currentRows'] = count($photos);
     // TODO evaluate SQL_CALC_FOUND_ROWS (indexes with the query builder might be hard to optimize)
     // http://www.mysqlperformanceblog.com/2007/08/28/to-sql_calc_found_rows-or-not-to-sql_calc_found_rows/
-    $result = $this->db->one("SELECT COUNT(*) {$query['from']} {$query['where']} {$query['groupBy']}");
-    if(!empty($result))
+
+    if(!empty($photos))
+    {
+      $result = $this->db->one("SELECT COUNT(*) {$query['from']} {$query['where']} {$query['groupBy']}");
       $photos[0]['totalRows'] = intval($result['COUNT(*)']);
+    }
 
     return $photos;
   }
@@ -592,6 +676,81 @@ class DatabaseMySql implements DatabaseInterface
 
     $resourceMap = $this->normalizeResourceMap($resourceMap);
     return $resourceMap;
+  }
+
+  /**
+    * Get a single relationship
+    *
+    * @param string $target email to fetch relationship to
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getRelationship($target)
+  {
+    $relationship = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}relationship` WHERE `actor`=:actor AND `follows`=:follows", array(':actor' => $this->getActor(), ':follows' => $target));
+    return $relationship;
+  }
+
+  /**
+    * Get a share token
+    *
+    * @param string $token token to be retrieved
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getShareToken($id)
+  {
+    $token = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `id`=:id", array(':owner' => $this->owner, ':id' => $id));
+
+    if(!$token)
+      return false;
+
+    if($token['dateExpires'] > 0 && $token['dateExpires'] <= time())
+    {
+      getLogger()->info('Sharing token has expired');
+      return false;
+    }
+
+    return $token;
+  }
+
+  /**
+    * Get all share token by type and target
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getShareTokensByTarget($type, $data)
+  {
+    $tokens = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `type`=:type AND `data`=:data", array(':owner' => $this->owner, ':type' => $type, ':data' => $data));
+
+    if($tokens === false)
+      return false;
+
+    foreach($tokens as $key => $value)
+    {
+      if($value['dateExpires'] > 0 && $value['dateExpires'] <= time())
+        unset($tokens[$key]);
+    }
+
+    return $tokens;
+  }
+
+  /**
+    * Get all share tokens
+    *
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getShareTokens()
+  {
+  }
+
+  /**
+    * Get the total space used
+    *
+    * @return int Size in bytes
+    */
+  public function getStorageUsed()
+  {
+    $res = $this->db->one("SELECT SUM(`size`) AS `KB` FROM `{$this->mySqlTablePrefix}photo` WHERE owner=:owner", array(':owner' => $this->owner));
+    return $res['KB'];
   }
 
   /**
@@ -677,9 +836,16 @@ class DatabaseMySql implements DatabaseInterface
   {
     if($owner === null)
       $owner = $this->owner;
+
+    $cached = $this->cacheGet('user', $owner);
+    if($cached !== null)
+      return $cached;
+
     $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
+ 
     if($res)
-      return $this->normalizeUser($res);
+      return $this->cacheSet('user', $this->normalizeUser($res), $owner);
+
     return null;
   }
 
@@ -802,17 +968,6 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Delete all activity for a user
-    *
-    * @return boolean
-    */
-  public function postActivitiesPurge()
-  {
-    $result = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}activity` WHERE owner=:owner", array(':owner' => $this->owner));
-    return ($result !== false);
-  }
-
-  /**
     * Update an existing album in the database
     * This method does not overwrite existing values present in $params - hence "new action".
     *
@@ -823,7 +978,6 @@ class DatabaseMySql implements DatabaseInterface
   public function postAlbum($id, $params)
   {
     $params = $this->prepareAlbum($params);
-    $params['owner'] = $this->owner;
     $bindings = array();
     if(isset($params['::bindings']))
       $bindings = $params['::bindings'];
@@ -868,10 +1022,35 @@ class DatabaseMySql implements DatabaseInterface
     $res = true;
     foreach($elementIds as $elementId)
     {
-      $res = $res && $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `element`=:elementId AND `album`=:albumId AND `type`=:type",
+      $tmpRes = $res && $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `element`=:elementId AND `album`=:albumId AND `type`=:type",
         array(':owner' => $this->owner, ':elementId' => $elementId, ':albumId' => $albumId, ':type' => $type));
+      $res = $res && $tmpRes !== false;
     }
     return $res !== false;
+  }
+
+  /**
+    * Ajdust the counters on albums
+    *
+    * @param array $params Albums and related attributes to update.
+    * @return boolean
+    */
+  public function postAlbumsIncrementer($albums, $value)
+  {
+    if(empty($albums) || empty($value))
+      return true;
+
+    $value = intval($value);
+    $status = true;
+    foreach($albums as $album)
+    {
+      if(strlen($album) > 0)
+      {
+        $status = $status && $this->db->execute("UPDATE `{$this->mySqlTablePrefix}album` SET `countPublic`=`countPublic`+:value WHERE owner=:owner AND id=:album",
+          array(':value' => $value, ':owner' => $this->owner, ':album' => $album));
+      }
+    }
+    return $status;
   }
 
   /**
@@ -948,11 +1127,8 @@ class DatabaseMySql implements DatabaseInterface
     elseif(empty($params))
       return true;
 
-    $tags = false;
-    if(isset($params['tags']))
-      $tags = !empty($params['tags']) ? (array)explode(',', $params['tags']) : null;
-
     // path\d+x\d+ keys go into the photoVersion table
+    $versions = array();
     foreach($params as $key => $val)
     {
       if(preg_match('/^path\d+x\d+/', $key))
@@ -962,40 +1138,30 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
 
+    // check if params are still !empty and update the photo table
     if(!empty($params))
     {
-      if(isset($params['groups']))
-      {
-        $this->updateGroupToPhotoMapping($id, $params['groups']);
-        // TODO: Generalize this and use for tags too -- @jmathai
-        $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['groups']);
-      }
-      if(isset($params['albums']))
-      {
-        $this->updateAlbumToPhotoMapping($id, $params['albums']);
-        // TODO: Generalize this and use for tags too -- @jmathai
-        $params['albums'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['albums']);
-      }
-      $params = $this->preparePhoto($id, $params);
-      unset($params['id']);
-      $bindings = $params['::bindings'];
-      $stmt = $this->sqlUpdateExplode($params, $bindings);
+      $paramsUpd = $this->preparePhoto($id, $params);
+      unset($paramsUpd['id']);
+      $bindings = $paramsUpd['::bindings'];
+      $stmt = $this->sqlUpdateExplode($paramsUpd, $bindings);
       $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}photo` SET {$stmt} WHERE `id`=:id AND owner=:owner", 
         array_merge($bindings, array(':id' => $id, ':owner' => $this->owner)));
+
+      if($res === false)
+        return false;
     }
+
     if(!empty($versions))
       $resVersions = $this->postVersions($id, $versions);
 
-    if($tags !== false)
-    {
-      $this->deleteTagsFromElement($id, 'photo');
-      if(!empty($tags))
-      {
-        // TODO combine this into a multi row insert in addTagsToElement
-        foreach($tags as $tag)
-          $this->addTagToElement($id, $tag, 'photo');
-      }
-    }
+    // empty($albums) means remove from all albums
+    //if(isset($params['albums']))
+    //  $this->updateAlbumToPhotoMapping($id, $params['albums']);
+
+    // empty($tags) means remove from all tags
+    if(isset($params['tags']))
+      $this->updateTagsToPhotoMapping($id, $params['tags']);
 
     return (isset($res) && $res !== false) || (isset($resVersions) && $resVersions);
   }
@@ -1011,10 +1177,8 @@ class DatabaseMySql implements DatabaseInterface
   public function postTag($id, $params)
   {
     if(!isset($params['id']))
-    {
       $params['id'] = $id;
-    }
-    $params['owner'] = $this->owner;
+
     $params = $this->prepareTag($params);
     if(isset($params['::bindings']))
       $bindings = $params['::bindings'];
@@ -1048,6 +1212,31 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Ajdust the counters on tags
+    *
+    * @param array $params Tags and related attributes to update.
+    * @return boolean
+    */
+  public function postTagsIncrementer($tags, $value)
+  {
+    if(empty($tags) || empty($value))
+      return true;
+
+    $value = intval($value);
+    $status = true;
+    foreach($tags as $tag)
+    {
+      if(strlen($tag) > 0)
+      {
+        $status = $status && $this->db->execute("UPDATE `{$this->mySqlTablePrefix}tag` SET `countPublic`=`countPublic`+:value WHERE owner=:owner AND id=:tag",
+          array(':value' => $value, ':owner' => $this->owner, ':tag' => $tag));
+      }
+    }
+
+    return $status;
+  }
+
+  /**
     * Update the information for the user record.
     * This method overwrites existing values present in $params.
     *
@@ -1070,7 +1259,13 @@ class DatabaseMySql implements DatabaseInterface
     }
 
     $res = $this->db->execute($sql, $params); 
-    return ($res == 1);
+    if($res == 1)
+    {
+      // clear the cache
+      $this->cacheSet('user', null, $this->owner);
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -1095,10 +1290,10 @@ class DatabaseMySql implements DatabaseInterface
     * @param array $params Attributes to update.
     * @return boolean
     */
-  public function putActivity($id, $params)
+  public function putActivity($id, $elementId, $params)
   {
     $stmt = $this->sqlInsertExplode($this->prepareActivity($params));
-    $result = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}activity` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
+    $result = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}activity` (id,elementId,{$stmt['cols']}) VALUES (:id,:elementId,{$stmt['vals']})", array(':id' => $id, ':elementId' => $elementId));
     return ($result !== false);
   }
 
@@ -1127,7 +1322,6 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putAlbum($id, $params)
   {
-    $params['owner'] = $this->owner;
     $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute($sql = "INSERT INTO `{$this->mySqlTablePrefix}album` (id,{$stmt['cols']}) VALUES (:id,{$stmt['vals']})", array(':id' => $id));
     return ($result !== false);
@@ -1143,7 +1337,6 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function putCredential($id, $params)
   {
-    $params['owner'] = $this->owner;
     if(!isset($params['id']))
       $params['id'] = $id;
     $params = $this->prepareCredential($params);
@@ -1186,31 +1379,14 @@ class DatabaseMySql implements DatabaseInterface
   public function putPhoto($id, $params)
   {
     $params['id'] = $id;
-    $params['owner'] = $this->owner;
-    $tags = null;
-    if(isset($params['tags']) && !empty($params['tags']))
-      $tags = (array)explode(',', $params['tags']);
-    if(isset($params['groups']))
-    {
-      $this->updateGroupToPhotoMapping($id, $params['groups']);
-      // TODO: Generalize this and use for tags too -- @jmathai
-      $params['groups'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['groups']);
-    }
-    if(isset($params['albums']))
-    {
-      $this->updateAlbumToPhotoMapping($id, $params['albums']);
-      // TODO: Generalize this and use for tags too -- @jmathai
-      $params['albums'] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $params['albums']);
-    }
-    $params = $this->preparePhoto($id, $params);
-    $bindings = $params['::bindings'];
-    $stmt = $this->sqlInsertExplode($params, $bindings);
+    $paramsIns = $this->preparePhoto($id, $params);
+    $bindings = $paramsIns['::bindings'];
+    $stmt = $this->sqlInsertExplode($paramsIns, $bindings);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}photo` ({$stmt['cols']}) VALUES ({$stmt['vals']})", $bindings);
-    if(!empty($tags))
-    {
-      foreach($tags as $tag)
-        $this->addTagToElement($id, $tag, 'photo');
-    }
+
+    if(isset($params['tags']))
+      $this->addTagsToElement($id, $params['tags'], 'photo');
+
     return ($result !== false);
   }
 
@@ -1225,11 +1401,30 @@ class DatabaseMySql implements DatabaseInterface
   {
     if(!isset($params['id']))
       $params['id'] = $id;
-    $params['owner'] = $this->owner;
     $params = $this->prepareResourceMap($params);
     $stmt = $this->sqlInsertExplode($params);
     $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}resourceMap` ({$stmt['cols']}) VALUES ({$stmt['vals']})");
     return  ($result !== false);
+  }
+
+  /**
+    * Add a new share token to the database
+    *
+    * @param string $id ID of the token
+    * @param array $params Attributes to create.
+    * @return boolean
+    */
+  public function putShareToken($id, $params)
+  {
+    $dateExpires = 0;
+    if(isset($params['dateExpires']))
+      $dateExpires = $params['dateExpires'];
+
+    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}shareToken` (`id`, `owner`, `actor`, `type`, `data`, `dateExpires`) 
+      VALUES(:id, :owner, :actor, :type, :data, :dateExpires)",
+      array(':id' => $id, ':owner' => $this->owner, ':actor' => $this->getActor(), ':type' => $params['type'], ':data' => $params['data'], ':dateExpires' => $dateExpires));
+    return  ($result !== false);
+
   }
 
   /**
@@ -1281,7 +1476,7 @@ class DatabaseMySql implements DatabaseInterface
   public function putWebhook($id, $params)
   {
     $stmt = $this->sqlInsertExplode($params);
-    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}webhook` (id,owner,{$stmt['cols']}) VALUES (:id,:owner,{$stmt['vals']})", array(':id' => $id, ':owner' => $this->owner));
+    $result = $this->db->execute("INSERT INTO `{$this->mySqlTablePrefix}webhook` ({$stmt['cols']}) VALUES (:id,:owner,{$stmt['vals']})");
     return $result !== false;
   }
 
@@ -1310,14 +1505,18 @@ class DatabaseMySql implements DatabaseInterface
     * Insert albums into the mapping table
     *
     * @param string $id Element id (id of the photo or video)
-    * @param string $albums Album IDs to be added
+    * @param string $albums Album IDs to be added (can also be an array)
     * @param string $type Element type (photo or video)
     * @return boolean
     */
   private function addAlbumsToElement($id, $albums, $type)
   {
-    if(empty($id) || empty($albums) || empty($type))
+    // empty($albums) means remove all
+    if(empty($id) || empty($type))
       return false;
+
+    if(!is_array($albums))
+      $albums = (array)explode(',', $albums);
 
     $hasAlbum = false;
     $sql = "REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`, `type`, `element`, `album`) VALUES";
@@ -1396,13 +1595,36 @@ class DatabaseMySql implements DatabaseInterface
     * Insert tags into the mapping table
     *
     * @param string $id Element id (id of the photo or video)
-    * @param string $tag Tag to be added
+    * @param string $tags Tag to be added (can also be an array)
     * @param string $type Element type (photo or video)
     * @return boolean
     */
-  private function addTagToElement($id, $tag, $type)
+  private function addTagsToElement($id, $tags, $type)
   {
-    $res = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementTag`(`owner`, `type`, `element`, `tag`) VALUES(:owner, :type, :element, :tag)", array(':owner' => $this->owner, ':type' => $type, ':element' => $id, ':tag' => $tag));
+    // empty($tags) means remove all tags
+    if(empty($id) || empty($type))
+      return false;
+
+    if(!is_array($tags))
+      $tags = (array)explode(',', $tags);
+
+    $hasTag = false;
+    $sql = "REPLACE INTO `{$this->mySqlTablePrefix}elementTag`(`owner`, `type`, `element`, `tag`) VALUES";
+    foreach($tags as $tag)
+    {
+      if(strlen($tag) > 0)
+      {
+        $sql .= sprintf("('%s', '%s', '%s', '%s'),", $this->_($this->owner), $this->_($type), $this->_($id), $this->_($tag));
+        $hasTag = true;
+      }
+    }
+
+    if(!$hasTag)
+      return false;
+
+    $sql = substr($sql, 0, -1);
+    $res = $this->db->execute($sql);
+
     return $res !== false;
   }
 
@@ -1419,8 +1641,23 @@ class DatabaseMySql implements DatabaseInterface
     // TODO: support logic for multiple conditions
     $from = "FROM `{$this->mySqlTablePrefix}{$table}` ";
     $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner`='{$this->owner}'";
+    if($table === 'activity')
+    {
+      // for owners and admins we get social feed
+      // for everyone else just get activity for this site
+      $ids = array($this->owner);
+      if($this->isAdmin())
+      {
+        $queryForFollows = $this->db->all("SELECT `follows` FROM `{$this->mySqlTablePrefix}relationship` WHERE `actor`=:actor", array(':actor' => $this->getActor()));
+        foreach($queryForFollows as $followRes)
+          $ids[] = $this->_($followRes['follows']);
+      }
+      $ids = sprintf("'%s'", implode("','", $ids));
+      $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner` IN({$ids})";
+    }
     $groupBy = '';
     $sortBy = 'ORDER BY dateSortByDay DESC';
+
     if(!empty($filters) && is_array($filters))
     {
       foreach($filters as $name => $value)
@@ -1457,6 +1694,19 @@ class DatabaseMySql implements DatabaseInterface
             break;
           case 'permission':
             $where = $this->buildWhere($where, "`permission`='1'");
+            break;
+          case 'since': // deprecate this, only implemented for testing. delete after grepping source @jmathai #592 #973
+          case 'takenAfter':
+            $where = $this->buildWhere($where, sprintf("`dateSortByDay`>'%s'", $this->_($this->dateSortByDay(strtotime($value)))));
+            break;
+          case 'takenBefore':
+            $where = $this->buildWhere($where, sprintf("`dateSortByDay`<'%s'", $this->_($this->dateSortByDay(strtotime($value)))));
+            break;
+          case 'uploadedAfter':
+            $where = $this->buildWhere($where, sprintf("`dateUploaded`>'%s'", $this->_(strtotime($value))));
+            break;
+          case 'uploadedBefore':
+            $where = $this->buildWhere($where, sprintf("`dateUploaded`<'%s'", $this->_(strtotime($value))));
             break;
           case 'sortBy':
             if($value === 'dateTaken,desc')
@@ -1538,6 +1788,55 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Get an entry from the cache
+    *
+    * @param string $node Top level container
+    * @param string $key Second level container
+    * @return mixed Returns value from cache
+    */
+  private function cacheGet($node, $key = '')
+  {
+    $id = md5(sprintf('%s-%s', $node, $key));
+    if(isset($this->cache[$id]))
+      return $this->cache[$id];
+    return null;
+  }
+
+  /**
+    * Set a value for a cached entry
+    *
+    * @param string $node Top level container
+    * @param string $value to be stored (if null the entry is deleted)
+    * @param string $key Second level container
+    * @return mixed Returns $value
+    */
+  private function cacheSet($node, $value, $key = '')
+  {
+    $id = md5(sprintf('%s-%s', $node, $key));
+    if($value === null)
+      unset($this->cache[$id]);
+    else
+      $this->cache[$id] = $value;
+
+    return $value;
+  }
+
+  /**
+    * Builds the dateSortByDay string from a timestamp
+    *
+    * @param string $time time to format
+    * @return string
+    */
+  private function dateSortByDay($time)
+  {
+    $invHours = str_pad(intval(23-date('H', $time)), 2, '0', STR_PAD_LEFT);
+    $invMins = str_pad(intval(59-date('i', $time)), 2, '0', STR_PAD_LEFT);
+    $invSecs = str_pad(intval(59-date('s', $time)), 2, '0', STR_PAD_LEFT);
+    return sprintf('%s%s%s%s', date('Ymd', $time), $invHours, $invMins, $invSecs);
+  }
+
+
+  /**
     * Delete albums for an element from the mapping table
     *
     * @param string $id Element id
@@ -1589,6 +1888,25 @@ class DatabaseMySql implements DatabaseInterface
     return $res !== false;
   }
 
+  private function getActor()
+  {
+    if($this->actor !== null)
+      return $this->actor;
+
+    $user = new User;
+    $this->actor = $user->getEmailAddress();
+    return $this->actor;
+  }
+
+  private function isAdmin()
+  {
+    if($this->isAdmin !== null)
+      return $this->isAdmin;
+
+    $user = new User;
+    return $user->isAdmin();
+  }
+
   /**
     * Get all the versions of a given photo
     * TODO this can be eliminated once versions are in the json field
@@ -1608,7 +1926,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeActivity($raw)
@@ -1620,7 +1938,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeAction($raw)
@@ -1631,7 +1949,7 @@ class DatabaseMySql implements DatabaseInterface
   /**
     * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeAlbum($raw)
@@ -1640,25 +1958,24 @@ class DatabaseMySql implements DatabaseInterface
       return $raw;
 
     $raw['cover'] = null;
-    if(!empty($raw['extra']))
+    if(isset($raw['extra']))
     {
-      $extra = json_decode($raw['extra'], 1);
-      if(isset($extra['cover']))
-        $raw['cover'] = $extra['cover'];
+      if(!empty($raw['extra']))
+      {
+        $extra = json_decode($raw['extra'], 1);
+        if(isset($extra['cover']))
+          $raw['cover'] = $extra['cover'];
+      }
+      unset($raw['extra']);
     }
-    if(empty($raw['groups']))
-      $raw['groups'] = array();
-    else
-      $raw['groups'] = (array)explode(',', $raw['groups']);
-    unset($raw['extra']);
     return $raw;
   }
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A photo from SimpleDb in SimpleXML.
+    * @param Array $raw A photo from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizePhoto($photo)
@@ -1682,11 +1999,6 @@ class DatabaseMySql implements DatabaseInterface
     else
       $photo['albums'] = array();
 
-    if(isset($photo['groups']) && strlen($photo['groups']) > 0)
-      $photo['groups'] = (array)explode(',', $photo['groups']);
-    else
-      $photo['groups'] = array();
-
     if(isset($photo['tags']) && strlen($photo['tags']) > 0)
       $photo['tags'] = (array)explode(',', $photo['tags']);
     else
@@ -1700,10 +2012,10 @@ class DatabaseMySql implements DatabaseInterface
     return $photo;
   }
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @param Array $raw A tag from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeResourceMap($raw)
@@ -1722,10 +2034,10 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @param Array $raw A tag from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeTag($raw)
@@ -1739,10 +2051,10 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     * TODO this should eventually translate the json field
     *
-    * @param SimpleXMLObject $raw A tag from SimpleDb in SimpleXML.
+    * @param Array $raw A tag from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeUser($raw)
@@ -1771,9 +2083,9 @@ class DatabaseMySql implements DatabaseInterface
 
 
   /**
-    * Normalizes data from simpleDb into schema definition
+    * Normalizes data from MySql into schema definition
     *
-    * @param SimpleXMLObject $raw An action from SimpleDb in SimpleXML.
+    * @param Array $raw An action from SimpleDb in SimpleXML.
     * @return array
     */
   private function normalizeGroup($raw)
@@ -1847,6 +2159,10 @@ class DatabaseMySql implements DatabaseInterface
         case 'extraDatabase':
           $extra[$key] = $value;
           break;
+        case 'albums':
+        case 'tags':
+          $params[$key] = preg_replace(array('/^,|,$/','/,{2,}/'), array('', ','), $value);
+          // don't break here
         default:
           // when lat/long is empty set value to null else it is stored as 0. Gh-313
           if(($key == 'latitude' || $key == 'longitude') && empty($value))
@@ -1870,10 +2186,8 @@ class DatabaseMySql implements DatabaseInterface
     if(isset($params['dateTaken']))
     {
       // here we seed a field for the default sort order of day descending and time ascending
-      $invHours = str_pad(intval(23-date('H', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
-      $invMins = str_pad(intval(59-date('i', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
-      $invSecs = str_pad(intval(59-date('s', $params['dateTaken'])), 2, '0', STR_PAD_LEFT);
-      $bindings[':dateSortByDay'] = sprintf('%s%s%s%s', date('Ymd', $params['dateTaken']), $invHours, $invMins, $invSecs);
+
+      $bindings[':dateSortByDay'] = $this->dateSortByDay($params['dateTaken']);
       $paramsOut['dateSortByDay'] = ':dateSortByDay';
     }
     $paramsOut['::bindings'] = $bindings;
@@ -2045,31 +2359,45 @@ class DatabaseMySql implements DatabaseInterface
    */
   private function updateAlbumToPhotoMapping($id, $albums)
   {
+    // empty albums means to clear all albums from photo
+    if(empty($id))
+      return '';
+
+    $this->deleteAlbumsFromElement($id, 'photo');
+    if(empty($albums))
+      return '';
+
     if(!is_array($albums))
       $albums = (array)explode(',', $albums);
-    $this->deleteAlbumsFromElement($id, 'photo');
-    if(!empty($albums))
-      $this->addAlbumsToElement($id, $albums, 'photo');
+    $this->addAlbumsToElement($id, $albums, 'photo');
+
+    return implode(',', $albums);
   }
 
 
   /**
-   * Update the mapping table for groups<->photos
+   * Update the mapping table for tags<->photos
    *
    * @param string $id ID of the photo
    * @param array $groups Groups
    * @return string
    */
-  private function updateGroupToPhotoMapping($id, $groups)
+  private function updateTagsToPhotoMapping($id, $tags)
   {
-    if(!is_array($groups))
-      $groups = (array)explode(',', $groups);
-    $this->deleteGroupsFromElement($id, 'photo');
-    if(!empty($groups))
-      $this->addGroupsToElement($id, $groups, 'photo');
+    // empty tags means to clear all tags from photo
+    if(empty($id))
+      return '';
 
+    $this->deleteTagsFromElement($id, 'photo');
+    if(empty($tags))
+      return '';
+
+    if(!is_array($tags))
+      $tags = (array)explode(',', $tags);
+    $this->addTagsToElement($id, $tags, 'photo');
+
+    return implode(',', $tags);
   }
-
 
   /**
    * Wrapper function for escaping strings for queries

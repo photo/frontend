@@ -89,7 +89,7 @@ class PhotoController extends BaseController
     $isAttachment = !isset($_GET['stream']) || $_GET['stream'] != '1';
     $userObj = new User;
     // the API enforces permissions, we just have to check for download privileges
-    if($userObj->isOwner() || $this->config->site->allowOriginalDownload == 1)
+    if($userObj->isAdmin() || $this->config->site->allowOriginalDownload == 1)
     {
       $photoResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
       $photo = $photoResp['result'];
@@ -143,6 +143,7 @@ class PhotoController extends BaseController
       $photos = $this->api->invoke("/photos/{$filterOpts}/list.json", EpiRoute::httpGet, $params);
     else
       $photos = $this->api->invoke("/photos/list.json", EpiRoute::httpGet, $params);
+
     $photos = $photos['result'];
 
     $this->plugin->setData('photos', $photos);
@@ -197,7 +198,7 @@ class PhotoController extends BaseController
   {
     getAuthentication()->requireAuthentication();
     $userObj = new User;
-    if(!$userObj->isOwner())
+    if(!$userObj->isAdmin())
     {
       $this->route->run('/error/403');
       return;
@@ -240,7 +241,11 @@ class PhotoController extends BaseController
     */
   public function view($id, $options = null)
   {
-    $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
+    if($options === null)
+      $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
+    else
+      $apiResp = $this->api->invoke("/photo/{$id}/{$options}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
+
     if($apiResp['code'] === 200)
     {
       $detailDimensions = explode('x', $this->config->photoSizes->detail);

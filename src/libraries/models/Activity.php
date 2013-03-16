@@ -19,8 +19,14 @@ class Activity extends BaseModel
       $this->user = new User;
   }
 
-  public function create($attributes)
+  public function create($elementId, $attributes)
   {
+    if(empty($elementId) || empty($attributes))
+    {
+      $this->logger->warn('When creating an activity one of the following attributes were not passed, elementId or attributes');
+      return false;
+    }
+
     $attributes = array_merge($this->getDefaultAttributes(), $attributes);
     $attributes = $this->whitelistParams($attributes);
     if(!$this->validateParams($attributes))
@@ -36,13 +42,21 @@ class Activity extends BaseModel
       return false;
     }
 
-    return $this->db->putActivity($id, $attributes);
+    $attributes['owner'] = $this->owner;
+    $attributes['actor'] = $this->getActor();
+    return $this->db->putActivity($id, $elementId, $attributes);
+  }
+
+  public function deleteForElement($elementId, $types)
+  {
+    $types = (array)$types;
+    return $this->db->deleteActivitiesForElement($elementId, $types);
   }
 
   public function list_($filters, $pageSize)
   {
     $filters['pageSize'] = $pageSize;
-    if(!$this->user->isOwner())
+    if(!$this->user->isAdmin())
       $filters['permission'] = '1';
     return $this->db->getActivities($filters);
   }
@@ -61,14 +75,13 @@ class Activity extends BaseModel
   {
     return array(
       'appId' => $this->config->application->appId,
-      'owner' => $this->config->user->email,
       'dateCreated' => time()
     );
   }
 
   private function validateParams($attributes)
   {
-    if(!isset($attributes['owner']) || !isset($attributes['type']) || !isset($attributes['permission']))
+    if(!isset($attributes['type']) || !isset($attributes['permission']))
       return false;
 
     return true;

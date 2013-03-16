@@ -88,9 +88,6 @@ function getDb(/*$type*/)
 
   switch($type)
   {
-    case 'SimpleDb':
-      $database = new DatabaseSimpleDb();
-      break;
     case 'MySql':
       $database = new DatabaseMySql();
       break;
@@ -131,14 +128,23 @@ function getFs(/*$type, $useCache*/)
 
   switch($type)
   {
+    case 'InternetArchive':
+      $fs = new FileSystemInternetArchive();
+      break;
     case 'Local':
       $fs = new FileSystemLocal();
       break;
     case 'LocalDropbox':
       $fs = new FileSystemLocalDropbox();
       break;
+    case 'LocalAppDotNet':
+      $fs = new FileSystemLocalAppDotNet();
+      break;
     case 'S3':
       $fs = new FileSystemS3();
+      break;
+    case 'S3AppDotNet':
+      $fs = new FileSystemS3AppDotNet();
       break;
     case 'S3Box':
       $fs = new FileSystemS3Box();
@@ -209,8 +215,8 @@ function getLogin($provider)
 {
   switch($provider)
   {
-    case 'openphoto':
-      return new LoginOpenPhoto;
+    case 'self':
+      return new LoginSelf;
       break;
     case 'facebook':
       return new LoginFacebook;

@@ -39,13 +39,13 @@ class Credential extends BaseModel
   }
 
   /**
-    * Add an oauth credential for this user
+    * Create an oauth credential for this user
     *
     * @param string $name Human readable name for this credential
     * @param array $params Array of permissions
     * @return mixed Credential ID on success, false on failure
     */
-  public function add($name, $permissions = array('read'))
+  public function create($name, $permissions = array('read'))
   {
     if(!class_exists('OAuthProvider'))
     {
@@ -57,6 +57,8 @@ class Credential extends BaseModel
     $randomUser = bin2hex($this->provider->generateToken(20));
     $id = substr($randomConsumer, 0, 30);
     $params = array(
+      'owner' => $this->owner,
+      'actor' => $this->getActor(),
       'name' => $name,
       'clientSecret' => substr($randomConsumer, -10),
       'userToken' => substr($randomUser, 0, 30),
@@ -65,7 +67,7 @@ class Credential extends BaseModel
       'verifier' => substr($randomConsumer, 30, 10),
       'type' => self::typeUnauthorizedRequest,
       'status' => self::statusActive,
-	  'dateCreated' => time()
+      'dateCreated' => time()
     );
     $res = $this->db->putCredential($id, $params);
     if($res)

@@ -1,4 +1,3 @@
-<?php $this->theme->setTheme(); // force this as the default theme ?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -137,7 +136,7 @@
               'plugin-update-submit':'submit:plugin-update',
               'search-submit':'submit:search'
           },
-          <?php if($this->user->isOwner()) { ?>
+          <?php if($this->user->isAdmin()) { ?>
             'change': {
                 'batch-field-change':'change:batch-field'
             },

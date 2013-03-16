@@ -69,7 +69,7 @@ class Photo extends BaseModel
 
     $photo['pathBase'] = $this->generateUrlBaseOrOriginal($photo, 'base');
     // the original needs to be conditionally included
-    if($this->config->site->allowOriginalDownload == 1 || $this->user->isOwner())
+    if($this->config->site->allowOriginalDownload == 1 || $this->user->isAdmin())
     {
       $photo['pathOriginal'] = $this->generateUrlBaseOrOriginal($photo, 'original');
       $photo['pathDownload'] = $this->generateUrlDownload($photo);
@@ -396,6 +396,17 @@ class Photo extends BaseModel
   }
 
   /**
+    * Returns all albums a photo belongs to
+    *
+    * @param string Photo id
+    * @return array
+    */
+  public function getAlbumsForPhoto($id)
+  {
+    return $this->db->getPhotoAlbums($id);
+  }
+
+  /**
     * Calculate the width and height of a scaled photo
     *
     * @param int $originalWidth The width of the original photo.
@@ -449,7 +460,7 @@ class Photo extends BaseModel
     * @param $photo Path to the photo.
     * @return array
     */
-  public function readExif($photo)
+  protected function readExif($photo, $allowAutoRotate)
   {
     $exif = @exif_read_data($photo);
     if(!$exif)
@@ -472,10 +483,32 @@ class Photo extends BaseModel
     }
     $dateTaken = $parsedDate;    
 
-    $exif_array = array('dateTaken' => $dateTaken, 'width' => $size[0],
-      'height' => $size[1], 'cameraModel' => @$exif['Model'],
+    $width = $size[0];
+    $height = $size[1];
+
+    // Since we stopped auto rotating originals we have to use the Orientation from
+    //  exif and if this photo was autorotated
+    // Gh-1031 Gh-1149
+    if($this->autoRotateEnabled($allowAutoRotate))
+    {
+      // http://recursive-design.com/blog/2012/07/28/exif-orientation-handling-is-a-ghetto/
+      switch($exif['Orientation'])
+      {
+        case '6':
+        case '8':
+        case '5':
+        case '7':
+          $width = $size[1];
+          $height = $size[0];
+          break;
+      }
+    }
+
+    $exif_array = array('dateTaken' => $dateTaken, 'width' => $width,
+      'height' => $height, 'cameraModel' => @$exif['Model'],
       'cameraMake' => @$exif['Make'],
       'ISO' => @$exif['ISOSpeedRatings'],
+      'Orientation' => @$exif['Orientation'],
       'exposureTime' => @$exif['ExposureTime']);
 
     if(isset($exif['GPSLongitude'])) {
@@ -560,9 +593,15 @@ class Photo extends BaseModel
     $tagObj = new Tag;
     $attributes = $this->whitelistParams($attributes);
     if(isset($attributes['tags']) && !empty($attributes['tags']))
-    {
       $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
-    }
+
+    foreach($attributes as $key => $val)
+      $attributes[$key] = trim($val);
+
+    // since tags can be created adhoc we need to ensure they're here
+    if(isset($attributes['tags']) && !empty($attributes['tags']))
+      $tagObj->createBatch($attributes['tags']);
+
     $status = $this->db->postPhoto($id, $attributes);
     if(!$status)
       return false;
@@ -579,7 +618,8 @@ class Photo extends BaseModel
       return false;
     }
 
-    $exif = $this->readExif($localFile);
+    $allowAutoRotate = isset($attributes['allowAutoRotate']) ? $attributes['allowAutoRotate'] : '1';
+    $exif = $this->readExif($localFile, $allowAutoRotate);
     $iptc = $this->readIptc($localFile);
 
     if(isset($attributes['dateTaken']) && !empty($attributes['dateTaken']))
@@ -589,7 +629,7 @@ class Photo extends BaseModel
     else
       $dateTaken = time();
 
-    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile, $dateTaken);
+    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile, $dateTaken, $allowAutoRotate);
     $paths = $resp['paths'];
 
     $attributes = array_merge($this->whitelistParams($attributes), $resp['paths']);
@@ -608,7 +648,7 @@ class Photo extends BaseModel
           continue;
 
         if($iptckey == 'tags')
-          $attributes[$iptckey] .= implode(',', $iptcval);
+          $attributes['tags'] = implode(',', array_unique(array_merge((array)explode(',', $attributes['tags']), $iptcval)));
         else if(!isset($attributes[$iptckey])) // do not clobber if already in $attributes #1011
           $attributes[$iptckey] = $iptcval;
       }
@@ -636,9 +676,9 @@ class Photo extends BaseModel
       $attributes['host'] = $this->fs->getHost();
       $attributes['filenameOriginal'] = $name;
 
-      $exiftran = $this->config->modules->exiftran;
-      if(is_executable($exiftran))
-        exec(sprintf('%s -ai %s', $exiftran, escapeshellarg($localFile)));
+      $tagObj = new Tag;
+      if(isset($attributes['tags']) && !empty($attributes['tags']))
+        $tagObj->createBatch($attributes['tags']);
 
       $photo = $this->db->getPhoto($id);
 
@@ -679,6 +719,46 @@ class Photo extends BaseModel
   /**
     * Uploads a new photo to the remote file system and database.
     *
+    * @param string $url URL of the photo to store locally
+    * @return mixed file pointer on success, FALSE on failure
+    */
+  public function storeLocally($url)
+  {
+    $file = tempnam(sys_get_temp_dir(), 'opme-locally-');
+    $fp = fopen($file, 'w');
+    if(!$fp)
+    {
+      $this->logger->warn('Could not create file pointer to store photo locally');
+      return false;
+    }
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_FILE, $fp);
+    $data = curl_exec($ch);
+    $curl_errno = curl_errno($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+    curl_close($ch);
+    fclose($fp);
+
+    if($curl_errno !== 0)
+    {
+      $this->logger->warn('Storing photo locally failed due to curl error');
+      return false;
+    }
+
+    if($code != '200')
+    {
+      $this->logger->warn('Fetching of photo to store locally did not return a 200 HTTP response');
+      return false;
+    }
+
+    return $file;
+  }
+
+  /**
+    * Uploads a new photo to the remote file system and database.
+    *
     * @param string $localFile The local file system path to the photo.
     * @param string $name The file name of the photo.
     * @param array $attributes The attributes to save
@@ -702,7 +782,8 @@ class Photo extends BaseModel
     $tagObj = new Tag;
     $filenameOriginal = $name;
 
-    $exif = $this->readExif($localFile);
+    $allowAutoRotate = isset($attributes['allowAutoRotate']) ? $attributes['allowAutoRotate'] : '1';
+    $exif = $this->readExif($localFile, $allowAutoRotate);
     $iptc = $this->readIptc($localFile);
 
     if(isset($attributes['dateTaken']) && !empty($attributes['dateTaken']))
@@ -712,7 +793,7 @@ class Photo extends BaseModel
     else
       $dateTaken = time();
 
-    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile, $dateTaken);
+    $resp = $this->createAndStoreBaseAndOriginal($name, $localFile, $dateTaken, $allowAutoRotate);
     $paths = $resp['paths'];
 
     $attributes = $this->whitelistParams($attributes);
@@ -730,7 +811,7 @@ class Photo extends BaseModel
           continue;
 
         if($iptckey == 'tags')
-          $attributes[$iptckey] .= implode(',', $iptcval);
+          $attributes['tags'] = implode(',', array_unique(array_merge((array)explode(',', $attributes['tags']), $iptcval)));
         else if(!isset($attributes[$iptckey])) // do not clobber if already in $attributes #1011
           $attributes[$iptckey] = $iptcval;
       }
@@ -771,6 +852,13 @@ class Photo extends BaseModel
       if(isset($attributes['tags']) && !empty($attributes['tags']))
         $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
 
+    // since tags can be created adhoc we need to ensure they're here
+      if(isset($attributes['tags']) && !empty($attributes['tags']))
+        $tagObj->createBatch($attributes['tags']);
+
+      $attributes['owner'] = $this->owner;
+      $attributes['actor'] = $this->getActor();
+
       $attributes = array_merge(
         $this->getDefaultAttributes(),
         array(
@@ -797,9 +885,6 @@ class Photo extends BaseModel
       unlink($resp['localFileCopy']);
       if($stored)
       {
-        if(isset($attributes['tags']) && !empty($attributes['tags']))
-          $tagObj->updateTagCounts(array(), (array)explode(',', $attributes['tags']), $attributes['permission'], $attributes['permission']);
-
         $this->logger->info("Photo ({$id}) successfully stored to the database");
         return $id;
       }
@@ -914,7 +999,22 @@ class Photo extends BaseModel
     return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
   }
 
-  private function createAndStoreBaseAndOriginal($name, $localFile, $dateTaken)
+  private function autoRotate($file, $allowAutoRotate = false)
+  {
+    if($this->autoRotateEnabled($allowAutoRotate))
+    {
+      exec(sprintf('%s -ai %s', $this->config->modules->exiftran, escapeshellarg($file)));
+    }
+  }
+
+  protected function autoRotateEnabled($allowAutoRotate)
+  {
+    if($allowAutoRotate != '0' && is_executable($this->config->modules->exiftran))
+      return true;
+    return false;
+  }
+
+  private function createAndStoreBaseAndOriginal($name, $localFile, $dateTaken, $allowAutoRotate)
   {
     $paths = $this->generatePaths($name, $dateTaken);
 
@@ -922,6 +1022,8 @@ class Photo extends BaseModel
     $localFileCopy = "{$localFile}-copy";
     $this->logger->info("Making a local copy of the uploaded image. {$localFile} to {$localFileCopy}");
     copy($localFile, $localFileCopy);
+
+    $this->autoRotate($localFileCopy, $allowAutoRotate);
     
     $baseImage = $this->image->load($localFileCopy);
     if(!$baseImage)

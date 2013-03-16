@@ -11,13 +11,19 @@ class ApiManageController extends ApiBaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
-    $configFile = $this->utility->getConfigFile();
+    $configFile = $this->utility->getConfigFile(true);
     $configString = getConfig()->getString($configFile);
     $configArray = parse_ini_string($configString, true);
-    foreach($_POST as $key => $value)
+
+    // set defaults since checkbox values are not passed if unchecked
+    $post = array_merge(array('allowDuplicate' => 0, 'downloadOriginal' => 0, 'hideFromSearchEngines' => 0, 'decreaseLocationPrecision' => 0), $_POST);
+    foreach($post as $key => $value)
     {
       switch($key)
       {
+        case 'admins':
+          $configArray['user']['admins'] = implode(',', (array)$value);
+          break;
         case 'allowDuplicate':
           $configArray['site']['allowDuplicate'] = (string)intval($value);
           break;
@@ -26,6 +32,9 @@ class ApiManageController extends ApiBaseController
           break;
         case 'hideFromSearchEngines':
           $configArray['site']['hideFromSearchEngines'] = (string)intval($value);
+          break;
+        case 'decreaseLocationPrecision':
+          $configArray['site']['decreaseLocationPrecision'] = (string)intval($value);
           break;
         case 'fileSystem':
           // validate this is an existing file system

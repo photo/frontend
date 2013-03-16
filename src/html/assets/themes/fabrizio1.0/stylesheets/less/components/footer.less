@@ -1,0 +1,53 @@
+/* Top Banner Area */
+.trovebox-footer {
+  font-family: @font_primary;
+  background-color:@color_footer_background;
+  margin:30px 0 0 0;
+  padding:30px 0;
+  color:@color_footer_font;
+  font-size:85%;
+  a {
+    color:@color_footer_link;
+  }
+
+  .links {
+    ul li {
+      float:left;
+      margin-right:20px;
+    }
+  }
+
+  .badges {
+    ul li {
+      margin: 0 30px 8px 0;
+      float:left;
+
+      &.supported-by {
+        text-transform:uppercase;
+      }
+      a {
+        display:block;
+        width:160px;
+        height:48px;
+        content:"";
+        background:url("../images/badges-sprite.png") no-repeat;
+
+        &.apple {
+        }
+        &.android {
+          background-position:0 -55px;
+        }
+        &.shuttleworth {
+          background-position:0 -110px;
+        }
+        &.webfwd {
+          background-position:0 -165px;
+        }
+      }
+    }
+  }
+
+  .copyright {
+    padding-top:30px;
+  }
+}

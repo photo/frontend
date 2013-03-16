@@ -18,29 +18,123 @@ SQL;
   $sql = <<<SQL
     UPDATE `{$this->mySqlTablePrefix}{$table}` SET `actor`=`owner`;
 SQL;
+  $status = $status && mysql_4_0_0($sql);
 
 }
 
-// GH-1024
 $sql = <<<SQL
-  ALTER TABLE `{$this->mySqlTablePrefix}tag` DROP INDEX `id` ,
-  ADD UNIQUE `id` ( `owner` , `id` ) ;
+ ALTER TABLE `{$this->mySqlTablePrefix}album` ADD `countPublic` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `extra` ;
 SQL;
-$status = $status && mysql_4_0_0($sql, array(':key' => 'version', ':version' => '4.0.0'));
+mysql_4_0_0($sql);
 
-// GH-1025
 $sql = <<<SQL
-  ALTER TABLE `{$this->mySqlTablePrefix}config` ADD INDEX ( `aliasOf` ) ;
+ ALTER TABLE `activity` ADD `elementId` VARCHAR( 6 ) NOT NULL AFTER `type` 
 SQL;
-$status = $status && mysql_4_0_0($sql, array(':key' => 'version', ':version' => '4.0.0'));
+mysql_4_0_0($sql);
 
+$sql = <<<SQL
+  CREATE TABLE IF NOT EXISTS `{$this->mySqlTablePrefix}relationship` (
+    `actor` varchar(127) NOT NULL,
+    `follows` varchar(127) NOT NULL,
+    `dateCreated` datetime NOT NULL,
+    PRIMARY KEY (`actor`,`follows`)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL;
+mysql_4_0_0($sql);
 
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}activity` ADD `elementId` VARCHAR( 6 ) NOT NULL AFTER `type`;
+SQL;
+$status = $status && mysql_4_0_0($sql);
 
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}activity` DROP PRIMARY KEY , ADD PRIMARY KEY ( `owner` , `id` ) ;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}elementAlbum` DROP INDEX `element` ;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}elementAlbum` ADD INDEX ( `owner` , `album` ) ;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}album` DROP PRIMARY KEY , ADD PRIMARY KEY ( `owner` , `id` ) ;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}album` CHANGE `count` `countPublic` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0';
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}album` ADD `countPrivate` INT( 10 ) NOT NULL DEFAULT '0' AFTER `countPublic` ;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}photo` DROP INDEX `id` , ADD UNIQUE `owner` ( `owner` , `id` ) 
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}tag` DROP INDEX `id` , ADD UNIQUE `owner` ( `owner` , `id` ) 
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}webhook` DROP INDEX `id` , ADD UNIQUE `owner` ( `owner` , `id` ) 
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}album` DROP `visible` ;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  DROP TRIGGER IF EXISTS `{$this->mySqlTablePrefix}increment_album_photo_count`;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  DROP TRIGGER IF EXISTS `{$this->mySqlTablePrefix}decrement_album_photo_count`;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  CREATE TABLE `{$this->mySqlTablePrefix}relationship` (
+   `actor` varchar(127) NOT NULL,
+   `follows` varchar(127) NOT NULL,
+   `dateCreated` datetime NOT NULL,
+   PRIMARY KEY (`actor`,`follows`)
+  ) ENGINE=InnoDB;
+SQL;
+$status = $status && mysql_4_0_0($sql);
+
+$sql = <<<SQL
+  CREATE TABLE `{$this->mySqlTablePrefix}shareToken` (
+    `id` VARCHAR( 10 ) NOT NULL ,
+    `owner` VARCHAR( 127 ) NOT NULL ,
+    `actor` VARCHAR( 127 ) NOT NULL ,
+    `type` ENUM( 'album', 'photo', 'photos', 'video' ) NOT NULL ,
+    `data` VARCHAR( 255 ) NOT NULL ,
+    `dateExpires` INT UNSIGNED NOT NULL ,
+    PRIMARY KEY ( `owner` , `id` ),
+    UNIQUE KEY `owner` (`owner`,`type`,`data`)
+  ) ENGINE = InnoDB;
+SQL;
+$status = $status && mysql_4_0_0($sql);
 
 $sql = <<<SQL
   UPDATE `{$this->mySqlTablePrefix}admin` SET `value`=:version WHERE `key`=:key
 SQL;
-$status = $status && mysql_3_0_8($sql, array(':key' => 'version', ':version' => '4.0.0'));
+$status = $status && mysql_4_0_0($sql, array(':key' => 'version', ':version' => '4.0.0'));
 
 function mysql_4_0_0($sql, $params = array())
 {
@@ -58,5 +152,3 @@ function mysql_4_0_0($sql, $params = array())
 }
 
 return $status;
-
-

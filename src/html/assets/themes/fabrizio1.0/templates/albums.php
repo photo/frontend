@@ -1,40 +1,30 @@
-<?php if(!empty($albums)) { ?>
-  <?php if(count($albums) >= 8 || (isset($_GET['page']) && $_GET['page'] > 1)) { ?>
-    <div class="pagination">
-      <ul role="navigation">
-        <?php /* TODO this is really crude */ ?>
-        <?php if(isset($_GET['page']) && $_GET['page'] > 1) { ?>
-          <li><a href="<?php $this->utility->safe(preg_replace('/page=\d+/', 'page='.intval($_GET['page']-1), $_SERVER['REQUEST_URI'])); ?>">&larr; Prev</a></li>
-        <?php } ?>
-        <?php if(count($albums) >= 8) { ?>
-          <?php if(stristr($_SERVER['REQUEST_URI'], 'page=')) { ?>
-            <li><a href="<?php $this->utility->safe(preg_replace('/page=\d+/', 'page='.intval($_GET['page']+1), $_SERVER['REQUEST_URI'])); ?>">Next &rarr;</a></li>
-          <?php } else { ?>
-            <li><a href="<?php $this->utility->safe($_SERVER['REQUEST_URI']); ?>?page=2">Next &rarr;</a></li>
-          <?php } ?>
-        <?php } ?>
-      </ul>
-    </div>
-  <?php } ?>
-  
-  <div class="row album-row hero-unit empty">
-    <div class="album-list span12">
-      <ul class="thumbnails">
-        <?php foreach($albums as $alb) { ?>
-          <li>
-            <a href="<?php $this->url->photosView(sprintf('album-%s', $alb['id'])); ?>">
-              <?php if(empty($alb['cover'])) { ?>
-                <i class="icon-picture icon-large"></i>
-              <?php } else { ?>
-                <div style="background-image:url('<?php $this->utility->safe($alb['cover']['path200x200xCR']); ?>');"></div>
-              <?php } ?>
-            </a>
-            <h5><?php $this->utility->safe($alb['name']); ?></h5>
-          </li>
-        <?php } ?>
-      </ul>
-    </div>
+<?php $this->theme->display('partials/user-badge.php'); ?>
+
+<div class="row">
+  <div class="span12 album-grid">
+    <div class="album-grid-hr"></div>
+
+    <?php if(!empty($albums) ) { ?>
+      <ul class="albums"></ul>
+      <script> var initData = <?php echo json_encode($albums); ?>;</script>
+    <?php } else { ?>
+      <?php if($this->user->isAdmin()) { ?>
+        <h4>You haven't created any albums, yet.</h4>  
+        <p>
+          It's easy to get started with albums.
+          <ol>
+            <li>Click the link above to create a new album.</li>
+            <li>Type a name and create the album.</li>
+            <li>Head over to your gallery and select the photos you'd like to add.</li>
+            <li>Add them to your newly created album.</li>
+          </ol>
+        </p>
+      <?php } else { ?>
+        <h4>This user hasn't created any albums, yet.</h4>  
+        <p>
+          You should give them a nudge to get started!
+        </p>
+      <?php } ?>
+    <?php } ?>
   </div>
-<?php } else { ?>
-  <?php $this->theme->display('partials/no-content.php', array('type' => 'albums')); ?>
-<?php } ?>
+</div>

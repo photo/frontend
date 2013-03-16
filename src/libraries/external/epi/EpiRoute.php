@@ -22,6 +22,7 @@ class EpiRoute
   private $route = null;
   const routeKey= '__route__';
   const httpGet = 'GET';
+  const httpOptions = 'OPTIONS';
   const httpPost= 'POST';
 
   /**
@@ -34,6 +35,18 @@ class EpiRoute
   public function get($route, $callback, $isApi = false)
   {
     $this->addRoute($route, $callback, self::httpGet, $isApi);
+  }
+
+  /**
+   * options('/', 'function');
+   * @name  options
+   * @author  Jaisen Mathai <jaisen@jmathai.com>
+   * @param string $route
+   * @param mixed $callback
+   */
+  public function options($route, $callback, $isApi = false)
+  {
+    $this->addRoute($route, $callback, self::httpOptions, $isApi);
   }
 
   /**

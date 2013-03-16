@@ -26,9 +26,28 @@ class Album extends BaseModel
     return $this->db->postAlbumAdd($albumId, $type, $ids);
   }
 
+  /*
+   * Adjust the counters on a album when the permission of an element changes
+   *
+   * @param array $albums An array of albums (strings get converted)
+   * @param int $permission Permission of 1 or 0
+   */
+  public function adjustCounters($albums, $permission)
+  {
+    if(!is_array($albums))
+      $albums = (array)explode(',', $albums);
+
+    // if being marked public then increment the public count (private is already being tracked)
+    // if being marked private then derement the public count
+    $value = $permission == 1 ? 1 : -1;
+    $this->db->postAlbumsIncrementer($albums, $value);
+  }
+
   public function create($params)
   {
     $params = $this->whitelistParams($params);
+    $params['owner'] = $this->owner;
+    $params['actor'] = $this->getActor();
     $id = $this->user->getNextId('album');
     if($id === false)
     {
@@ -56,7 +75,7 @@ class Album extends BaseModel
     if(!$album)
       return false;
 
-    if(!$this->user->isOwner())
+    if(!$this->user->isAdmin())
     {
       if(!$this->isAlbumCoverVisible($album))
         $album['cover'] = null;
@@ -77,7 +96,7 @@ class Album extends BaseModel
     if($albums === false)
       return false;
     
-    if(!$this->user->isOwner())
+    if(!$this->user->isAdmin())
     {
       foreach($albums as $key => $alb)
       {

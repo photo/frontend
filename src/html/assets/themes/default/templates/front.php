@@ -1,7 +1,7 @@
 <div class="front">
   <p>
     <?php if($photos[0]['totalRows'] == 0) { ?>
-      <?php if($this->user->isOwner()) { ?>
+      <?php if($this->user->isAdmin()) { ?>
         <h1>Oh no, you haven't uploaded any photos yet. <a href="<?php $this->url->photoUpload(); ?>" class="button">Start Now</a>
         <img src="<?php $this->theme->asset('image', 'front.jpg'); ?>" class="front">
       <?php } else { ?>

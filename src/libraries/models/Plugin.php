@@ -203,6 +203,14 @@ class Plugin extends BaseModel
     {
       $routes = $instance->defineRoutes();
       if(empty($routes))
+        $routes = array();
+      $apis = $instance->defineApis();
+      if(empty($apis))
+        $apis = array();
+
+      $routes = array_merge($routes, $apis);
+
+      if(empty($routes))
         continue;
 
       foreach($routes as $name => $route)
@@ -213,7 +221,10 @@ class Plugin extends BaseModel
         $method = strtolower($route[0]);
 
         $routePath = sprintf('/plugin/%s(%s)', $name, $route[1]);
-        $this->route->$method($routePath, array($class, 'routeHandler'));
+        if(count($route) === 2) // a normal route
+          $this->route->$method($routePath, array($class, 'routeHandler'));
+        elseif(count($route) === 3) // an api route
+          $this->api->$method($routePath, array($class, 'routeHandler'), $route[2]);
       }
     }
   }

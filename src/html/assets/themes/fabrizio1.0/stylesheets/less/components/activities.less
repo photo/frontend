@@ -1,0 +1,86 @@
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  li {
+    list-style: none;
+    padding: 10px;
+    margin: 0 0 4px;
+    line-height: 36px;
+    font-size: 12px;
+    color: #888;
+    
+    .to, .from {
+      float: left;
+      vertical-align: top;
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      margin-right: 4px;
+      // don't use gravatar
+      font-size:36px;
+      line-height:36px;
+    }
+    
+    a {
+      font-weight: bold;
+    }
+    
+    .activity-meta {
+      float: right;
+    }
+    
+    .activity-type {
+      color: #d7d7d7;
+      margin-left: 4px;
+    }
+    
+    .activity-time {
+      font-size: 10px;
+    }
+    
+    .activity-wrap {
+      margin-left: 86px;
+      margin-right: 85px;
+    }
+    
+    .activity-content {
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1.4em;
+
+      ul li {
+        float:left;
+        margin:5px 4px 0 0;
+        padding:0;
+
+        img {
+          border-radius: 4px;
+          width:50px;
+          height:50px;
+          margin:0;
+        }
+      }
+    }
+    
+    &:hover {
+      background: #f8f8f8;
+    }
+    
+    &.new {
+      background-color: #fffbef;
+    }
+  }
+}
+
+.activity-list-heading {
+  clear: both;
+  margin: 0 0 30px;
+  border-bottom: 0;
+  border-top: 1px solid #ccc;
+  line-height: 3em;
+  .icon-angle-down {
+    float: right;
+    line-height: 3em;
+  }
+}

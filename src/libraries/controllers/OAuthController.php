@@ -15,6 +15,13 @@ class OAuthController extends BaseController
   
   public function authorize()
   {
+    $userObj = new User;
+    if(!$userObj->isAdmin())
+    {
+      $this->route->redirect(sprintf('/user/login?r=%s', $_SERVER['REQUEST_URI']));
+      die();
+    }
+
     $callback = null;
     $separator = '?';
 
@@ -40,7 +47,7 @@ class OAuthController extends BaseController
   public function authorizePost()
   {
     $userObj = new User;
-    if(!$userObj->isOwner())
+    if(!$userObj->isAdmin())
     {
       $this->route->run('/error/403', EpiRoute::httpGet);
       die();
@@ -53,7 +60,7 @@ class OAuthController extends BaseController
     }
 
     // TODO make permissions an array
-    $consumerKey = getCredential()->add($_POST['name'], array()/*$_POST['permissions']*/);
+    $consumerKey = getCredential()->create($_POST['name'], array()/*$_POST['permissions']*/);
     if(!$consumerKey)
     {
       getLogger()->warn(sprintf('Could not add credential for: %s', json_encode($consumerKey)));

@@ -28,6 +28,11 @@ class EpiCache
     return self::$instances[$hash];
   }
 
+  protected function deleteEpiCacheKey($key)
+  {
+    unset($this->cached[$key]);
+  }
+
   protected function getEpiCache($key)
   {
     if(isset($this->cached[$this->hash][$key]))

@@ -38,6 +38,33 @@ class AssetsController extends BaseController
       echo $this->pipeline->getCombined($type, $version);
   }
 
+  public function lessc()
+  {
+    if(!isset($_GET['f']))
+    {
+      $this->route->run('/error/404');
+      return;
+    }
+
+    $f = $_GET['f'];
+
+    header('Content-type: text/css');
+    header(sprintf('Last-Modified: %s GMT', gmdate('D, d M Y H:i:s', strtotime('-1 year')))); 
+    header(sprintf('Etag: %s', md5(sprintf('%s~%s', $key, $f))));
+
+    if(!is_array($f))
+      $f = (array)explode(',', $f);
+
+    $theme = getTheme();
+    $less = new lessc;
+    foreach($f as $file)
+    {
+      $fullPath = realpath(sprintf('%s/%s/stylesheets/%s', $this->config->paths->themes, $theme->getThemeName(), $file));
+      if(file_exists($fullPath) && preg_match('/\.less$/', $file) === 1 && strpos($fullPath, $this->config->paths->themes) === 0)
+        echo $this->pipeline->normalizeUrls(dirname($fullPath), $less->compileFile($fullPath));
+    }
+  }
+
   public function staticAsset($file)
   {
     $this->pipeline->returnHeader($file);

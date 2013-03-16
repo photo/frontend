@@ -1,32 +1,27 @@
-<?php if($photos[0]['totalRows'] > 0) { ?>
-  <?php $minDate = min($photos[0]['dateTaken'], $photos[count($photos)-1]['dateTaken']); ?>
-  <?php $maxDate = max($photos[count($photos)-1]['dateTaken'], $photos[count($photos)-1]['dateTaken']); ?>
-  <div class="infobar subnav subnav-fixed">
-    <ul class="nav nav-pills">
-      <li class="plain"><a>Showing photos between <i class="icon-calendar icon-large"></i> <span class="startdate date" data-time="<?php $this->utility->safe($minDate); ?>"><?php $this->utility->safe(date('l F jS, Y', $minDate)); ?></span> and <i class="icon-calendar icon-large"></i> <span class="enddate date" data-time="<?php $this->utility->safe($maxDate); ?>"><?php $this->utility->safe(date('l F jS, Y', $maxDate)); ?></span></a></li>
-    </ul>
-  </div>
+<?php $this->theme->display('partials/user-badge.php'); ?>
 
-  <div class="row hero-unit empty gallery">
-    <?php if(!empty($album)) { ?>
-      <div class="header">Photos from <i class="icon-th icon-large"></i> <?php $this->utility->safe($album['name']); ?></div>
-    <?php } elseif(!empty($tags)) { ?>
-      <div class="header">
-        <i class="icon-tags icon-large"></i>
-        Photos tagged with
-        <?php foreach($tags as $cnt => $tag) { ?><?php $this->utility->safe($tag); ?><?php if(count($tags) > 1 && $cnt < (count($tags)-1)) { ?><?php if($cnt < (count($tags)-2)) { ?>, <?php } else { ?> and <?php } ?><?php } ?>
-        <?php } ?>
-      </div>
-    <?php } ?>
-    <div class="photo-grid-justify"></div>
-    <br clear="all">
-    <?php if($photos[0]['totalPages'] > 1) { ?>
-      <div class="load-more">
-        <button type="button" class="span2 btn btn-primary photos-load-more-click"><i class="icon-plus icon-large"></i> Load more</button>
-      </div>
+<div class="row">
+  <div class="span12 photo-grid">
+    <div class="photo-grid-hr"></div>
+    <?php if(!empty($photos)) { ?>
+      <?php if(isset($album)) { ?>
+        <h4><i class="icon-th-large"></i> <?php $this->utility->safe($album['name']); ?> <small>(<?php $this->utility->safe($album['count']); ?> photos)</small></h4>
+      <?php } else if(isset($tags)) { ?>
+        <h4><i class="icon-tags"></i> <?php $this->utility->safe(implode(', ', $tags)); ?> <small>(<?php $this->utility->safe($photos[0]['totalRows']); ?> photos)</small></h4>
+      <?php } ?>
+      <script> var initData = <?php echo json_encode($photos); ?>; var filterOpts = <?php echo json_encode($options); ?>;</script>
+    <?php } else { ?>
+      <?php if($this->user->isAdmin()) { ?>
+        <h4>You haven't uploaded any photos, yet.</h4>  
+        <p>
+          It's easy to start uploading photos. Head over to the <a href="/photos/upload">upload</a> page to get started.
+        </p>
+      <?php } else { ?>
+        <h4>This user hasn't uploaded any photos, yet.</h4>  
+        <p>
+          You should give them a nudge to get started!
+        </p>
+      <?php } ?>
     <?php } ?>
   </div>
-  <script> var initData = <?php echo json_encode($photos); ?>; var filterOpts = <?php echo json_encode($options); ?>;</script>
-<?php } else { ?>
-  <?php $this->theme->display('partials/no-content.php', array('type' => 'upload')); ?>
-<?php } ?>
+</div>

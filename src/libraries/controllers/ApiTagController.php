@@ -67,7 +67,7 @@ class ApiTagController extends ApiBaseController
     getAuthentication()->requireCrumb();
     $tag = $this->tag->sanitize($tag);
     $params = $this->tag->validateParams($_POST);
-    $res = getDb()->postTag($tag, $params);
+    $res = $this->tag->update($tag, $params);
     if($res)
     {
       $tag = $this->api->invoke("/{$this->apiVersion}/tag/{$tag}/view.json", EpiRoute::httpGet);
@@ -104,10 +104,10 @@ class ApiTagController extends ApiBaseController
     unset($filters['__route__']);
 
     $userObj = new User;
-    if($userObj->isOwner())
+    if($userObj->isAdmin())
       $filters['permission'] = 0;
 
-    $tagField = $userObj->isOwner() ? 'countPrivate' : 'countPublic';
+    $tagField = $userObj->isAdmin() ? 'countPrivate' : 'countPublic';
     $tagsFromDb = $this->tag->getTags($filters);
     $tags = array(); // see issue #795 why we don't operate directly on $tagsFromDb
 
