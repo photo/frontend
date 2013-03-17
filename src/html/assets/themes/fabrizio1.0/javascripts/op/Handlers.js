@@ -150,6 +150,10 @@
       var $el = $('.share.trigger');
       $el.trigger('click');
     };
+    this.click.tutorial = function(ev) {
+      ev.preventDefault();
+      TBX.tutorial.run();
+    };
 
     this.custom = {};
     this.custom.preloadPhotos = function(photos) {
@@ -297,6 +301,12 @@
       } else {
         TBX.notification.show('The upload widget could not be loaded. Try refreshing this page.', 'flash', 'error');
       }
+    };
+
+    // custom
+    this.custom.tutorialUpdate = function() {
+      var params = {section: this.section, key: this.key, crumb: TBX.crumb()};
+      OP.Util.makeRequest('/plugin/Tutorial/update.json', params, TBX.callbacks.tutorialUpdate, 'json', 'post');
     };
   }
   

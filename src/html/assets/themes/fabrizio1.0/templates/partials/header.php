@@ -55,10 +55,13 @@
           <?php $this->theme->display('partials/header-secondary.php', array()); ?>
         </ul>
         <ul class="nav pull-right">
+          <?php if($numTutorials = $this->user->numberOfTutorials()) { ?>
+            <li class="info"><a href="#" class="tutorial" title="Click here to reveal new features."><i class="icon-info-sign tutorial"></i><span class="badge badge-info tutorial"><?php $this->utility->safe($numTutorials); ?></span></a>
+          <?php } ?>
           <?php if($this->user->isAdmin()) { ?>
             <li><a href="/manage/settings"><i class="icon-cog"></i> Site Settings</a></li>
           <?php } ?>
-          <li><div class="help-container"><a href="https://trovebox.com/faq"><i class="icon-question-sign"></i></div></a>
+          <!--<li><div class="help-container"><a href="https://trovebox.com/faq"><i class="icon-question-sign"></i></div></a>-->
         </ul>
       </div>
       <div class="container">

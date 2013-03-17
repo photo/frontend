@@ -302,6 +302,23 @@ class User extends BaseModel
   }
 
   /**
+    * Returns the number of tutorials for the current page
+    *
+    * @return int
+    */
+  public function numberOfTutorials()
+  {
+    if(!$this->isAdmin())
+      return 0;
+
+    $tutorial = new Tutorial;
+    $unseen = $tutorial->getUnseen();
+    if($unseen === false)
+      return 0;
+    return count($unseen);
+  }
+
+  /**
     * Set an attribute.
     *
     * @return boolean

@@ -151,6 +151,9 @@
       $('a.batchHide').trigger('click');
       TBX.notification.show('Your photo was successfully emailed.', 'flash', 'confirm');
     },
+    this.tutorialUpdate = function(response) {
+      $('.navbar-inner-secondary ul li.info').fadeOut();
+    };
     this.upload = function(ev) {
       ev.preventDefault();
       var uploader = $("#uploader").pluploadQueue();
