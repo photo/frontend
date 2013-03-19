@@ -11,7 +11,7 @@
       // key = key from the ini file
       // section = section from the ini file
       q.push({step:step, selector: selector, intro:intro, key: key, section: section, width: width});
-      if(init) {
+      if(init && fired === false) {
         OP.Util.fire('tutorial:run');
         fired = true;
       }
