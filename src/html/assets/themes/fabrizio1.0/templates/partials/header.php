@@ -1,7 +1,7 @@
     <!-- Logo and Primary Navigation -->
     <div class="navbar-inner navbar-inner-primary">
       <div class="container">
-        <h1 class="logo"><a href="/">TroveBox</a></h1>
+        <h1 class="logo"><a href="/" class="brand">TroveBox</a></h1>
         
         <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
         <a class="btn btn-navbar" data-toggle="collapse" data-target=".primary-navigation">
@@ -17,7 +17,10 @@
               <?php if($this->session->get('site') != '' && $this->utility->gethost() != $this->session->get('site')) { ?>
                 <li><a href="<?php printf('%s://%s', $this->utility->getProtocol(false), $this->utility->safe($this->session->get('site'), false)); ?>">Back to my site</a></li>
               <?php } ?>
-              <li><a href="/user/logout">Logout</a></li>
+              <?php if($this->user->isAdmin()) { ?>
+                <li><a href="/manage/settings"><i class="icon-cog"></i> Settings</a></li>
+              <?php } ?>
+              <li><a href="/user/logout"><i class="icon-signout"></i> Logout</a></li>
             </ul>
           </div>
         <?php } else { ?>
@@ -56,10 +59,7 @@
         </ul>
         <ul class="nav pull-right">
           <?php if($numTutorials = $this->user->numberOfTutorials()) { ?>
-            <li class="info"><a href="#" class="tutorial" title="Click here to reveal new features."><i class="icon-info-sign tutorial"></i><span class="badge badge-info tutorial"><?php $this->utility->safe($numTutorials); ?></span></a>
-          <?php } ?>
-          <?php if($this->user->isAdmin()) { ?>
-            <li><a href="/manage/settings"><i class="icon-cog"></i> Site Settings</a></li>
+            <li class="info"><a href="#" class="tutorial" title="Click here to reveal new features."><span class="badge badge-info tutorial"><?php $this->utility->safe($numTutorials); ?></span> New Feature On This Page</a>
           <?php } ?>
           <!--<li><div class="help-container"><a href="https://trovebox.com/faq"><i class="icon-question-sign"></i></div></a>-->
         </ul>

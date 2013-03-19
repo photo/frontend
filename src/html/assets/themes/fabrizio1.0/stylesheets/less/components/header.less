@@ -1,10 +1,16 @@
 body.trovebox {
-  padding-top: 102px;
+  //padding-top: 102px;
 }
 
 /* Top Banner Area */
 .trovebox-banner {
-  position: fixed;
+  //position: fixed;
+  &.navbar-fixed-top {
+    z-index: inherit;
+  }
+  &.navbar {
+    position:relative;
+  }
   
   font-family: @font_primary;
   

@@ -200,6 +200,8 @@
       
       helperNumberLayer.className = "introjs-helperNumberLayer";
       tooltipLayer.className = "introjs-tooltip";
+      if(targetElement.getAttribute('data-width'))
+        tooltipLayer.setAttribute("style", "width:" + targetElement.getAttribute("data-width") + "px;");
 
       helperNumberLayer.innerHTML = targetElement.getAttribute("data-step");
       tooltipLayer.innerHTML = "<div class='introjs-tooltiptext'>" + targetElement.getAttribute("data-intro") + "</div><div class='introjs-tooltipbuttons'></div>";

@@ -18,13 +18,11 @@
         <em class="poweredby">Powered by <a href="http://www.plupload.com">Plupload</a>.</em>
         <hr>
         <h3>Or import from your favorite services</h3>
-        <p>
-          <ul>
-            <li><a href="https://openphoto.me/for/flickr">Import from Flickr</a></li>
-            <li><a href="https://openphoto.me/for/facebook">Import from Facebook</a></li>
-            <li><a href="https://openphoto.me/for/instagram">Import from Instagram</a></li>
-          </ul>
-        </p>
+        <ul>
+          <li><a href="https://openphoto.me/for/flickr">Import from Flickr</a></li>
+          <li><a href="https://openphoto.me/for/facebook">Import from Facebook</a></li>
+          <li><a href="https://openphoto.me/for/instagram">Import from Instagram</a></li>
+        </ul>
       </div>
       <div class="span4">
         <h3>Use these settings.</h3>
@@ -45,7 +43,7 @@
         <div class="control-group">
           <label for="tags">Permission</label>
           <div class="controls">
-            <label class="radio inline">
+            <label class="radio inline private">
               <input type="radio" name="permission" value="0"<?php if($preferences['permission'] === false || $preferences['permission'] === '0') { ?> checked="checked"<?php } ?>>
               <span>Private</span>
             </label>
