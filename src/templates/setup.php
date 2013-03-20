@@ -28,7 +28,7 @@
       <label for="email">Email address</label>
       <input type="text" name="email" id="email" placeholder="user@example.com" <?php if(isset($email)) { ?>value="<?php $this->utility->safe($email); ?>"<?php } ?> data-validation="required email">
 
-      <?php if($this->config->site->allowTroveboxLogin == 1) { ?>
+      <?php if($this->config->site->allowOpenPhotoLogin == 1) { ?>
         <label for="email">Password</label>
         <input type="password" name="password" id="password" placeholder="password" <?php if(isset($password)) { ?>value="<?php $this->utility->safe($password); ?>"<?php } ?> data-validation="required">
       <?php } else { ?>
