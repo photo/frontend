@@ -47,7 +47,7 @@ SUHOSIN
 MULTIBYTE
 MAILHEAD
 
-    cd /usr/port/lang/php5-extentions
+    cd /usr/port/lang/php5
     make config install clean distclean
 
 ##### Install php5 extentions
