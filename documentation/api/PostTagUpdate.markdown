@@ -18,7 +18,7 @@ Update Tag
 <a name="purpose"></a>
 ### Purpose of the update Tag API
 
-Use this API to update a tag.
+This API is used internally to update a tag.
 
 ----------------------------------------
 
@@ -34,8 +34,6 @@ _Authentication: required_
 
 1.  count (optional), Number of photos which contain this tag
 1.  email (optional), An email address that corresponds to this tag
-1.  latitude (optional), _i.e. 34.76_ - A decimal representation of latitude.
-1.  longitude (optional), _i.e. -87.45_ - A decimal representation of longitude.
 
 ----------------------------------------
 

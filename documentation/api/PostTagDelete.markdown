@@ -1,4 +1,4 @@
-Create Tag
+Delete Tag
 =======================
 
 
@@ -16,10 +16,10 @@ Create Tag
 ----------------------------------------
 
 <a name="purpose"></a>
-### Purpose of the Create Tag API
+### Purpose of the Delete Tag API
 
-This API is used internally to create a tag.
-External applications should use the [Photo Update API](http://theopenphotoproject.org/documentation/api/PostPhotoUpdate) to create tags.
+This API is used internally to delete a tag.
+External applications should use the [Photo Update API](http://theopenphotoproject.org/documentation/api/PostPhotoUpdate) to delete tags.
 
 ----------------------------------------
 
@@ -28,14 +28,10 @@ External applications should use the [Photo Update API](http://theopenphotoproje
 
 _Authentication: required_
 
-    POST /tag/create.json
+    POST /tag/:id/delete.json
 
 <a name="parameters"></a>
 ### Parameters
-
-1.  tag (required), The name of the tag to create
-1.  count (optional), Number of photos which contain this tag
-1.  email (optional), An email address that corresponds to this tag
 
 ----------------------------------------
 
@@ -45,13 +41,13 @@ _Authentication: required_
 <a name="example-cli"></a>
 #### Command Line (using [openphoto-php][openphoto-php])
 
-    ./openphoto -p -X POST -h current.trovebox.com -e /tag/create.json -F 'tag=sunnyvale' -F 'count=10'
+    ./openphoto -p -X POST -h current.trovebox.com -e /tag/sunnyvale/delete.json
 
 <a name="example-php"></a>
 #### PHP (using [openphoto-php][openphoto-php])
 
     $client = new OpenPhotoOAuth($host, $consumerKey, $consumerSecret, $oauthToken, $oauthTokenSecret);
-    $response = $client->post("/tag/create.json", array('tag' => 'sunnyvale', 'count' => 10));
+    $response = $client->post("/tag/sunnyvale/delete.json");
 
 ----------------------------------------
 
@@ -62,7 +58,7 @@ The response is in a standard [response envelope](http://theopenphotoproject.org
 
 * _message_, A string describing the result. Don't use this for anything but reading.
 * _code_, _201_ on success
-* _result_, TRUE if the tag was successfully created
+* _result_, TRUE if the tag was successfully deleted
 
 <a name="sample"></a>
 #### Sample
