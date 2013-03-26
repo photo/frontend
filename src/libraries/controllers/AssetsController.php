@@ -48,21 +48,44 @@ class AssetsController extends BaseController
 
     $f = $_GET['f'];
 
+    $key = 'key';
     header('Content-type: text/css');
     header(sprintf('Last-Modified: %s GMT', gmdate('D, d M Y H:i:s', strtotime('-1 year')))); 
     header(sprintf('Etag: %s', md5(sprintf('%s~%s', $key, $f))));
 
     if(!is_array($f))
       $f = (array)explode(',', $f);
-
     $theme = getTheme();
     $less = new lessc;
     foreach($f as $file)
     {
       $fullPath = realpath(sprintf('%s/%s/stylesheets/%s', $this->config->paths->themes, $theme->getThemeName(), $file));
       if(file_exists($fullPath) && preg_match('/\.less$/', $file) === 1 && strpos($fullPath, $this->config->paths->themes) === 0)
-        echo $this->pipeline->normalizeUrls(dirname($fullPath), $less->compileFile($fullPath));
+      {
+        $cacheFile = realpath(sprintf('%s/assets/cache', $this->config->paths->docroot)) . '/' . md5($theme->getThemeName() . $file) . '.css';
+        $cssOutput = $this->getCompiledLessFile($fullPath, $cacheFile, $less);
+        echo $this->pipeline->normalizeUrls(dirname($fullPath), $cssOutput);
+      }
     }
+  }
+
+  private function getCompiledLessFile($inputFile, $outputFile, $lessc)
+  {
+    $cacheFile = $outputFile.".cache";
+
+    if (file_exists($cacheFile)) 
+      $cache = unserialize(file_get_contents($cacheFile));
+    else 
+      $cache = $inputFile;
+
+    $newCache = $lessc->cachedCompile($cache);
+
+    if (!is_array($cache) || $newCache["updated"] > $cache["updated"]) 
+    {
+      file_put_contents($cacheFile, serialize($newCache));
+      file_put_contents($outputFile, $newCache['compiled']);
+    }
+    return $newCache['compiled'];
   }
 
   public function staticAsset($file)
