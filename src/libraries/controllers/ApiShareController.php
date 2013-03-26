@@ -50,7 +50,8 @@ class ApiShareController extends ApiController
       $params['photo'] = $albumResp['result']['cover']['path200x200xCR'];
       $params['title'] = $albumResp['result']['name'];
       $utilityObj = new Utility;
-      $params['url'] = sprintf('http://%s/photos/album-%s/token-%s/list', $utilityObj->getHost(), $data, $token);
+      $path = sprintf('/photos/album-%s/token-%s/list', $data, $token);
+      $params['url'] = $utilityObj->getAbsoluteUrl($path, false);
       $params['permission'] = 0;
     }
 
@@ -89,7 +90,7 @@ class ApiShareController extends ApiController
 
     $body = nl2br($_POST['message']);
     $body .= sprintf('<p><img src="%s" style="padding:3px; border:solid 1px #ccc;"></p>', $album['cover']['path200x200xCR']);
-    $body .= sprintf("\n<br><br>Click the link below to view the album.<br>\n%s", $_POST['url']);
+    $body .= sprintf('<br><br>Click the link below to view the album.<br><a href="%s">%s</a>', $_POST['url'], $_POST['url']);
 
     $subject = sprintf('The album "%s" has been shared with you', $album['name']);
     $emailer->setSubject($subject);
