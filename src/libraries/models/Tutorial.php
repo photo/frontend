@@ -2,6 +2,7 @@
 class Tutorial extends BaseModel
 {
   private $inited, $all = 'tutorialAll';
+  protected $user, $theme, $utility;
   public function __construct()
   {
     parent::__construct();
@@ -12,10 +13,7 @@ class Tutorial extends BaseModel
     $this->init();
     $all = $this->all;
 
-    $user = new User;
-    $utility = new Utility;
-
-    if(!$user->isAdmin())
+    if(!$this->user->isAdmin())
     {
       return false;
     }
@@ -25,11 +23,11 @@ class Tutorial extends BaseModel
     if(!empty($all))
       return $all;
 
-    if($utility->isActiveTab('albums'))
+    if($this->utility->isActiveTab('albums'))
       $section = 'tutorialAlbums';
-    elseif($utility->isActiveTab('photos'))
+    elseif($this->utility->isActiveTab('photos'))
       $section = 'tutorialPhotos';
-    elseif($utility->isActiveTab('upload'))
+    elseif($this->utility->isActiveTab('upload'))
       $section = 'tutorialUpload';
     else
       return false;
@@ -38,14 +36,13 @@ class Tutorial extends BaseModel
     $out = array();
 
     // get any entries from the current section
-    $entry = $user->getAttribute($section);
+    $entry = $this->user->getAttribute($section);
     $isInit = false;
     if(!$entry)
     {
       $entry = '1';
       $isInit = true;
     }
-
     $config = (array)$this->config->$section;
     $pos = array_search($entry,array_keys($config));
     // for the first tutorial we start at 1 then we get the 
@@ -67,15 +64,15 @@ class Tutorial extends BaseModel
   private function getAllUnseen()
   {
     $all = $section = $this->all;
-    $user = new User;
     // get any entries from the "all" section
-    $entryAll = $user->getAttribute($all);
+    $entryAll = $this->user->getAttribute($all);
     $isInitAll = false;
     if(!$entryAll)
     {
       $entryAll = '1';
       $isInitAll = true;
     }
+
     $configAll = (array)$this->config->$all;
     $posAll = array_search($entryAll,array_keys($configAll));
     // for the first tutorial we start at 1 then we get the 
@@ -90,7 +87,6 @@ class Tutorial extends BaseModel
       foreach($unseenAll as $k => $v)
         $out[] = array_merge(json_decode($v, 1), array('key' => $k, 'section' => $section));
     }
-    
     return $out;
   }
 
@@ -99,7 +95,14 @@ class Tutorial extends BaseModel
     if($this->inited)
       return;
 
-    if(file_exists($mobileSettings = sprintf('%s/%s/config/tutorial.ini', $this->config->paths->themes, getTheme()->getThemeName())))
+    if(!$this->user)
+      $this->user = new User;
+    if(!$this->utility)
+      $this->utility = new Utility;
+    if(!$this->theme)
+      $this->theme = getTheme();
+
+    if(file_exists($mobileSettings = sprintf('%s/%s/config/tutorial.ini', $this->config->paths->themes, $this->theme->getThemeName())))
       getConfig()->loadString(file_get_contents($mobileSettings)); // Can't use $this->config since it's an object of config values
 
     $this->inited = true;
