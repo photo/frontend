@@ -62,17 +62,15 @@ class AssetsController extends BaseController
       $fullPath = realpath(sprintf('%s/%s/stylesheets/%s', $this->config->paths->themes, $theme->getThemeName(), $file));
       if(file_exists($fullPath) && preg_match('/\.less$/', $file) === 1 && strpos($fullPath, $this->config->paths->themes) === 0)
       {
-        $cacheFile = realpath(sprintf('%s/assets/cache', $this->config->paths->docroot)) . '/' . md5($theme->getThemeName() . $file) . '.css';
+        $cacheFile = realpath(sprintf('%s/assets/cache', $this->config->paths->docroot)) . '/' . md5($theme->getThemeName() . $file) . '.css.cache';
         $cssOutput = $this->getCompiledLessFile($fullPath, $cacheFile, $less);
-        echo $this->pipeline->normalizeUrls(dirname($fullPath), $cssOutput);
+        echo $cssOutput;
       }
     }
   }
 
-  private function getCompiledLessFile($inputFile, $outputFile, $lessc)
+  private function getCompiledLessFile($inputFile, $cacheFile, $lessc)
   {
-    $cacheFile = $outputFile.".cache";
-
     if (file_exists($cacheFile)) 
       $cache = unserialize(file_get_contents($cacheFile));
     else 
@@ -82,8 +80,9 @@ class AssetsController extends BaseController
 
     if (!is_array($cache) || $newCache["updated"] > $cache["updated"]) 
     {
+      $normalizedCss = $this->pipeline->normalizeUrls(dirname($inputFile), $newCache['compiled']);
+      $newCache['compiled'] = $normalizedCss;
       file_put_contents($cacheFile, serialize($newCache));
-      file_put_contents($outputFile, $newCache['compiled']);
     }
     return $newCache['compiled'];
   }
