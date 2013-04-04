@@ -9,12 +9,13 @@ class TutorialTest extends PHPUnit_Framework_TestCase
     {
       vfsStreamWrapper::register();
       vfsStreamWrapper::setRoot(new vfsStreamDirectory('themeDir'));
+      vfsStreamWrapper::setRoot(new vfsStreamDirectory('themeConfigDir'));
       $this->themeDir = vfsStream::url('themeDir');
+      $this->themeConfigDir = vfsStream::url('themeConfigDir');
       mkdir("{$this->themeDir}/html");
       mkdir("{$this->themeDir}/html/assets");
       mkdir($themeDir = "{$this->themeDir}/html/assets/themes");
       mkdir("{$this->themeDir}/html/assets/themes/fabrizio1.0");
-      mkdir($this->themeConfigDir = "{$this->themeDir}/html/assets/themes/fabrizio1.0/config");
     }
 
     $utility = $this->getMock('Utility', array('isActiveTab'));
