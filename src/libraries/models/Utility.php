@@ -128,7 +128,7 @@ class Utility
 
   public function getPath()
   {
-    return $_SERVER['REDIRECT_URL'];
+    return $_SERVER['REQUEST_URI'];
   }
 
   public function dateLong($ts, $write = true)
