@@ -90,7 +90,7 @@ class ApiShareController extends ApiController
 
     $body = nl2br($_POST['message']);
     $body .= sprintf('<p><img src="%s" style="padding:3px; border:solid 1px #ccc;"></p>', $album['cover']['path200x200xCR']);
-    $body .= sprintf('<br><br>Click the link below to view the album.<br><a href="%s">%s</a>', $_POST['url'], $_POST['url']);
+    $body .= sprintf("\n<br><br>Click the link below to view the album.<br>\n<a href=\"%s\">%s</a>", $_POST['url'], $_POST['url']);
 
     $subject = sprintf('The album "%s" has been shared with you', $album['name']);
     $emailer->setSubject($subject);
