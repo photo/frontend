@@ -337,8 +337,9 @@ class DatabaseMySql implements DatabaseInterface
   {
     $photos = $this->db->all("SELECT `pht`.* 
       FROM `{$this->mySqlTablePrefix}photo` AS `pht` INNER JOIN `{$this->mySqlTablePrefix}elementAlbum` AS `alb` ON `pht`.`id`=`alb`.`element`
-      WHERE `pht`.`owner`=:owner AND `alb`.`owner`=:owner",
-      array(':owner' => $this->owner));
+      WHERE `pht`.`owner`=:owner AND `alb`.`owner`=:owner
+      AND `alb`.`album`=:album",
+      array(':owner' => $this->owner, ':album' => $id));
 
     if($photos === false)
       return false;
