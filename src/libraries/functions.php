@@ -128,9 +128,6 @@ function getFs(/*$type, $useCache*/)
 
   switch($type)
   {
-    case 'ArchiveOrg':
-      $fs = new FileSystemArchiveOrg();
-      break;
     case 'Local':
       $fs = new FileSystemLocal();
       break;
@@ -145,6 +142,9 @@ function getFs(/*$type, $useCache*/)
       break;
     case 'S3AppDotNet':
       $fs = new FileSystemS3AppDotNet();
+      break;
+    case 'S3ArchiveOrg':
+      $fs = new FileSystemS3ArchiveOrg();
       break;
     case 'S3Box':
       $fs = new FileSystemS3Box();
