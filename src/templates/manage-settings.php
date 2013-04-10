@@ -10,9 +10,9 @@
     Don't want users to download your original photos? No problem. Want to allow the same photo to be uploaded twice? You're at the right spot.
   </div>
 </div>
-<div class="row">
-  <div class="span12">
-    <form method="post" action="/manage/settings">
+<form method="post" action="/manage/settings">
+  <div class="row">
+    <div class="span12">
       <h3>General settings</h3>
       <div class="controls">
         <label class="checkbox inline">
@@ -38,18 +38,11 @@
           Decrease the accuracy when displaying my photos on a map for others
         </label>
       </div>
-      
-      <div class="btn-toolbar"><button class="btn btn-primary">Save</button></div>
-      <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
-    </form>
-  </div>
-</div>
+    </div>
 
-<a name="admins"></a>
-<div class="row">
-  <div class="span6">
-    <form method="post" action="/manage/settings">
-      <h3>Collaborators</h3>
+    <div class="span6">
+      <a name="admins"></a>
+      <h5>Collaborators</h5>
       <p>
         Enter email addresses for others you'd like to collaborate with you. These users will have full access to your account. They can log in using Mozilla Persona.
       </p>
@@ -59,10 +52,10 @@
         <?php } ?>
       </div>
       <div class="btn-toolbar"><button class="btn btn-primary">Save</button></div>
-      <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
-    </form>
+    </div>
   </div>
-</div>
+  <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
+</form>
 
 <a name="apps"></a>
 <div class="row">
