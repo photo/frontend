@@ -15,7 +15,7 @@ class FileSystemArchiveOrgBase
     // here we remap the config so the FileSysetmS3 talks to archive.org
     $this->config->credentials->awsKey = $this->config->credentials->archiveOrgKey;
     $this->config->credentials->awsSecret = $this->config->credentials->archiveOrgSecret;
-    $this->config->aws->s3BucketName = $this->config->archiveOrg->s3BucketName;
+    $this->config->aws->s3BucketName = $this->config->archiveOrg->archiveOrgBucketName;
 
     $this->fs = new FileSystemS3($this->config);
     $this->fs->setHostname('s3.us.archive.org');
