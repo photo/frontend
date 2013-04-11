@@ -26,7 +26,7 @@ class FileSystemArchiveOrgBase
 
   public function getHost()
   {
-    return $this->config->archiveOrg->s3Host;
+    return $this->config->archiveOrg->archiveOrgHost;
   }
 
   public function segmentFiles($files)
