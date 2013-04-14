@@ -128,6 +128,9 @@
           var result = response.result;
           model.set('loading', false);
           $('.secondary-flyout').html(result.markup).slideDown('fast');
+          if(typeof(params.action) !== "undefined" && params.action === "tags") {
+            new op.data.view.TagSearch({el: $('form.batch input.typeahead')});
+          }
         }, 'json', 'get');
       } else if($el.hasClass('album')) {
         model = TBX.init.pages.albums.batchModel;

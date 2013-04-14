@@ -162,9 +162,11 @@
         profiles.load();
         
         /**
-         * Initialize tags typeahead in the header
+         * Initialize tags typeahead
          */
-        new op.data.view.TagSearch({el: $('.trovebox-banner input[type=search]')});
+        $('input.typeahead.tags').each(function(i, el) {
+          new op.data.view.TagSearch({el: el});
+        });
         
         // init tooltips
 

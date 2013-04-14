@@ -21,7 +21,7 @@
         <h3>Use these settings.</h3>
         <br>
         <label for="tags">Tags</label>
-        <input type="text" name="tags" class="tags" placeholder="Optional comma separated list">
+        <input type="search" name="tags" class="typeahead tags" autocomplete="off" placeholder="Optional comma separated list">
 
         <div class="control-group">
           <label class="control-label">Albums <small>(<a href="#" class="showBatchForm album" data-action="albums">create new</a>)</small></label>
