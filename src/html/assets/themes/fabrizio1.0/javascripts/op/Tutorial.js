@@ -2,9 +2,12 @@
   if(typeof TBX === 'undefined')
     TBX = {};
   
-  var q = [], fired = false, introObj;
+  var q = [], fired = false, introObj, enabled, enabledState;
   function Tutorial() {
     this.queue = function(step, selector, intro, key, section, width, init) {
+      if(!enabled())
+        return;
+
       // step = numeric value always starts at 1
       // selector = css selector for the element
       // intro = text to display to user
@@ -18,6 +21,9 @@
     };
 
     this.run = function() {
+      if(!enabled())
+        return;
+
       var qObj, el;
       introObj = introJs();
       for(i=0; i<q.length; i++) {
@@ -30,7 +36,15 @@
       introObj.complete(TBX.handlers.custom.tutorialUpdate.bind(qObj));
       introObj.start();
     };
-
+    
+    // we only enable this is the info element in the navigation is visible
+    //  we hide it using hidden-phone
+    enabled = function() {
+      if(typeof(enabledState) === "undefined") {
+        enabledState = $('.navbar-inner-secondary li.info').is(':visible');
+      }
+      return enabledState;
+    }
   }
   TBX.tutorial = new Tutorial;
 })(jQuery);
