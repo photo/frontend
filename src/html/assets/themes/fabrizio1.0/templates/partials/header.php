@@ -58,7 +58,7 @@
         </ul>
         <ul class="nav pull-right">
           <?php if($numTutorials = $this->user->numberOfTutorials()) { ?>
-            <li class="info"><a href="#" class="tutorial" title="Click here to reveal new features."><span class="badge badge-info tutorial"><?php $this->utility->safe($numTutorials); ?></span> New Feature On This Page</a>
+            <li class="info hidden-phone"><a href="#" class="tutorial" title="Click here to reveal new features."><span class="badge badge-info tutorial"><?php $this->utility->safe($numTutorials); ?></span> New Feature On This Page</a>
           <?php } ?>
           <!--<li><div class="help-container"><a href="https://trovebox.com/faq"><i class="icon-question-sign"></i></div></a>-->
         </ul>
