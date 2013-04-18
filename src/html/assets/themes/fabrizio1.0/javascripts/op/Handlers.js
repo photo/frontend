@@ -7,9 +7,23 @@
 
     // CLICK
     this.click = {};
+    this.click.batchAlbumMode = function(ev) {
+      var $el = $(ev.target), $form = $el.closest('form'), $albums = $('select.albums', $form);
+      if($el.val() === 'add')
+        $albums.attr('name', 'albumsAdd');
+      else
+        $albums.attr('name', 'albumsRemove');
+    };
     this.click.batchHide = function(ev) {
       ev.preventDefault();
       $('.secondary-flyout').slideUp('fast');
+    };
+    this.click.batchTagMode = function(ev) {
+      var $el = $(ev.target), $form = $el.closest('form'), $tags = $('input.tags', $form);
+      if($el.val() === 'add')
+        $tags.attr('name', 'tagsAdd');
+      else
+        $tags.attr('name', 'tagsRemove');
     };
     this.click.credentialDelete = function(ev) {
       ev.preventDefault();
@@ -208,20 +222,6 @@
         }
       }
       OP.Util.makeRequest(url, params, TBX.callbacks.batch.bind(params), 'json', 'post');
-    };
-    this.click.batchAlbumMode = function(ev) {
-      var $el = $(ev.target), $form = $el.closest('form'), $albums = $('select.albums', $form);
-      if($el.val() === 'add')
-        $albums.attr('name', 'albumsAdd');
-      else
-        $albums.attr('name', 'albumsRemove');
-    };
-    this.click.batchTagMode = function(ev) {
-      var $el = $(ev.target), $form = $el.closest('form'), $tags = $('input.tags', $form);
-      if($el.val() === 'add')
-        $tags.attr('name', 'tagsAdd');
-      else
-        $tags.attr('name', 'tagsRemove');
     };
     this.submit.login = function(ev) {
       ev.preventDefault();
