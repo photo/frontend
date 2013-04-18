@@ -61,12 +61,17 @@
       OP.Util.init(jQuery, {
         js: {
           assets: [
-            <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
+            <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload/beta')) { ?> 
+              '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
+                addJs($this->theme->asset('javascript', 'dropzone.js', false))->
+                getUrl(AssetPipeline::js, $this->config->site->mediaVersion, $this->config->site->mode === 'prod'); ?>',
+            <?php } else if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
               '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                 addJs('/assets/javascripts/plupload.js', false)->
                 addJs('/assets/javascripts/plupload.html5.js', false)->
                 addJs('/assets/javascripts/jquery.plupload.queue.js', false)->
                 addJs('/assets/javascripts/openphoto-upload.js')->
+                addJs($this->theme->asset('javascript', 'dropzone.js', false))->
                 getUrl(AssetPipeline::js, $this->config->site->mediaVersion, $this->config->site->mode === 'prod'); ?>',
             <?php } ?>
 
@@ -109,6 +114,7 @@
                 addJs($this->theme->asset('javascript', 'op/Handlers.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Callbacks.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Tutorial.js', false))->
+                addJs($this->theme->asset('javascript', 'op/Upload.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Format.js', false))->
                 addJs($this->theme->asset('javascript', 'gallery.js', false))->
                 addJs($this->theme->asset('javascript', 'intro.js', false))->

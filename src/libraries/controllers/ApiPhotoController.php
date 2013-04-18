@@ -562,7 +562,7 @@ class ApiPhotoController extends ApiBaseController
         $params['url'] = $this->url->resourceMap($resourceMapResp['result']['id'], false);
     }
 
-    $template = sprintf('%s/uploadConfirm.php', $this->config->paths->templates);
+    $template = sprintf('%s/upload-confirm.php', $this->config->paths->templates);
     $body = $this->template->get($template, $params);
     return $this->success('Photos uploaded successfully', array('tpl' => $body, 'data' => $params));
   }

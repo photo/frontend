@@ -182,6 +182,8 @@
           TBX.init.pages.photo.init();
         else if(location.pathname === '/photos/upload')
           TBX.init.pages.upload();
+        else if(location.pathname === '/photos/upload/beta')
+          TBX.init.pages.uploadBeta();
       },
       attachEvents: function() {
         OP.Util.on('preload:photos', TBX.handlers.custom.preloadPhotos);
@@ -366,6 +368,13 @@
           OP.Util.on('upload:uploader-ready', TBX.callbacks.uploaderReady);
           OP.Util.on('submit:photo-upload', TBX.callbacks.upload);
           OP.Util.fire('upload:uploader-ready');
+        },
+        uploadBeta: function() {
+          window.Dropzone.autoDiscover = false;
+          OP.Util.on('upload:uploader-beta-ready', TBX.handlers.custom.uploaderBetaReady);
+//        OP.Util.on('click:upload-dialog', TBX.handlers.uploadDialogBeta);
+//        OP.Util.on('click:photo-upload', TBX.handlers.click.uploadBeta);
+          OP.Util.fire('upload:uploader-beta-ready');
         }
       }
     }; // init
