@@ -45,7 +45,7 @@ class Photo extends BaseModel
     * @param string $protocol http or https
     * @return array
     */
-  public function addApiUrls($photo, $sizes, $protocol=null)
+  public function addApiUrls($photo, $sizes, $token=null, $protocol=null)
   {
     if($protocol === null)
       $protocol = $this->utility->getProtocol(false);
@@ -72,7 +72,7 @@ class Photo extends BaseModel
     if($this->config->site->allowOriginalDownload == 1 || $this->user->isAdmin())
     {
       $photo['pathOriginal'] = $this->generateUrlBaseOrOriginal($photo, 'original');
-      $photo['pathDownload'] = $this->generateUrlDownload($photo);
+      $photo['pathDownload'] = $this->generateUrlDownload($photo, $token);
     }
     elseif(isset($photo['pathOriginal']))
     {
@@ -330,8 +330,11 @@ class Photo extends BaseModel
     * @param string $protocol Protocol for the URL
     * @return mixed string URL on success, FALSE on failure
     */
-  public function generateUrlBaseOrOriginal($photo, $type = 'base', $protocol = 'http')
+  public function generateUrlBaseOrOriginal($photo, $type = 'base', $protocol = null)
   {
+    if(!$protocol)
+      $protocol = $this->utility->getProtocol(false);
+
     if($type === 'base')
       return "{$protocol}://{$photo['host']}{$photo['pathBase']}";
     elseif($type === 'original')
@@ -348,9 +351,15 @@ class Photo extends BaseModel
     * @param string $protocol Protocol for the URL
     * @return mixed string URL on success, FALSE on failure
     */
-  public function generateUrlDownload($photo, $protocol = 'http')
+  public function generateUrlDownload($photo, $token = null, $protocol = null)
   {
-    return sprintf('%s://%s/photo/%s/download', $protocol, $this->utility->getHost(), $photo['id']);
+    if(!$protocol)
+      $protocol = $this->utility->getProtocol(false);
+
+    if($token)
+      return sprintf('%s://%s/photo/%s/token-%s/download', $protocol, $this->utility->getHost(), $photo['id'], $token);
+    else
+      return sprintf('%s://%s/photo/%s/download', $protocol, $this->utility->getHost(), $photo['id']);
   }
 
   /**
@@ -365,8 +374,11 @@ class Photo extends BaseModel
     * @param string $protocol Protocol for the URL
     * @return mixed string URL on success, FALSE on failure
     */
-  public function generateUrlPublic($photo, $width, $height, $options = null, $protocol = 'http')
+  public function generateUrlPublic($photo, $width, $height, $options = null, $protocol = null)
   {
+    if(!$protocol)
+      $protocol = $this->utility->getProtocol(false);
+
     $key = $this->generateCustomKey($width, $height, $options);
 
     if(isset($photo[$key]))
