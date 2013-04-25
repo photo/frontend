@@ -128,6 +128,11 @@
       count = batch.length();
       TBX.notification.show(TBX.format.sprintf(TBX.strings.batchConfirm, count, count > 1 ? 's' : ''), 'flash', 'confirm');
     };
+    this.click.setAlbumCover = function(ev) {
+      ev.preventDefault();
+      var $el = $(ev.target), photoId = $el.attr('data-id'), albumId = TBX.util.getPathParam('album');
+      OP.Util.makeRequest(TBX.format.sprintf('/album/%s/cover/%s/update.json', albumId, photoId), {crumb: TBX.crumb()}, TBX.callbacks.setAlbumCover, 'json', 'post');
+    };
     this.click.sharePopup = function(ev) {
       ev.preventDefault();
       var $el = $(ev.target), url = $el.attr('href'), w=575, h=300, l, t, opts;

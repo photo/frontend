@@ -35,6 +35,7 @@ $apiObj->post('/?v?[1-2]?/activity/create.json', array('ApiActivityController', 
  * Everything in []'s are optional
  * /album[s][/:id]/{action}.json
  */
+$apiObj->post('/?v?[1-2]?/album/([a-zA-Z0-9]+)/cover/([a-zA-Z0-9]+)/update.json', array('ApiAlbumController', 'coverUpdate'), EpiApi::external); // update an album cover (/album/:albumId/cover/:photoId/update.json)
 $apiObj->post('/?v?[1-2]?/album/create.json', array('ApiAlbumController', 'create'), EpiApi::external); // post an activity (/activity/create.json)
 $apiObj->post('/?v?[1-2]?/album/([a-zA-Z0-9]+)/delete.json', array('ApiAlbumController', 'delete'), EpiApi::external); // post an activity (/activity/create.json)
 $apiObj->get('/?v?[1-2]?/album/form.json', array('ApiAlbumController', 'form'), EpiApi::external); // post an activity (/activity/create.json)

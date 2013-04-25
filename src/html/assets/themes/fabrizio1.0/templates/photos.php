@@ -1,7 +1,7 @@
 <?php $this->theme->display('partials/user-badge.php'); ?>
 
 <div class="row">
-  <div class="span12 photo-grid">
+  <div class="span12 photo-grid <?php if(isset($album)) { ?>is-album<?php } ?>">
     <div class="photo-grid-hr"></div>
     <?php if(isset($album)) { ?>
       <h4><i class="icon-th-large"></i> <?php $this->utility->safe($album['name']); ?> <small>(<?php $this->utility->safe($album['count']); ?> photos)</small></h4>

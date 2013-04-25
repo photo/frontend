@@ -137,6 +137,13 @@
       var id = $(el).attr('data-id'), photo = op.data.store.Photos.get(id).toJSON();
       OP.Batch.add(id, photo);
     };
+    this.setAlbumCover = function(response) {
+      if(response.code === 200) {
+        TBX.notification.show('Your album cover was updated successfully.', 'flash', 'confirm');
+        return;
+      }
+      TBX.notification.show('There was a problem updating your album cover.', 'flash', 'error');
+    };
     this.share = function(response) {
       var result = response.result;
       if(response.code !== 200) {

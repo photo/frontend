@@ -15,6 +15,13 @@
           return result[1].trim();
       return '';
     };
+
+    this.getPathParam = function(name) {
+      var re = new RegExp(TBX.format.sprintf('/%s-([^/]+)/', name)), result = re.exec(location.pathname);
+      if(result.length === 2)
+        return result[1];
+      return null;
+    };
   }
 
   TBX.util = new Util;
