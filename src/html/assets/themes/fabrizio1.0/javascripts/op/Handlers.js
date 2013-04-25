@@ -47,6 +47,10 @@
       ev.preventDefault();
       TBX.init.pages.photos.load();
     };
+    this.click.loadMoreAlbums = function(ev) {
+      ev.preventDefault();
+      TBX.init.pages.albums.load();
+    };
     this.click.loginExternal = function(ev) {
       ev.preventDefault();
       var el = $(ev.target);

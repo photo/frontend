@@ -61,7 +61,8 @@
           $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
         },
         load: function(context) {
-          var async = typeof(arguments[1]) === 'undefined' ? true : arguments[1];
+          var async = typeof(arguments[1]) === 'undefined' ? true : arguments[1], $button = $('button.loadMore');
+          $('i', $button).show().addClass('icon-spinner icon-spin');
           // we define initData at runtime to avoid having to make an HTTP call on load
           // all subsequent calls run through the http API
           if(typeof(context.initData) === "undefined") {
@@ -111,15 +112,38 @@
                 dataType: 'json',
                 url: api,
                 data: params,
-                success: context.loadCb
+                success: util.loadCb.bind(context)
               });
             }
           } else {
             delete context.initData;
             context.page = 1;
             var response = {code:200, result:initData};
-            context.loadCb(response);
+            util.loadCb.call(context, response);
           }
+        },
+        loadCb: function(response) {
+          console.log('calling loadCb in util');
+          // this is the context, bound in the callback
+          // at the last page
+          var context = this, r = response.result, $button = $('button.loadMore');
+
+          console.log($button);
+          console.log(r[0]);
+          // check if there are more pages
+          if(r.length > 0 && r[0].totalPages > r[0].currentPage) {
+            $button.fadeIn();
+            $('i', $button).fadeOut();
+            context.page++;
+            context.pageCount++;
+            context.running = false;
+          } else {
+            $button.fadeOut();
+            context.end = true;
+          }
+          
+          // proceed to call the context's loadCb
+          this.loadCb(response);
         },
         scrollCb: function(context) {
           // don't autoload if the width is narrow
@@ -220,21 +244,21 @@
             _this.load();
           },
           load: function() {
-            var _this = TBX.init.pages.albums; loc = location;
-            util.load(_this);
+            var _this = TBX.init.pages.albums; loc = location, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];
+            util.load(_this, async);
           },
           loadCb: function(response) {
+            console.log('loadCb in album');
             var items = response.result, _this = TBX.init.pages.albums;
+            console.log(items)
+
             for(i in items) {
               if(items.hasOwnProperty(i))
                 op.data.store.Albums.add( items[i] );
             }
-            if(items.length > 0) {
+
+            if(items.length > 0)
               _this.addAlbums(items);
-              _this.page++;
-              _this.pageCount++;
-              _this.running = false;
-            }
           }
         },
         front: {
@@ -325,8 +349,7 @@
             Backbone.history.start({pushState: true, silent: true});
           },
           load: function() {
-            var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0], $button = $('button.loadMorePhotos');
-            $('i', $button).show().addClass('icon-spinner icon-spin');
+            var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];
             util.load(_this, async);
           },
           loadCb: function(response) {
@@ -334,23 +357,9 @@
                 ui = TBX.ui, i, $button = $('button.loadMorePhotos');
 
             op.data.store.Photos.add( items );
-            if(items.length > 0) {
+
+            if(items.length > 0)
               Gallery.showImages($(".photo-grid"), items);
-              _this.page++;
-              _this.pageCount++;
-              _this.running = false;
-
-              // at the last page
-              if(_this.page <= items[0].totalPages) {
-                $button.fadeIn();
-                $('i', $button).fadeOut();
-                return;
-              }
-            }
-
-            // if items.length > 0 and we're not at the last page we remove pagination links.
-            $button.fadeOut();
-            _this.end = true;
           }
         },
         upload: function() {

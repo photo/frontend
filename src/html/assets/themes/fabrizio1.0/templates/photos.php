@@ -27,8 +27,8 @@
 </div>
 <?php if(!empty($photos)) { ?>
   <div class="row">
-    <div class="span12">
-      <button class="btn btn-theme-secondary loadMorePhotos hide"><i></i> Load more</button>
+    <div class="span12 loadMoreContainer">
+      <button class="btn btn-theme-secondary loadMore loadMorePhotos hide"><i></i> Load more</button>
     </div>
   </div>
 <?php } ?>
