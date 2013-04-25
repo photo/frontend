@@ -49,7 +49,7 @@
     share: function(ev) {
       ev.preventDefault();
       var $el = $(ev.currentTarget), id = $el.attr('data-id'), router = op.data.store.Router;
-      OP.Util.makeRequest('/photos/'+id+'/share.json', {}, function(response) {
+      OP.Util.makeRequest('/share/photo/'+id+'/view.json', {}, function(response) {
         router.navigate(op.Lightbox.prototype._path, {trigger: true});
         TBX.callbacks.share(response);
       }, 'json', 'get');
