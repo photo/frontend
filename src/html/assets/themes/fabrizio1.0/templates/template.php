@@ -69,7 +69,6 @@
                 addJs('/assets/javascripts/openphoto-upload.js')->
                 getUrl(AssetPipeline::js, $this->config->site->mediaVersion, $this->config->site->mode === 'prod'); ?>',
             <?php } ?>
-
               '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                 addJs($this->theme->asset('javascript', 'underscore-min.js', false))->
                 addJs($this->theme->asset('javascript', 'backbone.js', false))->

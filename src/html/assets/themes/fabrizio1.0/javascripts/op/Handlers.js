@@ -43,6 +43,10 @@
       OP.Util.makeRequest(url, params, TBX.callbacks.credentialView, 'json', 'get');
       return false;
     };
+    this.click.loadMorePhotos = function(ev) {
+      ev.preventDefault();
+      TBX.init.pages.photos.load();
+    };
     this.click.loginExternal = function(ev) {
       ev.preventDefault();
       var el = $(ev.target);

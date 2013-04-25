@@ -325,39 +325,32 @@
             Backbone.history.start({pushState: true, silent: true});
           },
           load: function() {
-            var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];
+            var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0], $button = $('button.loadMorePhotos');
+            $('i', $button).show().addClass('icon-spinner icon-spin');
             util.load(_this, async);
           },
           loadCb: function(response) {
-            var items = response.result, _this = TBX.init.pages.photos, infobar = $('.infobar'),
-                minDate = $('.startdate', infobar), maxDate = $('.enddate', infobar),
-                minDateVal = parseInt(minDate.attr('data-time')), maxDateVal = parseInt(maxDate.attr('data-time')),
-                ui = TBX.ui, i;
+            var items = response.result, _this = TBX.init.pages.photos,
+                ui = TBX.ui, i, $button = $('button.loadMorePhotos');
 
             op.data.store.Photos.add( items );
             if(items.length > 0) {
-              var thisTaken;
-              for(i=0; i<items.length; i++) {
-                thisTaken = parseInt(items[i].dateTaken);
-                if(thisTaken > maxDateVal) {
-                  ui.fadeAndSet(maxDate, phpjs.date('l F jS, Y', thisTaken));
-                  maxDate.attr('data-time', thisTaken);
-                  maxDateVal = thisTaken;
-                } else if(parseInt(items[i].dateTaken) < parseInt(minDate.attr('data-time'))) {
-                  ui.fadeAndSet(minDate, phpjs.date('l F jS, Y', thisTaken));
-                  minDate.attr('data-time', thisTaken);
-                  minDateVal = thisTaken;
-                }
-              }
-
               Gallery.showImages($(".photo-grid"), items);
               _this.page++;
               _this.pageCount++;
               _this.running = false;
-            } else {
-              $('.load-more').hide();
-              _this.end = true;
+
+              // at the last page
+              if(_this.page <= items[0].totalPages) {
+                $button.fadeIn();
+                $('i', $button).fadeOut();
+                return;
+              }
             }
+
+            // if items.length > 0 and we're not at the last page we remove pagination links.
+            $button.fadeOut();
+            _this.end = true;
           }
         },
         upload: function() {

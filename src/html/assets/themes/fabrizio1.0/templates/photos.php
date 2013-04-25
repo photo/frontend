@@ -19,9 +19,16 @@
       <?php } else { ?>
         <h4>This user hasn't uploaded any photos, yet.</h4>  
         <p>
-          You should give them a nudge to get started!
+          You should give them a nudge to get started! If this is your site then you can <a href="/user/login?r=<?php $this->utility->safe(urlencode($_SERVER['REQUEST_URI'])); ?>">log in</a>.
         </p>
       <?php } ?>
     <?php } ?>
   </div>
 </div>
+<?php if(!empty($photos)) { ?>
+  <div class="row">
+    <div class="span12">
+      <button class="btn btn-theme-secondary loadMorePhotos hide"><i></i> Load more</button>
+    </div>
+  </div>
+<?php } ?>
