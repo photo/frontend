@@ -3,16 +3,16 @@
 <div class="row">
   <div class="span12 photo-grid">
     <div class="photo-grid-hr"></div>
+    <?php if(isset($album)) { ?>
+      <h4><i class="icon-th-large"></i> <?php $this->utility->safe($album['name']); ?> <small>(<?php $this->utility->safe($album['count']); ?> photos)</small></h4>
+    <?php } else if(isset($tags)) { ?>
+      <h4><i class="icon-tags"></i> <?php $this->utility->safe(implode(', ', $tags)); ?> <small>(<?php $this->utility->safe($photos[0]['totalRows']); ?> photos)</small></h4>
+    <?php } ?>
     <?php if(!empty($photos)) { ?>
-      <?php if(isset($album)) { ?>
-        <h4><i class="icon-th-large"></i> <?php $this->utility->safe($album['name']); ?> <small>(<?php $this->utility->safe($album['count']); ?> photos)</small></h4>
-      <?php } else if(isset($tags)) { ?>
-        <h4><i class="icon-tags"></i> <?php $this->utility->safe(implode(', ', $tags)); ?> <small>(<?php $this->utility->safe($photos[0]['totalRows']); ?> photos)</small></h4>
-      <?php } ?>
       <script> var initData = <?php echo json_encode($photos); ?>; var filterOpts = <?php echo json_encode($options); ?>;</script>
     <?php } else { ?>
       <?php if($this->user->isAdmin()) { ?>
-        <h4>You haven't uploaded any photos, yet.</h4>  
+        <h4>No photos to show.</h4>  
         <p>
           It's easy to start uploading photos. Head over to the <a href="/photos/upload">upload</a> page to get started.
         </p>

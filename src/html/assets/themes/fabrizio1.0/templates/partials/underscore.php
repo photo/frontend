@@ -41,7 +41,7 @@
       <% if(photoUrl.search('gravatar.com') == -1) { %>
         <img class="avatar profile-pic profile-photo" src="<%= photoUrl %>" />
       <% } else { %>
-        <i class="icon-user profile-pic profile-photo"></i>
+        <i class="icon-user profile-pic profile-photo" title="Click the profile icon when mousing over any photo to set it as your profile photo."></i>
       <% } %>
     </span>
     <div class="tray">
@@ -49,22 +49,22 @@
         <h5 class="username"><%= name %></h5>
         <ul>
           <li>
-            <a href="/photos/list">
-              <i class="icon-picture" rel="tooltip" title="View Photos" data-placement="bottom"></i>
+            <a href="/photos/list" title="View Photos">
+              <i class="icon-picture" rel="tooltip" data-placement="bottom"></i>
               <span class="number"><%= counts.photos %></span>
               <span class="title">photos</span>
             </a>
           </li>
           <li>
-            <a href="/albums/list">
-              <i class="icon-th-large" rel="tooltip" title="View Albums" data-placement="bottom"></i>
+            <a href="/albums/list" title="View Albums">
+              <i class="icon-th-large" rel="tooltip" data-placement="bottom"></i>
               <span class="number"><%= counts.albums %></span>
               <span class="title">albums</span>
             </a>
           </li>
           <li>
-            <a href="/tags/list">
-              <i class="icon-tags" rel="tooltip" title="View Tags" data-placement="bottom"></i>
+            <a href="/tags/list" title="View Tags">
+              <i class="icon-tags" rel="tooltip" data-placement="bottom"></i>
               <span class="number"><%= counts.tags %></span>
               <span class="title">tags</span>
             </a>
