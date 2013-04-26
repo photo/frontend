@@ -956,7 +956,7 @@ class Photo extends BaseModel
     */
   private function getPhotoViewUrl($photo)
   {
-    return sprintf('%s://%s%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], $this->url->photoView($photo['id'], null, false));
+    return sprintf('%s://%s%s', $this->utility->getProtocol(false), $this->utility->getHost(false), $this->url->photoView($photo['id'], null, false));
   }
 
   /**
