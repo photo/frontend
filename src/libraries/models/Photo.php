@@ -379,12 +379,20 @@ class Photo extends BaseModel
     if(!$protocol)
       $protocol = $this->utility->getProtocol(false);
 
+    // force a protocol if specified in the configs for assets
+    //  we only do this for static assets
+    //  assets which need to run through the API to be generated inherit the current protocol
+    //  See #1236
+    $assetProtocol = $protocol;
+    if(!empty($this->config->site->assetProtocol))
+      $assetProtocol = $this->config->site->assetProtocol;
+
     $key = $this->generateCustomKey($width, $height, $options);
 
     if(isset($photo[$key]))
-      return "{$protocol}://{$photo['host']}{$photo[$key]}";
+      return "{$assetProtocol}://{$photo['host']}{$photo[$key]}";
     elseif(isset($photo['id']))
-      return "{$protocol}://{$_SERVER['HTTP_HOST']}".$this->generateUrlInternal($photo['id'], $width, $height, $options);
+      return "{$protocol}://{$_SERVER['HTTP_HOST']}".$this->generateUrlInternal($photo['id'], $width, $height, $options); // TODO remove reference to HTTP_HOST
     else
       return false;
   }
