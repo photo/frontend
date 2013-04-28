@@ -68,11 +68,6 @@ SQL;
 $status = $status && mysql_4_0_0($sql);
 
 $sql = <<<SQL
-  ALTER TABLE `{$this->mySqlTablePrefix}photo` DROP INDEX `id` , ADD UNIQUE `owner` ( `owner` , `id` ) 
-SQL;
-$status = $status && mysql_4_0_0($sql);
-
-$sql = <<<SQL
   ALTER TABLE `{$this->mySqlTablePrefix}tag` DROP INDEX `id` , ADD UNIQUE `owner` ( `owner` , `id` ) 
 SQL;
 $status = $status && mysql_4_0_0($sql);
