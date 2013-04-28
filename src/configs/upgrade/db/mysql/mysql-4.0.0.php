@@ -63,11 +63,6 @@ SQL;
 $status = $status && mysql_4_0_0($sql);
 
 $sql = <<<SQL
-  ALTER TABLE `{$this->mySqlTablePrefix}album` CHANGE `count` `countPublic` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0';
-SQL;
-$status = $status && mysql_4_0_0($sql);
-
-$sql = <<<SQL
   ALTER TABLE `{$this->mySqlTablePrefix}album` ADD `countPrivate` INT( 10 ) NOT NULL DEFAULT '0' AFTER `countPublic` ;
 SQL;
 $status = $status && mysql_4_0_0($sql);
