@@ -93,16 +93,6 @@ SQL;
 $status = $status && mysql_4_0_0($sql);
 
 $sql = <<<SQL
-  CREATE TABLE `{$this->mySqlTablePrefix}relationship` (
-   `actor` varchar(127) NOT NULL,
-   `follows` varchar(127) NOT NULL,
-   `dateCreated` datetime NOT NULL,
-   PRIMARY KEY (`actor`,`follows`)
-  ) ENGINE=InnoDB;
-SQL;
-$status = $status && mysql_4_0_0($sql);
-
-$sql = <<<SQL
   CREATE TABLE `{$this->mySqlTablePrefix}shareToken` (
     `id` VARCHAR( 10 ) NOT NULL ,
     `owner` VARCHAR( 127 ) NOT NULL ,
