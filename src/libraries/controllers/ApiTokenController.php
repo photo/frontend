@@ -22,7 +22,6 @@ class ApiTokenController extends ApiController
 
     $tok = $this->token->get($id);
     return $this->created('Successfully created share token', $tok);
-
   }
 
   public function delete($id)

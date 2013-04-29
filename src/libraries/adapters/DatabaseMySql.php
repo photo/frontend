@@ -832,7 +832,7 @@ class DatabaseMySql implements DatabaseInterface
     *
     * @return mixed Array on success, NULL if user record is empty, FALSE on error
     */
-  public function getUser($owner = null)
+  public function getUser($owner = null, $lock = false)
   {
     if($owner === null)
       $owner = $this->owner;
@@ -841,8 +841,14 @@ class DatabaseMySql implements DatabaseInterface
     if($cached !== null)
       return $cached;
 
-    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
- 
+    // optionally lock until an update happens
+    //  See #1230
+    $doLock = '';
+    if($lock)
+      $doLock = 'FOR UPDATE';
+
+    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner {$doLock}", array(':owner' => $owner));
+
     if($res)
       return $this->cacheSet('user', $this->normalizeUser($res), $owner);
 

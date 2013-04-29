@@ -146,10 +146,15 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->method('getUser')
       ->will($this->onConsecutiveCalls(
         array('id' => 'test@example.com', 'lastPhotoId' => 'abc'),
+        array('id' => '', '' => ''), // stub for User::update to update the cache
         array('id' => 'test@example.com', 'lastPhotoId' => '0'),
+        array('id' => '', '' => ''), // stub for User::update to update the cache
         array('id' => 'test@example.com', 'lastPhotoId' => 'a1'),
+        array('id' => '', '' => ''), // stub for User::update to update the cache
         array('id' => 'test@example.com', 'lastPhotoId' => '9'),
-        array('id' => 'test@example.com', 'lastPhotoId' => 'u')
+        array('id' => '', '' => ''), // stub for User::update to update the cache
+        array('id' => 'test@example.com', 'lastPhotoId' => 'u'),
+        array('id' => '', '' => '') // stub for User::update to update the cache
       ));
     $db->expects($this->any())
       ->method('postUser')

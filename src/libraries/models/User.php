@@ -130,7 +130,7 @@ class User extends BaseModel
   {
     $type = ucwords($type);
     $key = "last{$type}Id";
-    $user = $this->getUserRecord();
+    $user = $this->getUserRecord(false, true); // no cache, do lock
     if($user === false)
       return false;
 
@@ -160,13 +160,13 @@ class User extends BaseModel
     *
     * @return mixed  FALSE on error, array on success
     */
-  public function getUserRecord($cache = true, $owner = null)
+  public function getUserRecord($cache = true, $lock = false)
   {
     // we cache the user entry per request
     if($cache && $this->user)
       return $this->user;
 
-    $res = $this->db->getUser();
+    $res = $this->db->getUser(null, $lock);
     // if null create, onerror return false
     if($res === null)
     {
@@ -176,7 +176,7 @@ class User extends BaseModel
         return false;
 
       // fetch the record to return
-      $res = $this->db->getUser();
+      $res = $this->db->getUser(null, $lock);
       if(!$res)
         return false;
     }
