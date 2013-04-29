@@ -223,6 +223,26 @@ class UserTest extends PHPUnit_Framework_TestCase
     $this->assertFalse($res);
   }
 
+  public function testGetNextIdUpdateFailure()
+  {
+    $db = $this->getMock('Db', array('getUser', 'postUser', 'putUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->onConsecutiveCalls(
+        array('id' => 'test@example.com', 'lastPhotoId' => 'abc'),
+        array('id' => '', 'lastPhotoId' => '')
+      ));
+    $db->expects($this->any())
+      ->method('postUser')
+      ->will($this->returnValue(false));
+    $this->user->inject('db', $db);
+
+    // abc
+    $res = $this->user->getNextId('photo');
+    $this->assertEquals(false, $res);
+  }
+
+
   public function testGetAttributeNameSuccess()
   {
     $res = $this->user->getAttributeName('foobar');

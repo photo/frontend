@@ -139,7 +139,9 @@ class User extends BaseModel
     $nextIntId = base_convert($user[$key], 31, 10) + 1;
     $nextId = base_convert($nextIntId, 10, 31);
 
-    $this->update(array($key => $nextId));
+    $status = $this->update(array($key => $nextId));
+    if(!$status)
+      return false;
     return $nextId;
   }
 
