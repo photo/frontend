@@ -534,6 +534,21 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $this->assertEquals('https://host/path/original', $res);
   }
 
+  public function testGenerateUrlOriginalWithStaticOverrideWhenStaticAssetExists()
+  {
+    $this->config->site->assetProtocol = 'xxx';
+    $res = $this->photo->generateUrlPublic($this->photoData, 10, 10);
+    $this->assertEquals('xxx://host/path/foo10x10', $res);
+  }
+
+  public function testGenerateUrlOriginalWithStaticOverrideWhenStaticAssetDoesNotExist()
+  {
+    // assetProtocol should not be used when asset needs to be generated
+    $this->config->site->assetProtocol = 'xxx';
+    $res = $this->photo->generateUrlPublic($this->photoData, 10, 100);
+    $this->assertEquals('http://foobar/photo/a/create/1e34d/10x100.jpg', $res);
+  }
+
   public function testGenerateUrlPublicWhenStaticAssetExists()
   {
     $res = $this->photo->generateUrlPublic($this->photoData, 10, 10);

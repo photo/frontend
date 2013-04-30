@@ -335,10 +335,18 @@ class Photo extends BaseModel
     if(!$protocol)
       $protocol = $this->utility->getProtocol(false);
 
+    // force a protocol if specified in the configs for assets
+    //  we only do this for static assets
+    //  assets which need to run through the API to be generated inherit the current protocol
+    //  See #1236
+    $assetProtocol = $protocol;
+    if(!empty($this->config->site->assetProtocol))
+      $assetProtocol = $this->config->site->assetProtocol;
+
     if($type === 'base')
-      return "{$protocol}://{$photo['host']}{$photo['pathBase']}";
+      return "{$assetProtocol}://{$photo['host']}{$photo['pathBase']}";
     elseif($type === 'original')
-      return "{$protocol}://{$photo['host']}{$photo['pathOriginal']}";
+      return "{$assetProtocol}://{$photo['host']}{$photo['pathOriginal']}";
 
   }
 
