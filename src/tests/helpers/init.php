@@ -62,6 +62,10 @@ if(!function_exists('getSession'))
 {
   function getSession() { return new FauxObject; }
 }
+if(!function_exists('getTemplate'))
+{
+  function getTemplate() { return new FauxObject; }
+}
 if(!function_exists('getDb'))
 {
   function getDb() { return new FauxObject; }

@@ -16,7 +16,7 @@ class User extends BaseModel
     * @access private
     * @var array
     */
-  protected $user, $userArray = array(), $credential;
+  protected $user, $userArray = array(), $credential, $themeObj;
 
   /*
    * Constructor
@@ -84,8 +84,19 @@ class User extends BaseModel
     if(isset($user['attrprofilePhoto']) && !empty($user['attrprofilePhoto']))
       return $user['attrprofilePhoto'];
 
+    $utilityObj = new Utility;
+    if(empty($this->config->site->cdnPrefix))
+      $hostAndProtocol = sprintf('%s://%s', $utilityObj->getProtocol(false), $utilityObj->getHost(false));
+    else
+      $hostAndProtocol = sprintf('%s%s', $utilityObj->getProtocol(false), $this->config->site->cdnPrefix);
+
+    if(!$this->themeObj)
+      $this->themeObj = getTheme();
+
+    $defaultUrl = sprintf('%s%s', $hostAndProtocol, $this->themeObj->asset('image', 'profile-default.png', false));
+
     $hash = md5(strtolower(trim($email)));
-    return "http://www.gravatar.com/avatar/{$hash}?s={$size}";
+    return sprintf("http://www.gravatar.com/avatar/%s?s=%s&d=%s", $hash, $size, urlencode($defaultUrl));
   }
 
   /**

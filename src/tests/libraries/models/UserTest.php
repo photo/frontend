@@ -30,9 +30,17 @@ class UserTest extends PHPUnit_Framework_TestCase
     $db->expects($this->any())
       ->method('getUser')
       ->will($this->returnValue(array('id' => 'test@example.com', 'lastPhotoId' => 'abc')));
+    $themeObj = $this->getMock('ThemeObj', array('asset'));
+    $themeObj->expects($this->any())
+      ->method('asset')
+      ->will($this->returnValue('/path/to/asset'));
+    $this->user->inject('themeObj', $themeObj);
     $this->user->inject('db', $db);
+
+    $_SERVER['HTTP_HOST'] = 'foo';
+
     $res = $this->user->getAvatarFromEmail(50, 'test@example.com');
-    $this->assertEquals('http://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=50', $res);
+    $this->assertEquals('http://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=50&d=http%3A%2F%2Ffoo%2Fpath%2Fto%2Fasset', $res);
   }
 
   public function testGetEmailAddressNonOAuth()
