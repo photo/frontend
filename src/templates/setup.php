@@ -28,7 +28,7 @@
       <label for="email">Email address</label>
       <input type="text" name="email" id="email" placeholder="user@example.com" <?php if(isset($email)) { ?>value="<?php $this->utility->safe($email); ?>"<?php } ?> data-validation="required email">
 
-      <?php if($this->config->site->allowTroveboxLogin == 1) { ?>
+      <?php if($this->config->site->allowOpenPhotoLogin == 1) { ?>
         <label for="email">Password</label>
         <input type="password" name="password" id="password" placeholder="password" <?php if(isset($password)) { ?>value="<?php $this->utility->safe($password); ?>"<?php } ?> data-validation="required">
       <?php } else { ?>
@@ -39,7 +39,7 @@
 
       <div class="btn-toolbar">
         <?php if(isset($_GET['edit'])) { ?><a class="btn" href="/">Cancel</a><?php } ?>
-        <button class="btn btn-primary" type="submit">Continue to Step 2</button>
+        <button class="btn btn-brand" type="submit">Continue to Step 2</button>
       </div>
       <input type="hidden" name="appId" id="appId" <?php if(isset($appId)) { ?>value="<?php $this->utility->safe($appId); ?>"<?php } ?>>
     </form>
@@ -64,7 +64,7 @@
         <option value="S3Dropbox"<?php echo ($filesystem == 'S3Dropbox') ? ' selected="selected"' : '' ?>>Amazon S3 + Dropbox</option>
         <option value="Local"<?php echo ($filesystem == 'Local') ? ' selected="selected"' : '' ?>>Local filesystem</option>
         <option value="LocalDropbox"<?php echo ($filesystem == 'LocalDropbox') ? ' selected="selected"' : '' ?>>Local filesystem + Dropbox</option>
-        <option value="DreamObjects"<?php echo ($filesystem == 'DreamObjects') ? ' selected="selected"' : '' ?>>DreamObjects</option>
+        <!--<option value="DreamObjects"<?php echo ($filesystem == 'DreamObjects') ? ' selected="selected"' : '' ?>>DreamObjects</option>-->
       </select>
 
       <div class="btn-toolbar">
