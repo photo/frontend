@@ -1,6 +1,11 @@
 <?php
 $status = true;
 
+$sql = <<<SQL
+  ALTER TABLE `{$this->mySqlTablePrefix}shareToken` DROP INDEX `owner` , ADD INDEX `owner` ( `owner` , `type` , `data` ); 
+SQL;
+$status = $status && mysql_4_0_1($sql);
+
 /** add triggers **/
 $sql = <<<SQL
 CREATE TRIGGER update_album_counts_on_delete AFTER DELETE ON {$this->mySqlTablePrefix}elementAlbum

@@ -268,7 +268,8 @@ SQL;
     `type` ENUM( 'album', 'photo', 'photos', 'video' ) NOT NULL ,
     `data` VARCHAR( 255 ) NOT NULL ,
     `dateExpires` INT UNSIGNED NOT NULL ,
-    PRIMARY KEY ( `owner` , `id` )
+    PRIMARY KEY ( `owner` , `id` ),
+    KEY `owner` (`owner`,`type`,`data`)
   ) ENGINE = InnoDB;
 SQL;
   mysql_base($sql);
