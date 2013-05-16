@@ -43,11 +43,6 @@ SQL;
 mysql_4_0_0($sql);
 
 $sql = <<<SQL
-  ALTER TABLE `{$this->mySqlTablePrefix}activity` ADD `elementId` VARCHAR( 6 ) NOT NULL AFTER `type`;
-SQL;
-$status = $status && mysql_4_0_0($sql);
-
-$sql = <<<SQL
   ALTER TABLE `{$this->mySqlTablePrefix}activity` DROP PRIMARY KEY , ADD PRIMARY KEY ( `owner` , `id` ) ;
 SQL;
 $status = $status && mysql_4_0_0($sql);
@@ -68,17 +63,7 @@ SQL;
 $status = $status && mysql_4_0_0($sql);
 
 $sql = <<<SQL
-  ALTER TABLE `{$this->mySqlTablePrefix}album` CHANGE `count` `countPublic` INT( 10 ) UNSIGNED NOT NULL DEFAULT '0';
-SQL;
-$status = $status && mysql_4_0_0($sql);
-
-$sql = <<<SQL
   ALTER TABLE `{$this->mySqlTablePrefix}album` ADD `countPrivate` INT( 10 ) NOT NULL DEFAULT '0' AFTER `countPublic` ;
-SQL;
-$status = $status && mysql_4_0_0($sql);
-
-$sql = <<<SQL
-  ALTER TABLE `{$this->mySqlTablePrefix}photo` DROP INDEX `id` , ADD UNIQUE `owner` ( `owner` , `id` ) 
 SQL;
 $status = $status && mysql_4_0_0($sql);
 
@@ -104,16 +89,6 @@ $status = $status && mysql_4_0_0($sql);
 
 $sql = <<<SQL
   DROP TRIGGER IF EXISTS `{$this->mySqlTablePrefix}decrement_album_photo_count`;
-SQL;
-$status = $status && mysql_4_0_0($sql);
-
-$sql = <<<SQL
-  CREATE TABLE `{$this->mySqlTablePrefix}relationship` (
-   `actor` varchar(127) NOT NULL,
-   `follows` varchar(127) NOT NULL,
-   `dateCreated` datetime NOT NULL,
-   PRIMARY KEY (`actor`,`follows`)
-  ) ENGINE=InnoDB;
 SQL;
 $status = $status && mysql_4_0_0($sql);
 
