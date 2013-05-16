@@ -1,9 +1,18 @@
 (function($){
   op.ns('data.view').TagSearch = Backbone.View.extend({
     initialize: function() {
-      $(this.el)
+      var $el = $(this.el), source = [];
+      if($el.hasClass('tags') && $el.hasClass('albums')) {
+        source = $.merge(_.pluck(OP.Tag.getTags(), 'id'),  _.pluck(OP.Album.getAlbums(), 'name'));
+      } else if($el.hasClass('tags')) {
+        source = _.pluck(OP.Tag.getTags(), 'id');
+      } else if($el.hasClass('albums')) {
+        source = _.pluck(OP.Album.getAlbums(), 'name');
+      }
+
+      $el
         .typeahead({
-          source : $.merge(_.pluck(OP.Tag.getTags(), 'id'),  _.pluck(OP.Album.getAlbums(), 'name')),
+          source : source,
           updater : _.bind(this.updater, this),
           matcher: this.matcher,
           highlighter: this.highlighter

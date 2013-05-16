@@ -156,17 +156,31 @@ RES;
 
   public function testGetProtocol()
   {
-    $_SERVER['SERVER_PORT'] = 80;
+    $_SERVER['HTTPS'] = null;
     $res = $this->utility->getProtocol(false);
     $this->assertEquals('http', $res);
 
-    $_SERVER['SERVER_PORT'] = 443;
+    $_SERVER['HTTPS'] = 'on';
     $res = $this->utility->getProtocol(false);
     $this->assertEquals('https', $res);
 
-    $_SERVER['SERVER_PORT'] = 0;
+    $_SERVER['HTTPS'] = 'On';
+    $res = $this->utility->getProtocol(false);
+    $this->assertEquals('https', $res);
+
+    $_SERVER['HTTPS'] = null;
+
+    $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'http';
     $res = $this->utility->getProtocol(false);
     $this->assertEquals('http', $res);
+
+    $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'https';
+    $res = $this->utility->getProtocol(false);
+    $this->assertEquals('https', $res);
+
+    $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'HTTPS';
+    $res = $this->utility->getProtocol(false);
+    $this->assertEquals('https', $res);
   }
 
   public function testIsActiveTab()
@@ -249,6 +263,18 @@ RES;
 
     $res = $this->utility->plural(2, 'word', false);
     $this->assertEquals('words', $res, 'plural for word with 2 incorrect');
+  }
+
+  public function testSelectPlural()
+  {
+    $res = $this->utility->selectPlural(0, 'was', 'were', false);
+    $this->assertEquals('were', $res, 'plural for word with 0 selected incorrectly');
+
+    $res = $this->utility->selectPlural(1, 'was', 'were', false);
+    $this->assertEquals('was', $res, 'plural for word with 1 selected incorrectly');
+
+    $res = $this->utility->selectPlural(2, 'was', 'were', false);
+    $this->assertEquals('were', $res, 'plural for word with 2 selected incorrectly');
   }
 
   public function testReturnValue()

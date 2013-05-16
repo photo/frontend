@@ -1,8 +1,7 @@
     <!-- Logo and Primary Navigation -->
     <div class="navbar-inner navbar-inner-primary">
       <div class="container">
-        <h1 class="logo"><a href="/">TroveBox</a></h1>
-        
+        <h1 class="logo"><a href="/" class="brand">Trovebox</a></h1>
         <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
         <a class="btn btn-navbar" data-toggle="collapse" data-target=".primary-navigation">
           <span class="icon-bar"></span>
@@ -17,15 +16,18 @@
               <?php if($this->session->get('site') != '' && $this->utility->gethost() != $this->session->get('site')) { ?>
                 <li><a href="<?php printf('%s://%s', $this->utility->getProtocol(false), $this->utility->safe($this->session->get('site'), false)); ?>">Back to my site</a></li>
               <?php } ?>
-              <li><a href="/user/logout">Logout</a></li>
+              <?php if($this->user->isAdmin()) { ?>
+                <li><a href="/manage/settings"><i class="icon-cog"></i> Settings</a></li>
+              <?php } ?>
+              <li><a href="/user/logout"><i class="icon-signout"></i> Logout</a></li>
             </ul>
           </div>
         <?php } else { ?>
           <div class="user">
+            <a href="/user/login?r=<?php $this->utility->safe($_SERVER['REQUEST_URI']); ?>" class="btn btn-theme-secondary">Sign In</a>
             <?php if($this->config->site->displaySignupLink == 1) { ?>
               <a href="<?php $this->utility->safe($this->config->site->displaySignupUrl); ?>" class="btn btn-brand btn-arrow">Sign Up</a>
             <?php } ?>
-            <a href="/user/login?r=<?php $this->utility->safe($_SERVER['REQUEST_URI']); ?>" class="btn btn-theme-secondary">Sign In</a>
           </div>
         <?php } ?>
         
@@ -40,7 +42,7 @@
           </ul>
           <div class="search-wrap separator-left">
             <form class="form-inline search" action="/photos/list">
-              <input type="search" class="search-query" name="tags" placeholder="Search Tags or Albums..." autocomplete="off">
+              <input type="search" class="search-query typeahead tags albums" name="tags" placeholder="Search Tags or Albums..." autocomplete="off">
               <button type="submit" class="btn btn-theme-secondary"><i class="icon-search"></i></button>
             </form>
           </div>
@@ -55,10 +57,10 @@
           <?php $this->theme->display('partials/header-secondary.php', array()); ?>
         </ul>
         <ul class="nav pull-right">
-          <?php if($this->user->isAdmin()) { ?>
-            <li><a href="/manage/settings"><i class="icon-cog"></i> Site Settings</a></li>
+          <?php if($numTutorials = $this->user->numberOfTutorials()) { ?>
+            <li class="info hidden-phone"><a href="#" class="tutorial" title="Click here to reveal new features."><span class="badge badge-info tutorial"><?php $this->utility->safe($numTutorials); ?></span> New <?php $this->utility->plural($numTutorials, 'Feature'); ?> On This Page</a>
           <?php } ?>
-          <li><div class="help-container"><a href="https://trovebox.com/faq"><i class="icon-question-sign"></i></div></a>
+          <!--<li><div class="help-container"><a href="https://trovebox.com/faq"><i class="icon-question-sign"></i></div></a>-->
         </ul>
       </div>
       <div class="container">

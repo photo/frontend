@@ -28,3 +28,10 @@
     <?php } ?>
   </div>
 </div>
+<?php if(!empty($albums)) { ?>
+  <div class="row">
+    <div class="span12 loadMoreContainer">
+      <button class="btn btn-theme-secondary loadMore loadMoreAlbums hide"><i></i> Load more</button>
+    </div>
+  </div>
+<?php } ?>

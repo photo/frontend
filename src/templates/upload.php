@@ -16,21 +16,12 @@
           </div>
         </div>
         <em class="poweredby">Powered by <a href="http://www.plupload.com">Plupload</a>.</em>
-        <hr>
-        <h3>Or import from your favorite services</h3>
-        <p>
-          <ul>
-            <li><a href="https://openphoto.me/for/flickr">Import from Flickr</a></li>
-            <li><a href="https://openphoto.me/for/facebook">Import from Facebook</a></li>
-            <li><a href="https://openphoto.me/for/instagram">Import from Instagram</a></li>
-          </ul>
-        </p>
       </div>
       <div class="span4">
         <h3>Use these settings.</h3>
         <br>
         <label for="tags">Tags</label>
-        <input type="text" name="tags" class="tags" placeholder="Optional comma separated list">
+        <input type="search" name="tags" class="typeahead tags" autocomplete="off" placeholder="Optional comma separated list">
 
         <div class="control-group">
           <label class="control-label">Albums <small>(<a href="#" class="showBatchForm album" data-action="albums">create new</a>)</small></label>
@@ -45,7 +36,7 @@
         <div class="control-group">
           <label for="tags">Permission</label>
           <div class="controls">
-            <label class="radio inline">
+            <label class="radio inline private">
               <input type="radio" name="permission" value="0"<?php if($preferences['permission'] === false || $preferences['permission'] === '0') { ?> checked="checked"<?php } ?>>
               <span>Private</span>
             </label>

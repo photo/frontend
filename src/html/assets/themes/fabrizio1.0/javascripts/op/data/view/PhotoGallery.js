@@ -43,11 +43,15 @@
       }
     },
     events: {
+      'click .album.edit': 'album',
       'click .delete.edit': 'delete',
       'click .permission.edit': 'permission',
       'click .profile.edit': 'profile',
       'click .pin.edit': 'pin',
       'click .share': 'share'
+    },
+    album: function(ev) {
+      TBX.handlers.click.setAlbumCover(ev);
     },
     delete: function(ev) {
       TBX.handlers.click.showBatchForm(ev);

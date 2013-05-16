@@ -1,5 +1,5 @@
 /**
- * TroveBox User Badge
+ * Trovebox User Badge
  */
 .trovebox {
   .userbadge {
@@ -7,16 +7,13 @@
     margin: 10px 0;
     
     .avatar {
-      // don't use gravatar
-      i {
-        font-size:@badge_height;
-        line-height: @badge_height;
-        vertical-align: middle;
-      }
       img {
         height: @badge_height;
+        width: @badge_height;
         border-radius: 10px;
         vertical-align: middle;
+        display:inline-block;
+        background:url("../images/profile-default.png") no-repeat 100%;
       }
     }
     

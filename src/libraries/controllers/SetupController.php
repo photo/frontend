@@ -301,7 +301,7 @@ class SetupController extends BaseController
     $usesAws = (preg_match('/S3|DreamObjects/', getSession()->get('fileSystem'))) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
-    $usesS3 = (preg_match('/S3|DreamObjects/', getSession()->get('fileSystem')) !== false) ? true : false;
+    $usesS3 = (preg_match('/S3|DreamObjects/', getSession()->get('fileSystem'))) ? true : false;
     $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
 
     $dropboxKey = getSession()->get('dropboxKey');
@@ -400,7 +400,7 @@ class SetupController extends BaseController
     $usesAws = (preg_match('/S3|DreamObjects/', $filesystem)) ? true : false;
     $usesMySql = (getSession()->get('database') == 'MySql') ? true : false;
     $usesLocalFs = (stristr(getSession()->get('fileSystem'), 'Local') !== false) ? true : false;
-    $usesS3 = (preg_match('/S3|DreamObjects/', $filesystem) !== false) ? true : false;
+    $usesS3 = (preg_match('/S3|DreamObjects/', $filesystem)) ? true : false;
     $usesDropbox = (stristr(getSession()->get('fileSystem'), 'Dropbox') !== false) ? true : false;
     $awsErrors = false;
     $mySqlErrors = false;

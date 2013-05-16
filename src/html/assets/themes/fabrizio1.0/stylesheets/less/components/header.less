@@ -5,6 +5,12 @@ body.trovebox {
 /* Top Banner Area */
 .trovebox-banner {
   position: fixed;
+  &.navbar-fixed-top {
+    //z-index: inherit;
+  }
+  &.navbar {
+    //position:relative;
+  }
   
   font-family: @font_primary;
   
@@ -41,6 +47,11 @@ body.trovebox {
     padding: 10px 0;
     min-height: auto;
     border-bottom: 1px solid #bebec0;
+
+    a.black:not(.btn) {
+      color: #000;
+      text-decoration:underline;
+    }
   }
   
   .btn {
@@ -135,7 +146,7 @@ body.trovebox {
         vertical-align: middle;
         margin-bottom: 0;
         width: 125px;
-        height: 16px;
+        height: 15px;
         font-size: 11px;
         padding: 4px 6px;
         
@@ -161,6 +172,7 @@ body.trovebox {
       .btn {
         margin-left: 10px;
         vertical-align: middle;
+        margin-top: -3px;
       }
       /* Logged in profile */
       .profile-link {

@@ -12,6 +12,17 @@
       margin: 20px 5px 15px;
     }
 
+    @media(max-width:979px){
+      ul.albums {
+        margin: 0;
+        
+        > li {
+          width: 100%;
+          min-width: 220px;
+        }
+      }
+    }
+
     ul.albums {
       list-style: none;
       padding: 0;
@@ -85,15 +96,16 @@
       }
     }
   }
-}
 
-@media(max-width:979px){
-  ul.albums {
-    margin: 0;
-    
-    > li {
-      width: 100%;
-      min-width: 220px;
+  .loadMoreContainer {
+    margin-top: 20px;
+    padding-top: 20px;
+    text-align:center;
+    border-top: solid 1px #ccc;
+
+    button {
+      font-size:110%;
+      padding:10px 25px;
     }
   }
 }

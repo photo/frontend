@@ -15,6 +15,7 @@ class FileSystemS3 implements FileSystemInterface
   const uploadTypeAttach = 'attachment';
   const uploadTypeInline = 'inline';
   private $bucket, $config, $fs, $uploadType = self::uploadTypeAttach;
+  protected $storeThumbs = true;
 
   /**
     * Constructor
@@ -146,6 +147,11 @@ class FileSystemS3 implements FileSystemInterface
     {
       getLogger()->warn("The photo {$localFile} does not exist so putPhoto failed");
       return false;
+    }
+
+    if($this->storeThumbs === false && strpos($remoteFile, '/original/') !== false)
+    {
+      return true;
     }
 
     $remoteFile = $this->normalizePath($remoteFile);

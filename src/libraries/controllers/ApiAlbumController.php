@@ -18,6 +18,21 @@ class ApiAlbumController extends ApiBaseController
     $this->user = new User;
   }
 
+  public function coverUpdate($albumId, $photoId)
+  {
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    $photoResp = $this->api->invoke("/photo/{$photoId}/view.json", EpiRoute::httpGet, array('_GET' => array('generate' => 'true', 'returnSizes' => '100x100,100x100xCR,200x200,200x200xCR')));
+    if($photoResp['code'] === 200)
+    {
+      // TODO: this clobbers anything that was in `extra` (currently nothing)
+      $status = $this->album->update($albumId, array('extra' => array('cover' => $photoResp['result'])));
+      if($status)
+        return $this->success('Your album cover was updated.', true);
+    }
+    return $this->error('Sorry, your album cover could not be updated.', false);
+  }
+
   public function create()
   {
     getAuthentication()->requireAuthentication();
@@ -100,15 +115,7 @@ class ApiAlbumController extends ApiBaseController
           {
             $ids = (array)explode(',', $_POST['ids']);
             $id = array_pop($ids);
-            if($id)
-            {
-              $lastPhotoResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('generate' => 'true', 'returnSizes' => '100x100,100x100xCR,200x200,200x200xCR')));
-              if($lastPhotoResp['code'] === 200)
-              {
-                // TODO: this clobbers anything that was in `extra` (currently nothing)
-                $this->album->update($albumId, array('extra' => array('cover' => $lastPhotoResp['result'])));
-              }
-            }
+            $this->api->invoke("/album/{$albumId}/cover/{$id}/update.json", EpiRoute::httpPost);
           }
         }
         break;

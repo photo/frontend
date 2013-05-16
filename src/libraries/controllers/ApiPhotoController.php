@@ -35,8 +35,6 @@ class ApiPhotoController extends ApiBaseController
     {
       $activityObj = new Activity;
       $activityObj->deleteForElement($id, array('photo-upload','photo-update','action-create'));
-
-      $res = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json");
       return $this->noContent('Photo deleted successfully', true);
     }
     else
@@ -257,6 +255,15 @@ class ApiPhotoController extends ApiBaseController
     if(isset($_GET['generate']) && $_GET['generate'] == 'true')
       $generate = true;
 
+    // check permissions
+    $validToken = false;
+    $tokenValue = null;
+    if($token)
+    {
+      $validToken = true;
+      $tokenValue = $token['id'];
+    }
+
     foreach($photos as $key => $photo)
     {
       // we remove all path* entries to keep the interface clean and only return sizes explicitly requested
@@ -292,7 +299,7 @@ class ApiPhotoController extends ApiBaseController
     // we also can't pass in $photo since it doesn't persist over iterations and removes returnSizes
     foreach($photos as $key => $photo)
     {
-      $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes);
+      $photos[$key] = $this->photo->addApiUrls($photos[$key], $sizes, $tokenValue);
       if(!$this->user->isAdmin() && $this->config->site->decreaseLocationPrecision === '1')
       {
         if(isset($photos[$key]['latitude']))
@@ -593,10 +600,17 @@ class ApiPhotoController extends ApiBaseController
     $photoBefore = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
     $photoBefore = $photoBefore['result'];
 
-    if(isset($params['tagsAdd']))
-      $params['tags'] = implode(',', array_unique(array_merge($photoBefore['tags'], (array)explode(',', $params['tagsAdd']))));
+    // set tags and modify if tagsAdd or tagsRemove are passed in
+    $tags = $photoBefore['tags'];
     if(isset($params['tagsRemove']))
-      $params['tags'] = implode(',', array_unique(array_diff($photoBefore['tags'], (array)explode(',', $params['tagsRemove']))));
+      $tags = array_unique(array_diff($tags, (array)explode(',', $params['tagsRemove'])));
+    if(isset($params['tagsAdd']))
+      $tags = array_unique(array_merge($tags, (array)explode(',', $params['tagsAdd'])));
+
+    // if $tags is different than $photoBefore['tags'] it means tagsAdd or tagsRemove modifed the existing tags so we update accordingly
+    if($tags !== $photoBefore['tags'])
+      $params['tags'] = implode(',', $tags);
+
 
     // if the permission of a photo changes we have to clean some stuff up
     if(isset($params['permission']) && $params['permission'] != $photoBefore['permission'])
@@ -700,6 +714,8 @@ class ApiPhotoController extends ApiBaseController
     }
 
     // check permissions
+    $validToken = false;
+    $tokenValue = null;
     if(!isset($photo['id']))
     {
       return $this->notFound("Photo {$id} not found", false);
@@ -707,7 +723,6 @@ class ApiPhotoController extends ApiBaseController
     elseif(!$this->user->isAdmin())
     {
       // we check to see if there's a token and verify that it's valid
-      $validToken = false;
       if(!empty($optionsArr['token']))
       {
         if($optionsArr['token'] !== false)
@@ -718,9 +733,11 @@ class ApiPhotoController extends ApiBaseController
             $validToken = true;
           elseif($optionsArr['token']['type'] === 'album' && in_array($optionsArr['token']['data'], $this->photo->getAlbumsForPhoto($id)))
             $validToken = true;
+
+          if($validToken)
+            $tokenValue = $optionsArr['token']['id'];
         }
       }
-
       // if no valid token is found and the photo's permission is 0 then we
       //  enforce privacy
       if($validToken === false && $photo['permission'] == 0)
@@ -801,7 +818,7 @@ class ApiPhotoController extends ApiBaseController
       }
     }
 
-    $photo = $this->photo->addApiUrls($photo, $sizes);
+    $photo = $this->photo->addApiUrls($photo, $sizes, $tokenValue);
     if(!$this->user->isAdmin() && $this->config->site->decreaseLocationPrecision === '1')
     {
       if(isset($photo['latitude']))

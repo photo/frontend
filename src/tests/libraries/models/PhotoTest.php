@@ -17,17 +17,22 @@ class PhotoTest extends PHPUnit_Framework_TestCase
   public function setUp()
   {
     $_SERVER['HTTP_HOST'] = 'foobar';
-    $params = array('user' => new FauxObject, 'utility' => new stdClass, 'url' => new stdClass, 'image' => new FauxObject);
+    $utility = $this->getMock('Utility', array('getProtocol'));
+    $utility->expects($this->any())
+      ->method('getProtocol')
+      ->will($this->returnValue('http'));
+
+    $params = array('user' => new FauxObject, 'utility' => $utility, 'url' => new stdClass, 'image' => new FauxObject);
     $this->photo = new PhotoWrapper($params);
-    $config = new stdClass;
-    $config->site = new stdClass;
-    $config->site->allowOriginalDownload = 1;
-    $config->modules = new stdClass;
-    $config->modules->exiftran = exec('which exiftran');
+    $this->config = new stdClass;
+    $this->config->site = new stdClass;
+    $this->config->site->allowOriginalDownload = 1;
+    $this->config->modules = new stdClass;
+    $this->config->modules->exiftran = exec('which exiftran');
     $secrets = new stdClass;
     $secrets->secret = 'secret';
-    $config->secrets = $secrets;
-    $this->photo->inject('config', $config);
+    $this->config->secrets = $secrets;
+    $this->photo->inject('config', $this->config);
 
     $this->photoData = array(
       'id'=>'a','title'=>'title','host'=>'host','width'=>1100,'height'=>2000,
@@ -44,12 +49,7 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $url->expects($this->any())
       ->method('photoView')
       ->will($this->returnValue('/url'));
-    $utility = $this->getMock('Utility', array('getProtocol'));
-    $utility->expects($this->any())
-      ->method('getProtocol')
-      ->will($this->returnValue('http'));
     $this->photo->inject('url', $url);
-    $this->photo->inject('utility', $utility);
 
     // api for already existing photos
     $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
@@ -74,6 +74,28 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $this->assertEquals(10, $res['photo10x10xCR'][2], 'The height is not correct in the photo array');
   }
 
+  public function testAddApiUrlsDownloadAsOwner()
+  {
+    $url = $this->getMock('Url', array('photoView'));
+    $url->expects($this->any())
+      ->method('photoView')
+      ->will($this->returnValue('/url'));
+    $user = $this->getMock('User', array('isOwner'));
+    $user->expects($this->any())
+      ->method('isOwner')
+      ->will($this->returnValue(true));
+    $this->photo->inject('url', $url);
+    $this->photo->inject('user', $user);
+
+    // without token
+    $res = $this->photo->addApiUrls($this->photoData, array('10x10xCR'));
+    $this->assertEquals('http://foobar/photo/a/download', $res['pathDownload'], 'Download path does not have token');
+
+    // with token
+    $res = $this->photo->addApiUrls($this->photoData, array('10x10xCR'), '1234');
+    $this->assertEquals('http://foobar/photo/a/token-1234/download', $res['pathDownload'], 'Download path does not have token');
+  }
+
   public function testAddApiUrlsOriginalAsOwner()
   {
     $user = $this->getMock('User', array('isOwner'));
@@ -84,20 +106,61 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $url->expects($this->any())
       ->method('photoView')
       ->will($this->returnValue('/url'));
-    $utility = $this->getMock('Utility', array('getProtocol'));
-    $utility->expects($this->any())
-      ->method('getProtocol')
-      ->will($this->returnValue('http'));
     $config = $this->photo->config;
     $config->site->allowOriginalDownload = 0;
     $this->photo->inject('user', $user);
     $this->photo->inject('url', $url);
-    $this->photo->inject('utility', $utility);
     $this->photo->inject('config', $config);
 
     $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
     $this->assertTrue(isset($res['pathOriginal']));
     $this->assertTrue(isset($res['pathDownload']));
+  }
+
+  public function testAddApiUrlsDownloadAsNonOwnerYesDownload()
+  {
+    $url = $this->getMock('Url', array('photoView'));
+    $url->expects($this->any())
+      ->method('photoView')
+      ->will($this->returnValue('/url'));
+    $user = $this->getMock('User', array('isOwner'));
+    $user->expects($this->any())
+      ->method('isOwner')
+      ->will($this->returnValue(false));
+    $this->photo->inject('url', $url);
+    $this->photo->inject('user', $user);
+
+    // without token
+    $res = $this->photo->addApiUrls($this->photoData, array('10x10xCR'));
+    $this->assertEquals('http://foobar/photo/a/download', $res['pathDownload'], 'Download path does not have token');
+
+    // with token
+    $res = $this->photo->addApiUrls($this->photoData, array('10x10xCR'), '1234');
+    $this->assertEquals('http://foobar/photo/a/token-1234/download', $res['pathDownload'], 'Download path does not have token');
+  }
+
+  public function testAddApiUrlsDownloadAsNonOwnerNoDownload()
+  {
+    $url = $this->getMock('Url', array('photoView'));
+    $url->expects($this->any())
+      ->method('photoView')
+      ->will($this->returnValue('/url'));
+    $user = $this->getMock('User', array('isOwner'));
+    $user->expects($this->any())
+      ->method('isOwner')
+      ->will($this->returnValue(false));
+    $this->config->site->allowOriginalDownload = 0;
+    $this->photo->inject('url', $url);
+    $this->photo->inject('user', $user);
+    $this->photo->inject('config', $this->config);
+
+    // without token
+    $res = $this->photo->addApiUrls($this->photoData, array('10x10xCR'));
+    $this->assertTrue(!isset($res['pathDownload']), 'NonOwner with no download should not return pathDownload');
+
+    // with token
+    $res = $this->photo->addApiUrls($this->photoData, array('10x10xCR'), '1234');
+    $this->assertTrue(!isset($res['pathDownload']), 'NonOwner with no download should not return pathDownload w/ token');
   }
 
   public function testAddApiUrlsOriginalAsNonOwner()
@@ -110,15 +173,10 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $url->expects($this->any())
       ->method('photoView')
       ->will($this->returnValue('/url'));
-    $utility = $this->getMock('Utility', array('getProtocol'));
-    $utility->expects($this->any())
-      ->method('getProtocol')
-      ->will($this->returnValue('http'));
     $config = $this->photo->config;
     $config->site->allowOriginalDownload = 1;
     $this->photo->inject('user', $user);
     $this->photo->inject('url', $url);
-    $this->photo->inject('utility', $utility);
     $this->photo->inject('config', $config);
 
     $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
@@ -136,15 +194,10 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $url->expects($this->any())
       ->method('photoView')
       ->will($this->returnValue('/url'));
-    $utility = $this->getMock('Utility', array('getProtocol'));
-    $utility->expects($this->any())
-      ->method('getProtocol')
-      ->will($this->returnValue('http'));
     $config = $this->photo->config;
     $config->site->allowOriginalDownload = 0;
     $this->photo->inject('user', $user);
     $this->photo->inject('url', $url);
-    $this->photo->inject('utility', $utility);
     $this->photo->inject('config', $config);
 
     $res = $this->photo->addApiUrls($this->photoData, array('10x10'));
@@ -481,6 +534,21 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $this->assertEquals('https://host/path/original', $res);
   }
 
+  public function testGenerateUrlOriginalWithStaticOverrideWhenStaticAssetExists()
+  {
+    $this->config->site->assetProtocol = 'xxx';
+    $res = $this->photo->generateUrlPublic($this->photoData, 10, 10);
+    $this->assertEquals('xxx://host/path/foo10x10', $res);
+  }
+
+  public function testGenerateUrlOriginalWithStaticOverrideWhenStaticAssetDoesNotExist()
+  {
+    // assetProtocol should not be used when asset needs to be generated
+    $this->config->site->assetProtocol = 'xxx';
+    $res = $this->photo->generateUrlPublic($this->photoData, 10, 100);
+    $this->assertEquals('http://foobar/photo/a/create/1e34d/10x100.jpg', $res);
+  }
+
   public function testGenerateUrlPublicWhenStaticAssetExists()
   {
     $res = $this->photo->generateUrlPublic($this->photoData, 10, 10);
@@ -489,6 +557,21 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
   public function testGenerateUrlPublicWhenStaticAssetDoesNotExist()
   {
+    $res = $this->photo->generateUrlPublic($this->photoData, 10, 100);
+    $this->assertEquals('http://foobar/photo/a/create/1e34d/10x100.jpg', $res);
+  }
+
+  public function testGenerateUrlPublicWithStaticOverrideWhenStaticAssetExists()
+  {
+    $this->config->site->assetProtocol = 'xxx';
+    $res = $this->photo->generateUrlPublic($this->photoData, 10, 10);
+    $this->assertEquals('xxx://host/path/foo10x10', $res);
+  }
+
+  public function testGenerateUrlPublicWithStaticOverrideWhenStaticAssetDoesNotExist()
+  {
+    // assetProtocol should not be used when asset needs to be generated
+    $this->config->site->assetProtocol = 'xxx';
     $res = $this->photo->generateUrlPublic($this->photoData, 10, 100);
     $this->assertEquals('http://foobar/photo/a/create/1e34d/10x100.jpg', $res);
   }

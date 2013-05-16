@@ -2,7 +2,7 @@
   <?php if($this->config->site->allowOpenPhotoLogin == 1) { ?>
     <div class="span6">
     <h4>Sign in with your email and password</h4>
-    <form class="login">
+    <form class="login" method="post">
       <fieldset class="control-group">
         <label>What's your email address?</label>
         <input type="text" name="email" placeholder="user@example.com" id="login-email">

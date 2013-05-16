@@ -45,7 +45,7 @@ class Photo extends BaseModel
     * @param string $protocol http or https
     * @return array
     */
-  public function addApiUrls($photo, $sizes, $protocol=null)
+  public function addApiUrls($photo, $sizes, $token=null, $protocol=null)
   {
     if($protocol === null)
       $protocol = $this->utility->getProtocol(false);
@@ -72,7 +72,7 @@ class Photo extends BaseModel
     if($this->config->site->allowOriginalDownload == 1 || $this->user->isAdmin())
     {
       $photo['pathOriginal'] = $this->generateUrlBaseOrOriginal($photo, 'original');
-      $photo['pathDownload'] = $this->generateUrlDownload($photo);
+      $photo['pathDownload'] = $this->generateUrlDownload($photo, $token);
     }
     elseif(isset($photo['pathOriginal']))
     {
@@ -330,12 +330,23 @@ class Photo extends BaseModel
     * @param string $protocol Protocol for the URL
     * @return mixed string URL on success, FALSE on failure
     */
-  public function generateUrlBaseOrOriginal($photo, $type = 'base', $protocol = 'http')
+  public function generateUrlBaseOrOriginal($photo, $type = 'base', $protocol = null)
   {
+    if(!$protocol)
+      $protocol = $this->utility->getProtocol(false);
+
+    // force a protocol if specified in the configs for assets
+    //  we only do this for static assets
+    //  assets which need to run through the API to be generated inherit the current protocol
+    //  See #1236
+    $assetProtocol = $protocol;
+    if(!empty($this->config->site->assetProtocol))
+      $assetProtocol = $this->config->site->assetProtocol;
+
     if($type === 'base')
-      return "{$protocol}://{$photo['host']}{$photo['pathBase']}";
+      return "{$assetProtocol}://{$photo['host']}{$photo['pathBase']}";
     elseif($type === 'original')
-      return "{$protocol}://{$photo['host']}{$photo['pathOriginal']}";
+      return "{$assetProtocol}://{$photo['host']}{$photo['pathOriginal']}";
 
   }
 
@@ -348,9 +359,15 @@ class Photo extends BaseModel
     * @param string $protocol Protocol for the URL
     * @return mixed string URL on success, FALSE on failure
     */
-  public function generateUrlDownload($photo, $protocol = 'http')
+  public function generateUrlDownload($photo, $token = null, $protocol = null)
   {
-    return sprintf('%s://%s/photo/%s/download', $protocol, $this->utility->getHost(), $photo['id']);
+    if(!$protocol)
+      $protocol = $this->utility->getProtocol(false);
+
+    if($token)
+      return sprintf('%s://%s/photo/%s/token-%s/download', $protocol, $this->utility->getHost(), $photo['id'], $token);
+    else
+      return sprintf('%s://%s/photo/%s/download', $protocol, $this->utility->getHost(), $photo['id']);
   }
 
   /**
@@ -365,14 +382,25 @@ class Photo extends BaseModel
     * @param string $protocol Protocol for the URL
     * @return mixed string URL on success, FALSE on failure
     */
-  public function generateUrlPublic($photo, $width, $height, $options = null, $protocol = 'http')
+  public function generateUrlPublic($photo, $width, $height, $options = null, $protocol = null)
   {
+    if(!$protocol)
+      $protocol = $this->utility->getProtocol(false);
+
+    // force a protocol if specified in the configs for assets
+    //  we only do this for static assets
+    //  assets which need to run through the API to be generated inherit the current protocol
+    //  See #1236
+    $assetProtocol = $protocol;
+    if(!empty($this->config->site->assetProtocol))
+      $assetProtocol = $this->config->site->assetProtocol;
+
     $key = $this->generateCustomKey($width, $height, $options);
 
     if(isset($photo[$key]))
-      return "{$protocol}://{$photo['host']}{$photo[$key]}";
+      return "{$assetProtocol}://{$photo['host']}{$photo[$key]}";
     elseif(isset($photo['id']))
-      return "{$protocol}://{$_SERVER['HTTP_HOST']}".$this->generateUrlInternal($photo['id'], $width, $height, $options);
+      return "{$protocol}://{$_SERVER['HTTP_HOST']}".$this->generateUrlInternal($photo['id'], $width, $height, $options); // TODO remove reference to HTTP_HOST
     else
       return false;
   }
@@ -944,7 +972,7 @@ class Photo extends BaseModel
     */
   private function getPhotoViewUrl($photo)
   {
-    return sprintf('%s://%s%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], $this->url->photoView($photo['id'], null, false));
+    return sprintf('%s://%s%s', $this->utility->getProtocol(false), $this->utility->getHost(false), $this->url->photoView($photo['id'], null, false));
   }
 
   /**

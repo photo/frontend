@@ -17,7 +17,7 @@
       <?php if($action == 'tags') { ?>
         <h4>What tags would you like to add or remove?</h4>
         <div class="control-group">
-          <input type="text" name="tagsAdd" class="input-medium tags" placeholder="Tags to add or remove...">
+          <input type="text" name="tagsAdd" class="input-medium typeahead tags" autocomplete="off" placeholder="Tags to add or remove...">
         </div>
         <div class="control-group">
           <label class="radio inline">

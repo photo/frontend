@@ -171,9 +171,15 @@ class FileSystemBoxBase
     foreach($files as $file)
     {
       list($localFile, $remoteFileArr) = each($file);
+      if(!file_exists($localFile))
+      {
+        getLogger()->warn(sprintf('One of %s photos do not exist when running putPhotos, %s', count($files), $localFile));
+        return false;
+      }
+
       $remoteFile = $remoteFileArr[0];
       $dateTaken = $remoteFileArr[1];
-      if(strpos($remoteFile, '/original/') !== false && file_exists($localFile))
+      if(strpos($remoteFile, '/original/') !== false)
       {
         $directory = urlencode(date($this->directoryMask, $dateTaken));
         if(!$this->putFileInDirectory($directory, $localFile, basename($remoteFile)))

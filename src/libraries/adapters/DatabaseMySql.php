@@ -183,7 +183,7 @@ class DatabaseMySql implements DatabaseInterface
   public function deleteShareToken($id)
   {
     $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `id`=:id", array(':owner' => $this->owner, ':id' => $id));
-    return $res !== 1;
+    return $res !== false;
   }
 
   /**
@@ -337,8 +337,9 @@ class DatabaseMySql implements DatabaseInterface
   {
     $photos = $this->db->all("SELECT `pht`.* 
       FROM `{$this->mySqlTablePrefix}photo` AS `pht` INNER JOIN `{$this->mySqlTablePrefix}elementAlbum` AS `alb` ON `pht`.`id`=`alb`.`element`
-      WHERE `pht`.`owner`=:owner AND `alb`.`owner`=:owner",
-      array(':owner' => $this->owner));
+      WHERE `pht`.`owner`=:owner AND `alb`.`owner`=:owner
+      AND `alb`.`album`=:album",
+      array(':owner' => $this->owner, ':album' => $id));
 
     if($photos === false)
       return false;
@@ -712,13 +713,16 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Get all share token by type and target
+    * Get all share tokens
     *
     * @return mixed Array on success, FALSE on failure
     */
-  public function getShareTokensByTarget($type, $data)
+  public function getShareTokens($type = null, $data = null)
   {
-    $tokens = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `type`=:type AND `data`=:data", array(':owner' => $this->owner, ':type' => $type, ':data' => $data));
+    if($type === null && $data === null)
+      $tokens = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner", array(':owner' => $this->owner));
+    else
+      $tokens = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `type`=:type AND `data`=:data", array(':owner' => $this->owner, ':type' => $type, ':data' => $data));
 
     if($tokens === false)
       return false;
@@ -730,15 +734,6 @@ class DatabaseMySql implements DatabaseInterface
     }
 
     return $tokens;
-  }
-
-  /**
-    * Get all share tokens
-    *
-    * @return mixed Array on success, FALSE on failure
-    */
-  public function getShareTokens()
-  {
   }
 
   /**
@@ -761,7 +756,7 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getTag($tag)
   {
-    $tag = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id`=:id AND `owner`=:owner", array(':id' => $tag, ':owner' => $this->owner));
+    $tag = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `owner`=:owner AND `id`=:id", array(':owner' => $this->owner, ':id' => $tag));
 
     if(!$tag )
       return false;
@@ -803,12 +798,12 @@ class DatabaseMySql implements DatabaseInterface
     if(isset($filters['search']) && $filters['search'] != '')
     {
       $filters['search'] = $this->_($filters['search']);
-      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND `id` LIKE :search ORDER BY {$sortBy}";
+      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `owner`=:owner AND `id` IS NOT NULL AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' AND `id` LIKE :search ORDER BY {$sortBy}";
       $params[':search'] = "{$filters['search']}%";
     }
     else
     {
-      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `id` IS NOT NULL AND `owner`=:owner AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY {$sortBy}";
+      $query = "SELECT * FROM `{$this->mySqlTablePrefix}tag` WHERE `owner`=:owner AND `id` IS NOT NULL AND `{$countField}` IS NOT NULL AND `{$countField}` > '0' ORDER BY {$sortBy}";
     }
     $tags = $this->db->all($query, $params);
 
@@ -831,7 +826,7 @@ class DatabaseMySql implements DatabaseInterface
     *
     * @return mixed Array on success, NULL if user record is empty, FALSE on error
     */
-  public function getUser($owner = null)
+  public function getUser($owner = null, $lock = false)
   {
     if($owner === null)
       $owner = $this->owner;
@@ -840,8 +835,14 @@ class DatabaseMySql implements DatabaseInterface
     if($cached !== null)
       return $cached;
 
-    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
- 
+    // optionally lock until an update happens
+    //  See #1230
+    $doLock = '';
+    if($lock)
+      $doLock = 'FOR UPDATE';
+
+    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner {$doLock}", array(':owner' => $owner));
+
     if($res)
       return $this->cacheSet('user', $this->normalizeUser($res), $owner);
 

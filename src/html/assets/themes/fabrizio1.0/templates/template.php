@@ -69,7 +69,6 @@
                 addJs('/assets/javascripts/openphoto-upload.js')->
                 getUrl(AssetPipeline::js, $this->config->site->mediaVersion, $this->config->site->mode === 'prod'); ?>',
             <?php } ?>
-
               '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                 addJs($this->theme->asset('javascript', 'underscore-min.js', false))->
                 addJs($this->theme->asset('javascript', 'backbone.js', false))->
@@ -108,8 +107,10 @@
                 addJs($this->theme->asset('javascript', 'op/Strings.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Handlers.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Callbacks.js', false))->
+                addJs($this->theme->asset('javascript', 'op/Tutorial.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Format.js', false))->
                 addJs($this->theme->asset('javascript', 'gallery.js', false))->
+                addJs($this->theme->asset('javascript', 'intro.js', false))->
                 addJs($this->theme->asset('javascript', 'fabrizio.js', false))->
                 getUrl(AssetPipeline::js, $this->config->site->mediaVersion, $this->config->site->mode === 'prod'); ?>'
             ], // assets
