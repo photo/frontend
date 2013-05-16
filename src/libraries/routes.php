@@ -69,7 +69,7 @@ $routeObj->get('/photos/?(.+)?/list', array('PhotoController', 'list_')); // vie
  * /s[/{id}]/{action}
  */
 // the optional trailing slash is because the twitter popup appends it to the url automatically
-$routeObj->get('/?v?1?/s/([a-z0-9]+)/?', array('ResourceMapController', 'render'), EpiApi::external); // create a resource map (/s/{id}/view.json)
+$routeObj->get('/s/([a-z0-9]+)/?', array('ResourceMapController', 'render'), EpiApi::external); // create a resource map (/s/{id}/view.json)
 
 /*
  * Tag endpoints

@@ -170,6 +170,15 @@
       }
       return;
     };
+    this.click.tokenDelete = function(ev) {
+      ev.preventDefault();
+      var el = $(ev.target),
+          url = el.attr('href')+'.json',
+          params = {crumb: TBX.crumb()};
+
+      OP.Util.makeRequest(url, params, TBX.callbacks.tokenDelete.bind(el));
+      return false;
+    };
     this.click.triggerDownload = function(ev) {
       ev.preventDefault();
       var $el = $('.download.trigger'), url = $el.attr('href');

@@ -35,6 +35,23 @@ class ApiTokenController extends ApiController
     return $this->noContent('Successfully deleted share token', true);
   }
 
+  public function list_()
+  {
+    $tokens = $this->token->getAll();
+    if($tokens === false)
+      return $this->error('Error getting sharing tokens', false);
+
+    $retval = array('photos' => array(), 'albums' => array());
+    foreach($tokens as $token)
+    {
+      if($token['type'] === 'photo')
+        $retval['photos'][] = $token;
+      else
+        $retval['albums'][] = $token;
+    }
+    return $this->success('Share tokens', $retval);
+  }
+
   public function listByTarget($type, $data)
   {
     $tokens = $this->token->getByTarget($type, $data);

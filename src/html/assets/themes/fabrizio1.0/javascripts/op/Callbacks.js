@@ -54,7 +54,7 @@
     this.credentialDelete = function(response) {
       if(response.code === 204) {
         this.closest('tr').slideUp('medium');
-        TBX.notification.show('Your app was successfully deleted.', null, 'error');
+        TBX.notification.show('Your app was successfully deleted.', null, 'confirm');
       } else {
         TBX.notification.show('There was a problem deleting your app.', null, 'error');
       }
@@ -157,6 +157,14 @@
       var result = response.result;
       $('a.batchHide').trigger('click');
       TBX.notification.show('Your photo was successfully emailed.', 'flash', 'confirm');
+    };
+    this.tokenDelete = function(response) {
+      if(response.code === 204) {
+        this.closest('tr').slideUp('medium');
+        TBX.notification.show('Your sharing token was successfully deleted.', null, 'confirm');
+      } else {
+        TBX.notification.show('There was a problem deleting your sharing token.', null, 'error');
+      }
     };
     this.tutorialUpdate = function(response) {
       $('.navbar-inner-secondary ul li.info').fadeOut();

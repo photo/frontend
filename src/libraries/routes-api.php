@@ -114,6 +114,7 @@ $apiObj->post('/?v?[1-2]?/token/(album|photo)/([a-zA-Z0-9]+)/create.json', array
 $apiObj->post('/?v?[1-2]?/token/([a-zA-Z0-9]+)/delete.json', array('ApiTokenController', 'delete'), EpiApi::external); // delete a sharing token (/token/:id/delete.json)
 $apiObj->get('/?v?[1-2]?/token/([a-zA-Z0-9]+)/view.json', array('ApiTokenController', 'view'), EpiApi::external); // get an existing sharing token (/token/:id/view.json)
 $apiObj->get('/?v?[1-2]?/token/(album|photo)/([a-zA-Z0-9]+)/list.json', array('ApiTokenController', 'listByTarget'), EpiApi::external); // list sharing tokens for a target (/token/:type/:data/view.json)
+$apiObj->get('/?v?[1-2]?/tokens/list.json', array('ApiTokenController', 'list_'), EpiApi::external); // list sharing tokens
 
 /*
  * Resource mapping endpoints
