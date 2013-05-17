@@ -82,6 +82,98 @@ class SetupController extends BaseController
   }
 
   /**
+    * Gets Skydrive info from the user
+    *
+    * @return string HTML
+    */
+  public function setupSkydrive()
+  {
+    extract($this->getDefaultConfigParams());
+    $secret = $this->getSecret();
+    $credentials = getConfig()->get('credentials');
+    $skydrive = getConfig()->get('skydrive');
+    if($credentials !== null)
+    {
+      if(isset($credentials->SkyDriveKey) && !empty($credentials->SkyDriveKey))
+        $SkyDriveKey = $this->utility->decrypt($credentials->SkyDriveKey, $secret);
+      if(isset($credentials->SkyDriveSecret) && !empty($credentials->SkyDriveSecret))
+        $SkyDriveSecret = $this->utility->decrypt($credentials->SkyDriveSecret, $secret);
+      if(isset($skydrive->SkyDriveFolder))
+        $SkyDriveFolder = $skydrive->SkyDriveFolder;
+    }
+
+    $qs = '';
+    if(isset($_GET['edit']))
+      $qs = '?edit';
+
+    $template = sprintf('%s/setup-skydrive.php', getConfig()->get('paths')->templates);
+    $body = $this->template->get($template, array('skydriveKey' => $skydriveKey, 'skydriveSecret' => $skydriveSecret, 'skydriveFolder' => $skydriveFolder, 'qs' => $qs));
+    $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
+  }
+
+  /**
+    * Handles callback from SkyDrive oauth flow
+    */
+  public function setupSkyDriveCallback()
+  {
+    $secret = $this->getSecret();
+    try
+    {
+      $skyDriveToken = getSession()->get('skyDriveToken');
+      $skyDriveKey = $this->utility->decrypt(getSession()->get('flowSkyDriveKey'), $secret);
+      $skyDriveSecret = $this->utility->decrypt(getSession()->get('flowSkyDriveSecret'), $secret);
+      //$oauth = new SkyDrive_OAuth_PHP($skyDriveKey, $skyDriveSecret);
+      //$oauth->setToken($skyDriveToken);
+      //$accessToken = $oauth->getAccessToken();
+      getSession()->set('skyDriveFolder', getSession()->get('flowSkyDriveFolder'));
+      getSession()->set('skyDriveKey', getSession()->get('flowSkyDriveKey'));
+      getSession()->set('skyDriveSecret', getSession()->get('flowSkyDriveSecret'));
+      getSession()->set('skyDriveToken', $this->utility->encrypt($accessToken['token'], $secret));
+      getSession()->set('skyDriveTokenSecret', $this->utility->encrypt($accessToken['token_secret'], $secret));
+
+      $qs = '';
+      if(isset($_GET['edit']))
+        $qs = '?edit';
+
+      $this->route->redirect(sprintf('%s%s', '/setup/3', $qs));
+    }
+    catch(SkyDrive_Exception $e)
+    {
+      getLogger()->crit(sprintf('An error occured getting the SkyDrive authorize url. Message: %s', $e->getMessage()));
+      $this->route->run('/error/500');
+    }
+  }
+
+  /**
+    * Gets authorize URL and redirects to skydrive
+    *
+    */
+  public function setupSkyDrivePost()
+  {
+    $qs = '';
+    if(isset($_GET['edit']))
+      $qs = '?edit';
+    $secret = $this->getSecret();
+
+    try
+    {
+      getSession()->set('flowSkyDriveKey', $this->utility->encrypt($_POST['SkyDriveKey'], $secret));
+      getSession()->set('flowSkyDriveSecret', $this->utility->encrypt($_POST['SkyDriveSecret'], $secret));
+      getSession()->set('flowSkyDriveFolder', $_POST['SkyDriveFolder']);
+      $callback = urlencode(sprintf('%s://%s%s%s', $this->utility->getProtocol(false), getenv('HTTP_HOST'), '/setup/skydrive/callback', $qs));
+      #$oauth = new Dropbox_OAuth_PHP($_POST['dropboxKey'], $_POST['dropboxSecret']);
+      getSession()->set('dropboxToken', $oauth->getRequestToken());
+      $url = $oauth->getAuthorizeUrl($callback);
+      $this->route->redirect($url, null, true);
+    }
+    catch(Dropbox_Exception $e)
+    {
+      getLogger()->crit('An error occured getting the Dropbox authorize url.', $e);
+      $this->route->run('/error/500', EpiRoute::httpGet);
+    }
+  }
+
+  /**
     * Gets Dropbox info from the user
     *
     * @return string HTML
@@ -271,6 +363,8 @@ class SetupController extends BaseController
         $qs = '?edit';
       if(stristr($_POST['fileSystem'], 'Dropbox') !== false)
         $this->route->redirect('/setup/dropbox' . $qs);
+      elseif(stristr($_POST['fileSystem'], 'SkyDrive') !== false)
+        $this->route->redirect('/setup/skydrive' . $qs);
       else
         $this->route->redirect('/setup/3' . $qs);
   }
