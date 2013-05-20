@@ -125,7 +125,6 @@ class SetupController extends BaseController
       //$oauth = new SkyDrive_OAuth_PHP($skyDriveKey, $skyDriveSecret);
       //$oauth->setToken($skyDriveToken);
       //$accessToken = $oauth->getAccessToken();
-      getSession()->set('skyDriveFolder', getSession()->get('flowSkyDriveFolder'));
       getSession()->set('skyDriveKey', getSession()->get('flowSkyDriveKey'));
       getSession()->set('skyDriveSecret', getSession()->get('flowSkyDriveSecret'));
       getSession()->set('skyDriveToken', $this->utility->encrypt($accessToken['token'], $secret));
@@ -157,13 +156,14 @@ class SetupController extends BaseController
 
     try
     {
-      getSession()->set('flowSkyDriveKey', $this->utility->encrypt($_POST['SkyDriveKey'], $secret));
-      getSession()->set('flowSkyDriveSecret', $this->utility->encrypt($_POST['SkyDriveSecret'], $secret));
-      getSession()->set('flowSkyDriveFolder', $_POST['SkyDriveFolder']);
+      getSession()->set('flowSkyDriveClientID', $this->utility->encrypt($_POST['SkyDriveClientID'], $secret));
+      getSession()->set('flowSkyDriveClientSecret', $this->utility->encrypt($_POST['SkyDriveClientSecret'], $secret));
       $callback = urlencode(sprintf('%s://%s%s%s', $this->utility->getProtocol(false), getenv('HTTP_HOST'), '/setup/skydrive/callback', $qs));
       #$oauth = new Dropbox_OAuth_PHP($_POST['dropboxKey'], $_POST['dropboxSecret']);
-      getSession()->set('dropboxToken', $oauth->getRequestToken());
-      $url = $oauth->getAuthorizeUrl($callback);
+      $url = "https://login.live.com/oauth20_authorize.srf?client_id=00000000440F3200&display=page&locale=en&redirect_uri=http%3A%2F%2Fwww.garethgreenaway.com%2Fsetup%2Fskydrive%2Fcallback&response_type=code&scope=wl.signin%20wl.basic%20wl.offline_access&state=redirect_type%3Dauth%26display%3Dpage%26request_ts%3D1368925809268%26response_method%3Dcookie%26secure_cookie%3Dfalse";
+      #$url = "https://login.live.com/oauth20_authorize.srf?client_id=" . $SkyDriveClientID . "&display=page&locale=en&redirect_uri=" . $callback . "&response_type=code&scope=wl.signin%20wl.basic%20wl.offline_access&state=redirect_type%3Dauth%26display%3Dpage%26request_ts%3D1368925809268%26response_method%3Dcookie%26secure_cookie%3Dfalse"
+      #getSession()->set('dropboxToken', $oauth->getRequestToken());
+      #$url = $oauth->getAuthorizeUrl($callback);
       $this->route->redirect($url, null, true);
     }
     catch(Dropbox_Exception $e)
