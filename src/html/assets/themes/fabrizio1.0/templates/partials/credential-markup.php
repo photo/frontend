@@ -7,19 +7,19 @@
         <td><?php $this->utility->safe($name); ?></td>
       </tr>
       <tr>
-        <td>Consumer Key</td>
+        <td>consumerKey =</td>
         <td><?php $this->utility->safe($id); ?></td>
       </tr>
       <tr>
-        <td>Consumer Secret</td>
+        <td>consumerSecret =</td>
         <td><?php $this->utility->safe($clientSecret); ?></td>
       </tr>
       <tr>
-        <td>OAuth Token</td>
+        <td>token =</td>
         <td><?php $this->utility->safe($userToken); ?></td>
       </tr>
       <tr>
-        <td>OAuth Secret</td>
+        <td>tokenSecret =</td>
         <td><?php $this->utility->safe($userSecret); ?></td>
       </tr>
       <tr>
