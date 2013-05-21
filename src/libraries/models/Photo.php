@@ -623,8 +623,9 @@ class Photo extends BaseModel
     if(isset($attributes['tags']) && !empty($attributes['tags']))
       $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
 
+    // trim all the attributes
     foreach($attributes as $key => $val)
-      $attributes[$key] = trim($val);
+      $attributes[$key] = $this->trim($val);
 
     // since tags can be created adhoc we need to ensure they're here
     if(isset($attributes['tags']) && !empty($attributes['tags']))
@@ -730,6 +731,11 @@ class Photo extends BaseModel
           return false;
         }
       }
+
+      // trim all the attributes
+      foreach($attributes as $key => $val)
+        $attributes[$key] = $this->trim($val);
+
       // update photo paths / hash
       $updPathsResp = $this->db->postPhoto($id, $attributes);
 
@@ -908,6 +914,11 @@ class Photo extends BaseModel
         ),
         $attributes
       );
+
+      // trim all the attributes
+      foreach($attributes as $key => $val)
+        $attributes[$key] = $this->trim($val);
+
       $stored = $this->db->putPhoto($id, $attributes, $dateTaken);
       unlink($localFile);
       unlink($resp['localFileCopy']);
@@ -1042,6 +1053,11 @@ class Photo extends BaseModel
     return false;
   }
 
+  protected function trim($string)
+  {
+    return preg_replace('/^([ \r\n]+)|(\s+)$/', '', $string);
+  }
+
   private function createAndStoreBaseAndOriginal($name, $localFile, $dateTaken, $allowAutoRotate)
   {
     $paths = $this->generatePaths($name, $dateTaken);
@@ -1070,7 +1086,6 @@ class Photo extends BaseModel
 
     return array('status' => $uploaded, 'paths' => $paths, 'localFileCopy' => $localFileCopy);;
   }
-
 
   /**
     * Reads IPTC data from a photo.
