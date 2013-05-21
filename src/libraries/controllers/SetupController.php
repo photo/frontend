@@ -117,16 +117,43 @@ class SetupController extends BaseController
     $secret = $this->getSecret();
     try
     {
-      getLogger()->info("Inside the try");
-      $skyDriveToken = getSession()->get('skyDriveToken');
+      $authCode = $_GET['code'];
+      
       $SkyDriveClientID = $this->utility->decrypt(getSession()->get('flowSkyDriveClientID'), $secret);
       $SkyDriveClientSecret = $this->utility->decrypt(getSession()->get('flowSkyDriveClientSecret'), $secret);
-      //$oauth = new SkyDrive_OAuth_PHP($skyDriveKey, $skyDriveSecret);
-      //$oauth->setToken($skyDriveToken);
-      //$accessToken = $oauth->getAccessToken();
+      $callback = urlencode(sprintf('%s://%s%s%s', $this->utility->getProtocol(false), getenv('HTTP_HOST'), '/setup/skydrive/callback', $qs));
+
+      getLogger()->warn($_GET['code']);
+
+      $authCode = $_GET['code'];
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, "https://login.live.com/oauth20_token.srf");
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); 
+      curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/x-www-form-urlencoded',
+      ));
+      curl_setopt($ch, CURLOPT_POST, TRUE);
+
+      $data = "client_id=" . $SkyDriveClientID . "&redirect_uri=" . $callback . "&client_secret=" . $SkyDriveClientSecret . "&code=" . $authCode . "&grant_type=authorization_code"; 
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+      $output = curl_exec($ch);
+
+      $response = json_decode($output, true);
+      getLogger()->warn($response);
+
+      if(isset($response['access_token']))
+        $accessToken = $response['access_token'];
+
+      if(isset($response['refresh_token']))
+        $refreshToken = $response['refresh_token'];
+
+      getLogger()->warn("accessToken: " . $accessToken . " refreshToken: " . $refreshToken);
+
+      $skyDriveToken = getSession()->get('skyDriveToken');
       getSession()->set('skyDriveClientID', getSession()->get('flowSkyDriveClientID'));
       getSession()->set('skyDriveClientSecret', getSession()->get('flowSkyDriveClientSecret'));
-      getSession()->set('skyDriveToken', getSession()->get('skyDriveToken'));
+      getSession()->set('skyDriveAccessToken', $accessToken);
+      getSession()->set('skyDriveRefreshToken', $refreshToken);
 
       $qs = '';
       if(isset($_GET['edit']))
@@ -411,7 +438,8 @@ class SetupController extends BaseController
     {
       $skyDriveClientID = $this->utility->decrypt(getSession()->get('skyDriveClientID'), $secret);
       $skyDriveClientSecret = $this->utility->decrypt(getSession()->get('skyDriveClientSecret'), $secret);
-      $skyDriveToken = $this->utility->decrypt(getSession()->get('skyDriveToken'), $secret);
+      $skyDriveAccessToken = $this->utility->decrypt(getSession()->get('skyDriveAccessToken'), $secret);
+      $skyDriveRefreshToken = $this->utility->decrypt(getSession()->get('skyDriveRefreshToken'), $secret);
     }    
     if(getConfig()->get('credentials') != null)
     {
@@ -437,8 +465,10 @@ class SetupController extends BaseController
           $skyDriveClientID = $this->utility->decrypt($credentials->skyDriveClientID, $secret);
         if(isset($credentials->skyDriveClientSecret))
           $skyDriveClientSecret = $this->utility->decrypt($credentials->skyDriveClientSecret, $secret);
-        if(isset($credentials->skyDriveToken))
-          $skyDriveToken = $this->utility->decrypt($credentials->skyDriveToken, $secret);
+        if(isset($credentials->skyDriveAccessToken))
+          $skyDriveAccessToken = $this->utility->decrypt($credentials->skyDriveAccessToken, $secret);
+        if(isset($credentials->skyDriveRefreshToken))
+          $skyDriveRefreshToken = $this->utility->decrypt($credentials->skyDriveRefreshToken, $secret);
       }      
     }
 
@@ -487,7 +517,7 @@ class SetupController extends BaseController
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder,
       'usesSkyDrive' => $usesSkyDrive, 'skyDriveClientID' => $skyDriveClientID, 
-      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveToken' => $skyDriveToken,
+      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveAccessToken' => $skyDriveAccessToken,'skyDriveRefreshToken' => $skyDriveRefreshToken,
       'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
 
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
@@ -582,7 +612,8 @@ class SetupController extends BaseController
     {
       $skyDriveClientID = $_POST['skyDriveClientID'];
       $skyDriveClientSecret = $_POST['skyDriveClientSecret'];
-      $skyDriveToken = $_POST['skyDriveToken'];
+      $skyDriveAccessToken = $_POST['skyDriveAccessToken'];
+      $skyDriveRefreshToken = $_POST['skyDriveRefreshToken'];
     }
 
     if($awsErrors === false && $mySqlErrors === false && $localFsErrors === false)
@@ -759,7 +790,7 @@ class SetupController extends BaseController
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 
       'usesSkyDrive' => $usesSkyDrive, 'skyDriveClientID' => $skyDriveClientID, 
-      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveToken' => $skyDriveToken,      
+      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveAccessToken' => $skyDriveAccessToken, 'skyDriveRefreshToken' => $skyDriveRefreshToken,
       'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
@@ -903,7 +934,8 @@ class SetupController extends BaseController
       '{dropboxFolder}' => "",
       '{skyDriveClientID}' => "",
       '{skyDriveClientSecret}' => "",
-      '{skyDriveTokenq}' => "",            
+      '{skyDriveAccessToken}' => "",
+      '{skyDriveRefreshToken}' => "",
       '{fsRoot}' => "",
       '{fsHost}' => "",
       '{lastCodeVersion}' => getConfig()->get('defaults')->currentCodeVersion,
