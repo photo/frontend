@@ -103,18 +103,8 @@ class FileSystemSkyDrive implements FileSystemInterface
 
   public function initialize($isEditMode)
   {
-    if(!file_exists($this->root)) {
-      @mkdir($this->root, 0775, true);
-    }
-    if(file_exists($this->root))
-    {
-      return true;
-    }
-    else
-    {
-      getLogger()->crit("Could not create {$this->root}");
-      return false;
-    }
+    /* Just return true for now until we figure out what to initialize */  
+    return true;
   }
 
   /**

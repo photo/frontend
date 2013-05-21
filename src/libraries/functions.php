@@ -158,6 +158,9 @@ function getFs(/*$type, $useCache*/)
     case 'DreamObjects':
       $fs = new FileSystemDreamObjects();
       break;
+    case 'SkyDrive':
+      $fs = new FileSystemSkyDrive();
+      break;      
     default:
       throw new Exception("FileSystem Provider {$type} does not exist", 404);
       break;
