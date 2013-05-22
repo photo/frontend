@@ -244,6 +244,24 @@ class SkyDriveAPI
           ));          
         }
 
+        if ($method === "PUT")
+        {
+
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_HEADER, 0);
+				curl_setopt($ch, CURLOPT_VERBOSE, 0);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible;)");
+				curl_setopt($ch, CURLOPT_URL, _VIRUS_SCAN_URL);
+				curl_setopt($ch, CURLOPT_POST, true);
+				// same as <input type="file" name="file_box">
+				$post = array(
+				"file_box"=>"@/path/to/myfile.jpg",
+				);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $post); 
+				$response = curl_exec($ch);
+				
+        }
         $output = curl_exec($ch);
         error_log($output);
         $response = json_decode($output, true);
@@ -310,7 +328,7 @@ class SkyDriveAPI
     {
         $path = self::SKYDRIVE_API_BASE_URL . $folder_id . '/files/' . $filename;
         $body = fopen($file_path, "r");
-        $response = $this->skyDriveApiCall($path, EHttpClient::PUT, null, $body, '');
+        $response = $this->skyDriveApiCall($path, "PUT", null, $body, '');
         if ($print) {
             $this->print_response($response);
             exit;
