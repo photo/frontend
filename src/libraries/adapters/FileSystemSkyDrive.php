@@ -27,8 +27,11 @@ class FileSystemSkyDrive implements FileSystemInterface
                             );
   
     
-    $response = $oauth->refreshAccessToken();
-    //getLogger()->warn("access_token: " . $response['access_token']);
+    $response = $oauth->isAccessTokenExpired();
+    getLogger()->warn("access_token: " . $response);
+
+    $response = $oauth->getMyAlbums();
+    getLogger()->warn("albums: " . $response);
     
                               
   }
