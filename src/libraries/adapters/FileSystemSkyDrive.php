@@ -12,8 +12,24 @@ class FileSystemSkyDrive implements FileSystemInterface
 
   public function __construct($config = null, $params = null)
   {
-  }
+    $this->config = !is_null($config) ? $config : getConfig()->get();
+    $this->directoryMask = 'Y_m_F';
+    $utilityObj = new Utility;
 
+    $callback = urlencode(sprintf('%s://%s%s%s', $utilityObj->getProtocol(false), getenv('HTTP_HOST'), ''));
+    $oauth = new SkyDriveAPI(array(
+                              'client_id' => $utilityObj->decrypt($this->config->credentials->skyDriveClientID),
+                              'redirect_uri' => $callback,
+                              'client_secret' => $utilityObj->decrypt($this->config->credentials->skyDriveClientSecret),    
+                              )
+                            );
+  
+    $response = $oauth->refreshAccessToken();
+    getLogger()->warn("access_token: " . $response['access_token']);
+    
+                              
+  }
+  
   /**
     * Deletes a photo (and all generated versions) from the file system.
     * To get a list of all the files to delete we first have to query the database and find out what versions exist.
@@ -73,14 +89,37 @@ class FileSystemSkyDrive implements FileSystemInterface
    */
   public function getPhoto($filename)
   {
+    getLogger()->warn("Calling getPhoto");  
   }
 
   public function putPhoto($localFile, $remoteFile, $dateTaken)
   {
+    getLogger()->warn("Calling putPhoto");
   }
 
   public function putPhotos($files)
   {
+    getLogger()->warn("Calling putPhotos " . $files);
+    
+    //$queue = $this->getBatchRequest();
+    foreach($files as $file)
+    {
+
+      list($localFile, $remoteFileArr) = each($file);
+      $remoteFile = $remoteFileArr[0];
+      $dateTaken = $remoteFileArr[1];
+      getLogger()->warn("Calling putPhotos " . $remoteFile);      
+      //$opts = $this->getUploadOpts($localFile, $acl);
+      $remoteFile = $this->normalizePath($remoteFile);
+      //$this->fs->batch($queue)->create_object($this->bucket, $remoteFile, $opts);
+    }
+    //$responses = $this->fs->batch($queue)->send();
+    if(!$responses->areOK())
+    {
+      foreach($responses as $resp)
+        getLogger()->crit(var_export($resp, 1));
+    }
+    return $responses->areOK();    
   }
 
   /**

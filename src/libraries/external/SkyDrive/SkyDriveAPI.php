@@ -42,12 +42,12 @@ class SkyDriveAPI
      * CLIENT_ID
      * @var string
      */
-    private $client_id = '00000000440F3200';
+    private $client_id = '';
     /**
      * CLIENT_SECRET
      * @var string
      */
-    private $client_secret = 'hfL7Zr0MPGXoMxSdgXVjxsAFWdajxTAa';
+    private $client_secret = '';
 
     /**
      * SCOPE
@@ -93,9 +93,6 @@ class SkyDriveAPI
     public function __construct($config_array = null)
     {
 
-        Yii::import('protected.extensions.ehttpclient.*');
-        Yii::import('protected.extensions.ehttpclient.adapter.*');
-
         if (!empty($config_array)) {
             foreach ($config_array as $key => $value) {
                 $this->$key = $value;
@@ -104,17 +101,17 @@ class SkyDriveAPI
 
         if (isset($_GET['code'])) $this->code = $_GET['code'];
 
-        $this->session = Yii::app()->session;
-        $this->access_token = $this->session['access_token'];
+        //$this->session = Yii::app()->session;
+        //$this->access_token = $this->session['access_token'];
 
         //if we are getting a new authorization code,skip the access token renewal
-        if (!$this->getcode) {
-            if ($this->isAccessTokenExpired()) {
-                $this->access_token = $this->refreshAccessToken();
-                $this->session['access_token'] = $this->access_token;
-            }
-            ;
-        }
+        //if (!$this->getcode) {
+        //    if ($this->isAccessTokenExpired()) {
+        //        $this->access_token = $this->refreshAccessToken();
+        //        $this->session['access_token'] = $this->access_token;
+        //    }
+        //    ;
+        //}
     }
 
 
@@ -206,7 +203,7 @@ class SkyDriveAPI
             'grant_type' => 'refresh_token',
             'refresh_token' => $this->refresh_token,
         );
-        $response = $this->skyDriveApiCall($path, EHttpClient::GET, $getParameters, null, '');
+        $response = $this->skyDriveApiCall($path, "POST", $getParameters, null, '');
         $access_token = (array)$response;
         $access_token['created'] = time();
         return $access_token;
@@ -226,48 +223,69 @@ class SkyDriveAPI
      *
      * @return stdClass $ $response_obj
      */
-    public function skyDriveApiCall($path, $method = EHttpClient::GET, $getParameters = null, $postbody = null, $body_enctype = null)
+    public function skyDriveApiCall($path, $method = "GET", $getParameters = null, $postbody = null, $body_enctype = null)
     {
 
-        $adapter = new EHttpClientAdapterCurl();
+        $ch = curl_init();
+        
+        curl_setopt($ch, CURLOPT_URL, $path);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        curl_setopt($ch, CURLOPT_FAILONERROR, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);        
 
-        $client = new EHttpClient($path, array(
-            'maxredirects' => 2,
-            'timeout' => 30,
-            'adapter' => 'EHttpClientAdapterCurl'
-        ));
-
-        $client->setMethod($method);
-
-        if (!empty($postbody))
-            $client->setRawData($postbody, $body_enctype);
-
-        $access_token_parameter = array('access_token' => $this->access_token['access_token']);
-        if (!empty($getParameters)) $GET_Parameters = array_merge($getParameters, $access_token_parameter); else
-            $GET_Parameters = $access_token_parameter;
-        $client->setParameterGet($GET_Parameters);
-
-        $client->setAdapter($adapter);
-        $client->setHeaders('Accept-encoding', '');
-        $adapter->setConfig(array(
-            'curloptions' => array(
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_FAILONERROR => false,
-                CURLOPT_SSL_VERIFYPEER => false,
-            )
-        ));
-        $response = $client->request();
-
-        //render the Microsoft  login screen if we are calling the authorize url
-        if ($path == self::SKYDRIVE_AUTHORIZE_BASE_URL) {
-            echo($response->getBody());
-            $this->getRefreshTokenMessage();
-            exit;
+        if ($method === "POST")
+        {
+          curl_setopt($ch, CURLOPT_POST, TRUE);
+          curl_setopt($ch, CURLOPT_POSTFIELDS, $getParameters);
+          curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+              'Content-Type: application/x-www-form-urlencoded',
+          ));          
         }
 
+        $output = curl_exec($ch);
+        $response = json_decode($output, true);
+        
+        return $response;
+        
+#        $adapter = new EHttpClientAdapterCurl();
+
+#        $client = new EHttpClient($path, array(
+#            'maxredirects' => 2,
+#            'timeout' => 30,
+#            'adapter' => 'EHttpClientAdapterCurl'
+#        ));
+
+#        $client->setMethod($method);
+
+#        if (!empty($postbody))
+#            $client->setRawData($postbody, $body_enctype);
+
+#        $access_token_parameter = array('access_token' => $this->access_token['access_token']);
+#        if (!empty($getParameters)) $GET_Parameters = array_merge($getParameters, $access_token_parameter); else
+#            $GET_Parameters = $access_token_parameter;
+#        $client->setParameterGet($GET_Parameters);
+
+#        $client->setAdapter($adapter);
+#        $client->setHeaders('Accept-encoding', '');
+#        $adapter->setConfig(array(
+#            'curloptions' => array(
+#                CURLOPT_RETURNTRANSFER => true,
+#                CURLOPT_FAILONERROR => false,
+#                CURLOPT_SSL_VERIFYPEER => false,
+#            )
+#        ));
+#        $response = $client->request();
+
+        //render the Microsoft  login screen if we are calling the authorize url
+#        if ($path == self::SKYDRIVE_AUTHORIZE_BASE_URL) {
+#            echo($response->getBody());
+#            $this->getRefreshTokenMessage();
+#            exit;
+#        }
+
         //return stdClass object for all other API calls
-        $response_obj = json_decode($response->getBody());
-        return $response_obj;
+        //$response_obj = json_decode($response->getBody());
+        //return $response_obj;
     }
 
 

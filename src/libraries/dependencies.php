@@ -10,6 +10,7 @@ spl_autoload_register('openphoto_autoloader');
 require $pathsObj->external . '/aws/sdk.class.php';
 require $pathsObj->external . '/swift-mailer/swift_required.php';
 require $pathsObj->external . '/Dropbox/autoload.php';
+require $pathsObj->external . '/SkyDrive/SkyDriveAPI.php';
 
 // exceptions
 require $pathsObj->libraries . '/exceptions.php';
