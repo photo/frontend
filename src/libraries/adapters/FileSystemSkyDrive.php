@@ -16,16 +16,19 @@ class FileSystemSkyDrive implements FileSystemInterface
     $this->directoryMask = 'Y_m_F';
     $utilityObj = new Utility;
 
-    $callback = urlencode(sprintf('%s://%s%s%s', $utilityObj->getProtocol(false), getenv('HTTP_HOST'), ''));
+    $qs = '';
+    $callback = urlencode(sprintf('%s://%s%s%s', $utilityObj->getProtocol(false), getenv('HTTP_HOST'), '/setup/dropbox/callback', $qs));
     $oauth = new SkyDriveAPI(array(
                               'client_id' => $utilityObj->decrypt($this->config->credentials->skyDriveClientID),
                               'redirect_uri' => $callback,
-                              'client_secret' => $utilityObj->decrypt($this->config->credentials->skyDriveClientSecret),    
+                              'client_secret' => $utilityObj->decrypt($this->config->credentials->skyDriveClientSecret),
+                              'refresh_token' => $utilityObj->decrypt($this->config->credentials->skyDriveRefreshToken),
                               )
                             );
   
+    
     $response = $oauth->refreshAccessToken();
-    getLogger()->warn("access_token: " . $response['access_token']);
+    //getLogger()->warn("access_token: " . $response['access_token']);
     
                               
   }

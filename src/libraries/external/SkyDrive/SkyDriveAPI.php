@@ -203,9 +203,11 @@ class SkyDriveAPI
             'grant_type' => 'refresh_token',
             'refresh_token' => $this->refresh_token,
         );
-        $response = $this->skyDriveApiCall($path, "POST", $getParameters, null, '');
-        $access_token = (array)$response;
-        $access_token['created'] = time();
+        error_log(print_r($getParameters, 1));
+        #$response = $this->skyDriveApiCall($path, "POST", $getParameters, null, '');
+        #$access_token = (array)$response;
+        $access_token = "";        
+        #$access_token['created'] = time();
         return $access_token;
     }
 
@@ -243,6 +245,7 @@ class SkyDriveAPI
         }
 
         $output = curl_exec($ch);
+        error_log($output);
         $response = json_decode($output, true);
         
         return $response;
