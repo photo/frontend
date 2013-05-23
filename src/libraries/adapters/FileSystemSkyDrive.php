@@ -17,23 +17,31 @@ class FileSystemSkyDrive implements FileSystemInterface
     $utilityObj = new Utility;
 
     $qs = '';
-    $callback = urlencode(sprintf('%s://%s%s%s', $utilityObj->getProtocol(false), getenv('HTTP_HOST'), '/setup/dropbox/callback', $qs));
-    $oauth = new SkyDriveAPI(array(
-                              'client_id' => $utilityObj->decrypt($this->config->credentials->skyDriveClientID),
-                              'redirect_uri' => $callback,
-                              'client_secret' => $utilityObj->decrypt($this->config->credentials->skyDriveClientSecret),
-                              'refresh_token' => $utilityObj->decrypt($this->config->credentials->skyDriveRefreshToken),
-                              )
-                            );
+    $callback = sprintf('%s://%s%s%s', $utilityObj->getProtocol(false), getenv('HTTP_HOST'), '', $qs);
+    
+    $session = getSession();
+    
+    if (!$session->get('skydrive'))
+    {
+      $this->skydrive = new SkyDriveAPI(array(
+                                'client_id' => $utilityObj->decrypt($this->config->credentials->skyDriveClientID),
+                                'redirect_uri' => $callback,
+                                'client_secret' => $utilityObj->decrypt($this->config->credentials->skyDriveClientSecret),
+                                'refresh_token' => $utilityObj->decrypt($this->config->credentials->skyDriveRefreshToken),
+                                )
+                              ); 
+      $session->set('skydrive', $this->skydrive);                                
+    }
+    
+    $this->skydrive = $session->get('skydrive');
   
-    
-    $response = $oauth->isAccessTokenExpired();
-    getLogger()->warn("access_token: " . $response);
-
-    $response = $oauth->getMyAlbums();
-    getLogger()->warn("albums: " . $response);
-    
-                              
+    if ($this->skydrive->isAccessTokenExpired())
+    {
+      $accessToken = $this->skydrive->refreshAccessToken();
+      $this->skydrive->setAccessToken($accessToken);
+      getSession()->set('skyDriveAccessToken', $accessToken['access_token']);
+    }
+                                 
   }
   
   /**
@@ -105,7 +113,7 @@ class FileSystemSkyDrive implements FileSystemInterface
 
   public function putPhotos($files)
   {
-    getLogger()->warn("Calling putPhotos " . $files);
+    getLogger()->warn("Calling putPhotos " . print_r($files,1));
     
     //$queue = $this->getBatchRequest();
     foreach($files as $file)
@@ -115,17 +123,21 @@ class FileSystemSkyDrive implements FileSystemInterface
       $remoteFile = $remoteFileArr[0];
       $dateTaken = $remoteFileArr[1];
       getLogger()->warn("Calling putPhotos " . $remoteFile);      
-      //$opts = $this->getUploadOpts($localFile, $acl);
+
       $remoteFile = $this->normalizePath($remoteFile);
-      //$this->fs->batch($queue)->create_object($this->bucket, $remoteFile, $opts);
+      
+      $this->skydrive->upload($localFile, basename($remoteFile), "me/folder.CA04824622699B37!121/files/");
+
     }
+    $responses = '';
     //$responses = $this->fs->batch($queue)->send();
-    if(!$responses->areOK())
-    {
-      foreach($responses as $resp)
-        getLogger()->crit(var_export($resp, 1));
-    }
-    return $responses->areOK();    
+    //if(!$responses->areOK())
+    //{
+    //  foreach($responses as $resp)
+    //    getLogger()->crit(var_export($resp, 1));
+    //}
+    //return $responses->areOK();    
+    return true;
   }
 
   /**

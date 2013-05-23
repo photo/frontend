@@ -119,26 +119,26 @@ class SetupController extends BaseController
     {
       $authCode = $_GET['code'];
       
+      //$qs = '';
       $SkyDriveClientID = $this->utility->decrypt(getSession()->get('flowSkyDriveClientID'), $secret);
       $SkyDriveClientSecret = $this->utility->decrypt(getSession()->get('flowSkyDriveClientSecret'), $secret);
-      $callback = urlencode(sprintf('%s://%s%s%s', $this->utility->getProtocol(false), getenv('HTTP_HOST'), '/setup/skydrive/callback', $qs));
+      $callback = sprintf('%s://%s%s%s', $this->utility->getProtocol(false), getenv('HTTP_HOST'), '/setup/skydrive/callback', $qs);
 
       getLogger()->warn($_GET['code']);
+      getLogger()->warn($callback);      
 
       $authCode = $_GET['code'];
-      $ch = curl_init();
-      curl_setopt($ch, CURLOPT_URL, "https://login.live.com/oauth20_token.srf");
-      curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE); 
-      curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        'Content-Type: application/x-www-form-urlencoded',
-      ));
-      curl_setopt($ch, CURLOPT_POST, TRUE);
-
-      $data = "client_id=" . $SkyDriveClientID . "&redirect_uri=" . $callback . "&client_secret=" . $SkyDriveClientSecret . "&code=" . $authCode . "&grant_type=authorization_code"; 
-      curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-      $output = curl_exec($ch);
-
-      $response = json_decode($output, true);
+      
+      $oauth = new SkyDriveAPI(array(
+                                'client_id' => $SkyDriveClientID,
+                                'redirect_uri' => $callback,
+                                'client_secret' => $SkyDriveClientSecret,
+                                'code' => $authCode
+                                )
+                              );
+      
+      $response = $oauth->getAccessTokenFromCode(0);
+      
       getLogger()->warn($response);
 
       if(isset($response['access_token']))
@@ -147,13 +147,11 @@ class SetupController extends BaseController
       if(isset($response['refresh_token']))
         $refreshToken = $response['refresh_token'];
 
-      getLogger()->warn("accessToken: " . $accessToken . " refreshToken: " . $refreshToken);
-
       $skyDriveToken = getSession()->get('skyDriveToken');
       getSession()->set('skyDriveClientID', getSession()->get('flowSkyDriveClientID'));
       getSession()->set('skyDriveClientSecret', getSession()->get('flowSkyDriveClientSecret'));
-      getSession()->set('skyDriveAccessToken', $accessToken);
-      getSession()->set('skyDriveRefreshToken', $refreshToken);
+      getSession()->set('skyDriveAccessToken', $this->utility->encrypt($accessToken, $secret));
+      getSession()->set('skyDriveRefreshToken', $this->utility->encrypt($refreshToken, $secret));
 
       $qs = '';
       if(isset($_GET['edit']))
@@ -185,10 +183,18 @@ class SetupController extends BaseController
 
       getSession()->set('flowSkyDriveClientID', $this->utility->encrypt($_POST['SkyDriveClientID'], $secret));
       getSession()->set('flowSkyDriveClientSecret', $this->utility->encrypt($_POST['SkyDriveClientSecret'], $secret));
-      $callback = urlencode(sprintf('%s://%s%s%s', $this->utility->getProtocol(false), getenv('HTTP_HOST'), '/setup/skydrive/callback', $qs));
+      $callback = sprintf('%s://%s%s%s', $this->utility->getProtocol(false), getenv('HTTP_HOST'), '/setup/skydrive/callback', $qs);
 
-      $url = "https://login.live.com/oauth20_authorize.srf?client_id=" . $SkyDriveClientID . "&display=page&locale=en&redirect_uri=" . $callback . "&response_type=code&scope=wl.signin%20wl.basic%20wl.offline_access&state=redirect_type%3Dauth%26display%3Dpage%26request_ts%3D1368925809268%26response_method%3Dcookie%26secure_cookie%3Dfalse";
-
+      $oauth = new SkyDriveAPI(array(
+                                'client_id' => $SkyDriveClientID,
+                                'redirect_uri' => $callback,
+                                'client_secret' => $SkyDriveClientSecret,
+                                'redirect_uri' => $callback
+                                )
+                              );
+                              
+      $url = $oauth->getAuthorizeUrl();
+      
       $this->route->redirect($url, null, true);
     }
     catch(Dropbox_Exception $e)
