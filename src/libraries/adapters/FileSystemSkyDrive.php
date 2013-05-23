@@ -19,6 +19,7 @@ class FileSystemSkyDrive implements FileSystemInterface
     $qs = '';
     $callback = sprintf('%s://%s%s%s', $utilityObj->getProtocol(false), getenv('HTTP_HOST'), '', $qs);
     
+    getLogger()->warn("Calling _constuct");
     $session = getSession();
     
     if (!$session->get('skydrive'))

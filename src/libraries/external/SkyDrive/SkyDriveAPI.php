@@ -120,7 +120,8 @@ class SkyDriveAPI
      */
     public function isAccessTokenExpired()
     {
-        if (null == $this->access_token['access_token']) {
+        getLogger()->warn("Access Token: " . print_r($this->access_token,1));
+        if (!isset($this->access_token)) {
             return true;
         }
 
@@ -264,7 +265,7 @@ class SkyDriveAPI
         curl_setopt($ch, CURLOPT_FAILONERROR, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);  
         //For Debugging
-        curl_setopt($ch, CURLOPT_VERBOSE, TRUE);      
+        //curl_setopt($ch, CURLOPT_VERBOSE, TRUE);      
 
         if ($method === "GET")
         {
