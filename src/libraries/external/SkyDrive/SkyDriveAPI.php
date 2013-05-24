@@ -300,7 +300,7 @@ class SkyDriveAPI
         }
         
         $output = curl_exec($ch);
-        error_log($output);
+        //error_log($output);
         $response = json_decode($output, true);
         
         return $response;

@@ -138,7 +138,7 @@ class FileSystemSkyDrive implements FileSystemInterface
 
       $remoteFile = $this->normalizePath($remoteFile);
       
-      $this->skyDrive->upload($localFile, basename($remoteFile), "folder.ca04824622699b37.CA04824622699B37!121");
+      $response = $this->skyDrive->upload($localFile, basename($remoteFile), "folder.ca04824622699b37.CA04824622699B37!121");
 
     }
     $responses = '';
