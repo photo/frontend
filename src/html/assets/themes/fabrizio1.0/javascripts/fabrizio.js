@@ -123,13 +123,10 @@
           }
         },
         loadCb: function(response) {
-          console.log('calling loadCb in util');
           // this is the context, bound in the callback
           // at the last page
           var context = this, r = response.result, $button = $('button.loadMore');
 
-          console.log($button);
-          console.log(r[0]);
           // check if there are more pages
           if(r.length > 0 && r[0].totalPages > r[0].currentPage) {
             $button.fadeIn();
@@ -248,9 +245,7 @@
             util.load(_this, async);
           },
           loadCb: function(response) {
-            console.log('loadCb in album');
             var items = response.result, _this = TBX.init.pages.albums;
-            console.log(items)
 
             for(i in items) {
               if(items.hasOwnProperty(i))
@@ -346,7 +341,8 @@
             };
             op.data.store.Router = new op.data.route.Routes(options);
             // Start Backbone history a necessary step for bookmarkable URL's
-            Backbone.history.start({pushState: true, silent: true});
+            Backbone.history.start({pushState: Modernizr.history, silent: true});
+            Backbone.history.loadUrl(Backbone.history.getFragment())
           },
           load: function() {
             var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];

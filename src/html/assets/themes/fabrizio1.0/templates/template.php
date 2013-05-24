@@ -71,6 +71,7 @@
             <?php } ?>
               '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                 addJs($this->theme->asset('javascript', 'underscore-min.js', false))->
+                addJs($this->theme->asset('javascript', 'modernizr.custom.js', false))->
                 addJs($this->theme->asset('javascript', 'backbone.js', false))->
                 addJs($this->theme->asset('javascript', 'bootstrap.min.js', false))->
                 addJs($this->theme->asset('javascript', 'x-editable/bootstrap-editable/js/bootstrap-editable.js', false))->
