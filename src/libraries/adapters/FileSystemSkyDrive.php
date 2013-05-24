@@ -20,26 +20,38 @@ class FileSystemSkyDrive implements FileSystemInterface
     $callback = sprintf('%s://%s%s%s', $utilityObj->getProtocol(false), getenv('HTTP_HOST'), '', $qs);
     
     getLogger()->warn("Calling _constuct");
+    getLogger()->warn("skyDriveClientID " . ($utilityObj->decrypt($this->config->credentials->skyDriveClientID)));
+    getLogger()->warn("skyDriveClientSecret " . ($utilityObj->decrypt($this->config->credentials->skyDriveClientSecret)));
+    getLogger()->warn("skyDriveRefreshToken " . ($utilityObj->decrypt($this->config->credentials->skyDriveRefreshToken)));
+            
     $session = getSession();
     
-    if (!$session->get('skydrive'))
+    if (!$session->get('skyDrive'))
     {
-      $this->skydrive = new SkyDriveAPI(array(
+      getLogger()->warn("not in session, creating a new one");
+      
+      $this->skyDrive = new SkyDriveAPI(array(
                                 'client_id' => $utilityObj->decrypt($this->config->credentials->skyDriveClientID),
                                 'redirect_uri' => $callback,
                                 'client_secret' => $utilityObj->decrypt($this->config->credentials->skyDriveClientSecret),
                                 'refresh_token' => $utilityObj->decrypt($this->config->credentials->skyDriveRefreshToken),
                                 )
-                              ); 
-      $session->set('skydrive', $this->skydrive);                                
+                              );
+
+      $session->set('skyDrive', $this->skyDrive);
+      
+    } else {
+      getLogger()->warn("Already set");
     }
     
-    $this->skydrive = $session->get('skydrive');
+    $this->skyDrive = $session->get('skyDrive');
+    getLogger()->warn(print_r($this->skyDrive, 1));    
+    getLogger()->warn(print_r($this->skyDrive->access_token, 1));
   
-    if ($this->skydrive->isAccessTokenExpired())
+    if ($this->skyDrive->isAccessTokenExpired())
     {
-      $accessToken = $this->skydrive->refreshAccessToken();
-      $this->skydrive->setAccessToken($accessToken);
+      $accessToken = $this->skyDrive->refreshAccessToken();
+      $this->skyDrive->setAccessToken($accessToken);
       getSession()->set('skyDriveAccessToken', $accessToken['access_token']);
     }
                                  

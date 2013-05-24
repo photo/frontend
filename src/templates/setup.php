@@ -127,6 +127,13 @@
         <input type="hidden" name="dropboxFolder" value="<?php $this->utility->safe($dropboxFolder); ?>">
       <?php } ?>
 
+      <?php if(isset($usesSkyDrive) && !empty($usesSkyDrive)) { ?>
+        <input type="hidden" name="skyDriveClientID" value="<?php $this->utility->safe($skyDriveClientID); ?>">
+        <input type="hidden" name="skyDriveClientSecret" value="<?php $this->utility->safe($skyDriveClientSecret); ?>">
+        <input type="hidden" name="skyDriveAccessToken" value="<?php $this->utility->safe($skyDriveAccessToken); ?>">        
+        <input type="hidden" name="skyDriveRefreshToken" value="<?php $this->utility->safe($skyDriveRefreshToken); ?>">
+      <?php } ?>
+
       <div class="btn-toolbar">
         <?php if(isset($_GET['edit'])) { ?><a class="btn" href="/">Cancel</a><?php } ?>
         <button type="submit" class="btn btn-primary">Complete setup</button>
