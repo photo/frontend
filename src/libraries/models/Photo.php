@@ -797,6 +797,7 @@ class Photo extends BaseModel
     // check if file type is valid
     if(!$this->utility->isValidMimeType($localFile))
     {
+      $this->logger->warn("$localFile");
       $this->logger->warn(sprintf('Invalid mime type for %s', $localFile));
       return false;
     }

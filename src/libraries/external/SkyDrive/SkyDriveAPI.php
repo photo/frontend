@@ -120,7 +120,7 @@ class SkyDriveAPI
      */
     public function isAccessTokenExpired()
     {
-        getLogger()->warn("Access Token: " . print_r($this->access_token,1));
+        //getLogger()->warn("Access Token: " . print_r($this->access_token,1));
         if (!isset($this->access_token)) {
             return true;
         }
@@ -234,7 +234,6 @@ class SkyDriveAPI
             'grant_type' => 'refresh_token',
             'refresh_token' => $this->refresh_token,
         );
-        error_log(print_r($getParameters, 1));
         $response = $this->skyDriveApiCall($path, "POST", $getParameters, null, '');
         $access_token = (array)$response;
         $access_token['created'] = time();

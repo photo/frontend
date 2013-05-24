@@ -19,16 +19,16 @@ class FileSystemSkyDrive implements FileSystemInterface
     $qs = '';
     $callback = sprintf('%s://%s%s%s', $utilityObj->getProtocol(false), getenv('HTTP_HOST'), '', $qs);
     
-    getLogger()->warn("Calling _constuct");
-    getLogger()->warn("skyDriveClientID " . ($utilityObj->decrypt($this->config->credentials->skyDriveClientID)));
-    getLogger()->warn("skyDriveClientSecret " . ($utilityObj->decrypt($this->config->credentials->skyDriveClientSecret)));
-    getLogger()->warn("skyDriveRefreshToken " . ($utilityObj->decrypt($this->config->credentials->skyDriveRefreshToken)));
+    //getLogger()->warn("Calling _constuct");
+    //getLogger()->warn("skyDriveClientID " . ($utilityObj->decrypt($this->config->credentials->skyDriveClientID)));
+    //getLogger()->warn("skyDriveClientSecret " . ($utilityObj->decrypt($this->config->credentials->skyDriveClientSecret)));
+    //getLogger()->warn("skyDriveRefreshToken " . ($utilityObj->decrypt($this->config->credentials->skyDriveRefreshToken)));
             
     $session = getSession();
     
     if (!$session->get('skyDrive'))
     {
-      getLogger()->warn("not in session, creating a new one");
+      //getLogger()->warn("not in session, creating a new one");
       
       $this->skyDrive = new SkyDriveAPI(array(
                                 'client_id' => $utilityObj->decrypt($this->config->credentials->skyDriveClientID),
@@ -38,15 +38,14 @@ class FileSystemSkyDrive implements FileSystemInterface
                                 )
                               );
 
-      $session->set('skyDrive', $this->skyDrive);
+      $session->set('skyDrive', serialize($this->skyDrive));
       
     } else {
-      getLogger()->warn("Already set");
-    }
-    
-    $this->skyDrive = $session->get('skyDrive');
-    getLogger()->warn(print_r($this->skyDrive, 1));    
-    getLogger()->warn(print_r($this->skyDrive->access_token, 1));
+      //getLogger()->warn("Already set");
+      //getLogger()->warn(print_r($session->get("skyDrive"),1));  
+      $this->skyDrive = unserialize($session->get('skyDrive'));
+    }  
+
   
     if ($this->skyDrive->isAccessTokenExpired())
     {
@@ -139,7 +138,7 @@ class FileSystemSkyDrive implements FileSystemInterface
 
       $remoteFile = $this->normalizePath($remoteFile);
       
-      $this->skydrive->upload($localFile, basename($remoteFile), "me/folder.CA04824622699B37!121/files/");
+      $this->skyDrive->upload($localFile, basename($remoteFile), "folder.ca04824622699b37.CA04824622699B37!121");
 
     }
     $responses = '';
