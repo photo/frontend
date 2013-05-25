@@ -115,7 +115,16 @@ class FileSystemSkyDrive implements FileSystemInterface
    */
   public function getPhoto($filename)
   {
-    getLogger()->warn("Calling getPhoto");  
+    getLogger()->warn("Calling getPhoto");
+    getLogger()->warn($filename);
+    
+    //$this->skyDrive->getFileByName($filename);
+    $accessToken = $this->skyDrive->getAccessToken();
+    $rootFolders = $this->skyDrive->getMyRootFolders();
+    getLogger()->warn(print_r($rootFolders,1));    
+    $this->skyDrive->getFileByName("IMG_0090-519fe9e03b30f.JPG");
+    getLogger()->warn(print_r($accessToken,1));
+        
   }
 
   public function putPhoto($localFile, $remoteFile, $dateTaken)
@@ -134,11 +143,16 @@ class FileSystemSkyDrive implements FileSystemInterface
       list($localFile, $remoteFileArr) = each($file);
       $remoteFile = $remoteFileArr[0];
       $dateTaken = $remoteFileArr[1];
-      getLogger()->warn("Calling putPhotos " . $remoteFile);      
+      getLogger()->warn("Calling putPhotos " . $remoteFile);
+      if(strpos($remoteFile, '/original/') !== false && file_exists($localFile))
+      {
+        $remoteFile = $this->normalizePath($remoteFile);
+        
+        // Hard coded folder for now
+        $response = $this->skyDrive->upload($localFile, basename($remoteFile), "folder.ca04824622699b37.CA04824622699B37!121");
+        getLogger()->warn($response);        
+      }         
 
-      $remoteFile = $this->normalizePath($remoteFile);
-      
-      $response = $this->skyDrive->upload($localFile, basename($remoteFile), "folder.ca04824622699b37.CA04824622699B37!121");
 
     }
     $responses = '';

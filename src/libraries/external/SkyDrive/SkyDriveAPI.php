@@ -120,7 +120,6 @@ class SkyDriveAPI
      */
     public function isAccessTokenExpired()
     {
-        //getLogger()->warn("Access Token: " . print_r($this->access_token,1));
         if (!isset($this->access_token)) {
             return true;
         }
@@ -139,6 +138,16 @@ class SkyDriveAPI
     public function setAccessToken($accessToken)
     {
         $this->access_token = $accessToken;
+    }
+
+    /**
+     * getAccessToken
+     *
+     *  Gets the access token expires
+     */
+    public function getAccessToken()
+    {
+        return $this->access_token;
     }
 
 
@@ -266,38 +275,73 @@ class SkyDriveAPI
         //For Debugging
         //curl_setopt($ch, CURLOPT_VERBOSE, TRUE);      
 
-        if ($method === "GET")
-        {
-          $access_token_parameter = array('access_token' => $this->access_token['access_token']);
-          if (!empty($getParameters)) $GET_Parameters = array_merge($getParameters, $access_token_parameter); else
-              $getParameters = $access_token_parameter;
-          curl_setopt($ch, CURLOPT_URL, $path . "?" . http_build_query($getParameters, '', '&'));
+        switch($method) {
+        
+          case "GET":
+            $access_token_parameter = array('access_token' => $this->access_token['access_token']);
+            if (!empty($getParameters)) $GET_Parameters = array_merge($getParameters, $access_token_parameter); else
+                $getParameters = $access_token_parameter;
+            curl_setopt($ch, CURLOPT_URL, $path . "?" . http_build_query($getParameters, '', '&'));
+            
+            break;
+          
+          case "POST":
+            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($getParameters, '', '&'));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/x-www-form-urlencoded',
+            ));
+            
+            break;
+          
+          case "PUT":
+            error_log("Attempting a PUT");
+				    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible;)");
+				    curl_setopt($ch, CURLOPT_PUT, true);
+				    curl_setopt($ch, CURLOPT_INFILE, $postbody);
+				    curl_setopt($ch, CURLOPT_INFILESIZE, $postbodySize);
+				    
+            $access_token_parameter = array('access_token' => $this->access_token['access_token']);
+            if (!empty($getParameters)) $GET_Parameters = array_merge($getParameters, $access_token_parameter); else
+                $getParameters = $access_token_parameter;
+
+            curl_setopt($ch, CURLOPT_URL, $path . "?" . http_build_query($getParameters, '', '&'));
+            
+            break;
         }
         
-        if ($method === "POST")
-        {
-          curl_setopt($ch, CURLOPT_POST, TRUE);
-          curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($getParameters, '', '&'));
-          curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-              'Content-Type: application/x-www-form-urlencoded',
-          ));
-          
-        }
+#        if ($method === "GET")
+#        {
+#          $access_token_parameter = array('access_token' => $this->access_token['access_token']);
+#          if (!empty($getParameters)) $GET_Parameters = array_merge($getParameters, $access_token_parameter); else
+#              $getParameters = $access_token_parameter;
+#          curl_setopt($ch, CURLOPT_URL, $path . "?" . http_build_query($getParameters, '', '&'));
+#        }
+#        
+#        if ($method === "POST")
+#        {
+#          curl_setopt($ch, CURLOPT_POST, TRUE);
+#          curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($getParameters, '', '&'));
+#          curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+#              'Content-Type: application/x-www-form-urlencoded',
+#          ));
+#          
+#        }
 
-        if ($method === "PUT")
-        {
-          error_log("Attempting a PUT");
-				  curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible;)");
-				  curl_setopt($ch, CURLOPT_PUT, true);
-				  curl_setopt($ch, CURLOPT_INFILE, $postbody);
-				  curl_setopt($ch, CURLOPT_INFILESIZE, $postbodySize);
-				  
-          $access_token_parameter = array('access_token' => $this->access_token['access_token']);
-          if (!empty($getParameters)) $GET_Parameters = array_merge($getParameters, $access_token_parameter); else
-              $getParameters = $access_token_parameter;
+#        if ($method === "PUT")
+#        {
+#          error_log("Attempting a PUT");
+#				  curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible;)");
+#				  curl_setopt($ch, CURLOPT_PUT, true);
+#				  curl_setopt($ch, CURLOPT_INFILE, $postbody);
+#				  curl_setopt($ch, CURLOPT_INFILESIZE, $postbodySize);
+#				  
+#          $access_token_parameter = array('access_token' => $this->access_token['access_token']);
+#          if (!empty($getParameters)) $GET_Parameters = array_merge($getParameters, $access_token_parameter); else
+#              $getParameters = $access_token_parameter;
 
-          curl_setopt($ch, CURLOPT_URL, $path . "?" . http_build_query($getParameters, '', '&'));
-        }
+#          curl_setopt($ch, CURLOPT_URL, $path . "?" . http_build_query($getParameters, '', '&'));
+#        }
         
         $output = curl_exec($ch);
         //error_log($output);
@@ -467,7 +511,7 @@ class SkyDriveAPI
       */
     	public function getFileByName($fileName, $parentID = null,$print=false)
     	{
-            $file_found=null;
+        $file_found=null;
     		$result = $this->getFolderFilesByID($parentID,null,false);
     		$files =$result->data;
     		foreach($files as $file) {
@@ -475,11 +519,12 @@ class SkyDriveAPI
                     $file_found= $file;
     			}
     		}
-            if ($print) {
-                     $this->print_response($file_found);
-                     exit;
-                 } else
-                     return $file_found;
+        if ($print) {
+          $this->print_response($file_found);
+          exit;
+        } else {
+          return $file_found;
+        }
     	}
 
 
