@@ -151,12 +151,23 @@ class ImageGD extends ImageAbstract
     * @param string $outputFile The file to write the modifications to.
     * @return void
     */
-  public function write($outputFile)
+  public function write($outputFile, $format = '')
   {
-    if(preg_match('/png$/', $this->type))
+    if(!$format) {
+      if(preg_match('/png$/', $this->type))
+        $format = 'png';
+      elseif(preg_match('/gif$/', $this->type))
+        $format = 'gif';
+      elseif(preg_match('/tif$/', $this->type) || preg_match('/tiff$/', $this->type))
+        $format = 'tif';
+      elseif(preg_match('/jpeg$/', $this->type) || preg_match('/jpeg$/', $this->type))
+        $format = 'jpg';
+    }
+    if($format == 'png')
       imagepng($this->image, $outputFile, 9);
-    elseif(preg_match('/gif$/', $this->type))
+    elseif($format == 'gif')
       imagegif($this->image, $outputFile, 90);
+    // tif ain't working on GD it seems.
     else
       imagejpeg($this->image, $outputFile, 90);
   }
