@@ -289,7 +289,7 @@ class Utility
   public function isValidMimeType($filename)
   {
     $type = get_mime_type($filename);
-    if(preg_match('/jpg|jpeg|gif|png$/', $type))
+    if(preg_match('/jpg|jpeg|gif|png|tif|tiff$/', $type))
       return true;
     return false;
   }
