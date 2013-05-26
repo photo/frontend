@@ -9,11 +9,6 @@ OPU = (function() {
     return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
   };
   var photosUploaded = {success: [], failure: [], duplicate: [], ids: []};
-  var log = function(msg) {
-    if(typeof(console) !== 'undefined' && typeof(console.log) !== 'undefined')
-      console.log(msg);
-  };
-
   return {
       init: function() {
         if(typeof plupload === "undefined")
@@ -69,15 +64,15 @@ OPU = (function() {
                     code = apiResponse.code,
                     result = apiResponse.result;
                 if(code === 201) {
-                  log('Successfully uploaded ' + file.name + ' at ' + result.url);
+                  OP.Log.info('Successfully uploaded ' + file.name + ' at ' + result.url);
                   photosUploaded.success.push(result);
                   photosUploaded.ids.push(result.id);
                 } else if(code === 409) {
-                  log('Detected a duplicate of ' + file.name);
+                  OP.Log.info('Detected a duplicate of ' + file.name);
                   photosUploaded.duplicate.push(result);
                   photosUploaded.ids.push(result.id);
                 } else {
-                  log('Unable to upload ' + file.name);
+                  OP.Log.error('Unable to upload ' + file.name);
                   photosUploaded.failure.push(file.name);
                 }
               },

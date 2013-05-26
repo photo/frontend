@@ -1,7 +1,9 @@
+var _log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } };
+
 (function($) {
 
   function Fabrizio() {
-    var crumb, log, markup, profiles, pushstate, tags, pathname, util;
+    var crumb, markup, profiles, pushstate, tags, pathname, util;
 
     crumb = (function() {
       var value = null;
@@ -411,4 +413,5 @@
   TBX.notification = _TBX.notification;
   TBX.init = _TBX.init;
   TBX.crumb = _TBX.crumb;
+  TBX.log = OP.Log; // for consistency
 })(jQuery);
