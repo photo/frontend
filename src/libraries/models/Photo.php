@@ -517,7 +517,7 @@ class Photo extends BaseModel
     // Since we stopped auto rotating originals we have to use the Orientation from
     //  exif and if this photo was autorotated
     // Gh-1031 Gh-1149
-    if($this->autoRotateEnabled($allowAutoRotate))
+    if($this->autoRotateEnabled($allowAutoRotate) && isset($exif['Orientation']))
     {
       // http://recursive-design.com/blog/2012/07/28/exif-orientation-handling-is-a-ghetto/
       switch($exif['Orientation'])
