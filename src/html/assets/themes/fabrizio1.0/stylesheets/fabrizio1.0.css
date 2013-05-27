@@ -5683,7 +5683,6 @@ h6 {
 }
 .trovebox .photo-grid > .imageContainer {
   float: left;
-  height: 180px;
   margin: 5px;
   position: relative;
   overflow: hidden;
