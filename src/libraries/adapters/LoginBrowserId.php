@@ -15,7 +15,7 @@ class LoginBrowserId implements LoginInterface
 
   public function verifyEmail($args)
   {
-    $ch = curl_init('https://browserid.org/verify');
+    $ch = curl_init('https://verifier.login.persona.org/verify');
     $params = array('assertion' => $args['assertion'], 'audience' => $this->audience);
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
