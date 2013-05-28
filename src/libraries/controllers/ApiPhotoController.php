@@ -337,6 +337,12 @@ class ApiPhotoController extends ApiBaseController
 
     // this determines where to get the photo from and populates $localFile and $name
     extract($this->parsePhotoFromRequest());
+    if(!$localFile)
+    {
+      // localFile is empty, this possibly mean that upload file (max size, etc). gh-1294
+      $this->logger->warn('Error uploading file.');
+      return $this->error('Error uploading file.', false);
+    }
 
     $hash = sha1_file($localFile);
     $allowDuplicate = $this->config->site->allowDuplicate;
@@ -416,6 +422,12 @@ class ApiPhotoController extends ApiBaseController
 
     // this determines where to get the photo from and populates $localFile and $name
     extract($this->parsePhotoFromRequest());
+    if(!$localFile)
+    {
+      // localFile is empty, this possibly mean that upload file (max size, etc). gh-1294
+      $this->logger->warn('Error uploading file.');
+      return $this->error('Error uploading file.', false);
+    }
 
     // check if file type is valid
     $utility = new Utility;
@@ -423,7 +435,7 @@ class ApiPhotoController extends ApiBaseController
     {
       $this->logger->warn(sprintf('Invalid mime type for %s', $localFile));
       unlink($localFile);
-      return $this->error('Invalid mime type', false);;
+      return $this->error('Invalid mime type', false);
     }
 
     // TODO put this in a whitelist function (see replace())
