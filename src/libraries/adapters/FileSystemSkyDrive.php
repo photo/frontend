@@ -17,18 +17,11 @@ class FileSystemSkyDrive implements FileSystemInterface
     $utilityObj = new Utility;
 
     $qs = '';
-    $callback = sprintf('%s://%s%s%s', $utilityObj->getProtocol(false), getenv('HTTP_HOST'), '', $qs);
-    
-    //getLogger()->warn("Calling _constuct");
-    //getLogger()->warn("skyDriveClientID " . ($utilityObj->decrypt($this->config->credentials->skyDriveClientID)));
-    //getLogger()->warn("skyDriveClientSecret " . ($utilityObj->decrypt($this->config->credentials->skyDriveClientSecret)));
-    //getLogger()->warn("skyDriveRefreshToken " . ($utilityObj->decrypt($this->config->credentials->skyDriveRefreshToken)));
-            
+    $callback = sprintf('%s://%s%s%s', $utilityObj->getProtocol(false), getenv('HTTP_HOST'), '', $qs);                
     $session = getSession();
     
     if (!$session->get('skyDrive'))
     {
-      //getLogger()->warn("not in session, creating a new one");
       
       $this->skyDrive = new SkyDriveAPI(array(
                                 'client_id' => $utilityObj->decrypt($this->config->credentials->skyDriveClientID),
@@ -41,8 +34,6 @@ class FileSystemSkyDrive implements FileSystemInterface
       $session->set('skyDrive', serialize($this->skyDrive));
       
     } else {
-      //getLogger()->warn("Already set");
-      //getLogger()->warn(print_r($session->get("skyDrive"),1));  
       $this->skyDrive = unserialize($session->get('skyDrive'));
     }  
 
@@ -110,26 +101,52 @@ class FileSystemSkyDrive implements FileSystemInterface
   }
 
   /**
+    * Retrieves a photo from the remote file system as specified by $filename.
+    * This file is stored locally and the path to the local file is returned.
+    *
+    * @param string $filename File name on the remote file system.
+    * @return mixed String on success, FALSE on failure.
+    */
+  /**
    * Get photo will copy the photo to a temporary file.
    *
    */
   public function getPhoto($filename)
   {
     getLogger()->warn("Calling getPhoto");
-    getLogger()->warn($filename);
+
+    $photo = $this->skyDrive->getFileByName($filename, $parentID = "folder.ca04824622699b37.CA04824622699B37!121");
+    getLogger()->warn("Photo ID: " . $photo->id);
+
+    //$filename = $this->normalizePath($filename);
+    $tmpname = '/tmp/'.uniqid('opme', true);
+    $fp = fopen($tmpname, 'w+');    
+    $res = $this->skyDrive->download($fileID = $photo->id, $returnDownloadLink = true);
     
-    //$this->skyDrive->getFileByName($filename);
-    $accessToken = $this->skyDrive->getAccessToken();
-    $rootFolders = $this->skyDrive->getMyRootFolders();
-    getLogger()->warn(print_r($rootFolders,1));    
-    $this->skyDrive->getFileByName("IMG_0090-519fe9e03b30f.JPG");
-    getLogger()->warn(print_r($accessToken,1));
-        
+    // Temp Download
+    $ch = curl_init(); 
+    curl_setopt($ch, CURLOPT_FILE, $fp);
+    curl_setopt($ch, CURLOPT_HEADER, 0); 
+    curl_setopt($ch, CURLOPT_URL, $res);
+    //curl_setopt($ch, CURLOPT_VERBOSE, TRUE);    
+    curl_exec($ch);
+    curl_close($ch);
+    
+    fclose($fp);
+    //return $res->isOK() ? $tmpname : false;
+    return $tmpname;
   }
 
   public function putPhoto($localFile, $remoteFile, $dateTaken)
   {
     getLogger()->warn("Calling putPhoto");
+    getLogger()->warn($localFile);
+    getLogger()->warn($remoteFile);
+    getLogger()->warn($dateTaken);
+    
+    $response = $this->skyDrive->upload($localFile, basename($remoteFile), "folder.ca04824622699b37.CA04824622699B37!121");
+    
+    return true;    
   }
 
   public function putPhotos($files)
@@ -150,7 +167,7 @@ class FileSystemSkyDrive implements FileSystemInterface
         
         // Hard coded folder for now
         $response = $this->skyDrive->upload($localFile, basename($remoteFile), "folder.ca04824622699b37.CA04824622699B37!121");
-        getLogger()->warn($response);        
+        //getLogger()->warn($response);        
       }         
 
 
