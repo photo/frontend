@@ -141,15 +141,15 @@ class SetupController extends BaseController
       
       $response = $oauth->getAccessTokenFromCode(0);
      
-      getLogger()->warn("Response in Setup: " . $response);
+      //getLogger()->warn("Response in Setup: " . print_r($response,1));
 
-      if(isset($response['access_token']))
+      if(isset($response->access_token))
         getLogger()->warn("Setting access_token");
-        $accessToken = $response['access_token'];
+        $accessToken = $response->access_token;
 
-      if(isset($response['refresh_token']))
+      if(isset($response->refresh_token))
         getLogger()->warn("Setting refresh_token");
-        $refreshToken = $response['refresh_token'];
+        $refreshToken = $response->refresh_token;
 
       getSession()->set('skyDriveClientID', $this->utility->encrypt($SkyDriveClientID, $secret));
       getSession()->set('skyDriveClientSecret', $this->utility->encrypt($SkyDriveClientSecret, $secret));
@@ -533,7 +533,7 @@ class SetupController extends BaseController
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder,
       'usesSkyDrive' => $usesSkyDrive, 'skyDriveClientID' => $skyDriveClientID, 
-      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveAccessToken' => $skyDriveAccessToken,'skyDriveRefreshToken' => $skyDriveRefreshToken,
+      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveRefreshToken' => $skyDriveRefreshToken,
       'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
 
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
@@ -820,7 +820,7 @@ class SetupController extends BaseController
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 
       'usesSkyDrive' => $usesSkyDrive, 'skyDriveClientID' => $skyDriveClientID, 
-      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveAccessToken' => $skyDriveAccessToken, 'skyDriveRefreshToken' => $skyDriveRefreshToken,
+      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveRefreshToken' => $skyDriveRefreshToken,
       'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
