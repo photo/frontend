@@ -10,7 +10,6 @@
  * @link http://www.reverbnation.com/spiroskabasakalis
  * @copyright Copyright &copy; Spiros Kabasakalis 2013
  * @license The MIT License
- * @category Yii
  * @package
  * @version 1.0
  */
@@ -175,7 +174,7 @@ class SkyDriveAPI
     
     /**
      *  getAuthorizationCode
-	 *
+     *
      * Starts the authorization code grant flow
      * See OAuth2 http://msdn.microsoft.com/en-us/library/live/hh243647.aspx
      */
@@ -452,8 +451,9 @@ class SkyDriveAPI
     		$result = $this->getFolderFilesByID($parentID,null,false);
     		$files = $result->data;
     		foreach($files as $file) {
+  		    error_log("$fileName " . $file->name);    		
     			if($file->name == $fileName) {
-                    $file_found = $file;
+            $file_found = $file;
     			}
     		}
         if ($print) {
@@ -595,17 +595,19 @@ class SkyDriveAPI
     /**
      *getFolderFilesByID
      *
-     * @param string $folder_ID the  ID of the folder cantaining the files
+     * @param string $folder_ID the  ID of the folder containing the files
      * @param  string $querystring  filter results with a query,ex 'filter=videos,audio'.See http://msdn.microsoft.com/en-us/library/live/hh243648.aspx
      * @param bool  $print  Dump response on screen?
      * @return stdClass  $response
      */
     public function getFolderFilesByID($folder_ID, $querystring = null, $print = false)
     {
-        error_log("call to getFolderFilesByID");
+        error_log("call to getFolderFilesByID " . $folder_ID);
         $path = self::SKYDRIVE_API_BASE_URL . $folder_ID . '/files';
+        error_log("call to getFolderFilesByID " . $path);        
         if (!empty($querystring)) $path = $path . '?' . $querystring;
         $response = $this->skyDriveApiCall($path);
+        //error_log("call to getFolderFilesByID " . print_r($response, 1));
         if ($print) {
             $this->print_response($response);
             exit;
@@ -658,6 +660,22 @@ class SkyDriveAPI
             return $response;
     }
 
+    /**
+     *getMyRoot
+     *
+     * @param bool  $print  Dump response on screen?
+     * @return stdClass  $response
+     */
+    public function getMyRoot($print = false)
+    {
+        $path = self::SKYDRIVE_API_BASE_URL . 'me/skydrive/';
+        $response = $this->skyDriveApiCall($path);
+        if ($print) {
+            $this->print_response($response);
+            exit;
+        } else
+            return $response;
+    }
 
     /**
      *getMySharedFiles

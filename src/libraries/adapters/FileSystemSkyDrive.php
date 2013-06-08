@@ -44,7 +44,9 @@ class FileSystemSkyDrive implements FileSystemInterface
       $this->skyDrive->setAccessToken($accessToken);
       getSession()->set('skyDriveAccessToken', $accessToken['access_token']);
     }
-                                 
+
+    $this->skyDriveFolder = $this->config->skyDrive->skyDriveFolder;
+                                     
   }
   
   /**
@@ -113,10 +115,22 @@ class FileSystemSkyDrive implements FileSystemInterface
    */
   public function getPhoto($filename)
   {
-    getLogger()->warn("Calling getPhoto");
+    getLogger()->warn("Calling getPhoto: " . $filename);
 
-    $photo = $this->skyDrive->getFileByName($filename, $parentID = "folder.ca04824622699b37.CA04824622699B37!121");
-    getLogger()->warn("Photo ID: " . $photo->id);
+    // Get the folderID
+    $folders = preg_split("/\//", substr(dirname($filename), 1));
+    
+    $parent = $this->skyDriveFolder;
+    foreach ($folders as $folder) {
+      $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
+      getLogger()->warn("Calling getPhoto inside foreach: " . print_r($response,1));
+      $parent = $response->id;
+    }
+                
+    // Using my Pictures folder by default for now
+    $photo = $this->skyDrive->getFileByName(basename($filename), $parentID = $parent);
+    getLogger()->warn("getPhoto photo is : " . print_r($photo,1));    
+    getLogger()->warn("Photo: " . $filename . " ID: " . $photo->id);
 
     //$filename = $this->normalizePath($filename);
     $tmpname = '/tmp/'.uniqid('opme', true);
@@ -143,8 +157,17 @@ class FileSystemSkyDrive implements FileSystemInterface
     getLogger()->warn($localFile);
     getLogger()->warn($remoteFile);
     getLogger()->warn($dateTaken);
+
+    // Get the folderID
+    $folders = preg_split("/\//", substr(dirname($remoteFile), 1));
     
-    $response = $this->skyDrive->upload($localFile, basename($remoteFile), "folder.ca04824622699b37.CA04824622699B37!121");
+    $parent = $this->skyDriveFolder;
+    foreach ($folders as $folder) {
+      $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
+      getLogger()->warn("Calling getPhoto inside foreach: " . print_r($response,1));
+      $parent = $response->id;
+    }
+    $response = $this->skyDrive->upload($localFile, basename($remoteFile), $parent);
     
     return true;    
   }
@@ -161,25 +184,27 @@ class FileSystemSkyDrive implements FileSystemInterface
       $remoteFile = $remoteFileArr[0];
       $dateTaken = $remoteFileArr[1];
       getLogger()->warn("Calling putPhotos " . $remoteFile);
-      if(strpos($remoteFile, '/original/') !== false && file_exists($localFile))
-      {
-        $remoteFile = $this->normalizePath($remoteFile);
+
+      $folders = preg_split("/\//", substr(dirname($file), 1));
+      foreach ($folders as $folder) {
+        $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
+        getLogger()->warn("Calling getPhoto inside foreach: " . print_r($response,1));
         
-        // Hard coded folder for now
-        $response = $this->skyDrive->upload($localFile, basename($remoteFile), "folder.ca04824622699b37.CA04824622699B37!121");
-        //getLogger()->warn($response);        
-      }         
-
-
+        // if $response says folder doesn't exist we should create it
+        //$this->skyDrive->createFolder($parent, $folder, $folder);
+        
+        $parent = $response->id;
+      }
+      
+      $normalized_remoteFile = $this->normalizePath($remoteFile);
+        
+      $response = $this->skyDrive->upload($localFile, basename($normalized_remoteFile), $parent);
+      getLogger()->warn($response);
+              
     }
     $responses = '';
-    //$responses = $this->fs->batch($queue)->send();
-    //if(!$responses->areOK())
-    //{
-    //  foreach($responses as $resp)
-    //    getLogger()->crit(var_export($resp, 1));
-    //}
-    //return $responses->areOK();    
+    
+    // Need to fix this so it only returns true if it was successfull 
     return true;
   }
 
@@ -189,6 +214,7 @@ class FileSystemSkyDrive implements FileSystemInterface
     */
   public function getHost()
   {
+    getLogger()->warn("Calling getHost");
     return $this->host;
   }
 
@@ -203,6 +229,7 @@ class FileSystemSkyDrive implements FileSystemInterface
 
   public function initialize($isEditMode)
   {
+    getLogger()->warn("Calling initialize");  
     /* Just return true for now until we figure out what to initialize */  
     return true;
   }
@@ -219,11 +246,13 @@ class FileSystemSkyDrive implements FileSystemInterface
 
   public function normalizePath($path)
   {
+    getLogger()->warn("Calling normalizePath");    
     return $this->root . $path;
   }
 
   public function getRoot()
   {
+    getLogger()->warn("Calling getRoot");      
     return $this->root;
   }
 }
