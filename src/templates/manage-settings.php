@@ -16,6 +16,12 @@
       <h3>General settings</h3>
       <div class="controls">
         <label class="checkbox inline">
+          <input type="checkbox" name="enableBetaFeatures" value="1" <?php if($enableBetaFeatures) { ?>checked="checked"<?php } ?>>
+          Enable beta features on this site and on the mobile apps
+        </label>
+      </div>
+      <div class="controls">
+        <label class="checkbox inline">
           <input type="checkbox" name="allowDuplicate" value="1" <?php if($allowDuplicate) { ?>checked="checked"<?php } ?>>
           The same photo can be uploaded more than once
         </label>

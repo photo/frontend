@@ -83,6 +83,7 @@ class ManageController extends BaseController
     $tokensResp = $this->api->invoke('/tokens/list.json');
     $tokens = $tokensResp['result'];
     $params['downloadOriginal'] = $this->config->site->allowOriginalDownload == '1';
+    $params['enableBetaFeatures'] = $this->config->site->enableBetaFeatures == '1';
     $params['allowDuplicate'] = $this->config->site->allowDuplicate == '1';
     $params['hideFromSearchEngines'] = $this->config->site->hideFromSearchEngines == '1';
     $params['decreaseLocationPrecision'] = $this->config->site->decreaseLocationPrecision == '1';
