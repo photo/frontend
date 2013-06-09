@@ -8,7 +8,38 @@ body.upload {
       }
     }
   }
+
+  .dropzone {
+    border:none;
+    background:none;
+    padding:0;
+  }
+  .dropzone .dz-default.dz-message {
+    top:30px;
+    margin:auto;
+    cursor: pointer;
+  }
+  .dropzone .dz-error-message {
+    visibility:hidden;
+  }
+  .dropzone .bucket {
+    text-align:center;
+    border: 1px solid rgba(0,0,0,0.08);
+    background: rgba(0,0,0,0.02);
+    // cursor: pointer;
+    @media only screen and (min-device-width: 480px) {
+      min-height:400px;
+      margin-top:20px;
+    }
+  }
+  .dropzone.dz-clickable * {
+    //cursor: default;
+  }
+  .preview-container {
+    margin-top:140px;
+  }
 }
+
 body.upload.upload-confirm {
   .navbar-inner-secondary {
     .nav {

@@ -194,27 +194,8 @@
       TBX.tutorial.run();
     };
     this.click.uploadBeta = function(ev) {
-      console.log('upload');
       ev.preventDefault();
       TBX.upload.start();
-      /*var uploader = $("#uploader").pluploadQueue();
-      if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
-        uploader.start();
-      } else {
-        TBX.notification.show('The upload widget could not be loaded. Try refreshing this page.', 'flash', 'error');
-      }*/
-    };
-
-    this.custom = {};
-    this.custom.preloadPhotos = function(photos) {
-      if(photos.length == 0)
-        return;
-
-      for(i in photos) {
-        if(photos.hasOwnProperty(i)) { 
-          TBX.util.fetchAndCache(photos[i]);
-        }
-      }
     };
 
     this.keydown = { },
@@ -329,8 +310,28 @@
       }
       location.href = url;
     };
+    this.submit.upload = function(ev) {
+      ev.preventDefault();
+      var uploader = $("#uploader").pluploadQueue();
+      if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
+        uploader.start();
+      } else {
+        TBX.notification.show('The upload widget could not be loaded. Try refreshing this page.', 'flash', 'error');
+      }
+    };
 
     // custom
+    this.custom = {};
+    this.custom.preloadPhotos = function(photos) {
+      if(photos.length == 0)
+        return;
+
+      for(i in photos) {
+        if(photos.hasOwnProperty(i)) { 
+          TBX.util.fetchAndCache(photos[i]);
+        }
+      }
+    };
     this.custom.tutorialUpdate = function() {
       var params = {section: this.section, key: this.key, crumb: TBX.crumb()};
       OP.Util.makeRequest('/plugin/Tutorial/update.json', params, TBX.callbacks.tutorialUpdate, 'json', 'post');

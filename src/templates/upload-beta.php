@@ -1,8 +1,7 @@
 <form class="upload dropzone form-stacked" method="post" action="/photo/upload">
   <div class="row">
     <div class="span3">
-      <h3>Use these settings.</h3>
-      <br>
+      <h3>Details for your photos</h3>
       <label for="tags">Tags</label>
       <input type="search" name="tags" class="typeahead tags" autocomplete="off" placeholder="Optional comma separated list">
 
@@ -38,11 +37,13 @@
       </select>
 
       <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
+      <input type="hidden" name="httpCodes" value="500,200,403,401">
+      <input type="hidden" name="returnSizes" value="100x100xCR">
       
       <div class="btn-toolbar">
-        <button type="button" class="btn btn-theme-secondary photo-upload">Start uploading</button>
+        <button type="button" class="btn btn-theme-secondary uploadBeta">Start uploading</button>
       </div>
-      <small><em>Powered by <a href="http://www.dropzonejs.com/">Dropzone.js</a></em></small>
+      <small><em>Powered by <a href="http://www.dropzonejs.com/" target="_blank">Dropzone.js</a></em></small>
     </div>
     <div class="span9">
       <div class="bucket">
