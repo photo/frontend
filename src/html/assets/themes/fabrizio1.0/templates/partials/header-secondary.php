@@ -21,4 +21,5 @@
             <li class="separator-left"><a href="#settings"><i class="icon-cogs"></i> General Settings</a></li>
             <li><a href="#apps"><i class="icon-briefcase"></i> Applications</a></li>
             <li><a href="#plugins"><i class="icon-circle-blank"></i> Plugins</a></li>
+            <li><a href="#tokens"><i class="icon-share-alt"></i> Sharing Tokens</a></li>
           <?php } ?>

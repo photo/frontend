@@ -30,9 +30,17 @@ class UserTest extends PHPUnit_Framework_TestCase
     $db->expects($this->any())
       ->method('getUser')
       ->will($this->returnValue(array('id' => 'test@example.com', 'lastPhotoId' => 'abc')));
+    $themeObj = $this->getMock('ThemeObj', array('asset'));
+    $themeObj->expects($this->any())
+      ->method('asset')
+      ->will($this->returnValue('/path/to/asset'));
+    $this->user->inject('themeObj', $themeObj);
     $this->user->inject('db', $db);
+
+    $_SERVER['HTTP_HOST'] = 'foo';
+
     $res = $this->user->getAvatarFromEmail(50, 'test@example.com');
-    $this->assertEquals('http://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=50', $res);
+    $this->assertEquals('http://www.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=50&d=http%3A%2F%2Ffoo%2Fpath%2Fto%2Fasset', $res);
   }
 
   public function testGetEmailAddressNonOAuth()
@@ -146,10 +154,15 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->method('getUser')
       ->will($this->onConsecutiveCalls(
         array('id' => 'test@example.com', 'lastPhotoId' => 'abc'),
+        array('id' => '', '' => ''), // stub for User::update to update the cache
         array('id' => 'test@example.com', 'lastPhotoId' => '0'),
+        array('id' => '', '' => ''), // stub for User::update to update the cache
         array('id' => 'test@example.com', 'lastPhotoId' => 'a1'),
+        array('id' => '', '' => ''), // stub for User::update to update the cache
         array('id' => 'test@example.com', 'lastPhotoId' => '9'),
-        array('id' => 'test@example.com', 'lastPhotoId' => 'u')
+        array('id' => '', '' => ''), // stub for User::update to update the cache
+        array('id' => 'test@example.com', 'lastPhotoId' => 'u'),
+        array('id' => '', '' => '') // stub for User::update to update the cache
       ));
     $db->expects($this->any())
       ->method('postUser')
@@ -217,6 +230,26 @@ class UserTest extends PHPUnit_Framework_TestCase
     $res = $this->user->getNextId('photo');
     $this->assertFalse($res);
   }
+
+  public function testGetNextIdUpdateFailure()
+  {
+    $db = $this->getMock('Db', array('getUser', 'postUser', 'putUser'));
+    $db->expects($this->any())
+      ->method('getUser')
+      ->will($this->onConsecutiveCalls(
+        array('id' => 'test@example.com', 'lastPhotoId' => 'abc'),
+        array('id' => '', 'lastPhotoId' => '')
+      ));
+    $db->expects($this->any())
+      ->method('postUser')
+      ->will($this->returnValue(false));
+    $this->user->inject('db', $db);
+
+    // abc
+    $res = $this->user->getNextId('photo');
+    $this->assertEquals(false, $res);
+  }
+
 
   public function testGetAttributeNameSuccess()
   {

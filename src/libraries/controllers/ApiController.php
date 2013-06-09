@@ -80,6 +80,6 @@ class ApiController extends ApiBaseController
     $filesystemVersion = '0.0.0';
     $filesystemType = getFs()->identity();
     return $this->success('System versions', array('api' => $apiVersion, 'system' => $systemVersion, 'database' => $databaseVersion, 'databaseType' => $databaseType,
-      'filesystem' => $filesystemVersion, 'filesystemType' => $filesystemType, 'isHosted' => true));
+      'filesystem' => $filesystemVersion, 'filesystemType' => $filesystemType));
   }
 }

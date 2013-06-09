@@ -128,7 +128,7 @@ class Utility
 
   public function getPath()
   {
-    return $_SERVER['REDIRECT_URL'];
+    return $_SERVER['REQUEST_URI'];
   }
 
   public function dateLong($ts, $write = true)
@@ -203,10 +203,18 @@ class Utility
     return range($start, $end);
   }
 
-  // TODO do not look up $_SERVER
   public function getProtocol($write = true)
   {
-    $protocol = $_SERVER['SERVER_PORT'] != '443' ? 'http' : 'https';
+    $protocol = 'http';
+
+    // If any of these match then we should use https
+    if(isset($_SERVER['HTTPS']) && strncasecmp('on', $_SERVER['HTTPS'], 2) === 0)
+      $protocol = 'https';
+
+    //  It's possible that HTTPS is NULL in the case of SSL being terminated higher up the chain
+    if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strncasecmp('https', $_SERVER['HTTP_X_FORWARDED_PROTO'], 5) === 0)
+      $protocol = 'https';
+
     return $this->returnValue($protocol, $write);
   }
 

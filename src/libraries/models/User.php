@@ -10,13 +10,13 @@
   */
 class User extends BaseModel
 {
-  const displayNameDefault = 'Photo Project User';
+  const displayNameDefault = 'Trovebox User';
   /**
     * A user object that caches the value once it's been fetched from the remote datasource.
     * @access private
     * @var array
     */
-  protected $user, $userArray = array(), $credential;
+  protected $user, $userArray = array(), $credential, $themeObj;
 
   /*
    * Constructor
@@ -84,8 +84,19 @@ class User extends BaseModel
     if(isset($user['attrprofilePhoto']) && !empty($user['attrprofilePhoto']))
       return $user['attrprofilePhoto'];
 
+    $utilityObj = new Utility;
+    if(empty($this->config->site->cdnPrefix))
+      $hostAndProtocol = sprintf('%s://%s', $utilityObj->getProtocol(false), $utilityObj->getHost(false));
+    else
+      $hostAndProtocol = sprintf('%s%s', $utilityObj->getProtocol(false), $this->config->site->cdnPrefix);
+
+    if(!$this->themeObj)
+      $this->themeObj = getTheme();
+
+    $defaultUrl = sprintf('%s%s', $hostAndProtocol, $this->themeObj->asset('image', 'profile-default.png', false));
+
     $hash = md5(strtolower(trim($email)));
-    return "http://www.gravatar.com/avatar/{$hash}?s={$size}";
+    return sprintf("http://www.gravatar.com/avatar/%s?s=%s&d=%s", $hash, $size, urlencode($defaultUrl));
   }
 
   /**
@@ -130,7 +141,7 @@ class User extends BaseModel
   {
     $type = ucwords($type);
     $key = "last{$type}Id";
-    $user = $this->getUserRecord();
+    $user = $this->getUserRecord(false, true); // no cache, do lock
     if($user === false)
       return false;
 
@@ -139,7 +150,9 @@ class User extends BaseModel
     $nextIntId = base_convert($user[$key], 31, 10) + 1;
     $nextId = base_convert($nextIntId, 10, 31);
 
-    $this->update(array($key => $nextId));
+    $status = $this->update(array($key => $nextId));
+    if(!$status)
+      return false;
     return $nextId;
   }
 
@@ -160,13 +173,13 @@ class User extends BaseModel
     *
     * @return mixed  FALSE on error, array on success
     */
-  public function getUserRecord($cache = true, $owner = null)
+  public function getUserRecord($cache = true, $lock = false)
   {
     // we cache the user entry per request
     if($cache && $this->user)
       return $this->user;
 
-    $res = $this->db->getUser();
+    $res = $this->db->getUser(null, $lock);
     // if null create, onerror return false
     if($res === null)
     {
@@ -176,7 +189,7 @@ class User extends BaseModel
         return false;
 
       // fetch the record to return
-      $res = $this->db->getUser();
+      $res = $this->db->getUser(null, $lock);
       if(!$res)
         return false;
     }

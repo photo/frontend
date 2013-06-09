@@ -7,9 +7,23 @@
 
     // CLICK
     this.click = {};
+    this.click.batchAlbumMode = function(ev) {
+      var $el = $(ev.target), $form = $el.closest('form'), $albums = $('select.albums', $form);
+      if($el.val() === 'add')
+        $albums.attr('name', 'albumsAdd');
+      else
+        $albums.attr('name', 'albumsRemove');
+    };
     this.click.batchHide = function(ev) {
       ev.preventDefault();
       $('.secondary-flyout').slideUp('fast');
+    };
+    this.click.batchTagMode = function(ev) {
+      var $el = $(ev.target), $form = $el.closest('form'), $tags = $('input.tags', $form);
+      if($el.val() === 'add')
+        $tags.attr('name', 'tagsAdd');
+      else
+        $tags.attr('name', 'tagsRemove');
     };
     this.click.credentialDelete = function(ev) {
       ev.preventDefault();
@@ -28,6 +42,14 @@
 
       OP.Util.makeRequest(url, params, TBX.callbacks.credentialView, 'json', 'get');
       return false;
+    };
+    this.click.loadMorePhotos = function(ev) {
+      ev.preventDefault();
+      TBX.init.pages.photos.load();
+    };
+    this.click.loadMoreAlbums = function(ev) {
+      ev.preventDefault();
+      TBX.init.pages.albums.load();
     };
     this.click.loginExternal = function(ev) {
       ev.preventDefault();
@@ -106,6 +128,11 @@
       count = batch.length();
       TBX.notification.show(TBX.format.sprintf(TBX.strings.batchConfirm, count, count > 1 ? 's' : ''), 'flash', 'confirm');
     };
+    this.click.setAlbumCover = function(ev) {
+      ev.preventDefault();
+      var $el = $(ev.target), photoId = $el.attr('data-id'), albumId = TBX.util.getPathParam('album');
+      OP.Util.makeRequest(TBX.format.sprintf('/album/%s/cover/%s/update.json', albumId, photoId), {crumb: TBX.crumb()}, TBX.callbacks.setAlbumCover, 'json', 'post');
+    };
     this.click.sharePopup = function(ev) {
       ev.preventDefault();
       var $el = $(ev.target), url = $el.attr('href'), w=575, h=300, l, t, opts;
@@ -142,6 +169,15 @@
         }, 'json', 'get');
       }
       return;
+    };
+    this.click.tokenDelete = function(ev) {
+      ev.preventDefault();
+      var el = $(ev.target),
+          url = el.attr('href')+'.json',
+          params = {crumb: TBX.crumb()};
+
+      OP.Util.makeRequest(url, params, TBX.callbacks.tokenDelete.bind(el));
+      return false;
     };
     this.click.triggerDownload = function(ev) {
       ev.preventDefault();
@@ -219,20 +255,6 @@
         }
       }
       OP.Util.makeRequest(url, params, TBX.callbacks.batch.bind(params), 'json', 'post');
-    };
-    this.click.batchAlbumMode = function(ev) {
-      var $el = $(ev.target), $form = $el.closest('form'), $albums = $('select.albums', $form);
-      if($el.val() === 'add')
-        $albums.attr('name', 'albumsAdd');
-      else
-        $albums.attr('name', 'albumsRemove');
-    };
-    this.click.batchTagMode = function(ev) {
-      var $el = $(ev.target), $form = $el.closest('form'), $tags = $('input.tags', $form);
-      if($el.val() === 'add')
-        $tags.attr('name', 'tagsAdd');
-      else
-        $tags.attr('name', 'tagsRemove');
     };
     this.submit.login = function(ev) {
       ev.preventDefault();

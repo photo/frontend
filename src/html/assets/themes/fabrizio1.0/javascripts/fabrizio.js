@@ -1,7 +1,9 @@
+var _log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } };
+
 (function($) {
 
   function Fabrizio() {
-    var crumb, log, markup, profiles, pushstate, tags, pathname, util;
+    var crumb, markup, profiles, pushstate, tags, pathname, util;
 
     crumb = (function() {
       var value = null;
@@ -61,7 +63,8 @@
           $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
         },
         load: function(context) {
-          var async = typeof(arguments[1]) === 'undefined' ? true : arguments[1];
+          var async = typeof(arguments[1]) === 'undefined' ? true : arguments[1], $button = $('button.loadMore');
+          $('i', $button).show().addClass('icon-spinner icon-spin');
           // we define initData at runtime to avoid having to make an HTTP call on load
           // all subsequent calls run through the http API
           if(typeof(context.initData) === "undefined") {
@@ -111,15 +114,35 @@
                 dataType: 'json',
                 url: api,
                 data: params,
-                success: context.loadCb
+                success: util.loadCb.bind(context)
               });
             }
           } else {
             delete context.initData;
             context.page = 1;
             var response = {code:200, result:initData};
-            context.loadCb(response);
+            util.loadCb.call(context, response);
           }
+        },
+        loadCb: function(response) {
+          // this is the context, bound in the callback
+          // at the last page
+          var context = this, r = response.result, $button = $('button.loadMore');
+
+          // check if there are more pages
+          if(r.length > 0 && r[0].totalPages > r[0].currentPage) {
+            $button.fadeIn();
+            $('i', $button).fadeOut();
+            context.page++;
+            context.pageCount++;
+            context.running = false;
+          } else {
+            $button.fadeOut();
+            context.end = true;
+          }
+          
+          // proceed to call the context's loadCb
+          this.loadCb(response);
         },
         scrollCb: function(context) {
           // don't autoload if the width is narrow
@@ -222,21 +245,19 @@
             _this.load();
           },
           load: function() {
-            var _this = TBX.init.pages.albums; loc = location;
-            util.load(_this);
+            var _this = TBX.init.pages.albums; loc = location, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];
+            util.load(_this, async);
           },
           loadCb: function(response) {
             var items = response.result, _this = TBX.init.pages.albums;
+
             for(i in items) {
               if(items.hasOwnProperty(i))
                 op.data.store.Albums.add( items[i] );
             }
-            if(items.length > 0) {
+
+            if(items.length > 0)
               _this.addAlbums(items);
-              _this.page++;
-              _this.pageCount++;
-              _this.running = false;
-            }
           }
         },
         front: {
@@ -324,42 +345,21 @@
             };
             op.data.store.Router = new op.data.route.Routes(options);
             // Start Backbone history a necessary step for bookmarkable URL's
-            Backbone.history.start({pushState: true, silent: true});
+            Backbone.history.start({pushState: Modernizr.history, silent: true});
+            Backbone.history.loadUrl(Backbone.history.getFragment())
           },
           load: function() {
             var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];
             util.load(_this, async);
           },
           loadCb: function(response) {
-            var items = response.result, _this = TBX.init.pages.photos, infobar = $('.infobar'),
-                minDate = $('.startdate', infobar), maxDate = $('.enddate', infobar),
-                minDateVal = parseInt(minDate.attr('data-time')), maxDateVal = parseInt(maxDate.attr('data-time')),
-                ui = TBX.ui, i;
+            var items = response.result, _this = TBX.init.pages.photos,
+                ui = TBX.ui, i, $button = $('button.loadMorePhotos');
 
             op.data.store.Photos.add( items );
-            if(items.length > 0) {
-              var thisTaken;
-              for(i=0; i<items.length; i++) {
-                thisTaken = parseInt(items[i].dateTaken);
-                if(thisTaken > maxDateVal) {
-                  ui.fadeAndSet(maxDate, phpjs.date('l F jS, Y', thisTaken));
-                  maxDate.attr('data-time', thisTaken);
-                  maxDateVal = thisTaken;
-                } else if(parseInt(items[i].dateTaken) < parseInt(minDate.attr('data-time'))) {
-                  ui.fadeAndSet(minDate, phpjs.date('l F jS, Y', thisTaken));
-                  minDate.attr('data-time', thisTaken);
-                  minDateVal = thisTaken;
-                }
-              }
 
+            if(items.length > 0)
               Gallery.showImages($(".photo-grid"), items);
-              _this.page++;
-              _this.pageCount++;
-              _this.running = false;
-            } else {
-              $('.load-more').hide();
-              _this.end = true;
-            }
           }
         },
         upload: function() {
@@ -422,4 +422,5 @@
   TBX.notification = _TBX.notification;
   TBX.init = _TBX.init;
   TBX.crumb = _TBX.crumb;
+  TBX.log = OP.Log; // for consistency
 })(jQuery);

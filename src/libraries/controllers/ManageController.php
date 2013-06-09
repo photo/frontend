@@ -80,12 +80,15 @@ class ManageController extends BaseController
     $credentials = $credentialsResp['result'];
     $pluginsResp = $this->api->invoke('/plugins/list.json');
     $plugins = $pluginsResp['result'];
+    $tokensResp = $this->api->invoke('/tokens/list.json');
+    $tokens = $tokensResp['result'];
     $params['downloadOriginal'] = $this->config->site->allowOriginalDownload == '1';
     $params['allowDuplicate'] = $this->config->site->allowDuplicate == '1';
     $params['hideFromSearchEngines'] = $this->config->site->hideFromSearchEngines == '1';
     $params['decreaseLocationPrecision'] = $this->config->site->decreaseLocationPrecision == '1';
     $params['credentials'] = $credentials;
     $params['plugins'] = $plugins;
+    $params['tokens'] = $tokens;
     $params['admins'] = array();
     if(isset($this->config->user->admins))
       $params['admins'] = (array)explode(',', $this->config->user->admins);

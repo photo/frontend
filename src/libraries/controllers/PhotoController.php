@@ -84,14 +84,18 @@ class PhotoController extends BaseController
     * @param string $id ID of the photo to be edited.
     * @return string Standard JSON envelope
     */
-  public function download($id)
+  public function download($id, $token = null)
   {
     $isAttachment = !isset($_GET['stream']) || $_GET['stream'] != '1';
     $userObj = new User;
     // the API enforces permissions, we just have to check for download privileges
     if($userObj->isAdmin() || $this->config->site->allowOriginalDownload == 1)
     {
-      $photoResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
+      if($token === null)
+        $photoResp = $this->api->invoke(sprintf('/photo/%s/view.json', $id), EpiRoute::httpGet);
+      else
+        $photoResp = $this->api->invoke(sprintf('/photo/%s/%s/view.json', $id, $token), EpiRoute::httpGet);
+
       $photo = $photoResp['result'];
       if($photoResp['code'] === 200)
       {

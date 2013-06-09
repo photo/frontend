@@ -51,7 +51,7 @@
           <input type="text" name="admins[<?php echo $i; ?>]" <?php if(isset($admins[$i])) { ?> value="<?php $this->utility->safe($admins[$i]); ?>" <?php } ?> placeholder="user<?php echo ($i+1); ?>@example.com">
         <?php } ?>
       </div>
-      <div class="btn-toolbar"><button class="btn btn-primary">Save</button></div>
+      <div class="btn-toolbar"><button class="btn btn-brand">Save</button></div>
     </div>
   </div>
   <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
@@ -71,7 +71,7 @@
 <div class="row">
   <div class="span12">
     <p>
-      <a href="/v1/oauth/authorize?oauth_callback=<?php $this->utility->safe(sprintf('%s://%s%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], '/manage/apps/callback')); ?>&name=<?php $this->utility->safe(urlencode('Self Generated App')); ?>&tokenType=access" class="btn btn-primary">Create a new app</a>
+      <a href="/v1/oauth/authorize?oauth_callback=<?php $this->utility->safe(sprintf('%s://%s%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], '/manage/apps/callback')); ?>&name=<?php $this->utility->safe(urlencode('Self Generated App')); ?>&tokenType=access" class="btn btn-brand">Create a new app</a>
     </p>
     <?php if(!empty($credentials)) { ?>
       <table class="table table-striped">
@@ -133,6 +133,69 @@
             </div>
           </td>
         </tr>
+      <?php } ?>
+    </table>
+  </div>
+</div>
+
+<a name="tokens"></a>
+<div class="row">
+  <div class="span12">
+    <h2>Your sharing tokens</h2>
+  </div>
+</div>
+<div class="row">
+  <div class="span12">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th colspan="2">Photos</th>
+        </tr>
+      </thead>
+      <?php if(count($tokens['photos']) === 0) { ?>
+        <tr><td colspan="2">You don't have any sharing tokens for your photos.</td></tr>
+      <?php } else { ?>
+        <?php foreach($tokens['photos'] as $photo) { ?>
+          <tr>
+            <td>
+              Photo <?php $this->utility->safe($photo['data']); ?>
+              <small><em>(<?php if(empty($photo['dateExpires'])) { ?>Sharing token never expires<?php } else { ?>Sharing token expires on <?php $this->utility->dateLong($photo['dateExpires']); ?><?php } ?>)</em></small>
+            </td>
+            <td>
+              <div class="pull-right">
+                <a href="<?php $this->url->photoView($photo['data']); ?>"><i class="icon-eye-open icon-large"></i> View</a>
+                &nbsp; &nbsp; &nbsp;
+                <a href="/token/<?php $this->utility->safe($photo['id']); ?>/delete" class="tokenDelete"><i class="icon-trash icon-large"></i> Delete</a>
+              </div>
+            </td>
+          </tr>
+        <?php } ?>
+      <?php } ?>
+    </table>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th colspan="2">Albums</th>
+        </tr>
+      </thead>
+      <?php if(count($tokens['albums']) === 0) { ?>
+        <tr><td colspan="2">You don't have any sharing tokens for your albums.</td></tr>
+      <?php } else { ?>
+        <?php foreach($tokens['albums'] as $album) { ?>
+          <tr>
+            <td>
+              Album
+              <small><em>(<?php if(empty($album['dateExpires'])) { ?>Sharing token never expires<?php } else { ?>Sharing token expires on <?php $this->utility->dateLong($album['dateExpires']); ?><?php } ?>)</em></small>
+            </td>
+            <td>
+              <div class="pull-right">
+                <a href="<?php $this->url->albumView($album['data']); ?>"><i class="icon-eye-open icon-large"></i> View</a>
+                &nbsp; &nbsp; &nbsp;
+                <a href="/token/<?php $this->utility->safe($album['id']); ?>/delete" class="tokenDelete"><i class="icon-trash icon-large"></i> Delete</a>
+              </div>
+            </td>
+          </tr>
+        <?php } ?>
       <?php } ?>
     </table>
   </div>

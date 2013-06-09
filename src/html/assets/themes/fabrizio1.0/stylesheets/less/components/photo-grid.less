@@ -1,5 +1,30 @@
 .trovebox {
+  .photo-grid.is-album {
+    > .imageContainer {
+      .meta {
+        .photo-meta {
+          ul {
+            li.album {
+              display: inline-block;
+            }
+          }
+        }
+      }
+    }
+  }
+
   .photo-grid {
+    > .imageContainer {
+      .photo-meta {
+        .meta {
+          ul {
+            li.album {
+              display: inline-block;
+            }
+          }
+        }
+      }
+    }
     
     > h4, p {
       margin-left:5px;
@@ -73,6 +98,9 @@
             list-style: none;
             margin: 0;
             padding: 0;
+            li.album {
+                display:none;
+            }
             li {
               form {
                 margin:0;
@@ -116,5 +144,18 @@
         border-color:@color_brand #fff;
       }
     }
+  }
+
+  .loadMoreContainer {
+    margin-top: 20px;
+    padding-top: 20px;
+    text-align:center;
+    border-top: solid 1px #ccc;
+
+    button {
+      font-size:110%;
+      padding:10px 25px;
+    }
+    
   }
 }

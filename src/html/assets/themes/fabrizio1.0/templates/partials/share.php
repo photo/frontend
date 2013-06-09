@@ -10,7 +10,7 @@
     <?php } else { ?>
       <img src="<?php $this->utility->safe($photo); ?>" class="img-polaroid">
     <?php } ?>
-    <small><?php $this->utility->safe($url); ?></small>
+    <small><a href="<?php $this->utility->safe($url); ?>" class="black" title="Copy this link to share it manually"><?php $this->utility->safe($url); ?></a></small>
   </div>
   <?php if($this->user->isAdmin()) { ?>
     <div class="span3">

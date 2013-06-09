@@ -183,7 +183,7 @@ class DatabaseMySql implements DatabaseInterface
   public function deleteShareToken($id)
   {
     $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `id`=:id", array(':owner' => $this->owner, ':id' => $id));
-    return $res !== 1;
+    return $res !== false;
   }
 
   /**
@@ -713,13 +713,16 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
-    * Get all share token by type and target
+    * Get all share tokens
     *
     * @return mixed Array on success, FALSE on failure
     */
-  public function getShareTokensByTarget($type, $data)
+  public function getShareTokens($type = null, $data = null)
   {
-    $tokens = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `type`=:type AND `data`=:data", array(':owner' => $this->owner, ':type' => $type, ':data' => $data));
+    if($type === null && $data === null)
+      $tokens = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner", array(':owner' => $this->owner));
+    else
+      $tokens = $this->db->all("SELECT * FROM `{$this->mySqlTablePrefix}shareToken` WHERE `owner`=:owner AND `type`=:type AND `data`=:data", array(':owner' => $this->owner, ':type' => $type, ':data' => $data));
 
     if($tokens === false)
       return false;
@@ -731,15 +734,6 @@ class DatabaseMySql implements DatabaseInterface
     }
 
     return $tokens;
-  }
-
-  /**
-    * Get all share tokens
-    *
-    * @return mixed Array on success, FALSE on failure
-    */
-  public function getShareTokens()
-  {
   }
 
   /**
@@ -832,7 +826,7 @@ class DatabaseMySql implements DatabaseInterface
     *
     * @return mixed Array on success, NULL if user record is empty, FALSE on error
     */
-  public function getUser($owner = null)
+  public function getUser($owner = null, $lock = false)
   {
     if($owner === null)
       $owner = $this->owner;
@@ -841,8 +835,14 @@ class DatabaseMySql implements DatabaseInterface
     if($cached !== null)
       return $cached;
 
-    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner", array(':owner' => $owner));
- 
+    // optionally lock until an update happens
+    //  See #1230
+    $doLock = '';
+    if($lock)
+      $doLock = 'FOR UPDATE';
+
+    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:owner {$doLock}", array(':owner' => $owner));
+
     if($res)
       return $this->cacheSet('user', $this->normalizeUser($res), $owner);
 

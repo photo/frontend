@@ -29,12 +29,12 @@ class Token extends BaseModel
 
   public function getByTarget($type, $data)
   {
-    return $this->db->getShareTokensByTarget($type, $data);
+    return $this->db->getShareTokens($type, $data);
   }
 
   public function getAll()
   {
-
+    return $this->db->getShareTokens();
   }
 
   private function whitelistParams($params)

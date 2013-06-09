@@ -1,15 +1,15 @@
 body.trovebox {
-  //padding-top: 102px;
+  padding-top: 102px;
 }
 
 /* Top Banner Area */
 .trovebox-banner {
-  //position: fixed;
+  position: fixed;
   &.navbar-fixed-top {
-    z-index: inherit;
+    //z-index: inherit;
   }
   &.navbar {
-    position:relative;
+    //position:relative;
   }
   
   font-family: @font_primary;
@@ -28,25 +28,17 @@ body.trovebox {
     box-shadow: 1px 0 0 rgba(255,255,255,0.3);
   }
   
-  .navbar-inner-primary {
-    background-color: @color_banner_primary;
-    background-image: none;
-    padding: 12px 0;
-    min-height: auto;
-    border-bottom: 0;
-
-    form {
-      margin:0;
-      padding:0;
-    }
-  }
-  
   .navbar-inner-secondary {
     background-color: @color_banner_secondary;
     background-image: none;
     padding: 10px 0;
     min-height: auto;
     border-bottom: 1px solid #bebec0;
+
+    a.black:not(.btn) {
+      color: #000;
+      text-decoration:underline;
+    }
   }
   
   .btn {
@@ -76,6 +68,18 @@ body.trovebox {
   }
   
   .navbar-inner-primary {
+    background-color: @color_banner_primary;
+    background-image: none;
+    padding: 12px 0;
+    min-height: auto;
+    border-bottom: 0;
+    filter:none;
+
+    form {
+      margin:0;
+      padding:0;
+    }
+
     .nav {
       
       margin-left: 20px;
@@ -141,7 +145,7 @@ body.trovebox {
         vertical-align: middle;
         margin-bottom: 0;
         width: 125px;
-        height: 16px;
+        height: 15px;
         font-size: 11px;
         padding: 4px 6px;
         
@@ -167,6 +171,7 @@ body.trovebox {
       .btn {
         margin-left: 10px;
         vertical-align: middle;
+        margin-top: -3px;
       }
       /* Logged in profile */
       .profile-link {
@@ -264,6 +269,7 @@ body.trovebox {
     color: @color_banner_secondary_font;
     font-size: 13px;
     line-height: 18px;
+    filter:none;
     
     .separator-left {
       border-left: 1px solid rgba(255,255,255,0.7);
