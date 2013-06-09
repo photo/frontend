@@ -235,14 +235,14 @@ class SkyDriveAPI
     public function refreshAccessToken()
     {
         $path = self::SKYDRIVE_BASE_TOKEN_URL;
-        $getParameters = array(
+        $parameters = array(
             'client_id' => $this->client_id,
             'redirect_uri' => $this->redirect_uri,
             'client_secret' => $this->client_secret,
             'grant_type' => 'refresh_token',
             'refresh_token' => $this->refresh_token,
         );
-        $response = $this->skyDriveApiCall($path, "POST", $getParameters, null, '');
+        $response = $this->skyDriveApiCall($path, "POST", null, http_build_query($parameters, '', '&'), null);
         $access_token = (array)$response;
         $access_token['created'] = time();
         return $access_token;
@@ -262,10 +262,19 @@ class SkyDriveAPI
      *
      * @return stdClass $ $response_obj
      */
-    public function skyDriveApiCall($path, $method = "GET", $getParameters = null, $postbody = null, $postbodySize = null)
+    public function skyDriveApiCall($path, $method = "GET", $parameters = null, $postbody = null, $postbodySize = null, $contentType = "application/x-www-form-urlencoded")
     {
-        $ch = curl_init();        
-        curl_setopt($ch, CURLOPT_URL, $path);
+        $ch = curl_init();
+        
+        // Ensure that the accessToken is included
+        $access_token_parameter = array('access_token' => $this->access_token['access_token']);
+        if (!empty($parameters)) {
+          $Parameters = array_merge($parameters, $access_token_parameter);
+        } else {
+          $Parameters = $access_token_parameter;
+        }
+        curl_setopt($ch, CURLOPT_URL, $path . "?" . http_build_query($Parameters, '', '&'));
+                    
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_FAILONERROR, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);  
@@ -275,23 +284,16 @@ class SkyDriveAPI
         switch($method) {
         
           case "GET":
-            $access_token_parameter = array('access_token' => $this->access_token['access_token']);
-            if (!empty($getParameters)) {
-              $GET_Parameters = array_merge($getParameters, $access_token_parameter);
-            } else {
-              $GET_Parameters = $access_token_parameter;
-            }
-            curl_setopt($ch, CURLOPT_URL, $path . "?" . http_build_query($GET_Parameters, '', '&'));
-            
+            //error_log("Attempting a GET");          
             break;
           
           case "POST":
+            //error_log("Attempting a POST");          
             curl_setopt($ch, CURLOPT_POST, TRUE);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($getParameters, '', '&'));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postbody);
             curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/x-www-form-urlencoded',
+                "Content-Type: $contentType",
             ));
-            
             break;
           
           case "PUT":
@@ -300,16 +302,6 @@ class SkyDriveAPI
 				    curl_setopt($ch, CURLOPT_PUT, true);
 				    curl_setopt($ch, CURLOPT_INFILE, $postbody);
 				    curl_setopt($ch, CURLOPT_INFILESIZE, $postbodySize);
-				    
-            $access_token_parameter = array('access_token' => $this->access_token['access_token']);
-            if (!empty($getParameters)) {
-              $GET_Parameters = array_merge($getParameters, $access_token_parameter);
-            } else {
-              $GET_Parameters = $access_token_parameter;
-            }
-
-            curl_setopt($ch, CURLOPT_URL, $path . "?" . http_build_query($GET_Parameters, '', '&'));
-            
             break;
         }        
         
@@ -371,14 +363,14 @@ class SkyDriveAPI
                 'suppress_redirects' => 'true',
             );
         } else {
-            $path = self::SKYDRIVE_API_BASE_URL . $fileID . '/content?download=true';
+            $path = self::SKYDRIVE_API_BASE_URL . $fileID . '/content';
             $getParameters = array(
                 'download' => 'true',
             );            
         }
 
         $response = $this->skyDriveApiCall($path, "GET", $getParameters, null);        
-        error_log(print_r($response,1));
+        error_log("inside download $path ". print_r($response,1));
         if ($print) {
             $this->print_response($response);
             exit;
@@ -628,9 +620,12 @@ class SkyDriveAPI
     public function createFolder($parentFolderID, $name, $description, $print = false)
     {
 
+        error_log("Calling createFolder: $parentFolderID $name");
+
+
         $postbody = json_encode(array('name' => $name, 'description' => $description));
         $path = self::SKYDRIVE_API_BASE_URL . $parentFolderID;
-        $response = $this->skyDriveApiCall($path, EHttpClient::POST, null, $postbody, 'application/json');
+        $response = $this->skyDriveApiCall($path, "POST", null, $postbody, null, 'application/json');
 
         if ($print) {
             $this->print_response($response);

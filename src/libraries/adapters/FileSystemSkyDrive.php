@@ -42,7 +42,7 @@ class FileSystemSkyDrive implements FileSystemInterface
     {
       $accessToken = $this->skyDrive->refreshAccessToken();
       $this->skyDrive->setAccessToken($accessToken);
-      getSession()->set('skyDriveAccessToken', $accessToken['access_token']);
+      $session->set('skyDriveAccessToken', $accessToken['access_token']);
     }
 
     $this->skyDriveFolder = $this->config->skyDrive->skyDriveFolder;
@@ -62,6 +62,7 @@ class FileSystemSkyDrive implements FileSystemInterface
 
   public function downloadPhoto($photo)
   {
+    getLogger()->warn("Calling downloadPhoto: " . $photo);
     $fp = fopen($photo['pathOriginal'], 'r');
     return $fp;
   }
@@ -117,22 +118,20 @@ class FileSystemSkyDrive implements FileSystemInterface
   {
     getLogger()->warn("Calling getPhoto: " . $filename);
 
-    // Get the folderID
-    $folders = preg_split("/\//", substr(dirname($filename), 1));
-    
-    $parent = $this->skyDriveFolder;
-    foreach ($folders as $folder) {
-      $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
-      getLogger()->warn("Calling getPhoto inside foreach: " . print_r($response,1));
-      $parent = $response->id;
+    $session = getSession();
+    $fileCookieName = substr($filename, 1);
+    if (!$session->get($fileCookieName)) 
+    {    
+      $parent = $this->getFolderId($fileCookieName);
+      $photo = $this->skyDrive->getFileByName(basename($filename), $parentID = $parent);
+      $session->set($fileCookieName, $photo);
+    } else {
+      $photo = $session->get($fileCookieName);
     }
-                
-    // Using my Pictures folder by default for now
-    $photo = $this->skyDrive->getFileByName(basename($filename), $parentID = $parent);
+    
     getLogger()->warn("getPhoto photo is : " . print_r($photo,1));    
     getLogger()->warn("Photo: " . $filename . " ID: " . $photo->id);
 
-    //$filename = $this->normalizePath($filename);
     $tmpname = '/tmp/'.uniqid('opme', true);
     $fp = fopen($tmpname, 'w+');    
     $res = $this->skyDrive->download($fileID = $photo->id, $returnDownloadLink = true);
@@ -154,20 +153,37 @@ class FileSystemSkyDrive implements FileSystemInterface
   public function putPhoto($localFile, $remoteFile, $dateTaken)
   {
     getLogger()->warn("Calling putPhoto");
-    getLogger()->warn($localFile);
-    getLogger()->warn($remoteFile);
-    getLogger()->warn($dateTaken);
-
-    // Get the folderID
-    $folders = preg_split("/\//", substr(dirname($remoteFile), 1));
     
-    $parent = $this->skyDriveFolder;
-    foreach ($folders as $folder) {
-      $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
-      getLogger()->warn("Calling getPhoto inside foreach: " . print_r($response,1));
-      $parent = $response->id;
+    $path = substr(dirname($remoteFile), 1);
+    $session = getSession();
+    
+    // Get the folderID
+    $folderCookie = preg_replace("/\//", "/\_/", $path);
+    if (!$session->get($folderCookie)) 
+    {          
+      $folders = preg_split("/\//", $path);
+      
+      $parent = $this->skyDriveFolder;
+      foreach ($folders as $folder) {
+        $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
+        getLogger()->warn("Calling getPhoto inside foreach: " . print_r($response,1));
+
+        // if $response says folder doesn't exist we should create it        
+        if (is_null($response)) {
+          getLogger()->warn("Creating $folder");
+          $response = $this->skyDrive->createFolder($parent, $folder, $folder);        
+          getLogger()->warn(print_r($response, 1));          
+        }
+                
+        $parent = $response->id;
+      }
+      $parent = $session->set($folderCookie, $parent);
+      
+    } else {
+        $parent = $session->get($folderCookie);    
     }
     $response = $this->skyDrive->upload($localFile, basename($remoteFile), $parent);
+    getLogger()->warn(print_r($response, 1));
     
     return true;    
   }
@@ -176,30 +192,39 @@ class FileSystemSkyDrive implements FileSystemInterface
   {
     getLogger()->warn("Calling putPhotos " . print_r($files,1));
     
-    //$queue = $this->getBatchRequest();
+    $session = getSession();
     foreach($files as $file)
     {
-
       list($localFile, $remoteFileArr) = each($file);
-      $remoteFile = $remoteFileArr[0];
+      $remoteFile = substr($remoteFileArr[0], 1);
       $dateTaken = $remoteFileArr[1];
       getLogger()->warn("Calling putPhotos " . $remoteFile);
 
-      $folders = preg_split("/\//", substr(dirname($file), 1));
-      foreach ($folders as $folder) {
-        $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
-        getLogger()->warn("Calling getPhoto inside foreach: " . print_r($response,1));
-        
-        // if $response says folder doesn't exist we should create it
-        //$this->skyDrive->createFolder($parent, $folder, $folder);
-        
-        $parent = $response->id;
+      $folderCookie = preg_replace("/\//", "/\_/", dirname($remoteFile));
+      if (!$session->get($folderCookie)) 
+      {      
+        $folders = preg_split("/\//", dirname($remoteFile));      
+        $parent = $this->skyDriveFolder;      
+        foreach ($folders as $folder) {
+          $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
+          getLogger()->warn("Calling getPhoto inside foreach: " . print_r($response,1));
+
+          // if $response says folder doesn't exist we should create it        
+          if (is_null($response)) {
+            getLogger()->warn("Creating $folder");
+            $response = $this->skyDrive->createFolder($parent, $folder, $folder);        
+          }          
+          $parent = $response->id;
+        }
+        $parent = $session->set($folderCookie, $parent);        
+      } else {
+        $parent = $session->get($folderCookie);
       }
       
       $normalized_remoteFile = $this->normalizePath($remoteFile);
         
       $response = $this->skyDrive->upload($localFile, basename($normalized_remoteFile), $parent);
-      getLogger()->warn($response);
+      getLogger()->warn(print_r($response,1));
               
     }
     $responses = '';
@@ -214,8 +239,9 @@ class FileSystemSkyDrive implements FileSystemInterface
     */
   public function getHost()
   {
+    $utilityObj = new Utility;  
     getLogger()->warn("Calling getHost");
-    return $this->host;
+    return sprintf('%s/skydrive', getenv('HTTP_HOST'));
   }
 
   /**
@@ -255,4 +281,44 @@ class FileSystemSkyDrive implements FileSystemInterface
     getLogger()->warn("Calling getRoot");      
     return $this->root;
   }
+  
+  public function getFolderId($path) 
+  {
+    $session = getSession();  
+    $folderCookie = preg_replace("/\//", "/\_/", dirname($path));
+    if (!$session->get($folderCookie)) {
+      $folders = preg_split("/\//", dirname($path));
+      $parent = $this->skyDriveFolder;
+      foreach ($folders as $folder) {
+        $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
+        $parent = $response->id;
+      }      
+      $session->set($folderCookie, $parent);
+    } else {
+      $parent = $session->get($folderCookie);
+    } 
+    return $parent;  
+  
+  }
+  
+  public function view($path)
+  {
+    getLogger()->warn("Calling view");
+    getLogger()->warn($path);
+    $session = getSession();    
+
+    if (!$session->get($path)) 
+    {    
+      $parent = $this->getFolderId($path);
+      $response = $this->skyDrive->getFileByName(basename($path), $parentID = $parent);
+      $photo = $this->skyDrive->download($response->id, $returnDownloadLink = true);
+      $session->set($path, $photo);
+    } else {
+      $photo = $session->get($path);
+    }    
+    getLogger()->warn($photo);
+    
+    header("Location: $photo");
+
+  }  
 }

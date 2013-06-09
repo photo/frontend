@@ -123,6 +123,10 @@ $routeObj->get('/assets/.*/stylesheets/lessc', array('AssetsController', 'lessc'
 $routeObj->get('/assets/cache/([^/]+)/(js|css)/(c|m)(/.+)', array('AssetsController', 'get'));
 $routeObj->get('/assets/versioned/[^/]+/(.+)', array('AssetsController', 'staticAsset'));
 
+/*
+ * SkyDrive endpoints
+ */
+$routeObj->get('/skydrive/?(.+)?', array('FileSystemSkyDrive', 'view')); // view a photo from skydrive
 
 if($runUpgrade)
   require $configObj->get('paths')->libraries . '/routes-upgrade.php';
