@@ -446,9 +446,22 @@ class ApiPhotoController extends ApiBaseController
     $allowDuplicate = $this->config->site->allowDuplicate;
     if(isset($attributes['allowDuplicate']))
       $allowDuplicate = $attributes['allowDuplicate'];
+
+    // jmathai - check where this gets set
+    if(isset($returnSizes))
+    {
+      $sizes = (array)explode(',', $returnSizes);
+      if(!in_array('100x100xCR', $sizes))
+        $sizes[] = '100x100xCR';
+    }
+    else
+    {
+      $sizes = array('100x100xCR');
+    }
+
     if($allowDuplicate == '0')
     {
-      $hashResp = $this->api->invoke("/{$this->apiVersion}/photos/list.json", EpiRoute::httpGet, array('_GET' => array('hash' => $attributes['hash'])));
+      $hashResp = $this->api->invoke("/{$this->apiVersion}/photos/list.json", EpiRoute::httpGet, array('_GET' => array('hash' => $attributes['hash'], 'returnSizes' => implode(',', $sizes))));
       // the second condition is for backwards compatability between v2 and v1. See #1086
       if(!empty($hashResp['result']) && $hashResp['result'][0]['totalRows'] > 0)
       {
@@ -463,18 +476,6 @@ class ApiPhotoController extends ApiBaseController
     {
       if(isset($attributes['albums']))
         $this->updateAlbums($attributes['albums'], $photoId);
-
-      // jmathai - check where this gets set
-      if(isset($returnSizes))
-      {
-        $sizes = (array)explode(',', $returnSizes);
-        if(!in_array('100x100xCR', $sizes))
-          $sizes[] = '100x100xCR';
-      }
-      else
-      {
-        $sizes = array('100x100xCR');
-      }
 
       foreach($sizes as $size)
       {
