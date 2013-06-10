@@ -282,6 +282,11 @@ class FileSystemSkyDrive implements FileSystemInterface
     return $this->root;
   }
   
+  /*
+    Grab the folder Id for the path from SkyDrive
+    store the ids of the pieces as cookies so subsequent look ups are faster
+    Here be dragons....
+  */
   public function getFolderId($path) 
   {
     $session = getSession();  
@@ -289,9 +294,26 @@ class FileSystemSkyDrive implements FileSystemInterface
     if (!$session->get($folderCookie)) {
       $folders = preg_split("/\//", dirname($path));
       $parent = $this->skyDriveFolder;
+      $previousFolder = null;
       foreach ($folders as $folder) {
-        $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
-        $parent = $response->id;
+
+        if (is_null($previousFolder))
+          $parentFolderCookie = $folder;
+        else
+          $parentFolderCookie = $previousFolder . "_" . $folder;
+
+        if (!$session->get($parentFolderCookie)) {
+          $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
+          $parent = $response->id;
+          $session->set($parentFolderCookie, $parent);
+          error_log("Setting $parentFolderCookie");
+        } else {
+          error_log("Getting $parentFolderCookie");
+          $parent = $session->get($parentFolderCookie);
+        }
+
+        $previousFolder = $folder;
+
       }      
       $session->set($folderCookie, $parent);
     } else {
