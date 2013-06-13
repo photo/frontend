@@ -1,7 +1,7 @@
 (function($) {
 
   function Fabrizio() {
-    var crumb, log, markup, profiles, pushstate, tags, pathname, util;
+    var crumb, markup, profiles, pushstate, tags, pathname, util;
 
     crumb = (function() {
       var value = null;
@@ -123,13 +123,10 @@
           }
         },
         loadCb: function(response) {
-          console.log('calling loadCb in util');
           // this is the context, bound in the callback
           // at the last page
           var context = this, r = response.result, $button = $('button.loadMore');
 
-          console.log($button);
-          console.log(r[0]);
           // check if there are more pages
           if(r.length > 0 && r[0].totalPages > r[0].currentPage) {
             $button.fadeIn();
@@ -206,6 +203,8 @@
           TBX.init.pages.photo.init();
         else if(location.pathname === '/photos/upload')
           TBX.init.pages.upload();
+        else if(location.pathname === '/photos/upload/beta')
+          TBX.init.pages.uploadBeta();
       },
       attachEvents: function() {
         OP.Util.on('preload:photos', TBX.handlers.custom.preloadPhotos);
@@ -248,9 +247,7 @@
             util.load(_this, async);
           },
           loadCb: function(response) {
-            console.log('loadCb in album');
             var items = response.result, _this = TBX.init.pages.albums;
-            console.log(items)
 
             for(i in items) {
               if(items.hasOwnProperty(i))
@@ -346,7 +343,8 @@
             };
             op.data.store.Router = new op.data.route.Routes(options);
             // Start Backbone history a necessary step for bookmarkable URL's
-            Backbone.history.start({pushState: true, silent: true});
+            Backbone.history.start({pushState: Modernizr.history, silent: true});
+            Backbone.history.loadUrl(Backbone.history.getFragment())
           },
           load: function() {
             var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];
@@ -368,6 +366,13 @@
           OP.Util.on('upload:uploader-ready', TBX.callbacks.uploaderReady);
           OP.Util.on('submit:photo-upload', TBX.callbacks.upload);
           OP.Util.fire('upload:uploader-ready');
+        },
+        uploadBeta: function() {
+          window.Dropzone.autoDiscover = false;
+          OP.Util.on('upload:uploader-beta-ready', TBX.handlers.custom.uploaderBetaReady);
+//        OP.Util.on('click:upload-dialog', TBX.handlers.uploadDialogBeta);
+//        OP.Util.on('click:photo-upload', TBX.handlers.click.uploadBeta);
+          OP.Util.fire('upload:uploader-beta-ready');
         }
       }
     }; // init
@@ -415,4 +420,5 @@
   TBX.notification = _TBX.notification;
   TBX.init = _TBX.init;
   TBX.crumb = _TBX.crumb;
+  TBX.log = OP.Log; // for consistency
 })(jQuery);

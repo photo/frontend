@@ -10,6 +10,11 @@ class PhotoWrapper extends Photo
   {
     return parent::autoRotateEnabled($allowAutoRotate);
   }
+
+  public function trim($str)
+  {
+    return parent::trim($str);
+  }
 }
 
 class PhotoTest extends PHPUnit_Framework_TestCase
@@ -637,5 +642,29 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $size = getimagesize($this->portrait);
 
     $this->assertEquals($size[1], $exif['width']);
+  }
+
+  public function testTrim()
+  {
+    // starts
+    $this->assertEquals("\tabcd", $this->photo->trim("\tabcd"), 'Starts with tab fails');
+    $this->assertEquals("\t abcd", $this->photo->trim("\t abcd"), 'Starts with tab then space fails');
+    $this->assertEquals("\tabcd", $this->photo->trim(" \tabcd"), 'Starts with space then tab fails');
+    $this->assertEquals("abcd", $this->photo->trim("\nabcd"), 'Starts with new line fails');
+    $this->assertEquals("\tabcd", $this->photo->trim("\n\tabcd"), 'Starts with new line then tab fails');
+
+    // ends
+    $this->assertEquals("abcd", $this->photo->trim("abcd\t"), 'Ends with tab fails');
+    $this->assertEquals("abcd", $this->photo->trim("abcd\t "), 'Ends with tab then space fails');
+    $this->assertEquals("abcd", $this->photo->trim("abcd \t"), 'Ends with space then tab fails');
+    $this->assertEquals("abcd", $this->photo->trim("abcd\n"), 'Ends with new line fails');
+    $this->assertEquals("abcd", $this->photo->trim("abcd\n\t"), 'Ends with new line then tab fails');
+
+    // starts and ends
+    $this->assertEquals("\tabcd", $this->photo->trim("\tabcd\t"), 'Starts/Ends with tab fails');
+    $this->assertEquals("\t abcd", $this->photo->trim("\t abcd\t "), 'Starts/Ends with tab then space fails');
+    $this->assertEquals("\tabcd", $this->photo->trim(" \tabcd \t"), 'Starts/Ends with space then tab fails');
+    $this->assertEquals("abcd", $this->photo->trim("\nabcd\n"), 'Starts/Ends with new line fails');
+    $this->assertEquals("\tabcd", $this->photo->trim("\n\tabcd\n\t"), 'Starts/Ends with new line then tab fails');
   }
 }

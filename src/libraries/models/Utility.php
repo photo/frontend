@@ -60,6 +60,12 @@ class Utility
     return array('status' => $status, 'label' => $label, 'message' => $message);
   }
 
+  public function enableBetaFeatures()
+  {
+    $config = getConfig()->get();
+    return $config->site->enableBetaFeatures === '1';
+  }
+
   public function encrypt($string, $secret = null, $salt = null)
   {
     if($secret === null)
@@ -128,7 +134,7 @@ class Utility
 
   public function getPath()
   {
-    return $_SERVER['REDIRECT_URL'];
+    return $_SERVER['REQUEST_URI'];
   }
 
   public function dateLong($ts, $write = true)

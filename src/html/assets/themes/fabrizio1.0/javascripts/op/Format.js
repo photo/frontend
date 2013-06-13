@@ -248,7 +248,17 @@
         return {size: Math.ceil(size / Math.pow(kb,2)), unit: 'MB'}
 
       return {size: Math.ceil(size / Math.pow(kb,3)), unit: 'GB'}
-    }
+    };
+    this.plural = function(string, count) {
+      if(count < 2)
+        return string;
+
+      var lastLetter = string.charAt(string.length-1);
+      if(lastLetter === 'y' || lastLetter === 'Y')
+        return string.substr(0, string.length-1) + 'ies';
+      else
+        return string.substr(0, string.length-1) + 's';
+    };
 
     this.sprintf = function() {
       // http://kevin.vanzonneveld.net
