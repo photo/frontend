@@ -3,17 +3,17 @@
     TBX = {};
 
   function Upload() {
-    var dropzone, total = 0, duplicateCache = {}, completeObj = {success: 0, duplicate: 0, failed: 0}, confirmationMessage = 0;
+    var dropzone, total = 0, ids = [], duplicateCache = {}, completeObj = {success: 0, duplicate: 0, failed: 0, completed: 0}, progressModel, $form = $('form.upload');
 
     var fileFinishedHandler = function(file, response) {
-      var message, previewElement = $(file.previewElement);
+      var message, $previewElement = $(file.previewElement);
       switch(response.code) {
         case 201:
           completeObj.success++;
-          $(".dz-details>img", previewElement).attr('src', response.result.path100x100xCR).css('display', 'block');
+          $(".dz-details>img", $previewElement).attr('src', response.result.path100x100xCR).css('display', 'block');
           break;
         case 409:
-          $(".dz-details>img", previewElement).attr('src', response.result.path100x100xCR).css('display', 'block');
+          $(".dz-details>img", $previewElement).attr('src', response.result.path100x100xCR).css('display', 'block');
           completeObj.duplicate++;
           break;
         default:
@@ -21,17 +21,44 @@
           break;
       }
 
-      if(completeObj.duplicate === 0)
-        message = TBX.format.sprintf('Your upload progress: total -> %s, successful -> %s, failed -> %s', total, completeObj.success, completeObj.failed);
-      else
-        message = TBX.format.sprintf('Your upload progress: total -> %s, successful -> %s, duplicate -> %s, failed -> %s', total, completeObj.success, completeObj.duplicate, completeObj.failed);
+      completeObj.completed++;
+      ids.push(response.result.id);
 
-      if(confirmationMessage === 0)
-        TBX.notification.show(message);
-      else
-        
-      confirmationMessage = 1;
+      if(completeObj.completed === total) {
+        progressModel.completed();
+
+        if(completeObj.failed === 0) {
+          if(completeObj.duplicate === 0)
+            message = 'Your photos have been successfully uploaded. %s';
+          else
+            message = TBX.format.sprintf('Your photos have been successfully uploaded (%s %s).', completeObj.duplicate, TBX.format.plural('duplicate', completeObj.duplicate)) + ' %s';
+
+          TBX.notification.show(TBX.format.sprintf(message, TBX.format.sprintf('<a href="/photos/ids-%s/list">View or edit your photos</a>.', ids.join(','))));
+        } else {
+          TBX.notification.show('There was a problem uploading your photos. Please try again.', 'static', 'error');
+        }
+      }
+
+      progressModel.set('success', percent(completeObj.success, total));
+      progressModel.set('warning', percent(completeObj.duplicate, total));
+      progressModel.set('danger', percent(completeObj.failed, total));
     };
+    var fileSending = function() {
+      if(typeof(progressModel) === "undefined") {
+        // insert the progress container
+        $el = $('.progress-upload');
+        // create the progress model
+        progressModel = new op.data.model.ProgressBar();
+        // insert the view and render it in place
+        (new op.data.view.ProgressBar({model: progressModel, el: $el})).render();
+      }
+    };
+    var percent = function(numerator, denominator) {
+      if(denominator === 0)
+        return 0;
+      return (numerator / denominator) * 100;
+    };
+
     this.init = function() {
       dropzone = new Dropzone('form.dropzone', {
         url: '/photo/upload.json',

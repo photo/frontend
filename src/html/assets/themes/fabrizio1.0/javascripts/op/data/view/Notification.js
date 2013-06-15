@@ -11,11 +11,12 @@
     },
     render: function(){
       var that = this, $el = $(this.el), notification = that.model.toJSON(), exists = $('.trovebox-message').length === 1;
-      if(exists)
-        $el.slideUp('fast', function() { $(this).html(that.template(notification)).slideDown('medium'); });
-      else
+      if(exists) {
+        $el.html(that.template(notification));
+        TBX.highlight.run($('.alert', $el));
+      } else {
         $el.css('display', 'none').html(that.template(notification)).slideDown('medium');
-
+      }
       return this;
     }
   });

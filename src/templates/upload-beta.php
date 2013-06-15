@@ -43,6 +43,7 @@
       <div class="btn-toolbar">
         <button type="button" class="btn btn-theme-secondary uploadBeta">Start uploading</button>
       </div>
+      <div class="progress-upload progress-meta"></div>
       <small><em>Powered by <a href="http://www.dropzonejs.com/" target="_blank">Dropzone.js</a></em></small>
     </div>
     <div class="span9">
