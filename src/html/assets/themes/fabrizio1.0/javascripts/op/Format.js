@@ -257,7 +257,7 @@
       if(lastLetter === 'y' || lastLetter === 'Y')
         return string.substr(0, string.length-1) + 'ies';
       else
-        return string.substr(0, string.length-1) + 's';
+        return string.substr(0, string.length) + 's';
     };
 
     this.sprintf = function() {
