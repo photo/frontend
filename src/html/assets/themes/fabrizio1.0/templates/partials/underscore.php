@@ -470,3 +470,10 @@
     </div>
   </div>
 </script>
+<script type="tmpl/underscore" id="progress-meta">
+  <div class="progress <%= striped %>">
+    <div class="bar bar-success" style="width:<%= success %>%;"></div>
+    <div class="bar bar-warning" style="width:<%= warning %>%;"></div>
+    <div class="bar bar-danger" style="width:<%= danger %>%;"></div>
+  </div>
+</script>
