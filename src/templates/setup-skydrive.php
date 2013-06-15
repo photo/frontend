@@ -12,7 +12,10 @@
 
       <label for="SkyDriveSecret">SkyDrive Client Secret</label>
       <input type="password" name="SkyDriveClientSecret" id="SkyDriveClientSecret" size="50" autocomplete="off" data-validation="required" placeholder="SkyDrive Client Secret" value="<?php echo $skyDriveClientSecret; ?>">
-    
+
+      <label for="SkyDriveFolder">SkyDrive Folder</label>
+      <input type="input" name="SkyDriveFolder" id="SkyDriveFolder" size="50" autocomplete="off" data-validation="required" placeholder="SkyDrive Folder" value="<?php echo $skyDriveFolder; ?>">    
+      
       <h2>Sign Into your SkyDrive Account</h2>
       
       <div class="btn-toolbar">

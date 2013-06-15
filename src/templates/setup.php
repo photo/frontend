@@ -65,6 +65,7 @@
         <option value="Local"<?php echo ($filesystem == 'Local') ? ' selected="selected"' : '' ?>>Local filesystem</option>
         <option value="LocalDropbox"<?php echo ($filesystem == 'LocalDropbox') ? ' selected="selected"' : '' ?>>Local filesystem + Dropbox</option>
         <!--<option value="DreamObjects"<?php echo ($filesystem == 'DreamObjects') ? ' selected="selected"' : '' ?>>DreamObjects</option>-->
+        <option value="LocalSkyDrive"<?php echo ($filesystem == 'LocalSkyDrive') ? ' selected="selected"' : '' ?>>Local filesystem + SkyDrive</option>        
         <option value="SkyDrive"<?php echo ($filesystem == 'SkyDrive') ? ' selected="selected"' : '' ?>>SkyDrive</option>
       </select>
 
@@ -130,7 +131,7 @@
       <?php if(isset($usesSkyDrive) && !empty($usesSkyDrive)) { ?>
         <input type="hidden" name="skyDriveClientID" value="<?php $this->utility->safe($skyDriveClientID); ?>">
         <input type="hidden" name="skyDriveClientSecret" value="<?php $this->utility->safe($skyDriveClientSecret); ?>">
-        <input type="hidden" name="skyDriveAccessToken" value="<?php $this->utility->safe($skyDriveAccessToken); ?>">        
+        <input type="hidden" name="skyDriveFolder" value="<?php $this->utility->safe($skyDriveFolder); ?>">        
         <input type="hidden" name="skyDriveRefreshToken" value="<?php $this->utility->safe($skyDriveRefreshToken); ?>">
       <?php } ?>
 

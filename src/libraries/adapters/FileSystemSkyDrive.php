@@ -58,13 +58,34 @@ class FileSystemSkyDrive implements FileSystemInterface
     */
   public function deletePhoto($photo)
   {
+    getLogger()->warn("Calling deletePhoto: " . print_r($photo,1));
+    foreach($photo as $key => $value)
+    {
+      if(strncmp($key, 'path', 4) === 0) 
+      {
+        $session = getSession();
+        $fileCookieName = substr($value, 1);
+        if (!$session->get($fileCookieName)) 
+        {    
+          $parent = $this->getFolderId(dirname($value));
+          $filename = $this->skyDrive->getFileByName(basename($value), $parentID = $parent);
+        } else {
+          $filename = $session->get($fileCookieName);
+        }      
+        getLogger()->warn(print_r($filename, 1));
+        $response = $this->skyDrive->deleteFileByID($filename->id);
+        getLogger()->warn(print_r($response, 1));
+      }        
+    }
+
+    return true;
   }
 
   public function downloadPhoto($photo)
   {
-    getLogger()->warn("Calling downloadPhoto: " . $photo);
-    $fp = fopen($photo['pathOriginal'], 'r');
-    return $fp;
+    getLogger()->warn("Calling downloadPhoto: " . print_r($photo,1));
+    //$fp = fopen($photo['pathOriginal'], 'r');
+    //return $fp;
   }
 
   /**
@@ -122,8 +143,10 @@ class FileSystemSkyDrive implements FileSystemInterface
     $fileCookieName = substr($filename, 1);
     if (!$session->get($fileCookieName)) 
     {    
-      $parent = $this->getFolderId($fileCookieName);
+      $parent = $this->getFolderId(dirname($filename));
+      getLogger()->warn("Parent: " . $parent);            
       $photo = $this->skyDrive->getFileByName(basename($filename), $parentID = $parent);
+      getLogger()->warn("Photo: " . print_r($photo, 1));      
       $session->set($fileCookieName, $photo);
     } else {
       $photo = $session->get($fileCookieName);
@@ -134,7 +157,8 @@ class FileSystemSkyDrive implements FileSystemInterface
 
     $tmpname = '/tmp/'.uniqid('opme', true);
     $fp = fopen($tmpname, 'w+');    
-    $res = $this->skyDrive->download($fileID = $photo->id, $returnDownloadLink = true);
+    //$res = $this->skyDrive->download($fileID = $photo->id, $returnDownloadLink = true);
+    $res = $photo->picture;
     
     // Temp Download
     $ch = curl_init(); 
@@ -290,25 +314,34 @@ class FileSystemSkyDrive implements FileSystemInterface
   public function getFolderId($path) 
   {
     $session = getSession();  
-    $folderCookie = preg_replace("/\//", "/\_/", dirname($path));
+
+    // Strip Beginning Slash
+    if ($path[0] == "/")
+      $path = substr($path, 1);
+
+    $folderCookie = $path;
+    
+    getLogger()->warn("===== Inside getFolderId ===== " . $path);
+    
     if (!$session->get($folderCookie)) {
-      $folders = preg_split("/\//", dirname($path));
+      getLogger()->warn("===== No Session Variable ===== " . $path);    
+      $folders = preg_split("/\//", $path);
       $parent = $this->skyDriveFolder;
-      $previousFolder = null;
+      $previousFolder = NULL;
       foreach ($folders as $folder) {
 
         if (is_null($previousFolder))
           $parentFolderCookie = $folder;
         else
-          $parentFolderCookie = $previousFolder . "_" . $folder;
+          $parentFolderCookie = $previousFolder . "/" . $folder;
 
         if (!$session->get($parentFolderCookie)) {
           $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
           $parent = $response->id;
           $session->set($parentFolderCookie, $parent);
-          error_log("Setting $parentFolderCookie");
+          error_log("=== Setting $parentFolderCookie ===");
         } else {
-          error_log("Getting $parentFolderCookie");
+          error_log("=== Getting $parentFolderCookie ===");
           $parent = $session->get($parentFolderCookie);
         }
 
@@ -316,8 +349,9 @@ class FileSystemSkyDrive implements FileSystemInterface
 
       }      
       $session->set($folderCookie, $parent);
-    } else {
+    } else {    
       $parent = $session->get($folderCookie);
+      getLogger()->warn("===== Session Variable ===== " . $path . " " . $parent);      
     } 
     return $parent;  
   
@@ -331,14 +365,17 @@ class FileSystemSkyDrive implements FileSystemInterface
 
     if (!$session->get($path)) 
     {    
-      $parent = $this->getFolderId($path);
+      $parent = $this->getFolderId(dirname($path));
       $response = $this->skyDrive->getFileByName(basename($path), $parentID = $parent);
-      $photo = $this->skyDrive->download($response->id, $returnDownloadLink = true);
+      getLogger()->warn("response: " . print_r($response, 1));
+      $photo = $response->picture;
+      $photo2 = $this->skyDrive->download($response->id, $returnDownloadLink = true);
       $session->set($path, $photo);
     } else {
       $photo = $session->get($path);
     }    
-    getLogger()->warn($photo);
+    getLogger()->warn("Photo from object: " . $photo);
+    getLogger()->warn("Photo from download: " . $photo2);
     
     header("Location: $photo");
 

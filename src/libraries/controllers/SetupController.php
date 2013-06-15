@@ -119,15 +119,12 @@ class SetupController extends BaseController
     {
       $authCode = $_GET['code'];
       
-      //$qs = '';
+      $qs = '';
       $SkyDriveClientID = $this->utility->decrypt(getSession()->get('flowSkyDriveClientID'), $secret);
       $SkyDriveClientSecret = $this->utility->decrypt(getSession()->get('flowSkyDriveClientSecret'), $secret);
+      $SkyDriveFolder = getSession()->get('flowSkyDriveFolder');      
+      
       $callback = sprintf('%s://%s%s%s', $this->utility->getProtocol(false), getenv('HTTP_HOST'), '/setup/skydrive/callback', $qs);
-
-      getLogger()->warn($_GET['code']);
-      getLogger()->warn($callback);      
-      getLogger()->warn($SkyDriveClientID);
-      getLogger()->warn($SkyDriveClientSecret);
 
       $authCode = $_GET['code'];
       
@@ -143,18 +140,15 @@ class SetupController extends BaseController
      
       //getLogger()->warn("Response in Setup: " . print_r($response,1));
 
-      if(isset($response->access_token))
-        getLogger()->warn("Setting access_token");
-        $accessToken = $response->access_token;
-
       if(isset($response->refresh_token))
         getLogger()->warn("Setting refresh_token");
         $refreshToken = $response->refresh_token;
 
       getSession()->set('skyDriveClientID', $this->utility->encrypt($SkyDriveClientID, $secret));
       getSession()->set('skyDriveClientSecret', $this->utility->encrypt($SkyDriveClientSecret, $secret));
-      getSession()->set('skyDriveAccessToken', $this->utility->encrypt($accessToken, $secret));
+      getSession()->set('skyDriveFolder', $SkyDriveFolder);      
       getSession()->set('skyDriveRefreshToken', $this->utility->encrypt($refreshToken, $secret));
+      
 
       $qs = '';
       if(isset($_GET['edit']))
@@ -184,13 +178,12 @@ class SetupController extends BaseController
     {
       $SkyDriveClientID = $_POST['SkyDriveClientID'];
       $SkyDriveClientSecret = $_POST['SkyDriveClientSecret'];
+      $SkyDriveFolder = $_POST['SkyDriveFolder'];      
 
       getSession()->set('flowSkyDriveClientID', $this->utility->encrypt($_POST['SkyDriveClientID'], $secret));
       getSession()->set('flowSkyDriveClientSecret', $this->utility->encrypt($_POST['SkyDriveClientSecret'], $secret));
+      getSession()->set('flowSkyDriveFolder', $_POST['SkyDriveFolder']);      
       $callback = sprintf('%s://%s%s%s', $this->utility->getProtocol(false), getenv('HTTP_HOST'), '/setup/skydrive/callback', $qs);
-
-      getLogger()->warn("ClientID: " . $SkyDriveClientID);
-      getLogger()->warn("ClientSecret: " . $SkyDriveClientSecret);
 
       $skydrive = new SkyDriveAPI(array(
                                 'client_id' => $SkyDriveClientID,
@@ -450,12 +443,9 @@ class SetupController extends BaseController
     if(!empty($skyDriveClientID))
     {
       $skyDriveClientID = $this->utility->decrypt(getSession()->get('skyDriveClientID'), $secret);
-      getLogger()->warn("in setup3, skyDriveClientID: " . $skyDriveClientID);
       $skyDriveClientSecret = $this->utility->decrypt(getSession()->get('skyDriveClientSecret'), $secret);
-      getLogger()->warn("in setup3, skyDriveClientSecret: " . $skyDriveClientSecret);
-      $skyDriveAccessToken = $this->utility->decrypt(getSession()->get('skyDriveAccessToken'), $secret);
       $skyDriveRefreshToken = $this->utility->decrypt(getSession()->get('skyDriveRefreshToken'), $secret);
-      getLogger()->warn("in setup3, skyDriveRefreshToken: " . $skyDriveRefreshToken);
+      $skyDriveFolder = getSession()->get('skyDriveFolder');
     }    
     if(getConfig()->get('credentials') != null)
     {
@@ -481,11 +471,9 @@ class SetupController extends BaseController
           $skyDriveClientID = $this->utility->decrypt($credentials->skyDriveClientID, $secret);
         if(isset($credentials->skyDriveClientSecret))
           $skyDriveClientSecret = $this->utility->decrypt($credentials->skyDriveClientSecret, $secret);
-        if(isset($credentials->skyDriveAccessToken))
-          $skyDriveAccessToken = $this->utility->decrypt($credentials->skyDriveAccessToken, $secret);
         if(isset($credentials->skyDriveRefreshToken))
           $skyDriveRefreshToken = $this->utility->decrypt($credentials->skyDriveRefreshToken, $secret);
-      }      
+      } 
     }
 
     if(getConfig()->get('aws') != null)
@@ -519,6 +507,11 @@ class SetupController extends BaseController
       $dropboxFolder = getConfig()->get('dropbox')->dropboxFolder;
     }
 
+    if(!isset($skyDriveFolder) && getConfig()->get('skydrive') != null)
+    {
+      $skyDriveFolder = getConfig()->get('skydrive')->skyDriveFolder;
+    }
+    
     $qs = '';
     if(isset($_GET['edit']))
       $qs = '?edit';
@@ -533,7 +526,7 @@ class SetupController extends BaseController
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder,
       'usesSkyDrive' => $usesSkyDrive, 'skyDriveClientID' => $skyDriveClientID, 
-      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveRefreshToken' => $skyDriveRefreshToken,
+      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveFolder' => $skyDriveFolder, 'skyDriveRefreshToken' => $skyDriveRefreshToken,
       'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
 
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
@@ -628,7 +621,7 @@ class SetupController extends BaseController
     {
       $skyDriveClientID = $_POST['skyDriveClientID'];
       $skyDriveClientSecret = $_POST['skyDriveClientSecret'];
-      $skyDriveAccessToken = $_POST['skyDriveAccessToken'];
+      $skyDriveFolder = $_POST['skyDriveFolder'];
       $skyDriveRefreshToken = $_POST['skyDriveRefreshToken'];
     }
 
@@ -696,12 +689,12 @@ class SetupController extends BaseController
         getSession()->set('skyDriveClientID', $this->utility->encrypt($skyDriveClientID, $secret));
         getSession()->set('skyDriveClientSecret', $this->utility->encrypt($skyDriveClientSecret, $secret));
         getSession()->set('skyDriveRefreshToken', $this->utility->encrypt($skyDriveRefreshToken, $secret));
-        getSession()->set('skyDriveAccessToken', $this->utility->encrypt($skyDriveAccessToken, $secret));
+        getSession()->set('skyDriveFolder', $skyDriveFolder);
         $credentials->skyDriveClientID = $this->utility->encrypt($skyDriveClientID, $secret);
         $credentials->skyDriveClientSecret = $this->utility->encrypt($skyDriveClientSecret, $secret);
         $credentials->skyDriveRefreshToken = $this->utility->encrypt($skyDriveRefreshToken, $secret);
-        $credentials->skyDriveAccessToken = $this->utility->encrypt($skyDriveAccessToken, $secret);
         $skydrive = new stdClass;        
+        $skydrive->skyDriveFolder = $skyDriveFolder;
       }
 
       $systems = new stdClass;
@@ -723,6 +716,8 @@ class SetupController extends BaseController
         getConfig()->set('localfs', $fs);
       if($usesDropbox)
         getConfig()->set('dropbox', $dropbox);
+      if($usesSkyDrive)
+        getConfig()->set('skydrive', $skydrive);      
       getConfig()->set('systems', $systems);
       getConfig()->set('secrets', $secrets);
       getConfig()->set('user', $user);
@@ -820,7 +815,7 @@ class SetupController extends BaseController
       'usesDropbox' => $usesDropbox, 'dropboxKey' => $dropboxKey, 'dropboxSecret' => $dropboxSecret, 'dropboxToken' => $dropboxToken,
       'dropboxTokenSecret' => $dropboxTokenSecret, 'dropboxFolder' => $dropboxFolder, 
       'usesSkyDrive' => $usesSkyDrive, 'skyDriveClientID' => $skyDriveClientID, 
-      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveRefreshToken' => $skyDriveRefreshToken,
+      'skyDriveClientSecret' => $skyDriveClientSecret, 'skyDriveFolder' => $skyDriveFolder, 'skyDriveRefreshToken' => $skyDriveRefreshToken,
       'qs' => $qs, 'appId' => $appId, 'errors' => $errors));
     $this->theme->display('template.php', array('body' => $body, 'page' => 'setup'));
   }
@@ -861,7 +856,7 @@ class SetupController extends BaseController
       'mySqlUser' => '', 'mySqlPassword' => '', 'mySqlDb' => '', 'mySqlTablePrefix' => '',
       'fsRoot' => '', 'fsHost' => '', 'dropboxFolder' => '', 'dropboxKey' => '', 'dropboxSecret' => '',
       'dropboxKey' => '', 'dropboxToken' => '', 'dropboxTokenSecret' => '',
-      'skyDriveClientID' => '', 'skyDriveClientSecret' => '', 'skyDriveRefreshToken' => '',      
+      'skyDriveClientID' => '', 'skyDriveClientSecret' => '', 'skyDriveRefreshToken' => '', 'skyDriveFolder' => '',
       'errors' => '');
   }
 
@@ -966,7 +961,7 @@ class SetupController extends BaseController
       '{dropboxFolder}' => "",
       '{skyDriveClientID}' => "",
       '{skyDriveClientSecret}' => "",
-      '{skyDriveAccessToken}' => "",
+      '{skyDriveFolder}' => "",
       '{skyDriveRefreshToken}' => "",
       '{fsRoot}' => "",
       '{fsHost}' => "",

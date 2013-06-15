@@ -204,14 +204,14 @@ class SkyDriveAPI
     {
         error_log($this->client_id);
         $path = self::SKYDRIVE_BASE_TOKEN_URL;
-        $getParameters = array(
+        $parameters = array(
             'client_id' => $this->client_id,
             'redirect_uri' => $this->redirect_uri,
             'client_secret' => $this->client_secret,
             'grant_type' => 'authorization_code',
             'code' => $this->code
         );
-        $response_obj = $this->skyDriveApiCall($path, "POST", $getParameters, null);
+        $response_obj = $this->skyDriveApiCall($path, "POST", null, http_build_query($parameters, '', '&'), null);
 
         if ($print) {
             $this->print_response($response_obj);
@@ -285,6 +285,11 @@ class SkyDriveAPI
         
           case "GET":
             //error_log("Attempting a GET");          
+            break;
+
+          case "DELETE":
+            //error_log("Attempting a GET");
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");                     
             break;
           
           case "POST":
@@ -470,7 +475,7 @@ class SkyDriveAPI
     public function deleteFileByID($object_ID, $print = false)
     {
         $path = self::SKYDRIVE_API_BASE_URL . $object_ID;
-        $response = $this->skyDriveApiCall($path, EHttpClient::DELETE);
+        $response = $this->skyDriveApiCall($path, "DELETE");
         if ($print) {
             $this->print_response($response);
             exit;

@@ -9,6 +9,7 @@
 class FileSystemDropboxBase
 {
   private $config, $parent;
+  
   public function __construct($parent, $config = null, $params = null)
   {
     $this->config = !is_null($config) ? $config : getConfig()->get();
