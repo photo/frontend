@@ -2,6 +2,9 @@
   <div class="row">
     <div class="span3">
       <h3>Details for your photos</h3>
+      <label for="title">Title</label>
+      <input type="search" name="title" placeholder="A title for these photos">
+
       <label for="tags">Tags</label>
       <input type="search" name="tags" class="typeahead tags" autocomplete="off" placeholder="Optional comma separated list">
 

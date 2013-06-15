@@ -37,6 +37,8 @@
         } else {
           TBX.notification.show('There was a problem uploading your photos. Please try again.', 'static', 'error');
         }
+
+        $('button i', $form).remove();
       }
 
       progressModel.set('success', percent(completeObj.success, total));
@@ -51,6 +53,7 @@
         progressModel = new op.data.model.ProgressBar();
         // insert the view and render it in place
         (new op.data.view.ProgressBar({model: progressModel, el: $el})).render();
+        $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
       }
     };
     var percent = function(numerator, denominator) {
