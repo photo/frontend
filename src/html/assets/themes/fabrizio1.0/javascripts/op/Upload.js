@@ -95,11 +95,12 @@
       });
       dropzone.on("success", function(file, response) { fileFinishedHandler(file, response); });
       dropzone.on("error", function(file) { fileFinishedHandler(file, {"code":500}); });
+      dropzone.on("sending", fileSending);
     };
     this.start = function() {
       dropzone.processQueue();
     }
   }
-  
+ 
   TBX.upload = new Upload;
 })(jQuery);
