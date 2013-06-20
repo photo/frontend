@@ -304,7 +304,7 @@ class SkyDriveAPI
           case "PUT":
             error_log("Attempting a PUT");
 				    curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible;)");
-				    curl_setopt($ch, CURLOPT_PUT, true);
+				    curl_setopt($ch, CURLOPT_PUT, TRUE);
 				    curl_setopt($ch, CURLOPT_INFILE, $postbody);
 				    curl_setopt($ch, CURLOPT_INFILESIZE, $postbodySize);
             break;
@@ -335,8 +335,14 @@ class SkyDriveAPI
     public function upload($file_path, $filename, $folder_id, $print = false)
     {
         getLogger()->warn("upload params: " . $file_path . " " . $filename . " " . $folder_id);
+
         $path = self::SKYDRIVE_API_BASE_URL . $folder_id . '/files/' . $filename;
+        
+        // Clears file status cache
+        clearstatcache();
         $bodySize = filesize($file_path);
+        getLogger()->warn("Bodysize $bodySize");
+                
         $body = fopen($file_path, "r");
         $response = $this->skyDriveApiCall($path, "PUT", null, $body, $bodySize);
         if ($print) {

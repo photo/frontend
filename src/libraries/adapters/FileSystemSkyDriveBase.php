@@ -7,7 +7,7 @@
  */
 class FileSystemSkyDriveBase
 {
-  private $config, $parent;
+  private $config, $parent, $root;
   
   public function __construct($parent, $config = null, $params = null)
   {
@@ -171,6 +171,9 @@ class FileSystemSkyDriveBase
   {
     getLogger()->warn("Calling putPhoto $localFile $remoteFile");
     
+    $shell_output = shell_exec("file $localFile");
+    getLogger()->warn("$shell_output");
+    
     $rootFolder = $this->skyDrive->getMyRoot();
     $skyDriveFolder = $this->skyDrive->getFileByName($this->skyDriveFolder, $parentID = $rootFolder->id);
 
@@ -199,7 +202,7 @@ class FileSystemSkyDriveBase
     }
 
     $response = $this->skyDrive->upload($localFile, basename($remoteFile), $parent);
-    //getLogger()->warn(print_r($response, 1));
+    getLogger()->warn(print_r($response, 1));
     
     return true;    
   }
@@ -347,7 +350,6 @@ class FileSystemSkyDriveBase
     {
       $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
       $parent = $response->id;
-      $parent = $session->get($parentFolderCookie);
     } 
     return $parent;  
   }

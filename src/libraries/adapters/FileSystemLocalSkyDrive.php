@@ -60,12 +60,11 @@ class FileSystemLocalSkyDrive extends FileSystemLocal implements FileSystemInter
    */
   public function getPhoto($filename)
   {
-    getLogger()->warn("=== Calling getPhoto from FileSystemLocalSkyDrive ===");
     return parent::getPhoto($filename);
   }
 
   public function putPhoto($localFile, $remoteFile, $dateTaken)
-  {
+  {   
     $parentStatus = true;
     if(strpos($remoteFile, '/original/') === false)
       $parentStatus = parent::putPhoto($localFile, $remoteFile, $dateTaken);
