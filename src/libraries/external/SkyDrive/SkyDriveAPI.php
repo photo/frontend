@@ -372,6 +372,7 @@ class SkyDriveAPI
         if ($returnDownloadLink) {
             $getParameters = array(
                 'suppress_redirects' => 'true',
+                'download' => 'false',                
             );
         } else {
             $path = self::SKYDRIVE_API_BASE_URL . $fileID . '/content';

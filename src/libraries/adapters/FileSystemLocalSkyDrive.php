@@ -28,7 +28,7 @@ class FileSystemLocalSkyDrive extends FileSystemLocal implements FileSystemInter
 
   public function downloadPhoto($photo)
   {
-    return $this->skydrive->getFilePointer($photo);
+    return $this->skydrive->downloadPhoto($photo);
   }
 
   /**
