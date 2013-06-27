@@ -66,7 +66,7 @@
         <option value="LocalDropbox"<?php echo ($filesystem == 'LocalDropbox') ? ' selected="selected"' : '' ?>>Local filesystem + Dropbox</option>
         <!--<option value="DreamObjects"<?php echo ($filesystem == 'DreamObjects') ? ' selected="selected"' : '' ?>>DreamObjects</option>-->
         <option value="LocalSkyDrive"<?php echo ($filesystem == 'LocalSkyDrive') ? ' selected="selected"' : '' ?>>Local filesystem + SkyDrive</option>        
-        <option value="SkyDrive"<?php echo ($filesystem == 'SkyDrive') ? ' selected="selected"' : '' ?>>SkyDrive</option>
+        <!-- <option value="SkyDrive"<?php echo ($filesystem == 'SkyDrive') ? ' selected="selected"' : '' ?>>SkyDrive</option>-->
       </select>
 
       <div class="btn-toolbar">
