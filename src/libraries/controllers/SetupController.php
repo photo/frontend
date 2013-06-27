@@ -137,8 +137,6 @@ class SetupController extends BaseController
                               );
       
       $response = $oauth->getAccessTokenFromCode(0);
-     
-      //getLogger()->warn("Response in Setup: " . print_r($response,1));
 
       if(isset($response->refresh_token))
         getLogger()->warn("Setting refresh_token");
@@ -722,7 +720,6 @@ class SetupController extends BaseController
       getConfig()->set('secrets', $secrets);
       getConfig()->set('user', $user);
 
-      getLogger()->warn("initializing the filesystem");
       $fsObj = getFs();
       $dbObj = getDb();
 

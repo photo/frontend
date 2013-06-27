@@ -123,5 +123,36 @@ class UpgradeTest extends PHPUnit_Framework_TestCase
   {
     $this->markTestIncomplete('This test has not been implemented yet.');
   }
+
+  public function test401Regex()
+  {
+    $configStr = <<<STR
+foo="bar"
+
+[theme]
+name="default"
+
+[more]
+something="else"
+STR;
+    $configStr2 = str_replace('name="default"', 'name = "default"', $configStr);
+    $configStr3 = str_replace('name="default"', 'name = default', $configStr);
+    $configStr4 = str_replace('name="default"', 'name=default', $configStr);
+
+    // target string
+    $configStrTgt = str_replace('name="default"', 'name="fabrizio1.0"', $configStr);
+
+    $str1 = preg_replace('/^name ?\= ?"?.+"?$/m', 'name="fabrizio1.0"', $configStr);
+    $this->assertEquals($configStrTgt, $str1, 'Failed with default string');
+
+    $str1 = preg_replace('/^name ?\= ?"?.+"?$/m', 'name="fabrizio1.0"', $configStr2);
+    $this->assertEquals($configStrTgt, $str1, 'failed with spaces around =');
+
+    $str1 = preg_replace('/^name ?\= ?"?.+"?$/m', 'name="fabrizio1.0"', $configStr3);
+    $this->assertEquals($configStrTgt, $str1, 'failed with spaces and no quotes');
+
+    $str1 = preg_replace('/^name ?\= ?"?.+"?$/m', 'name="fabrizio1.0"', $configStr4);
+    $this->assertEquals($configStrTgt, $str1, 'failed with no quotes');
+  }
 }
 

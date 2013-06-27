@@ -60,6 +60,7 @@ $routeObj->get('/p/([a-zA-Z0-9]+)/?(.+)?', array('PhotoController', 'view')); //
 $routeObj->post('/photo/([a-zA-Z0-9]+)/update', array('PhotoController', 'update')); // update a photo (/photo/{id}/update
 $routeObj->post('/photo/upload', array('PhotoController', 'uploadPost')); // upload a photo
 $routeObj->get('/photos/upload', array('PhotoController', 'upload')); // view the upload photo form
+$routeObj->get('/photos/upload/beta', array('PhotoController', 'uploadBeta')); // upload a photo
 $routeObj->get('/photos/?(.+)?/list', array('PhotoController', 'list_')); // view all photos / optionally filter (/photos[/{options})]/list
 
 /*
@@ -123,10 +124,6 @@ $routeObj->get('/assets/.*/stylesheets/lessc', array('AssetsController', 'lessc'
 $routeObj->get('/assets/cache/([^/]+)/(js|css)/(c|m)(/.+)', array('AssetsController', 'get'));
 $routeObj->get('/assets/versioned/[^/]+/(.+)', array('AssetsController', 'staticAsset'));
 
-/*
- * SkyDrive endpoints
- */
-$routeObj->get('/skydrive/?(.+)?', array('FileSystemSkyDrive', 'view')); // view a photo from skydrive
 
 if($runUpgrade)
   require $configObj->get('paths')->libraries . '/routes-upgrade.php';

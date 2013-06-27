@@ -135,7 +135,10 @@ class Url
   public function photosUpload($write = true)
   {
     $utilityObj = new Utility;
-    return $utilityObj->returnValue('/photos/upload', $write);
+    if($utilityObj->enableBetaFeatures())
+      return $utilityObj->returnValue('/photos/upload/beta', $write);
+    else
+      return $utilityObj->returnValue('/photos/upload', $write);
   }
 
   public function setup($write = true)

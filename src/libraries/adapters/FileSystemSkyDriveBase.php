@@ -58,7 +58,6 @@ class FileSystemSkyDriveBase
   public function deletePhoto($photo)
   {
     $session = getSession();  
-    getLogger()->warn("Calling deletePhoto: " . print_r($photo,1));
     foreach($photo as $key => $value)
     {
       if(strncmp($key, 'path', 4) === 0) 
@@ -71,9 +70,7 @@ class FileSystemSkyDriveBase
         } else {
           $filename = $session->get($fileCookieName);
         }      
-        getLogger()->warn(print_r($filename, 1));
         $response = $this->skyDrive->deleteFileByID($filename->id);
-        getLogger()->warn(print_r($response, 1));
       }        
     }
 
@@ -101,39 +98,6 @@ class FileSystemSkyDriveBase
     $res = preg_replace("/https/", "http", $res);
 
     $fp = fopen($res, 'r');
-    return $fp;
-  }
-
-  public function getFileUrl($photo, $key = 'dateTaken')
-  {
-    $directory = urlencode(date($this->directoryMask, $photo[$key]));
-    try
-    {
-      return $this->skyDrive->getFileUrl(sprintf('%s/%s/%s', $this->skyDriveFolder, $directory, basename($photo['pathOriginal'])));
-    }
-    catch(Exception $e)
-    {
-      getLogger()->crit(sprintf('Could not get Dropbox file URL using %s (%s). Message: %s', $key, $photo['id'], $e->getMessage()));
-      return false;
-    }
-  }
-
-  // Gh-1012
-  //  Since we originally used dateUploaded this ensures backwards compatability
-  public function getFilePointer($photo)
-  {
-    $url = $this->getFileUrl($photo, 'dateTaken');
-    $fp = fopen($url, 'r');
-    if(!$fp)
-    {
-      getLogger()->warn(sprintf('Could not load photo %s from dateTaken location. %s', $photo['id'], $url));
-      $url = $this->getFileUrl($photo, 'dateUploaded');
-      $fp = fopen($url, 'r');
-
-      if(!$fp)
-        getLogger()->warn(sprintf('Could not load photo %s from dateUploaded location. %s', $photo['id'], $url));
-    }
-
     return $fp;
   }
 
@@ -186,8 +150,6 @@ class FileSystemSkyDriveBase
    */
   public function getPhoto($filename)
   {
-    getLogger()->warn("Calling getPhoto: " . $filename);
-
     $rootFolder = $this->skyDrive->getMyRoot();
     $skyDriveFolder = $this->skyDrive->getFileByName($this->skyDriveFolder, $parentID = $rootFolder->id);
     $parent = $this->getFolderId(dirname($filename));
@@ -195,7 +157,6 @@ class FileSystemSkyDriveBase
 
     $tmpname = '/tmp/'.uniqid('opme', true);
     $fp = fopen($tmpname, 'w+');    
-    //$res = $this->skyDrive->download($fileID = $photo->id, $returnDownloadLink = true);
     $res = $photo->picture;
     
     // Temp Download
@@ -212,13 +173,10 @@ class FileSystemSkyDriveBase
   }
 
   public function putPhoto($localFile, $remoteFile, $dateTaken)
-  {
-    getLogger()->warn("Calling putPhoto $localFile $remoteFile");
-    
+  { 
     $session = getSession();    
     $rootFolder = $this->skyDrive->getMyRoot();
     $skyDriveFolder = $this->skyDrive->getFileByName($this->skyDriveFolder, $parentID = $rootFolder->id);
-
     $parent = $skyDriveFolder->id;
 
     // Strip Beginning Slash
@@ -230,37 +188,39 @@ class FileSystemSkyDriveBase
     $folderCookie = dirname($path);
     if (!$session->get($folderCookie)) 
     {
-      getLogger()->warn("=== No cookie set $folderCookie ===");
       $folders = preg_split("/\//", dirname($path));
       foreach ($folders as $folder) {
         $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
 
         // if $response says folder doesn't exist we should create it        
-        if (is_null($response)) {
+        if (is_null($response))
           $response = $this->skyDrive->createFolder($parent, $folder, $folder);        
-        }         
+
         $parent = $response->id;
       }
       $session->set($folderCookie, $parent);      
     } else {
-      getLogger()->warn("=== Cookie set $folderCookie ===");    
       $parent = $session->get($folderCookie);    
     }
 
     $response = $this->skyDrive->upload($localFile, basename($remoteFile), $parent);
-    getLogger()->warn(print_r($response, 1));
     
-    return true;    
+    if (isset($response->id))
+      return true;
+    else
+      return false;
+    
   }
 
   public function putPhotos($files)
   {
-    getLogger()->warn("Calling putPhotos " . print_r($files,1));
     
     $session = getSession();    
     $rootFolder = $this->skyDrive->getMyRoot();
     $skyDriveFolder = $this->skyDrive->getFileByName($this->skyDriveFolder, $parentID = $rootFolder->id);
 
+    $responses = true;
+    
     foreach($files as $file)
     {
       list($localFile, $remoteFileArr) = each($file);
@@ -278,33 +238,30 @@ class FileSystemSkyDriveBase
       $folderCookie = dirname($path);
       if (!$session->get($folderCookie)) 
       {
-        getLogger()->warn("=== No cookie set $folderCookie ===");      
         $folders = preg_split("/\//", dirname($path));
         foreach ($folders as $folder)
         {
           $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
 
           // if $response says folder doesn't exist we should create it        
-          if (is_null($response)) {
+          if (is_null($response))
             $response = $this->skyDrive->createFolder($parent, $folder, $folder);        
-          }
+
           $parent = $response->id;
         }
         $session->set($folderCookie, $parent);
       } else {
-        getLogger()->warn("=== Cookie set $folderCookie ===");      
         $parent = $session->get($folderCookie);
       }         
       
       $normalized_remoteFile = $this->normalizePath($remoteFile);
       $response = $this->skyDrive->upload($localFile, basename($normalized_remoteFile), $parent);
-              
-    }
 
-    $responses = '';
-    
-    // Need to fix this so it only returns true if it was successfull 
-    return true;
+      if (!isset($response->id))
+        $responses = false;        
+                    
+    }
+    return $responses;
   }
 
   /**
@@ -314,7 +271,6 @@ class FileSystemSkyDriveBase
   public function getHost()
   {
     $utilityObj = new Utility;  
-    getLogger()->warn("Calling getHost");
     return sprintf('%s/skydrive', getenv('HTTP_HOST'));
   }
 
@@ -328,9 +284,7 @@ class FileSystemSkyDriveBase
   }
 
   public function initialize($isEditMode)
-  {
-    getLogger()->warn("Calling initialize");
-    
+  { 
     $skyDriveFolder = $this->skyDriveFolder;
     $rootFolder = $this->skyDrive->getMyRoot();
 
@@ -338,25 +292,19 @@ class FileSystemSkyDriveBase
     $response = $this->skyDrive->getFileByName($skyDriveFolder, $parentID = $rootFolder->id);
 
     // if $response says folder doesn't exist we should create it        
-    if (is_null($response)) {
-      getLogger()->warn("Creating $folder");
+    if (is_null($response))
       $response = $this->skyDrive->createFolder($parent, $folder, $folder);        
-      getLogger()->warn(print_r($response, 1));          
-    }
-    
+
     $parent = $response->id;
             
     // Once it exists, create the original directory
     $response = $this->skyDrive->createFolder($parent, "original", "original");     
         
-    // if we can't create, then return false'
-    // return false;
-    
-    // set configuration to be the folderID
-    getConfig()->set('skydrive', $parent);
-    
-    /* Just return true for now until we figure out what to initialize */  
-    return true;
+    // if we can't create, then return false
+    if (isset($response->id))
+      return true;
+    else
+      return false;
   }
 
   /**
@@ -371,13 +319,11 @@ class FileSystemSkyDriveBase
 
   public function normalizePath($path)
   {
-    getLogger()->warn("Calling normalizePath");    
     return $this->root . $path;
   }
 
   public function getRoot()
   {
-    getLogger()->warn("Calling getRoot");      
     return $this->root;
   }
   
@@ -407,9 +353,7 @@ class FileSystemSkyDriveBase
       $parent = $response->id;
       $previousFolder = NULL;
       foreach ($folders as $folder) 
-      {
-        getLogger()->warn($folder);
-        
+      { 
         if (is_null($previousFolder))
           $parentFolderCookie = $folder;
         else
@@ -417,9 +361,7 @@ class FileSystemSkyDriveBase
 
         if (!$session->get($parentFolderCookie))
         {
-          getLogger()->warn("===== No parent folder cookie set =====");        
           $response = $this->skyDrive->getFileByName($folder, $parentID = $parent);
-          getLogger()->warn("Response: $folder $parent " . print_r($response, 1));                  
           $parent = $response->id;
           $session->set($parentFolderCookie, $parent);
         } else {
@@ -431,7 +373,6 @@ class FileSystemSkyDriveBase
     } else {    
       $parent = $session->get($folderCookie);
     }
-    getLogger()->warn("Returning from getFolderId parent is " . $parent);
     return $parent;  
   }
 }

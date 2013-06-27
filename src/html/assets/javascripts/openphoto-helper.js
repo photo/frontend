@@ -13,9 +13,15 @@
   }
   //OP and OP.Util are already defined at this point, so just modify directly
   var OU = OP.Util.constructor.prototype,
-      lib = OP.Util.lib,
-      log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } };
+      lib = OP.Util.lib;
 
+  function Log() {
+    var log = function(msg) { if(typeof(console) !== 'undefined') {  console.log(msg); } };
+
+    this.info = log;
+    this.warn = log;
+    this.error = log;
+  }
 
   function Album() {
     var self = this,
@@ -120,21 +126,21 @@
     this.add = function(id/*, photo */) {
       var photo = arguments[1] || false;
       if(typeof photo === 'object') {
-        log("[Util][Batch] adding from argument " + id);
+        OP.Log.info("[Util][Batch] adding from argument " + id);
         self._callbackAdd({result: photo});
       } else {
-        log("[Util][Batch] adding " + id);
+        OP.Log.info("[Util][Batch] adding " + id);
         OU.makeRequest('/photo/'+id+'/view.json', {}, self._callbackAdd, 'json', 'get');
       }
     };
 
     this.remove = function(id) {
-      log("[Util][Batch] removing " + id);
+      OP.Log.info("[Util][Batch] removing " + id);
       self.collection.remove(id);
     };
 
     this.clear = function() {
-      log("[Util][Batch] clearing");
+      OP.Log.info("[Util][Batch] clearing");
       this.collection.clear();
     };
 
@@ -217,6 +223,7 @@
     })();
   }
   //store the util instance
+  OP.Log = new Log();
   OP.Batch = new Batch();
   OP.Tag = new Tag();
   OP.Album = new Album();

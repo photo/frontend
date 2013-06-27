@@ -11,8 +11,7 @@
     }
 
     //constants
-    var PLUGIN_FILE_PREFIX = 'openphoto-lib-',
-        log = function(msg) { if(typeof(console) !== 'undefined' && typeof(console.log) !== 'undefined') {  console.log(msg); } };
+    var PLUGIN_FILE_PREFIX = 'openphoto-lib-';
 
     /**
     * Class that contains all utility functions for OpenPhoto
@@ -78,7 +77,7 @@
         */
         this.init = function(lib, config) {
 
-            log('[Util] init:');
+            OP.Log.info('[Util] init:');
 
             //merge the config with the user specified config
             this.config = this.merge(this.config, config);
@@ -113,7 +112,7 @@
         */
         this._init = function() {
 
-            log('[Util] _init:')
+            OP.Log.info('[Util] _init:')
 
             var js = this.config.js.assets,
                 css = this.config.css.assets,
@@ -148,7 +147,7 @@
         * @method onviewevent
         */
         this.onviewevent = function(e) {
-            log('[Util] ' + e.type + ': ' + e.target);
+            OP.Log.info('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -173,7 +172,7 @@
         * @method onkeydownevent
         */
         this.onkeydownevent = function(e) {
-            log('[Util] ' + e.type + ': ' + e.target);
+            OP.Log.info('[Util] ' + e.type + ': ' + e.target);
             
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -220,7 +219,7 @@
         */
         this.onmouseevent = function(e) {
             
-            //log('[Util] ' + e.type + ': ' + e.target);
+            //OP.Log.info('[Util] ' + e.type + ': ' + e.target);
 
             var targ = e.target || e.srcElement,
                 classes = targ.className.split(" "),
@@ -254,7 +253,7 @@
         */
         this.getLibraryPlugin = function() {
 
-            log('[Util] getLibraryPlugin');
+            OP.Log.info('[Util] getLibraryPlugin');
 
             var url = this.config.baseUrl + this.config.jsLocation + PLUGIN_FILE_PREFIX + this.libType + ".js";
 
@@ -272,7 +271,7 @@
         */
         this.merge = function() {
 
-            log('[Util] merge');
+            OP.Log.info('[Util] merge');
 
             var merged = {},
                 i,
@@ -303,7 +302,7 @@
         */
         this.loadScript = function(url, fn, scope) {
 
-            log('[Util] loadScript');
+            OP.Log.info('[Util] loadScript');
 
             var head = document.getElementsByTagName('head')[0],
                 script = document.createElement('script'),
@@ -344,7 +343,7 @@
         */
         this.loadCss = function(url, fn, scope) {
 
-            log('[Util] loadCss');
+            OP.Log.info('[Util] loadCss');
 
             var head = document.getElementsByTagName('head')[0],
                 link = document.createElement('link'),
@@ -452,7 +451,7 @@
         */
         this.on = function(eventName, callback, scope) {
 
-            log('[Util] on: ' + eventName)
+            OP.Log.info('[Util] on: ' + eventName)
 
             var events = this._customEvents,
                 cEvent = events[eventName],
@@ -489,7 +488,7 @@
         */
         this.unsubscribe = function(eventName, callback) {
 
-            log('[Util] unsubscribe: ' + callback);
+            OP.Log.info('[Util] unsubscribe: ' + callback);
 
             var events = this._customEvents,
                 cEvent = events[eventName],
@@ -515,7 +514,7 @@
         */
         this.fire = function(eventName, arg) {
 
-            log('[Util] fire: ' + eventName);
+            OP.Log.info('[Util] fire: ' + eventName);
 
             var callbacks = this._customEvents[eventName],
                 arg = arg || {},

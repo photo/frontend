@@ -71,7 +71,7 @@
 
       <div class="btn-toolbar">
         <?php if(isset($_GET['edit'])) { ?><a class="btn" href="/">Cancel</a><?php } ?>
-        <button type="submit" class="btn btn-primary">Continue to Step 3</button>
+        <button type="submit" class="btn btn-brand">Continue to Step 3</button>
       </div>
     </form>
   </div>
@@ -137,7 +137,7 @@
 
       <div class="btn-toolbar">
         <?php if(isset($_GET['edit'])) { ?><a class="btn" href="/">Cancel</a><?php } ?>
-        <button type="submit" class="btn btn-primary">Complete setup</button>
+        <button type="submit" class="btn btn-brand">Complete setup</button>
       </div>
     </form>
   </div>
