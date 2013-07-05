@@ -13,6 +13,9 @@
             <?php if($this->user->isAdmin()) { ?>
               <li class="batch separator-left"><a href="#" class="selectAll"><i class="icon-pushpin"></i> Select all</a></li>
               <li class="batch dropdown batch-meta"></li>
+              <?php if($this->utility->isActiveTab('photos-album')) { ?>
+                <li><a href="#" class="triggerShare"><i class="icon-share-alt triggerShare"></i> Share this album</a></li>
+              <?php } ?>
             <?php } ?>
           <?php } elseif($this->utility->isActiveTab('upload')) {?>
             <li class="separator-left">Import from </li>

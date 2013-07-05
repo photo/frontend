@@ -252,6 +252,11 @@ class Utility
           return true;
         return false;
         break;
+      case 'photos-album':
+        if(!empty($route) && (preg_match('#^/photos/#', $route) && preg_match('#album-[0-9a-z]+#', $route)))
+          return true;
+        return false;
+        break;
       case 'tags':
         if(!empty($route) && preg_match('#^/tags/list#', $route))
           return true;
