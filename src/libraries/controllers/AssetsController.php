@@ -48,7 +48,7 @@ class AssetsController extends BaseController
 
     $f = $_GET['f'];
 
-    $key = 'key';
+    $key = $this->config->site->mediaVersion;
     header('Content-type: text/css');
     header(sprintf('Last-Modified: %s GMT', gmdate('D, d M Y H:i:s', strtotime('-1 year')))); 
     header(sprintf('Etag: %s', md5(sprintf('%s~%s', $key, $f))));
