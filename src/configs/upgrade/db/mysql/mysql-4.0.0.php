@@ -28,7 +28,7 @@ SQL;
 mysql_4_0_0($sql);
 
 $sql = <<<SQL
- ALTER TABLE `activity` ADD `elementId` VARCHAR( 6 ) NOT NULL AFTER `type` 
+ ALTER TABLE `activity` ADD `{$this->mySqlTablePrefix}elementId` VARCHAR( 6 ) NOT NULL AFTER `type` 
 SQL;
 mysql_4_0_0($sql);
 
