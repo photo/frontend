@@ -62,8 +62,15 @@ class AssetsController extends BaseController
       $fullPath = realpath(sprintf('%s/%s/stylesheets/%s', $this->config->paths->themes, $theme->getThemeName(), $file));
       if(file_exists($fullPath) && preg_match('/\.less$/', $file) === 1 && strpos($fullPath, $this->config->paths->themes) === 0)
       {
-        $cacheFile = realpath(sprintf('%s/assets/cache', $this->config->paths->docroot)) . '/' . md5($theme->getThemeName() . $file) . '.css.cache';
-        $cssOutput = $this->getCompiledLessFile($fullPath, $cacheFile, $less);
+        if($this->config->site->mode === 'prod')
+        {
+          $cacheFile = realpath(sprintf('%s/assets/cache', $this->config->paths->docroot)) . '/' . md5($theme->getThemeName() . $file) . '-' . basename($file) . '.css.cache';
+          $cssOutput = $this->getCompiledLessFile($fullPath, $cacheFile, $less);
+        }
+        else
+        {
+          $cssOutput = $this->pipeline->normalizeUrls(dirname($fullPath), $less->compileFile($fullPath));
+        }
         echo $cssOutput;
       }
     }
@@ -78,7 +85,7 @@ class AssetsController extends BaseController
 
     $newCache = $lessc->cachedCompile($cache);
 
-    if (!is_array($cache) || $newCache["updated"] > $cache["updated"]) 
+    if (!is_array($cache) || $newCache['updated'] > $cache['updated']) 
     {
       $normalizedCss = $this->pipeline->normalizeUrls(dirname($inputFile), $newCache['compiled']);
       $newCache['compiled'] = $normalizedCss;
