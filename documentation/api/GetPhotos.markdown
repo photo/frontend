@@ -34,11 +34,11 @@ _Authentication: optional_
 <a name="parameters"></a>
 ### Parameters
 
-1.  returnSizes (optional), (i.e. 20x20 or 30x30xCR,40x40) The photo sizes you'd like in the response. Specify every size you plan on using. [Docs for this parameter](http://theopenphotoproject.org/documentation/faq/ReturnSizes)
+1.  returnSizes (optional), (e.g. 20x20 or 30x30xCR,40x40) The photo sizes you'd like in the response. Specify every size you plan on using. [Docs for this parameter](http://theopenphotoproject.org/documentation/faq/ReturnSizes)
 1.  generate (optional), (i.e. true or false) Tells the API to generate the sizes from `returnSizes` instead of returning a _create_ URL. [Docs for this parameter](http://theopenphotoproject.org/documentation/faq/ReturnSizes)
 1.  pageSize (optional), Number of photos to return per request.
 1.  page (optional), Page number when browsing through photos. Starts at 1.
-1.  tags (optional), _i.e. dog,cat_ - A comma delimited string of strings.
+1.  tags (optional), _e.g. dog,cat_ - A comma delimited string of strings.
 
 ----------------------------------------
 
