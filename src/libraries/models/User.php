@@ -27,6 +27,16 @@ class User extends BaseModel
   }
 
   /**
+    * Clears the per request user cache
+    *
+    * @return void
+   */
+  public function clearUserCache()
+  {
+    $this->user = null;
+  }
+
+  /**
     * Encrypt user password
     *
     * @return string
@@ -378,7 +388,7 @@ class User extends BaseModel
     }
 
     // update cache
-    $this->getUserRecord(false);
+    $this->clearUserCache();
     // TODO check $params against a whitelist
     return $this->db->postUser($params);
   }

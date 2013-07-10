@@ -154,15 +154,10 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->method('getUser')
       ->will($this->onConsecutiveCalls(
         array('id' => 'test@example.com', 'lastPhotoId' => 'abc'),
-        array('id' => '', '' => ''), // stub for User::update to update the cache
         array('id' => 'test@example.com', 'lastPhotoId' => '0'),
-        array('id' => '', '' => ''), // stub for User::update to update the cache
         array('id' => 'test@example.com', 'lastPhotoId' => 'a1'),
-        array('id' => '', '' => ''), // stub for User::update to update the cache
         array('id' => 'test@example.com', 'lastPhotoId' => '9'),
-        array('id' => '', '' => ''), // stub for User::update to update the cache
-        array('id' => 'test@example.com', 'lastPhotoId' => 'u'),
-        array('id' => '', '' => '') // stub for User::update to update the cache
+        array('id' => 'test@example.com', 'lastPhotoId' => 'u')
       ));
     $db->expects($this->any())
       ->method('postUser')
@@ -288,7 +283,7 @@ class UserTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue('2'));
     $this->user->inject('db', $db);
 
-    $this->user->getUserRecord(false);
+    $this->user->clearUserCache();
     $res = $this->user->getUserRecord();
     $this->assertEquals('2', $res);
   }
