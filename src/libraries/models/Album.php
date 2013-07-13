@@ -87,6 +87,24 @@ class Album extends BaseModel
     return $album;
   } 
 
+  public function getAlbumByName($name, $email = null)
+  {
+    if($email === null)
+      $email = $this->user->getEmailAddress();
+
+    $album = $this->db->getAlbumByName($name, $email);
+    if(!$album)
+      return false;
+
+    if(!$this->user->isAdmin())
+    {
+      if(!$this->isAlbumCoverVisible($album))
+        $album['cover'] = null;
+    }
+
+    return $album;
+  }
+
   public function getAlbums($email = null, $limit = null, $offset = null)
   {
     if($email === null)

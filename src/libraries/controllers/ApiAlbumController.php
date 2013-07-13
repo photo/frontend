@@ -37,6 +37,20 @@ class ApiAlbumController extends ApiBaseController
   {
     getAuthentication()->requireAuthentication();
     getAuthentication()->requireCrumb();
+
+    // disallow duplicate names for album
+    //  return existing album if attempting to create
+    //  gh-911
+    $albumNameCheck = $this->album->getAlbumByName($_POST['name']);
+    if(!empty($albumNameCheck))
+    {
+      $albumResp = $this->api->invoke("/album/{$albumNameCheck['id']}/view.json", EpiRoute::httpGet);
+      if($albumResp['code'] === 200)
+        return $this->conflict('Album name exists', $albumResp['result']);
+      else
+        return $this->error('Album with the same name already exists but failed to fetch it', false);
+    }
+
     $albumId = $this->album->create($_POST);
     if($albumId)
     {

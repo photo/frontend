@@ -328,6 +328,27 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Retrieves album by name
+    *
+    * @param string $name name of the album to get
+    * @param string $email email of viewer to determine which albums they have access to
+    * @return mixed Array on success, FALSE on failure
+    */
+  public function getAlbumByName($name, $email)
+  {
+    $album = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}album` WHERE `owner`=:owner AND `name`=:name ",
+      array(':owner' => $email, ':name' => $name));
+
+    if($album === false)
+      return false;
+    else if((empty($email) || $this->owner !== $email || $this->getActor() !== $email) && $album['countPublic'] == 0)
+      return false;
+
+    $album = $this->normalizeAlbum($album);
+    return $album;
+  }
+
+  /**
     * Retrieve elements for an album
     *
     * @param string $id ID of the album to get elements of
