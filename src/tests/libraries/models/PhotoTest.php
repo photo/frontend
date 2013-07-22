@@ -6,6 +6,11 @@ class PhotoWrapper extends Photo
     return parent::readExif($file, $allowAutoRotate);
   }
 
+  public function parseExifDate($exif, $key)
+  {
+    return parent::parseExifDate($exif, $key);
+  }
+
   public function autoRotateEnabled($allowAutoRotate)
   {
     return parent::autoRotateEnabled($allowAutoRotate);
@@ -642,6 +647,24 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $size = getimagesize($this->portrait);
 
     $this->assertEquals($size[1], $exif['width']);
+  }
+
+  public function testReadExifSuccessWithColon()
+  {
+    $exif = array('key' => '2011/1/1 01:01:01');
+    $this->assertEquals('1293872461', $this->photo->parseExifDate($exif, 'key'));
+  }
+
+  public function testReadExifSuccessWithSlash()
+  {
+    $exif = array('key' => '2012/2/2 02:02:02');
+    $this->assertEquals('1328176922', $this->photo->parseExifDate($exif, 'key'));
+  }
+
+  public function testReadExifSuccessWithInvalidKey()
+  {
+    $exif = array('key' => '2012/2/2 02:02:02');
+    $this->assertFalse($this->photo->parseExifDate($exif, 'keyDNE'));
   }
 
   public function testTrim()

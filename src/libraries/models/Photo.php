@@ -471,12 +471,15 @@ class Photo extends BaseModel
    * @param $key the exif key to get the date from
    * @return the parsed date or false if not found
    */
-  private function parseExifDate($exif, $key)
+  protected function parseExifDate($exif, $key)
   {
     if(array_key_exists($key, $exif))
     {
       $dateTime = explode(' ', $exif[$key]);
-      $date = explode(':', $dateTime[0]);
+      // gh-1335
+      // check if the string contains : else assume it uses / for the ymd separator
+      $dateSeparator = strpos($dateTime[0], ':') > 0 ? ':' : '/';
+      $date = explode($dateSeparator, $dateTime[0]);
       $time = explode(':', $dateTime[1]);
       return @mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]);
     }
