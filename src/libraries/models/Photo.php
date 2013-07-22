@@ -475,10 +475,15 @@ class Photo extends BaseModel
   {
     if(array_key_exists($key, $exif))
     {
+      // gh-1335
+      // additional check in case this field is an integer then we treat it as a timestamp
+      if(is_numeric($exif[$key]) && (int)$exif[$key] == $exif[$key])
+        return $exif[$key];
+
       $dateTime = explode(' ', $exif[$key]);
       // gh-1335
-      // check if the string contains : else assume it uses / for the ymd separator
-      $dateSeparator = strpos($dateTime[0], ':') > 0 ? ':' : '/';
+      // check if the string contains / else assume it uses : for the ymd separator
+      $dateSeparator = preg_match('#^\d{2,4}/\d{1,2}/\d{1,2}#', $dateTime[0]) === 1 ? '/' : ':';
       $date = explode($dateSeparator, $dateTime[0]);
       $time = explode(':', $dateTime[1]);
       return @mktime($time[0], $time[1], $time[2], $date[1], $date[2], $date[0]);
