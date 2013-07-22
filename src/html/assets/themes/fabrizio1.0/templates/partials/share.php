@@ -47,8 +47,8 @@
           <li>
             <a href="#" class="toggle btn btn-theme-secondary" data-target=".social pre.share-embed-code"><i class="icon-list-alt"></i> Embed in blog</a>
             <pre class="hide share-embed-code"><?php echo htmlspecialchars(<<<MKP
-<a href="{$photoLarge}">
-  <img src="{$url}">
+<a href="{$url}">
+  <img src="{$photoLarge}">
 </a>
 MKP
               ); ?></pre>
