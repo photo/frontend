@@ -32,7 +32,7 @@
     </div>
   <?php } ?>
   <div class="span3 offset1 social">
-    <strong>Share using Facebook, Twitter or IM</strong>
+    <strong>Share using Facebook, Twitter or a blog</strong>
     <p>
       <?php if($type === 'photo') { ?>
         <small>Your photo is private. Anyone with this link can view it.</small>
@@ -43,6 +43,17 @@
     <ul class="unstyled">
       <li><a href="https://twitter.com/share?text=<?php echo urlencode('View my photo shared via @Trovebox.'); ?>&url=<?php echo urlencode($url); ?>" class="sharePopup btn btn-theme-secondary" target="blank"><i class="icon-twitter"></i> Post to Twitter</a></li>
       <li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode($url); ?>" class="sharePopup btn btn-theme-secondary"><i class="icon-facebook"></i> Post to Facebook</a></li>
+        <?php if($type === 'photo') { ?>
+          <li>
+            <a href="#" class="toggle btn btn-theme-secondary" data-target=".social pre.share-embed-code"><i class="icon-list-alt"></i> Embed in blog</a>
+            <pre class="hide share-embed-code"><?php echo htmlspecialchars(<<<MKP
+<a href="{$photoLarge}">
+  <img src="{$url}">
+</a>
+MKP
+              ); ?></pre>
+        </li>
+      <?php } ?>
     </ul>
     <small>
       <i class="icon-info-sign"></i>

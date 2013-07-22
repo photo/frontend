@@ -87,7 +87,7 @@
           dropzone.removeFile(file);
           return;
         }
-
+      
         total++;
         duplicateCache[file.name] = 1;
         dropzone.filesQueue.push(file);

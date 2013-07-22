@@ -175,6 +175,12 @@
       }
       return;
     };
+    this.click.toggle = function(ev) {
+      // use data-type to support other toggles
+      ev.preventDefault();
+      var $el = $(ev.target), $tgt = $($el.attr('data-target'));
+      $tgt.slideToggle();
+    };
     this.click.tokenDelete = function(ev) {
       ev.preventDefault();
       var el = $(ev.target),

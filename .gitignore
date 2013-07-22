@@ -1,5 +1,5 @@
 # Files we don't want
-.DS_Store
+*.DS_Store
 *~
 *.swp
 *.graffle

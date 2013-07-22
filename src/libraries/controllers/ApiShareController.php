@@ -33,10 +33,11 @@ class ApiShareController extends ApiController
 
     if($type === 'photo')
     {
-      $photoResp = $this->api->invoke(sprintf('/photo/%s/view.json', $dataArr[0]), EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200')));
+      $photoResp = $this->api->invoke(sprintf('/photo/%s/view.json', $dataArr[0]), EpiRoute::httpGet, array('_GET' => array('returnSizes' => '200x200,800x800', 'generate' => 'true')));
       if($photoResp['code'] !== 200)
         return $this->error('Could not get first photo to share.', false);
       $params['photo'] = $photoResp['result']['path200x200'];
+      $params['photoLarge'] = $photoResp['result']['path800x800'];
       $params['title'] = $photoResp['result']['title'] != '' ? $photoResp['result']['title'] : $photoResp['result']['filenameOriginal'];
       $params['url'] = sprintf('%s/token-%s', $photoResp['result']['url'], $token);
       $params['permission'] = $photoResp['result']['permission'];
