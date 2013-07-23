@@ -15,5 +15,6 @@ before_install:
   - sudo pecl install oauth
   - sudo pear channel-discover pear.bovigo.org
   - sudo pear install bovigo/vfsStream-beta
+  - sudo phpenv rehash
 
 script: phpunit -v --configuration src/tests/phpunit.xml src/tests/
