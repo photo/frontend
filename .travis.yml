@@ -8,15 +8,16 @@ branches:
   only:
     - master
     - development
+    - test
 
 before_install:
   - sudo apt-get update
   - sudo apt-get install build-essential libpcre3-dev php-pear php5-curl php5-imagick
 
 before_script:
-  - sudo pecl install oauth
-  - sudo pear channel-discover pear.bovigo.org
-  - sudo pear install bovigo/vfsStream-beta
-  - sudo phpenv rehash
+  - pecl install oauth
+  - pear channel-discover pear.bovigo.org
+  - pear install bovigo/vfsStream-beta
+  - phpenv rehash
 
 script: phpunit -v --configuration src/tests/phpunit.xml src/tests/
