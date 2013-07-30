@@ -649,15 +649,21 @@ class PhotoTest extends PHPUnit_Framework_TestCase
     $this->assertEquals($size[1], $exif['width']);
   }
 
+  public function testReadExifSuccessWithInvalidTime()
+  {
+    $exif = array('key' => 'not a real time');
+    $this->assertFalse($this->photo->parseExifDate($exif, 'key'));
+  }
+
   public function testReadExifSuccessWithTimestamp()
   {
-    $exif = array('key' => '1234');
-    $this->assertEquals('1234', $this->photo->parseExifDate($exif, 'key'));
+    $exif = array('key' => time());
+    $this->assertFalse($this->photo->parseExifDate($exif, 'key'));
   }
 
   public function testReadExifSuccessWithColon()
   {
-    $exif = array('key' => '2011:1:1 01:01:01');
+    $exif = array('key' => '2011:01:01 01:01:01');
     $this->assertEquals('1293872461', $this->photo->parseExifDate($exif, 'key'));
   }
 
