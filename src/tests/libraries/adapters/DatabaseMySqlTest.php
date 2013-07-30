@@ -183,6 +183,18 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
     $this->assertFalse($res);
   }
 
+  public function testGetAlbumByNameSuccess()
+  {
+    $db = $this->getMock('MySqlMock', array('one'));
+    $db->expects($this->any())
+      ->method('one')
+      ->will($this->returnValue(array('name' => 'unittest', 'countPublic' => '1')));
+    $this->db->inject('db', $db);
+
+    $res = $this->db->getAlbum('foo', 'test@example.com');
+    $this->assertEquals($res['name'], 'unittest', 'The MySql adapter did not return the album name for getAlbum');
+  }
+
   public function testGetAlbumsSuccess()
   {
     $db = $this->getMock('MySqlMock', array('all','one'));
