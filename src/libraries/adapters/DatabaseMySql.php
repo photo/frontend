@@ -1630,7 +1630,7 @@ class DatabaseMySql implements DatabaseInterface
       $tags = (array)explode(',', $tags);
 
     $hasTag = false;
-    $sql = "REPLACE INTO `{$this->mySqlTablePrefix}elementTag`(`owner`, `type`, `element`, `tag`) VALUES";
+    $sql = "INSERT IGNORE INTO `{$this->mySqlTablePrefix}elementTag`(`owner`, `type`, `element`, `tag`) VALUES";
     foreach($tags as $tag)
     {
       if(strlen($tag) > 0)
