@@ -44,7 +44,7 @@
     },
     events: {
       'click .album.edit': 'album',
-      'click .delete.edit': 'delete',
+      'click .delete.edit': 'delete_',
       'click .permission.edit': 'permission',
       'click .profile.edit': 'profile',
       'click .pin.edit': 'pin',
@@ -53,7 +53,7 @@
     album: function(ev) {
       TBX.handlers.click.setAlbumCover(ev);
     },
-    delete: function(ev) {
+    delete_: function(ev) {
       TBX.handlers.click.showBatchForm(ev);
     },
     permission: function(ev) {

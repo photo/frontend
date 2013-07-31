@@ -20,7 +20,7 @@
       }
     },
     events: {
-      'click .delete': 'delete',
+      'click .delete': 'delete_',
       'click .share': 'share'
     },
     modelChanged: function() {
@@ -30,7 +30,7 @@
       var $el = $('.album-'+this.get('id'));
       $el.fadeTo('medium', .25);
     },
-    delete: function(ev) {
+    delete_: function(ev) {
       ev.preventDefault();
       var $el = $(ev.target), id = $el.attr('data-id'), model = this.model, ask;
       ask = prompt('Type DELETE if you\'d like to delete the album '+model.get('name') + '.');

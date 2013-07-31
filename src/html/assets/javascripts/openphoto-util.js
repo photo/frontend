@@ -193,7 +193,7 @@
                 
                 //the event map for key press can be two dimensional, it can be
                 //keycode, or className then keyCode, if keyCode, fire the custom event
-                if (map[keyCode]) {
+                if (typeof(map) === 'object' && map[keyCode]) {
                     this.fire( map[keyCode], e);
                 }
                 
@@ -306,23 +306,30 @@
 
             var head = document.getElementsByTagName('head')[0],
                 script = document.createElement('script'),
-                callback;
+                onload, onerror;
+
+            onerror = function() {
+              OP.Log.info('[Util] loadScript failed for ' + url);
+            };
 
             script.type = "text/javascript";
             script.src = url;
+            script.onerror = onerror;
 
             //callback function was specified - add the onload handlers
             if (typeof(fn) !== 'undefined') {
 
                 scope = scope || window,
-                callback = function() {
+                onload = function() {
                     return fn.apply(scope);
                 };
+                script.onload = onload;
 
-                script.onload = callback;
+                // This is for IE
                 script.onreadystatechange = function() {
-                    if (this.readyState === 'complete') {
-                        callback();
+                    if (this.readyState === 'complete' || this.readyState === 'loaded') {
+                        onload();
+                        script.onreadystatechange = null;
                     }
                 }
 
