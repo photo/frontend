@@ -57,6 +57,10 @@
               return d;
             }
           }, this.editable[i]);
+
+          if(typeof(this.editable[i].shown) !== "undefined") {
+            $el.on('shown', this.editable[i].shown);
+          }
           
           // grab the "on" property
           var on = config.on;

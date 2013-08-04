@@ -1,5 +1,10 @@
 (function($){
-  var _instance;
+  var _instance, addTagSearch;
+
+  addTagSearch = function() {
+    var $el = $('.editable-container .tags-inline-input')
+    new op.data.view.TagSearch({el: $el});
+  };
   
   var DetailView = op.data.view.Editable.extend({
     initialize: function(){
@@ -25,6 +30,14 @@
         title: 'Edit Photo Description',
         placement: 'top',
         emptytext: 'Click to add a description'
+      },
+      '.tags.edit' : {
+        name: 'tags',
+        title: 'Edit Tags',
+        placement: 'top',
+        emptytext: '',
+        inputclass: 'tags-inline-input tags',
+        shown: addTagSearch
       }
     },
     setModel: function(model){
@@ -86,7 +99,9 @@
       next      	  :[34, 39, 40, 74], // up, down, j
       prev      	  :[33, 37, 38, 75], // left, up, k
       title         :[84],  // t
+      tags          :[71],  // g
       description   :[68],  // d
+      privacy    	  :[80],  // p
       hide      	  :[27],  // escape
       togglePlay	  :[32]  // spacebar 
       //toggleDetails :[68]   // d
@@ -298,12 +313,23 @@
       }
     },
 
+    tags: function(ev) {
+      var $tagsEl = $('a.tags.editable-click', this.$el);
+      $tagsEl.on('render', function() { console.log('yaya'); });
+      $tagsEl.trigger('click');
+      //new op.data.view.TagSearch({el: $inputEl});
+    },
+
     description: function(ev) {
-      $('.description .editable-click', this.$el).trigger('click');
+      $('a.description.editable-click', this.$el).trigger('click');
     },
 
     title: function(ev) {
-      $('.title .editable-click', this.$el).trigger('click');
+      $('a.title.editable-click', this.$el).trigger('click');
+    },
+
+    privacy: function(ev) {
+      $('.permission', this.$el).trigger('click');
     },
     
     go : function( index ){

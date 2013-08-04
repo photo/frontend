@@ -120,20 +120,6 @@
   </div>
 </script>
 <script type="tmpl/underscore" id="op-lightbox-details">
-  <div class="action-block">
-    <!--<ul>
-      <li><a class="permission<?php if($isAdmin) { ?> edit<?php } ?>" href="#"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i> Private</i></a></li>
-      <?php if($this->config->site->allowOriginalDownload == 1) { ?>
-        <li><a href="<%= pathDownload %>"><i class="icon-download"></i> Download</i></a></li>
-      <?php } ?>
-      <li><i class="icon-eye-open"></i> 110 Views</i></li>
-      <li><i class="icon-comment"></i> 7 Comments</i></li>
-      <li><i class="icon-heart"></i> 16 Favorites</i></li>
-      <?php if($isAdmin) { ?>
-        <li><a href="#"><i class="icon-share-alt"></i> Share</i></a></li>
-      <?php } ?>
-    </ul>-->
-  </div>
   <div class="detail-block">
     <div class="title">
       <span class="text">
@@ -144,13 +130,11 @@
         <?php } ?>
       </span>
       <span class="actions">
-        <!--<a href="#"><i class="icon-heart"></i></a>
-        <a href="#"><i class="icon-comments"></i></a>-->
-
         <?php if($isAdmin) { ?>
+          <a href="#" class="tags edit" title="Edit Tags"><i class="icon-tags"></i><span class="hide"><%= tags %></span></a>
           <a href="#" class="share" data-id="<%= id %>" title="Share this photo via email, Facebook or Twitter"><i class="icon-share-alt"></i></a>
           <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
-          <a href="#" class="permission" title="Click to make this photo <%= permission == 0 ? 'public' : 'private' %>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
+          <a href="#" class="permission edit" title="Click to make this photo <%= permission == 0 ? 'public' : 'private' %>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
         <?php } else { ?>
           <?php if($this->config->site->allowOriginalDownload == 1) { ?>
             <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
