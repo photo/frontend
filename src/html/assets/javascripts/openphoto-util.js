@@ -126,6 +126,7 @@
             this.attachEvent( 'body', 'mouseover', this.onmouseevent, this);
             this.attachEvent( 'body', 'mouseout', this.onmouseevent, this);
             this.attachEvent( 'html', 'keydown', this.onkeydownevent, this);
+            this.attachEvent( 'html', 'keyup', this.onkeydownevent, this);
             this.attachEvent( 'form', 'submit', this.onviewevent, this);
             
             //load additional js in order specified

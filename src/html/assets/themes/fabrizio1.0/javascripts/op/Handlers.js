@@ -209,9 +209,11 @@
       TBX.upload.start();
     };
 
-    this.keydown = { },
-    this.keyup = { },
-    this.mouseover = { },
+    this.keydown = { };
+    this.keyup = { };
+    this.keyup["27"] = "keyup:escape";
+    this.keyup["191"] = "keyup:slash";
+    this.mouseover = { };
     this.submit = {};
     this.submit.albumCreate = function(ev) {
       ev.preventDefault();

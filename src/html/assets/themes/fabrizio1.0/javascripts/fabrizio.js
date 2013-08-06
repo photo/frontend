@@ -189,7 +189,9 @@
           new op.data.view.TagSearch({el: el});
         });
         
-        // init tooltips
+        // escape cancels flyout
+        OP.Util.on('keyup:escape', TBX.handlers.click.batchHide);
+        OP.Util.on('keyup:slash', TBX.callbacks.showKeyboardShortcuts);
 
         if(location.pathname === '/')
           TBX.init.pages.front.init();
@@ -344,7 +346,7 @@
             op.data.store.Router = new op.data.route.Routes(options);
             // Start Backbone history a necessary step for bookmarkable URL's
             Backbone.history.start({pushState: Modernizr.history, silent: true});
-            Backbone.history.loadUrl(Backbone.history.getFragment())
+            Backbone.history.loadUrl(Backbone.history.getFragment());
           },
           load: function() {
             var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];

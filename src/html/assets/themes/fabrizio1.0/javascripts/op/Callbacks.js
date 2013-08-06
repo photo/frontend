@@ -174,6 +174,12 @@
         TBX.notification.show('There was a problem deleting your sharing token.', null, 'error');
       }
     };
+    this.showKeyboardShortcuts = function(ev) {
+      if(!ev.shiftKey)
+        return;
+      var markup = $('script#keyboard-shortcuts').html();
+      $('.secondary-flyout').html(markup).slideDown('fast');
+    };
     this.tutorialUpdate = function(response) {
       $('.navbar-inner-secondary ul li.info').fadeOut();
     };

@@ -461,3 +461,27 @@
     <div class="bar bar-danger" style="width:<%= danger %>%;"></div>
   </div>
 </script>
+<script type="tmpl/underscore" id="keyboard-shortcuts">
+  <h4>Advanced shortcuts</h4>
+  <div class="row">
+    <div class="span5">
+      <h5>Gallery page</h5>
+      <ul class="unstyled">
+        <li><strong>alt</strong> + <strong>click</strong> &middot; Select a photo.</li>
+        <li><strong>shift</strong> + <strong>click</strong> &middot; Select a range of photos.</li>
+      </ul>    
+    </div>
+    <div class="span5">
+      <h5>Lightbox</h5>
+      <ul class="unstyled">
+        <li><strong>t</strong> &middot; Edit the title.</li>
+        <li><strong>d</strong> &middot; Edit the description.</li>
+        <li><strong>g</strong> &middot; Edit tags.</li>
+        <li><strong>p</strong> &middot; Toggle privacy.</li>
+        <li><strong>h</strong> or <strong><i class="icon-arrow-left"></i></strong> &middot; Previous photo.</li>
+        <li><strong>j</strong> or <strong><i class="icon-arrow-right"></i></strong> &middot; Next photo.</li>
+      </ul>    
+    </div>
+  </div>
+  <a href="#" class="batchHide close" title="Close this dialog"><i class="icon-remove batchHide"></i></a>
+</script>
