@@ -18,7 +18,7 @@
               <?php } ?>
             <?php } ?>
           <?php } elseif($this->utility->isActiveTab('upload')) {?>
-            <li class="separator-left">Import from </li>
+            <li class="separator-left">Mobile apps </li>
             <li><a href="http://bit.ly/trovebox-for-iphone" title="Download our Trovebox for iOS"><i class="icon-apple"></i> iPhone / iPad</a></li>
             <li><a href="http://bit.ly/trovebox-for-android" title="Download Trovebox for Android"><i class="icon-android"></i> Android</a></li>
           <?php } elseif($this->utility->isActiveTab('manage')) {?>
