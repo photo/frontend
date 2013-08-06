@@ -81,10 +81,7 @@
   
   _.extend( Lightbox.prototype, Backbone.Events, {
 	
-    imagePathKey : 'path870x870',
-    //imagePathKey : 'pathBase',
-    //imagePathKey : 'path870x550',
-    //imagePathKey : 'pathOriginal',
+    imagePathKey : 'pathBase',
     
     _initialize : function(){
       if( this._initialized ) return;
