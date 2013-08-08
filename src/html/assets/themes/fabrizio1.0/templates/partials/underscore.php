@@ -2,7 +2,7 @@
 <script type="tmpl/underscore" id="photo-meta">
   <div class="photo-meta">
     <?php if($isAdmin) { ?>
-      <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><i class="icon-pencil"></i> <%= title || filenameOriginal %></a></h4>
+      <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><i class="icon-pencil"></i> <%- title || filenameOriginal %></a></h4>
       <ul class="info">
         <!--<li><a href="#" title="Comments"><i class="icon-comments"></i> <span class="number">24</span></li>
         <li><a href="#" title="Favorites"><i class="icon-heart"></i> <span class="number">24</span></li>-->
@@ -14,7 +14,7 @@
         <li class="pull-right"><a href="#" title="Toggle the privacy setting"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %> permission edit" data-id="<%= id %>"></i></a></li>
       </ul>
     <?php } else { ?>
-      <h4 class="title"><%= title || filenameOriginal %></h4>
+      <h4 class="title"><%- title || filenameOriginal %></h4>
       <ul class="info">
         <!--<li><a href="#"><i class="icon-comments"></i> <span class="number">24</span></a></li>
         <li><a href="#"><i class="icon-heart"></i> <span class="number">24</span></a></li>-->
@@ -29,9 +29,9 @@
 
 <script type="tmpl/underscore" id="user-badge-meta">
   <?php if($isAdmin) { ?>
-    <h4 class="profile-name-meta username"><span class="name edit"><i class="icon-pencil"></i> <%= name %></span></h4>
+    <h4 class="profile-name-meta username"><span class="name edit"><i class="icon-pencil"></i> <%- name %></span></h4>
   <?php } else { ?>
-    <h4 class="profile-name-meta username"><span class="name"><%= name %></span></h4>
+    <h4 class="profile-name-meta username"><span class="name"><%- name %></span></h4>
   <?php } ?>
   <div class="tray-wrap">
     <span class="avatar">
@@ -39,7 +39,7 @@
     </span>
     <div class="tray">
       <div class="details">
-        <h5 class="username"><%= name %></h5>
+        <h5 class="username"><%- name %></h5>
         <ul>
           <li>
             <a href="/photos/list" title="View Photos">
@@ -83,10 +83,9 @@
 
 <script type="tmpl/underscore" id="profile-name-meta">
   <?php if($isAdmin) { ?>
-
-    <span class="name edit" title="Change display name"><i class="icon-pencil"></i> <%= name %></span>
+    <span class="name edit" title="Change display name"><i class="icon-pencil"></i> <%- name %></span>
   <?php } else { ?>
-    <span class="name" ><%= name %></span>
+    <span class="name" ><%- name %></span>
   <?php } ?>
 
 </script>
@@ -124,14 +123,14 @@
     <div class="title">
       <span class="text">
         <?php if($isAdmin) { ?>
-          <a href="#" class="title edit text"><i class="icon-pencil"></i> <%= title || filenameOriginal %></a>
+          <a href="#" class="title edit text"><i class="icon-pencil"></i> <%- title || filenameOriginal %></a>
         <?php } else { ?>
-          <%= title || filenameOriginal %>
+          <%- title || filenameOriginal %>
         <?php } ?>
       </span>
       <span class="actions">
         <?php if($isAdmin) { ?>
-          <a href="#" class="tags edit" title="Edit Tags"><i class="icon-tags"></i><span class="hide"><%= tags %></span></a>
+          <a href="#" class="tags edit" title="Edit Tags"><i class="icon-tags"></i><span class="hide"><%- tags %></span></a>
           <a href="#" class="share" data-id="<%= id %>" title="Share this photo via email, Facebook or Twitter"><i class="icon-share-alt"></i></a>
           <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
           <a href="#" class="permission edit" title="Click to make this photo <%= permission == 0 ? 'public' : 'private' %>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
@@ -146,9 +145,9 @@
     <div class="description">
       <span class="text">
         <?php if($isAdmin) { ?>
-          <a href="#" class="description edit text"><i class="icon-pencil"></i> <%= description %></a>
+          <a href="#" class="description edit text"><i class="icon-pencil"></i> <%- description %></a>
         <?php } else { ?>
-          <%= description %>
+          <%- description %>
         <?php } ?>
       </span>
     </div>
@@ -169,7 +168,7 @@
     <?php if($isAdmin) { ?>
       <h5>
         <span>
-          <span class="name edit" title="<%= name %>"><i class="icon-pencil"></i> <%= name %></span>
+          <span class="name edit" title="<%- name %>"><i class="icon-pencil"></i> <%- name %></span>
           <div class="icons">
             <a href="#" class="share" data-id="<%= id %>" title="Share this album"><i class="icon-share"></i> Share</a>
             <a href="#" class="delete pull-right" data-id="<%= id %>" title="Delete this album"><i class="icon-trash"></i></a>
@@ -177,7 +176,7 @@
         </span>
       </h5>
     <?php } else { ?>
-      <h5><span class="name" title="<%= name %>"><%= name %></span></h5>
+      <h5><span class="name" title="<%- name %>"><%- name %></span></h5>
     <?php } ?>
   </div>
 </script>
@@ -230,9 +229,9 @@
 
 <script type="tmpl/underscore" id="photo-detail-title-tmpl">
   <?php if($isAdmin) { ?>
-    <span class="title edit"><i class="icon-pencil"></i> <%= title || filenameOriginal %></span>
+    <span class="title edit"><i class="icon-pencil"></i> <%- title || filenameOriginal %></span>
   <?php } else { ?>
-    <span class="title"><%= title || filenameOriginal %></span>
+    <span class="title"><%- title || filenameOriginal %></span>
   <?php } ?>
   <span class="actions">
     <!--<a href="#"><i class="icon-heart"></i></a>
@@ -244,7 +243,7 @@
 </script>
 
 <script type="tmpl/underscore" id="photo-detail-description-tmpl">
-  <span class="text<?php if($isAdmin) { ?> edit<?php } ?>"><%= description %></span>
+  <span class="text<?php if($isAdmin) { ?> edit<?php } ?>"><%- description %></span>
 </script>
 
 <script type="tmpl/underscore" id="photo-comments-tmpl">
@@ -343,7 +342,7 @@
       <div class="c">
         <ul class="tags">
           <% for(var tag in tags) { %>
-            <li><a href="/photos/tags-<%= tags[tag] %>/list"><%= tags[tag] %></a></li>
+            <li><a href="/photos/tags-<%- tags[tag] %>/list"><%- tags[tag] %></a></li>
           <% } %>
         </ul>
       </div>
@@ -363,37 +362,37 @@
           <% if( typeof exifCameraMake !== 'undefined' && exifCameraMake ){ %>
             <tr>
               <th>Camera Make</th>
-              <td><%= exifCameraMake %></td>
+              <td><%- exifCameraMake %></td>
             </tr>
           <% } %>
           <% if( typeof exifCameraModel !== 'undefined' && exifCameraModel ){ %>
             <tr>
               <th>Camera Model</th>
-              <td><%= exifCameraModel %></td>
+              <td><%- exifCameraModel %></td>
             </tr>
           <% } %>
           <% if( typeof exifExposureTime !== 'undefined' && exifExposureTime ){ %>
             <tr>
               <th>Exposure Time</th>
-              <td><%= exifExposureTime %></td>
+              <td><%- exifExposureTime %></td>
             </tr>
           <% } %>
           <% if( typeof exifFNumber !== 'undefined' && exifFNumber ){ %>
             <tr>
               <th>F Number</th>
-              <td><%= exifFNumber %></td>
+              <td><%- exifFNumber %></td>
             </tr>
           <% } %>
           <% if( typeof exifFocalLength !== 'undefined' && exifFocalLength ){ %>
             <tr>
               <th>Focal Length</th>
-              <td><%= exifFocalLength %></td>
+              <td><%- exifFocalLength %></td>
             </tr>
           <% } %>
           <% if( typeof exifISOSpeed !== 'undefined' && exifISOSpeed ){ %>
             <tr>
               <th>ISO Time</th>
-              <td><%= exifISOSpeed %></td>
+              <td><%- exifISOSpeed %></td>
             </tr>
           <% } %>
         </table>

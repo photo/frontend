@@ -14,18 +14,19 @@ class BetterPageTitlesPlugin extends PluginBase
   public function renderHead()
   {
     parent::renderHead();
+    $utilityObj = new Utility;
     $user = new User;
     $page = $this->plugin->getData('page');
-    $username = $user->getNameFromEmail($this->config->user->email);
+    $username = $utilityObj->safe($user->getNameFromEmail($this->config->user->email), false);
     switch($page)
     {
       case 'photo-detail':
         $photo = $this->plugin->getData('photo');
         $prefix = '';
         if($photo['title'] != '')
-          $prefix = sprintf('%s - ', $photo['title']);
+          $prefix = sprintf('%s - ', $utilityObj->safe($photo['title'], false));
         elseif($photo['filenameOriginal'] != '')
-          $prefix = sprintf('%s - ', $photo['filenameOriginal']);
+          $prefix = sprintf('%s - ', $utilityObj->safe($photo['filenameOriginal'], false));
     return <<<MKP
 <title>{$prefix}{$username}'s photos - Trovebox</title>
 MKP;
