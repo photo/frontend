@@ -131,6 +131,7 @@
               <?php if($note = $this->notification->get()) { ?>
                 TBX.notification.show(<?php printf('%s, %s, %s', json_encode($this->utility->safe($note['msg'], '<a>', false)), json_encode($this->utility->safe($note['type'], false)), json_encode($this->utility->safe($note['mode'], false))); ?>);
               <?php } ?>
+              TBX.util.enableBetaFeatures(<?php echo json_encode((bool)$this->config->site->enableBetaFeatures); ?>);
               TBX.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
               TBX.init.attachEvents();
               <?php $this->plugin->invoke('renderFooterJavascript'); ?>

@@ -15,7 +15,8 @@ var Gallery = (function($) {
   };
 
   var batchEmpty;
-  
+
+  var breakOnDate;
   
 	/* ------------ PRIVATE functions ------------ */
 
@@ -134,16 +135,17 @@ var Gallery = (function($) {
 		while(items.length > 0 && len < maxwidth) {
 			var item = items[0];
 
-      // we also break by date
-      // do this conditionally
-      // only on gallery page
-      d = new Date(item.dateTaken*1000);
-      currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
-      if(typeof(lastDate) !== 'undefined' &&  currentDate !== lastDate) {
-        lastRowWidthRemaining = 0;
-        break;
+      // Gh-1341
+      // If beta features are enabled then separate photos by date
+      if(breakOnDate) {
+        d = new Date(item.dateTaken*1000);
+        currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
+        if(typeof(lastDate) !== 'undefined' &&  currentDate !== lastDate) {
+          lastRowWidthRemaining = 0;
+          break;
+        }
+        lastDate = currentDate;
       }
-      lastDate = currentDate;
 
 			row.push(item);
 			len += (item[photoKey][1] + marginsOfImage);
@@ -254,8 +256,12 @@ var Gallery = (function($) {
 
     // insert calendar icon
     currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
-    if(currentDate !== lastDate)
-      parent.append(dateSeparator(item.dateTaken));
+    if(currentDate !== lastDate) {
+      if(breakOnDate)
+        parent.append(dateSeparator(item.dateTaken));
+      else
+        imageContainer.append(dateSeparator(item.dateTaken));
+    }
     lastDate = currentDate;
 
 		parent.append(imageContainer);
@@ -286,6 +292,9 @@ var Gallery = (function($) {
 		},
 
 		showImages : function(photosContainer, realItems) {
+      if(typeof(breakOnDate) === 'undefined')
+        breakOnDate = TBX.util.enableBetaFeatures() && TBX.util.currentPage() === 'photos';
+
       // check if the batch queue is empty
       // we do this here to keep from having to call length for each photo, just for each page
       batchEmpty = OP.Batch.length() === 0;

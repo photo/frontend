@@ -41,7 +41,16 @@
       display:block;
       overflow: auto;
       width: 100%;
-      color:red;
+      line-height: 14px;
+      font-size: 13px;
+      vertical-align: middle;
+      padding:10px 0 4px;
+      a {
+        color: #666;
+        i {
+          vertical-align: middle;
+        }
+      }
     }
 
     > .imageContainer {
@@ -61,6 +70,23 @@
       margin: 5px;
       position: relative;
       overflow: hidden;
+
+      .date-placeholder {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: rgba(255,255,255,0.8);
+        padding: 6px 5px 4px;
+        line-height: 14px;
+        font-size: 10px;
+        vertical-align: middle;
+        a {
+          color: #666;
+          i {
+            vertical-align: middle;
+          }
+        }
+      }
       
       img {
         max-width: none;

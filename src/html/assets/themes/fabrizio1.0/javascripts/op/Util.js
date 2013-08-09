@@ -3,6 +3,20 @@
     TBX = {};
 
   function Util() {
+    var enableBetaFeatures = false, currentPage = null;
+
+    this.currentPage = function(/*[set]*/) {
+      if(arguments.length === 1)
+        currentPage = arguments[0];
+      return currentPage;
+    };
+
+    this.enableBetaFeatures = function(/*[set]*/) {
+      if(arguments.length === 1)
+        enableBetaFeatures = arguments[0];
+      return enableBetaFeatures;
+    };
+
     this.fetchAndCache = function(src) {
       $('<img />').attr('src', src).appendTo('body').css('display', 'none').on('load', function(ev) { $(ev.target).remove(); });
     };

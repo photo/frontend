@@ -193,20 +193,25 @@
         OP.Util.on('keyup:escape', TBX.handlers.click.batchHide);
         OP.Util.on('keyup:slash', TBX.callbacks.showKeyboardShortcuts);
 
-        if(location.pathname === '/')
+        if(location.pathname === '/') {
           TBX.init.pages.front.init();
-        else if(location.pathname.search(/^\/albums(.*)\/list/) === 0)
+        } else if(location.pathname.search(/^\/albums(.*)\/list/) === 0) {
           TBX.init.pages.albums.init();
-        else if(location.pathname === '/manage/photos')
-          TBX.init.pages.manage.photos();
-        else if(location.pathname.search(/^\/photos(.*)\/list/) === 0)
+          TBX.util.currentPage('albums');
+        } else if(location.pathname.search(/^\/photos(.*)\/list/) === 0) {
+          if(location.pathname.search(/album-/) !== -1)
+            TBX.util.currentPage('album');
+          else
+            TBX.util.currentPage('photos');
+
           TBX.init.pages.photos.init();
-        else if(location.pathname.search(/^\/p\/[a-z0-9]+/) === 0 || location.pathname.search(/^\/photo\/[a-z0-9]+\/?(.*)\/view/) === 0)
+        } else if(location.pathname.search(/^\/p\/[a-z0-9]+/) === 0 || location.pathname.search(/^\/photo\/[a-z0-9]+\/?(.*)\/view/) === 0) {
           TBX.init.pages.photo.init();
-        else if(location.pathname === '/photos/upload')
+        } else if(location.pathname === '/photos/upload') {
           TBX.init.pages.upload();
-        else if(location.pathname === '/photos/upload/beta')
+        } else if(location.pathname === '/photos/upload/beta') {
           TBX.init.pages.uploadBeta();
+        }
       },
       attachEvents: function() {
         OP.Util.on('preload:photos', TBX.handlers.custom.preloadPhotos);
