@@ -28,11 +28,9 @@ var Gallery = (function($) {
 	};
 
   var dateSeparator = function(ts) {
-  var calendarContainer = $('<div/>'),
-      a = $('<a/>');
+    var calendarContainer = $('<div/>');
     calendarContainer.attr('class', 'date-placeholder');
-    a.html('<i class="tb-icon-small-calendar tb-icon-light""></i> '+phpjs.date('M jS, Y', ts));
-    calendarContainer.append(a);
+    calendarContainer.html('<i class="tb-icon-small-calendar tb-icon-light""></i> '+phpjs.date('M jS, Y', ts));
     return calendarContainer;
   };
 
@@ -118,9 +116,9 @@ var Gallery = (function($) {
 	 * @method buildImageRow
 	 */
 	var buildImageRow = function(maxwidth, items) {
-		var row = [], len = 0;
-
+		var row = [], len = 0, currentDate, d, lastDate;
 		var photoKey = 'photo' + configuration['thumbnailSize'];
+
 
     // if the last row has pixels left just fill them
     if(lastRowWidthRemaining > 0)
@@ -134,9 +132,22 @@ var Gallery = (function($) {
 
 		// Build a row of images until longer than maxwidth
 		while(items.length > 0 && len < maxwidth) {
-			var item = items.shift();
+			var item = items[0];
+
+      // we also break by date
+      // do this conditionally
+      // only on gallery page
+      d = new Date(item.dateTaken*1000);
+      currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
+      if(typeof(lastDate) !== 'undefined' &&  currentDate !== lastDate) {
+        lastRowWidthRemaining = 0;
+        break;
+      }
+      lastDate = currentDate;
+
 			row.push(item);
 			len += (item[photoKey][1] + marginsOfImage);
+      items.shift();
 		}
 
 		// calculate by how many pixels too long?
@@ -218,12 +229,6 @@ var Gallery = (function($) {
 		link.append(img);
 		overflow.append(link);
 		imageContainer.append(overflow);
-
-    // insert calendar icon
-    currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
-    if(currentDate !== lastDate)
-      imageContainer.prepend(dateSeparator(item.dateTaken));
-    lastDate = currentDate;
     
     /**
      * Add meta information to bottom
@@ -246,6 +251,12 @@ var Gallery = (function($) {
 		img.bind("load", function () { 
 			$(this).fadeIn(400); 
 		});
+
+    // insert calendar icon
+    currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
+    if(currentDate !== lastDate)
+      parent.append(dateSeparator(item.dateTaken));
+    lastDate = currentDate;
 
 		parent.append(imageContainer);
     return parseInt(imageContainer.width());
