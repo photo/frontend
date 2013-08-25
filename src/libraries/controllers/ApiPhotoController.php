@@ -385,7 +385,7 @@ class ApiPhotoController extends ApiBaseController
 
     if($res) 
     {
-      $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet);
+      $apiResp = $this->api->invoke("/{$this->apiVersion}/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => $_POST));
       $photo = $apiResp['result'];
       return $this->success('Successfully transformed the photo', $photo);
     }
