@@ -84,6 +84,7 @@
     },
     events : {
       'click .permission.edit': 'permission',
+      'click .rotate': 'rotate',
       'click .share': 'share'
     },
     permission: function(ev) {
@@ -91,6 +92,11 @@
       var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model;
       model.set('permission', model.get('permission') == 0 ? 1 : 0, {silent:false});
       model.save();
+    },
+    rotate: function(ev) {
+      ev.preventDefault();
+      var $el = $(ev.currentTarget), model = this.model, id = model.get('id'), size = '870x870', value='90';
+      OP.Util.makeRequest('/photo/'+id+'/transform.json', {crumb: TBX.crumb(),rotate:value,returnSizes:size,generate:'true'}, TBX.callbacks.rotate.bind({model: model, id: id, size: size}), 'json', 'post');
     },
     share: function(ev) {
       ev.preventDefault();

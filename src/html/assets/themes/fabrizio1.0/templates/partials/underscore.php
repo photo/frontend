@@ -134,6 +134,7 @@
           <a href="#" class="share" data-id="<%= id %>" title="Share this photo via email, Facebook or Twitter"><i class="icon-share-alt"></i></a>
           <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
           <a href="#" class="permission edit" title="Click to make this photo <%= permission == 0 ? 'public' : 'private' %>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
+          <a href="#" class="rotate" title="Click to rotate this photo"><i class="icon-rotate-right"></i></a>
         <?php } else { ?>
           <?php if($this->config->site->allowOriginalDownload == 1) { ?>
             <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
@@ -187,7 +188,7 @@
   <div class="row">
     <div class="span9">
       <div class="photo">
-        <img src="<%= path870x870 %>"  />
+        <img src="<%= path870x870 %>" class="photo-img-<%= id %>" />
         <span class="mag photo-view-modal-click" data-id="<%= id %>"><i class="icon-search"></i></span>
       </div>
       <div class="description"></div>
@@ -280,10 +281,12 @@
 
 <script type="tmpl/underscore" id="photo-detail-meta-tmpl">
   <ul>
-    <!--<li><i class="icon-heart"></i> 16 Favorites</i></li>-->
-    <!--<li><i class="icon-comment"></i> 7 Comments</i></li>-->
-    <!--<li><i class="icon-eye-open"></i> 110 Views</i></li>-->
-    <li><i class="icon-calendar"></i> <%= phpjs.date('M d, Y', dateTaken) %></i></li>
+    <?php if($isAdmin) { ?>
+      <li class="full"><i class="icon-calendar"></i> <%= phpjs.date('l, F jS, Y @ g:ia', dateTaken) %></i></li>
+    <?php } else { ?>
+      <li><i class="icon-calendar"></i> <%= phpjs.date('M d, Y', dateTaken) %></i></li>
+    <?php } ?>
+
     <?php if($isAdmin) { ?>
       <li><a href="#" class="share trigger" data-id="<%= id %>"><i class="icon-share-alt"></i> Share</i></a></li>
     <?php } ?>
@@ -291,7 +294,9 @@
     <?php if($isAdmin || $this->config->site->allowOriginalDownload == 1) { ?>
       <li><a href="<%= pathDownload %>" class="download trigger"><i class="icon-download"></i> Download</i></a></li>
     <?php } ?>
-    
+    <?php if($isAdmin) { ?>
+      <li><a class="rotate" href="#"><i class="icon-rotate-right"></i> Rotate</a></li>
+    <?php } ?>
   </ul>
 </script>
 

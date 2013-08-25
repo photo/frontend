@@ -51,6 +51,7 @@
     },
     events : {
       'click .permission.edit': 'permission',
+      'click .rotate': 'rotate',
       'click .share': 'share'
     },
     permission: function(ev) {
@@ -58,6 +59,11 @@
       var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model;
       model.set('permission', model.get('permission') == 0 ? 1 : 0, {silent:false});
       model.save();
+    },
+    rotate: function(ev) {
+      ev.preventDefault();
+      var $el = $(ev.currentTarget), model = this.model, id = model.get('id'), size = 'Base', value='90';
+      OP.Util.makeRequest('/photo/'+id+'/transform.json', {crumb: TBX.crumb(),rotate:value,generate:'true'}, TBX.callbacks.rotate.bind({model: model, id: id, size: size}), 'json', 'post');
     },
     share: function(ev) {
       ev.preventDefault();
@@ -185,13 +191,13 @@
           , ch = $(window).height() - this.$el.find('.bd').position().top
           , cr = cw / ch
         
-        if( iw < cw && ih < ch ){
-          $photo.width(iw);
-          $photo.height(ih);
-        }
-        else {
-          $photo.css( cr > ir ? {width: iw * ch/ih, height: ch} : {width: cw, height: ih * cw/iw} );
-        }
+//      if( iw < cw && ih < ch ){
+//        $photo.width(iw);
+//        $photo.height(ih);
+//      }
+//      else {
+//        $photo.css( cr > ir ? {width: iw * ch/ih, height: ch} : {width: cw, height: ih * cw/iw} );
+//      }
       }
       else {
         $photo.css({'height': ( $(window).height() - this.$el.find('.bd').position().top )+'px'} );
@@ -240,7 +246,7 @@
       if( this.model.get('id') != id ) return;
       this.$el.removeClass('loading');
       this.$el.find('.photo img').remove();
-      $('<img />').attr('src', $(c).attr('src')).hide().appendTo(this.$el.find('.photo')).fadeIn('fast');
+      $('<img />').attr('class', 'photo-img-'+id).attr('src', $(c).attr('src')).hide().appendTo(this.$el.find('.photo')).fadeIn('fast');
       this.adjustSize();
     },
 
