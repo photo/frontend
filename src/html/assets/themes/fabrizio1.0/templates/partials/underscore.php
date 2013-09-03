@@ -2,11 +2,11 @@
 <script type="tmpl/underscore" id="photo-meta">
   <div class="photo-meta">
     <?php if($isAdmin) { ?>
-      <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><i class="icon-pencil"></i> <%- title || filenameOriginal %></a></h4>
+      <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><i class="icon-pencil"></i><%- title || filenameOriginal %></a></h4>
       <ul class="info">
         <!--<li><a href="#" title="Comments"><i class="icon-comments"></i> <span class="number">24</span></li>
         <li><a href="#" title="Favorites"><i class="icon-heart"></i> <span class="number">24</span></li>-->
-        <li><a href="#" class="share" title="Share via Facebook, Twitter or Email" data-id="<%= id %>"><i class="icon-share-alt"></i> Share</a> &nbsp;</li>
+        <li><a href="#" class="share" title="Share via Facebook, Twitter or Email" data-id="<%= id %>"><i class="icon-share-alt"></i>Share</a> &nbsp;</li>
         <li class="pull-right"><a href="#" title="Delete this photo"><i class="icon-trash photo delete edit" data-action="delete" data-ids="<%= id %>"></i></a></li>
         <li class="pull-right"><a href="#" title="Select for batch editing"><i class="icon-pushpin pin edit" data-id="<%= id %>"></i></a></li>
         <li class="pull-right album"><a href="#" title="Set as your album cover"><i class="icon-th-large album edit" data-id="<%= id %>"></i></a></li>
@@ -123,7 +123,7 @@
     <div class="title">
       <span class="text">
         <?php if($isAdmin) { ?>
-          <a href="#" class="title edit text"><i class="icon-pencil"></i> <%- title || filenameOriginal %></a>
+          <a href="#" class="title edit text"><i class="icon-pencil"></i><%- title || filenameOriginal %></a>
         <?php } else { ?>
           <%- title || filenameOriginal %>
         <?php } ?>
@@ -169,9 +169,9 @@
     <?php if($isAdmin) { ?>
       <h5>
         <span>
-          <span class="name edit" title="<%- name %>"><i class="icon-pencil"></i> <%- name %></span>
+          <span class="name edit" title="<%- name %>"><i class="icon-pencil"></i><%- name %></span>
           <div class="icons">
-            <a href="#" class="share" data-id="<%= id %>" title="Share this album"><i class="icon-share"></i> Share</a>
+            <a href="#" class="share" data-id="<%= id %>" title="Share this album"><i class="icon-share"></i>Share</a>
             <a href="#" class="delete pull-right" data-id="<%= id %>" title="Delete this album"><i class="icon-trash"></i></a>
           </div>
         </span>
@@ -230,7 +230,7 @@
 
 <script type="tmpl/underscore" id="photo-detail-title-tmpl">
   <?php if($isAdmin) { ?>
-    <span class="title edit"><i class="icon-pencil"></i> <%- title || filenameOriginal %></span>
+    <span class="title edit"><i class="icon-pencil"></i><%- title || filenameOriginal %></span>
   <?php } else { ?>
     <span class="title"><%- title || filenameOriginal %></span>
   <?php } ?>
