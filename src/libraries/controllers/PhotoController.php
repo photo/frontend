@@ -150,6 +150,7 @@ class PhotoController extends BaseController
 
     $photos = $photos['result'];
 
+    $filterAttributes = array();
     $this->plugin->setData('photos', $photos);
     $this->plugin->setData('page', 'photos');
 
@@ -168,11 +169,17 @@ class PhotoController extends BaseController
     {
       $albumResp = $this->api->invoke("/album/{$filterMatches[1]}/view.json", EpiRoute::httpGet);
       $album = $albumResp['result'];
+      $filterAttributes[] = 'album';
+      $this->plugin->setData('album', $album);
     }
     if(preg_match('/tags-([^\/]+)/', $filterOpts, $filterMatches))
     {
       $tags = (array)explode(',', $filterMatches[1]);
+      $filterAttributes[] = 'tags';
+      $this->plugin->setData('tags', $tags);
     }
+
+    $this->plugin->setData('filters', $filterAttributes);
 
     $body = $this->theme->get($this->utility->getTemplate('photos.php'), array('album' => $album, 'tags' => $tags, 'photos' => $photos, 'pages' => $pages, 'options' => $filterOpts));
     $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'photos'));
