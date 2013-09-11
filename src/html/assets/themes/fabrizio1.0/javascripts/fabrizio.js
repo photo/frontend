@@ -168,18 +168,7 @@
         OP.Album.init();
         pathname = location.pathname;
 
-        /* jm History.Adapter.bind(window,'statechange',function(){
-          var State = History.getState(),
-              initialPop = !popped && location.href == initialURL;
-          popped = true;
-          if(initialPop)
-            return;
-
-          pushstate.render(State.data);
-        });*/
-
         // TODO cache in local storage
-
         profiles.load();
         
         /**
@@ -188,11 +177,8 @@
         $('input.typeahead.tags').each(function(i, el) {
           new op.data.view.TagSearch({el: el});
         });
-        
-        // escape cancels flyout
-        OP.Util.on('keyup:escape', TBX.handlers.click.batchHide);
-        OP.Util.on('keyup:slash', TBX.callbacks.showKeyboardShortcuts);
-
+      },
+      run: function() {
         if(location.pathname === '/') {
           TBX.init.pages.front.init();
         } else if(location.pathname.search(/^\/albums(.*)\/list/) === 0) {
@@ -214,6 +200,10 @@
         }
       },
       attachEvents: function() {
+        OP.Util.on('keyup:escape', TBX.handlers.click.batchHide);
+        OP.Util.on('keyup:slash', TBX.callbacks.showKeyboardShortcuts);
+        OP.Util.on('callback:remove-spinners', TBX.callbacks.removeSpinners);
+        OP.Util.on('callback:replace-spinner', TBX.callbacks.replaceSpinner);
         OP.Util.on('preload:photos', TBX.handlers.custom.preloadPhotos);
       },
       pages: {

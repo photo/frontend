@@ -133,8 +133,9 @@
               <?php } ?>
               TBX.util.enableBetaFeatures(<?php echo json_encode((bool)$this->config->site->enableBetaFeatures); ?>);
               TBX.init.load('<?php $this->utility->safe($this->session->get('crumb')); ?>'); 
-              TBX.init.attachEvents();
               <?php $this->plugin->invoke('renderFooterJavascript'); ?>
+              TBX.init.run(); 
+              TBX.init.attachEvents();
             } // onComplete
           } // js
         });
