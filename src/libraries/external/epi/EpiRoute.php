@@ -24,6 +24,7 @@ class EpiRoute
   const httpGet = 'GET';
   const httpOptions = 'OPTIONS';
   const httpPost= 'POST';
+  const httpHead= 'HEAD';
 
   /**
    * get('/', 'function');
@@ -35,6 +36,7 @@ class EpiRoute
   public function get($route, $callback, $isApi = false)
   {
     $this->addRoute($route, $callback, self::httpGet, $isApi);
+    $this->addRoute($route, array($this, 'void'), self::httpHead, $isApi);
   }
 
   /**
@@ -98,6 +100,14 @@ class EpiRoute
         $this->$method($route['path'], $route['function']);
     }
   }
+
+  /**
+   * EpiRoute::void
+   *  Used for HEAD requests as the route handler
+   * @name  void
+   * @author  Jaisen Mathai <jaisen@jmathai.com>
+   */
+  public function void() { }
 
   /**
    * EpiRoute::run($_GET['__route__'], $_['routes']);
