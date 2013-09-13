@@ -138,6 +138,7 @@
     
     _initEvents : function(){
       this.$el.click( this._bound('onContainerClick') );
+      this.$el.find('.photo').click( this._bound('nextIfImage'));
       this.$el.find('.photo .nav .prev').click( this._bound('prev'));
       this.$el.find('.photo .nav .next').click( this._bound('next'));
       this.$el.find('.details .toggle').click( this._bound('toggleDetails'));
@@ -149,7 +150,7 @@
       });
       $(window).on({
         'resize.oplightbox'		:this._bound('adjustSize')
-      })
+      });
     },
     
     _releaseDocumentEvents : function(){
@@ -184,22 +185,33 @@
       
       // check for the image
       if( (c =this.cache[this.model.get('id')]) && c._loaded ){
+        /*
+         * iw = image width, ih = image height, ir = image ratio
+         * cw = chrome width, ch = chrome height, cr = chrome ratio
+         */
         var iw = c.width
           , ih = c.height
           , ir = iw / ih
           , cw = $(window).width()
           , ch = $(window).height() - this.$el.find('.bd').position().top
-          , cr = cw / ch
+          , cr = cw / ch;
         
-//      if( iw < cw && ih < ch ){
-//        $photo.width(iw);
-//        $photo.height(ih);
-//      }
-//      else {
-//        $photo.css( cr > ir ? {width: iw * ch/ih, height: ch} : {width: cw, height: ih * cw/iw} );
-//      }
-      }
-      else {
+        // if the image is narrower and the height is shorter than the chrome
+        //  then set the div's width to the images dimensions
+        // else
+        //  if the chrome ratio (width) is greater than the image
+        //    set the width to the image width * chrome height / image height
+        //    set the height to the chrome height
+        //  else
+        //    set the height to the image height * chrome width / image width
+        //    set the width to the chrome width
+        if( iw < cw && ih < ch ){
+          $photo.width(iw);
+          $photo.height(ih);
+        } else {
+          $photo.css( cr > ir ? {width: iw * ch/ih, height: ch} : {width: cw, height: ih * cw/iw} );
+        }
+      } else {
         $photo.css({'height': ( $(window).height() - this.$el.find('.bd').position().top )+'px'} );
       }
     },
@@ -313,6 +325,15 @@
           router.navigate('/p/'+id+this._filter, {trigger: false});
         }
         this.go(i);
+      }
+    },
+
+    nextIfImage : function(ev) {
+      var el = ev.target;
+      console.log(el.tagName);
+      if(el.tagName === 'IMG') {
+        ev.stopPropagation();
+        this.next(ev);
       }
     },
 
