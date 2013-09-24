@@ -723,7 +723,12 @@ class Photo extends BaseModel
           $this->logger->info('Could not purge photo versions from the database');
           return false;
         }
+
         // delete all photos from the original photo object (includes paths to existing photos)
+        // check if skipDeleteOriginal is passed in and remove from $photo and $attributes to preserve
+        if($skipOriginal === '1')
+          unset($photo['pathOriginal']);
+
         $delFilesResp = $this->fs->deletePhoto($photo);
         if(!$delFilesResp)
         {
