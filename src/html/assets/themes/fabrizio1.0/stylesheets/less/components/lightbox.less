@@ -42,6 +42,21 @@
   .bd {
     text-align: center;
     .photo {
+      &.video {
+        display:inline-block;
+        position:absolute;
+        top:0;
+      }
+      &.first {
+        a.prev {
+          display:none;
+        }
+      }
+      &.last {
+        a.next {
+          display:none;
+        }
+      }
       background-image: none;
       position: relative;
       display: inline-block;

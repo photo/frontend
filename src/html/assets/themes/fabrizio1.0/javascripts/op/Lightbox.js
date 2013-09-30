@@ -291,12 +291,27 @@
     },
     
     loadImage : function(){
-      var c, $title = $('title');
+      var c, src = this.model.get(this.imagePathKey), next, previous, $photo;
+      previous = this.store.at(this.store.indexOf(this.model) - 1),
+      next = this.store.at(this.store.indexOf(this.model) + 1);
+
       this.$el.find('.photo img').remove();
       this.$el.addClass('loading');
-      this.$el.find('.photo')
+      $photo = this.$el.find('.photo');
+      $photo
         .width($(window).width())
         .height(($(window).height() - this.$el.find('.bd').position().top )+'px');
+      // add/remove class="first" to .photo to hide previous arrow
+      if(typeof(previous) === 'undefined')
+        $photo.addClass('first');
+      else
+        $photo.removeClass('first');
+
+      // add/remove class="last" to .photo to hide next arrow
+      if(typeof(next) === 'undefined')
+        $photo.addClass('last');
+      else
+        $photo.removeClass('last');
         
       // set the title to include the photo's title
       $title.html(TBX.format.sprintf('%s / Photo / %s / Trovebox', TBX.profiles.getOwnerUsername(), this.model.get('title') || this.model.get('filenameOriginal')));
@@ -342,6 +357,7 @@
       }
     },
 
+    // next if the image was clicked (as opposed to the arrows)
     nextIfImage : function(ev) {
       var el = ev.target;
       if(el.tagName === 'IMG') {
