@@ -292,9 +292,6 @@ var Gallery = (function($) {
 		},
 
 		showImages : function(photosContainer, realItems) {
-      if(typeof(breakOnDate) === 'undefined')
-        breakOnDate = TBX.util.enableBetaFeatures() && TBX.util.currentPage() === 'photos';
-
       // check if the batch queue is empty
       // we do this here to keep from having to call length for each photo, just for each page
       batchEmpty = OP.Batch.length() === 0;
