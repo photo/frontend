@@ -1,7 +1,5 @@
 <div class="row">
   <div class="span12 album-grid">
-    <div class="album-grid-hr"></div>
-
     <?php if(!empty($albums) ) { ?>
       <ul class="albums"></ul>
       <script> var initData = <?php echo json_encode($albums); ?>;</script>

@@ -1,6 +1,5 @@
 <div class="row">
   <div class="span12 tags-content">
-    <div class="tags-hr"></div>
     <?php if(!empty($tags)) { ?>
       <ul class="tags">
         <?php foreach($tags as $tag) { ?>
