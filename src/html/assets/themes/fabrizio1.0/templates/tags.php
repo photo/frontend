@@ -1,5 +1,3 @@
-<?php $this->theme->display('partials/user-badge.php'); ?>
-
 <div class="row">
   <div class="span12 tags-content">
     <div class="tags-hr"></div>
