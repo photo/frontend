@@ -180,9 +180,9 @@
       this.views = {};
 
       if(location.pathname.search('/photo/') > -1)
-        this._filter = /\/photo\/([^/]+)(\/.*)\/view/.exec(location.pathname)[2];
+        this._filter = /\/photo\/([^/]+)(\/.*)?\/view/.exec(location.pathname)[2] || '';
       else
-        this._filter = /\/p\/([^/]+)(\/.*)?/.exec(location.pathname)[2];
+        this._filter = /\/p\/([^/]+)(\/.*)?/.exec(location.pathname)[2] || '';
 
       var self = this;
       op.Lightbox.getInstance().on('updatemodel', function(model){
