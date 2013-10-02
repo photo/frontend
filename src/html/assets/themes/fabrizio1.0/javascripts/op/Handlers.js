@@ -213,6 +213,8 @@
     this.keyup = { };
     this.keyup["27"] = "keyup:escape";
     this.keyup["191"] = "keyup:slash";
+    this.keyup["37"] = "keyup:left";
+    this.keyup["39"] = "keyup:right";
     this.mouseover = { };
     this.submit = {};
     this.submit.albumCreate = function(ev) {

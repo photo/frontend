@@ -283,6 +283,8 @@
             delete _this.photo.actions;
             _this.render(_this.photo);
             delete _this.initData;
+            OP.Util.on('keyup:left', TBX.callbacks.photoPrevious);
+            OP.Util.on('keyup:right', TBX.callbacks.photoNext);
           },
           load: function(id) {
             // TODO don't hard code the returnSizes

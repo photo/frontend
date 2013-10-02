@@ -91,6 +91,27 @@
       var url = $('input[name="r"]', $('form.login')).val();
       location.href = url;
     };
+    this.passwordReset = function(response) {
+      var $button = this;
+      if(response.code !== 200) {
+        TBX.notification.show('We could not update your password.', 'flash', 'error');
+        OP.Util.fire('callback:replace-spinner', {button: $button, icon:'icon-warning-sign'});
+        return;
+      }
+      location.href = '/';
+    };
+    this.personaSuccess = function(assertion) {
+      var params = {assertion: assertion};
+      OP.Util.makeRequest('/user/browserid/login.json', params, TBX.callbacks.loginProcessed);
+    };
+    this.photoNext = function(ev) {
+      if(!op.Lightbox.getInstance().isOpen())
+        $('.pagination .arrow-next').click();
+    };
+    this.photoPrevious = function(ev) {
+      if(!op.Lightbox.getInstance().isOpen())
+        $('.pagination .arrow-prev').click();
+    };
     this.pluginStatusToggle = function(response) {
       var a = $(this),
           div = a.parent(),
@@ -173,6 +194,12 @@
       $('a.batchHide').trigger('click');
       TBX.notification.show('Your photo was successfully emailed.', 'flash', 'confirm');
     };
+    this.showKeyboardShortcuts = function(ev) {
+      if(!ev.shiftKey)
+        return;
+      var markup = $('script#keyboard-shortcuts').html();
+      $('.secondary-flyout').html(markup).slideDown('fast');
+    };
     this.tokenDelete = function(response) {
       if(response.code === 204) {
         this.closest('tr').slideUp('medium');
@@ -180,12 +207,6 @@
       } else {
         TBX.notification.show('There was a problem deleting your sharing token.', null, 'error');
       }
-    };
-    this.showKeyboardShortcuts = function(ev) {
-      if(!ev.shiftKey)
-        return;
-      var markup = $('script#keyboard-shortcuts').html();
-      $('.secondary-flyout').html(markup).slideDown('fast');
     };
     this.tutorialUpdate = function(response) {
       $('.navbar-inner-secondary ul li.info').fadeOut();
@@ -229,4 +250,3 @@
   
   TBX.callbacks = new Callbacks;
 })(jQuery);
-

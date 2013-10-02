@@ -160,7 +160,7 @@
     
     largePath : 'path870x870',
     thumbPath : 'path180x180xCR',
-    _filter: location.pathname.replace('/p/', '/').replace('/photo/', '/').replace('/view', ''),
+    _filter: null,
     
     viewMap : {
       '.comments'     :CommentsView,
@@ -178,6 +178,12 @@
       this.initialModel = this.model;
       this.thumbs = {};
       this.views = {};
+
+      if(location.pathname.search('/photo/') > -1)
+        this._filter = /\/photo\/([^/]+)(\/.*)\/view/.exec(location.pathname)[2];
+      else
+        this._filter = /\/p\/([^/]+)(\/.*)?/.exec(location.pathname)[2];
+
       var self = this;
       op.Lightbox.getInstance().on('updatemodel', function(model){
         self.go(model.get('id'));
@@ -402,7 +408,7 @@
           [this.thumbPath, this.largePath],
           function(str){ return str.replace(/^path/,''); }
         ).join(',') 
-        , apiParams = {nextprevious:'1', returnSizes:sizes}
+        , apiParams = {nextprevious:'1', generate: 'true', returnSizes:sizes}
         , endpoint
         , fn = 'next';
         
