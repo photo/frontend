@@ -10,8 +10,6 @@
       
       var self = this;
       
-      
-      
       // whenever this is re-rendered, check for any old editables
       // and hide them in case the tip is open.
       if( this.editable ) for(var i in this.editable){
@@ -60,6 +58,10 @@
 
           if(typeof(this.editable[i].shown) !== "undefined") {
             $el.on('shown', this.editable[i].shown);
+          }
+          
+          if( $el.find('.value').length ){
+            config.value = $el.find('.value').text();
           }
           
           // grab the "on" property
