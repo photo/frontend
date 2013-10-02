@@ -29,7 +29,7 @@
 
 <script type="tmpl/underscore" id="user-badge-meta">
   <?php if($isAdmin) { ?>
-    <h4 class="profile-name-meta username"><span class="name edit"><i class="icon-pencil"></i> <%- name %></span></h4>
+    <h4 class="profile-name-meta username"><span class="name edit"><i class="icon-pencil"></i> <span class="value"><%- name %></span></span></h4>
   <?php } else { ?>
     <h4 class="profile-name-meta username"><span class="name"><%- name %></span></h4>
   <?php } ?>
@@ -83,7 +83,7 @@
 
 <script type="tmpl/underscore" id="profile-name-meta">
   <?php if($isAdmin) { ?>
-    <span class="name edit" title="Change display name"><i class="icon-pencil"></i> <%- name %></span>
+    <span class="name edit" title="Change display name"><i class="icon-pencil"></i> <span class="value"><%- name %></span></span>
   <?php } else { ?>
     <span class="name" ><%- name %></span>
   <?php } ?>

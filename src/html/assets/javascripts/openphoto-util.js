@@ -3,7 +3,7 @@
 * And ability to swap frameworks (YUI or jQuery) in and out.
 */
 (function() {
-
+    
     // just make sure that OP, the global namespace for OpenPhoto
     // is defined
     if ( typeof(OP) === "undefined") {
@@ -76,7 +76,7 @@
         * @method init
         */
         this.init = function(lib, config) {
-
+            
             OP.Log.info('[Util] init:');
 
             //merge the config with the user specified config
@@ -307,7 +307,7 @@
 
             var head = document.getElementsByTagName('head')[0],
                 script = document.createElement('script'),
-                onload, onerror;
+                onload, onerror, loaded = false;
 
             onerror = function() {
               OP.Log.info('[Util] loadScript failed for ' + url);
@@ -322,6 +322,8 @@
 
                 scope = scope || window,
                 onload = function() {
+                    if( loaded ) return null;
+                    loaded = true;
                     return fn.apply(scope);
                 };
                 script.onload = onload;
