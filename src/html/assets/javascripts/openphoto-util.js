@@ -322,14 +322,16 @@
 
                 scope = scope || window,
                 onload = function() {
-                    if( !loaded ) return fn.apply(scope);
-                    return;
+                    if( loaded ) return null;
+                    loaded = true;
+                    return fn.apply(scope);
                 };
                 script.onload = onload;
 
                 // This is for IE
                 script.onreadystatechange = function() {
                     if (this.readyState === 'complete' || this.readyState === 'loaded') {
+                        onload();
                         script.onreadystatechange = null;
                     }
                 }
