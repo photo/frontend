@@ -142,6 +142,7 @@
       this.$el.find('.photo .nav .prev').click( this._bound('prev'));
       this.$el.find('.photo .nav .next').click( this._bound('next'));
       this.$el.find('.details .toggle').click( this._bound('toggleDetails'));
+      this.$el.find('.detail-link').click( this._bound('viewDetailPage'));
     },
     
     _captureDocumentEvents : function(){
@@ -341,6 +342,12 @@
         ev.stopPropagation();
         this.next(ev);
       }
+    },
+
+    viewDetailPage : function(ev) {
+      ev.preventDefault();
+      var id = this.model.get('id');
+      location.href = '/p/'+id+this._filter;
     },
 
     tags: function(ev) {
