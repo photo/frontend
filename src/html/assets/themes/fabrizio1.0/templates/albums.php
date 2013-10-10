@@ -1,6 +1,7 @@
 <div class="row">
   <div class="span12 album-grid">
     <?php if(!empty($albums) ) { ?>
+      <h4><i class="icon-th-large"></i> Albums <small>(<?php $this->utility->safe($albums[0]['totalRows']); ?> total &middot; <i class="icon-sort-by-alphabet"></i>)</small></h4>
       <ul class="albums"></ul>
       <script> var initData = <?php echo json_encode($albums); ?>;</script>
     <?php } else { ?>
