@@ -95,8 +95,12 @@ class User extends BaseModel
 
     $defaultUrl = sprintf('%s%s', $hostAndProtocol, $this->themeObj->asset('image', 'profile-default.png', false));
 
+    if ($this->config->site->useGravatar == 0)
+        return $defaultUrl;
+
     $hash = md5(strtolower(trim($email)));
-    return sprintf("http://www.gravatar.com/avatar/%s?s=%s&d=%s", $hash, $size, urlencode($defaultUrl));
+    // return without the protocol part, so that we use the same protocol as it's currently being served
+    return sprintf("//www.gravatar.com/avatar/%s?s=%s&d=%s", $hash, $size, urlencode($defaultUrl));
   }
 
   /**
