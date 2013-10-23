@@ -99,8 +99,7 @@ class User extends BaseModel
         return $defaultUrl;
 
     $hash = md5(strtolower(trim($email)));
-    // return without the protocol part, so that we use the same protocol as it's currently being served
-    return sprintf("//www.gravatar.com/avatar/%s?s=%s&d=%s", $hash, $size, urlencode($defaultUrl));
+    return sprintf("http://www.gravatar.com/avatar/%s?s=%s&d=%s", $hash, $size, urlencode($defaultUrl));
   }
 
   /**
