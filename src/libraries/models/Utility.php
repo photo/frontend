@@ -236,6 +236,35 @@ class Utility
     return $this->returnValue($protocol, $write);
   }
 
+  public function getSortByParams($part, $val, $current = null, $write = true)
+  {
+    if($current == null)
+    {
+      if(isset($_GET['sortBy']))
+        $current = $_GET['sortBy'];
+      else
+        return null;
+    }
+
+    $sortParts = (array)explode(',', $current);
+    if(count($sortParts) != 2)
+      return null;
+
+    if($part == 'by')
+      $sortParts[0] = $val;
+    elseif($part == 'sort')
+      $sortParts[1] = $val;
+
+    return $this->returnValue(implode(',', $sortParts), $write);
+  }
+
+  /*public function getSortParts($sortBy)
+  {
+    explode(',', $sortBy);
+    $parts = $this->getSortByParams(null, null);
+    return (array)explode(',', $parts);
+  }*/
+
   public function isActiveTab($label)
   {
     if(!isset($_GET['__route__']))

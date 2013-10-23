@@ -210,6 +210,20 @@ RES;
     $this->assertEquals('https', $res);
   }
 
+  public function testGetSortByParams()
+  {
+    $res = $this->utility->getSortByParams('by', 'dateTaken', 'dateTaken,asc', false);
+    $this->assertEquals($res, 'dateTaken,asc');
+    $res = $this->utility->getSortByParams('by', 'dateTaken', 'dateUploaded,asc', false);
+    $this->assertEquals($res, 'dateTaken,asc');
+    $res = $this->utility->getSortByParams('by', 'dateUploaded', 'dateTaken,asc', false);
+    $this->assertEquals($res, 'dateUploaded,asc');
+    $res = $this->utility->getSortByParams('sort', 'asc', 'dateTaken,asc', false);
+    $this->assertEquals($res, 'dateTaken,asc');
+    $res = $this->utility->getSortByParams('sort', 'desc', 'dateTaken,asc', false);
+    $this->assertEquals($res, 'dateTaken,desc');
+  }
+
   public function testIsActiveTab()
   {
     $_GET['__route__'] = '/';

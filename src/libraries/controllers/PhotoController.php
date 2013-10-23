@@ -142,7 +142,19 @@ class PhotoController extends BaseController
     $getParams = array();
     if(!empty($_SERVER['QUERY_STRING']))
       parse_str($_SERVER['QUERY_STRING'], $getParams);
-    $params = array('_GET' => array_merge($getParams, array('returnSizes' => $returnSizes)));
+
+    $additionalParams = array('returnSizes' => $returnSizes, 'sortBy' => 'dateUploaded,desc');
+    if($isAlbum || $isTags)
+    {
+      if(!isset($getParams['sortBy']))
+        $additionalParams['sortBy'] = 'dateTaken,asc';
+
+      if($isAlbum)
+        $additionalParams['pageSize'] = '0';
+    }
+
+    $params = array('_GET' => array_merge($additionalParams, $getParams));
+
     if($filterOpts)
       $photos = $this->api->invoke("/photos/{$filterOpts}/list.json", EpiRoute::httpGet, $params);
     else
@@ -188,7 +200,11 @@ class PhotoController extends BaseController
     $photoCount = empty($photos) ? 0 : $photos[0]['totalRows'];
     $currentSortParts = (array)explode(',', $params['_GET']['sortBy']);
     $currentSortBy = $params['_GET']['sortBy'];
+<<<<<<< HEAD
     $headingHelper = $this->theme->get($this->utility->getTemplate('partials/photos-sub-heading.php'), array('isAlbum' => $isAlbum, 'album' => $album, 'currentSortBy' => $currentSortBy, 'sortParts' => $currentSortParts, 'photoCount' => $photoCount, 'pages' => $pages, 'uri' => $_SERVER['REQUEST_URI']));
+=======
+    $headingHelper = $this->theme->get($this->utility->getTemplate('partials/photos-sub-heading.php'), array('isAlbum' => $isAlbum, 'currentSortBy' => $currentSortBy, 'sortParts' => $currentSortParts, 'photoCount' => $photoCount));
+>>>>>>> 0850a99... Adding sort options to the Gallery view for Gallery, Album, Tags. #1341
 
     $body = $this->theme->get($this->utility->getTemplate('photos.php'), array('album' => $album, 'tags' => $tags, 'photos' => $photos, 'pages' => $pages, 'options' => $filterOpts, 'headingHelper' => $headingHelper));
     $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'photos', 'album' => $album/* pass album through for header-secondary */));
