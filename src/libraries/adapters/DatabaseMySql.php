@@ -1784,18 +1784,32 @@ class DatabaseMySql implements DatabaseInterface
           $where = $this->buildWhere($where, sprintf("`dateUploaded`<'%s'", $this->_(strtotime($value))));
           break;
         case 'sortBy':
-          if($value === 'dateTaken,desc')
-            $sortBy = 'ORDER BY dateSortByDay DESC';
-          elseif($value === 'dateTaken,asc')
-            $sortBy = 'ORDER BY dateSortByDay ASC';
-          elseif($value === 'dateUploaded,desc')
-            $sortBy = 'ORDER BY dateSortByDay DESC, dateUploaded ASC';
-          elseif($value === 'dateUploaded,asc')
-            $sortBy = 'ORDER BY dateSortByDay ASC, dateUploaded ASC';
-          else
-            $sortBy = 'ORDER BY ' . $this->_(str_replace(',', ' ', $value));
+          // default is dateTaken,desc
+          switch($value)
+          {
+            case 'dateTaken,desc':
+              $sortBy = 'ORDER BY dateTaken DESC';
+              break;
+            case 'dateTaken,asc':
+              $sortBy = 'ORDER BY `dateTaken` ASC';
+              break;
+            case 'dateUploaded,desc':
+              $sortBy = 'ORDER BY `dateUploaded` DESC';
+              break;
+            case 'dateUploaded,asc':
+              $sortBy = 'ORDER BY `dateUploaded` ASC';
+              break;
+            default:
+              if($table === 'photo')
+                $sortBy = 'ORDER BY dateSortByDay DESC, dateTaken ASC';
+              else if($table === 'activity')
+                $sortBy =  'ORDER BY dateCreated DESC';
+          }
+          /*
+          // #1341 removing since all photos should have the date fields
           $field = $this->_(substr($value, 0, strpos($value, ',')));
           $where = $this->buildWhere($where, "{$field} is not null");
+          */
           break;
         case 'tags':
           if(!is_array($value))
