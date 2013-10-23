@@ -389,7 +389,7 @@
         arg.preventDefault();
         id = $(arg.currentTarget).attr('data-id');
       } else {
-        id = arg;
+        id = arg.replace(/[^a-z0-9].*/,''); // since adding query strings for sort we need to sanitie
       }
       
       // get the item from the store

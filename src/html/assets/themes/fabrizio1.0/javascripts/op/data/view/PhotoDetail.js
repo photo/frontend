@@ -161,6 +161,7 @@
     largePath : 'path870x870',
     thumbPath : 'path180x180xCR',
     _filter: null,
+    _query: location.search || '',
     
     viewMap : {
       '.comments'     :CommentsView,
@@ -397,7 +398,7 @@
       
       this.loadMore( x > c );
       this.updateModel(this.store.get(id));
-      router.navigate('/p/'+id+this._filter, {trigger: false});
+      router.navigate('/p/'+id+this._filter+location.search, {trigger: false});
     },
     
     loadMore : function( dir ){
@@ -407,7 +408,7 @@
           [this.thumbPath, this.largePath],
           function(str){ return str.replace(/^path/,''); }
         ).join(',') 
-        , apiParams = {nextprevious:'1', generate: 'true', returnSizes:sizes}
+        , apiParams = {nextprevious:'1', generate: 'true', returnSizes:sizes, sortBy:TBX.util.getQueryParam('sortBy')}
         , endpoint
         , fn = 'next';
         
