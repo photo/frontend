@@ -336,6 +336,7 @@
               routes: {
                 "p/:id": "photoModal",
                 "p/:id/*path": "photoModal",
+                "p/:id?*path": "photoModal",
                 "photos/list": "photosList",
                 "photos/*path/list": "photosList"
               },

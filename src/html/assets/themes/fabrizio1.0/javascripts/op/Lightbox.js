@@ -111,6 +111,7 @@
     },
     
     _path: location.pathname,
+    _pathWithQuery: location.pathname+location.search,
     _filter: location.pathname.replace('/p/', '/').replace('/photos/', '/').replace('/list', ''),
     _visible: false,
 
@@ -236,8 +237,9 @@
       var router = op.data.store.Router;
       this._releaseDocumentEvents();
       this._visible = false;
-      this.$el.fadeOut('fast');
-      router.navigate(this._path, {silent:true});
+      if(this.$el)
+        this.$el.fadeOut('fast');
+      router.navigate(this._pathWithQuery, {silent:true});
       return this;
     },
     
@@ -393,7 +395,6 @@
       model = op.data.store.Photos.get(id);
         
       if( !model ) return $.error('No image in store with id '+id);
-        
       return this.update(model).show();
     }
   });
