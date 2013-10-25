@@ -99,7 +99,7 @@ class User extends BaseModel
     if(empty($this->config->site->cdnPrefix))
       $hostAndProtocol = sprintf('%s://%s', $protocol, $utilityObj->getHost(false));
     else
-      $hostAndProtocol = sprintf('%s%s', $protocol, $this->config->site->cdnPrefix);
+      $hostAndProtocol = sprintf('%s:%s', $protocol, $this->config->site->cdnPrefix);
 
     if(!$this->themeObj)
       $this->themeObj = getTheme();
