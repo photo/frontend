@@ -5,6 +5,7 @@ class MySqlMockHelper
   {
     $photo = array(
       'id' => 'foo',
+      'key' => 'keyish',
       'exif' => '{"foo":"bar"}',
       'extra' => '{"foo":"bar"}',
       'tags' => 'one,two,three',
