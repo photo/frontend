@@ -277,7 +277,7 @@ class User extends BaseModel
     $loggedInEmail = $this->session->get('email');
     if($credential->isOAuthRequest())
     {
-      return $credential->checkRequest() === true && $credential->getEmailFromOAuth() === $user->email;;
+      return $credential->checkRequest() === true && strcasecmp($credential->getEmailFromOAuth(), $user->email) === 0;
     }
     elseif(!$this->isLoggedIn())
     {
@@ -288,7 +288,7 @@ class User extends BaseModel
       if($user === null)
         return false;
       $len = max(strlen($loggedInEmail), strlen($user->email));
-      $isOwner = isset($user->email) && strncmp(strtolower($loggedInEmail), strtolower($user->email), $len) === 0;
+      $isOwner = isset($user->email) && strncasecmp($loggedInEmail, $user->email, $len) === 0;
       if($isOwner)
         return true;
 
