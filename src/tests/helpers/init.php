@@ -99,7 +99,7 @@ class FauxObject
 
   public function __get($key)
   {
-    return func_get_args();
+    return $key;
   }
 
   public function __set($key, $value)
