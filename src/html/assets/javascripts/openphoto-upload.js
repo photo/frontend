@@ -30,7 +30,7 @@ OPU = (function() {
             max_file_size : '32mb',
             file_data_name : 'photo',
             //chunk_size : '1mb',
-            unique_names : true,
+            unique_names : false,
             keep_droptext : true,
      
             // Specify what files to browse for
