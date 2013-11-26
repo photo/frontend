@@ -113,10 +113,7 @@
     _path: location.pathname,
     _pathWithQuery: location.pathname+location.search,
     _filter: location.pathname.replace('/p/', '/').replace('/photos/', '/').replace('/list', ''),
-<<<<<<< HEAD
-=======
     _query: function() { return location.search || ''; }, // gh-1421 we make this a function since location.search changes when viewing a photo 
->>>>>>> 2535860... Fix sending of query params from lightbox to detail page. Closes #1421
     _visible: false,
 
     _indexOf : function(model){
@@ -317,11 +314,7 @@
       if( i < 0 ) i = this.store.models.length-1;
       id = this.store.models[i].get('id');
       if( !$('body').hasClass('photo-details') ){
-<<<<<<< HEAD
-        router.navigate('/p/'+id+this._filter, {trigger: false});
-=======
         router.navigate('/p/'+id+this._filter+this._query(), {trigger: false});
->>>>>>> 2535860... Fix sending of query params from lightbox to detail page. Closes #1421
       }
       this.go(i);
     },
@@ -339,11 +332,7 @@
       if( i < this.store.models.length ) {
         if( !$('body').hasClass('photo-details') ){
           id = this.store.models[i].get('id');
-<<<<<<< HEAD
-          router.navigate('/p/'+id+this._filter, {trigger: false});
-=======
           router.navigate('/p/'+id+this._filter+this._query(), {trigger: false});
->>>>>>> 2535860... Fix sending of query params from lightbox to detail page. Closes #1421
         }
         this.go(i);
       }
@@ -360,11 +349,7 @@
     viewDetailPage : function(ev) {
       ev.preventDefault();
       var id = this.model.get('id');
-<<<<<<< HEAD
-      location.href = '/p/'+id+this._filter;
-=======
       location.href = '/p/'+id+this._filter+this._query();
->>>>>>> 2535860... Fix sending of query params from lightbox to detail page. Closes #1421
     },
 
     tags: function(ev) {

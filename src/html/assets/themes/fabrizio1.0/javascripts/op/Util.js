@@ -36,8 +36,6 @@
         return result[1];
       return null;
     };
-<<<<<<< HEAD
-=======
 
     this.getQueryParam = function(name) {
       var re = new RegExp(TBX.format.sprintf('%s=([^&]+)', name)), result = re.exec(location.search);
@@ -45,7 +43,6 @@
         return result[1];
       return null;
     };
->>>>>>> 2535860... Fix sending of query params from lightbox to detail page. Closes #1421
   }
 
   TBX.util = new Util;
