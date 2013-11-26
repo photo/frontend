@@ -347,7 +347,19 @@
             Backbone.history.loadUrl(Backbone.history.getFragment());
           },
           load: function() {
+<<<<<<< HEAD
             var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0];
+=======
+            var _this = TBX.init.pages.photos, async = typeof(arguments[0]) === 'undefined' ? true : arguments[0], concat = _this.pageLocation.search.length == 0 ? '?' : '&';
+            // since sort order for the API is static and onload changes the sort order for albums and gallery we need to mimic the controller behavior in JS
+            if(_this.pageLocation.search.search('sortBy') === -1) {
+              if(_this.pageLocation.pathname.search('/album-') === -1) // gallery
+                _this.pageLocation.search += concat + 'sortBy=dateUploaded,desc';
+              else // album
+                _this.pageLocation.search += concat + 'sortBy=dateTaken,asc';
+            }
+
+>>>>>>> 2535860... Fix sending of query params from lightbox to detail page. Closes #1421
             util.load(_this, async);
           },
           loadCb: function(response) {
