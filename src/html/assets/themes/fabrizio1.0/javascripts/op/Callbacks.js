@@ -17,9 +17,9 @@
           }
         } else {
           if(response.code === 201) {
-            TBX.notification.show('Your album was created. You can add photos from your <a href="/photos/list">gallery</a> page from using the <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
+            TBX.notification.show('Your album was created. You can <a href="/photos/upload?album='+result.id+'"><i class="icon-upload"></i> upload photos</a> or <a href="#" class="albumInviteUploaders" data-id="'+result.id+'"><i class="icon-exchange"></i> invite others</a> to upload their photos.', 'flash', 'confirm');
           } else {
-            TBX.notification.show('We found an album with that name so we didn\'t create another. You can add photos from your <a href="/photos/list">gallery</a> page from using the <i class="icon-cogs"></i> batch queue.', 'flash', 'confirm');
+            TBX.notification.show('We found an album with that name so we didn\'t create another.  You can <a href="/photos/upload?album='+result.id+'"><i class="icon-upload"></i> upload photos</a> or <a href="#" class="albumInviteUploaders" data-id="'+result.id+'"><i class="icon-exchange"></i> invite others</a> to upload their photos.', 'flash', 'confirm');
           }
         }
       } else {
