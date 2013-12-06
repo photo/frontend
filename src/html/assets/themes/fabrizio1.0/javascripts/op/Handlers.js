@@ -331,7 +331,8 @@
       if (typeof(uploader.files) != 'undefined' && uploader.files.length > 0) {
         uploader.start();
       } else {
-        TBX.notification.show('The upload widget could not be loaded. Try refreshing this page.', 'flash', 'error');
+        TBX.notification.show('Nothing to upload.', 'flash', 'error');
+        TBX.callbacks.removeSpinners();
       }
     };
 

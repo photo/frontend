@@ -3,7 +3,6 @@
  */
 
 .trovebox {
-  
   .btn {
     font-family: @font_primary;
     text-transform: uppercase;
@@ -23,7 +22,16 @@
       #gradient > .vertical( rgba(0,0,0,0), rgba(0,0,0,0.1) );
       background-position: 0 0;
     }
-    
+
+    i {
+      margin-right:3px;
+    }
+
+    @media only screen and (max-width: 480px) {
+      &.wide {
+        width:100%;
+      }
+    }
   }
   
   .btn-brand {

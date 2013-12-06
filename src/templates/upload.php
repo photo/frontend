@@ -15,9 +15,14 @@
             </p>
           </div>
         </div>
-        <em class="poweredby">Powered by <a href="http://www.plupload.com">Plupload</a>.</em>
+        <?php if(!empty($token)) { ?>
+          <div class="btn-toolbar visible-phone">
+            <button type="submit" class="btn btn-brand upload-button addSpinner wide">Start uploading</button>
+          </div>
+        <?php } ?>
+        <em class="poweredby hidden-phone">Powered by <a href="http://www.plupload.com">Plupload</a>.</em>
       </div>
-      <div class="span4">
+      <div class="span4 <?php if(!empty($token)) { ?>hide<?php } ?>">
         <h3>Use these settings.</h3>
         <br>
         <label for="tags">Tags</label>
@@ -47,18 +52,24 @@
           </div>
         </div>
 
-        <label for="license">License</label>
-        <select name="license" class="license">
-          <?php foreach($licenses as $code => $license) { ?>
-            <option value="<?php $this->utility->safe($code); ?>" <?php if($license['selected']) { ?> selected="selected" <?php } ?>><?php $this->utility->licenseName($code); ?></option>
-          <?php } ?>
-        </select>
+        <?php if(empty($token)) { ?>
+          <label for="license">License</label>
+          <select name="license" class="license">
+            <?php foreach($licenses as $code => $license) { ?>
+              <option value="<?php $this->utility->safe($code); ?>" <?php if($license['selected']) { ?> selected="selected" <?php } ?>><?php $this->utility->licenseName($code); ?></option>
+            <?php } ?>
+          </select>
+        <?php } else { ?>
+          <input type="hidden" name="license" value="<?php reset($licenses); $this->utility->safe(key($licenses)); ?>">
+        <?php } ?>
 
         <input type="hidden" name="crumb" value="<?php $this->utility->safe($crumb); ?>">
         
-        <div class="btn-toolbar">
-          <button type="submit" class="btn btn-theme-secondary upload-button">Start uploading</button>
-        </div>
+        <?php if(empty($token)) { ?>
+          <div class="btn-toolbar visible-phone">
+            <button type="submit" class="btn btn-brand upload-button addSpinner wide">Start uploading</button>
+          </div>
+        <?php } ?>
       </div>
     </div>
   </form>

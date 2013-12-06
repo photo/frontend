@@ -43,7 +43,8 @@
 							'<div class="plupload_filelist_footer">' +
 								'<div class="plupload_file_name">' +
 									'<div class="plupload_buttons">' +
-										'<a href="#" class="plupload_button plupload_add">' + _('Add photos') + '</a>' +
+										//'<a href="#" class="plupload_button plupload_add hidden-phone">' + _('Add photos') + '</a>' +
+										(window.innerWidth > 480 ? '<a href="" class="btn btn-theme-tertiary" id="uploader_browse"><i class="icon-paperclip"></i> Select photos</a>&nbsp;&nbsp;<button type="submit" class="btn btn-brand upload-button addSpinner">Start uploading</button>' : '') +
 										'<a href="#" class="plupload_button plupload_start">' + _('Start upload') + '</a>' +
 									'</div>' +
 									'<span class="plupload_upload_status"></span>' +
