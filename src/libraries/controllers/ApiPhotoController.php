@@ -598,6 +598,12 @@ class ApiPhotoController extends ApiBaseController
     if($albumResp['code'] !== 200)
       return $this->error('Could not get album details', false);
 
+    $uploader = $count = null;
+    if(isset($_POST['uploader']))
+      $uploader = $_POST['uploader'];
+    if(isset($_POST['count']))
+      $count = $_POST['count'];
+
     $utilityObj = new Utility;
     $albumName = $albumResp['result']['name'];
     $albumUrl = sprintf('%s://%s/photos/album-%s/token-%s/list', $utilityObj->getProtocol(false), $utilityObj->getHost(false), $albumId, $token);
@@ -610,7 +616,7 @@ class ApiPhotoController extends ApiBaseController
     else
       $emailer->setSubject('New photos were uploaded for you');
 
-    $markup = $this->theme->get('partials/upload-notify.php', array('albumId' => $albumId, 'albumName' => $albumName, 'albumUrl' => $albumUrl, 'uploader' => $_GET['uploader']));
+    $markup = $this->theme->get('partials/upload-notify.php', array('albumId' => $albumId, 'albumName' => $albumName, 'albumUrl' => $albumUrl, 'uploader' => $uploader, 'count' => $count));
     $emailer->setBody($markup);
     $res = $emailer->send($markup);
     return $this->success('Email probably sent', true);

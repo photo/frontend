@@ -1,10 +1,6 @@
 Hello,
 
-<?php if(empty($uploader)) { ?>
-We wanted to let you know that photos have been uploaded to <?php $this->utility->safe($albumName); ?>.
-<?php } else { ?>
-We wanted to let you know that photos have been uploaded by <?php $this->utility->safe($uploader); ?> to <?php $this->utility->safe($albumName); ?>.
-<?php } ?>
+We wanted to let you know that <?php if(empty($count)) { ?>by <?php $this->utility->safe($count); ?> <?php } ?>photos have been uploaded <?php if(empty($uploader)) { ?>by <?php $this->utility->safe($uploader); ?> <?php } ?> to <?php $this->utility->safe($albumName); ?>.
 
 You can view the photos at <?php $this->utility->safe($albumUrl); ?>.
 
