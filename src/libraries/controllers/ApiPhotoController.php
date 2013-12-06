@@ -585,6 +585,37 @@ class ApiPhotoController extends ApiBaseController
     return $this->success('Photos uploaded successfully', array('tpl' => $body, 'data' => $params));
   }
 
+  public function uploadNotify($token)
+  {
+    $shareTokenObj = new ShareToken;
+    $tokenArr = $shareTokenObj->get($token);
+    if(empty($tokenArr) || $tokenArr['type'] != 'upload')
+      return $this->forbidden('No permissions with the passed in token', false);
+
+    $albumId = $tokenArr['data'];
+    $albumResp = $this->api->invoke(sprintf('/album/%s/view.json', $albumId), EpiRoute::httpGet, array('_GET' => array('token' => $token)));
+
+    if($albumResp['code'] !== 200)
+      return $this->error('Could not get album details', false);
+
+    $utilityObj = new Utility;
+    $albumName = $albumResp['result']['name'];
+    $albumUrl = sprintf('%s://%s/photos/album-%s/token-%s/list', $utilityObj->getProtocol(false), $utilityObj->getHost(false), $albumId, $token);
+    $tokenOwner = $tokenArr['actor'];
+
+    $emailer = new Emailer;
+    $emailer->setRecipients(array($tokenOwner));
+    if(!empty($albumName))
+      $emailer->setSubject(sprintf('Photos uploaded to %s', $albumName));
+    else
+      $emailer->setSubject('New photos were uploaded for you');
+
+    $markup = $this->theme->get('partials/upload-notify.php', array('albumId' => $albumId, 'albumName' => $albumName, 'albumUrl' => $albumUrl, 'uploader' => $_GET['uploader']));
+    $emailer->setBody($markup);
+    $res = $emailer->send($markup);
+    return $this->success('Email probably sent', true);
+  }
+
   /**
     * Update the data associated with the photo in the remote data store.
     * Parameters to be updated are in _POST
