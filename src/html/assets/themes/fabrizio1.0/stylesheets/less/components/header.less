@@ -16,16 +16,16 @@ body.trovebox {
   
   .navbar-inner {
     min-height: 0;
+    box-shadow: none;
   }
   
   .separator-left {
-    border-left: 1px solid rgba(255,255,255,0.3);
-    box-shadow: -1px 0 0 rgba(0,0,0,0.4);
+  //border-left: 1px solid rgba(0,0,0,0.4);
+    border-left: 1px solid @hdr_sep_color;
   }
   
   .separator-right {
-    border-left: 1px solid rgba(0,0,0,0.4);
-    box-shadow: 1px 0 0 rgba(255,255,255,0.3);
+    border-left: 1px solid rgba(255,255,255,0.3);
   }
   
   .navbar-inner-secondary {
@@ -70,7 +70,7 @@ body.trovebox {
       display: none;
     }
   }
-  
+
   .navbar-inner-primary {
     background-color: @color_banner_primary;
     background-image: none;
@@ -92,14 +92,15 @@ body.trovebox {
       > li {
         > a {
           padding: 5px 10px 0;
-          text-transform: uppercase;
+          text-transform: @hdr_link_case;
           line-height: 27px;
-          font-size: 13px;
-          font-weight: 500;
-          color: @color_header_menu;
+          font-size: @hdr_link_size;
+          font-weight: @hdr_link_weight;
+          color: @hdr_link_color;
+          text-shadow: none;
           
           i {
-            font-size: 14px;
+            font-size: @hdr_link_size;
             line-height: 1em;
             vertical-align: baseline;
             margin-right: .2em;
@@ -115,7 +116,8 @@ body.trovebox {
         }
         &.active {
           a, a:hover {
-            color: @color_header_menu_active;
+            box-shadow: none;
+            color: @hdr_link_active_color;
             i {
               .opacity(99);
             }
@@ -128,10 +130,6 @@ body.trovebox {
     .nav .active > a:hover,
     .nav .active > a:focus {
       background: transparent none;
-      -webkit-box-shadow: 0 0 0;
-      -moz-box-shadow: 0 0 0;
-      -ms-box-shadow: 0 0 0;
-      box-shadow: 0 0 0;
     }
     
     .search-wrap {
@@ -144,7 +142,6 @@ body.trovebox {
         background-color: @color_theme_secondary;
         color: @color_header_menu;
         border-radius: 2px;
-        box-shadow: 1px 1px 0 #000;
         border-color: transparent;
         vertical-align: middle;
         margin-bottom: 0;
@@ -155,7 +152,6 @@ body.trovebox {
         
         &::-webkit-input-placeholder, &:-moz-placeholder, &:-ms-input-placeholder {
           color: #fff;
-          text-shadow: 1px 1px 1px #000;
         }
       }
       
@@ -280,12 +276,10 @@ body.trovebox {
     
     .separator-left {
       border-left: 1px solid rgba(255,255,255,0.7);
-      box-shadow: -1px 0 0 rgba(0,0,0,0.2);
     }
     
     .separator-right {
       border-left: 1px solid rgba(0,0,0,0.2);
-      box-shadow: 1px 0 0 rgba(255,255,255,0.7);
     }
     
     .nav {
@@ -301,9 +295,9 @@ body.trovebox {
         }
         
         > a, .help-container a {
+          text-shadow: none;
           padding: 0;
-          color: @color_banner_secondary_font;
-          text-shadow: 0 0 0;
+          color: @hdr_2nd_background_font_color;
           i {
             color: @color_banner_secondary_font;
             margin-right: .2em;
@@ -437,10 +431,6 @@ body.trovebox {
     .nav .active > a:hover,
     .nav .active > a:focus {
       background: transparent none;
-      -webkit-box-shadow: 0 0 0;
-      -moz-box-shadow: 0 0 0;
-      -ms-box-shadow: 0 0 0;
-      box-shadow: 0 0 0;
     }
     
   }
@@ -465,7 +455,6 @@ body.trovebox {
     
     .separator-left, .separator-right {
       border: 0;
-      text-shadow: 0 0 0;
     }
     
     .navbar-inner-secondary {
@@ -505,10 +494,6 @@ body.trovebox {
       .nav .active > a:hover,
       .nav .active > a:focus {
         background: transparent none;
-        -webkit-box-shadow: 0 0 0;
-        -moz-box-shadow: 0 0 0;
-        -ms-box-shadow: 0 0 0;
-        box-shadow: 0 0 0;
       }
       
       .search-wrap {
@@ -521,7 +506,6 @@ body.trovebox {
         padding-top: 2px;
         padding-bottom: 10px;
         border: 0;
-        box-shadow: 0 0 0;
         
         input[type=search] {
           box-sizing: border-box;

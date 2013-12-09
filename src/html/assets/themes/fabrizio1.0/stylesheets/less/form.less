@@ -3,20 +3,22 @@
  */
 
 .trovebox {
+  input[type="text"], input[type="search"], input[type="email"] {
+    text-shadow: none;
+    box-shadow: none;
+  }
   .btn {
     font-family: @font_primary;
     text-transform: uppercase;
     background-image: none;
     background-color: inherit !important;
     border-radius: 5px;
-    -webkit-box-shadow: 0 0 0;
-    -moz-box-shadow: 0 0 0;
-    box-shadow: 0 0 0;
     font-size: 12px;
     padding: 3px 10px;
     border-width: 0;
     font-weight: 500;
-    text-shadow: 1px 1px 1px rgba(255,255,255,.7);
+    text-shadow: none;
+    box-shadow: none;
     &:hover {
       .transition(none);
       #gradient > .vertical( rgba(0,0,0,0), rgba(0,0,0,0.1) );
@@ -35,17 +37,22 @@
   }
   
   .btn-brand {
-    background-color: @color_brand !important;
+    color: @btn_font_color !important;
+    background-color: @btn_background_color !important;
+  }
+  
+  .btn-danger {
+    background-color: rgb(179, 27, 27) !important;
   }
   
   .btn-theme {
-    background-color: @color_theme !important;
+    color: @btn_2nd_font_color !important;
+    background-color: @btn_2nd_background_color !important;
   }
   
   .btn-primary, .editable-submit {
     font-weight: 500;
     background-color: green !important;
-    text-shadow: 0 0 0 transparent;
   }
   
   .btn.editable-cancel {
@@ -53,15 +60,13 @@
   }
   
   .btn-theme-secondary {
-    background-color: @color_theme_secondary !important;
-    color: @color_light_gray;
-    text-shadow: 1px 1px 1px rgba(0,0,0,.7);
+    background-color: @btn_2nd_background_color !important;
+    color: @btn_2nd_font_color !important;
   }
   
   .btn-theme-tertiary {
-    background-color: @color_theme_tertiary !important;
-    color: #fff;
-    text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+    background-color: @btn_3rd_background_color !important;
+    color: @btn_3rd_font_color;
   }
   
   .btn-dark {
