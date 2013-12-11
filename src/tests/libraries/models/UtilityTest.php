@@ -216,6 +216,20 @@ RES;
     $res = $this->utility->getHost();
     $this->assertEquals('foobar', $res);
   }
+
+  public function testGetNewHostSuccess()
+  {
+    $this->markTestIncomplete('This test has not been implemented yet.');
+    /*$_SERVER['HTTP_HOST'] = 'foo.base.com';
+
+    $this->config = new stdClass;
+    $this->config->site = new stdClass;
+    $this->config->site->baseHost = 'base.com';
+    $this->config->site->rewriteHost = 'rewrite.com';
+
+    $res = $this->utility->getHost(true);
+    $this->assertEquals('foo.rewrite.com', $res);*/
+  }
   
   // TODO implement some sort of test
   public function testIsMobile() {}

@@ -105,7 +105,7 @@ class Utility
       return $_SERVER['HTTP_HOST'];
 
     $config = getConfig()->get();
-    return str_replace($config->site->rewriteHost, $config->site->baseHost, $_SERVER['HTTP_HOST']);
+    return str_replace($config->site->baseHost, $config->site->rewriteHost, $_SERVER['HTTP_HOST']);
   }
 
   public function getLicenses($selected = null)
