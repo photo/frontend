@@ -536,6 +536,13 @@ class ApiPhotoController extends ApiBaseController
   public function uploadConfirm()
   {
     $params = $_POST;
+    $tokenStr = '';
+    if(!empty($params['albums']))
+      $tokenStr .= sprintf('/album-%s', $params['albums']);
+    if(!empty($params['token']))
+      $tokenStr .= sprintf('/token-%s', $params['token']);
+
+
     $params['successIds'] = $params['duplicateIds'] = array();
     if(isset($params['success']) && !empty($params['success']))
     {
@@ -559,7 +566,7 @@ class ApiPhotoController extends ApiBaseController
     unset($params['duplicateIds']);
     if(count($params['successIds']) > 0)
     {
-      $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('pageSize' => '0', 'ids' => $params['successIds'], 'returnSizes' => $returnSizes)));
+      $photosResp = $this->api->invoke(sprintf('/photos%s/list.json', $tokenStr), EpiRoute::httpGet, array('_GET' => array('pageSize' => '0', 'ids' => $params['successIds'], 'returnSizes' => $returnSizes)));
       if($photosResp['code'] === 200 && $photosResp['result'][0]['totalRows'] > 0)
         $params['successPhotos'] = $photosResp['result'];
     }
