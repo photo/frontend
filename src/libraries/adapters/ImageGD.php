@@ -163,9 +163,9 @@ class ImageGD extends ImageAbstract
       elseif(preg_match('/jpeg$/', $this->type) || preg_match('/jpeg$/', $this->type))
         $format = 'jpg';
     }
-    if($format = 'png')
+    if($format == 'png')
       imagepng($this->image, $outputFile, 9);
-    elseif($format = 'gif')
+    elseif($format == 'gif')
       imagegif($this->image, $outputFile, 90);
     // tif ain't working on GD it seems.
     else
