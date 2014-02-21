@@ -7,6 +7,7 @@
   * Application settings include things like default permissions and auto increment ids.
   * Profile information includes things like email address.
   * @author Jaisen Mathai <jaisen@jmathai.com>
+  * @author James Walker <walkah@walkah.net>
   */
 class User extends BaseModel
 {
@@ -32,6 +33,16 @@ class User extends BaseModel
     * @return string
    */
   public function encryptPassword($password)
+  {
+    return password_hash($password, PASSWORD_BCRYPT);
+  }
+  
+  /**
+    * Deprecated: Encrypt user password
+    *
+    * @return string
+   */
+  public function encryptPasswordDeprecated($password)
   {
     return sha1(sprintf('%s-%s', $password, $this->config->secrets->passwordSalt));
   }
