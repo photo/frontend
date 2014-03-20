@@ -3,7 +3,7 @@
   <p>
     <!--If you haven't already created a Dropbox app then <a href="https://www.dropbox.com/developers/apps" target="_blank">click here</a>.-->
     <a href="https://www.dropbox.com/developers/apps" target="_blank">Click here</a> to create a Dropbox app if you haven't already.
-    <em>IMPORTANT:</em> make sure you select <em>Full Dropbox</em> access level.
+    <em>IMPORTANT:</em> make sure you select <em>App Folder</em> access level.
   </p>
   <div id="setup-dropbox">
     <form action="/setup/dropbox<?php $this->utility->safe($qs); ?>" method="post" class="validate">
