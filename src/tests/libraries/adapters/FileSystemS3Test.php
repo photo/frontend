@@ -21,7 +21,7 @@ class FileSystemS3Test extends PHPUnit_Framework_TestCase
       'aws' => array('s3BucketName' => 'foo', 's3Host' => 'bar')
     );
     $config = arrayToObject($config);
-    $params = array('db' => true);
+    $params = array('db' => true, 'fs' => true); // adding fs per #1448
     $this->fs = new FileSystemS3Override($config, $params);
   }
 
