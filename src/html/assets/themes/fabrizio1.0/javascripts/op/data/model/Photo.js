@@ -10,11 +10,22 @@
           break;
         case 'update':
           options.url = '/photo/'+model.get('id')+'/update.json';
-          var changedParams = model.changedAttributes();
+          var changedParams = model.changedAttributes(), isRestore = false;
           for(i in changedParams) {
             if(changedParams.hasOwnProperty(i)) {
+              if(i == 'active')
+                isRestore = changedParams[i];
               options.data[i] = changedParams[i];
             }
+          }
+
+          // in the case we're setting the active colum we assume it's the only changed value
+          //  and call the restore/delete endpoint
+          if(isRestore !== false) {
+            if(isRestore == 1)
+              options.url = '/photo/'+model.get('id')+'/restore.json';
+            else
+              options.url = '/photo/'+model.get('id')+'/delete.json';
           }
           break;
         case 'delete':

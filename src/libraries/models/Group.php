@@ -58,6 +58,60 @@ class Group extends BaseModel
     return $this->db->getGroups($email);
   }
 
+  public function getGroupsByMember($email)
+  {
+    return $this->db->getGroupMemberGroups($email);
+  }
+
+  public function manageMembers($id, $emails, $action)
+  {
+    $utilityObj = new Utility;
+    $host = $utilityObj->getHost(true);
+    foreach($emails as $k => $v) 
+    {
+      if(stristr($v, '@') === false)
+        unset($emails[$k]);
+    }
+
+    if(count($emails) === 0)
+      return false;
+
+    $res = false;
+    switch($action)
+    {
+      case 'add':
+        $res = $this->db->putGroupMembers($id, $host, $emails);
+        if($res)
+          $this->notifyMembers($id, $emails);
+        break;
+      case 'remove':
+        $res = $this->db->deleteGroupMembers($id, $emails);
+        break;
+    }
+    return $res;
+  }
+
+  public function getMembersAcrossGroups()
+  {
+    return $this->db->getGroupsMembers();
+  }
+
+  public function getNewMembersFromList($emails)
+  {
+    $members = $this->getMembersAcrossGroups();
+    // TODO check php function to extract colum from multi dimensional array
+    $existingMembers = array();
+    foreach($members as $m)
+      $existingMembers[] = $m['email'];
+
+    return array_diff($emails, $existingMembers);
+  }
+
+  public function undelete($id)
+  {
+    return $this->db->restoreGroup($id);
+  }
+
   public function update($id, $params)
   {
     $defaults = $this->getDefaultAttributes();

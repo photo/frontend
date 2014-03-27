@@ -139,12 +139,12 @@ class DatabaseMySql implements DatabaseInterface
     if(!isset($photo['id']))
       return false;
 
-    $resPhoto = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
-    $resVersions = $this->deletePhotoVersions($photo);
-    $this->deleteAlbumsFromElement($photo['id'], 'photo');
-    $this->deleteTagsFromElement($photo['id'], 'photo');
+    $resPhoto = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}photo` SET `active`=0 WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
+    //$resVersions = $this->deletePhotoVersions($photo);
+    $this->setActiveFieldForAlbumsFromElement($photo['id'], 'photo', 0);
+    $this->setActiveFieldForTagsFromElement($photo['id'], 'photo', 0);
 
-    return ($resPhoto !== false && $resVersions !== false);
+    return $resPhoto !== false;
   }
 
   /**
@@ -358,9 +358,8 @@ class DatabaseMySql implements DatabaseInterface
   {
     $photos = $this->db->all("SELECT `pht`.* 
       FROM `{$this->mySqlTablePrefix}photo` AS `pht` INNER JOIN `{$this->mySqlTablePrefix}elementAlbum` AS `alb` ON `pht`.`id`=`alb`.`element`
-      WHERE `pht`.`owner`=:owner AND `alb`.`owner`=:owner
-      AND `alb`.`album`=:album",
-      array(':owner' => $this->owner, ':album' => $id));
+      WHERE `pht`.`owner`=:owner AND `pht`.`active`=1
+      AND `alb`.`owner`=:owner AND `alb`.`album`=:album ", array(':owner' => $this->owner, ':album' => $id));
 
     if($photos === false)
       return false;
@@ -544,7 +543,30 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getPhoto($id)
   {
-    $photo = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    if($this->isAdmin())
+    {
+      $photo = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE owner=:owner AND `id`=:id", array(':id' => $id, ':owner' => $this->owner));
+    }
+    else
+    {
+      $photo = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE owner=:owner AND `id`=:id AND `active`=1", array(':id' => $id, ':owner' => $this->owner));
+    }
+
+    if(empty($photo))
+      return false;
+    return $this->normalizePhoto($photo);
+  }
+
+  /**
+   * Get a photo specified by $key
+   *
+   * @param string $key ID of the photo to retrieve
+   * @return mixed Array on success, FALSE on failure
+   */
+  public function getPhotoByKey($key)
+  {
+    // TODO: unsure if this should be viewable to owner/admin gh-1453
+    $photo = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE owner=:owner AND `key`=:key", array(':owner' => $this->owner, ':key' => $key));
     if(empty($photo))
       return false;
     return $this->normalizePhoto($photo);
@@ -1355,6 +1377,25 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Delete a photo in it's entirety from the database
+    *
+    * @param string $id ID of the photo to delete
+    * @return boolean
+    */
+  public function purgePhoto($photo)
+  {
+    if(!isset($photo['id']))
+      return false;
+
+    $resPhoto = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photo`  WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
+    //$resVersions = $this->deletePhotoVersions($photo);
+    $this->deleteAlbumsFromElement($photo['id'], 'photo');
+    $this->deleteTagsFromElement($photo['id'], 'photo');
+
+    return ($resPhoto !== false && $resVersions !== false);
+  }
+
+  /**
     * Add a new activity to the database
     * This method does not overwrite existing values present in $params - hence "new action".
     *
@@ -1553,6 +1594,39 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Marks an inactive photo as active
+    *
+    * @param string $id ID of the photo to delete
+    * @return boolean
+    */
+  public function restorePhoto($photo)
+  {
+    if(!isset($photo['id']))
+      return false;
+
+    $resPhoto = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}photo` SET `active`=1 WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
+    //$resVersions = $this->deletePhotoVersions($photo);
+    $this->setActiveFieldForAlbumsFromElement($photo['id'], 'photo', 1);
+    $this->setActiveFieldForTagsFromElement($photo['id'], 'photo', 1);
+
+    return $resPhoto;
+  }
+
+  /**
+    * Restores an inactive group the database
+    *
+    * @param string $id ID of the group to delete
+    * @return boolean
+    */
+  public function restoreGroup($id)
+  {
+    // TODO clean up all references in related tables
+    $res = $this->db->execute($sql = "UPDATE `{$this->mySqlTablePrefix}group` SET `active`=1 WHERE `id`=:id AND `owner`=:owner", array(':id' => $id, ':owner' => $this->owner));
+    return ($res !== false);
+  }
+
+
+  /**
     * Get the current database version
     *
     * @return string Version number
@@ -1697,6 +1771,47 @@ class DatabaseMySql implements DatabaseInterface
     $sql = substr($sql, 0, -1);
     $res = $this->db->execute($sql);
 
+    // update tag counts here instead of in a trigger #1342
+    $tagsForSql = array();
+    foreach($tags as $tag)
+      $tagsForSql[] = $this->_($tag);
+    $tagsForSql = sprintf("'%s'", implode("','", $tagsForSql));
+    // get public and private counts for all the tags
+    // private tag counts (omit permission column in WHERE clause to get all photos (private is everything))
+    $privateCounts = $this->db->all("SELECT et.`tag`, COUNT(*) AS _CNT
+      FROM `{$this->mySqlTablePrefix}photo` AS p INNER JOIN `{$this->mySqlTablePrefix}elementTag` AS et ON et.`element`=p.`id`
+      WHERE et.`owner`=:owner1 AND et.`tag` IN ({$tagsForSql}) AND p.`owner`=:owner2 AND p.`active`=1
+      GROUP BY et.`tag`", 
+      array(':owner1' => $this->owner, ':owner2' => $this->owner)
+    );
+    // public tag counts (include permission column in WHERE clause to get only public photos)
+    $publicCounts = $this->db->all("SELECT et.`tag`, COUNT(*) AS _CNT
+      FROM `{$this->mySqlTablePrefix}photo` AS p INNER JOIN `{$this->mySqlTablePrefix}elementTag` AS et ON et.`element`=p.`id`
+      WHERE et.`owner`=:owner1 AND et.`tag` IN ({$tagsForSql}) AND p.`owner`=:owner2 AND p.`permission`=:permission AND p.`active`=1
+      GROUP BY et.`tag`", 
+      array(':owner1' => $this->owner, ':owner2' => $this->owner, ':permission' => '1')
+    );
+
+    $tagCountSql = "UPDATE `{$this->mySqlTablePrefix}tag` ";
+    if(count($privateCounts) > 0)
+    {
+      $tagCountSql .= 'SET `countPrivate` = CASE `id` ';
+      foreach($privateCounts as $t)
+        $tagCountSql .= sprintf("WHEN '%s' THEN '%s' ", $this->_($t['tag']), $t['_CNT']);
+      $tagCountSql .= "ELSE `id` END WHERE `owner`=:owner AND `id` IN({$tagsForSql})";
+      $this->db->execute($tagCountSql, array(':owner' => $this->owner));
+    }
+    
+    $tagCountSql = "UPDATE `{$this->mySqlTablePrefix}tag` ";
+    if(count($publicCounts) > 0)
+    {
+      $tagCountSql .= 'SET `countPublic` = CASE `id` ';
+      foreach($publicCounts as $t)
+        $tagCountSql .= sprintf("WHEN '%s' THEN '%s' ", $this->_($t['tag']), $t['_CNT']);
+      $tagCountSql .= "ELSE `id` END WHERE `owner`=:owner AND `id` IN({$tagsForSql})";
+      $this->db->execute($tagCountSql, array(':owner' => $this->owner));
+    }
+
     return $res !== false;
   }
 
@@ -1726,6 +1841,10 @@ class DatabaseMySql implements DatabaseInterface
       }
       $ids = sprintf("'%s'", implode("','", $ids));
       $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner` IN({$ids})";
+    }
+    elseif($table === 'photo')
+    {
+      $where = $this->buildWhere($where, '`active`=1');
     }
     $groupBy = '';
 
@@ -1923,7 +2042,6 @@ class DatabaseMySql implements DatabaseInterface
     return sprintf('%s%s%s%s', date('Ymd', $time), $invHours, $invMins, $invSecs);
   }
 
-
   /**
     * Delete albums for an element from the mapping table
     *
@@ -1966,7 +2084,6 @@ class DatabaseMySql implements DatabaseInterface
     * Delete tags for an element from the mapping table
     *
     * @param string $id Element id (id of the photo or video)
-    * @param string $tag Tag to be added
     * @param string $type Element type (photo or video)
     * @return boolean
     */
@@ -2074,6 +2191,7 @@ class DatabaseMySql implements DatabaseInterface
     $photo['appId'] = $this->config->application->appId;
 
     $versions = $this->getPhotoVersions($photo['id']);
+
     if($versions && !empty($versions))
     {
       foreach($versions as $version)
@@ -2381,6 +2499,33 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Purge albums for an element from the mapping table
+    *
+    * @param string $id Element id
+    * @return boolean
+    */
+  private function purgeAlbumsFromElement($id)
+  {
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `type`=:type AND `element`=:album", array(':owner' => $this->owner, ':type' => 'photo', ':album' => $id));
+    return $res !== false;
+  }
+
+  /**
+    * Purge tags for an element from the mapping table
+    *
+    * @param string $id Element id (id of the photo or video)
+    * @param string $tag Tag to be added
+    * @param string $type Element type (photo or video)
+    * @return boolean
+    */
+  private function purgeTagsFromElement($id, $type)
+  {
+    $res = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}elementTag` WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':owner' => $this->owner, ':type' => $type, ':element' => $id));
+    return $res !== false;
+  }
+
+
+  /**
    * Explode params associative array into SQL insert statement lists
    * Return an array with 'cols' and 'vals'
    */
@@ -2412,6 +2557,32 @@ class DatabaseMySql implements DatabaseInterface
       }
     }
     return $stmt;
+  }
+
+  /**
+    * Set active column for an element from the mapping table
+    *
+    * @param string $id Element id
+    * @return boolean
+    */
+  private function setActiveFieldForAlbumsFromElement($id, $value)
+  {
+    $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}elementAlbum` SET `active`=:active WHERE `owner`=:owner AND `type`=:type AND `element`=:album", array(':active' => $value, ':owner' => $this->owner, ':type' => 'photo', ':album' => $id));
+    return $res !== false;
+  }
+
+  /**
+    * Set active column for an element from the mapping table
+    *
+    * @param string $id Element id (id of the photo or video)
+    * @param string $tag Tag to be added
+    * @param string $type Element type (photo or video)
+    * @return boolean
+    */
+  private function setActiveFieldForTagsFromElement($id, $type, $value)
+  {
+    $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}elementTag` SET `active`=:active WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':active' => $value, ':owner' => $this->owner, ':type' => $type, ':element' => $id));
+    return $res !== false;
   }
 
   /**

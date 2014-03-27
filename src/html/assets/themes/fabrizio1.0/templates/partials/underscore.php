@@ -4,10 +4,15 @@
     <?php if($isAdmin) { ?>
       <h4 class="title edit"><a href="/p/<%= id %>" title="Update the title"><i class="icon-pencil"></i><%- title || filenameOriginal %></a></h4>
       <ul class="info">
-        <!--<li><a href="#" title="Comments"><i class="icon-comments"></i> <span class="number">24</span></li>
-        <li><a href="#" title="Favorites"><i class="icon-heart"></i> <span class="number">24</span></li>-->
-        <li><a href="#" class="share" title="Share via Facebook, Twitter or Email" data-id="<%= id %>"><i class="icon-share-alt"></i>Share</a> &nbsp;</li>
-        <li class="pull-right"><a href="#" title="Delete this photo"><i class="icon-trash photo delete edit" data-action="delete" data-ids="<%= id %>"></i></a></li>
+        <li><a href="#" class="share" title="Share via Facebook, Twitter or Email" data-id="<%= id %>"><i class="icon-share-alt"></i> Share</a> &nbsp;</li>
+
+        <li class="pull-right">
+          <% if(active) { %>
+            <a href="#" title="Delete this photo"><i class="icon-trash photo delete edit" data-action="delete" data-album="<?php $this->utility->safe($albumId); ?>" data-ids="<%= id %>"></i></a></li>
+          <% } else { %>
+            <a href="#" title="Restore this photo"><i class="icon-undo photo restore edit"></i></a>
+          <% } %>
+        </li>
         <li class="pull-right"><a href="#" title="Select for batch editing"><i class="icon-pushpin pin edit" data-id="<%= id %>"></i></a></li>
         <li class="pull-right album"><a href="#" title="Set as your album cover"><i class="icon-th-large album edit" data-id="<%= id %>"></i></a></li>
         <li class="pull-right"><a href="#" title="Set as your profile photo"><i class="icon-user profile edit" data-id="<%= id %>"></i></a></li>
@@ -15,11 +20,17 @@
       </ul>
     <?php } else { ?>
       <h4 class="title"><%- title || filenameOriginal %></h4>
-      <ul class="info">
-        <!--<li><a href="#"><i class="icon-comments"></i> <span class="number">24</span></a></li>
-        <li><a href="#"><i class="icon-heart"></i> <span class="number">24</span></a></li>-->
-        <!--<li><a href="#" title="Share via Facebook, Twitter or Email"><i class="icon-share-alt"></i> Share</a></li>-->
-      </ul>
+      <?php if($canDelete) { ?>
+        <ul class="info">
+          <li class="pull-right">
+            <% if(active) { %>
+              <a href="#" title="Delete this photo"><i class="icon-trash photo delete edit" data-action="delete" data-album="<?php $this->utility->safe($albumId); ?>" data-ids="<%= id %>"></i></a>
+            <% } else { %>
+              <a href="#" title="Restore this photo"><i class="icon-undo photo restore edit"></i></a>
+            <% } %>
+          </li>
+        </ul>
+      <?php } ?>
     <?php } ?>
   </div>
 </script>

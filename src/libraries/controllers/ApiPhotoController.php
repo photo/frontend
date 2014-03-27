@@ -373,6 +373,40 @@ class ApiPhotoController extends ApiBaseController
   }
 
   /**
+<<<<<<< HEAD
+=======
+    * Restore photo
+    *
+    * @return string standard json envelope
+    */
+  public function restore($id)
+  {
+    // only available to owners/admins
+    getAuthentication()->requireAuthentication();
+    getAuthentication()->requireCrumb();
+    
+    $status = $this->photo->restore($id);
+    if(!$status)
+      return $this->error(sprintf('Could not restore photo %s', $id), false);
+
+    $apiResp = $this->api->invoke(sprintf('/photo/%s/view.json', $id));
+
+    // even if API call fails we return success since the restore succeeded
+    return $this->success(sprintf('Photo %s restored', $id), $apiResp['result']);
+  }
+
+  /**
+    * Search photos
+    *
+    * @return string standard json envelope
+    */
+  public function search()
+  {
+    return $this->api->invoke("/plugin/AwsSearch/search.json", EpiRoute::httpGet);
+  }
+
+  /**
+>>>>>>> d1f9983... Adding initial version of photo deletion undo for API and web UI. #1453
     * Transform a photo.
     * Modifies a photo by rotating/BW/etc.
     *

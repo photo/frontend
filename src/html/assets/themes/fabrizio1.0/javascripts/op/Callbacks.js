@@ -28,7 +28,10 @@
       $('.batchHide').trigger('click');
     };
     this.batch = function(response) { // this is the form params
-      var id, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos, action = response.code === 204 ? 'deleted' : 'updated';
+      var id, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos, action = response.code === 204 ? 'deleted' : 'updated', secondaryMsg = '';
+      if(action == 'deleted')
+        secondaryMsg = 'Click the <i class="icon-undo"></i> icon on a photo to restore it.';
+
       if(response.code === 200 || response.code === 204) {
         for(i in ids) {
           if(ids.hasOwnProperty(i)) {
@@ -39,7 +42,9 @@
               if(response.code === 200) {
                 model.fetch();
               } else {
-                OP.Util.fire('callback:photo-destroy', model);
+                model.attributes['active'] = 0;
+                model.trigger('change');
+                OP.Util.fire('callback:photo-deleted', id);
               }
             }
           }
@@ -53,11 +58,23 @@
           }
         }
 
-        TBX.notification.show(photoCount + ' photo ' + (photoCount>1?'s were':'was') + ' ' + action + '.', 'flash', 'confirm');
+        TBX.notification.show(photoCount + ' photo' + (photoCount>1?'s were':' was') + ' ' + action + '. ' + secondaryMsg, 'flash', 'confirm');
       } else {
         TBX.notification.show('Sorry, an error occured when trying to update your photos.', 'flash', 'error');
       }
       $('.batchHide').trigger('click');
+    };
+    this.batchAdd = function(photo) {
+      var model = TBX.init.pages.photos.batchModel, batch = OP.Batch;
+      $('.photo-id-'+photo.id).addClass('pinned');
+      model.set('count', batch.length());
+      model.trigger('change');
+    };
+    this.batchRemove = function(id) {
+      var model = TBX.init.pages.photos.batchModel, batch = OP.Batch;
+      $('.photo-id-'+id).removeClass('pinned');
+      model.set('count', batch.length());
+      model.trigger('change');
     };
     this.credentialDelete = function(response) {
       if(response.code === 204) {
@@ -104,6 +121,10 @@
       var params = {assertion: assertion};
       OP.Util.makeRequest('/user/browserid/login.json', params, TBX.callbacks.loginProcessed);
     };
+    this.photoDeleted = function(id) {
+      var $el = $('.imageContainer.photo-id-'+id);
+      $el.fadeTo('medium', .25);
+    };
     this.photoNext = function(ev) {
       if(!op.Lightbox.getInstance().isOpen())
         $('.pagination .arrow-next').click();
@@ -111,6 +132,10 @@
     this.photoPrevious = function(ev) {
       if(!op.Lightbox.getInstance().isOpen())
         $('.pagination .arrow-prev').click();
+    };
+    this.photoRestored = function(id) {
+      var $el = $('.imageContainer.photo-id-'+id);
+      $el.fadeTo('medium', 1);
     };
     this.pluginStatusToggle = function(response) {
       var a = $(this),

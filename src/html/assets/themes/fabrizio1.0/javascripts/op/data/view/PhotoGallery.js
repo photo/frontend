@@ -2,21 +2,6 @@
   op.ns('data.view').PhotoGallery = op.data.view.Editable.extend({
     initialize: function() {
       this.model.on('change', this.modelChanged, this);
-      OP.Util.on('callback:photo-destroy', this.modelDestroyed);
-      OP.Util.on('callback:batch-remove', this.batchRemove);
-      OP.Util.on('callback:batch-add', this.batchAdd);
-    },
-    batchAdd: function(photo) {
-      var model = TBX.init.pages.photos.batchModel, batch = OP.Batch;
-      $('.photo-id-'+photo.id).addClass('pinned');
-      model.set('count', batch.length());
-      model.trigger('change');
-    },
-    batchRemove: function(id) {
-      var model = TBX.init.pages.photos.batchModel, batch = OP.Batch;
-      $('.photo-id-'+id).removeClass('pinned');
-      model.set('count', batch.length());
-      model.trigger('change');
     },
     model: this.model,
     className: 'photo-meta',
@@ -44,7 +29,8 @@
     },
     events: {
       'click .album.edit': 'album',
-      'click .delete.edit': 'delete_',
+      'click .delete.edit': 'deleteOrRestore',
+      'click .restore.edit': 'deleteOrRestore',
       'click .permission.edit': 'permission',
       'click .profile.edit': 'profile',
       'click .pin.edit': 'pin',
@@ -53,8 +39,23 @@
     album: function(ev) {
       TBX.handlers.click.setAlbumCover(ev);
     },
-    delete_: function(ev) {
-      TBX.handlers.click.showBatchForm(ev);
+    deleteOrRestore: function(ev) {
+      ev.preventDefault();
+      var el = $(ev.currentTarget), model = this.model, id = model.get('id'), newActiveStatus = model.get('active') == 0 ? 1 : 0;
+      model.set('active', newActiveStatus, {silent:true});
+      model.save(null, {
+        error: TBX.notification.display.generic.error,
+        success: function() {
+          if(newActiveStatus === 1) {
+            TBX.callbacks.photoRestored(id);
+            TBX.notification.show('Your photo was restored.', 'flash', 'confirm');
+          } else {
+            TBX.callbacks.photoDeleted(id);
+            TBX.notification.show('Your photo was deleted. Click the <i class="icon-undo"></i> icon on the photo to restore.', 'flash', 'confirm');
+          }
+          this.render();
+        }
+      });
     },
     permission: function(ev) {
       ev.preventDefault();
@@ -92,10 +93,6 @@
     },
     modelChanged: function() {
       this.render();
-    },
-    modelDestroyed: function(model) {
-      var id = model.get('id'), $el = $('.imageContainer.photo-id-'+id);
-      $el.fadeTo('medium', .25);
     }
   });
 })(jQuery);

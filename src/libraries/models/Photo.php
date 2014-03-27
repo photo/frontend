@@ -84,8 +84,9 @@ class Photo extends BaseModel
   }
 
   /**
-    * Delete a photo from the remote database and remote filesystem.
-    * This deletes the original photo and all versions.
+    * Do a soft delete of a photo
+    * Does not delete rows from DB or files from FS
+    * See purge
     *
     * @param string $id ID of the photo
     * @return boolean
@@ -98,9 +99,8 @@ class Photo extends BaseModel
     if(!$photo)
       return false;
 
-    $fileStatus = $this->fs->deletePhoto($photo);
-    $dataStatus = $this->db->deletePhoto($photo);
-    return $fileStatus && $dataStatus;
+    $status = $this->db->deletePhoto($photo);
+    return $status;
   }
 
   /**
@@ -464,93 +464,59 @@ class Photo extends BaseModel
     return array('width' => $width, 'height' => $height);
   }
 
-  /** 
-   * Parse the exif date
-   *
-   * @param $exif the exif block
-   * @param $key the exif key to get the date from
-   * @return the parsed date or false if not found
-   */
-  protected function parseExifDate($exif, $key)
+  /**
+    * Check if a photo is RAW
+    *
+    * @param string Path to file
+    * @return boolean
+    */
+  public function isRawPhoto($filename)
   {
-    // gh-1335
-    // rely on strtotime which handles the following formats which have been seen
-    // 2013/01/01 00:00:00
-    // 2013:01:01 00:00:00
-    if(array_key_exists($key, $exif))
-      return strtotime($exif[$key]);
+    $type = get_mime_type($filename);
+    switch($type)
+    {
+      case 'image/tiff':
+      case 'image/x-canon-cr2':
+      case 'image/x-canon-crw':
+        return true;
+    }
+
     return false;
   }
 
   /**
-    * Reads exif data from a photo.
+    * Delete a photo from the remote database and remote filesystem.
+    * This deletes the original photo and all versions.
     *
-    * @param $photo Path to the photo.
-    * @return array
+    * @param string $id ID of the photo
+    * @return boolean
     */
-  protected function readExif($photo, $allowAutoRotate)
+  public function purge($id)
   {
-    $exif = @exif_read_data($photo);
-    if(!$exif)
-      $exif = array();
+    // TODO, validation
+    $photo = $this->db->getPhoto($id);
+    if(!$photo)
+      return false;
 
-    $size = getimagesize($photo);
-    // DateTimeOriginal is the right thing. If it is not there
-    // use DateTime which might be the date the photo was modified
-    $parsedDate = $this->parseExifDate($exif, 'DateTimeOriginal');
-    if($parsedDate === false) 
-    {
-      $parsedDate = $this->parseExifDate($exif, 'DateTime');    
-      if($parsedDate === false)
-      {
-        if(array_key_exists('FileDateTime', $exif))
-          $parsedDate = $exif['FileDateTime'];
-        else
-          $parsedDate = time();
-      }
-    }
-    $dateTaken = $parsedDate;    
+    $fileStatus = $this->fs->deletePhoto($photo);
+    $dataStatus = $this->db->purgePhoto($photo);
+    return $fileStatus && $dataStatus;
+  }
 
-    $width = $size[0];
-    $height = $size[1];
+  /**
+    * Restore a soft deleted photo
+    *
+    * @param string $id ID of the photo
+    * @return boolean
+    */
+  public function restore($id)
+  {
+    $photo = $this->db->getPhoto($id);
+    if(!$photo)
+      return false;
 
-    // Since we stopped auto rotating originals we have to use the Orientation from
-    //  exif and if this photo was autorotated
-    // Gh-1031 Gh-1149
-    if($this->autoRotateEnabled($allowAutoRotate) && isset($exif['Orientation']))
-    {
-      // http://recursive-design.com/blog/2012/07/28/exif-orientation-handling-is-a-ghetto/
-      switch($exif['Orientation'])
-      {
-        case '6':
-        case '8':
-        case '5':
-        case '7':
-          $width = $size[1];
-          $height = $size[0];
-          break;
-      }
-    }
-
-    $exif_array = array('dateTaken' => $dateTaken, 'width' => $width,
-      'height' => $height, 'cameraModel' => @$exif['Model'],
-      'cameraMake' => @$exif['Make'],
-      'ISO' => @$exif['ISOSpeedRatings'],
-      'Orientation' => @$exif['Orientation'],
-      'exposureTime' => @$exif['ExposureTime']);
-
-    if(isset($exif['GPSLongitude'])) {
-      $exif_array['longitude'] = $this->getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
-    }
-
-    if(isset($exif['GPSLatitude'])) {
-      $exif_array['latitude'] = $this->getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
-    }
-
-    $exif_array['FNumber'] = $this->frac2Num(@$exif['FNumber']);
-    $exif_array['focalLength'] = $this->frac2Num(@$exif['FocalLength']);
-
-    return $exif_array;
+    $status = $this->db->restorePhoto($photo);
+    return $status;
   }
 
   public function transform($id, $transformations)
@@ -1090,6 +1056,122 @@ class Photo extends BaseModel
     );
 
     return array('status' => $uploaded, 'paths' => $paths, 'localFileCopy' => $localFileCopy);;
+  }
+
+  /**
+    * Extracts the image size from a RAW file (identified by mimetype 'image/tiff'.
+    * Requires exiftool
+    * We have to do this because getimagesize(raw_file) returns the size of the 
+    *   embedded thumbnail.
+    * Returns [width, height]
+    *
+    * @param $photo Path to the photo.
+    * @return array
+    */
+  private function getImageSizeFromRaw($photo)
+  {
+    if(!is_executable($this->config->modules->exiftool))
+      return getimagesize($photo);
+
+    $cmd = sprintf('%s %s | egrep %s | awk %s', $this->config->modules->exiftool, escapeshellarg($photo), escapeshellarg('^Image Size +:'), escapeshellarg('{print $4}'));
+    $size = trim(exec($cmd));
+    return explode('x', $size);
+  }
+
+  /** 
+   * Parse the exif date
+   *
+   * @param $exif the exif block
+   * @param $key the exif key to get the date from
+   * @return the parsed date or false if not found
+   */
+  protected function parseExifDate($exif, $key)
+  {
+    // gh-1335
+    // rely on strtotime which handles the following formats which have been seen
+    // 2013/01/01 00:00:00
+    // 2013:01:01 00:00:00
+    if(array_key_exists($key, $exif))
+      return strtotime($exif[$key]);
+    return false;
+  }
+
+  /**
+    * Reads exif data from a photo.
+    *
+    * @param $photo Path to the photo.
+    * @return array
+    */
+  protected function readExif($photo, $allowAutoRotate)
+  {
+    $exif = @exif_read_data($photo);
+    if(!$exif)
+      $exif = array();
+
+    // DateTimeOriginal is the right thing. If it is not there
+    // use DateTime which might be the date the photo was modified
+    $parsedDate = $this->parseExifDate($exif, 'DateTimeOriginal');
+    if($parsedDate === false) 
+    {
+      $parsedDate = $this->parseExifDate($exif, 'DateTime');    
+      if($parsedDate === false)
+      {
+        if(array_key_exists('FileDateTime', $exif))
+          $parsedDate = $exif['FileDateTime'];
+        else
+          $parsedDate = time();
+      }
+    }
+    $dateTaken = $parsedDate;    
+
+    if($this->isRawPhoto($photo))
+      $size = $this->getImageSizeFromRaw($photo);
+    else
+      $size = getimagesize($photo);
+
+    $width = $size[0];
+    $height = $size[1];
+
+    // Since we stopped auto rotating originals we have to use the Orientation from
+    //  exif and if this photo was autorotated
+    // Gh-1031 Gh-1149
+    if($this->autoRotateEnabled($allowAutoRotate) && isset($exif['Orientation']))
+    {
+      // http://recursive-design.com/blog/2012/07/28/exif-orientation-handling-is-a-ghetto/
+      switch($exif['Orientation'])
+      {
+        case '6':
+        case '8':
+        case '5':
+        case '7':
+          $width = $size[1];
+          $height = $size[0];
+          break;
+      }
+    }
+
+    $exif_array = array(
+      'dateTaken' => $dateTaken,
+      'width' => $width,
+      'height' => $height,
+      'cameraModel' => @$exif['Model'],
+      'cameraMake' => @$exif['Make'],
+      'ISO' => @$exif['ISOSpeedRatings'],
+      'Orientation' => @$exif['Orientation'],
+      'exposureTime' => @$exif['ExposureTime']);
+
+    if(isset($exif['GPSLongitude'])) {
+      $exif_array['longitude'] = $this->getGps($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
+    }
+
+    if(isset($exif['GPSLatitude'])) {
+      $exif_array['latitude'] = $this->getGps($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
+    }
+
+    $exif_array['FNumber'] = $this->frac2Num(@$exif['FNumber']);
+    $exif_array['focalLength'] = $this->frac2Num(@$exif['FocalLength']);
+
+    return $exif_array;
   }
 
   /**

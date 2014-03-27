@@ -332,7 +332,14 @@
             _this.load();
             (new op.data.view.BatchIndicator({model:batchModel, el: $batchEl})).render();
 
-            options = {
+            TBX.init.pages.photos.initRoutes();
+            OP.Util.on('callback:photo-deleted', TBX.callbacks.photoDeleted);
+            OP.Util.on('callback:photo-restored', TBX.callbacks.photoRestored);
+            OP.Util.on('callback:batch-remove', TBX.callbacks.batchRemove);
+            OP.Util.on('callback:batch-add', TBX.callbacks.batchAdd);
+          },
+          initRoutes: function() {
+            var options = {
               routes: {
                 "p/:id": "photoModal",
                 "p/:id/*path": "photoModal",

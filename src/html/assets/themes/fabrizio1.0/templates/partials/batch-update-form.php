@@ -29,21 +29,9 @@
         </div>
       <?php } elseif($action == 'delete') { ?>
         <input type="hidden" name="delete" value="1">
-        <?php $buttonLabel = "I'm absolutely sure"; ?>
+        <?php $buttonLabel = "Yes, delete these photos"; ?>
         <h4>Are you sure you'd like to delete <?php if(isset($ids)) { ?>this photo<?php } else { ?> these photos<?php } ?>?</h4>
-        <div class="row">
-          <div class="alert alert-warning span4"><i class="icon-warning-sign"></i>This action cannot be undone</div>
-        </div>
-        <div class="control-group">
-          <label class="checkbox">
-            <input type="checkbox" name="confirm" value="1"> I'm sure 
-          </label>
-        </div>
-        <div class="control-group">
-          <label class="checkbox">
-            <input type="checkbox" name="confirm2" value="remove"> I'm really sure 
-          </label>
-        </div>
+        <input type="hidden" name="album" value="<?php $this->utility->safe($album); ?>">
       <?php } elseif($action == 'albums') { ?>
         <h4>Add to or remove from which album? <em><small>(Found <?php echo count($albums); ?> albums)</small></em></h4>
         <div class="control-group">

@@ -69,6 +69,8 @@ interface DatabaseInterface
   public function postTags($params);
   public function postTagsIncrementer($tags, $value);
   public function postWebhook($id, $params);
+  // purge deletes data from database (hard delete)
+  // public function restorePhoto($photo)
   // put methods create but do not update
   public function putGroup($id, $params);
   public function putAction($id, $params);
@@ -81,6 +83,9 @@ interface DatabaseInterface
   public function putShareToken($id, $params);
   public function putTag($id, $params);
   public function putWebhook($id, $params);
+  // restore marks inactive data as active (restore)
+  public function restorePhoto($id);
+  public function restoreGroup($id);
   // general methods
   public function initialize($isEditMode);
 }
