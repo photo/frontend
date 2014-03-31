@@ -85,18 +85,24 @@ class User extends BaseModel
       return $user['attrprofilePhoto'];
 
     $utilityObj = new Utility;
+    $protocol = $utilityObj->getProtocol(false);
     if(empty($this->config->site->cdnPrefix))
-      $hostAndProtocol = sprintf('%s://%s', $utilityObj->getProtocol(false), $utilityObj->getHost(false));
+      $hostAndProtocol = sprintf('%s://%s', $protocol, $utilityObj->getHost(false));
     else
-      $hostAndProtocol = sprintf('%s%s', $utilityObj->getProtocol(false), $this->config->site->cdnPrefix);
+      $hostAndProtocol = sprintf('%s%s', $protocol, $this->config->site->cdnPrefix);
 
     if(!$this->themeObj)
       $this->themeObj = getTheme();
 
     $defaultUrl = sprintf('%s%s', $hostAndProtocol, $this->themeObj->asset('image', 'profile-default.png', false));
 
+    if($protocol === 'https')
+      $gravatarUrl = 'https://secure.gravatar.com/avatar/';
+    else
+      $gravatarUrl = 'http://www.gravatar.com/avatar/';
+
     $hash = md5(strtolower(trim($email)));
-    return sprintf("http://www.gravatar.com/avatar/%s?s=%s&d=%s", $hash, $size, urlencode($defaultUrl));
+    return sprintf('%s%s?s=%s&d=%s', $gravatarUrl, $hash, $size, urlencode($defaultUrl));
   }
 
   /**
