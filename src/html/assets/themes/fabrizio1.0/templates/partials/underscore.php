@@ -219,6 +219,7 @@
           </div>
         </li>
         <li>
+          <div class="photo-date"></div>
           <div class="photo-meta"></div>
         </li>
         <li>
@@ -245,6 +246,14 @@
       <a href="#" class="triggerShare"><i class="icon-share-alt triggerShare"></i></a>
     <?php } ?>
   </span>
+</script>
+
+<script type="tmpl/underscore" id="photo-detail-date-tmpl">
+  <?php if($isAdmin) { ?>
+    <i class="icon-calendar"></i> <span class="date-view date edit"><%= phpjs.date('l, F jS, Y @ g:ia', dateTaken) %><span class="display-for-edit" data-value="<%= phpjs.date('F j, Y h:i a', dateTaken) %>"></span></span>
+  <?php } else { ?>
+    <i class="icon-calendar"></i> <%= phpjs.date('M d, Y', dateTaken) %></i>
+  <?php } ?>
 </script>
 
 <script type="tmpl/underscore" id="photo-detail-description-tmpl">
@@ -285,12 +294,6 @@
 
 <script type="tmpl/underscore" id="photo-detail-meta-tmpl">
   <ul>
-    <?php if($isAdmin) { ?>
-      <li class="full"><i class="icon-calendar"></i> <%= phpjs.date('l, F jS, Y @ g:ia', dateTaken) %></i></li>
-    <?php } else { ?>
-      <li><i class="icon-calendar"></i> <%= phpjs.date('M d, Y', dateTaken) %></i></li>
-    <?php } ?>
-
     <?php if($isAdmin) { ?>
       <li><a href="#" class="share trigger" data-id="<%= id %>"><i class="icon-share-alt"></i> Share</i></a></li>
     <?php } ?>

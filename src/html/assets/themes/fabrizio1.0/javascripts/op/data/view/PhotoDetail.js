@@ -1,5 +1,8 @@
 (function($){
-  
+  var convertDateForInput = function(ev) {
+    var $el = $(ev.currentTarget), date = $('.display-for-edit', $el).attr('data-value'), $input = $('.editable-container .date-inline-input');
+    $input.val(date);
+  };
   var CommentView = Backbone.View.extend({
     template : _.template($('#photo-comment-tmpl').html()),
     render : function(){
@@ -59,6 +62,20 @@
         name: 'title',
         title: 'Edit Photo Title',
         placement: 'bottom'
+      }
+    }
+  });
+  
+  var DateView = op.data.view.Editable.extend({
+    template : _.template($('#photo-detail-date-tmpl').html()),
+    editable    : {
+      '.date.edit' : {
+        name: 'dateTaken',
+        title: 'Edit Photo Date',
+        emptytext: 'Set a date',
+        placement: 'top',
+        inputclass: 'date-inline-input',
+        shown: convertDateForInput
       }
     }
   });
@@ -167,6 +184,7 @@
       '.photo-title'  :TitleView,
       '.description'  :DescriptionView,
       '.photo-meta'   :PhotoMetaView,
+      '.photo-date'   :DateView,
       '.collapsibles' :CollapsiblesView,
       '.rights'       :RightsView
     },
