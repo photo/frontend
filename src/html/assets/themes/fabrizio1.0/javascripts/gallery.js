@@ -180,8 +180,6 @@ var Gallery = (function($) {
     var qs = pageObject.pageLocation.search.replace(qsRe, '');
     var pinnedClass = !batchEmpty && OP.Batch.exists(item.id) ? 'pinned' : '';
     var imageContainer = $('<div class="imageContainer photo-id-'+item.id+' '+pinnedClass+'"/>');
-		
-    var d = new Date(item.dateTaken*1000);
 
 		var pathKey = 'path' + configuration['thumbnailSize'];
 		var defaultWidthValue = configuration['defaultWidthValue'];
@@ -220,9 +218,10 @@ var Gallery = (function($) {
 		imageContainer.append(overflow);
 
     // insert calendar icon
+	var d = new Date(item.dateTakenYear, item.dateTakenMonth, item.dateTakenDay);
     currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
     if(currentDate !== lastDate)
-      imageContainer.prepend(dateSeparator(item.dateTaken));
+      imageContainer.prepend(dateSeparator(d.getTime()/1000));
     lastDate = currentDate;
     
     /**
