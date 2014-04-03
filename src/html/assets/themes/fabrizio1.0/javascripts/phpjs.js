@@ -516,7 +516,7 @@ var phpjs = (function() {
           //    return false;
 
           return (date.getTime() / 1000);
-        }
+      };
       return this.date(format, timestamp);
     }
   }

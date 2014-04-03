@@ -3,6 +3,11 @@
     var $el = $(ev.currentTarget), date = $('.display-for-edit', $el).attr('data-value'), $input = $('.editable-container .date-inline-input');
     $input.val(date);
   };
+  var validateDateFromInput = function(value) {
+    if(phpjs.strtotime(value) === false) {
+      return 'Could not process date.';
+    }
+  };
   var CommentView = Backbone.View.extend({
     template : _.template($('#photo-comment-tmpl').html()),
     render : function(){
@@ -75,7 +80,8 @@
         emptytext: 'Set a date',
         placement: 'top',
         inputclass: 'date-inline-input',
-        shown: convertDateForInput
+        shown: convertDateForInput,
+        validate: validateDateFromInput
       }
     }
   });
