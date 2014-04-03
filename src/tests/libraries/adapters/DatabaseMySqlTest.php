@@ -11,6 +11,26 @@ class DatabaseMySqlOverride extends DatabaseMySql
   {
     return null;
   }
+
+  public function getAlbumsFromGroups($groups)
+  {
+    return parent::getAlbumsFromGroups($groups);
+  }
+
+  protected function getActor()
+  {
+    return 'test@example.com';
+  }
+
+  protected function setActiveFieldForAlbumsFromElement($id, $value)
+  {
+    return true;
+  }
+
+  protected function setActiveFieldForTagsFromElement($id, $value)
+  {
+    return true;
+  }
 }
 
 class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
@@ -25,6 +45,7 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
     $config = arrayToObject($config);
     $params = array('db' => true);
     $this->db = new DatabaseMySqlOverride($config, $params);
+    $this->db->inject('isAdmin', true);
   }
 
   public function testDeleteActionSuccess()
@@ -137,6 +158,7 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
       ->method('one')
       ->will($this->returnValue(array('name' => 'unittest', 'countPublic' => '0')));
     $this->db->inject('db', $db);
+    $this->db->inject('isAdmin', false);
 
     $res = $this->db->getAlbum('foo', 'email');
     $this->assertFalse($res, 'The MySql adapter should return false when countPublic is 0 and non admin');

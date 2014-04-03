@@ -2375,6 +2375,48 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Set active column for an element from the mapping table
+    *
+    * @param string $id Element id
+    * @return boolean
+    */
+  protected function setActiveFieldForAlbumsFromElement($id, $value)
+  {
+    $photo = $this->getPhoto($id);
+    $albums = $photo['albums'];
+
+    $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}elementAlbum` SET `active`=:active WHERE `owner`=:owner AND `type`=:type AND `element`=:album", array(':active' => $value, ':owner' => $this->owner, ':type' => 'photo', ':album' => $id));
+
+    if($res === false)
+      return false;
+
+    $this->adjustItemCounts($albums, 'album');
+    return true;
+  }
+
+  /**
+    * Set active column for an element from the mapping table
+    *
+    * @param string $id Element id (id of the photo or video)
+    * @param string $tag Tag to be added
+    * @param string $type Element type (photo or video)
+    * @return boolean
+    */
+  protected function setActiveFieldForTagsFromElement($id, $type, $value)
+  {
+    $photo = $this->getPhoto($id);
+    $tags = $photo['tags'];
+
+    $res = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}elementTag` SET `active`=:active WHERE `owner`=:owner AND `type`=:type AND `element`=:element", array(':active' => $value, ':owner' => $this->owner, ':type' => $type, ':element' => $id));
+
+    if($res === false)
+      return false;
+
+    $this->adjustItemCounts($tags, 'tag');
+    return true;
+  }
+
+  /**
    * Explode params associative array into SQL update statement lists
    * TODO, have this work with PDO named parameters
    *

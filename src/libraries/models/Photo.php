@@ -619,7 +619,15 @@ class Photo extends BaseModel
       return $id;
 
     $tagObj = new Tag;
-    $attributes = $this->whitelistParams($attributes);
+
+    // to preserve json columns we have to do complete writes
+    $currentPhoto = $this->db->getPhoto($id);
+    unset($currentPhoto['id'], $currentPhoto['albums']);
+    $currentPhoto['tags'] = implode(',', $currentPhoto['tags']);
+    $attributes = array_merge($currentPhoto, $attributes);
+
+    $attributes = $this->prepareAttributes($attributes, null, null);
+
     if(isset($attributes['tags']) && !empty($attributes['tags']))
       $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
 

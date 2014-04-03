@@ -186,6 +186,26 @@ class AlbumTest extends PHPUnit_Framework_TestCase
     $this->assertFalse($res, "When db::getAlbum returns false model should too");
   }
 
+  public function testGetAlbumElementsSuccess()
+  {
+    $expected = array('id' => 'foo', 'cover' => '123');
+    $user = $this->getMock('User', array('getEmailAddress','isOwner'));
+    $user->expects($this->any())
+      ->method('getEmailAddress')
+      ->will($this->returnValue('user@example.com'));
+    $user->expects($this->any())
+      ->method('isOwner')
+      ->will($this->returnValue(true));
+    $db = $this->getMock('Db', array('getAlbum'));
+    $db->expects($this->any())
+      ->method('getAlbum')
+      ->will($this->returnValue($expected));
+    $this->album->inject('user', $user);
+    $this->album->inject('db', $db);
+    $res = $this->album->getAlbum('abc', false);
+    $this->assertEquals($expected, $res, "getAlbum should return an array album object");
+  }
+
   public function testGetAlbumsSuccess()
   {
     $expected = array(
@@ -203,13 +223,8 @@ class AlbumTest extends PHPUnit_Framework_TestCase
     $db->expects($this->any())
       ->method('getAlbums')
       ->will($this->returnValue($expected));
-//  $api = $this->getMock('Api', array('invoke'));
-//  $api->expects($this->any())
-//    ->method('invoke')
-//    ->will($this->returnValue(array('code' => 500)));
     $this->album->inject('user', $user);
     $this->album->inject('db', $db);
-//  $this->album->inject('api', $api);
     $res = $this->album->getAlbums('abc', false);
     $this->assertEquals($expected, $res);
   }
@@ -256,13 +271,8 @@ class AlbumTest extends PHPUnit_Framework_TestCase
     $db->expects($this->any())
       ->method('getAlbums')
       ->will($this->returnValue(false));
-//  $api = $this->getMock('Api', array('invoke'));
-//  $api->expects($this->any())
-//    ->method('invoke')
-//    ->will($this->returnValue(array('code' => 500)));
     $this->album->inject('user', $user);
     $this->album->inject('db', $db);
-//  $this->album->inject('api', $api);
     $res = $this->album->getAlbums('abc', false);
     $this->assertFalse($res, "When db::getAlbums returns false model should too");
   }

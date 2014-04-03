@@ -154,6 +154,9 @@ abstract class Media extends BaseModel
 
   protected function setMediaSpecificAttributes($attributes, $localFile)
   {
+    if(!$this->isUploadedFile($localFile))
+      return $attributes;
+
     $mediaType = $this->getMediaType($localFile);
     switch($mediaType)
     {
@@ -184,18 +187,45 @@ abstract class Media extends BaseModel
   protected function setTagAttributes($attributes)
   {
     $tagObj = new Tag;
-    if($this->config->photos->autoTagWithDate == 1)
+
+    $attributes = $this->setDateTagsByAttributes($attributes);
+    if(isset($attributes['tags']) && !empty($attributes['tags']))
     {
-      $dateTags = sprintf('%s,%s', date('F', $attributes['dateTaken']), date('Y', $attributes['dateTaken']));
-      // TODO see if there's a shortcut for this
-      if(!isset($attributes['tags']) || empty($attributes['tags']))
-        $attributes['tags'] = $dateTags;
-      else
-        $attributes['tags'] .= ",{$dateTags}";
+      $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
+      $tagsArray = (array)explode(',', $attributes['tags']);
+      sort($tagsArray);
+      $attributes['tags'] = implode(',', $tagsArray);
     }
 
+    return $attributes;
+  }
+
+  protected function setDateTagsByAttributes($attributes)
+  {
+    if($this->config->photos->autoTagWithDate != 1)
+      return $attributes;
+
+    // in (Photo|Video)::update we might change dateTaken which means we have to remove old year/month tags
     if(isset($attributes['tags']) && !empty($attributes['tags']))
-      $attributes['tags'] = $tagObj->sanitizeTagsAsString($attributes['tags']);
+    {
+      $dateNames = array('January','February','March','April','May','June','July','August','September','October','November','December');
+
+      $tagsArray = (array)explode(',', $attributes['tags']);
+      $tagsArray = array_diff($tagsArray, $dateNames);
+      foreach($tagsArray as $k => $t)
+      {
+        if(preg_match('/^(19|20|21)[0-9]{2}$/', $t))
+          unset($tagsArray[$k]);
+      }
+      $attributes['tags'] = implode(',', $tagsArray);
+    }
+
+    $dateTags = sprintf('%s,%s', date('F', $attributes['dateTaken']), date('Y', $attributes['dateTaken']));
+    // TODO see if there's a shortcut for this
+    if(!isset($attributes['tags']) || empty($attributes['tags']))
+      $attributes['tags'] = $dateTags;
+    else
+      $attributes['tags'] .= ",{$dateTags}";
 
     return $attributes;
   }
@@ -260,5 +290,10 @@ abstract class Media extends BaseModel
       }
     }
     return $returnAttrs;
+  }
+
+  protected function isUploadedFile($localFile)
+  {
+    return is_uploaded_file($localFile);
   }
 }
