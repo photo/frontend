@@ -39,7 +39,7 @@ class Http extends BaseModel
 
   protected function generateParamsAsString($params, $method)
   {
-    $optionLetter = strcasecmp($method, 'get') === 0 ? 'F' : 'd';
+    $optionLetter = stristr($method, 'get') === false ? 'd' : 'F';
     $paramsAsString = '';
     if(!empty($params) && is_array($params))
     {

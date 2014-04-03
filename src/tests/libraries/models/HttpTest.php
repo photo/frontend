@@ -41,4 +41,12 @@ class HttpTest extends PHPUnit_Framework_TestCase
     $res = $this->http->fireAndForget($url, 'GET', $params);
     $this->assertEquals("'GET'.-d 'key=value' -u 'user:pass' .'{$url}'", $res[0], 'The return for the fireAndForget test should be current working directory');
   }
+
+  public function testFireAndForgetWithUserPassAsPost()
+  {
+    $url = 'http://google.com/fake';
+    $params = array('key' => 'value', '-u' => 'user:pass');
+    $res = $this->http->fireAndForget($url, 'POST', $params);
+    $this->assertEquals("'POST'.-d 'key=value' -u 'user:pass' .'{$url}'", $res[0], 'The return for the fireAndForget test should be current working directory');
+  }
 }
