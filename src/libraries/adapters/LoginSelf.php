@@ -24,8 +24,7 @@ class LoginSelf implements LoginInterface
     if($this->config->site->allowOpenPhotoLogin != 1 || $email == '' || $password == '')
       return false;
 
-    $passwordHashed = $this->user->encryptPassword($password);
-    $user = $this->db->getUserByEmailAndPassword($email, $passwordHashed);
+    $user = $this->db->getUserByEmailAndPassword($email, $password);
     if(!$user)
       return false;
 

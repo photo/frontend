@@ -53,3 +53,6 @@ function get_mime_type($filename)
 
   return $type;
 }
+
+// password_verify and password_hash are >= 5.5
+// provided in external/password_compat/password.php
