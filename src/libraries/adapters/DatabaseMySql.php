@@ -548,7 +548,31 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function getPhoto($id)
   {
-    $photo = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $id, ':owner' => $this->owner));
+    if($this->isAdmin())
+    {
+      $photo = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE owner=:owner AND `id`=:id", array(':id' => $id, ':owner' => $this->owner));
+    }
+    else
+    {
+      $photo = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE owner=:owner AND `id`=:id AND `active`=1", array(':id' => $id, ':owner' => $this->owner));
+    }
+
+    // TODO: gh-1455 get tags and albums from mapping table
+    if(empty($photo))
+      return false;
+    return $this->normalizePhoto($photo);
+  }
+
+  /**
+   * Get a photo specified by $key
+   *
+   * @param string $key ID of the photo to retrieve
+   * @return mixed Array on success, FALSE on failure
+   */
+  public function getPhotoByKey($key)
+  {
+    // TODO: unsure if this should be viewable to owner/admin gh-1453
+    $photo = $this->db->one("SELECT * FROM `{$this->mySqlTablePrefix}photo` WHERE owner=:owner AND `key`=:key", array(':owner' => $this->owner, ':key' => $key));
     if(empty($photo))
       return false;
     return $this->normalizePhoto($photo);
