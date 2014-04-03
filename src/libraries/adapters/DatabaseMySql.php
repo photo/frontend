@@ -139,12 +139,12 @@ class DatabaseMySql implements DatabaseInterface
     if(!isset($photo['id']))
       return false;
 
-    $resPhoto = $this->db->execute("DELETE FROM `{$this->mySqlTablePrefix}photo` WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
-    $resVersions = $this->deletePhotoVersions($photo);
-    $this->deleteAlbumsFromElement($photo['id'], 'photo');
-    $this->deleteTagsFromElement($photo['id'], 'photo');
+    $resPhoto = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}photo` SET `active`=0 WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
 
-    return ($resPhoto !== false && $resVersions !== false);
+    $this->setActiveFieldForAlbumsFromElement($photo['id'], 'photo', 0);
+    $this->setActiveFieldForTagsFromElement($photo['id'], 'photo', 0);
+
+    return $resPhoto !== false;
   }
 
   /**
