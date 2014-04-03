@@ -19,7 +19,7 @@ class Http extends BaseModel
   {
     $url = escapeshellarg($url);
     $method = escapeshellarg($method);
-    $paramsAsString = $this->generateParamsAsString($params);
+    $paramsAsString = $this->generateParamsAsString($params, $method);
     $command = $this->generateCommand($method, $paramsAsString, $url);
     $this->logger->info($command);
     return $this->executeCommand($command);
@@ -37,8 +37,9 @@ class Http extends BaseModel
     return sprintf("curl -X %s %s %s > /dev/null 2> /dev/null &", $method, $paramsAsString, $url);
   }
 
-  protected function generateParamsAsString($params)
+  protected function generateParamsAsString($params, $method)
   {
+    $optionLetter = strcasecmp($method, 'get') === 0 ? 'F' : 'd';
     $paramsAsString = '';
     if(!empty($params) && is_array($params))
     {
@@ -47,9 +48,10 @@ class Http extends BaseModel
         if($key[0] === '-')
           $paramsAsString .= sprintf("-%s %s ", preg_replace('/^[^0-9a-zA-Z]{1}$/', '', $key[1]), escapeshellarg($value));
         else
-          $paramsAsString .= sprintf("-F %s ", escapeshellarg("{$key}={$value}"));
+          $paramsAsString .= sprintf("-%s %s ", $optionLetter, escapeshellarg("{$key}={$value}"));
       }
     }
     return $paramsAsString;
   }
 }
+
