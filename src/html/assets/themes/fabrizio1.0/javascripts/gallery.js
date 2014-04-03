@@ -227,10 +227,51 @@ var Gallery = (function($) {
 		img.css("margin-top", "" + 0 + "px");
 		img.hide();
 
-		link.append(img);
-		overflow.append(link);
-		imageContainer.append(overflow);
-    
+		var overflow = $("<div/>");
+		overflow.css("width", ""+$nz(item.vwidth, defaultWidthValue)+"px");
+		overflow.css("height", ""+$nz(item[pathKey][1], defaultHeightValue)+"px");
+		overflow.css("overflow", "hidden");
+    if(typeof(item.video) !== 'undefined' && typeof(item.videoSource) !== 'undefined') {
+      overflow.addClass("video");
+      overflow.append('<div class="video-element video-element-'+item.id+' is-splash" style="height:'+configuration.thumbnailHeight+'px; background:url(\''+item[pathKey]+'\') 100%;"/>');
+      videoQueue[item.id] = {
+        id: item.id,
+        //file:'http://content.bitsontherun.com/videos/lWMJeVvV-364767.mp4',
+        file: item.videoSource,
+        image: item[pathKey],
+        width: item.vwidth,
+        title: item.name,
+        height: configuration.thumbnailHeight
+      };
+      imageContainer.append(overflow);
+    } else {
+      var link = $('<a/>');
+      link.attr('href', urlParts.pathname+qs);
+      link.attr('title', _.escape(item.title));
+      link.attr("data-id", item.id);
+      
+      var img = $("<img/>");
+      img.attr("data-id", item.id);
+      img.attr("src", item[pathKey]);
+      //img.attr('class', 'photo-view-modal-click');
+      img.attr('class', 'photoModal');
+      img.attr("alt", _.escape(item.title));
+      img.css("width", "" + $nz(item[pathKey][1], defaultWidthValue) + "px");
+      img.css("height", "" + $nz(item[pathKey][2], defaultHeightValue) + "px");
+      img.css("margin-left", "" + (item.vx ? (-item.vx) : 0) + "px");
+      img.css("margin-top", "" + 0 + "px");
+      img.hide();
+
+      link.append(img);
+      overflow.append(link);
+      imageContainer.append(overflow);
+
+      // fade in the image after load
+      img.bind("load", function () { 
+        $(this).fadeIn(400); 
+      });
+    }
+
     /**
      * Add meta information to bottom
      *
