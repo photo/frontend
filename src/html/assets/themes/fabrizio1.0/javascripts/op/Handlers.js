@@ -80,7 +80,7 @@
     };
     this.click.photoModal = function(ev) {
       ev.preventDefault();
-      var $el = $(ev.target), id = $el.attr('data-id'), $a = $el.closest('a'), $container = $el.closest('.imageContainer'), $pin = $('.pin.edit', $container), url = $a.attr('href'), router = op.data.store.Router;
+      var $el = $(ev.target), id = $el.attr('data-id'), $a = $el.closest('a'), $container = $el.closest('.imageContainer'), $pin = $('.pin.edit', $container), url = $a.attr('href'), router = op.data.store.Router, lightbox;
       
       if(ev.altKey && $pin.length > 0) { // alt+click pins the photo
         $pin.trigger('click');
@@ -102,6 +102,8 @@
           delete state.shiftId;
         }
       } else {
+        lightbox = op.Lightbox.getInstance();
+        lightbox._pathWithQuery = location.pathname+location.search;
         router.navigate(url, {trigger:true});
       }
     };

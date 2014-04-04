@@ -92,6 +92,8 @@
                 addJs($this->theme->asset('javascript', 'jquery.color.js', false))->
                 addJs($this->theme->asset('javascript', 'x-editable/bootstrap-editable/js/bootstrap-editable.js', false))->
                 addJs($this->theme->asset('javascript', 'phpjs.js', false))->
+                addJs($this->theme->asset('javascript', 'waypoints.min.js', false))->
+                addJs($this->theme->asset('javascript', 'ZeroClipboard.min.js', false))->
                 addJs($this->theme->asset('javascript', 'overrides.js', false))->
                 addJs($this->theme->asset('javascript', 'op/namespace.js', false))->
                 addJs($this->theme->asset('javascript', 'op/data/route/Routes.js', false))->
@@ -130,6 +132,8 @@
                 addJs($this->theme->asset('javascript', 'op/Tutorial.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Upload.js', false))->
                 addJs($this->theme->asset('javascript', 'op/Format.js', false))->
+                addJs($this->theme->asset('javascript', 'op/Clipboard.js', false))->
+                addJs($this->theme->asset('javascript', 'op/Waypoints.js', false))->
                 addJs($this->theme->asset('javascript', 'gallery.js', false))->
                 addJs($this->theme->asset('javascript', 'intro.js', false))->
                 addJs($this->theme->asset('javascript', 'fabrizio.js', false))->

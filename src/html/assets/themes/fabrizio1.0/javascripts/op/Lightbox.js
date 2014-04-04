@@ -111,6 +111,7 @@
     },
     
     _path: location.pathname,
+    _pathWithQuery: location.pathname+location.search, // see Handlers.js (click.photoModal) where this gets updated per gh-1434
     _filter: location.pathname.replace('/p/', '/').replace('/photos/', '/').replace('/list', ''),
     _visible: false,
 

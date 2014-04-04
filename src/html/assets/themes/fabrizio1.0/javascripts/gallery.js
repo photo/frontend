@@ -2,10 +2,6 @@
 /* http://www.techbits.de/2011/10/25/building-a-google-plus-inspired-image-gallery/ */
 var Gallery = (function($) {
 	/* ------------ PRIVATE variables ------------ */
-  // Keep track of remaining width on last row and date
-  var lastRowWidthRemaining = 0;
-  var lastDate = null;
-
   // defaults
   var configuration = {
   	'thumbnailSize':'960x180',
@@ -14,7 +10,13 @@ var Gallery = (function($) {
   	'defaultHeightValue':120
   };
 
+  // Keep track of remaining width on last row and date
+  var lastRowWidthRemaining = 0;
+  var lastDate = null;
+  var videoQueue = {};
+  var inited = false;
   var batchEmpty;
+  var currentPage = 1;
 
   var breakOnDate;
   
@@ -27,6 +29,41 @@ var Gallery = (function($) {
 		}
 		return value;
 	};
+
+  var init = function() {
+    if(inited)
+      return;
+
+    setStartPage();
+    inited = true;
+  };
+
+  var trackPages = function(direction) {
+    var $el = this, thisPage = $el.attr('data-waypoint-page'), pathname = location.pathname, router = op.data.store.Router;
+
+    // check if page parameter exists and remove it
+    if(TBX.util.getPathParam('page') !== null)
+      pathname = pathname.replace(/\/page-[0-9]+/, '');
+
+    pathname = pathname.replace(/\/photos/, '/photos/page-'+thisPage);
+    router.navigate(pathname, {replace: true});
+  };
+
+  var setStartPage = function() {
+    var page;
+
+    page = TBX.util.getQueryParam('page');
+    if(page !== null) {
+      currentPage = page;
+      return;
+    } 
+
+    page = TBX.util.getPathParam('page');
+    if(page !== null) {
+      currentPage = page;
+      return;
+    } 
+  };
 
   var dateSeparator = function(ts) {
     var calendarContainer = $('<div/>');
@@ -188,12 +225,20 @@ var Gallery = (function($) {
 	 * to the image. 
 	 */
 	var createImageElement = function(parent, item) {
+    var d = new Date(item.dateTaken*1000);
     var pageObject = TBX.init.pages.photos;
     var qsRe = /(page|returnSizes)=[^&?]+\&?/g;
     var qs = pageObject.pageLocation.search.replace(qsRe, '');
     var pinnedClass = !batchEmpty && OP.Batch.exists(item.id) ? 'pinned' : '';
     var imageContainer = $('<div class="imageContainer photo-id-'+item.id+' '+pinnedClass+'"/>');
-		
+
+    // we need to "mark" the first element for each api response
+    //  See gh-1434
+    var isFirstItemInResponse = typeof(item.totalRows) === 'number';
+    imageContainer.attr("data-waypoint-page", currentPage);
+
+    if(isFirstItemInResponse)
+      imageContainer.addClass('first-in-response');
 
 		var pathKey = 'path' + configuration['thumbnailSize'];
 		var defaultWidthValue = configuration['defaultWidthValue'];
@@ -333,8 +378,8 @@ var Gallery = (function($) {
 		},
 
 		showImages : function(photosContainer, realItems) {
-      if(typeof(breakOnDate) === 'undefined')
-        breakOnDate = TBX.util.enableBetaFeatures() && TBX.util.currentPage() === 'photos';
+      // initialize
+      init();
 
       // check if the batch queue is empty
       // we do this here to keep from having to call length for each photo, just for each page
@@ -360,6 +405,10 @@ var Gallery = (function($) {
           createImageElement(photosContainer, item);
 				}
 			}
+
+      // add waypoint for new page (:not() selector skips previously added elements)
+      TBX.waypoints.add($('.imageContainer.first-in-response:not(.waypoint-added)'), trackPages);
+      currentPage++;
 		}
 	}
 })(jQuery);
