@@ -209,6 +209,18 @@ class Utility
     return range($start, $end);
   }
 
+  public function getPaginationUrl($url, $page, $appendTo, $write = true)
+  {
+    // strip existing page parameter in the following order
+    // replace /page-N in the path with ''
+    // replace page=N& in qs with ''
+    // replace &page=N in qs with ''
+    // replace ?page=N in qs with '?'
+    $url = preg_replace(array('/\/page-[0-9]+/', '/page=[0-9]+\&/', '/\&page=[0-9]+/', '/\?page=[0-9]+/'), array('', '', '', '?'), $url);
+    $url = preg_replace('/\?$/', '', str_replace($appendTo, sprintf('%s/page-%s', $appendTo, $page), $url));
+    return $this->returnValue($url, $write);
+  }
+
   public function getProtocol($write = true)
   {
     $protocol = 'http';

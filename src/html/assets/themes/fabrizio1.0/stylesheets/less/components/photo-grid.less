@@ -14,6 +14,26 @@
   }
 
   .photo-grid {
+    .pagination {
+      font-size: 14px;
+      ul {
+        border-radius: 0;
+        box-shadow: none;
+        display:block;
+        float:right;
+        li {
+          line-height: inherit;
+          a {
+            &:hover {
+              background-color: #fff;
+            }
+            float: none;
+            line-height: inherit;
+            border: none;
+          }
+        }
+      }
+    }
     > h4, p {
       margin-left:5px;
     }

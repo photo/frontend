@@ -154,6 +154,33 @@ RES;
     $this->assertEquals('user+.-)(*&^%$#!', $res);
   }
 
+  public function testGetPaginationUrl()
+  {
+    $url = '/photos/list';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list', $res);
+
+    $url = '/photos/page-10/list';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list', $res);
+
+    $url = '/photos/list?page=100';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list', $res);
+
+    $url = '/photos/list?page=100&foo=bar';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list?foo=bar', $res);
+
+    $url = '/photos/list?foo=bar&page=100';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list?foo=bar', $res);
+
+    $url = '/photos/list?foo=bar&page=100&x=y';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list?foo=bar&x=y', $res);
+  }
+
   public function testGetProtocol()
   {
     $_SERVER['HTTPS'] = null;

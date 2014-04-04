@@ -35,4 +35,17 @@
       <a href="?sortBy=<?php $this->utility->safe($this->utility->getSortByParams('sort','desc',$currentSortBy, false)); ?>" title="Order last to first"><i class="icon-sort-by-order-alt"></i></a>
     <?php } ?>
   )
+  <?php if($pages['currentPage'] > 1) { ?>
+    <span class="pagination">
+      <?php //$this->utility->safe($pages['currentPage']); ?>
+      <ul>
+        <li><i class="icon-list-ol" title="Prior pages"></i></li>
+        <?php $thisPage = max($pages['currentPage']-5, 1); ?>
+        <?php do { ?>
+          <li><a href="<?php $this->utility->getPaginationUrl($uri, $thisPage, '/photos'); ?>"><?php $this->utility->safe($thisPage); ?></a></li>
+          <?php $thisPage++; ?>
+        <?php }while($thisPage < $pages['currentPage']); ?>
+      </ul>
+    </span>
+  <?php } ?>
 </small>
