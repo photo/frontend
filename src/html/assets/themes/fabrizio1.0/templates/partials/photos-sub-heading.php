@@ -45,6 +45,8 @@
           <li><a href="<?php $this->utility->getPaginationUrl($uri, $thisPage, '/photos'); ?>"><?php $this->utility->safe($thisPage); ?></a></li>
           <?php $thisPage++; ?>
         <?php }while($thisPage < $pages['currentPage']); ?>
+        <li class="active"><a href="#"><?php $this->utility->safe($pages['currentPage']); ?></a></li>
+        <li class="disabled"><em>of <?php $this->utility->safe($pages['totalPages']); ?> pages</em></li>
       </ul>
     </span>
   <?php } ?>

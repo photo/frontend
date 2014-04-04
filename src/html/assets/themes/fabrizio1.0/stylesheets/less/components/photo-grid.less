@@ -23,6 +23,11 @@
         float:right;
         li {
           line-height: inherit;
+          &.active {
+            a {
+              background-color: #fff;
+            }
+          }
           a {
             &:hover {
               background-color: #fff;
@@ -30,6 +35,7 @@
             float: none;
             line-height: inherit;
             border: none;
+            padding: 0 6px;
           }
         }
       }
