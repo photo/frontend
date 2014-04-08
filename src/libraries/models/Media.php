@@ -291,6 +291,14 @@ abstract class Media extends BaseModel
 
   protected function isUploadedFile($localFile)
   {
+    // add a bypass for when the `photo` parameter is passed in as a URL
+    //  in this case `is_uploaded_file` will return true since we fetch and store
+    //  that file using curl
+    // we're using strstr since the file is prefixed with the temp directory
+    // we are prefixing the local file with this constant to handle this
+    // see gh-1465 for details
+    if(strstr($localFile, 'opme-via-url'))
+      return true;
     return is_uploaded_file($localFile);
   }
 }

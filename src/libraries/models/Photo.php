@@ -764,7 +764,8 @@ class Photo extends BaseModel
   }
 
   /**
-    * Uploads a new photo to the remote file system and database.
+    * Downloads a photo from a URL and stores it locally.
+    *  Used in ApiShareController to attach a photo in an email.
     *
     * @param string $url URL of the photo to store locally
     * @return mixed file pointer on success, FALSE on failure

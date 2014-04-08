@@ -63,6 +63,8 @@ class MediaWrapper extends Media
 
   public function isUploadedFile($localFile)
   {
+    if(strstr($localFile, 'opme-via-url'))
+      return parent::isUploadedFile($localFile);
     return true;
   }
 }
@@ -121,6 +123,12 @@ class MediaTest extends PHPUnit_Framework_TestCase
   {
     $res = $this->media->isValidMimeType($this->text);
     $this->assertFalse($res);
+  }
+
+  public function testIsUploadedFileAsUrl()
+  {
+    $res = $this->media->isUploadedFile('opme-via-url-foobar');
+    $this->assertTrue($res);
   }
 
   public function testPrepareAttributesWithOriginalFilenameEmpty()
