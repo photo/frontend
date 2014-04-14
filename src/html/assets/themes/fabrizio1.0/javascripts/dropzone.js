@@ -1079,7 +1079,7 @@ require.register("dropzone/lib/dropzone.js", function(exports, require, module){
           input = _ref2[_i];
           inputName = input.getAttribute("name");
           inputType = input.getAttribute("type");
-          if (!inputType || inputType.toLowerCase() !== "checkbox" || input.checked) {
+          if (!inputType || (inputType.toLowerCase() !== "checkbox" && inputType.toLowerCase() !== "radio") || input.checked) {
             formData.append(inputName, input.value);
           }
         }

@@ -133,6 +133,11 @@
       var $el = $(ev.target), photoId = $el.attr('data-id'), albumId = TBX.util.getPathParam('album');
       OP.Util.makeRequest(TBX.format.sprintf('/album/%s/cover/%s/update.json', albumId, photoId), {crumb: TBX.crumb()}, TBX.callbacks.setAlbumCover, 'json', 'post');
     };
+    this.click.shareAlbum = function(ev) {
+      ev.preventDefault();
+      var $el = $(ev.target), id = $el.attr('data-id');
+      OP.Util.makeRequest('/share/album/'+id+'/view.json', {crumb: TBX.crumb()}, TBX.callbacks.share, 'json', 'get');
+    };
     this.click.sharePopup = function(ev) {
       ev.preventDefault();
       var $el = $(ev.target), url = $el.attr('href'), w=575, h=300, l, t, opts;

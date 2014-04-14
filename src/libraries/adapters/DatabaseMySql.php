@@ -859,9 +859,20 @@ class DatabaseMySql implements DatabaseInterface
     if($email == '' || $password == '')
       return false;;
 
-    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:email AND `password`=:password", array(':email' => $email, ':password' => $password));
-    if($res)
-      return $this->normalizeUser($res);
+    $res = $this->db->one($sql = "SELECT * FROM `{$this->mySqlTablePrefix}user` WHERE `id`=:email", array(':email' => $email));
+    if($res) {
+      if (password_verify($password, $res['password'])) {
+        return $this->normalizeUser($res);
+      } else {
+        // Backwards compatibility: rehash old password
+        $userObj = new User;
+        if ($res['password'] == $userObj->encryptPasswordDeprecated($password)) {
+          $res['password'] = $userObj->encryptPassword($password);
+          $this->postUser($res);
+          return $this->normalizeUser($res);
+        }
+      }
+    }
     return false;
   }
 

@@ -284,9 +284,10 @@ function getPlugin()
 function getTheme($singleton = true)
 {
   static $theme;
-  if($singleton && !$theme)
+  if($singleton)
   {
-    $theme = new Theme();
+    if (!$theme)
+      $theme = new Theme();
     return $theme;
   }
 

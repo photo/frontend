@@ -9,14 +9,18 @@
             <?php if($this->user->isAdmin()) { ?>
               <li><a href="#" class="triggerShare"><i class="icon-share-alt triggerShare"></i> Share</a></li>
             <?php } ?>
-          <?php } else if($this->utility->isActiveTab('photos') || $this->utility->isActiveTab('upload')) { ?>
+          <?php } else if($this->utility->isActiveTab('photos')) { ?>
             <?php if($this->user->isAdmin()) { ?>
               <li class="batch separator-left"><a href="#" class="selectAll"><i class="icon-pushpin"></i> Select all</a></li>
               <li class="batch dropdown batch-meta"></li>
+              <?php if($this->utility->isActiveTab('photos-album')) { ?>
+                <li><a href="#" class="triggerShare"><i class="icon-share-alt triggerShare"></i> Share this album</a></li>
+              <?php } ?>
             <?php } ?>
           <?php } elseif($this->utility->isActiveTab('upload')) {?>
-            <li class="separator-left"><a href="http://bit.ly/trovebox-for-iphone"><i class="icon-camera-retro icon-mobile-phone"></i> iPhone App</a></li>
-            <li><a href="http://bit.ly/trovebox-for-android"><i class="icon-mobile-phone"></i> Android App</a></li>
+            <li class="separator-left">Import from </li>
+            <li><a href="http://bit.ly/trovebox-for-iphone" title="Download our Trovebox for iOS"><i class="icon-apple"></i> iPhone / iPad</a></li>
+            <li><a href="http://bit.ly/trovebox-for-android" title="Download Trovebox for Android"><i class="icon-android"></i> Android</a></li>
           <?php } elseif($this->utility->isActiveTab('manage')) {?>
             <li class="separator-left"><a href="#settings"><i class="icon-cogs"></i> General Settings</a></li>
             <li><a href="#apps"><i class="icon-briefcase"></i> Applications</a></li>
