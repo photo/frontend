@@ -61,19 +61,32 @@
       OP.Util.init(jQuery, {
         js: {
           assets: [
-            <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload/beta')) { ?> 
-              '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
-                addJs($this->theme->asset('javascript', 'dropzone.js', false))->
-                getUrl(AssetPipeline::js, $this->config->site->mediaVersion, $this->config->site->mode === 'prod'); ?>',
-            <?php } else if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
-              '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
-                addJs('/assets/javascripts/plupload.js', false)->
-                addJs('/assets/javascripts/plupload.html5.js', false)->
-                addJs('/assets/javascripts/jquery.plupload.queue.js', false)->
-                addJs('/assets/javascripts/openphoto-upload.js')->
-                addJs($this->theme->asset('javascript', 'dropzone.js', false))->
-                getUrl(AssetPipeline::js, $this->config->site->mediaVersion, $this->config->site->mode === 'prod'); ?>',
+            <?php if(isset($_GET['__route__']) && stristr($_GET['__route__'], 'upload')) { ?> 
+              <?php if($this->config->site->mode === 'prod') { ?>
+                '<?php printf('%s%s',
+                  $this->utility->safe($this->config->site->cdnPrefix),
+                  getAssetPipeline(true)->setMode(AssetPipeline::combined)->
+                    addJs(sprintf('/assets/javascripts/releases/%s/upload.js', $this->config->defaults->currentCodeVersion), false)->
+                    getUrl(AssetPipeline::js, $this->config->site->mediaVersion, true/*$this->config->site->mode === 'prod'*/)
+                ); ?>',
+              <?php } else { ?>
+                '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
+                  addJs('/assets/javascripts/plupload.js', false)->
+                  addJs('/assets/javascripts/plupload.html5.js', false)->
+                  addJs('/assets/javascripts/jquery.plupload.queue.js', false)->
+                  addJs('/assets/javascripts/openphoto-upload.js')->
+                  addJs($this->theme->asset('javascript', 'dropzone.js', false))->
+                  getUrl(AssetPipeline::js, $this->config->site->mediaVersion, false/*$this->config->site->mode === 'prod'*/); ?>',
+              <?php } ?>
             <?php } ?>
+            <?php if($this->config->site->mode === 'prod') { ?>
+              '<?php printf('%s%s',
+                $this->utility->safe($this->config->site->cdnPrefix),
+                getAssetPipeline(true)->setMode(AssetPipeline::combined)->
+                  addJs(sprintf('/assets/javascripts/releases/%s/tbx.js', $this->config->defaults->currentCodeVersion), false)->
+                  getUrl(AssetPipeline::js, $this->config->site->mediaVersion, true/*$this->config->site->mode === 'prod'*/)
+              ); ?>',
+            <?php } else { ?>
               '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
                 addJs($this->theme->asset('javascript', 'underscore-min.js', false))->
                 addJs($this->theme->asset('javascript', 'modernizr.custom.js', false))->
@@ -123,7 +136,8 @@
                 addJs($this->theme->asset('javascript', 'gallery.js', false))->
                 addJs($this->theme->asset('javascript', 'intro.js', false))->
                 addJs($this->theme->asset('javascript', 'fabrizio.js', false))->
-                getUrl(AssetPipeline::js, $this->config->site->mediaVersion, $this->config->site->mode === 'prod'); ?>'
+                getUrl(AssetPipeline::js, $this->config->site->mediaVersion, false/*$this->config->site->mode === 'prod'*/); ?>'
+            <?php } ?>
             ], // assets
             onComplete: function() {
               OP.Util.addEventMap(TBX.handlers);

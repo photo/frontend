@@ -100,7 +100,7 @@ class AssetPipeline
     // generate the hash and see if the file is on disk
     $url = sprintf('/assets/cache/%s/%s/%s%s', $version, $type, $this->mode, implode(',', $this->assetsRel[$type]));
     $hash = sha1($url);
-    if(is_dir($this->cacheDir) && file_exists($assetPath = sprintf('%s/%s.%s', $this->cacheDir, $hash, $type)))
+    if($cache && is_dir($this->cacheDir) && file_exists($assetPath = sprintf('%s/%s.%s', $this->cacheDir, $hash, $type)))
       return str_replace($this->docroot, '', $assetPath);
 
     // else we generate the URL which comebines all the URLs together
