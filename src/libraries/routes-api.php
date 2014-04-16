@@ -43,6 +43,7 @@ $apiObj->post('/?v?[1-2]?/album/([a-zA-Z0-9]+)/(photo)/(add|remove).json', array
 $apiObj->get('/?v?[1-2]?/albums/list.json', array('ApiAlbumController', 'list_'), EpiApi::external); // retrieve activities (/albums/list.json)
 $apiObj->post('/?v?[1-2]?/album/([a-zA-Z0-9]+)/update.json', array('ApiAlbumController', 'update'), EpiApi::external); // update an album (/album/{id}/update.json)
 $apiObj->get('/?v?[1-2]?/album/([a-zA-Z0-9]+)/view.json', array('ApiAlbumController', 'view'), EpiApi::external); // retrieve activity (/activity/:id/view.json)
+$apiObj->get('/album/([a-zA-Z0-9]+)/ids.json', array('ApiAlbumController', 'listAlbumIds'), EpiApi::external); //retrieve photo ids (/albums/list.json) 
 
 /*
  * Manage endpoints

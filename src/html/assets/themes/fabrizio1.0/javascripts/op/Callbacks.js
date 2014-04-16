@@ -28,8 +28,13 @@
       $('.batchHide').trigger('click');
     };
     this.batch = function(response) { // this is the form params
-      var id, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos, action = response.code === 204 ? 'deleted' : 'updated';
-      if(response.code === 200 || response.code === 204) {
+      var id,url, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos, action = response.code === 204 ? 'deleted' : 'updated';
+
+      if (response.code === 201) {
+          TBX.notification.show(photoCount + ' photo ' + (photoCount>1?'s were':'was') + ' zipped.', 'flash', 'confirm');
+          url = "/photo/" + response.fileName + "/tarball?outputName=" + response.outputName;
+          location.href = url;
+      } else if(response.code === 200 || response.code === 204) {
         for(i in ids) {
           if(ids.hasOwnProperty(i)) {
             id = ids[i];

@@ -70,7 +70,36 @@
           <input type="radio" name="permission" value="1"> Public 
         </label>
         &nbsp;&nbsp;
+      <?php } elseif($action == 'tarball') {?>
+      <?php
+          $buttonLabel = "Download";
+      ?>
+      <?php if(isset($ids)) { ?>
+        <input type="hidden" name="ids" value="<?php $this->utility->safe($ids); ?>">
       <?php } ?>
+        <h4>Choose an output format</h4>
+          <div class="control-group">
+            <select class="chooseFormat" name="archive" >
+              <?php $installed = shell_exec("which tar"); 
+              if (empty($installed)?false:true) {?>
+                <option value="tar">tar</option>
+              <?php } ?>     
+              <?php $installed = shell_exec("which zip"); 
+              if (empty($installed)?false:true) {?>
+                <option value="zip">zip</option>     
+              <?php } ?>        
+            </select>
+          </div>
+          <label class="checkbox">
+            <input type="checkbox" name="gzip" value="true"> gzip?
+          </label>
+          <h4>... and a name for the file</h4>
+          <label class="checkbox">
+            <input id="archiveAlbumName" type="text" value="Images" name="name">
+          </label>
+
+        &nbsp;&nbsp;
+      <?php } ?>      
       <button type="submit" class="btn btn-brand"><?php $this->utility->safe($buttonLabel); ?></button> or <a href="#" class="batchHide">cancel</a>
       <?php if(isset($ids)) { ?>
         <input type="hidden" name="ids" value="<?php $this->utility->safe($ids); ?>">

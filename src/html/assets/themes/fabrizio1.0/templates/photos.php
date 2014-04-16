@@ -11,7 +11,7 @@
         (
           <?php $this->utility->safe($album['count']); ?> photos
           <?php if($this->user->isAdmin()) { ?>
-            <span class="hide"> | <a href="#" class="shareAlbum share trigger" data-id="<?php $this->utility->safe($album['id']); ?>" title="Share this album"><i class="icon-share"></i> Share</a></span>
+            <span class="hide"> | <a href="#" class="shareAlbum share trigger" data-id="<?php $this->utility->safe($album['id']); ?>" data-name="<?php $this->utility->safe($album['name']); ?>" title="Share this album"><i class="icon-share"></i> Share</a></span>
           <?php } ?>
         )
       </small>

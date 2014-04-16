@@ -106,6 +106,7 @@ class PhotoController extends BaseController
       }
     }
 
+
     $this->route->run('/error/404');
   }
 
@@ -199,7 +200,6 @@ class PhotoController extends BaseController
     // TODO include success/error paramter
     $this->route->redirect($this->url->photoView($id, null, false));
   }
-
   /**
     * Display the upload form for photos.
     *
@@ -300,5 +300,133 @@ class PhotoController extends BaseController
     {
       $this->route->run('/error/404');
     }
+  }
+
+  public function getTarball ($path) 
+  {
+    $fileName    = $path;
+    $outputName  = $_GET['outputName'];
+    $format      =  array_pop(explode (".",$fileName));
+
+    $file =  $this->config->paths->temp . "/$path-tarballSecret";
+
+    if (file_exists($file)) {
+
+
+      header('Content-Description: File Transfer');
+      header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
+      header("Cache-Control: public"); // needed for i.e.
+
+      header('Content-Type: application/octet-stream');
+      if ($format==='zip') {
+          header("Content-Type: application/zip"); 
+      } else if ($format === 'tar') {
+          header("Content-Type: application/x-tar");
+      } else if ($format === 'tar.gz') {
+        header("Content-Type: application/x-gzip");
+      }
+
+      header("Content-Transfer-Encoding: Binary");
+      header("Content-Length:".filesize($file));
+      header("Content-Disposition: attachment; filename=$outputName");
+      
+
+      session_write_close();
+      
+      $fh = fopen($file, 'r');
+      while($buffer = fgets($fh, 4096)) {
+        echo $buffer;
+      }
+      fclose($fh);
+      unlink($file); //One time access only.
+    } else {
+          $this->route->run('/error/404');
+    }
+
+  }
+
+
+  public function createTarball()
+  {
+
+    $format   = $_POST['archive'];
+    $filename = $_POST['name'];
+    $gzip     = $_POST['gzip'];
+    $idStr    = $_POST['ids'];
+    $ids      = explode(",", $id);
+    $id       = $ids[0];
+    $pathes   = array ();
+    $count    = count($ids);
+    $ext      = $format;
+
+    if ($format !== 'zip') {
+      $format = 'tar';
+    } 
+
+    if ($gzip === 'true' && $format === 'tar') {
+       $ext = 'tar.gz';
+    }
+
+    if ($filename === '') {
+      $filename = 'tarball';
+    }
+
+    
+    for ($i=0; $i < $count; $i++) { 
+      $id = $ids[$i];
+
+      $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
+
+      if($apiResp['code'] === 200) {
+        $img = $_SERVER['DOCUMENT_ROOT'] . '/photos' . str_replace(array ("http://","https://",$apiResp['result']['host']), "", $apiResp['result']['pathOriginal']);
+        array_push($pathes, $img);
+      }    
+    }
+
+
+    if (count($pathes) === 0) {
+      $this->route->run('/error/404');
+    }
+
+    //get the folder path
+    $folder    = explode ( "/" , $pathes[0]);
+    $folder    = array_slice($folder, 0, count($folder) - 1 );
+    $folder    = implode('/', $folder);
+
+    $tmp       =  tempnam( $this->config->paths->temp, $filename);
+    $path      = $tmp . ".$ext" . '-tarballSecret';
+    $images    = implode(' ', $pathes);
+
+    $installed = shell_exec("which $format");
+    $installed = empty ($installed) ? false : true;
+
+    $flags = "";
+
+    if ($installed === false) {
+      header($_SERVER["SERVER_PROTOCOL"] . " 400");
+      die ();
+    }
+
+    if ($format === "tar") {
+      $flags = "-c";
+
+      if ($gzip === 'true') {
+        $flags .= "z";
+      }
+
+      $evl = "tar $flags -f $path -C $folder $images 2>&1";
+    } else {
+      $evl = "zip $flags -j $path $images 2>&1";
+    }
+
+    shell_exec($evl);
+    
+    $tmpFileName = array_pop ( explode("/", $tmp));
+
+    $result = (object) array("fileName" => $tmpFileName.".$ext", "outputName" => $filename.".$ext", "code" => 201);
+
+    header($_SERVER["SERVER_PROTOCOL"] . " 201 OK");
+
+    echo json_encode($result);
   }
 }

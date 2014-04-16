@@ -149,13 +149,15 @@
     this.click.showBatchForm = function(ev) {
       ev.preventDefault();
       var $el = $(ev.target), params = {}, model;
+      // we allow overriding the batch queue by passing in an id
+      if($el.attr('data-ids')) {
+        params.ids = $el.attr('data-ids');
+      }
+
       if($el.hasClass('photo')) {
         model = TBX.init.pages.photos.batchModel;
         model.set('loading', true);
         params.action = $el.attr('data-action');
-        // we allow overriding the batch queue by passing in an id
-        if($el.attr('data-ids'))
-          params.ids = $el.attr('data-ids');
         OP.Util.makeRequest('/photos/update.json', params, function(response) {
           var result = response.result;
           model.set('loading', false);
@@ -172,9 +174,69 @@
           model.set('loading', false);
           $('.secondary-flyout').html(result.markup).slideDown('fast');
         }, 'json', 'get');
+      } else if ($el.hasClass ('tarball')) {
+        params.action = $el.attr('data-action');
+
+        model = TBX.init.pages.photos.batchModel;
+        model.set('loading', true);
+
+        OP.Util.makeRequest('/photos/update.json', params, function(response) {
+          var result = response.result, albumName;
+
+          model.set('loading', false);
+          $('.secondary-flyout').html(result.markup).slideDown('fast');
+
+          albumName = $(".shareAlbum").attr ("data-name");
+          if (typeof albumName !== "undefined") {
+            $("#archiveAlbumName").val (albumName);
+            $("select.chooseFormat").change (TBX.handlers.chooseFormat);
+          }
+        }, 'json', 'get');
       }
       return;
     };
+    this.click.loadAlbumIds = function (ev) {
+        // Initially I wanted to create a new model instead of using the photo model, 
+        // and fetch the ids from the load method of the model. 
+        // but it turned out that this was simpler to implement, so KISS
+        
+        var albumId = $(".shareAlbum").attr ("data-id"), $el, ids;
+        $el = $(ev.target);
+        ids = $el.attr ("data-ids");
+
+        if ( typeof  ids === "undefined" && !$el.hasClass ("showBatchForm"))  {
+            OP.Util.makeRequest('/album/'+ albumId +'/ids.json', null, function(response) {
+            var result = response.result;
+
+              try {
+                ids = JSON.parse (result);
+              } catch (e) {
+                  return;
+              }
+
+              $el.attr ("data-ids", ids.join (","));
+              $el.removeClass ("loadAlbumIds");
+              $el.addClass ("showBatchForm").trigger ("click");
+            }, 'json', 'get');
+        } else if ($el.hasClass ("showBatchForm") && typeof  ids === "undefined") {
+              //This shouldn't be reached anyway
+              $el.removeClass ("showBatchForm");
+              $el.addClass ("loadAlbumIds").trigger ("click");
+        }
+    };
+    
+    this.click.chooseFormat = function (ev) {
+      var $el   = $(ev.target),
+          $gzip = $("[name=gzip]"),
+          $lbl  = $gzip.parent ();
+      if ($el.val () !== "tar") {
+        $lbl.hide ();
+        $gzip.attr ("checked",false);
+      } else {
+        $lbl.show ();
+      }
+    };
+
     this.click.toggle = function(ev) {
       // use data-type to support other toggles
       ev.preventDefault();
@@ -225,8 +287,7 @@
     };
     this.submit.batch = function(ev) {
       ev.preventDefault();
-      var $form = $(ev.target), url = '/photos/update.json', formParams = $form.serializeArray(), batch = OP.Batch, params = {ids: batch.ids().join(','), crumb: TBX.crumb()};
-      $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
+      var $form = $(ev.target), url = '/photos/update.json', formParams = $form.serializeArray(), batch = OP.Batch, params = {ids: batch.ids().join(','), crumb: TBX.crumb()},el;
       for(i in formParams) {
         if(formParams.hasOwnProperty(i)) {
           // we allow the batch ids to be overridden by a parameter named ids
@@ -245,12 +306,16 @@
               $($('button i', $form)[0]).remove();
               return; // don't continue
             }
+          } else if (formParams[i].name === 'archive') {
+            url = "/photos/tarball";
+            $('[type="submit"]',$form).text ("Archiving...")
           }
 
           params[formParams[i].name] = formParams[i].value;
         }
       }
       OP.Util.makeRequest(url, params, TBX.callbacks.batch.bind(params), 'json', 'post');
+      $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
     };
     this.submit.login = function(ev) {
       ev.preventDefault();
