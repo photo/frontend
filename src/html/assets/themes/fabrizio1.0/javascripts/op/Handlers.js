@@ -189,7 +189,7 @@
           albumName = $(".shareAlbum").attr ("data-name");
           if (typeof albumName !== "undefined") {
             $("#archiveAlbumName").val (albumName);
-            $("select.chooseFormat").change (TBX.handlers.chooseFormat);
+            $("select.chooseFormat").change (TBX.handlers.custom.chooseFormat);
           }
         }, 'json', 'get');
       }
@@ -205,15 +205,12 @@
         ids = $el.attr ("data-ids");
 
         if ( typeof  ids === "undefined" && !$el.hasClass ("showBatchForm"))  {
-            OP.Util.makeRequest('/album/'+ albumId +'/ids.json', null, function(response) {
-            var result = response.result;
-
-              try {
-                ids = JSON.parse (result);
-              } catch (e) {
-                  return;
-              }
-
+            OP.Util.makeRequest('/photos/album-' + albumId + '/list.json', null, function(response) {
+            var result = response.result,
+                ids    = result.map (function (a) {
+                    return a.id;
+                });
+              
               $el.attr ("data-ids", ids.join (","));
               $el.removeClass ("loadAlbumIds");
               $el.addClass ("showBatchForm").trigger ("click");
@@ -225,18 +222,6 @@
         }
     };
     
-    this.click.chooseFormat = function (ev) {
-      var $el   = $(ev.target),
-          $gzip = $("[name=gzip]"),
-          $lbl  = $gzip.parent ();
-      if ($el.val () !== "tar") {
-        $lbl.hide ();
-        $gzip.attr ("checked",false);
-      } else {
-        $lbl.show ();
-      }
-    };
-
     this.click.toggle = function(ev) {
       // use data-type to support other toggles
       ev.preventDefault();
@@ -306,9 +291,13 @@
               $($('button i', $form)[0]).remove();
               return; // don't continue
             }
-          } else if (formParams[i].name === 'archive') {
-            url = "/photos/tarball";
-            $('[type="submit"]',$form).text ("Archiving...")
+          } else if (formParams[i].name === 'archivename') {
+            var extension = [".tar",".zip","tar.gz",".zip","tar.bz2",".zip"], extIndex = (params["compression"] << 1) | params["format"];
+            url = "/photos/" + params.ids + "/tarball";
+            $('[type="submit"]',$form).text ("Archiving...");
+            
+            TBX.notification.show('Packing ' + params.ids.split (",").length + ' photo\'s into ' + formParams[i].value  + extension[extIndex], 'flash', 'spin');
+            $('.secondary-flyout').slideUp('fast');
           }
 
           params[formParams[i].name] = formParams[i].value;
@@ -418,6 +407,15 @@
     };
     this.custom.uploaderBetaReady = function() {
       TBX.upload.init();
+    };
+    this.custom.chooseFormat = function (ev) {
+      var $el   = $(ev.target),
+          $gzip = $(".compression");
+      if ($el.val () !== "0") {
+        $gzip.hide ();
+      } else {
+        $gzip.show ();
+      }
     };
   }
   

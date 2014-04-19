@@ -28,12 +28,11 @@
       $('.batchHide').trigger('click');
     };
     this.batch = function(response) { // this is the form params
-      var id,url, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos, action = response.code === 204 ? 'deleted' : 'updated';
-
+      var id,url,result, model, ids = this.ids.split(','), photoCount = ids.length, store = op.data.store.Photos, action = response.code === 204 ? 'deleted' : 'updated';
       if (response.code === 201) {
-          TBX.notification.show(photoCount + ' photo ' + (photoCount>1?'s were':'was') + ' zipped.', 'flash', 'confirm');
-          url = "/photo/" + response.fileName + "/tarball?outputName=" + response.outputName;
-          location.href = url;
+          result = response.result;
+          url = "/photo/" + result.fileName + "/tarball?outputName=" + result.outputName;
+          TBX.notification.show('Your archive was generated successfully. ' + result.success + '/' + photoCount + ' photo' + (photoCount>1?'s were':'was') + ' zipped. <a href=' + url + '><i class="icon-download"></i> ' + result.outputName + '</a>' , 'flash', 'confirm');
       } else if(response.code === 200 || response.code === 204) {
         for(i in ids) {
           if(ids.hasOwnProperty(i)) {

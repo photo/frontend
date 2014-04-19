@@ -43,7 +43,6 @@ $apiObj->post('/?v?[1-2]?/album/([a-zA-Z0-9]+)/(photo)/(add|remove).json', array
 $apiObj->get('/?v?[1-2]?/albums/list.json', array('ApiAlbumController', 'list_'), EpiApi::external); // retrieve activities (/albums/list.json)
 $apiObj->post('/?v?[1-2]?/album/([a-zA-Z0-9]+)/update.json', array('ApiAlbumController', 'update'), EpiApi::external); // update an album (/album/{id}/update.json)
 $apiObj->get('/?v?[1-2]?/album/([a-zA-Z0-9]+)/view.json', array('ApiAlbumController', 'view'), EpiApi::external); // retrieve activity (/activity/:id/view.json)
-$apiObj->get('/album/([a-zA-Z0-9]+)/ids.json', array('ApiAlbumController', 'listAlbumIds'), EpiApi::external); //retrieve photo ids (/albums/list.json) 
 
 /*
  * Manage endpoints
@@ -81,6 +80,7 @@ $apiObj->post('/?v?[1-2]?/photos/delete.json', array('ApiPhotoController', 'dele
 $apiObj->post('/?v?[1-2]?/photos/update.json', array('ApiPhotoController', 'updateBatch'), EpiApi::external); // update multiple photos (/photos/update.json)
 $apiObj->get('/?v?[1-2]?/photos/update.json', array('ApiPhotoController', 'updateBatchForm'), EpiApi::external); // update multiple photos (/photos/update.json)
 $apiObj->post('/?v?[1-2]?/photo/upload.json', array('ApiPhotoController', 'upload'), EpiApi::external); // upload a photo
+$routeObj->post('/photos/([a-zA-Z0-9,]+)/tarball', array('ApiPhotoController', 'createTarball'), EpiApi::external); // generate a tarball with the original images for the ids.
 $apiObj->post('/?v?[1-2]?/photos/upload/confirm.json', array('ApiPhotoController', 'uploadConfirm'), EpiApi::external); // confirmaton after upload
 $apiObj->get('/?v?[1-2]?/photo/([a-zA-Z0-9]+)/url/(\d+)x(\d+)x?([A-Zx]*)?.json', array('ApiPhotoController', 'dynamicUrl'), EpiApi::external); // generate a dynamic photo url (/photo/{id}/url/{options}.json) TODO, make internal for now
 $apiObj->get('/?v?[1-2]?/photo/([a-zA-Z0-9]+)/nextprevious/?(.+)?.json', array('ApiPhotoController', 'nextPrevious'), EpiApi::external); // get a photo's next/previous (/photo/{id}/nextprevious[/{options}].json)

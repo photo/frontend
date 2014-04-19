@@ -180,23 +180,4 @@ class ApiAlbumController extends ApiBaseController
 
     return $this->success('Album', $album);
   }
-  
-  public function listAlbumIds ($id) {
-    $userObj = new User;
-    if ($userObj->isAdmin()) {
-      $db=getDb('MySql');
-      $ids=array();
-      $albumPhotos = $db->getAlbumElements($id);
-
-      foreach ($albumPhotos as $photo) {
-        array_push($ids, $photo['id']);
-      }
-      
-      return $this->success ('List of the photo ids in the album',json_encode($ids));
-    } else {
-        return $this->error('Could not retrieve ids.', false);
-    }
-  }
 }
-
-

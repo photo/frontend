@@ -72,32 +72,31 @@
         &nbsp;&nbsp;
       <?php } elseif($action == 'tarball') {?>
       <?php
-          $buttonLabel = "Download";
+          $buttonLabel = "Archive";
       ?>
       <?php if(isset($ids)) { ?>
         <input type="hidden" name="ids" value="<?php $this->utility->safe($ids); ?>">
       <?php } ?>
         <h4>Choose an output format</h4>
           <div class="control-group">
-            <select class="chooseFormat" name="archive" >
-              <?php $installed = shell_exec("which tar"); 
-              if (empty($installed)?false:true) {?>
-                <option value="tar">tar</option>
-              <?php } ?>     
-              <?php $installed = shell_exec("which zip"); 
-              if (empty($installed)?false:true) {?>
-                <option value="zip">zip</option>     
-              <?php } ?>        
+            <select class="chooseFormat" name="format" >
+                <option value="0">tar</option>
+                <option value="1">zip</option>     
             </select>
           </div>
-          <label class="checkbox">
-            <input type="checkbox" name="gzip" value="true"> gzip?
+          <label class="radio inline compression">
+            <input type="radio" name="compression" value="0" checked="checked" class="batchTagMode"> none 
+          </label>
+          <label class="radio inline compression">
+            <input type="radio" name="compression" value="1" class="batchTagMode"> gzip 
+          </label>
+          <label class="radio inline compression">
+            <input type="radio" name="compression" value="2" class="batchTagMode"> bzip2 
           </label>
           <h4>... and a name for the file</h4>
           <label class="checkbox">
-            <input id="archiveAlbumName" type="text" value="Images" name="name">
+            <input id="archiveAlbumName" type="text" value="Images" name="archivename">
           </label>
-
         &nbsp;&nbsp;
       <?php } ?>      
       <button type="submit" class="btn btn-brand"><?php $this->utility->safe($buttonLabel); ?></button> or <a href="#" class="batchHide">cancel</a>
