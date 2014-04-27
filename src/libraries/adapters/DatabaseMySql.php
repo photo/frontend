@@ -1257,9 +1257,6 @@ class DatabaseMySql implements DatabaseInterface
     */
   public function postUser($params)
   {
-    if(!isset($params['password']) && !isset($params['extra']))
-      return false; // nothing was updated
-    
     $id = $this->owner;
     if(isset($params['id']))
     {
@@ -1267,7 +1264,12 @@ class DatabaseMySql implements DatabaseInterface
       unset($params['id']);
     }
 
+    // prepareUser sets up `password` and `extra` columns
+    // See Gh-1471
+    if(!isset($params['password']) && !isset($params['extra']))
+      return false; // nothing was updated
     $params = $this->prepareUser($params);
+
     $dbParams = array(':id' => $id);
     $sql = "UPDATE `{$this->mySqlTablePrefix}user` SET ";
     
@@ -1281,7 +1283,7 @@ class DatabaseMySql implements DatabaseInterface
       $sql .= '`extra`=:extra,';
       $dbParams[':extra'] = $params['extra'];
     }
-    $sql = sprintf('%s WHERE `id`=:id', substr($sql, -1));
+    $sql = sprintf('%s WHERE `id`=:id', substr($sql, 0, -1));
 
     $res = $this->db->execute($sql, $dbParams); 
     if($res == 1)
