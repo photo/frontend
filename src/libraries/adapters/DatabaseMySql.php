@@ -1263,10 +1263,14 @@ class DatabaseMySql implements DatabaseInterface
       $sql = "UPDATE `{$this->mySqlTablePrefix}user` SET `password`=:password,`extra`=:extra WHERE `id`=:id";
       $params = array(':id' => $this->owner, ':password' => $params['password'], ':extra' => $params['extra']);
     }
-    else
+    elseif(isset($params['extra']) && !empty($params['extra']))
     {
       $sql = "UPDATE `{$this->mySqlTablePrefix}user` SET `extra`=:extra WHERE `id`=:id";
       $params = array(':id' => $this->owner, ':extra' => $params['extra']);
+    }
+    else
+    {
+      return true; // noop
     }
 
     $res = $this->db->execute($sql, $params); 
