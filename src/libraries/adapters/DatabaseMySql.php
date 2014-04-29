@@ -1264,12 +1264,7 @@ class DatabaseMySql implements DatabaseInterface
       unset($params['id']);
     }
 
-    // prepareUser sets up `password` and `extra` columns
-    // See Gh-1471
-    if(!isset($params['password']) && !isset($params['extra']))
-      return false; // nothing was updated
     $params = $this->prepareUser($params);
-
     $dbParams = array(':id' => $id);
     $sql = "UPDATE `{$this->mySqlTablePrefix}user` SET ";
     
