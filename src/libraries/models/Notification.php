@@ -54,12 +54,16 @@ class Notification extends BaseModel
     if($fetchType === self::typeFlash)
     {
       $note = $this->getAndRemoveFrom($current, self::typeFlash); // pass by reference
+      if(empty($note))
+        return null;
       $this->cache->set($this->key, $current);
       return array_merge(array('type' => self::typeFlash), $note);
     }
     elseif($fetchType === self::typeStatic)
     {
       $note = $current[self::typeStatic][0];
+      if(empty($note))
+        return null;
       return array_merge(array('type' => self::typeStatic), $note);
 
     }
@@ -67,6 +71,9 @@ class Notification extends BaseModel
 
   public function getAndRemoveFrom(&$queue, $type)
   {
+    if(!isset($queue[$type]) || !isset($queue[$type][0]))
+      return null;
+
     $msg = $queue[$type][0];
     $queue[$type] = array_slice($queue[$type], 1, null, false);
     return $msg;    
