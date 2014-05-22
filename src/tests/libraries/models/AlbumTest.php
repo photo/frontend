@@ -117,7 +117,7 @@ class AlbumTest extends PHPUnit_Framework_TestCase
 
   public function testGetAlbumCoverNotVisibleSuccess()
   {
-    $expected = array('id' => 'foo', 'cover' => '123');
+    $expected = array('id' => 'foo', 'cover' => array('id' => '123'));
     $user = $this->getMock('User', array('getEmailAddress','isOwner'));
     $user->expects($this->any())
       ->method('getEmailAddress')
@@ -143,7 +143,7 @@ class AlbumTest extends PHPUnit_Framework_TestCase
 
   public function testGetAlbumCoverNotVisiblePhotoApi500Success()
   {
-    $expected = array('id' => 'foo', 'cover' => '123');
+    $expected = array('id' => 'foo', 'cover' => array('id' => '123'));
     $user = $this->getMock('User', array('getEmailAddress','isOwner'));
     $user->expects($this->any())
       ->method('getEmailAddress')
@@ -217,8 +217,8 @@ class AlbumTest extends PHPUnit_Framework_TestCase
   public function testGetAlbumsCoverNotVisibleSuccess()
   {
     $expected = array(
-      array('id' => 'foo', 'cover' => '123'),
-      array('id' => 'bar', 'cover' => '456')
+      array('id' => 'foo', 'cover' => array('id' => '123')),
+      array('id' => 'bar', 'cover' => array('id' => '456'))
     );
     $user = $this->getMock('User', array('getEmailAddress','isOwner'));
     $user->expects($this->any())

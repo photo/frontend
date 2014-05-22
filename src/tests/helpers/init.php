@@ -1,7 +1,12 @@
 <?php
 define('IS_UNIT_TEST', 1);
 date_default_timezone_set('America/Los_Angeles');
-require_once 'PHPUnit/Autoload.php';
+
+// if using the phar of phpunit we don't need the pear files
+//  see http://phpunit.de/getting-started.html
+// else load it from pear
+if(file_exists('PHPUnit/Autoload.php'))
+  require_once 'PHPUnit/Autoload.php';
 
 // set paths
 $libraryDir = sprintf('%s/libraries', dirname(dirname(dirname(__FILE__))));
@@ -99,7 +104,7 @@ class FauxObject
 
   public function __get($key)
   {
-    return func_get_args();
+    return $key;
   }
 
   public function __set($key, $value)

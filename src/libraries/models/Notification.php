@@ -7,10 +7,14 @@ class Notification extends BaseModel
   const modeError = 'error';
 
   private $key = 'notification';
-  public function __construct()
+  public function __construct($params = array())
   {
     parent::__construct();
-    $this->user = new User;
+    if(!isset($params['user']))
+      $this->user = new User;
+    else
+      $this->user = $params['user'];
+
     $this->key = sprintf('%s-%s', $this->key, $this->user->getEmailAddress());
   }
 

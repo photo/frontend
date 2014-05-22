@@ -3,7 +3,11 @@ class NotificationTest extends PHPUnit_Framework_TestCase
 {
   public function setUp()
   {
-    $this->notification = new Notification;
+    $user = $this->getMock('user', array('getEmailAddress'), array(), '', false);
+    $user->expects($this->any())
+      ->method('getEmailAddress')
+      ->will($this->returnValue('test@example.com'));
+    $this->notification = new Notification(array('user' => $user));
     $this->cache = $this->getMock('cache', array('get','set','delete'), array(), '', false);
   }
 

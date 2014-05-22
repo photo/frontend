@@ -74,8 +74,10 @@ class ImageGraphicsMagick extends ImageAbstract
     * @param string $outputFile The file to write the modifications to.
     * @return void
     */
-  public function write($outputFile)
+  public function write($outputFile, $format = '')
   {
-    $this->image->write($outputFile);
+    if($format)
+      $this->image->setimageformat($format);
+    $this->image->write($outputFile, $format);
   }
 }
