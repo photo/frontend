@@ -360,7 +360,7 @@ SQL;
     INSERT INTO `{$this->mySqlTablePrefix}admin` (`key`,`value`) 
     VALUES (:key, :value)
 SQL;
-  mysql_base($sql, array(':key' => 'version', ':value' => '4.0.1'));
+  mysql_base($sql, array(':key' => 'version', ':value' => '4.0.2'));
 
   return true;
 }
