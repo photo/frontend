@@ -35,11 +35,6 @@
   <strong><span class="label label-success"><?php printf('%d %s %s', count($successPhotos), $this->utility->plural(count($successPhotos), 'photo', false), $this->utility->selectPlural(count($successPhotos), 'was', 'were', false)); ?> uploaded successfully.</span></strong>
   <div class="upload-preview success photo-grid">
     <div class="photo-grid-hr"></div>
-    <ul class="thumbnails">
-      <?php foreach($successPhotos as $photo) { ?>
-        <li><a href="<?php $this->utility->safe($photo['url']); ?>" class="thumbnail"><img src="<?php $this->utility->safe($photo['path100x100xCR']); ?>"></a></li>
-      <?php } ?>
-    </ul>
   </div>
   <hr>
 <?php } ?>
