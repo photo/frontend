@@ -162,6 +162,10 @@ class PhotoController extends BaseController
       $pages['totalPages'] = $photos[0]['totalPages'];
       $pages['requestUri'] = $_SERVER['REQUEST_URI'];
     }
+    else
+    {
+      $photos[0]['totalRows'] = 0;
+    }
 
     // TODO we should clean this up somehow
     $album = $tags = null;

@@ -190,7 +190,7 @@ class Photo extends BaseModel
 
   /**
     * Generate a version of the photo as specified by the width, height and options.
-    * This method requres the $hash ve validated to keep random versions of images to be created.
+    * This method requires the $hash be validated to keep random versions of images to be created.
     * The photo is generated, uploaded to the remote file system and added to the database.
     * Operations are done in place on a downloaded version of the base photo and this file name is returned.
     *
@@ -248,7 +248,7 @@ class Photo extends BaseModel
     }
 
     $this->image->scale($width, $height, $maintainAspectRatio);
-    $this->image->write($filename);
+    $this->image->write($filename, 'jpg');
     $customPath = $this->generateCustomUrl($photo['pathBase'], $width, $height, $options);
     $key = $this->generateCustomKey($width, $height, $options);
     $resFs = $this->fs->putPhoto($filename, $customPath, $photo['dateTaken']);
@@ -315,7 +315,7 @@ class Photo extends BaseModel
   {
     $ext = substr($photoName, (strrpos($photoName, '.')+1));
     $rootName = preg_replace('/[^a-zA-Z0-9.-_]/', '-', substr($photoName, 0, (strrpos($photoName, '.'))));
-    $baseName = sprintf('%s-%s.%s', $rootName, dechex(rand(1000000,9999999)), $ext);
+    $baseName = sprintf('%s-%s.%s', $rootName, dechex(rand(1000000,9999999)), 'jpg');
     $originalName = sprintf('%s-%s.%s', $rootName, uniqid(), $ext);
     return array(
       'pathOriginal' => sprintf('/original/%s/%s', date('Ym', $dateTaken), $originalName),
@@ -517,7 +517,7 @@ class Photo extends BaseModel
     // Since we stopped auto rotating originals we have to use the Orientation from
     //  exif and if this photo was autorotated
     // Gh-1031 Gh-1149
-    if($this->autoRotateEnabled($allowAutoRotate))
+    if($this->autoRotateEnabled($allowAutoRotate) && isset($exif['Orientation']))
     {
       // http://recursive-design.com/blog/2012/07/28/exif-orientation-handling-is-a-ghetto/
       switch($exif['Orientation'])
@@ -1081,7 +1081,7 @@ class Photo extends BaseModel
       return false;
     }
     $baseImage->scale($this->config->photos->baseSize, $this->config->photos->baseSize);
-    $baseImage->write($localFileCopy);
+    $baseImage->write($localFileCopy, 'jpg');
     $uploaded = $this->fs->putPhotos(
       array(
         array($localFile => array($paths['pathOriginal'], $dateTaken)),

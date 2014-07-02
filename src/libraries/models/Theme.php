@@ -14,7 +14,7 @@ class Theme
   {
     $this->template = getTemplate();
     $this->template->notification = new Notification;
-    $this->theme = getConfig()->get('defaults')->theme;
+    $this->theme = self::themeDefault;
     $behavior = getConfig()->get('behavior');
     $themeConfig = getConfig()->get('theme');
     $utilityObj = new Utility;
@@ -23,10 +23,6 @@ class Theme
       $this->theme = self::themeDefault;
       if(file_exists($mobileSettings = sprintf('%s/%s/config/settings-mobile.ini', getConfig()->get('paths')->themes, $this->getThemeName())))
         getConfig()->loadString(file_get_contents($mobileSettings));
-    }
-    elseif($themeConfig !== null)
-    {
-      $this->theme = $themeConfig->name;
     }
 
     $this->themeDir = sprintf('%s/%s', getConfig()->get('paths')->themes, $this->theme);
