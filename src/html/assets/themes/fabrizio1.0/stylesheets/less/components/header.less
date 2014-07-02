@@ -58,6 +58,10 @@ body.trovebox {
       height: 32px;
       width: 119px;
       text-indent: -9999em;
+      @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { 
+        background:url("@{logo2x}") 50% 50% no-repeat;
+        background-size: 119px 32px;
+      }
     }
   }
   
@@ -259,7 +263,7 @@ body.trovebox {
       border-bottom: 5px solid @color_banner_secondary;
       border-left: 7px solid transparent;
       border-right: 7px solid transparent;
-      bottom: -12px;
+      bottom: -13px;
     }
     
     .logo.active-page-item:after {
