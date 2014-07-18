@@ -1,5 +1,3 @@
-<img src="https://raw.github.com/photo/frontend/master/files/creative/logo.png" style="width:234px; height:43px; margin:auto;">
-
 [![Build Status](https://secure.travis-ci.org/openphoto/frontend.png)](http://travis-ci.org/openphoto/frontend)
 
 ### What is OpenPhoto?
