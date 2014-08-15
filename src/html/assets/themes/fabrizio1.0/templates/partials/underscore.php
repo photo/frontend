@@ -408,7 +408,7 @@
           <% } %>
           <% if( typeof exifISOSpeed !== 'undefined' && exifISOSpeed ){ %>
             <tr>
-              <th>ISO Time</th>
+              <th>ISO</th>
               <td><%= exifISOSpeed %></td>
             </tr>
           <% } %>
