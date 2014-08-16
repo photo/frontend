@@ -512,8 +512,8 @@ class ApiPhotoController extends ApiBaseController
       $this->plugin->setData('photo', $photo);
       $this->plugin->invoke('onPhotoUploaded');
 
-      $this->user->setAttribute('stickyPermission', $permission);
       $this->user->setAttribute('stickyLicense', $photo['license']);
+      $this->user->setAttribute('stickyPermission', $permission);
       return $this->created("Photo {$photoId} uploaded successfully", $photo);
     }
 
