@@ -39,7 +39,7 @@
   <hr>
 <?php } ?>
 
-<?php if(count($duplicatePhotos) > 0) { ?>
+<?php if(isset($duplicatePhotos) && count($duplicatePhotos) > 0) { ?>
   <strong><span class="label label-warning"><?php echo count($duplicatePhotos); ?> of them already existed in your account.</span></strong>
   <div class="upload-preview">
     <ul class="thumbnails duplicates">
