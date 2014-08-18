@@ -774,7 +774,7 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(true));
     $this->db->inject('db', $db);
 
-    $res = $this->db->postUser('foo', array());
+    $res = $this->db->postUser(array());
     $this->assertTrue($res, 'The MySql adapter did not return TRUE for postUser');
   }
 
@@ -786,7 +786,7 @@ class DatabaseMySqlTest extends PHPUnit_Framework_TestCase
       ->will($this->returnValue(false));
     $this->db->inject('db', $db);
 
-    $res = $this->db->postUser('foo', array());
+    $res = $this->db->postUser(array());
     $this->assertFalse($res, 'The MySql adapter did not return FALSE for postUser');
   }
 
