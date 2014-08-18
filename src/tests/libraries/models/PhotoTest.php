@@ -657,8 +657,10 @@ class PhotoTest extends PHPUnit_Framework_TestCase
 
   public function testReadExifSuccessWithTimestamp()
   {
-    $exif = array('key' => time());
-    $this->assertFalse($this->photo->parseExifDate($exif, 'key'));
+    // gh-1335
+    $this->markTestIncomplete('See Github issue 1335 for wether the parseExifDate should handle timestamps. https://github.com/photo/frontend/issues/1335');
+    /*$exif = array('key' => time());
+    $this->assertFalse($this->photo->parseExifDate($exif, 'key'));*/
   }
 
   public function testReadExifSuccessWithColon()
