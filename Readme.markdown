@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/photo/frontend.png)](http://travis-ci.org/photo/frontend)
+[![Build Status](https://travis-ci.org/photo/frontend.svg?branch=master)](http://travis-ci.org/photo/frontend)
 
 ### What is Trovebox?
 
