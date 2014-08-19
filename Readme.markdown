@@ -2,8 +2,6 @@
 
 ### What is Trovebox?
 
-1.  [FAQ](http://theopenphotoproject.org/documentation/faq/Faq), Answers to the most common questions.
-1.  [API &amp; Guides](http://theopenphotoproject.org/documentation), Documentation to get started building applications on Trovebox.
 
 ### Install Trovebox in under 3 minutes
 
@@ -17,8 +15,8 @@
 
 ### How does Trovebox work?
 
-Trovebox works similarly to Flickr, Smugmug and other photo sharing services with one major difference: you retain ownership and give Trovebox access to use them.
-All photos, tags and comments are stored in your personal cloud accounts with companies like Amazon, Rackspace or Google.
+Trovebox works similarly to Flickr, Smugmug and other photo sharing services with one major difference; you retain ownership and give Trovebox access to use them.
+All photos, tags and comments are stored on your server or personal cloud accounts with companies like Amazon, Rackspace or Google.
 This means you can easily switch between Trovebox services, use more than one at a time or stop using them altogether while retaining all of your photos, tags and comments.
 
 ----------------------------------------
@@ -37,15 +35,6 @@ While Trovebox functions like many existing services it's drastically different 
     Your photos are not tied to any particular photo service. Because everything is open you can write your own web interface for your photos, choose between Trovebox hosting providers or install the Trovebox software on your own server.
 1.  **Community**
     New features will be entirely community driven. Features with the most votes will get top priority in getting implemented. If you want a feature that doesn't have many votes you can implement it yourself and issue a pull request.
-
-----------------------------------------
-
-### What if I use Flickr or Smugmug?
-
-If you're using Flickr or Smugmug you should consider switching to Trovebox.
-The more photos and time you invest on a proprietary photo sharing service the more devastated you're going to be once they shut down or no longer appeal to you.
-
-There are importing tools available to make the switch easy.
 
 ----------------------------------------
 
