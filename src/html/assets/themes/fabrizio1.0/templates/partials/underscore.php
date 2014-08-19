@@ -388,20 +388,20 @@
           <% } %>
           <% if( typeof exifFNumber !== 'undefined' && exifFNumber ){ %>
             <tr>
-              <th>F Number</th>
-              <td><%- exifFNumber %></td>
+              <th>Aperture</th>
+              <td>f/<%= exifFNumber %></td>
             </tr>
           <% } %>
           <% if( typeof exifFocalLength !== 'undefined' && exifFocalLength ){ %>
             <tr>
               <th>Focal Length</th>
-              <td><%- exifFocalLength %></td>
+              <td><%= exifFocalLength %>mm</td>
             </tr>
           <% } %>
           <% if( typeof exifISOSpeed !== 'undefined' && exifISOSpeed ){ %>
             <tr>
-              <th>ISO Time</th>
-              <td><%- exifISOSpeed %></td>
+              <th>ISO</th>
+              <td><%= exifISOSpeed %></td>
             </tr>
           <% } %>
         </table>
