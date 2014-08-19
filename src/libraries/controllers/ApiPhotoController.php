@@ -1041,4 +1041,94 @@ class ApiPhotoController extends ApiBaseController
     return array('localFile' => $localFile, 'name' => $name);
 
   }
+
+  public function createTarball($id, $options = null) {
+
+    $ids      = explode(",", $id);
+    $id       = $ids[0];
+    $count    = count($ids);
+    $failed   = 0;
+    $success  = 0;
+
+    $format       = intval( $_POST['format'], 10);
+    $compression  = intval($_POST['compression'], 10);
+
+    $filename     = $_POST['archivename'];
+
+    $extension      = $format;
+
+    $pharFormats = array (Phar::TAR,Phar::ZIP);
+    $pharCompressions = array (Phar::NONE,Phar::GZ,Phar::BZ2);
+
+    if ($format > 1 && $format < 0 ) {
+      $format = 0;
+    } 
+    
+    $extensionFlag = ($compression << 1) | $format;
+
+    switch ($extensionFlag) {
+      case 0:
+        $extension = ".tar";
+        break;
+      case 1:
+        $extension = ".zip";
+        break;
+      case 2:
+        $extension = ".tar.gz";
+        break;
+      case 4:
+        $extension = ".tar.bz2";
+        break;
+      default:
+        $compression = 0;   
+        $extension = ".zip";
+        break;
+    }
+
+    if ($filename === '') {
+      $filename = 'tarball';
+    }
+
+    $archivePath = tempnam( $this->config->paths->temp,  "tarball") . "$extension";
+    $pharArchive = new PharData($archivePath);
+
+    for ($i=0; $i < $count; $i++) { 
+      $id = $ids[$i];
+
+      if($options === null)
+        $apiResp = $this->api->invoke("/photo/{$id}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
+      else
+        $apiResp = $this->api->invoke("/photo/{$id}/{$options}/view.json", EpiRoute::httpGet, array('_GET' => array('actions' => 'true', 'returnSizes' => $this->config->photoSizes->detail)));
+
+      if($apiResp['code'] === 200) {
+        try {
+          $result = $apiResp['result'];
+          $originalPath = $result['pathOriginal'];
+          $originalName =  $result['filenameOriginal'];
+          $handle = fopen($originalPath, 'r');
+          $pharArchive[$originalName] = $handle;
+          fclose($handle);
+          $success += 1;    
+        } catch (Exception $e) {
+          //Skip the failing image, maybe return an info how many failed-
+          $failed += 1;
+        }
+      } 
+    }
+
+
+    $pharArchive->convertToData ($pharFormats[$format],$pharCompressions[$compression],"$extension-tarballSecret");
+
+    $archiveName = array_pop (explode("/",$archivePath));
+    $result = (object) array("fileName" => $archiveName, "outputName" => $filename."$extension", "failed" => $failed, "success" => $success);
+
+    $filePath = $archiveName . '-tarballSecret';
+    if (filesize($filePath) === 0 || $success === 0) {
+      unlink ($filePath);
+      $this->route->run('/error/404');
+      return;
+    }
+
+    return $this->created ("Created Archive", $result);
+  }  
 }

@@ -56,6 +56,7 @@ $routeObj->get('/photo/([a-zA-Z0-9]+)/edit', array('PhotoController', 'edit')); 
 $routeObj->get('/photo/([a-zA-Z0-9]+)/create/([a-z0-9]+)/([0-9]+)x([0-9]+)x?(.*).jpg', array('PhotoController', 'create')); // create a version of a photo (/photo/create/{id}/{options}.jpg)
 $routeObj->get('/photo/([a-zA-Z0-9]+)/?(token-[a-z0-9]+)?/download', array('PhotoController', 'download')); // download a high resolution version of a photo (/photo/create/{id}/{options}.jpg)
 $routeObj->get('/photo/([a-zA-Z0-9]+)/?(.+)?/view', array('PhotoController', 'view')); // view a photo (/photo/{id}[/{options}])/view
+$routeObj->get('/photo/([a-zA-Z0-9-.]+)/tarball', array('PhotoController', 'getTarball')); // serves the generated tarball
 $routeObj->get('/p/([a-zA-Z0-9]+)/?(.+)?', array('PhotoController', 'view')); // (shortcut for photo/view) view a photo (/p/{id}[/{options}])
 $routeObj->post('/photo/([a-zA-Z0-9]+)/update', array('PhotoController', 'update')); // update a photo (/photo/{id}/update
 $routeObj->post('/photo/upload', array('PhotoController', 'uploadPost')); // upload a photo

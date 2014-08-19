@@ -379,15 +379,19 @@
       model: new op.data.model.Notification,
       errorIcon: '<i class="icon-warning-sign"></i>',
       successIcon: '<i class="icon-ok"></i>',
+      spinnerIcon: '<i class="icon-spinner icon-spin"></i>',
       init: function() {
         var $el = $('.notification-meta'), view = new op.data.view.Notification({model: TBX.notification.model, el: $el});
       },
       show: function(message, type, mode) {
         var model = TBX.notification.model;
-        if(mode === 'confirm' || typeof mode === 'undefined')
+        if(mode === 'confirm' || typeof mode === 'undefined') {
           message = TBX.notification.successIcon + ' ' + message;
-        else
+        } else if (mode === 'spin') {
+          message = TBX.notification.spinnerIcon + ' ' + message;
+        } else {
           message = TBX.notification.errorIcon + ' ' + message;
+        }
 
         type = type || 'flash';
 

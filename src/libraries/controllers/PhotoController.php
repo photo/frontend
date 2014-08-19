@@ -301,4 +301,45 @@ class PhotoController extends BaseController
       $this->route->run('/error/404');
     }
   }
+
+  public function getTarball ($path) 
+  {
+    $fileName    = $path;
+    $outputName  = $_GET['outputName'];
+    $format      =  array_pop(explode (".",$fileName));
+    $file =  $this->config->paths->temp . "/$fileName-tarballSecret";
+
+    if (file_exists($file)) {
+      header('Content-Description: File Transfer');
+      header($_SERVER["SERVER_PROTOCOL"] . " 200 OK");
+      header("Cache-Control: public"); // needed for i.e.
+      header('Content-Type: application/octet-stream');
+
+      if ($format==='zip') {
+        header("Content-Type: application/zip"); 
+      } else if ($format === 'tar') {
+        header("Content-Type: application/x-tar");
+      } else if ($format === 'tar.gz') {
+        header("Content-Type: application/x-gzip");
+      } else if ($format === 'tar.gz') {
+        header("Content-Type: application/x-bz2");
+      } 
+
+      header("Content-Transfer-Encoding: Binary");
+      header("Content-Length:".filesize($file));
+      header("Content-Disposition: attachment; filename=$outputName");
+      
+
+      session_write_close();
+      
+      $fh = fopen($file, 'r');
+      while($buffer = fgets($fh, 4096)) {
+        echo $buffer;
+      }
+      fclose($fh);
+      unlink($file); //One time access only.
+    } else {
+          $this->route->run('/error/404');
+    }
+  }
 }
