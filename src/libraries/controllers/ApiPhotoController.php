@@ -421,7 +421,7 @@ class ApiPhotoController extends ApiBaseController
     if(!$localFile)
     {
       // localFile is empty, this possibly mean that upload file (max size, etc). gh-1294
-      $this->logger->warn('Error uploading file.');
+      $this->logger->warn('Failed to upload file as $localFile evaluated to false.');
       return $this->error('Error uploading file.', false);
     }
 
