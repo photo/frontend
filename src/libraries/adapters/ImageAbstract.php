@@ -14,6 +14,7 @@ abstract class ImageAbstract
   abstract public function scale($width, $height, $maintainAspectRatio = true);
   abstract public function greyscale();
   abstract public function write($outputFile);
+  abstract public function setCompressionQuality($quality);
 
   public function __construct()
   {

@@ -25,6 +25,7 @@ class ImageGD extends ImageAbstract
   private $type;
 	private $width;
 	private $height;
+  private $quality = 90;
 
   /**
     * Destructor.
@@ -146,6 +147,14 @@ class ImageGD extends ImageAbstract
   }
 
   /**
+   * Set compression quality
+   */
+  public function setCompressionQuality($quality)
+  {
+    $this->quality = (int) $quality;
+  }
+
+  /**
     * Save modifications to the image to the file system
     *
     * @param string $outputFile The file to write the modifications to.
@@ -154,10 +163,10 @@ class ImageGD extends ImageAbstract
   public function write($outputFile)
   {
     if(preg_match('/png$/', $this->type))
-      imagepng($this->image, $outputFile, 9);
+      imagepng($this->image, $outputFile, ceil($this->quality / 10));
     elseif(preg_match('/gif$/', $this->type))
-      imagegif($this->image, $outputFile, 90);
+      imagegif($this->image, $outputFile, $this->quality);
     else
-      imagejpeg($this->image, $outputFile, 90);
+      imagejpeg($this->image, $outputFile, $this->quality);
   }
 }
