@@ -1770,7 +1770,6 @@
 	// Expose plupload namespace
 	window.plupload = plupload;
 })();
-
 /**
  * plupload.html5.js
  *
@@ -1985,26 +1984,36 @@
 		init : function(uploader, callback) {
 			var features, xhr;
 
+      // adding support for multi file upload on mobile web browsers
+      // https://github.com/protonet/plupload/commit/9e2de0a8aa4da47d878b8d3868a595f27613a48d
 			function addSelectedFiles(native_files) {
-				var file, i, files = [], id, fileNames = {};
+        console.log(native_files);
+				var file, i, files = [], id, fileName, fileNames = {};
 
 				// Add the selected files to the file queue
 				for (i = 0; i < native_files.length; i++) {
 					file = native_files[i];
+
+          fileName = file.fileName || file.name;
+          // Safari on iOS 6 will name each picture "image.jpg"
+          if (fileName === "image.jpg" && native_files.length > 1) {
+             fileName = "image_" + (i + 1) + ".jpg";
+          }
+          
 										
 					// Safari on Windows will add first file from dragged set multiple times
 					// @see: https://bugs.webkit.org/show_bug.cgi?id=37957
-					if (fileNames[file.name]) {
+          if (fileNames[fileName]) {
 						continue;
 					}
-					fileNames[file.name] = true;
+          fileNames[fileName] = true;
 
 					// Store away gears blob internally
 					id = plupload.guid();
 					html5files[id] = file;
 
 					// Expose id, name and size
-					files.push(new plupload.File(id, file.fileName || file.name, file.fileSize || file.size)); // fileName / fileSize depricated
+          files.push(new plupload.File(id, fileName, file.fileSize || file.size, file.relativePath)); // fileName / fileSize deprecated
 				}
 
 				// Trigger FilesAdded event if we added any
@@ -3185,7 +3194,6 @@
 		};
 	};
 })(window, document, plupload);
-
 /**
  * jquery.plupload.queue.js
  *
@@ -3521,7 +3529,6 @@
 		}
 	};
 })(jQuery);
-
 /**
 * Upload utility for OpenPhoto.
 * Supports drag/drop with plupload
@@ -3645,7 +3652,6 @@ OPU = (function() {
       }
     };
 }());
-
 ;(function(){
 
 /**
@@ -5044,4 +5050,3 @@ if (typeof exports == "object") {
 } else {
   this["Dropzone"] = require("dropzone");
 }})();
-
