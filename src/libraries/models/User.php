@@ -101,10 +101,6 @@ class User extends BaseModel
     if(empty($email))
       return;
 
-    $user = $this->getUserByEmail($email);
-    if(isset($user['attrprofilePhoto']) && !empty($user['attrprofilePhoto']))
-      return $user['attrprofilePhoto'];
-
     $utilityObj = new Utility;
     $protocol = $utilityObj->getProtocol(false);
     if(empty($this->config->site->cdnPrefix))
@@ -116,6 +112,14 @@ class User extends BaseModel
       $this->themeObj = getTheme();
 
     $defaultUrl = sprintf('%s%s', $hostAndProtocol, $this->themeObj->asset('image', 'profile-default.png', false));
+
+    $user = $this->getUserByEmail($email);
+    if(isset($user['attrprofilePhoto']) && !empty($user['attrprofilePhoto']))
+      return $user['attrprofilePhoto'];
+
+    // if gravatar support is disabled and no profile photo exists then we immediately return the default url
+    if ($this->config->site->useGravatar == 0)
+      return $defaultUrl;
 
     if($protocol === 'https')
       $gravatarUrl = 'https://secure.gravatar.com/avatar/';
