@@ -337,7 +337,6 @@
 
     nextIfImage : function(ev) {
       var el = ev.target;
-      console.log(el.tagName);
       if(el.tagName === 'IMG') {
         ev.stopPropagation();
         this.next(ev);
@@ -352,7 +351,6 @@
 
     tags: function(ev) {
       var $tagsEl = $('a.tags.editable-click', this.$el);
-      $tagsEl.on('render', function() { console.log('yaya'); });
       $tagsEl.trigger('click');
       //new op.data.view.TagSearch({el: $inputEl});
     },
