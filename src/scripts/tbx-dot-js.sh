@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# This script generates the combined tbx.js JavaScript file for use when `mode="prod"`.
+# Running this will save a file at /src/html/assets/javascripts/releases/$VERSION/tbx.js.
+# TODO: Add link to documentation that describes how static assets are cached.
+#   https://github.com/photo/documentation/issues/40
+# These JS assets are what you can see in /src/html/assets/themes/fabrizio1.0/templates/template.php.
+#   The order in which these files are combined need to match what's in template.php
 
 VERSION=$(grep 'currentCodeVersion' ../configs/defaults.ini | awk -F '=' '{print $2}')
 JSDIR="../html/assets/themes/fabrizio1.0/javascripts/"
