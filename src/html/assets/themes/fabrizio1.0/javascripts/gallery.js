@@ -194,7 +194,6 @@ var Gallery = (function($) {
     var pinnedClass = !batchEmpty && OP.Batch.exists(item.id) ? 'pinned' : '';
     var imageContainer = $('<div class="imageContainer photo-id-'+item.id+' '+pinnedClass+'"/>');
 		
-    var d = new Date(item.dateTaken*1000);
 
 		var pathKey = 'path' + configuration['thumbnailSize'];
 		var defaultWidthValue = configuration['defaultWidthValue'];
@@ -255,12 +254,13 @@ var Gallery = (function($) {
 		});
 
     // insert calendar icon
+    var d = new Date(item.dateTakenYear, item.dateTakenMonth - 1, item.dateTakenDay);
     currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
     if(currentDate !== lastDate) {
       if(breakOnDate)
-        parent.append(dateSeparator(item.dateTaken));
+        parent.append(dateSeparator(d));
       else
-        imageContainer.append(dateSeparator(item.dateTaken));
+        imageContainer.append(dateSeparator(d));
     }
     lastDate = currentDate;
 
