@@ -1753,9 +1753,9 @@ class DatabaseMySql implements DatabaseInterface
             break;
           case 'sortBy':
             if($value === 'dateTaken,desc')
-              $sortBy = 'ORDER BY dateSortByDay DESC';
+              $sortBy = 'ORDER BY dateTaken DESC';
             elseif($value === 'dateTaken,asc')
-              $sortBy = 'ORDER BY dateSortByDay ASC';
+              $sortBy = 'ORDER BY dateTaken ASC';
             elseif($value === 'dateUploaded,desc')
               $sortBy = 'ORDER BY dateSortByDay DESC, dateUploaded ASC';
             elseif($value === 'dateUploaded,asc')
