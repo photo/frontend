@@ -290,10 +290,24 @@ class PhotoController extends BaseController
       $photo = $apiResp['result'];
       $this->plugin->setData('photo', $photo);
       $this->plugin->setData('page', 'photo-detail');
+
       $photo['previous'] = isset($apiNextPrevious['result']['previous']) ? $apiNextPrevious['result']['previous'] : null;
       $photo['next'] = isset($apiNextPrevious['result']['next']) ? $apiNextPrevious['result']['next'] : null;
+
+      // Get album details
+      $db = getDb();
+      $albums = array();
+      foreach ($photo['albums'] as $albumId)
+      {
+        $album = $db->getAlbum($albumId, $photo['owner']);
+        if ($album)
+        {
+          $albums[] = array('id' => $album['id'], 'name' => $album['name']);
+        }
+      }
+
       $crumb = $this->session->get('crumb');
-      $body = $this->theme->get($this->utility->getTemplate('photo-details.php'), array('photo' => $photo, 'crumb' => $crumb, 'options' => $options));
+      $body = $this->theme->get($this->utility->getTemplate('photo-details.php'), array('photo' => $photo, 'crumb' => $crumb, 'options' => $options, 'albums' => $albums));
       $this->theme->display($this->utility->getTemplate('template.php'), array('body' => $body, 'page' => 'photo-details'));
     }
     else

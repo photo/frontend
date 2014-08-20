@@ -132,6 +132,11 @@
           <?php if($this->user->isAdmin()) { ?>
             <a href="#" class="photo-edit-click invert" data-id="<?php $this->utility->safe($photo['id']); ?>"><i class="icon-edit"></i> Edit details</a>
           <?php } ?>
+          <?php if(count($albums) > 0) { ?>
+            <?php foreach($albums as $album) { ?>
+              <a href="<?php $this->url->photosView("album-{$album['id']}"); ?>" class=""invert"><i class="icon-th"></i> <?php $this->utility->safe($album['name']); ?></a>
+            <?php } ?>
+          <?php } ?>
         </div>
         <?php if(count($photo['tags']) > 0) { ?>
           <div class="tags">
