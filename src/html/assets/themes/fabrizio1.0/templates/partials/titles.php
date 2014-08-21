@@ -3,27 +3,31 @@
   $utilityObj = new Utility;
   $page = $this->plugin->getData('page');
   $username = $utilityObj->safe($user->getNameFromEmail($this->config->user->email), false);
+  $title = '';
 ?>
 
-<title>
 <?php if($page === 'photo-detail') { ?>
-  <?php /* done in JS */ ?>
+  <?php $photo = $this->plugin->getData('photo'); ?>
+  <?php $photoTitle = !empty($photo['name']) ? $photo['name'] : $photo['filenameOriginal']; ?>
+  <?php $title = sprintf("%s / Photo / %s", $username, $photoTitle); ?>
 <?php } elseif($page === 'photos') { ?>
   <?php $album = $this->plugin->getData('album'); ?>
   <?php $tags = $this->plugin->getData('tags'); ?>
   <?php if($album) { ?>
-    <?php $this->utility->safe(sprintf("%s / Album / %s", $username, $album['name'])); ?>
+    <?php $title = sprintf("%s / Album / %s", $username, $album['name']); ?>
   <?php } elseif($tags) { ?>
-    <?php $this->utility->safe(sprintf("%s / Tags / %s", $username, implode(', ', $tags))); ?>
+    <?php $title = sprintf("%s / Tags / %s", $username, implode(', ', $tags)); ?>
   <?php } else { ?>
-    <?php $this->utility->safe(sprintf("%s / Photos", $username)); ?>
+    <?php $title = sprintf("%s / Photos", $username); ?>
   <?php } ?>
 <?php } elseif($page === 'albums') { ?>
-  <?php $this->utility->safe(sprintf("%s / Album", $username)); ?>
+  <?php $title = sprintf("%s / Album", $username); ?>
 <?php } elseif($page === 'tags') { ?>
-  <?php $this->utility->safe(sprintf("%s / Tags", $username)); ?>
+  <?php $title = sprintf("%s / Tags", $username); ?>
 <?php } else { ?>
-  <?php $this->utility->safe(sprintf("%s", $username)); ?>
+  <?php $title = sprintf("%s", $username); ?>
 <?php } ?>
- / Trovebox
-</title>
+
+<?php $title .= ' / Trovebox'; ?>
+
+<title data-original="<?php $this->utility->safe($title); ?>"><?php $this->utility->safe($title); ?></title>

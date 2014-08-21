@@ -410,6 +410,9 @@
       },
       getViewer: function() {
         return profiles.viewer.id;
+      },
+      getOwnerUsername: function() {
+        return profiles.owner.name;
       }
     }; // profiles
   }

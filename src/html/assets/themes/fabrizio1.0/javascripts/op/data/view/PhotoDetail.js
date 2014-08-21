@@ -206,6 +206,7 @@
     },
     
     updateModel : function(model){
+      var $title = $('title');
       this.model.off(null, null, this);
       this.model = model;
       this.model.on('change', this.updateViews, this);
@@ -213,6 +214,7 @@
       // change the main image
       $(this.el).find('.photo img')
         .attr('src', this.model.get(this.largePath))
+      $title.html(TBX.format.sprintf('%s / Photo / %s / Trovebox', TBX.profiles.getOwnerUsername(), this.model.get('title') || this.model.get('filenameOriginal')));
 
       $(this.el).find('.photo .photo-view-modal-click')
         .attr('data-id', this.model.get('id'))
