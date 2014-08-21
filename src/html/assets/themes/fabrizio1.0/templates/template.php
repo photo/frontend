@@ -28,10 +28,7 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <?php if(!$this->plugin->isActive('BetterPageTitles')) { ?>
-      <title><?php $this->theme->meta('titles', $page); ?></title>
-    <?php } ?>
-    <?php $this->plugin->invoke('renderHead'); ?>
+    <?php $this->theme->display('partials/titles.php'); ?>
   </head>
 
   <body class="trovebox <?php $this->utility->safe($page); ?>">
