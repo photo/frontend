@@ -1,7 +1,9 @@
 [![Build Status](https://travis-ci.org/photo/frontend.svg?branch=master)](http://travis-ci.org/photo/frontend)
 
 ### What is Trovebox?
+Trovebox is software that helps you manage, organize and share photos. It includes [web](https://github.com/photo/frontend) and mobile apps for [Android](https://github.com/photo/mobile-android) and [iOS](https://github.com/photo/mobile-ios). The goal of Trovebox is to be software which people love to use and helps them preserve their digial media files.
 
+The development of Trovebox was in large part funded by the [Shuttleworth Foundation](https://www.shuttleworthfoundation.org/) through a fellowship grant.
 
 ### Install Trovebox in under 3 minutes
 
@@ -15,9 +17,9 @@
 
 ### How does Trovebox work?
 
-Trovebox works similarly to Flickr, Smugmug and other photo sharing services with one major difference; you retain ownership and give Trovebox access to use them.
-All photos, tags and comments are stored on your server or personal cloud accounts with companies like Amazon, Rackspace or Google.
-This means you can easily switch between Trovebox services, use more than one at a time or stop using them altogether while retaining all of your photos, tags and comments.
+Trovebox works similarly to Flickr or Smugmug. We've focused on making sure that the design, UI and UX is as good as our commercial alternatives. You can upload, view and share photos through the web or by using our mobile apps.
+
+Unlike most services you can install Trovebox on your own server and connect it to cloud storage services like Dropbox or Amazon S3. We wanted to make FOSS software that's as good as what the commercial sites offer without having to give up privacy.
 
 ----------------------------------------
 
@@ -37,7 +39,3 @@ While Trovebox functions like many existing services it's drastically different 
     New features will be entirely community driven. Features with the most votes will get top priority in getting implemented. If you want a feature that doesn't have many votes you can implement it yourself and issue a pull request.
 
 ----------------------------------------
-
-[aws]: http://aws.amazon.com/
-[s3]: http://aws.amazon.com/s3/
-[simpledb]: http://aws.amazon.com/simpledb/
