@@ -34,9 +34,9 @@ class ApiController extends ApiBaseController
     }
 
     if($isOkay)
-      return $this->success('Diagnostics PASSED!', array('filesystem' => $fsDiagnostics, 'database' => $dbDiagnostics));
+      return $this->success('Diagnostics PASSED!', array('version' => $this->config->defaults->currentCodeVersion, 'filesystem' => $fsDiagnostics, 'database' => $dbDiagnostics));
     else
-      return $this->error('Diagnostics FAILED!', array('filesystem' => $fsDiagnostics, 'database' => $dbDiagnostics));
+      return $this->error('Diagnostics FAILED!', array('version' => $this->config->defaults->currentCodeVersion, 'filesystem' => $fsDiagnostics, 'database' => $dbDiagnostics));
   }
 
   /**
