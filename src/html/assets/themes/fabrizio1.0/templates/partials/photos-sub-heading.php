@@ -41,6 +41,11 @@
       <ul>
         <li><i class="icon-list-ol" title="Prior pages"></i></li>
         <?php $thisPage = max($pages['currentPage']-5, 1); ?>
+        <?php if($thisPage > 1) { ?>
+          <li><a href="<?php $this->utility->getPaginationUrl($uri, 1, '/photos'); ?>">1</a></li>
+          <li class="active"><a href="#">...</a></li>
+        <?php } ?>
+
         <?php do { ?>
           <li><a href="<?php $this->utility->getPaginationUrl($uri, $thisPage, '/photos'); ?>"><?php $this->utility->safe($thisPage); ?></a></li>
           <?php $thisPage++; ?>
