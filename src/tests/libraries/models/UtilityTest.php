@@ -154,6 +154,33 @@ RES;
     $this->assertEquals('user+.-)(*&^%$#!', $res);
   }
 
+  public function testGetPaginationUrl()
+  {
+    $url = '/photos/list';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list', $res);
+
+    $url = '/photos/page-10/list';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list', $res);
+
+    $url = '/photos/list?page=100';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list', $res);
+
+    $url = '/photos/list?page=100&foo=bar';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list?foo=bar', $res);
+
+    $url = '/photos/list?foo=bar&page=100';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list?foo=bar', $res);
+
+    $url = '/photos/list?foo=bar&page=100&x=y';
+    $res = $this->utility->getPaginationUrl($url, 2, '/photos', false);
+    $this->assertEquals('/photos/page-2/list?foo=bar&x=y', $res);
+  }
+
   public function testGetProtocol()
   {
     $_SERVER['HTTPS'] = null;
@@ -181,6 +208,20 @@ RES;
     $_SERVER['HTTP_X_FORWARDED_PROTO'] = 'HTTPS';
     $res = $this->utility->getProtocol(false);
     $this->assertEquals('https', $res);
+  }
+
+  public function testGetSortByParams()
+  {
+    $res = $this->utility->getSortByParams('by', 'dateTaken', 'dateTaken,asc', false);
+    $this->assertEquals($res, 'dateTaken,asc');
+    $res = $this->utility->getSortByParams('by', 'dateTaken', 'dateUploaded,asc', false);
+    $this->assertEquals($res, 'dateTaken,asc');
+    $res = $this->utility->getSortByParams('by', 'dateUploaded', 'dateTaken,asc', false);
+    $this->assertEquals($res, 'dateUploaded,asc');
+    $res = $this->utility->getSortByParams('sort', 'asc', 'dateTaken,asc', false);
+    $this->assertEquals($res, 'dateTaken,asc');
+    $res = $this->utility->getSortByParams('sort', 'desc', 'dateTaken,asc', false);
+    $this->assertEquals($res, 'dateTaken,desc');
   }
 
   public function testIsActiveTab()

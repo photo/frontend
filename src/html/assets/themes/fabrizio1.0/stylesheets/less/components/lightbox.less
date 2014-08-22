@@ -72,10 +72,10 @@
           vertical-align: middle;
           .transition(background .25s);
           font-weight: 300;
-          &:hover {
+          text-decoration:none;
+          &.next:hover, &.prev:hover {
             background: rgba(0,0,0,.7);
-            text-decoration: none;
-            color: #fff;
+            color: @lightbox_nav_arrow;
           }
         }
         .prev {
@@ -87,7 +87,19 @@
           margin-right: 10px;
         }
         &:hover {
+          .next {
+            background: rgba(0,0,0,.3);
+            color: #ccc;
+          }
+        }
+      }
+      &:hover {
+        .nav {
           .opacity(98);
+        }
+        a.next {
+          background: rgba(0,0,0,.7);
+          color: @lightbox_nav_arrow;
         }
       }
     }

@@ -604,21 +604,52 @@ class DatabaseMySql implements DatabaseInterface
   {
     $buildQuery = $this->buildQuery($filterOpts, null, null, 'photo');
     $photo = $this->getPhoto($id);
-    if(!$photo || !isset($photo['dateSortByDay']) || empty($photo['dateSortByDay']))
+    if(!$photo)
       return false;
 
     // owner is in buildQuery
-    // TODO: paginating with random sorting is a pain - default for now
     // determine where to start
     // this should return the immediately adjacent photo prior to $photo
     // if there are none we set it to the current photo and only get a next
-    $startResp = $this->db->all("SELECT `id`, `dateSortByDay` FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND `dateSortByDay` < :dateSortByDay {$buildQuery['groupBy']} ORDER BY `dateSortByDay` DESC, `id` DESC LIMIT 2", 
-      array(':dateSortByDay' => $photo['dateSortByDay']));
+    $sortBy = '`dateSortByDay` ASC, `id` ASC';
+    $sortColumn = 'dateSortByDay';
+    $sortOperator = '<';
+    $invSortOperator = '>=';
+    $sortDirection = 'desc';
+    $invSortDirection = 'asc';
+
+    // if there's a sortBy parameter it affects pagination quite a bit so we set some defaults above
+    //  but override them here if needed.
+    if(isset($filterOpts['sortBy']))
+    {
+      $utilityObj = new Utility;
+      $sortParts = (array)explode(',', $filterOpts['sortBy']);
+      if(count($sortParts) === 2)
+      {
+        $sortColumn = trim($sortParts[0]);
+        $sortDirection = strtolower(trim($sortParts[1]));
+        $sortBy = sprintf('%s %s', $sortColumn, $sortDirection);
+        $invSortDirection = $sortDirection == 'asc' ? 'desc' : 'asc';
+        if($sortDirection == 'desc') {
+          $sortOperator = '>';
+          $invSortOperator = '<=';
+        }
+      }
+    }
+
+    // first we reverse the current order starting with the photo before $id and pick 2 since we get 5 total
+    //  p p c n n (where c is the current photo, p are previous and n are next 
+    $startResp = $this->db->all($sql = "SELECT `id`, `dateTaken`, `dateUploaded`, `dateSortByDay` FROM `{$this->mySqlTablePrefix}photo` {$buildQuery['where']} AND `{$sortColumn}` {$sortOperator} :sortColumn {$buildQuery['groupBy']} ORDER BY `{$sortColumn}` {$invSortDirection}, `id` {$invSortDirection} LIMIT 2", 
+      array(':sortColumn' => $photo[$sortColumn]));
+
+    // these two are in reverse order where it goes 2 1
+    //  that's why we get the last element
+    // if get 0 results then we start at photo with $id
     $ind = count($startResp)-1;
     if($ind >= 0)
-      $startValue = $startResp[$ind]['dateSortByDay'];
+      $startValue = $startResp[$ind][$sortColumn];
     else
-      $startValue = $photo['dateSortByDay'];
+      $startValue = $photo[$sortColumn];
 
     // remembering that the photos are sorted in descending order on dateSortByDay
     // we reverse the sort so it's the oldest first then select everything after the 
@@ -626,35 +657,33 @@ class DatabaseMySql implements DatabaseInterface
     $photosNextPrev = $this->db->all(
       $sql = " SELECT `{$this->mySqlTablePrefix}photo`.*
         {$buildQuery['from']}
-        {$buildQuery['where']} AND `dateSortByDay` >= :startValue
+        {$buildQuery['where']} AND `{$sortColumn}` {$invSortOperator} :startValue
         {$buildQuery['groupBy']}
-        ORDER BY `dateSortByDay` ASC, `id` ASC
+        ORDER BY {$sortBy}
         LIMIT 5", 
       array(':startValue' => $startValue)
     );
 
+    // now we loop through the (up to) 5 results where if there are 5 then $id is in the middle
+    //  we start by populating 'previous' until we get to $id then we switch to 'next'
+    //  if $id is the first then that implies no previous photos for this pagination request
+    $iKey = 'previous';
     $ret = array();
-    if(!empty($photosNextPrev))
+    foreach($photosNextPrev as $p)
     {
-      if($photosNextPrev[0]['dateSortByDay'] <= $photo['dateSortByDay'] && $photosNextPrev[0]['id'] !== $photo['id'])
-      {
-        $ret['next'] = array();
-        if($photosNextPrev[1]['dateSortByDay'] <= $photo['dateSortByDay'] && $photosNextPrev[1]['id'] !== $photo['id'])
-          $ret['next'][] = $this->normalizePhoto($photosNextPrev[1]);
+      if(!isset($ret[$iKey]))
+        $ret[$iKey] = array();
 
-        $ret['next'][] = $this->normalizePhoto($photosNextPrev[0]);
-      }
-
-      $last = array_pop($photosNextPrev);
-      if($last && $last['dateSortByDay'] > $photo['dateSortByDay'] && $last['id'] !== $photo['id'])
-      {
-        $otherLast = array_pop($photosNextPrev);
-        if($otherLast && $last['dateSortByDay'] > $photo['dateSortByDay'] && $otherLast['id'] !== $photo['id'])
-          $ret['previous'][] = $this->normalizePhoto($otherLast);
-
-        $ret['previous'][] = $this->normalizePhoto($last);
-      }
+      if($p['id'] == $photo['id'])
+        $iKey = 'next';
+      else
+        $ret[$iKey][] = $this->normalizePhoto($p);
     }
+
+    // since the previous photos need to be sorted 2,1 we reverse the order
+    if(isset($ret['previous']))
+      $ret['previous'] = array_reverse($ret['previous']);
+
     return $ret;
   }
 
@@ -1727,106 +1756,122 @@ class DatabaseMySql implements DatabaseInterface
       $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner` IN({$ids})";
     }
     $groupBy = '';
-    $sortBy = 'ORDER BY dateSortByDay DESC';
 
-    if(!empty($filters) && is_array($filters))
+    // #1341 To fix a regression for sort we set a default and apply it anytime there's no sortBy present
+    if(!is_array($filters))
+      $filters = array();
+    if(!isset($filters['sortBy']))
+      $filters['sortBy'] = null; // we seed sortBy to trigger the default case
+
+    foreach($filters as $name => $value)
     {
-      foreach($filters as $name => $value)
+      switch($name)
       {
-        switch($name)
-        {
-          case 'album':
-            $subquery = sprintf("`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `{$this->mySqlTablePrefix}elementAlbum`.`owner`='%s' AND `type`='%s' AND `album`='%s')",
-              $this->_($this->owner), 'photo', $value);
-            $where = $this->buildWhere($where, $subquery);
-            break;
-          case 'hash':
-            $hash = $this->_($value);
-            $where = $this->buildWhere($where, "hash='{$hash}'");
-            break;
-          case 'ids':
-            $ids = (array)explode(',', $value);
-            foreach($ids as $k => $v)
-              $ids[$k] = $this->_($v);
-            $where = $this->buildWhere($where, sprintf("`id` IN ('%s')", implode("','", $ids)));
-            break;
-          case 'groups':
-            if(!is_array($value))
-              $value = (array)explode(',', $value);
-            foreach($value as $k => $v)
-              $value[$k] = $this->_($v);
-            $subquery = sprintf("(`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementGroup` WHERE `{$this->mySqlTablePrefix}elementGroup`.`owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
-              $this->_($this->owner), 'photo', implode("','", $value));
-            $where = $this->buildWhere($where, $subquery);
-            break;
-          case 'page':
-            if($value > 1)
-              $offset = intval(($limit * $value) - $limit);
-            break;
-          case 'permission':
-            $where = $this->buildWhere($where, "`permission`='1'");
-            break;
-          case 'since': // deprecate this, only implemented for testing. delete after grepping source @jmathai #592 #973
-          case 'takenAfter':
-            $where = $this->buildWhere($where, sprintf("`dateSortByDay`>'%s'", $this->_($this->dateSortByDay(strtotime($value)))));
-            break;
-          case 'takenBefore':
-            $where = $this->buildWhere($where, sprintf("`dateSortByDay`<'%s'", $this->_($this->dateSortByDay(strtotime($value)))));
-            break;
-          case 'uploadedAfter':
-            $where = $this->buildWhere($where, sprintf("`dateUploaded`>'%s'", $this->_(strtotime($value))));
-            break;
-          case 'uploadedBefore':
-            $where = $this->buildWhere($where, sprintf("`dateUploaded`<'%s'", $this->_(strtotime($value))));
-            break;
-          case 'sortBy':
-            if($value === 'dateTaken,desc')
-              $sortBy = 'ORDER BY dateSortByDay DESC';
-            elseif($value === 'dateTaken,asc')
-              $sortBy = 'ORDER BY dateSortByDay ASC';
-            elseif($value === 'dateUploaded,desc')
-              $sortBy = 'ORDER BY dateSortByDay DESC, dateUploaded ASC';
-            elseif($value === 'dateUploaded,asc')
-              $sortBy = 'ORDER BY dateSortByDay ASC, dateUploaded ASC';
-            else
-              $sortBy = 'ORDER BY ' . $this->_(str_replace(',', ' ', $value));
-            $field = $this->_(substr($value, 0, strpos($value, ',')));
-            $where = $this->buildWhere($where, "{$field} is not null");
-            break;
-          case 'tags':
-            if(!is_array($value))
-              $value = (array)explode(',', $value);
-            $tagCount = count($value);
-            if($tagCount == 0)
+        case 'album':
+          $subquery = sprintf("`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `{$this->mySqlTablePrefix}elementAlbum`.`owner`='%s' AND `type`='%s' AND `album`='%s')",
+            $this->_($this->owner), 'photo', $value);
+          $where = $this->buildWhere($where, $subquery);
+          break;
+        case 'hash':
+          $hash = $this->_($value);
+          $where = $this->buildWhere($where, "hash='{$hash}'");
+          break;
+        case 'ids':
+          $ids = (array)explode(',', $value);
+          foreach($ids as $k => $v)
+            $ids[$k] = $this->_($v);
+          $where = $this->buildWhere($where, sprintf("`id` IN ('%s')", implode("','", $ids)));
+          break;
+        case 'groups':
+          if(!is_array($value))
+            $value = (array)explode(',', $value);
+          foreach($value as $k => $v)
+            $value[$k] = $this->_($v);
+          $subquery = sprintf("(`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementGroup` WHERE `{$this->mySqlTablePrefix}elementGroup`.`owner`='%s' AND `type`='%s' AND `group` IN('%s')) OR permission='1')",
+            $this->_($this->owner), 'photo', implode("','", $value));
+          $where = $this->buildWhere($where, $subquery);
+          break;
+        case 'page':
+          if($value > 1)
+            $offset = intval(($limit * $value) - $limit);
+          break;
+        case 'permission':
+          $where = $this->buildWhere($where, "`permission`='1'");
+          break;
+        case 'since': // deprecate this, only implemented for testing. delete after grepping source @jmathai #592 #973
+        case 'takenAfter':
+          $where = $this->buildWhere($where, sprintf("`dateSortByDay`>'%s'", $this->_($this->dateSortByDay(strtotime($value)))));
+          break;
+        case 'takenBefore':
+          $where = $this->buildWhere($where, sprintf("`dateSortByDay`<'%s'", $this->_($this->dateSortByDay(strtotime($value)))));
+          break;
+        case 'uploadedAfter':
+          $where = $this->buildWhere($where, sprintf("`dateUploaded`>'%s'", $this->_(strtotime($value))));
+          break;
+        case 'uploadedBefore':
+          $where = $this->buildWhere($where, sprintf("`dateUploaded`<'%s'", $this->_(strtotime($value))));
+          break;
+        case 'sortBy':
+          // default is dateTaken,desc
+          switch($value)
+          {
+            case 'dateTaken,desc':
+              $sortBy = 'ORDER BY dateTaken DESC';
               break;
-
-            $ids = array();
-            foreach($value as $k => $v)
-            {
-              $v = $value[$k] = $this->_($v);
-              $thisRes = $this->db->all(sprintf("SELECT `element`, `tag` FROM `%selementTag` WHERE `owner`='%s' AND `type`='photo' AND `tag`='%s'", $this->mySqlTablePrefix, $this->owner, $v));
-              foreach($thisRes as $t)
-              {
-                if(isset($ids[$t['element']]))
-                  $ids[$t['element']]++;
-                else
-                  $ids[$t['element']] = 1;
-              }
-            }
-            
-            foreach($ids as $k => $cnt)
-            {
-              if($cnt < $tagCount)
-                unset($ids[$k]);
-            }
-
-            $where = $this->buildWhere($where, sprintf("`%sphoto`.`id` IN('%s')", $this->mySqlTablePrefix, implode("','", array_keys($ids))));
+            case 'dateTaken,asc':
+              $sortBy = 'ORDER BY `dateTaken` ASC';
+              break;
+            case 'dateUploaded,desc':
+              $sortBy = 'ORDER BY `dateUploaded` DESC';
+              break;
+            case 'dateUploaded,asc':
+              $sortBy = 'ORDER BY `dateUploaded` ASC';
+              break;
+            default:
+              if($table === 'photo')
+                $sortBy = 'ORDER BY dateSortByDay DESC, dateTaken ASC';
+              else if($table === 'activity')
+                $sortBy =  'ORDER BY dateCreated DESC';
+          }
+          /*
+          // #1341 removing since all photos should have the date fields
+          $field = $this->_(substr($value, 0, strpos($value, ',')));
+          $where = $this->buildWhere($where, "{$field} is not null");
+          */
+          break;
+        case 'tags':
+          if(!is_array($value))
+            $value = (array)explode(',', $value);
+          $tagCount = count($value);
+          if($tagCount == 0)
             break;
-          case 'type': // type for activity
-            $value = $this->_($value);
-            $where = $this->buildWhere($where, "`type`='{$value}'");
-            break;
-        }
+
+          $ids = array();
+          foreach($value as $k => $v)
+          {
+            $v = $value[$k] = $this->_($v);
+            $thisRes = $this->db->all(sprintf("SELECT `element`, `tag` FROM `%selementTag` WHERE `owner`='%s' AND `type`='photo' AND `tag`='%s'", $this->mySqlTablePrefix, $this->owner, $v));
+            foreach($thisRes as $t)
+            {
+              if(isset($ids[$t['element']]))
+                $ids[$t['element']]++;
+              else
+                $ids[$t['element']] = 1;
+            }
+          }
+          
+          foreach($ids as $k => $cnt)
+          {
+            if($cnt < $tagCount)
+              unset($ids[$k]);
+          }
+
+          $where = $this->buildWhere($where, sprintf("`%sphoto`.`id` IN('%s')", $this->mySqlTablePrefix, implode("','", array_keys($ids))));
+          break;
+        case 'type': // type for activity
+          $value = $this->_($value);
+          $where = $this->buildWhere($where, "`type`='{$value}'");
+          break;
       }
     }
 

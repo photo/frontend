@@ -14,6 +14,32 @@
   }
 
   .photo-grid {
+    .pagination {
+      font-size: 14px;
+      ul {
+        border-radius: 0;
+        box-shadow: none;
+        display:block;
+        float:right;
+        li {
+          line-height: inherit;
+          &.active {
+            a {
+              background-color: #fff;
+            }
+          }
+          a {
+            &:hover {
+              background-color: #fff;
+            }
+            float: none;
+            line-height: inherit;
+            border: none;
+            padding: 0 6px;
+          }
+        }
+      }
+    }
     > h4, p {
       margin-left:5px;
     }
@@ -61,13 +87,14 @@
 
       .date-placeholder {
         position: absolute;
-        top: 0;
+        top: -100%;
         left: 0;
         background: rgba(255,255,255,0.8);
         padding: 6px 5px 4px;
         line-height: 14px;
         font-size: 10px;
         vertical-align: middle;
+        .transition(top 0.2s);
         a {
           color: #666;
           i {
@@ -135,6 +162,9 @@
         .meta {
           bottom: 0;
         }
+        .date-placeholder {
+          top: 0;
+        }
       }
       
       &.editing {
@@ -148,7 +178,7 @@
         right:0;
         border-width:0 30px 30px 0;
         border-style:solid;
-        border-color:@color_brand #fff;
+        border-color: @pinned_corner #fff;
       }
     }
   }

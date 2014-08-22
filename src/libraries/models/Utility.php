@@ -209,6 +209,18 @@ class Utility
     return range($start, $end);
   }
 
+  public function getPaginationUrl($url, $page, $appendTo, $write = true)
+  {
+    // strip existing page parameter in the following order
+    // replace /page-N in the path with ''
+    // replace page=N& in qs with ''
+    // replace &page=N in qs with ''
+    // replace ?page=N in qs with '?'
+    $url = preg_replace(array('/\/page-[0-9]+/', '/page=[0-9]+\&/', '/\&page=[0-9]+/', '/\?page=[0-9]+/'), array('', '', '', '?'), $url);
+    $url = preg_replace('/\?$/', '', str_replace($appendTo, sprintf('%s/page-%s', $appendTo, $page), $url));
+    return $this->returnValue($url, $write);
+  }
+
   public function getProtocol($write = true)
   {
     $protocol = 'http';
@@ -223,6 +235,35 @@ class Utility
 
     return $this->returnValue($protocol, $write);
   }
+
+  public function getSortByParams($part, $val, $current = null, $write = true)
+  {
+    if($current == null)
+    {
+      if(isset($_GET['sortBy']))
+        $current = $_GET['sortBy'];
+      else
+        return null;
+    }
+
+    $sortParts = (array)explode(',', $current);
+    if(count($sortParts) != 2)
+      return null;
+
+    if($part == 'by')
+      $sortParts[0] = $val;
+    elseif($part == 'sort')
+      $sortParts[1] = $val;
+
+    return $this->returnValue(implode(',', $sortParts), $write);
+  }
+
+  /*public function getSortParts($sortBy)
+  {
+    explode(',', $sortBy);
+    $parts = $this->getSortByParams(null, null);
+    return (array)explode(',', $parts);
+  }*/
 
   public function isActiveTab($label)
   {

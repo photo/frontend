@@ -18,8 +18,6 @@ var Gallery = (function($) {
   var batchEmpty;
   var currentPage = 1;
 
-  var breakOnDate;
-  
 	/* ------------ PRIVATE functions ------------ */
 
 	/** Utility function that returns a value or the defaultvalue if the value is null */
@@ -171,19 +169,6 @@ var Gallery = (function($) {
 		// Build a row of images until longer than maxwidth
 		while(items.length > 0 && len < maxwidth) {
 			var item = items[0];
-
-      // Gh-1341
-      // If beta features are enabled then separate photos by date
-      if(breakOnDate) {
-        d = new Date(item.dateTaken*1000);
-        currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
-        if(typeof(lastDate) !== 'undefined' &&  currentDate !== lastDate) {
-          lastRowWidthRemaining = 0;
-          break;
-        }
-        lastDate = currentDate;
-      }
-
 			row.push(item);
 			len += (item[photoKey][1] + marginsOfImage);
       items.shift();
@@ -342,12 +327,7 @@ var Gallery = (function($) {
     // insert calendar icon
     var d = new Date(item.dateTakenYear, item.dateTakenMonth - 1, item.dateTakenDay);
     currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
-    if(currentDate !== lastDate) {
-      if(breakOnDate)
-        parent.append(dateSeparator(d));
-      else
-        imageContainer.append(dateSeparator(d));
-    }
+    imageContainer.append(dateSeparator(d));
     lastDate = currentDate;
 
 		parent.append(imageContainer);

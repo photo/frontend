@@ -43,6 +43,13 @@
         return result[1];
       return null;
     };
+
+    this.getQueryParam = function(name) {
+      var re = new RegExp(TBX.format.sprintf('%s=([^&]+)', name)), result = re.exec(location.search);
+      if(result && result.length === 2)
+        return result[1];
+      return null;
+    };
   }
 
   TBX.util = new Util;

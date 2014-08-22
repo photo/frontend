@@ -69,6 +69,16 @@ class ImageGraphicsMagick extends ImageAbstract
   }
 
   /**
+   * Set compression quality
+   */
+  public function setCompressionQuality($quality)
+  {
+    if (method_exists($this->image, 'setCompressionQuality')) {
+      $this->image->setCompressionQuality((int) $quality);
+    }
+  }
+
+  /**
     * Save modifications to the image to the file system
     *
     * @param string $outputFile The file to write the modifications to.

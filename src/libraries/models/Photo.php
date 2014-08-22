@@ -45,7 +45,7 @@ class Photo extends BaseModel
     * @param string $protocol http or https
     * @return array
     */
-  public function addApiUrls($photo, $sizes, $token=null, $protocol=null)
+  public function addApiUrls($photo, $sizes, $token=null, $filterOpts=null, $protocol=null)
   {
     if($protocol === null)
       $protocol = $this->utility->getProtocol(false);
@@ -79,7 +79,7 @@ class Photo extends BaseModel
       unset($photo['pathOriginal']);
     }
 
-    $photo['url'] = $this->getPhotoViewUrl($photo);
+    $photo['url'] = $this->getPhotoViewUrl($photo, $filterOpts);
     return $photo;
   }
 
@@ -994,9 +994,9 @@ class Photo extends BaseModel
     *
     * @return array Default values for a new photo
     */
-  private function getPhotoViewUrl($photo)
+  private function getPhotoViewUrl($photo, $filterOpts=null)
   {
-    return sprintf('%s://%s%s', $this->utility->getProtocol(false), $this->utility->getHost(false), $this->url->photoView($photo['id'], null, false));
+    return sprintf('%s://%s%s', $this->utility->getProtocol(false), $this->utility->getHost(false), $this->url->photoView($photo['id'], $filterOpts, false));
   }
 
   /**

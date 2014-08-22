@@ -25,6 +25,7 @@ class ImageGD extends ImageAbstract
   private $type;
 	private $width;
 	private $height;
+  private $quality = 90;
 
   /**
     * Destructor.
@@ -146,6 +147,14 @@ class ImageGD extends ImageAbstract
   }
 
   /**
+   * Set compression quality
+   */
+  public function setCompressionQuality($quality)
+  {
+    $this->quality = (int) $quality;
+  }
+
+  /**
     * Save modifications to the image to the file system
     *
     * @param string $outputFile The file to write the modifications to.
@@ -167,8 +176,7 @@ class ImageGD extends ImageAbstract
       imagepng($this->image, $outputFile, 9);
     elseif($format == 'gif')
       imagegif($this->image, $outputFile, 90);
-    // tif ain't working on GD it seems.
-    else
-      imagejpeg($this->image, $outputFile, 90);
+    else // tif ain't working on GD it seems.
+      imagejpeg($this->image, $outputFile, $this->quality);
   }
 }

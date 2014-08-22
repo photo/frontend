@@ -1,23 +1,17 @@
-<?php $this->theme->display('partials/user-badge.php'); ?>
-
 <div class="row">
   <div class="span12 photo-grid <?php if(isset($album)) { ?>is-album<?php } ?>">
-    <div class="photo-grid-hr"></div>
     <?php if(isset($album)) { ?>
     <h4>
       <i class="icon-th-large"></i>
       <?php $this->utility->safe($album['name']); ?>
-      <small>
-        (
-          <?php $this->utility->safe($album['count']); ?> photos
-          <?php if($this->user->isAdmin()) { ?>
-            <span class="hide"> | <a href="#" class="shareAlbum share trigger" data-id="<?php $this->utility->safe($album['id']); ?>" title="Share this album"><i class="icon-share"></i> Share</a></span>
-          <?php } ?>
-        )
-      </small>
+      <?php echo $headingHelper; ?>
     </h4>
     <?php } else if(isset($tags)) { ?>
-      <h4><i class="icon-tags"></i> <?php $this->utility->safe(implode(', ', $tags)); ?> <small>(<?php $this->utility->safe($photos[0]['totalRows']); ?> photos)</small></h4>
+      <h4><i class="icon-tags"></i> <?php $this->utility->safe(implode(',', $tags)); ?>
+      <?php echo $headingHelper; ?>
+    <?php } else { ?>
+      <h4><i class="icon-picture"></i> Gallery
+      <?php echo $headingHelper; ?>
     <?php } ?>
     <?php if(!empty($photos)) { ?>
       <script> var initData = <?php echo json_encode($photos); ?>; var filterOpts = <?php echo json_encode($options); ?>;</script>
