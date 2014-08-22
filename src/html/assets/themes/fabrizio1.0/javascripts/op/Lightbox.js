@@ -291,7 +291,7 @@
     },
     
     loadImage : function(){
-      var c, src = this.model.get(this.imagePathKey), next, previous, $photo;
+      var c, src = this.model.get(this.imagePathKey), $title = $('title'), next, previous, $photo;
       previous = this.store.at(this.store.indexOf(this.model) - 1),
       next = this.store.at(this.store.indexOf(this.model) + 1);
 
