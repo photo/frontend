@@ -10,7 +10,7 @@
       <h4><i class="icon-tags"></i> <?php $this->utility->safe(implode(',', $tags)); ?>
       <?php echo $headingHelper; ?>
     <?php } else { ?>
-      <h4><i class="icon-picture"></i> Gallery
+      <h4><i class="icon-picture"></i> <span class="hidden-phone">Gallery</span>
       <?php echo $headingHelper; ?>
     <?php } ?>
     <?php if(!empty($photos)) { ?>
