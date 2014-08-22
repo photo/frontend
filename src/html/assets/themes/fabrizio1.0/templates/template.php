@@ -158,3 +158,4 @@
     <?php $this->plugin->invoke('renderFooter'); ?>
   </body>
 </html>
+<?php if($this->user->isAdmin()) { ?><!-- current code version is <?php $this->utility->safe($this->config->defaults->currentCodeVersion); ?> --><?php } ?>
