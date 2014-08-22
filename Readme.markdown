@@ -21,10 +21,10 @@ The development of Trovebox was in large part funded by the [Shuttleworth Founda
 
 ### Trovebox UI
 
-<img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/gallery-t.jpg" width="300" hspace="20" vspace="20">
-<img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/lightbox-t.jpg" width="300" hspace="20" vspace="20">
-<img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/detail-t.jpg" width="300" hspace="20" vspace="20">
-<img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/upload-t.jpg" width="300" hspace="20" vspace="20">
+<a href="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/gallery.jpg"><img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/gallery-t.jpg" width="300" hspace="20" vspace="20"></a>
+<a href="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/lightbox.jpg"><img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/lightbox-t.jpg" width="300" hspace="20" vspace="20"></a>
+<a href="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/detail.jpg"><img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/detail-t.jpg" width="300" hspace="20" vspace="20"></a>
+<a href="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/upload.jpg"><img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/upload-t.jpg" width="300" hspace="20" vspace="20"></a>
 
 *<sub>Photos by [Duncan Rawlinson](http://duncan.co/)</sub>*
 
@@ -52,5 +52,3 @@ While Trovebox functions like many existing services it's drastically different 
     Your photos are not tied to any particular photo service. Because everything is open you can write your own web interface for your photos, choose between Trovebox hosting providers or install the Trovebox software on your own server.
 1.  **Community**
     New features will be entirely community driven. Features with the most votes will get top priority in getting implemented. If you want a feature that doesn't have many votes you can implement it yourself and issue a pull request.
-
-----------------------------------------
