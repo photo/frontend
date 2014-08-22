@@ -141,6 +141,7 @@
     _initEvents : function(){
       this.$el.click( this._bound('onContainerClick') );
       this.$el.find('.photo').click( this._bound('nextIfImage'));
+      this.$el.find('.header .container .close-link').click( this._bound('close'));
       this.$el.find('.photo .nav .prev').click( this._bound('prev'));
       this.$el.find('.photo .nav .next').click( this._bound('next'));
       this.$el.find('.details .toggle').click( this._bound('toggleDetails'));
@@ -232,6 +233,11 @@
       this.$el.fadeIn('fast');
       this.adjustSize();
       return this;
+    },
+
+    close : function(ev){
+      ev.preventDefault();
+      return this.hide();
     },
     
     hide : function(){

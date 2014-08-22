@@ -99,7 +99,8 @@
     <div class="header">
       <div class="container">
         <div class="logo"></div>
-        <a class="detail-link" href="">Full Details</a>
+        <a class="detail detail-link" href="">Detail View</a> <a href="#" class="detail close-link" title="Pressing ESC also closes this lightbox"><i class="icon-remove"></i></a>
+
       </div>
     </div>
     <div class="bd">
