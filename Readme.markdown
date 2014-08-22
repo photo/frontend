@@ -1,9 +1,13 @@
 [![Build Status](https://travis-ci.org/photo/frontend.svg?branch=master)](http://travis-ci.org/photo/frontend)
 
+<img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/logo.png" width="250">
+
 ### What is Trovebox?
 Trovebox is software that helps you manage, organize and share photos. It includes [web](https://github.com/photo/frontend) and mobile apps for [Android](https://github.com/photo/mobile-android) and [iOS](https://github.com/photo/mobile-ios). The goal of Trovebox is to be software which people love to use and helps them preserve their digial media files.
 
 The development of Trovebox was in large part funded by the [Shuttleworth Foundation](https://www.shuttleworthfoundation.org/) through a fellowship grant.
+
+<img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/shuttleworth-funded.png" width="250">
 
 ### Install Trovebox in under 3 minutes
 
@@ -12,6 +16,17 @@ The development of Trovebox was in large part funded by the [Shuttleworth Founda
     # As always, view any script before running it ;).
 
     curl https://raw.github.com/photo/frontend/master/documentation/guides/InstallationUbuntuApache.sh | /bin/bash
+
+----------------------------------------
+
+### Trovebox UI
+
+<img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/gallery-t.jpg" width="300" hspace="20" vspace="20">
+<img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/lightbox-t.jpg" width="300" hspace="20" vspace="20">
+<img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/detail-t.jpg" width="300" hspace="20" vspace="20">
+<img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/screenshots/web/upload-t.jpg" width="300" hspace="20" vspace="20">
+
+*<sub>Photos by [Duncan Rawlinson](http://duncan.co/)</sub>*
 
 ----------------------------------------
 
