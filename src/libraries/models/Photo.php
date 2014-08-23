@@ -6,7 +6,7 @@
  * Upload, update, delete and generate, oh my!
  * @author Jaisen Mathai <jaisen@jmathai.com>
  */
-class Photo extends BaseModel
+class Photo extends Media
 {
   public function __construct($params = null)
   {
