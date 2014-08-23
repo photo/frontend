@@ -8,6 +8,17 @@
     line-height: 1.4em;
     margin: .4em 0;
 
+    // elipses for long titles on portrait mobile devices
+    @media only screen and (max-device-width : 320px)  {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 270px;
+      a i {
+        display:none;
+      }
+    }
+
     span.title i{
       padding-right: 3px;
     }
