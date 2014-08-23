@@ -189,20 +189,17 @@
 
 <script type="tmpl/underscore" id="photo-detail-meta">
   <h1 class="photo-title"></h1>
-  
   <div class="row">
     <div class="span9">
       <div class="photo">
         <img src="<%= path870x870 %>" class="photo-img-<%= id %>" />
-        <span class="mag photo-view-modal-click" data-id="<%= id %>"><i class="icon-search"></i></span>
+        <!--<span class="mag photo-view-modal-click" data-id="<%= id %>"><i class="icon-search"></i></span>-->
       </div>
       <div class="description"></div>
-      <!--<div class="comments"></div>-->
-      
     </div>
     <div class="span3">
       <ul class="sidebar">
-        <li>
+        <li class="hidden-phone">
           <div class="userbadge userbadge-light user-badge-meta owner"></div>
         </li>
         <li>
@@ -229,8 +226,8 @@
         <li>
           <div class="rights"></div>
         </li>
-      </div>
-    </ul>
+      </ul>
+    </div>
   </div>
 </script>
 
