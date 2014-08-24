@@ -278,11 +278,11 @@
     
     setupPagination : function(){
       var $scroller = $(this.el).find('.pagination .photos .scroller')
-        , shimDiv
+        , shimDiv;
       
       $(this.el).find('.pagination .arrow-prev').click(_.bind(this.prev, this));  
       $(this.el).find('.pagination .arrow-next').click(_.bind(this.next, this));
-      
+      $(this.el).find('img.photo-large').click(_.bind(this.next, this));
       
       // create the shim...
       shimDiv = $('<div class="thumb thumb-shim"><div class="border"><div class="inner" /></div></div>')
