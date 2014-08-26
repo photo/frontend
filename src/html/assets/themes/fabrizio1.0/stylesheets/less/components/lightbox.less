@@ -167,14 +167,25 @@
       
       .detail-block {
         a {
-          &.title i {
-            padding-right: 3px;
-          }
-          .opacity(80);
-          color: #fff;
-          &:hover {
-            .opacity(99);
-            text-decoration: none;
+          &.title {
+            .opacity(80);
+            color: #fff;
+            @media only screen and (max-device-width : 320px)  {
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              width: 300px;
+              display: inline-block;
+            }
+
+            i {
+              padding-right: 3px;
+            }
+
+            &:hover {
+              .opacity(99);
+              text-decoration: none;
+            }
           }
         }
       

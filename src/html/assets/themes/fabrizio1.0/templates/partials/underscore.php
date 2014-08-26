@@ -133,18 +133,15 @@
           <%- title || filenameOriginal %>
         <?php } ?>
       </span>
-      <span class="actions">
+      <span class="actions hidden-phone">
         <?php if($isAdmin) { ?>
-          <a href="#" class="tags edit" title="Edit Tags"><i class="icon-tags"></i><span class="hide"><%- tags %></span></a>
           <a href="#" class="share" data-id="<%= id %>" title="Share this photo via email, Facebook or Twitter"><i class="icon-share-alt"></i></a>
           <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
-          <a href="#" class="permission edit" title="Click to make this photo <%= permission == 0 ? 'public' : 'private' %>"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i></a>
-          <a href="#" class="rotate" title="Click to rotate this photo"><i class="icon-rotate-right"></i></a>
         <?php } else { ?>
           <?php if($this->config->site->allowOriginalDownload == 1) { ?>
             <a href="<%= pathDownload %>" title="Download the original high resolution photo"><i class="icon-download"></i></a>
           <?php } ?>
-          <i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i>
+          <!--<i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i>-->
         <?php } ?>
       </span>
     </div>
