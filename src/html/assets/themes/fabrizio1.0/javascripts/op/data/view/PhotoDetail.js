@@ -107,6 +107,7 @@
     },
     events : {
       'click .permission.edit': 'permission',
+      'click .profile': 'profile',
       'click .rotate': 'rotate',
       'click .share': 'share'
     },
@@ -115,6 +116,18 @@
       var el = $(ev.currentTarget), id = el.attr('data-id'), model = this.model;
       model.set('permission', model.get('permission') == 0 ? 1 : 0, {silent:false});
       model.save();
+    },
+    profile: function(ev) {
+      ev.preventDefault();
+      var el = $(ev.currentTarget), id = el.attr('data-id'), 
+          ownerModel = op.data.store.Profiles.get(TBX.profiles.getOwner()),
+          viewerModel = op.data.store.Profiles.get(TBX.profiles.getViewer());
+      ownerModel.set('photoId', id, {silent:true});
+      ownerModel.save(null, {error: TBX.notification.display.generic.error, success: function(){ TBX.notification.show('Your profile photo was successfully updated.', 'flash', 'confirm'); }});
+      if(TBX.profiles.getOwner() !== TBX.profiles.getViewer()) {
+        viewerModel.set('photoId', id, {silent:true});
+        viewerModel.save();
+      }
     },
     rotate: function(ev) {
       ev.preventDefault();

@@ -46,7 +46,6 @@
       'click .album.edit': 'album',
       'click .delete.edit': 'delete_',
       'click .permission.edit': 'permission',
-      'click .profile.edit': 'profile',
       'click .pin.edit': 'pin',
       'click .share': 'share'
     },
@@ -72,18 +71,6 @@
 
       count = batch.length();
       TBX.notification.show(TBX.format.sprintf(TBX.strings.batchConfirm, count, count > 1 ? 's' : ''), 'flash', 'confirm');
-    },
-    profile: function(ev) {
-      ev.preventDefault();
-      var el = $(ev.currentTarget), id = el.attr('data-id'), 
-          ownerModel = op.data.store.Profiles.get(TBX.profiles.getOwner()),
-          viewerModel = op.data.store.Profiles.get(TBX.profiles.getViewer());
-      ownerModel.set('photoId', id, {silent:true});
-      ownerModel.save(null, {error: TBX.notification.display.generic.error, success: function(){ TBX.notification.show('Your profile photo was successfully updated.', 'flash', 'confirm'); }});
-      if(TBX.profiles.getOwner() !== TBX.profiles.getViewer()) {
-        viewerModel.set('photoId', id, {silent:true});
-        viewerModel.save();
-      }
     },
     share: function(ev) {
       ev.preventDefault();

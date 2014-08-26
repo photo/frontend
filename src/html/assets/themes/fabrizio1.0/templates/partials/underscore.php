@@ -288,15 +288,18 @@
 
 <script type="tmpl/underscore" id="photo-detail-meta-tmpl">
   <ul>
+    <li><a class="permission<?php if($isAdmin) { ?> edit<?php } ?>" href="#"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i> <%= permission == 0 ? 'Private' : 'Public' %></i></a></li>
     <?php if($isAdmin) { ?>
       <li><a href="#" class="share trigger" data-id="<%= id %>"><i class="icon-share-alt"></i> Share</i></a></li>
     <?php } ?>
-    <li><a class="permission<?php if($isAdmin) { ?> edit<?php } ?>" href="#"><i class="icon-<%= permission == 0 ? 'lock' : 'unlock' %>"></i> <%= permission == 0 ? 'Private' : 'Public' %></i></a></li>
+    <?php if($isAdmin) { ?>
+      <li><a class="rotate" href="#"><i class="icon-rotate-right"></i> Rotate</a></li>
+    <?php } ?>
     <?php if($isAdmin || $this->config->site->allowOriginalDownload == 1) { ?>
       <li><a href="<%= pathDownload %>" class="download trigger"><i class="icon-download"></i> Download</i></a></li>
     <?php } ?>
     <?php if($isAdmin) { ?>
-      <li><a class="rotate" href="#"><i class="icon-rotate-right"></i> Rotate</a></li>
+      <li><a class="profile" href="#" data-id="<%= id %>"><i class="icon-user profile"></i> Profile Photo</a></li>
     <?php } ?>
   </ul>
 </script>
