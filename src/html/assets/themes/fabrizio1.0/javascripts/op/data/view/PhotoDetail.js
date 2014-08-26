@@ -106,10 +106,17 @@
       return this;
     },
     events : {
+      'click .lightbox': 'lightbox',
       'click .permission.edit': 'permission',
       'click .profile': 'profile',
       'click .rotate': 'rotate',
       'click .share': 'share'
+    },
+    lightbox: function(ev) {
+      ev.preventDefault();
+      console.log(this.model.get('id'));
+      op.Lightbox.getInstance().open(this.model.get('id'));
+      $('.detail-link').hide();
     },
     permission: function(ev) {
       ev.preventDefault();
@@ -238,9 +245,6 @@
       var self = this;
       this.setupPagination();
       this.updateViews();
-      $(this.el).find('.photo .mag').click(function(e){
-        op.Lightbox.getInstance().open(self.model.get('id'));
-      });
     },
     
     updateModel : function(model){
