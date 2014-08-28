@@ -114,7 +114,6 @@
     },
     lightbox: function(ev) {
       ev.preventDefault();
-      console.log(this.model.get('id'));
       op.Lightbox.getInstance().open(this.model.get('id'));
       $('.detail-link').hide();
     },

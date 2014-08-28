@@ -16,8 +16,12 @@
               if(i == 'active') {
                 isRestore = changedParams[i];
               } else if(i == 'dateTaken') {
-                console.log(i + ' = ' + changedParams[i]);
-                options.data[i] = phpjs.strtotime(changedParams[i]);
+                if(changedParams[i].search(/^([+-])/) === 0) {
+                  // add or subtract units. See gh-321
+                  options.data[i] = phpjs.strtotime(changedParams[i], model.previous('dateTaken'));
+                } else {
+                  options.data[i] = phpjs.strtotime(changedParams[i]);
+                }
               } else {
                 options.data[i] = changedParams[i];
               }
