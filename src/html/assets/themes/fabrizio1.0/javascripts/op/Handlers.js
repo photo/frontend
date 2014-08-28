@@ -251,18 +251,18 @@
               url = '/photos/delete.json';
             } else {
               TBX.notification.show("Check the appropriate checkboxes so we know you're serious.", 'flash', 'error');
-              TBX.callbacks.removeSpinners();
+              OP.Util.fire('callback:remove-spinners');
               return; // don't continue
             }
           } else if(formParams[i].name === 'dateAdjust') {
-            for(innerI in idsArr) {
-              if(idsArr.hasOwnProperty(innerI)) {
-                op.data.store.Photos.get(idsArr[innerI])
-                .set({dateTaken: }, {silent: true})
-                .save();
-              }
+            var dateAdjustedValue = formParams[i].value;
+            for(var innerI=0; innerI<idsArr.length; innerI++) {
+              op.data.store.Photos.get(idsArr[innerI])
+              .set({dateTaken: dateAdjustedValue}, {silent: true})
+              .save();
             }
-            //TBX.callbacks.removeSpinners();
+            OP.Util.fire('callback:remove-spinners');
+            // TODO gh-321 figure out how to handle errors
             return; // don't continue
           }
 
@@ -351,7 +351,7 @@
         uploader.start();
       } else {
         TBX.notification.show('Nothing to upload.', 'flash', 'error');
-        TBX.callbacks.removeSpinners();
+        OP.Util.fire('callback:remove-spinners');
       }
     };
 
