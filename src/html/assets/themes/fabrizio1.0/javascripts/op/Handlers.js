@@ -7,6 +7,12 @@
 
     // CLICK
     this.click = {};
+    this.click.addSpinner = function(ev) {
+      var $el = $(ev.target);
+      // remove existing icons if any
+      $el.find('i').remove();
+      $('<i class="icon-spinner icon-spin"></i>').prependTo($el);
+    };
     this.click.batchAlbumMode = function(ev) {
       var $el = $(ev.target), $form = $el.closest('form'), $albums = $('select.albums', $form);
       if($el.val() === 'add')

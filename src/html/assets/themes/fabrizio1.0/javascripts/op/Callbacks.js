@@ -162,6 +162,18 @@
       });
       (new op.data.view.ProfilePhoto({model:op.data.store.Profiles.get(viewerId), el: $('.profile-photo-header-meta')})).render();
     };
+    this.removeSpinners = function() {
+      var $icons = $('button i.icon-spinner');
+      $icons.each(function(i, el) { $(el).remove(); });
+    };
+    this.replaceSpinner = function(args) {
+      var $icon = $('i.icon-spinner', args.button), cls = 'icon-ok';
+      if(typeof(args['icon']) !== 'undefined')
+        cls = args.icon;
+
+      $icon.removeClass('icon-spinner icon-spin');
+      $icon.addClass(cls);
+    };
     this.rotate = function(response) {
       var model = this.model, id = this.id, size = this.size, code = response.code, src = response.result['path'+size], $img = $('img.photo-img-'+id);
       model.fetch();
