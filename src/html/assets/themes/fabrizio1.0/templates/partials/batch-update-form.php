@@ -70,6 +70,18 @@
           <input type="radio" name="permission" value="1"> Public 
         </label>
         &nbsp;&nbsp;
+      <?php } elseif($action == 'datetime') { ?>
+        <h4>Change the privacy of your photos?</h4>
+        <div class="control-group">
+          <input type="text" name="dateAdjust" class="input-large" placeholder="Date and time or an offset">
+          <span class="help-block">Some examples include
+            <ul>
+              <li>September 28, 2014 12:10 am &middot; <em>(set exact date and time)</em></li>
+              <li>+3 hours &middot; <em>(adjust for timezone by adding 3 hours to each photo's time)</em></li>
+              <li>-1 hour -30 minutes &middot; <em>(adjust hours and minutes)</em></li>
+            </ul>
+          </span>
+        </div>
       <?php } ?>
       <button type="submit" class="btn btn-brand"><?php $this->utility->safe($buttonLabel); ?></button> or <a href="#" class="batchHide">cancel</a>
       <?php if(isset($ids)) { ?>

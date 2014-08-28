@@ -22,6 +22,9 @@
     <?php } ?>
   </div>
 </script>
+<script type="tmpl/underscore" id="photo-meta-date">
+  <i class="tb-icon-small-calendar tb-icon-light""></i><%= phpjs.date('M jS, Y', dateTaken) %>
+</script>
 <script type="tmpl/underscore" id="profile-photo-meta">
   <% if(photoUrl.search('gravatar.com') == -1) { %>
     <img class="avatar profile-pic profile-photo" src="<%= photoUrl %>" <% if(photoUrl.search('gravatar.com') == -1) { %> <% } %> />
@@ -437,6 +440,7 @@
           <li><a href="#" class="showBatchForm photo" data-action="tags">&nbsp;&middot;&nbsp;Manage Tags</a></li>
           <li><a href="#" class="showBatchForm photo" data-action="albums">&nbsp;&middot;&nbsp;Manage Albums</a></li>
           <li><a href="#" class="showBatchForm photo" data-action="privacy">&nbsp;&middot;&nbsp;Manage Privacy</a></li>
+          <li><a href="#" class="showBatchForm photo" data-action="datetime">&nbsp;&middot;&nbsp;Correct Date &amp; Time</a></li>
           <li><a href="#" class="showBatchForm photo" data-action="delete">&nbsp;&middot;&nbsp;Delete</a></li>
           <!--<li><a href="#">&nbsp;&middot;&nbsp;Edit Date and Location</a></li>-->
           <!--<li class="divider"></li>

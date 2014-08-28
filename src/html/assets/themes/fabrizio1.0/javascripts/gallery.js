@@ -63,10 +63,12 @@ var Gallery = (function($) {
     } 
   };
 
-  var dateSeparator = function(ts) {
-    var calendarContainer = $('<div/>');
+  var dateSeparator = function(model, ts) {
+    var calendarContainer, view;
+    calendarContainer= $('<div/>');
     calendarContainer.attr('class', 'date-placeholder');
-    calendarContainer.html('<i class="tb-icon-small-calendar tb-icon-light""></i> '+phpjs.date('M jS, Y', ts));
+    view = new op.data.view.PhotoGalleryDate({model: model, el: calendarContainer});
+    view.render();
     return calendarContainer;
   };
 
@@ -327,7 +329,7 @@ var Gallery = (function($) {
     // insert calendar icon
     var d = new Date(item.dateTakenYear, item.dateTakenMonth - 1, item.dateTakenDay);
     currentDate = d.getYear()+'-'+d.getMonth()+'-'+d.getDay();
-    imageContainer.append(dateSeparator(d));
+    imageContainer.append(dateSeparator(model, d));
     lastDate = currentDate;
 
 		parent.append(imageContainer);

@@ -118,6 +118,7 @@
                 addJs($this->theme->asset('javascript', 'op/data/view/Notification.js', false))->
                 addJs($this->theme->asset('javascript', 'op/data/view/PhotoDetail.js', false))->
                 addJs($this->theme->asset('javascript', 'op/data/view/PhotoGallery.js', false))->
+                addJs($this->theme->asset('javascript', 'op/data/view/PhotoGalleryDate.js', false))->
                 addJs($this->theme->asset('javascript', 'op/data/view/ProfileName.js', false))->
                 addJs($this->theme->asset('javascript', 'op/data/view/ProfilePhoto.js', false))->
                 addJs($this->theme->asset('javascript', 'op/data/view/ProgressBar.js', false))->

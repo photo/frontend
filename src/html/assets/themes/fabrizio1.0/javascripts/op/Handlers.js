@@ -158,6 +158,7 @@
         // we allow overriding the batch queue by passing in an id
         if($el.attr('data-ids'))
           params.ids = $el.attr('data-ids');
+
         OP.Util.makeRequest('/photos/update.json', params, function(response) {
           var result = response.result;
           model.set('loading', false);
@@ -227,7 +228,7 @@
     };
     this.submit.batch = function(ev) {
       ev.preventDefault();
-      var $form = $(ev.target), url = '/photos/update.json', formParams = $form.serializeArray(), batch = OP.Batch, params = {ids: batch.ids().join(','), crumb: TBX.crumb()};
+      var $form = $(ev.target), url = '/photos/update.json', formParams = $form.serializeArray(), batch = OP.Batch, idsArr = batch.ids(), params = {ids: idsArr.join(','), crumb: TBX.crumb()};
       $('button', $form).prepend('<i class="icon-spinner icon-spin"></i> ');
       for(i in formParams) {
         if(formParams.hasOwnProperty(i)) {
@@ -244,9 +245,19 @@
               url = '/photos/delete.json';
             } else {
               TBX.notification.show("Check the appropriate checkboxes so we know you're serious.", 'flash', 'error');
-              $($('button i', $form)[0]).remove();
+              TBX.callbacks.removeSpinners();
               return; // don't continue
             }
+          } else if(formParams[i].name === 'dateAdjust') {
+            for(innerI in idsArr) {
+              if(idsArr.hasOwnProperty(innerI)) {
+                op.data.store.Photos.get(idsArr[innerI])
+                .set({dateTaken: }, {silent: true})
+                .save();
+              }
+            }
+            //TBX.callbacks.removeSpinners();
+            return; // don't continue
           }
 
           params[formParams[i].name] = formParams[i].value;

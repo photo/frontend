@@ -43,6 +43,7 @@ cat $JSDIR/underscore-min.js \
   $JSDIR/op/data/view/Notification.js \
   $JSDIR/op/data/view/PhotoDetail.js \
   $JSDIR/op/data/view/PhotoGallery.js \
+  $JSDIR/op/data/view/PhotoGalleryDate.js \
   $JSDIR/op/data/view/ProfileName.js \
   $JSDIR/op/data/view/ProfilePhoto.js \
   $JSDIR/op/data/view/ProgressBar.js \
