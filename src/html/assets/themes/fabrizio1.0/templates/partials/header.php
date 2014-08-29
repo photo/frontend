@@ -42,7 +42,7 @@
           </ul>
           <div class="search-wrap separator-left">
             <form class="form-inline search" action="/photos/list">
-              <input type="search" class="search-query typeahead tags albums" name="tags" placeholder="Search Tags or Albums..." autocomplete="off">
+              <input type="search" class="search-query typeahead tags albums" name="tags" placeholder="Keywords, Tags or Albums..." autocomplete="off">
               <button type="submit" class="btn btn-theme-secondary"><i class="icon-search"></i></button>
             </form>
           </div>
