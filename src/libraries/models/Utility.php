@@ -108,6 +108,22 @@ class Utility
     return str_replace($config->site->baseHost, $config->site->rewriteHost, $_SERVER['HTTP_HOST']);
   }
 
+  public function getJSAssetsUrl($write = true)
+  {
+    $configObj = getConfig()->get();
+    $themeObj = getTheme();
+    $pipelineObj = getAssetPipeline(true)->setMode(AssetPipeline::combined);
+
+    $assets = file($path = sprintf('%s/configs/js-assets.txt', dirname(dirname(__DIR__))));
+
+    foreach($assets as $asset)
+      $pipelineObj->addJs($themeObj->asset('javascript', trim($asset), false));
+
+
+    $url = sprintf('%s%s', $this->safe($configObj->site->cdnPrefix, false), $pipelineObj->getUrl(AssetPipeline::js, $configObj->site->mediaVersion, false));
+    return $this->returnValue($url, $write);
+  }
+
   public function getLicenses($selected = null)
   {
     if(!$this->licenses)

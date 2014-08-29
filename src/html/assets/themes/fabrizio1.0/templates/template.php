@@ -84,61 +84,7 @@
                   getUrl(AssetPipeline::js, $this->config->site->mediaVersion, true/*$this->config->site->mode === 'prod'*/)
               ); ?>',
             <?php } else { ?>
-              '<?php $this->utility->safe($this->config->site->cdnPrefix);?><?php echo getAssetPipeline(true)->setMode(AssetPipeline::combined)->
-                addJs($this->theme->asset('javascript', 'underscore-min.js', false))->
-                addJs($this->theme->asset('javascript', 'modernizr.custom.js', false))->
-                addJs($this->theme->asset('javascript', 'backbone.js', false))->
-                addJs($this->theme->asset('javascript', 'bootstrap.min.js', false))->
-                addJs($this->theme->asset('javascript', 'jquery.color.js', false))->
-                addJs($this->theme->asset('javascript', 'x-editable/bootstrap-editable/js/bootstrap-editable.js', false))->
-                addJs($this->theme->asset('javascript', 'phpjs.js', false))->
-                addJs($this->theme->asset('javascript', 'waypoints.min.js', false))->
-                addJs($this->theme->asset('javascript', 'ZeroClipboard.min.js', false))->
-                addJs($this->theme->asset('javascript', 'overrides.js', false))->
-                addJs($this->theme->asset('javascript', 'op/namespace.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/route/Routes.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/model/Album.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/model/Batch.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/model/Notification.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/model/Profile.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/model/Photo.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/model/ProgressBar.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/model/Tag.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/collection/Album.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/collection/Profile.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/collection/Photo.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/collection/Tag.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/store/Albums.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/store/Profiles.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/store/Photos.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/store/Tags.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/Editable.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/BatchIndicator.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/AlbumCover.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/Notification.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/PhotoDetail.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/PhotoGallery.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/PhotoGalleryDate.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/ProfileName.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/ProfilePhoto.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/ProgressBar.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/TagSearch.js', false))->
-                addJs($this->theme->asset('javascript', 'op/data/view/UserBadge.js', false))->
-                addJs($this->theme->asset('javascript', 'op/Lightbox.js', false))->
-                addJs($this->theme->asset('javascript', 'op/Util.js', false))->
-                addJs($this->theme->asset('javascript', 'op/Strings.js', false))->
-                addJs($this->theme->asset('javascript', 'op/Handlers.js', false))->
-                addJs($this->theme->asset('javascript', 'op/Highlight.js', false))->
-                addJs($this->theme->asset('javascript', 'op/Callbacks.js', false))->
-                addJs($this->theme->asset('javascript', 'op/Tutorial.js', false))->
-                addJs($this->theme->asset('javascript', 'op/Upload.js', false))->
-                addJs($this->theme->asset('javascript', 'op/Format.js', false))->
-                addJs($this->theme->asset('javascript', 'op/Clipboard.js', false))->
-                addJs($this->theme->asset('javascript', 'op/Waypoints.js', false))->
-                addJs($this->theme->asset('javascript', 'gallery.js', false))->
-                addJs($this->theme->asset('javascript', 'intro.js', false))->
-                addJs($this->theme->asset('javascript', 'fabrizio.js', false))->
-                getUrl(AssetPipeline::js, $this->config->site->mediaVersion, false/*$this->config->site->mode === 'prod'*/); ?>'
+              '<?php $this->utility->getJSAssetsURL(); ?>'
             <?php } ?>
             ], // assets
             onComplete: function() {
