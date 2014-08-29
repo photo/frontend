@@ -1791,6 +1791,9 @@ class DatabaseMySql implements DatabaseInterface
             $this->_($this->owner), 'photo', implode("','", $value));
           $where = $this->buildWhere($where, $subquery);
           break;
+        case 'keywords':
+          $where = $this->buildWhere($where, sprintf("(`title` LIKE '%%%s%%' OR `description` LIKE '%%%s%%' OR `filenameOriginal` LIKE '%%%s%%')", $this->_($value), $this->_($value), $this->_($value)));
+          break;
         case 'page':
           if($value > 1)
             $offset = intval(($limit * $value) - $limit);
