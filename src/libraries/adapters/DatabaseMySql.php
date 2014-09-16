@@ -1728,6 +1728,91 @@ class DatabaseMySql implements DatabaseInterface
     return $res !== false;
   }
 
+  // see #1342 for why we do this here instead of in a trigger
+  private function adjustItemCounts($items, $type)
+  {
+
+    if($type === 'tag')
+    {
+      $table = 'tag';
+      $tableMap = 'elementTag';
+      $column = 'tag';
+    }
+    elseif($type === 'album')
+    {
+      $table = 'album';
+      $tableMap = 'elementAlbum';
+      $column = 'album';
+    }
+    else
+    {
+      return false;
+    }
+
+    $itemsForSql = array();
+    foreach($items as $item)
+      $itemsForSql[] = $this->_($item);
+    $itemsForSql = sprintf("'%s'", implode("','", $itemsForSql));
+    // get public and private counts for all the items
+    // private item counts (omit permission column in WHERE clause to get all photos (private is everything))
+    $privateCounts = $this->db->all($sql = "SELECT ei.`{$column}`, COUNT(*) AS _CNT
+      FROM `{$this->mySqlTablePrefix}photo` AS p INNER JOIN `{$this->mySqlTablePrefix}{$tableMap}` AS ei ON ei.`element`=p.`id`
+      WHERE ei.`owner`=:owner1 AND ei.`{$column}` IN ({$itemsForSql}) AND p.`owner`=:owner2 AND p.`active`=1
+      GROUP BY ei.`{$table}`", 
+      array(':owner1' => $this->owner, ':owner2' => $this->owner)
+    );
+
+    // public item counts (include permission column in WHERE clause to get only public photos)
+    $publicCounts = $this->db->all("SELECT ei.`{$column}`, COUNT(*) AS _CNT
+      FROM `{$this->mySqlTablePrefix}photo` AS p INNER JOIN `{$this->mySqlTablePrefix}{$tableMap}` AS ei ON ei.`element`=p.`id`
+      WHERE ei.`owner`=:owner1 AND ei.`{$column}` IN ({$itemsForSql}) AND p.`owner`=:owner2 AND p.`permission`=:permission AND p.`active`=1
+      GROUP BY ei.`{$column}`", 
+      array(':owner1' => $this->owner, ':owner2' => $this->owner, ':permission' => '1')
+    );
+
+    // there's an edge case described by gh-1454
+    //  counts come out of sync when the only photo in a tag or album is deleted as the
+    //  above query returns NULL in the first column
+
+    // first we get all columns found in each query
+    $privateKeys = array_column($privateCounts, $column);
+    $privateDiff = array_diff($items, $privateKeys);
+    $publicKeys = array_column($publicCounts, $column);
+    $publicDiff = array_diff($items, $publicKeys);
+
+    if(!empty($privateDiff))
+    {
+      foreach($privateDiff as $pItem)
+        $privateCounts[] = array($column => $pItem, '_CNT' => 0);
+    }
+
+    if(!empty($publicDiff))
+    {
+      foreach($publicDiff as $pItem)
+        $publicCounts[] = array($column => $pItem, '_CNT' => 0);
+    }
+
+    $itemCountSql = "UPDATE `{$this->mySqlTablePrefix}{$table}` ";
+    if(count($privateCounts) > 0)
+    {
+      $itemCountSql .= 'SET `countPrivate` = CASE `id` ';
+      foreach($privateCounts as $t)
+        $itemCountSql .= sprintf("WHEN '%s' THEN '%s' ", $this->_($t[$column]), $t['_CNT']);
+      $itemCountSql .= "ELSE `id` END WHERE `owner`=:owner AND `id` IN({$itemsForSql})";
+      $this->db->execute($itemCountSql, array(':owner' => $this->owner));
+    }
+    
+    $itemCountSql = "UPDATE `{$this->mySqlTablePrefix}{$table}` ";
+    if(count($publicCounts) > 0)
+    {
+      $itemCountSql .= 'SET `countPublic` = CASE `id` ';
+      foreach($publicCounts as $t)
+        $itemCountSql .= sprintf("WHEN '%s' THEN '%s' ", $this->_($t[$column]), $t['_CNT']);
+      $itemCountSql .= "ELSE `id` END WHERE `owner`=:owner AND `id` IN({$itemsForSql})";
+      $this->db->execute($itemCountSql, array(':owner' => $this->owner));
+    }
+  }
+
   /**
     * Build parts of the photos select query
     *
