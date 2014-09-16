@@ -67,6 +67,7 @@ SQL;
     `extra` text,
     `countPublic` int(10) unsigned NOT NULL DEFAULT '0',
     `countPrivate` int(10) unsigned NOT NULL DEFAULT '0',
+    `dateLastPhotoAdded` int(11) NOT NULL DEFAULT '0',
     PRIMARY KEY `owner` (`owner`,`id`)
   ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 SQL;
@@ -122,6 +123,7 @@ SQL;
     `element` varchar(6) NOT NULL,
     `album` varchar(6) NOT NULL,
     `order` smallint(11) unsigned NOT NULL DEFAULT '0',
+    `active` tinyint(1) NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`owner`,`type`,`element`,`album`),
     INDEX (`owner`,`album`)
@@ -151,6 +153,7 @@ SQL;
     `type` enum('photo') NOT NULL,
     `element` varchar(6) NOT NULL DEFAULT 'photo',
     `tag` varchar(127) NOT NULL,
+    `active` tinyint(1) NOT NULL DEFAULT '1',
     PRIMARY KEY (`id`),
     UNIQUE KEY `id` (`owner`,`type`,`element`,`tag`)
   ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='Tag mapping table for photos (and videos in the future)';
@@ -221,6 +224,7 @@ SQL;
     `albums` text,
     `groups` text,
     `tags` text,
+    `active` tinyint(1) NOT NULL DEFAULT '1',
     UNIQUE KEY `owner` (`owner`,`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 SQL;
