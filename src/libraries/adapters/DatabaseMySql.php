@@ -1840,6 +1840,10 @@ class DatabaseMySql implements DatabaseInterface
       $ids = sprintf("'%s'", implode("','", $ids));
       $where = "WHERE `{$this->mySqlTablePrefix}{$table}`.`owner` IN({$ids})";
     }
+    elseif($table === 'photo')
+    {
+      $where = $this->buildWhere($where, '`active`=1');
+    }
     $groupBy = '';
 
     // #1341 To fix a regression for sort we set a default and apply it anytime there's no sortBy present
