@@ -5,8 +5,10 @@
   $page = $this->plugin->getData('page');
 
   // since $this->config->user doesn't exist on first set up we have to check gh-1546
-  $ownerEmail = isset($this->config->user) ? $this->config->user->email : null;
-  $username = $utilityObj->safe($user->getNameFromEmail($ownerEmail), false);
+  if(isset($this->config->user))
+    $username = $utilityObj->safe($user->getNameFromEmail($this->config->user->email), false);
+  else
+    $username = User::displayNameDefault;
   $title = '';
 ?>
 
