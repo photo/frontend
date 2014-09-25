@@ -1,4 +1,13 @@
 <?php
+// array_column is >= 5.5
+if(!function_exists('array_column')) 
+{
+  function array_column($array, $column)
+  {
+    return array_map(function($element){ return $element[$column]; }, $array);
+  }
+}
+
 // parse_ini_string is >= 5.3
 if(!function_exists('parse_ini_string')){
     function parse_ini_string($str, $ProcessSections=false){
