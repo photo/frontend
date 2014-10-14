@@ -37,7 +37,7 @@
       <li>
         <h3>OpenPhoto Links</h3>
         <p><a href="https://github.com/photo">All our source are belong to you</a></p>
-        <p><a href="http://blog.theopenphotoproject.org">Keep up to date on our blog</a></p>
+        <p><a href="https://trovebox.com/blog">Keep up to date on our blog</a></p>
         <p><a href="https://twitter.com/trovebox">Follow us on Twitter</a></p>
       </li>
     </ul>
