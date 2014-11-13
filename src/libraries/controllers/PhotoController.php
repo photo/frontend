@@ -138,6 +138,8 @@ class PhotoController extends BaseController
     */
   public function list_($filterOpts = null)
   {
+    $isAlbum = $this->utility->isActiveTab('photos-album');
+    $isTags = $this->utility->isActiveTab('photos-tags');
     $returnSizes = sprintf('%s,%s', $this->config->photoSizes->thumbnail, $this->config->photoSizes->detail);
     $getParams = array();
     if(!empty($_SERVER['QUERY_STRING']))
