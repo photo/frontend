@@ -10,7 +10,7 @@ This guide instructs you on how to install OpenPhoto under Lighttpd on Ubuntu or
 
 #### Database and File System Options
 
-##### MySql 
+##### MySql
 You'll need to provide credentials for a MySql database. If the database doesn't already exist it will be created. If the user doesn't have `CREATE DATABASE` permissions then make sure it's already created.
 
 ##### AWS
@@ -77,7 +77,7 @@ Now replace the path on the `server.document-root` line with the path to the `sr
 
 A few modules must be enabled for use by Lighty for our OpenPhoto install. First edit `/etc/lighttpd/lighttpd.conf` and uncomment the line for `mod_rewrite` under the `server.modules` section. Next enable PHP through the FastCGI module from the command line.
 
-    lighttpd-enable-mod fastcgi
+    lighttpd-enable-mod fastcgi fastcgi-php
 
 Finally, enable your edited configuration and force Lighty to reload its configuration.
 
@@ -96,6 +96,10 @@ Search for the following values and make sure they're correct.
     upload_max_filesize = 16M
     post_max_size = 16M
 
+Verify that the mcrypt module is enabled
+
+    php5enmod mcrypt
+
 If you made any changes then restart your Lighttpd server.
 
     /etc/init.d/lighttpd restart
@@ -109,4 +113,3 @@ Once you complete the 3 steps your site will be up and running and you'll be red
     rm /var/www/yourdomain.com/src/userdata/configs/yourdomain.com.ini
 
 **ENJOY!**
-
