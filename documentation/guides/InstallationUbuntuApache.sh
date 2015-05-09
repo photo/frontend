@@ -148,11 +148,11 @@ echo "Error try again." && \
 mysql -u root -t -p -e "CREATE DATABASE $DATABASE_NAME;" 2>&1 >/dev/null | grep -i error && DBFAIL=true
 
 if [ $DBFAIL == true ]; then
-echo "" && \
-echo "" && \
+echo ""
+echo ""
 echo "Error if root password is incorrect Rerun script or manually configure DB with the below sql after you have configured your password, If db exists, rerun with new dbname" && \
-echo "" && \
-echo "" && \
+echo ""
+echo ""
 echo "CREATE TABLE IF NOT EXISTS user (
  id varchar(255) NOT NULL COMMENT 'Users email address',
  password varchar(64) NOT NULL,
