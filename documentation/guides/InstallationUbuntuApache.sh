@@ -131,6 +131,66 @@ fi
 
 echo ""
 echo ""
+echo "===================================================="
+echo "Generating required database/User table"
+echo "===================================================="
+echo ""
+echo ""
+
+echo "Enter your mysql database name"
+read DATABASE_NAME
+echo "Attempting to create"
+DBFAIL=false
+mysql -u root -t -p -e "CREATE DATABASE $DATABASE_NAME;" 2>&1 >/dev/null | grep -i error && \
+echo "Error try again." && \
+mysql -u root -t -p -e "CREATE DATABASE $DATABASE_NAME;" 2>&1 >/dev/null | grep -i error && \
+echo "Error try again." && \
+mysql -u root -t -p -e "CREATE DATABASE $DATABASE_NAME;" 2>&1 >/dev/null | grep -i error && DBFAIL=true
+
+if [ $DBFAIL == true ]; then
+echo "" && \
+echo "" && \
+echo "Error if root password is incorrect Rerun script or manually configure DB with the below sql after you have configured your password, If db exists, rerun with new dbname" && \
+echo "" && \
+echo "" && \
+echo "CREATE TABLE IF NOT EXISTS user (
+ id varchar(255) NOT NULL COMMENT 'Users email address',
+ password varchar(64) NOT NULL,
+ extra text NOT NULL,
+ timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ PRIMARY KEY (id)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+
+else
+
+echo ""
+echo ""
+echo "Created $DATABASE_NAME, Now creating user table"
+echo ""
+echo ""
+echo "Generating user table"
+echo ""
+echo ""
+mysql -u root -t -p $DATABASE_NAME << SQL
+ CREATE TABLE IF NOT EXISTS user (
+ id varchar(255) NOT NULL COMMENT 'Users email address',
+ password varchar(64) NOT NULL,
+ extra text NOT NULL,
+ timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ PRIMARY KEY (id)
+ ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+SQL
+if [ $? -eq 0 ];then
+echo ""
+echo ""
+echo "DB created, User table created"
+fi
+fi
+echo ""
+echo ""
+
+echo ""
+echo ""
 echo ""
 echo "****************************************************"
 echo "===================================================="
