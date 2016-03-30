@@ -24,7 +24,7 @@ You can do this in two ways: through the main openphoto.me site or through your 
 ### How can I retrieve a lost password?
 Go to the Sign In page and click "Forgot Password" next to the password entry field. Enter the email address you signed up with and click Submit. You'll receive a link where you can reset your password.
 
-### Can I change the email I signed up with? 
+### Can I change the email I signed up with?
 Not at this time, no. We're working on it.
 
 ### Can I change my password?
@@ -74,7 +74,7 @@ Visit Photos under the Manage dropdown menu at your OpenPhoto site while logged 
 Groups let you share a photo with certain people without exposing the photo to the entire Web. Want to share photos from that party last week but don't want just anyone seeing them? Add the photos to a private group that only your friends have access to.
 
 ### How do I add a friend to a group?
-Visit Groups under the Manage menu and create a name for a group. From there you can add your friends by email address. They can log in with Mozilla Persona or Facebook to view the photos.
+Visit Groups under the Manage menu and create a name for a group. From there you can add your friends by email address.
 
 ### How do I add a photo to a group?
 When you upload a photo, you can select a group for the photo to be part of. This is completely optional. You can also change the group(s) a photo is part of at the Manage Photos menu.
@@ -114,7 +114,7 @@ OpenPhoto was built by lots of people just like you, most of them volunteers. We
 Check out our longer <a href="http://theopenphotoproject.org/contribute">guide to contributing</a>, along with <a href="http://theopenphotoproject.org/contribute/frontend">our separate guide for the web parts of the project</a>. Even if your skills aren't listed here, get in touch or make something cool. A great place to get started is <a href="http://github.com/photo">on our Github page</a>. Our main repository is frontend, which contains the main code that runs OpenPhoto. If you're interested in mobile development, check out the mobile-ios or mobile-android repositories.
 
 ### Where can I talk to the OpenPhoto team?
-We have <a href="http://groups.google.com/group/openphoto">a Google group</a> for project discussion, and we have <a href="http://webchat.freenode.net/">an IRC channel</a> at #openphoto on Freenode. 
+We have <a href="http://groups.google.com/group/openphoto">a Google group</a> for project discussion, and we have <a href="http://webchat.freenode.net/">an IRC channel</a> at #openphoto on Freenode.
 
 ## Contact Us
 
@@ -126,4 +126,3 @@ Several ways:
 * Email support@openphoto.me
 * Tweet at <a href="http://twitter.com/openphoto">@openphoto</a>
 * Chat with us at <a href="http://webchat.freenode.net/">#openphoto</a> on Freenode
-

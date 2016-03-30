@@ -26,7 +26,7 @@ Visit Photos under the Manage dropdown menu at your OpenPhoto site while logged 
 Groups let you share a photo with certain people without exposing the photo to the entire Web. Want to share photos from that party last week but don't want just anyone seeing them? Add the photos to a private group that only your friends have access to.
 
 ## How do I add a friend to a group?
-Visit Groups under the Manage menu and create a name for a group. From there you can add your friends by email address. They can log in with Mozilla Persona or Facebook to view the photos.
+Visit Groups under the Manage menu and create a name for a group. From there you can add your friends by email address.
 
 ## How do I add a photo to a group?
 When you upload a photo, you can select a group for the photo to be part of. This is completely optional. You can also change the group(s) a photo is part of at the Manage Photos menu.
