@@ -1,7 +1,7 @@
 (function($) {
   if(typeof TBX === 'undefined')
     TBX = {};
-  
+
   function Handlers() {
     var state = {};
 
@@ -60,15 +60,7 @@
     this.click.loginExternal = function(ev) {
       ev.preventDefault();
       var el = $(ev.target);
-      if(el.hasClass('persona')) {
-        navigator.id.getVerifiedEmail(function(assertion) {
-            if (assertion) {
-              TBX.callbacks.personaSuccess(assertion);
-            } else {
-              TBX.notification.show('Sorry, something went wrong trying to log you in.', 'flash', 'error');
-            }
-        });
-      } else if(el.hasClass('facebook')) {
+      if(el.hasClass('facebook')) {
         FB.login(function(response) {
           if (response.authResponse) {
             log('User logged in, posting to openphoto host.');
@@ -87,7 +79,7 @@
     this.click.photoModal = function(ev) {
       ev.preventDefault();
       var $el = $(ev.target), id = $el.attr('data-id'), $a = $el.closest('a'), $container = $el.closest('.imageContainer'), $pin = $('.pin.edit', $container), url = $a.attr('href'), router = op.data.store.Router, lightbox;
-      
+
       if(ev.altKey && $pin.length > 0) { // alt+click pins the photo
         $pin.trigger('click');
       } else if (ev.shiftKey && $pin.length > 0){ // shift+click pins a range of photos
@@ -204,7 +196,7 @@
       var $el = $('.download.trigger'), url = $el.attr('href');
       location.href = url;
     },
-    this.click.triggerShare = function(ev) { 
+    this.click.triggerShare = function(ev) {
       ev.preventDefault();
       var $el = $('.share.trigger');
       $el.trigger('click');
@@ -330,7 +322,7 @@
     this.submit.search = function(ev) {
       ev.preventDefault();
       var $form = $(ev.target), $button = $('button', $form), query = $('input[type="search"]', $form).val(),
-          albums = OP.Album.getAlbums(), albumSearch = _.where(albums, {name: query.replace(/,+$/, '')}), isAlbum  = albumSearch.length > 0, 
+          albums = OP.Album.getAlbums(), albumSearch = _.where(albums, {name: query.replace(/,+$/, '')}), isAlbum  = albumSearch.length > 0,
           tags = OP.Tag.getTags(), tagSearch = _.where(tags, {id: query.replace(/,+$/, '')}), isTag = tagSearch.length > 0,
           url;
 
@@ -368,7 +360,7 @@
         return;
 
       for(i in photos) {
-        if(photos.hasOwnProperty(i)) { 
+        if(photos.hasOwnProperty(i)) {
           TBX.util.fetchAndCache(photos[i]);
         }
       }
@@ -381,6 +373,6 @@
       TBX.upload.init();
     };
   }
-  
+
   TBX.handlers = new Handlers;
 })(jQuery);

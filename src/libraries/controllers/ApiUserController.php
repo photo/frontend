@@ -18,7 +18,7 @@ class ApiUserController extends ApiBaseController
   }
 
   /**
-    * Log a user in via BrowserID
+    * Log a user in with the provider given in parameter.
     *
     * @return string Standard JSON envelope
     */
@@ -125,7 +125,7 @@ class ApiUserController extends ApiBaseController
       'id' => $utilityObj->getHost(),
       'photoUrl' => $this->user->getAvatarFromEmail(100, $this->config->user->email),
       'counts' => array(
-        'photos' => empty($photos['result']) ? 0 : $photos['result'][0]['totalRows'], 
+        'photos' => empty($photos['result']) ? 0 : $photos['result'][0]['totalRows'],
         'albums' => empty($albums['result']) ? 0 : $albums['result'][0]['totalRows'],
         'tags' => count($tags['result'])
       ),
