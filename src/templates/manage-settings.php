@@ -50,7 +50,7 @@
       <a name="admins"></a>
       <h5>Collaborators</h5>
       <p>
-        Enter email addresses for others you'd like to collaborate with you. These users will have full access to your account. They can log in using Mozilla Persona.
+        Enter email addresses for others you'd like to collaborate with you. These users will have full access to your account. They can log in using Facebook.
       </p>
       <div class="controls">
         <?php for($i=0; $i<4; $i++) { ?>
@@ -108,7 +108,7 @@
     <?php } ?>
   </div>
 </div>
-  
+
 <a name="plugins"></a>
 <div class="row">
   <div class="span12">
