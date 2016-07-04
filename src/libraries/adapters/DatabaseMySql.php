@@ -141,7 +141,7 @@ class DatabaseMySql implements DatabaseInterface
 
     $resPhoto = $this->db->execute("UPDATE `{$this->mySqlTablePrefix}photo` SET `active`=0 WHERE `id`=:id AND owner=:owner", array(':id' => $photo['id'], ':owner' => $this->owner));
 
-    $this->setActiveFieldForAlbumsFromElement($photo['id'], 'photo', 0);
+    $this->setActiveFieldForAlbumsFromElement($photo['id'], 0);
     $this->setActiveFieldForTagsFromElement($photo['id'], 'photo', 0);
 
     return $resPhoto !== false;
