@@ -1,7 +1,7 @@
 (function($) {
   if(typeof TBX === 'undefined')
     TBX = {};
-  
+
   function Callbacks() {
     this.albumCreate = function(response) {
       var result = response.result;
@@ -78,19 +78,6 @@
       var redirect = $('input[name="r"]', this).val();
       window.location.href = redirect;
     };
-    this.personaSuccess = function(assertion) {
-      var params = {assertion: assertion};
-      OP.Util.makeRequest('/user/browserid/login.json', params, TBX.callbacks.loginProcessed);
-    };
-    this.loginProcessed = function(response) {
-      if(response.code != 200) {
-        TBX.notification.show('Sorry, we could not log you in.', 'flash', 'error');
-        return;
-      }
-      
-      var url = $('input[name="r"]', $('form.login')).val();
-      location.href = url;
-    };
     this.passwordReset = function(response) {
       var $button = this;
       if(response.code !== 200) {
@@ -99,10 +86,6 @@
         return;
       }
       location.href = '/';
-    };
-    this.personaSuccess = function(assertion) {
-      var params = {assertion: assertion};
-      OP.Util.makeRequest('/user/browserid/login.json', params, TBX.callbacks.loginProcessed);
     };
     this.photoNext = function(ev) {
       if(!op.Lightbox.getInstance().isOpen())
@@ -150,7 +133,7 @@
       // only if the viewer !== owner do we create two models
       if(viewer !== undefined && owner.isOwner === false)
         op.data.store.Profiles.add(profiles.viewer);
-        
+
       $('.user-badge-meta').each(function(i, el) {
         (new op.data.view.UserBadge({model:op.data.store.Profiles.get(ownerId), el: el})).render();
       });
@@ -262,6 +245,6 @@
         OPU.init();
     };
   }
-  
+
   TBX.callbacks = new Callbacks;
 })(jQuery);

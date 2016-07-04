@@ -221,9 +221,8 @@ function getLogin($provider)
     case 'facebook':
       return new LoginFacebook;
       break;
-    case 'browserid':
     default:
-      return new LoginBrowserId;
+      return new LoginSelf;
       break;
   }
 }

@@ -46,7 +46,7 @@ class User extends BaseModel
   {
     return password_hash($password, PASSWORD_BCRYPT);
   }
-  
+
   /**
     * Deprecated: Encrypt user password
     *
@@ -318,11 +318,11 @@ class User extends BaseModel
   }
 
   /**
-    * Validate the identity of the user using BrowserID
+    * Validate the identity of the user.
     * If the assertion is valid then the email address is stored in session with a random key to prevent XSRF.
     *
-    * @param string $assertion Assertion from BrowserID.org
-    * @param string $audience Audience from BrowserID.org
+    * @param string $provider the provider for the authentication (ie: 'self')
+    * @param string $params ('email' and 'password' for the self-login method)
     * @return boolean
     */
   public function login($provider, $params)
