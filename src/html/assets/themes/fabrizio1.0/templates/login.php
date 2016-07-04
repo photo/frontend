@@ -27,4 +27,3 @@
   </div>
   <?php } ?>
 </div>
-<script src="https://login.persona.org/include.js"></script>
