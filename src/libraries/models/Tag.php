@@ -145,6 +145,7 @@ class Tag extends BaseModel
   {
     $params['owner'] = $this->owner;
     $params['actor'] = $this->getActor();
+    $params['extra'] = '';
     return $this->db->postTag($id, $params);
   }
 

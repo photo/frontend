@@ -1091,8 +1091,8 @@ class DatabaseMySql implements DatabaseInterface
     $res = true;
     foreach($elementIds as $elementId)
     {
-      $tmpRes = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`,`type`,`element`,`album`) VALUES(:owner,:type,:elementId,:albumId)",
-        array(':owner' => $this->owner, ':type' => $type, ':elementId' => $elementId, ':albumId' => $albumId));
+      $tmpRes = $this->db->execute("REPLACE INTO `{$this->mySqlTablePrefix}elementAlbum`(`owner`,`type`,`element`,`album`, `actor`) VALUES(:owner,:type,:elementId,:albumId,:actor)",
+        array(':owner' => $this->owner, ':type' => $type, ':elementId' => $elementId, ':albumId' => $albumId, ':actor' => $this->getActor()));
       $res = $res && $tmpRes !== 0;
     }
     return $res !== false;
@@ -2494,8 +2494,8 @@ class DatabaseMySql implements DatabaseInterface
     {
       // TODO this is gonna fail if we already have the version -- hfiguiere
       // Possibly use REPLACE INTO? -- jmathai
-      $result = $this->db->execute("REPLACE INTO {$this->mySqlTablePrefix}photoVersion (`id`, `owner`, `key`, `path`) VALUES(:id, :owner, :key, :value)",
-        array(':id' => $id, ':owner' => $this->owner, ':key' => $key, ':value' => $value));
+      $result = $this->db->execute("REPLACE INTO {$this->mySqlTablePrefix}photoVersion (`id`, `owner`, `key`, `path`, `actor`) VALUES(:id, :owner, :key, :value, :actor)",
+        array(':id' => $id, ':owner' => $this->owner, ':key' => $key, ':value' => $value, ':actor' => $this->getActor()));
     }
     // TODO, what type of return value should we have here -- jmathai
     return ($result != 1);
