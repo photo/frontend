@@ -27,7 +27,7 @@
       <li>
         <h3>Links</h3>
         <p><a href="https://500px.com/cedricbonhomme">500px</a></p>
-        <p><a href="https://github.com/cedricbonhomme/frontend">Source code</a></p>
+        <p><a href="https://plus.google.com/+CédricBonhomme/palette">Google +</a></p>
       </li>
     </ul>
   </div>
