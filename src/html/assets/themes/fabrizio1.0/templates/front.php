@@ -25,9 +25,9 @@
   <div class="span4">
     <ul class="sidebar">
       <li>
-        <h3>Links</h3>
-        <p><a href="https://500px.com/cedricbonhomme">500px</a></p>
-        <p><a href="https://plus.google.com/+CédricBonhomme/palette">Google +</a></p>
+        <h3>Elsewhere</h3>
+        <p><a href="https://500px.com/cedricbonhomme">My photos on 500px</a></p>
+        <p><a href="https://plus.google.com/+CédricBonhomme/palette">My photos on Google +</a></p>
       </li>
     </ul>
   </div>
