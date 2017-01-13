@@ -27,16 +27,16 @@ $routeObj->post('/action/([a-zA-Z0-9]+)/(photo)/create', array('ActionController
  * Manage endpoints
  * /manage
  */
-$routeObj->get('/manage', array('ManageController', 'home')); // redirect to /manage/photos
-$routeObj->get('/manage/photos', array('ManageController', 'photos'));
-$routeObj->get('/manage/albums', array('ManageController', 'albums'));
-$routeObj->get('/manage/apps', array('ManageController', 'apps'));
-$routeObj->get('/manage/apps/callback', array('ManageController', 'appsCallback'));
-$routeObj->get('/manage/features', array('ManageController', 'features')); // redirect to /manage/settings
-$routeObj->get('/manage/settings', array('ManageController', 'settings'));
-$routeObj->post('/manage/settings', array('ManageController', 'settingsPost'));
-$routeObj->get('/manage/groups', array('ManageController', 'groups'));
-$routeObj->get('/manage/password/reset/([a-z0-9]{32})', array('ManageController', 'passwordReset'));
+$routeObj->get('/manage/?', array('ManageController', 'home')); // redirect to /manage/photos
+$routeObj->get('/manage/photos/?', array('ManageController', 'photos'));
+$routeObj->get('/manage/albums/?', array('ManageController', 'albums'));
+$routeObj->get('/manage/apps/?', array('ManageController', 'apps'));
+$routeObj->get('/manage/apps/callback/?', array('ManageController', 'appsCallback'));
+$routeObj->get('/manage/features/?', array('ManageController', 'features')); // redirect to /manage/settings
+$routeObj->get('/manage/settings/?', array('ManageController', 'settings'));
+$routeObj->post('/manage/settings/?', array('ManageController', 'settingsPost'));
+$routeObj->get('/manage/groups/?', array('ManageController', 'groups'));
+$routeObj->get('/manage/password/reset/([a-z0-9]{32})/?', array('ManageController', 'passwordReset'));
 
 /*
  * Album endpoints
@@ -78,7 +78,7 @@ $routeObj->get('/s/([a-z0-9]+)/?', array('ResourceMapController', 'render'), Epi
  * Everything in []'s are optional
  * /tag[s][/{id}/]{action}
  */
-$routeObj->get('/tags/list', array('TagController', 'list_')); // view tags
+$routeObj->get('/tags/list/?', array('TagController', 'list_')); // view tags
 
 /*
  * User endpoints
@@ -86,15 +86,15 @@ $routeObj->get('/tags/list', array('TagController', 'list_')); // view tags
  * Everything in []'s are optional
  * /user/{action}
  */
-$routeObj->get('/user/login', array('UserController', 'login')); // logout
-$routeObj->get('/user/logout', array('UserController', 'logout')); // logout
+$routeObj->get('/user/login/?', array('UserController', 'login')); // logout
+$routeObj->get('/user/logout/?', array('UserController', 'logout')); // logout
 
 /*
  * Webhook endpoints follow the same convention.
  * Everything in []'s are optional
  * /webhook[s][/{id}]/{action}
  */
-$routeObj->post('/?1?/webhook/subscribe', array('WebhookController', 'subscribe'));
+$routeObj->post('/?1?/webhook/subscribe/?', array('WebhookController', 'subscribe'));
 
 /*
  * OAuth endpoints
