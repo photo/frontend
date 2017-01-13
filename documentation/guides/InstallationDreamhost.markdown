@@ -21,7 +21,7 @@ Variables:
 
 		wget https://github.com/photo/frontend/tarball/master -O openphoto.tar.gz
 		tar -zxvf openphoto.tar.gz
-		mv openphoto-frontend-* OpenPhotoRoot
+		mv photo-frontend-* OpenPhotoRoot
 
 1. Create directories
 
@@ -65,6 +65,25 @@ If the setup page is not colorful and well formatted, then the css and javascrip
 
 #### Error setting up the database
 Double check all the parameters.  Open the Dreamhost control panel for databases.
+
+#### /setup not found
+If the server says that /setup is not found you may need an htaccess file. As suggested by [sokai](https://github.com/photo/frontend/issues/1197?source=cc#issuecomment-16859413), create a file in OpenPhotoRoot/src/html called .htaccess with the following contents:
+
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)\?*$ index.php?__route__=/$1 [L,QSA]
+
+    # 403 Forbidden for ini files
+    #RewriteRule \.ini$ - [F,NC]
+
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/x-javascript
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
 
 	
 ### Launching your OpenPhoto site
