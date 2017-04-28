@@ -19,14 +19,15 @@
         <?php } ?>
       </ul>
     <?php } else { ?>
-      <h4>No activity. Create some buzz by uploading a photo.</h4> 
+      <h4>No activity. Create some buzz by uploading a photo.</h4>
     <?php } ?>
   </div>
   <div class="span4">
     <ul class="sidebar">
       <li>
-        <h3>Links</h3>
-        <p><a href="https://github.com/cedricbonhomme/frontend">Source</a></p>
+        <h3>Elsewhere</h3>
+        <p><a href="https://500px.com/cedricbonhomme">My photos on 500px</a></p>
+        <p><a href="https://plus.google.com/+CédricBonhomme/palette">My photos on Google +</a></p>
       </li>
     </ul>
   </div>
