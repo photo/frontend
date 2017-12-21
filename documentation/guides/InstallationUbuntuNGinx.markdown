@@ -99,7 +99,7 @@ Search for the following values and make sure they're correct.
     upload_max_filesize = 16M
     post_max_size = 16M
 
-Now you're ready to restart apache and visit the site in your browser.
+Now you're ready to restart NGinx and visit the site in your browser.
 
     service php-fpm restart
     service nginx restart
