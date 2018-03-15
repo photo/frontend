@@ -91,7 +91,7 @@ class ApiUserController extends ApiBaseController
     $password = $_POST['password'];
     $passwordConfirm = $_POST['password-confirm'];
     $tokenFromDb = $user->getAttribute('passwordToken');
-    if($tokenFromDb != $token)
+    if($tokenFromDb !== $token)
       return $this->error('Could not validate password reset token.', false);
     elseif($password !== $passwordConfirm)
       return $this->error('Password confirmation did not match.', false);
