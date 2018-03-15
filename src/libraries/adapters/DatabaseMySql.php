@@ -1857,7 +1857,7 @@ class DatabaseMySql implements DatabaseInterface
       switch($name)
       {
         case 'album':
-          $subquery = sprintf("`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `{$this->mySqlTablePrefix}elementAlbum`.`owner`='%s' AND `type`='%s' AND `album`='%s')",
+          $subquery = sprintf("`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `{$this->mySqlTablePrefix}elementAlbum`.`owner`='%s' AND `type`='%s' AND `album`='%s')", $this->_($this->owner), 'photo', $this->_($value));
             $this->_($this->owner), 'photo', $value);
           $where = $this->buildWhere($where, $subquery);
           break;
@@ -2658,6 +2658,6 @@ class DatabaseMySql implements DatabaseInterface
    */
   private function _($str)
   {
-    return addslashes($str);
+      return mysql_real_escape_string($str);
   }
 }
