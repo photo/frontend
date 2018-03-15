@@ -218,12 +218,6 @@ function getLogin($provider)
     case 'self':
       return new LoginSelf;
       break;
-<<<<<<< HEAD
-=======
-    case 'facebook':
-      return new LoginFacebook;
-      break;
->>>>>>> fixes
     default:
       return new LoginSelf;
       break;
