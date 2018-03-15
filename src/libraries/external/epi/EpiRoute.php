@@ -87,7 +87,7 @@ class EpiRoute
     if(!file_exists($file))
     {
       EpiException::raise(new EpiException("Config file ({$file}) does not exist"));
-      return; // need to simulate same behavior if exceptions are turned off
+      break; // need to simulate same behavior if exceptions are turned off
     }
 
     $parsed_array = parse_ini_file($file, true);
