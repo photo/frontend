@@ -322,11 +322,7 @@ class User extends BaseModel
     * If the assertion is valid then the email address is stored in session with a random key to prevent XSRF.
     *
     * @param string $provider the provider for the authentication (ie: 'self')
-<<<<<<< HEAD
-    * @param string $params for 'email' and 'password'
-=======
     * @param string $params ('email' and 'password' for the self-login method)
->>>>>>> fixes
     * @return boolean
     */
   public function login($provider, $params)

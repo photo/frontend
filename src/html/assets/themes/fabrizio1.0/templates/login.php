@@ -18,15 +18,4 @@
     </form>
     </div>
   <?php } ?>
-<<<<<<< HEAD
-=======
-  <?php if($this->plugin->isActive('FacebookConnect')) { ?>
-  <div class="span6 alternate">
-    <strong>You can also sign in using...</strong>
-    <ul class="unstyled">
-        <li><a href="" class="btn btn-theme-secondary loginExternal facebook">Facebook Connect</a></li>
-    </ul>
-  </div>
-  <?php } ?>
->>>>>>> fixes
 </div>
