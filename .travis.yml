@@ -14,7 +14,6 @@ before_install:
   - sudo apt-get install build-essential libpcre3-dev php-pear php5-curl php5-imagick
 
 before_script:
-  - pecl install oauth
   - pear channel-discover pear.bovigo.org
   - pear install bovigo/vfsStream-beta
   - phpenv rehash

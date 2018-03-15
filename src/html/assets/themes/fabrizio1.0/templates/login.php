@@ -7,7 +7,7 @@
         <label>What's your email address?</label>
         <input type="text" name="email" placeholder="user@example.com" id="login-email">
       </fieldset>
-      
+
       <fieldset class="control-group">
         <label>Enter your password below</label>
         <input type="password" name="password" placeholder="Your password">
@@ -18,4 +18,15 @@
     </form>
     </div>
   <?php } ?>
+<<<<<<< HEAD
+=======
+  <?php if($this->plugin->isActive('FacebookConnect')) { ?>
+  <div class="span6 alternate">
+    <strong>You can also sign in using...</strong>
+    <ul class="unstyled">
+        <li><a href="" class="btn btn-theme-secondary loginExternal facebook">Facebook Connect</a></li>
+    </ul>
+  </div>
+  <?php } ?>
+>>>>>>> fixes
 </div>
