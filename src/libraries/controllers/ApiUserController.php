@@ -55,7 +55,7 @@ class ApiUserController extends ApiBaseController
     $email = $_POST['email'];
     if($email == $this->config->user->email)
     {
-      $token = md5(rand(10000,100000));
+      $token = md5(rand(10000,10000000));
       $tokenUrl = sprintf('%s://%s/manage/password/reset/%s', $this->utility->getProtocol(false), $_SERVER['HTTP_HOST'], $token);
       $this->user->setAttribute('passwordToken', $token);
       $templateObj = getTemplate();
