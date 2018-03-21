@@ -57,21 +57,6 @@
       ev.preventDefault();
       TBX.init.pages.albums.load();
     };
-    this.click.loginExternal = function(ev) {
-      ev.preventDefault();
-      var el = $(ev.target);
-      if(el.hasClass('facebook')) {
-        FB.login(function(response) {
-          if (response.authResponse) {
-            log('User logged in, posting to openphoto host.');
-            OP.Util.makeRequest('/user/facebook/login.json', opTheme.user.base.loginProcessed);
-          } else {
-            log('User cancelled login or did not fully authorize.');
-          }
-        }, {scope: 'email'});
-      }
-      return false;
-    };
     this.click.notificationDelete = function(ev) {
       ev.preventDefault();
       OP.Util.makeRequest('/notification/delete.json', {crumb: TBX.crumb()}, null, 'json');

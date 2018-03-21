@@ -25,9 +25,7 @@
   <div class="span4">
     <ul class="sidebar">
       <li>
-        <h3>OpenPhoto Links</h3>
-        <p><a href="https://github.com/photo">All our source are belong to you</a></p>
-        <p><a href="https://twitter.com/trovebox">Follow us on Twitter</a></p>
+        <p><a href="https://github.com/photo/frontend">Source code</a></p>
       </li>
     </ul>
   </div>

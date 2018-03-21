@@ -21,6 +21,11 @@ class WebhookController extends BaseController
       $urlParts = parse_url($params['callback']);
       if(isset($urlParts['scheme']) && isset($urlParts['host']))
       {
+        if ($urlParts['scheme'] != 'https' && $urlParts['scheme'] != 'http')
+	{
+	  header('HTTP/1.1 400 Bad Request');
+	  return;
+	}
         if(!isset($urlParts['port']))
           $port = '';
         if(!isset($urlParts['path']))

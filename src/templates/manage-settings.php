@@ -50,7 +50,7 @@
       <a name="admins"></a>
       <h5>Collaborators</h5>
       <p>
-        Enter email addresses for others you'd like to collaborate with you. These users will have full access to your account. They can log in using Facebook.
+        Enter email addresses for others you'd like to collaborate with you. These users will have full access to your account.
       </p>
       <div class="controls">
         <?php for($i=0; $i<4; $i++) { ?>
