@@ -1857,8 +1857,7 @@ class DatabaseMySql implements DatabaseInterface
       switch($name)
       {
         case 'album':
-          $subquery = sprintf("`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `{$this->mySqlTablePrefix}elementAlbum`.`owner`='%s' AND `type`='%s' AND `album`='%s')", $this->_($this->owner), 'photo', $this->_($value),
-            $this->_($this->owner), 'photo', $value);
+          $subquery = sprintf("`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `{$this->mySqlTablePrefix}elementAlbum`.`owner`='%s' AND `type`='%s' AND `album`='%s')", $this->_($this->owner), 'photo', $this->_($value));
           $where = $this->buildWhere($where, $subquery);
           break;
         case 'hash':
