@@ -4,8 +4,6 @@ LABEL maintainer="pad" \
       version="$CI_COMMIT_REF_NAME"
 
 RUN apk --update --no-cache add \
-        ca-certificates \
-        curl \
         nginx \
         php7 \
         php7-fpm \
@@ -24,7 +22,7 @@ RUN apk --update --no-cache add \
         s6
 
 COPY src/configs/docker/ /
-COPY src/               /var/www/src
+COPY src/                /var/www/src
 
 RUN mkdir -p /var/www/src/userdata \
  && mkdir -p /var/www/src/html/photos \
@@ -33,7 +31,7 @@ RUN mkdir -p /var/www/src/userdata \
                 /var/www/src/html/photos \
                 /var/www/src/html/assets/cache
 
-RUN ln -sf /dev/stderr /var/log/fpm-php.www.log \
+RUN ln -sf /dev/stderr /var/log/fpm-php.log \
  && ln -sf /dev/stdout /var/log/nginx/access.log \
  && ln -sf /dev/stderr /var/log/nginx/error.log
 
