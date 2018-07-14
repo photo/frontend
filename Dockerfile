@@ -1,7 +1,14 @@
 FROM alpine:3.8
 
-LABEL maintainer="pad" \
-      version="$CI_COMMIT_REF_NAME"
+LABEL maintainer="Pascal A. <pascalito@gmail.com>" \
+      org.photo-frontend.url="https://github.com/photo/frontend/blob/master/README.md" \
+      org.photo-frontend.build-date=$BUILD_DATE \
+      org.photo-frontend.version=$CI_COMMIT_REF_NAME \
+      org.photo-frontend.vcs-url="https://github.com/photo/frontend.git" \
+      org.photo-frontend.vcs-ref=$VCS_REF \
+      org.photo-frontend.docker.dockerfile="/Dockerfile" \
+      org.photo-frontend.description="Trovebox frontend" \
+      org.photo-frontend.schema-version="1.0"
 
 RUN apk --update --no-cache add \
         nginx \
