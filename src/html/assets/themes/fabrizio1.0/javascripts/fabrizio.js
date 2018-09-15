@@ -88,7 +88,7 @@
 
             var api = context.pageLocation.pathname+'.json';
                 params = {}, qs = context.pageLocation.search.replace('?', '');
-            
+
             if(qs.length > 0) {
               var qsKeyValueStrings = qs.split('&'), qsKeyAndValue;
               for(i in qsKeyValueStrings) {
@@ -138,7 +138,7 @@
             $button.fadeOut();
             context.end = true;
           }
-          
+
           // proceed to call the context's loadCb
           this.loadCb(response);
         },
@@ -170,7 +170,7 @@
 
         // TODO cache in local storage
         profiles.load();
-        
+
         /**
          * Initialize tags typeahead
          */
@@ -271,7 +271,7 @@
 
             options = {
               routes: {
-                "p/:id": "photoDetail" 
+                "p/:id": "photoDetail"
               },
               render: _this.render
             };
@@ -289,7 +289,7 @@
           load: function(id) {
             // TODO don't hard code the returnSizes
             var _this = TBX.init.pages.photo, endpoint, apiParams = {nextprevious:'1', returnSizes:'90x90xCR,870x550'};
-            
+
             if(_this.filterOpts === undefined || _this.filterOpts === null)
               endpoint = '/photo/'+id+'/view.json';
             else

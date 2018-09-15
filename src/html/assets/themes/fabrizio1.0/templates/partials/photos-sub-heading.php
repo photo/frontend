@@ -1,7 +1,7 @@
 <small>
   (
     <?php $this->utility->safe($photoCount); ?> photos
-    <?php if($isAlbum && $this->permission->canUpload($album['id'])) { ?>
+    <?php if($isAlbum /*&& $this->permission->canUpload($album['id'])*/) { ?>
       <span class="hide"> | <a href="#" class="shareAlbum share trigger" data-id="<?php $this->utility->safe($album['id']); ?>" title="Share this album"><i class="icon-share"></i> Share</a></span>
     <?php } ?>
 
