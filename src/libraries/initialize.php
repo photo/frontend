@@ -11,7 +11,8 @@ require "{$epiPath}/Epi.php";
 require "{$basePath}/libraries/compatability.php";
 require "{$basePath}/libraries/models/UserConfig.php";
 
-Epi::setSetting('exceptions', true);
+Epi::setSetting('exceptions', true);//let it to true for an install with PHP7 cf: Deleted break on line 90 to make it work with php7 in EpiRoute.php
+
 Epi::setPath('base', $epiPath);
 Epi::setPath('config', "{$basePath}/configs");
 Epi::setPath('view', '');
