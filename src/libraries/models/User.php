@@ -374,6 +374,22 @@ class User extends BaseModel
   }
 
   /**
+    * Set several attributes.
+    *
+    * @return boolean
+    */
+  public function setAttributes($attrs)
+  {
+    $new_array = array();
+    $keys = array_keys($attrs);
+    foreach ($attrs as $name => $value) {
+      $new_name = $this->getAttributeName($name);
+      $new_array[$new_name] = $attrs[$name];
+    }
+    return $this->update($new_array);
+  }
+
+  /**
     * Set the session email.
     *
     * @return void

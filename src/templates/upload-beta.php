@@ -19,7 +19,7 @@
       </div>
 
       <div class="control-group">
-        <label for="tags">Permission</label>
+        <label for="permission">Permission</label>
         <div class="controls">
           <label class="radio inline private">
             <input type="radio" name="permission" value="0"<?php if($preferences['permission'] === false || $preferences['permission'] === '0') { ?> checked="checked"<?php } ?>>
