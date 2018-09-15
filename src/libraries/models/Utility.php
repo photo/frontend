@@ -319,6 +319,11 @@ class Utility
           return true;
         return false;
         break;
+      case 'photos-tags':
+        if(!empty($route) && (preg_match('#^/photos/#', $route) && preg_match('#tags-.+#', $route)))
+          return true;
+        return false;
+        break;
       case 'upload':
         if(!empty($route) && preg_match('#^/photos/upload#', $route))
           return true;
