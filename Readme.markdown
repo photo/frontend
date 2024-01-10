@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/photo/frontend/master/files/creative/logo.png" width="250">
 
-### What is Trovebox?
+### What is foxvebox?
 Trovebox is software that helps you manage, organize and share photos. It includes [web](https://github.com/photo/frontend) and mobile apps for [Android](https://github.com/photo/mobile-android) and [iOS](https://github.com/photo/mobile-ios). The goal of Trovebox is to be software which people love to use and helps them preserve their digial media files.
 
 The development of Trovebox was in large part funded by the [Shuttleworth Foundation](https://www.shuttleworthfoundation.org/) through a fellowship grant.
