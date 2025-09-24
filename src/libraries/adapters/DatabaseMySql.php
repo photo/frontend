@@ -415,6 +415,31 @@ class DatabaseMySql implements DatabaseInterface
   }
 
   /**
+    * Get count of photos not in any album
+    *
+    * @param string $email Owner's email
+    * @return mixed Integer count on success, FALSE on failure
+    */
+  public function getNoAlbumPhotoCount($email)
+  {
+    if(!empty($email) && ($this->owner === $email || $this->getActor() === $email))
+    {
+      // For owner/admin, count both public and private photos
+      $result = $this->db->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}photo` WHERE `owner`=:owner AND `active`=1 AND `id` NOT IN (SELECT DISTINCT `element` FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `type`='photo')", array(':owner' => $this->owner));
+    }
+    else
+    {
+      // For visitors, count only public photos
+      $result = $this->db->one("SELECT COUNT(*) FROM `{$this->mySqlTablePrefix}photo` WHERE `owner`=:owner AND `active`=1 AND `permission`='1' AND `id` NOT IN (SELECT DISTINCT `element` FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `owner`=:owner AND `type`='photo')", array(':owner' => $this->owner));
+    }
+
+    if($result === false)
+      return false;
+
+    return intval($result['COUNT(*)']);
+  }
+
+  /**
     * Retrieve a credential with $id
     *
     * @param string $id ID of the credential to get
@@ -1858,6 +1883,11 @@ class DatabaseMySql implements DatabaseInterface
       {
         case 'album':
           $subquery = sprintf("`id` IN (SELECT element FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `{$this->mySqlTablePrefix}elementAlbum`.`owner`='%s' AND `type`='%s' AND `album`='%s')", $this->_($this->owner), 'photo', $this->_($value));
+          $where = $this->buildWhere($where, $subquery);
+          break;
+        case 'noalbum':
+          // Photos that are NOT in any album
+          $subquery = sprintf("`id` NOT IN (SELECT element FROM `{$this->mySqlTablePrefix}elementAlbum` WHERE `{$this->mySqlTablePrefix}elementAlbum`.`owner`='%s' AND `type`='%s')", $this->_($this->owner), 'photo');
           $where = $this->buildWhere($where, $subquery);
           break;
         case 'hash':
