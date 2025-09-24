@@ -143,8 +143,18 @@ class PhotoController extends BaseController
     if(!empty($_SERVER['QUERY_STRING']))
       parse_str($_SERVER['QUERY_STRING'], $getParams);
 
+    // Determine filter type
+    $isAlbum = false;
+    $isTags = false;
+    $isNoAlbum = false;
+    if($filterOpts) {
+      $isAlbum = preg_match('/album-/', $filterOpts) === 1;
+      $isTags = preg_match('/tags-/', $filterOpts) === 1;
+      $isNoAlbum = $filterOpts === 'noalbum';
+    }
+
     $additionalParams = array('returnSizes' => $returnSizes, 'sortBy' => 'dateUploaded,desc');
-    if($isAlbum || $isTags)
+    if($isAlbum || $isTags || $isNoAlbum)
     {
       if(!isset($getParams['sortBy']))
         $additionalParams['sortBy'] = 'dateTaken,asc';
@@ -193,6 +203,15 @@ class PhotoController extends BaseController
       $tags = (array)explode(',', $filterMatches[1]);
       $filterAttributes[] = 'tags';
       $this->plugin->setData('tags', $tags);
+    }
+    if($filterOpts === 'noalbum')
+    {
+      // Handle the special "No Album" case
+      $albumResp = $this->api->invoke("/album/noalbum/view.json", EpiRoute::httpGet);
+      $album = $albumResp['result'];
+      $filterAttributes[] = 'album';
+      $this->plugin->setData('album', $album);
+      $isAlbum = true; // Treat it like an album for UI purposes
     }
 
     $this->plugin->setData('filters', $filterAttributes);

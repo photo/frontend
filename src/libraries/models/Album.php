@@ -141,6 +141,14 @@ class Album extends BaseModel
     return $this->db->postAlbum($id, $params);
   }
 
+  public function getNoAlbumCount($email = null)
+  {
+    if($email === null)
+      $email = $this->user->getEmailAddress();
+    
+    return $this->db->getNoAlbumPhotoCount($email);
+  }
+
   private function isAlbumCoverVisible($album)
   {
     // check permission on the cover photo

@@ -160,28 +160,38 @@
 
 <script type="tmpl/underscore" id="album-meta">
   <div class="cover album-<%= id %>">
-    <a href="/photos/album-<%= id %>/list">
+    <% if (id === 'noalbum') { %>
+      <a href="/photos/noalbum/list">
+    <% } else { %>
+      <a href="/photos/album-<%= id %>/list">
+    <% } %>
       <% if (!_.isNull(cover)) { %>
         <img src="<%= cover.path200x200xCR %>">
+      <% } else if (id === 'noalbum') { %>
+        <img src="data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" style="background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px;">
       <% } else { %>
         <img src="data:image/gif;base64,R0lGODlhAQABAPAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==">
       <% } %>
       <span class="stack stack1"></span>
       <span class="stack stack2"></span>
     </a>
-    <?php if($isAdmin) { ?>
-      <h5>
-        <span>
-          <span class="name edit" title="<%- name %>"><i class="icon-pencil"></i><%- name %></span>
-          <div class="icons">
-            <a href="#" class="share" data-id="<%= id %>" title="Share this album"><i class="icon-share"></i>Share</a>
-            <a href="#" class="delete pull-right" data-id="<%= id %>" title="Delete this album"><i class="icon-trash"></i></a>
-          </div>
-        </span>
-      </h5>
-    <?php } else { ?>
+    <% if (id === 'noalbum') { %>
       <h5><span class="name" title="<%- name %>"><%- name %></span></h5>
-    <?php } ?>
+    <% } else { %>
+      <?php if($isAdmin) { ?>
+        <h5>
+          <span>
+            <span class="name edit" title="<%- name %>"><i class="icon-pencil"></i><%- name %></span>
+            <div class="icons">
+              <a href="#" class="share" data-id="<%= id %>" title="Share this album"><i class="icon-share"></i>Share</a>
+              <a href="#" class="delete pull-right" data-id="<%= id %>" title="Delete this album"><i class="icon-trash"></i></a>
+            </div>
+          </span>
+        </h5>
+      <?php } else { ?>
+        <h5><span class="name" title="<%- name %>"><%- name %></span></h5>
+      <?php } ?>
+    <% } %>
   </div>
 </script>
 

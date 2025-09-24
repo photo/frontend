@@ -98,6 +98,32 @@ class ApiAlbumController extends ApiBaseController
       unset($albums[$key]['countPublic'], $albums[$key]['countPrivate']);
     }
 
+    // Add the "No Album" virtual album
+    $noAlbumCount = $this->album->getNoAlbumCount();
+    if($noAlbumCount > 0)
+    {
+      $noAlbumEntry = array(
+        'id' => 'noalbum',
+        'name' => 'No Album',
+        'description' => 'Photos that are not in any album',
+        'count' => $noAlbumCount,
+        'cover' => null,
+        'extra' => array('virtual' => true),
+        'groups' => '',
+        'dateCreated' => time(),
+        'owner' => $this->owner
+      );
+      
+      // Insert at the beginning of the albums array
+      array_unshift($albums, $noAlbumEntry);
+      
+      // Update totalRows to include the virtual album
+      if(!empty($albums) && isset($albums[1]['totalRows']))
+        $albums[0]['totalRows'] = $albums[1]['totalRows'] + 1;
+      elseif(empty($albums))
+        $noAlbumEntry['totalRows'] = 1;
+    }
+
     if(!empty($albums))
     {
       $albums[0]['currentPage'] = intval($page);
@@ -166,6 +192,39 @@ class ApiAlbumController extends ApiBaseController
 
   public function view($id)
   {
+    // Handle special "No Album" virtual album
+    if($id === 'noalbum')
+    {
+      $includeElements = false;
+      if(isset($_GET['includeElements']) && $_GET['includeElements'] == '1')
+        $includeElements = true;
+      
+      $noAlbumCount = $this->album->getNoAlbumCount();
+      $album = array(
+        'id' => 'noalbum',
+        'name' => 'No Album',
+        'description' => 'Photos that are not in any album',
+        'count' => $noAlbumCount,
+        'cover' => null,
+        'extra' => array('virtual' => true),
+        'groups' => '',
+        'dateCreated' => time(),
+        'owner' => $this->owner
+      );
+      
+      if($includeElements)
+      {
+        // Get photos not in any album using the API
+        $photosResp = $this->api->invoke('/photos/list.json', EpiRoute::httpGet, array('_GET' => array('noalbum' => '1', 'pageSize' => 100)));
+        if($photosResp['code'] === 200)
+          $album['photos'] = $photosResp['result'];
+        else
+          $album['photos'] = array();
+      }
+      
+      return $this->success('Album', $album);
+    }
+    
     $includeElements = false;
     if(isset($_GET['includeElements']) && $_GET['includeElements'] == '1')
       $includeElements = true;
