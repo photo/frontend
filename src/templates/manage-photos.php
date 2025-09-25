@@ -13,6 +13,13 @@
 
   <?php echo $pagination; ?>
 
+  <!-- Add Select All button -->
+  <div class="row" style="margin-bottom: 10px;">
+    <div class="span12">
+      <button id="select-all-btn" class="btn btn-primary">Select All</button>
+    </div>
+  </div>
+
   <div class="row hero-unit empty">
     <?php if($photos[0]['totalRows'] > 0) { ?>
       <ul class="thumbnails">
@@ -25,9 +32,63 @@
             </div>
           </li>
         <?php } ?>
-    </ul>
-  </div>
-  <?php } else { ?>
-    <?php $this->theme->display('partials/no-content.php'); ?>
-  <?php } ?>
+      </ul>
+    </div>
+    <?php } else { ?>
+      <?php $this->theme->display('partials/no-content.php'); ?>
+    <?php } ?>
+
+  <!-- JavaScript for Select All functionality -->
+  <script>
+  $(document).ready(function() {
+    var selectAllBtn = $('#select-all-btn');
+    var isAllSelected = false;
+    
+    selectAllBtn.click(function() {
+      if (isAllSelected) {
+        // Unselect all - clear the batch
+        OP.Batch.clear();
+        $('.pin').removeClass('selected');
+        selectAllBtn.text('Select All');
+        isAllSelected = false;
+      } else {
+        // Select all - add each photo to batch
+        $('.pin').each(function() {
+          var photoId = $(this).data('id');
+          if (photoId && !OP.Batch.exists(photoId)) {
+            OP.Batch.add(photoId);
+            $(this).addClass('selected');
+          }
+        });
+        selectAllBtn.text('Unselect All');
+        isAllSelected = true;
+      }
+    });
+    
+    // Update button state based on current selections
+    function updateButtonState() {
+      var totalPhotos = $('.pin').length;
+      var selectedPhotos = OP.Batch.length();
+      
+      if (selectedPhotos === totalPhotos && totalPhotos > 0) {
+        selectAllBtn.text('Unselect All');
+        isAllSelected = true;
+      } else {
+        selectAllBtn.text('Select All');
+        isAllSelected = false;
+      }
+    }
+    
+    // Listen for batch changes
+    if (typeof OP !== 'undefined' && OP.Util) {
+      OP.Util.on('callback:batch-add', updateButtonState);
+      OP.Util.on('callback:batch-remove', updateButtonState);
+      OP.Util.on('callback:batch-clear', function() {
+        selectAllBtn.text('Select All');
+        isAllSelected = false;
+      });
+    }
+  });
+  </script>
+
 </div>
